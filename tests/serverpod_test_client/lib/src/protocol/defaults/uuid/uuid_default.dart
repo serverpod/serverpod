@@ -93,6 +93,7 @@ abstract class UuidDefault implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UuidDefault',
       if (id != null) 'id': id,
       'uuidDefaultRandom': uuidDefaultRandom.toJson(),
       'uuidDefaultRandomV7': uuidDefaultRandomV7.toJson(),

@@ -399,12 +399,27 @@ class Protocol extends _i1.SerializationManager {
 
   static final Protocol _instance = Protocol._();
 
+  static String? getClassNameFromObjectJson(dynamic data) {
+    if (data is! Map) return null;
+    final className = data['__className__'] as String?;
+    return className;
+  }
+
   @override
   T deserialize<T>(
     dynamic data, [
     Type? t,
   ]) {
     t ??= T;
+
+    final dataClassName = getClassNameFromObjectJson(data);
+    if (dataClassName != null && dataClassName != t.toString()) {
+      return deserializeByClassName({
+        'className': dataClassName,
+        'data': data,
+      });
+    }
+
     if (t == _i2.ByIndexEnumWithNameValue) {
       return _i2.ByIndexEnumWithNameValue.fromJson(data) as T;
     }
@@ -4870,6 +4885,14 @@ class Protocol extends _i1.SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
+
+    if (data is Map<String, dynamic> && data['__className__'] is String) {
+      return (data['__className__'] as String).replaceFirst(
+        'serverpod_test.',
+        '',
+      );
+    }
+
     switch (data) {
       case _i183.CustomClass():
         return 'CustomClass';

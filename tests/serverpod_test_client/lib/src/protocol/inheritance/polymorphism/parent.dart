@@ -32,7 +32,10 @@ class PolymorphicParent implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return {'parent': parent};
+    return {
+      '__className__': 'PolymorphicParent',
+      'parent': parent,
+    };
   }
 
   @override

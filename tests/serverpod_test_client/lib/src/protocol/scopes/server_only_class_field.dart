@@ -29,7 +29,7 @@ abstract class ServerOnlyClassField implements _i1.SerializableModel {
   ServerOnlyClassField copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {'__className__': 'ServerOnlyClassField'};
   }
 
   @override

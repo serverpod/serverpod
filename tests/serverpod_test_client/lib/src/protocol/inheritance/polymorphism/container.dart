@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../inheritance/polymorphism/child.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 /// A class that holds child objects.
 abstract class PolymorphicChildContainer implements _i1.SerializableModel {
@@ -37,40 +38,28 @@ abstract class PolymorphicChildContainer implements _i1.SerializableModel {
     Map<String, dynamic> jsonSerialization,
   ) {
     return PolymorphicChildContainer(
-      child: _i2.PolymorphicChild.fromJson(
-        (jsonSerialization['child'] as Map<String, dynamic>),
+      child: _i3.Protocol().deserialize<_i2.PolymorphicChild>(
+        jsonSerialization['child'],
       ),
       nullableChild: jsonSerialization['nullableChild'] == null
           ? null
-          : _i2.PolymorphicChild.fromJson(
-              (jsonSerialization['nullableChild'] as Map<String, dynamic>),
+          : _i3.Protocol().deserialize<_i2.PolymorphicChild>(
+              jsonSerialization['nullableChild'],
             ),
-      childrenList: (jsonSerialization['childrenList'] as List)
-          .map(
-            (e) => _i2.PolymorphicChild.fromJson((e as Map<String, dynamic>)),
-          )
-          .toList(),
-      nullableChildrenList: (jsonSerialization['nullableChildrenList'] as List)
-          .map(
-            (e) => e == null
-                ? null
-                : _i2.PolymorphicChild.fromJson((e as Map<String, dynamic>)),
-          )
-          .toList(),
-      childrenMap: (jsonSerialization['childrenMap'] as Map).map(
-        (k, v) => MapEntry(
-          k as String,
-          _i2.PolymorphicChild.fromJson((v as Map<String, dynamic>)),
-        ),
+      childrenList: _i3.Protocol().deserialize<List<_i2.PolymorphicChild>>(
+        jsonSerialization['childrenList'],
       ),
-      nullableChildrenMap: (jsonSerialization['nullableChildrenMap'] as Map)
-          .map(
-            (k, v) => MapEntry(
-              k as String,
-              v == null
-                  ? null
-                  : _i2.PolymorphicChild.fromJson((v as Map<String, dynamic>)),
-            ),
+      nullableChildrenList: _i3.Protocol()
+          .deserialize<List<_i2.PolymorphicChild?>>(
+            jsonSerialization['nullableChildrenList'],
+          ),
+      childrenMap: _i3.Protocol()
+          .deserialize<Map<String, _i2.PolymorphicChild>>(
+            jsonSerialization['childrenMap'],
+          ),
+      nullableChildrenMap: _i3.Protocol()
+          .deserialize<Map<String, _i2.PolymorphicChild?>>(
+            jsonSerialization['nullableChildrenMap'],
           ),
     );
   }
@@ -107,6 +96,7 @@ abstract class PolymorphicChildContainer implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'PolymorphicChildContainer',
       'child': child.toJson(),
       if (nullableChild != null) 'nullableChild': nullableChild?.toJson(),
       'childrenList': childrenList.toJson(valueToJson: (v) => v.toJson()),

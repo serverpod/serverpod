@@ -46,6 +46,7 @@ class SealedChild extends _i1.SealedParent implements _i2.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'SealedChild',
       'sealedInt': sealedInt,
       'sealedString': sealedString,
       if (nullableInt != null) 'nullableInt': nullableInt,

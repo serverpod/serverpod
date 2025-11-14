@@ -53,6 +53,7 @@ abstract class ServerOnlyDefault
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ServerOnlyDefault',
       'normalField': normalField,
       if (serverOnlyField != null) 'serverOnlyField': serverOnlyField,
       if (serverOnlyStringField != null)
@@ -62,7 +63,10 @@ abstract class ServerOnlyDefault
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'normalField': normalField};
+    return {
+      '__className__': 'ServerOnlyDefault',
+      'normalField': normalField,
+    };
   }
 
   @override

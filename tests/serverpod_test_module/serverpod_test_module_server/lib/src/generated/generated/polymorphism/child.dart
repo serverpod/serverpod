@@ -49,6 +49,7 @@ class ModulePolymorphicChild extends _i1.ModulePolymorphicParent
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_test_module.ModulePolymorphicChild',
       'parent': parent,
       'child': child,
     };
@@ -57,6 +58,7 @@ class ModulePolymorphicChild extends _i1.ModulePolymorphicParent
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_test_module.ModulePolymorphicChild',
       'parent': parent,
       'child': child,
     };

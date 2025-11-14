@@ -32,7 +32,10 @@ abstract class ServerOnlyDefault implements _i1.SerializableModel {
   ServerOnlyDefault copyWith({String? normalField});
   @override
   Map<String, dynamic> toJson() {
-    return {'normalField': normalField};
+    return {
+      '__className__': 'ServerOnlyDefault',
+      'normalField': normalField,
+    };
   }
 
   @override

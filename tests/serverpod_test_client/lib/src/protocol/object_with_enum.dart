@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'test_enum.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class ObjectWithEnum implements _i1.SerializableModel {
   ObjectWithEnum._({
@@ -39,19 +40,15 @@ abstract class ObjectWithEnum implements _i1.SerializableModel {
       nullableEnum: jsonSerialization['nullableEnum'] == null
           ? null
           : _i2.TestEnum.fromJson((jsonSerialization['nullableEnum'] as int)),
-      enumList: (jsonSerialization['enumList'] as List)
-          .map((e) => _i2.TestEnum.fromJson((e as int)))
-          .toList(),
-      nullableEnumList: (jsonSerialization['nullableEnumList'] as List)
-          .map((e) => e == null ? null : _i2.TestEnum.fromJson((e as int)))
-          .toList(),
-      enumListList: (jsonSerialization['enumListList'] as List)
-          .map(
-            (e) => (e as List)
-                .map((e) => _i2.TestEnum.fromJson((e as int)))
-                .toList(),
-          )
-          .toList(),
+      enumList: _i3.Protocol().deserialize<List<_i2.TestEnum>>(
+        jsonSerialization['enumList'],
+      ),
+      nullableEnumList: _i3.Protocol().deserialize<List<_i2.TestEnum?>>(
+        jsonSerialization['nullableEnumList'],
+      ),
+      enumListList: _i3.Protocol().deserialize<List<List<_i2.TestEnum>>>(
+        jsonSerialization['enumListList'],
+      ),
     );
   }
 
@@ -84,6 +81,7 @@ abstract class ObjectWithEnum implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithEnum',
       if (id != null) 'id': id,
       'testEnum': testEnum.toJson(),
       if (nullableEnum != null) 'nullableEnum': nullableEnum?.toJson(),

@@ -50,6 +50,7 @@ abstract class DoubleDefaultPersist implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DoubleDefaultPersist',
       if (id != null) 'id': id,
       if (doubleDefaultPersist != null)
         'doubleDefaultPersist': doubleDefaultPersist,

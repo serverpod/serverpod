@@ -37,12 +37,18 @@ class ModulePolymorphicParent
 
   @override
   Map<String, dynamic> toJson() {
-    return {'parent': parent};
+    return {
+      '__className__': 'serverpod_test_module.ModulePolymorphicParent',
+      'parent': parent,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'parent': parent};
+    return {
+      '__className__': 'serverpod_test_module.ModulePolymorphicParent',
+      'parent': parent,
+    };
   }
 
   @override

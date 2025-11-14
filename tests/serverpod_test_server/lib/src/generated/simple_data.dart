@@ -57,6 +57,7 @@ abstract class SimpleData
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'SimpleData',
       if (id != null) 'id': id,
       'num': num,
     };
@@ -65,6 +66,7 @@ abstract class SimpleData
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'SimpleData',
       if (id != null) 'id': id,
       'num': num,
     };

@@ -59,6 +59,7 @@ abstract class ObjectWithIndex
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithIndex',
       if (id != null) 'id': id,
       'indexed': indexed,
       'indexed2': indexed2,
@@ -68,6 +69,7 @@ abstract class ObjectWithIndex
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ObjectWithIndex',
       if (id != null) 'id': id,
       'indexed': indexed,
       'indexed2': indexed2,

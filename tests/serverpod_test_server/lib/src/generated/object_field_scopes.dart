@@ -65,6 +65,7 @@ abstract class ObjectFieldScopes
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectFieldScopes',
       if (id != null) 'id': id,
       'normal': normal,
       if (api != null) 'api': api,
@@ -75,6 +76,7 @@ abstract class ObjectFieldScopes
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ObjectFieldScopes',
       if (id != null) 'id': id,
       'normal': normal,
       if (api != null) 'api': api,

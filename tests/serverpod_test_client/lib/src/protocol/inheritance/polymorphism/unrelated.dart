@@ -36,7 +36,10 @@ abstract class UnrelatedToPolymorphism implements _i1.SerializableModel {
   UnrelatedToPolymorphism copyWith({String? unrelated});
   @override
   Map<String, dynamic> toJson() {
-    return {'unrelated': unrelated};
+    return {
+      '__className__': 'UnrelatedToPolymorphism',
+      'unrelated': unrelated,
+    };
   }
 
   @override

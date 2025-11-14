@@ -33,12 +33,18 @@ class PolymorphicParent
 
   @override
   Map<String, dynamic> toJson() {
-    return {'parent': parent};
+    return {
+      '__className__': 'PolymorphicParent',
+      'parent': parent,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'parent': parent};
+    return {
+      '__className__': 'PolymorphicParent',
+      'parent': parent,
+    };
   }
 
   @override

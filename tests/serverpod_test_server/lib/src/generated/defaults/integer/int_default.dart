@@ -60,6 +60,7 @@ abstract class IntDefault
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'IntDefault',
       if (id != null) 'id': id,
       'intDefault': intDefault,
       if (intDefaultNull != null) 'intDefaultNull': intDefaultNull,
@@ -69,6 +70,7 @@ abstract class IntDefault
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'IntDefault',
       if (id != null) 'id': id,
       'intDefault': intDefault,
       if (intDefaultNull != null) 'intDefaultNull': intDefaultNull,

@@ -49,6 +49,7 @@ class GrandparentClassWithId implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'GrandparentClassWithId',
       if (id != null) 'id': id?.toJson(),
       'grandParentField': grandParentField,
     };

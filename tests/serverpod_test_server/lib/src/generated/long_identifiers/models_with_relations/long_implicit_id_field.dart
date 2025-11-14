@@ -58,6 +58,7 @@ abstract class LongImplicitIdField
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'LongImplicitIdField',
       if (id != null) 'id': id,
       'name': name,
       if (_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id !=
@@ -70,6 +71,7 @@ abstract class LongImplicitIdField
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'LongImplicitIdField',
       if (id != null) 'id': id,
       'name': name,
     };

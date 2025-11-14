@@ -47,6 +47,7 @@ class PolymorphicChild extends _i1.PolymorphicParent
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'PolymorphicChild',
       'parent': parent,
       'child': child,
     };
@@ -55,6 +56,7 @@ class PolymorphicChild extends _i1.PolymorphicParent
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'PolymorphicChild',
       'parent': parent,
       'child': child,
     };

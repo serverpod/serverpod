@@ -47,6 +47,7 @@ abstract class IntDefaultPersist implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'IntDefaultPersist',
       if (id != null) 'id': id,
       if (intDefaultPersist != null) 'intDefaultPersist': intDefaultPersist,
     };

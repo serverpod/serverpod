@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/one_to_many/implicit/chapter.dart'
     as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Book._({
@@ -33,9 +34,11 @@ abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     return Book(
       id: jsonSerialization['id'] as int?,
       title: jsonSerialization['title'] as String,
-      chapters: (jsonSerialization['chapters'] as List?)
-          ?.map((e) => _i2.Chapter.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      chapters: jsonSerialization['chapters'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.Chapter>>(
+              jsonSerialization['chapters'],
+            ),
     );
   }
 
@@ -64,6 +67,7 @@ abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Book',
       if (id != null) 'id': id,
       'title': title,
       if (chapters != null)
@@ -74,6 +78,7 @@ abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Book',
       if (id != null) 'id': id,
       'title': title,
       if (chapters != null)

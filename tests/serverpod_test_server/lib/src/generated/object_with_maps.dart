@@ -13,6 +13,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'simple_data.dart' as _i2;
 import 'dart:typed_data' as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
 
 abstract class ObjectWithMaps
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -54,98 +55,51 @@ abstract class ObjectWithMaps
 
   factory ObjectWithMaps.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithMaps(
-      dataMap: (jsonSerialization['dataMap'] as Map).map(
-        (k, v) => MapEntry(
-          k as String,
-          _i2.SimpleData.fromJson((v as Map<String, dynamic>)),
-        ),
+      dataMap: _i4.Protocol().deserialize<Map<String, _i2.SimpleData>>(
+        jsonSerialization['dataMap'],
       ),
-      intMap: (jsonSerialization['intMap'] as Map).map(
-        (k, v) => MapEntry(
-          k as String,
-          v as int,
-        ),
+      intMap: _i4.Protocol().deserialize<Map<String, int>>(
+        jsonSerialization['intMap'],
       ),
-      stringMap: (jsonSerialization['stringMap'] as Map).map(
-        (k, v) => MapEntry(
-          k as String,
-          v as String,
-        ),
+      stringMap: _i4.Protocol().deserialize<Map<String, String>>(
+        jsonSerialization['stringMap'],
       ),
-      dateTimeMap: (jsonSerialization['dateTimeMap'] as Map).map(
-        (k, v) => MapEntry(
-          k as String,
-          _i1.DateTimeJsonExtension.fromJson(v),
-        ),
+      dateTimeMap: _i4.Protocol().deserialize<Map<String, DateTime>>(
+        jsonSerialization['dateTimeMap'],
       ),
-      byteDataMap: (jsonSerialization['byteDataMap'] as Map).map(
-        (k, v) => MapEntry(
-          k as String,
-          _i1.ByteDataJsonExtension.fromJson(v),
-        ),
+      byteDataMap: _i4.Protocol().deserialize<Map<String, _i3.ByteData>>(
+        jsonSerialization['byteDataMap'],
       ),
-      durationMap: (jsonSerialization['durationMap'] as Map).map(
-        (k, v) => MapEntry(
-          k as String,
-          _i1.DurationJsonExtension.fromJson(v),
-        ),
+      durationMap: _i4.Protocol().deserialize<Map<String, Duration>>(
+        jsonSerialization['durationMap'],
       ),
-      uuidMap: (jsonSerialization['uuidMap'] as Map).map(
-        (k, v) => MapEntry(
-          k as String,
-          _i1.UuidValueJsonExtension.fromJson(v),
-        ),
+      uuidMap: _i4.Protocol().deserialize<Map<String, _i1.UuidValue>>(
+        jsonSerialization['uuidMap'],
       ),
-      nullableDataMap: (jsonSerialization['nullableDataMap'] as Map).map(
-        (k, v) => MapEntry(
-          k as String,
-          v == null
-              ? null
-              : _i2.SimpleData.fromJson((v as Map<String, dynamic>)),
-        ),
+      nullableDataMap: _i4.Protocol().deserialize<Map<String, _i2.SimpleData?>>(
+        jsonSerialization['nullableDataMap'],
       ),
-      nullableIntMap: (jsonSerialization['nullableIntMap'] as Map).map(
-        (k, v) => MapEntry(
-          k as String,
-          v as int?,
-        ),
+      nullableIntMap: _i4.Protocol().deserialize<Map<String, int?>>(
+        jsonSerialization['nullableIntMap'],
       ),
-      nullableStringMap: (jsonSerialization['nullableStringMap'] as Map).map(
-        (k, v) => MapEntry(
-          k as String,
-          v as String?,
-        ),
+      nullableStringMap: _i4.Protocol().deserialize<Map<String, String?>>(
+        jsonSerialization['nullableStringMap'],
       ),
-      nullableDateTimeMap: (jsonSerialization['nullableDateTimeMap'] as Map)
-          .map(
-            (k, v) => MapEntry(
-              k as String,
-              v == null ? null : _i1.DateTimeJsonExtension.fromJson(v),
-            ),
+      nullableDateTimeMap: _i4.Protocol().deserialize<Map<String, DateTime?>>(
+        jsonSerialization['nullableDateTimeMap'],
+      ),
+      nullableByteDataMap: _i4.Protocol()
+          .deserialize<Map<String, _i3.ByteData?>>(
+            jsonSerialization['nullableByteDataMap'],
           ),
-      nullableByteDataMap: (jsonSerialization['nullableByteDataMap'] as Map)
-          .map(
-            (k, v) => MapEntry(
-              k as String,
-              v == null ? null : _i1.ByteDataJsonExtension.fromJson(v),
-            ),
-          ),
-      nullableDurationMap: (jsonSerialization['nullableDurationMap'] as Map)
-          .map(
-            (k, v) => MapEntry(
-              k as String,
-              v == null ? null : _i1.DurationJsonExtension.fromJson(v),
-            ),
-          ),
-      nullableUuidMap: (jsonSerialization['nullableUuidMap'] as Map).map(
-        (k, v) => MapEntry(
-          k as String,
-          v == null ? null : _i1.UuidValueJsonExtension.fromJson(v),
-        ),
+      nullableDurationMap: _i4.Protocol().deserialize<Map<String, Duration?>>(
+        jsonSerialization['nullableDurationMap'],
       ),
-      intIntMap: (jsonSerialization['intIntMap'] as List).fold<Map<int, int>>(
-        {},
-        (t, e) => {...t, e['k'] as int: e['v'] as int},
+      nullableUuidMap: _i4.Protocol().deserialize<Map<String, _i1.UuidValue?>>(
+        jsonSerialization['nullableUuidMap'],
+      ),
+      intIntMap: _i4.Protocol().deserialize<Map<int, int>>(
+        jsonSerialization['intIntMap'],
       ),
     );
   }
@@ -203,6 +157,7 @@ abstract class ObjectWithMaps
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithMaps',
       'dataMap': dataMap.toJson(valueToJson: (v) => v.toJson()),
       'intMap': intMap.toJson(),
       'stringMap': stringMap.toJson(),
@@ -234,6 +189,7 @@ abstract class ObjectWithMaps
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ObjectWithMaps',
       'dataMap': dataMap.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'intMap': intMap.toJson(),
       'stringMap': stringMap.toJson(),

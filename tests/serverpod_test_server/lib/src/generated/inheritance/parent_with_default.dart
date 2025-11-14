@@ -46,6 +46,7 @@ class ParentWithDefault
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ParentWithDefault',
       'name': name,
       'parentDefault': parentDefault,
     };
@@ -54,6 +55,7 @@ class ParentWithDefault
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ParentWithDefault',
       'name': name,
       'parentDefault': parentDefault,
     };

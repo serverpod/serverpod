@@ -55,6 +55,7 @@ abstract class DoubleDefault implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DoubleDefault',
       if (id != null) 'id': id,
       'doubleDefault': doubleDefault,
       if (doubleDefaultNull != null) 'doubleDefaultNull': doubleDefaultNull,

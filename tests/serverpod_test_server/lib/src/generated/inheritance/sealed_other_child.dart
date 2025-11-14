@@ -46,6 +46,7 @@ abstract class SealedOtherChild extends _i1.SealedParent
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'SealedOtherChild',
       'sealedInt': sealedInt,
       'sealedString': sealedString,
       'sealedOtherChildField': sealedOtherChildField,
@@ -55,6 +56,7 @@ abstract class SealedOtherChild extends _i1.SealedParent
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'SealedOtherChild',
       'sealedInt': sealedInt,
       'sealedString': sealedString,
       'sealedOtherChildField': sealedOtherChildField,

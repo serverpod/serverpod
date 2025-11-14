@@ -53,6 +53,7 @@ abstract class ModulePolymorphicGrandChild extends _i1.ModulePolymorphicChild
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_test_module.ModulePolymorphicGrandChild',
       'parent': parent,
       'child': child,
       'grandchild': grandchild,

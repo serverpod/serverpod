@@ -57,6 +57,7 @@ abstract class ObjectWithUuid implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithUuid',
       if (id != null) 'id': id,
       'uuid': uuid.toJson(),
       if (uuidNullable != null) 'uuidNullable': uuidNullable?.toJson(),

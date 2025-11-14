@@ -37,12 +37,18 @@ abstract class UnrelatedToPolymorphism
   UnrelatedToPolymorphism copyWith({String? unrelated});
   @override
   Map<String, dynamic> toJson() {
-    return {'unrelated': unrelated};
+    return {
+      '__className__': 'UnrelatedToPolymorphism',
+      'unrelated': unrelated,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'unrelated': unrelated};
+    return {
+      '__className__': 'UnrelatedToPolymorphism',
+      'unrelated': unrelated,
+    };
   }
 
   @override

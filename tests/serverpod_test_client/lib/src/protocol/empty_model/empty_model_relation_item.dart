@@ -49,6 +49,7 @@ abstract class EmptyModelRelationItem implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'EmptyModelRelationItem',
       if (id != null) 'id': id,
       'name': name,
     };

@@ -53,6 +53,7 @@ abstract class ObjectWithParent
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithParent',
       if (id != null) 'id': id,
       'other': other,
     };
@@ -61,6 +62,7 @@ abstract class ObjectWithParent
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ObjectWithParent',
       if (id != null) 'id': id,
       'other': other,
     };

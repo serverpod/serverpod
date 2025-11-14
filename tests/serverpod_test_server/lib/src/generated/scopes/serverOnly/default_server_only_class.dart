@@ -33,12 +33,18 @@ abstract class DefaultServerOnlyClass
   DefaultServerOnlyClass copyWith({String? foo});
   @override
   Map<String, dynamic> toJson() {
-    return {'foo': foo};
+    return {
+      '__className__': 'DefaultServerOnlyClass',
+      'foo': foo,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'foo': foo};
+    return {
+      '__className__': 'DefaultServerOnlyClass',
+      'foo': foo,
+    };
   }
 
   @override

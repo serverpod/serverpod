@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Arena._({
@@ -34,9 +35,7 @@ abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       name: jsonSerialization['name'] as String,
       team: jsonSerialization['team'] == null
           ? null
-          : _i2.Team.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>),
-            ),
+          : _i3.Protocol().deserialize<_i2.Team>(jsonSerialization['team']),
     );
   }
 
@@ -65,6 +64,7 @@ abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Arena',
       if (id != null) 'id': id,
       'name': name,
       if (team != null) 'team': team?.toJson(),
@@ -74,6 +74,7 @@ abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Arena',
       if (id != null) 'id': id,
       'name': name,
       if (team != null) 'team': team?.toJsonForProtocol(),

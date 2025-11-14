@@ -47,6 +47,7 @@ class SealedChild extends _i1.SealedParent
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'SealedChild',
       'sealedInt': sealedInt,
       'sealedString': sealedString,
       if (nullableInt != null) 'nullableInt': nullableInt,
@@ -56,6 +57,7 @@ class SealedChild extends _i1.SealedParent
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'SealedChild',
       'sealedInt': sealedInt,
       'sealedString': sealedString,
       if (nullableInt != null) 'nullableInt': nullableInt,

@@ -59,6 +59,7 @@ abstract class UriDefault implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UriDefault',
       if (id != null) 'id': id,
       'uriDefault': uriDefault.toJson(),
       if (uriDefaultNull != null) 'uriDefaultNull': uriDefaultNull?.toJson(),

@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'simple_data.dart' as _i3;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
 abstract class Nullability implements _i1.SerializableModel {
   Nullability._({
@@ -154,153 +155,135 @@ abstract class Nullability implements _i1.SerializableModel {
           : _i1.UuidValueJsonExtension.fromJson(
               jsonSerialization['aNullableUuid'],
             ),
-      anObject: _i3.SimpleData.fromJson(
-        (jsonSerialization['anObject'] as Map<String, dynamic>),
+      anObject: _i4.Protocol().deserialize<_i3.SimpleData>(
+        jsonSerialization['anObject'],
       ),
       aNullableObject: jsonSerialization['aNullableObject'] == null
           ? null
-          : _i3.SimpleData.fromJson(
-              (jsonSerialization['aNullableObject'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i3.SimpleData>(
+              jsonSerialization['aNullableObject'],
             ),
-      anIntList: (jsonSerialization['anIntList'] as List)
-          .map((e) => e as int)
-          .toList(),
-      aNullableIntList: (jsonSerialization['aNullableIntList'] as List?)
-          ?.map((e) => e as int)
-          .toList(),
-      aListWithNullableInts:
-          (jsonSerialization['aListWithNullableInts'] as List)
-              .map((e) => e as int?)
-              .toList(),
+      anIntList: _i4.Protocol().deserialize<List<int>>(
+        jsonSerialization['anIntList'],
+      ),
+      aNullableIntList: jsonSerialization['aNullableIntList'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<int>>(
+              jsonSerialization['aNullableIntList'],
+            ),
+      aListWithNullableInts: _i4.Protocol().deserialize<List<int?>>(
+        jsonSerialization['aListWithNullableInts'],
+      ),
       aNullableListWithNullableInts:
-          (jsonSerialization['aNullableListWithNullableInts'] as List?)
-              ?.map((e) => e as int?)
-              .toList(),
-      anObjectList: (jsonSerialization['anObjectList'] as List)
-          .map((e) => _i3.SimpleData.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      aNullableObjectList: (jsonSerialization['aNullableObjectList'] as List?)
-          ?.map((e) => _i3.SimpleData.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      aListWithNullableObjects:
-          (jsonSerialization['aListWithNullableObjects'] as List)
-              .map(
-                (e) => e == null
-                    ? null
-                    : _i3.SimpleData.fromJson((e as Map<String, dynamic>)),
-              )
-              .toList(),
+          jsonSerialization['aNullableListWithNullableInts'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<int?>>(
+              jsonSerialization['aNullableListWithNullableInts'],
+            ),
+      anObjectList: _i4.Protocol().deserialize<List<_i3.SimpleData>>(
+        jsonSerialization['anObjectList'],
+      ),
+      aNullableObjectList: jsonSerialization['aNullableObjectList'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i3.SimpleData>>(
+              jsonSerialization['aNullableObjectList'],
+            ),
+      aListWithNullableObjects: _i4.Protocol()
+          .deserialize<List<_i3.SimpleData?>>(
+            jsonSerialization['aListWithNullableObjects'],
+          ),
       aNullableListWithNullableObjects:
-          (jsonSerialization['aNullableListWithNullableObjects'] as List?)
-              ?.map(
-                (e) => e == null
-                    ? null
-                    : _i3.SimpleData.fromJson((e as Map<String, dynamic>)),
-              )
-              .toList(),
-      aDateTimeList: (jsonSerialization['aDateTimeList'] as List)
-          .map((e) => _i1.DateTimeJsonExtension.fromJson(e))
-          .toList(),
-      aNullableDateTimeList:
-          (jsonSerialization['aNullableDateTimeList'] as List?)
-              ?.map((e) => _i1.DateTimeJsonExtension.fromJson(e))
-              .toList(),
-      aListWithNullableDateTimes:
-          (jsonSerialization['aListWithNullableDateTimes'] as List)
-              .map(
-                (e) => e == null ? null : _i1.DateTimeJsonExtension.fromJson(e),
-              )
-              .toList(),
+          jsonSerialization['aNullableListWithNullableObjects'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i3.SimpleData?>>(
+              jsonSerialization['aNullableListWithNullableObjects'],
+            ),
+      aDateTimeList: _i4.Protocol().deserialize<List<DateTime>>(
+        jsonSerialization['aDateTimeList'],
+      ),
+      aNullableDateTimeList: jsonSerialization['aNullableDateTimeList'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<DateTime>>(
+              jsonSerialization['aNullableDateTimeList'],
+            ),
+      aListWithNullableDateTimes: _i4.Protocol().deserialize<List<DateTime?>>(
+        jsonSerialization['aListWithNullableDateTimes'],
+      ),
       aNullableListWithNullableDateTimes:
-          (jsonSerialization['aNullableListWithNullableDateTimes'] as List?)
-              ?.map(
-                (e) => e == null ? null : _i1.DateTimeJsonExtension.fromJson(e),
-              )
-              .toList(),
-      aByteDataList: (jsonSerialization['aByteDataList'] as List)
-          .map((e) => _i1.ByteDataJsonExtension.fromJson(e))
-          .toList(),
-      aNullableByteDataList:
-          (jsonSerialization['aNullableByteDataList'] as List?)
-              ?.map((e) => _i1.ByteDataJsonExtension.fromJson(e))
-              .toList(),
-      aListWithNullableByteDatas:
-          (jsonSerialization['aListWithNullableByteDatas'] as List)
-              .map(
-                (e) => e == null ? null : _i1.ByteDataJsonExtension.fromJson(e),
-              )
-              .toList(),
+          jsonSerialization['aNullableListWithNullableDateTimes'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<DateTime?>>(
+              jsonSerialization['aNullableListWithNullableDateTimes'],
+            ),
+      aByteDataList: _i4.Protocol().deserialize<List<_i2.ByteData>>(
+        jsonSerialization['aByteDataList'],
+      ),
+      aNullableByteDataList: jsonSerialization['aNullableByteDataList'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i2.ByteData>>(
+              jsonSerialization['aNullableByteDataList'],
+            ),
+      aListWithNullableByteDatas: _i4.Protocol()
+          .deserialize<List<_i2.ByteData?>>(
+            jsonSerialization['aListWithNullableByteDatas'],
+          ),
       aNullableListWithNullableByteDatas:
-          (jsonSerialization['aNullableListWithNullableByteDatas'] as List?)
-              ?.map(
-                (e) => e == null ? null : _i1.ByteDataJsonExtension.fromJson(e),
-              )
-              .toList(),
-      aDurationList: (jsonSerialization['aDurationList'] as List)
-          .map((e) => _i1.DurationJsonExtension.fromJson(e))
-          .toList(),
-      aNullableDurationList:
-          (jsonSerialization['aNullableDurationList'] as List?)
-              ?.map((e) => _i1.DurationJsonExtension.fromJson(e))
-              .toList(),
-      aListWithNullableDurations:
-          (jsonSerialization['aListWithNullableDurations'] as List)
-              .map(
-                (e) => e == null ? null : _i1.DurationJsonExtension.fromJson(e),
-              )
-              .toList(),
+          jsonSerialization['aNullableListWithNullableByteDatas'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i2.ByteData?>>(
+              jsonSerialization['aNullableListWithNullableByteDatas'],
+            ),
+      aDurationList: _i4.Protocol().deserialize<List<Duration>>(
+        jsonSerialization['aDurationList'],
+      ),
+      aNullableDurationList: jsonSerialization['aNullableDurationList'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<Duration>>(
+              jsonSerialization['aNullableDurationList'],
+            ),
+      aListWithNullableDurations: _i4.Protocol().deserialize<List<Duration?>>(
+        jsonSerialization['aListWithNullableDurations'],
+      ),
       aNullableListWithNullableDurations:
-          (jsonSerialization['aNullableListWithNullableDurations'] as List?)
-              ?.map(
-                (e) => e == null ? null : _i1.DurationJsonExtension.fromJson(e),
-              )
-              .toList(),
-      aUuidList: (jsonSerialization['aUuidList'] as List)
-          .map((e) => _i1.UuidValueJsonExtension.fromJson(e))
-          .toList(),
-      aNullableUuidList: (jsonSerialization['aNullableUuidList'] as List?)
-          ?.map((e) => _i1.UuidValueJsonExtension.fromJson(e))
-          .toList(),
-      aListWithNullableUuids:
-          (jsonSerialization['aListWithNullableUuids'] as List)
-              .map(
-                (e) =>
-                    e == null ? null : _i1.UuidValueJsonExtension.fromJson(e),
-              )
-              .toList(),
+          jsonSerialization['aNullableListWithNullableDurations'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<Duration?>>(
+              jsonSerialization['aNullableListWithNullableDurations'],
+            ),
+      aUuidList: _i4.Protocol().deserialize<List<_i1.UuidValue>>(
+        jsonSerialization['aUuidList'],
+      ),
+      aNullableUuidList: jsonSerialization['aNullableUuidList'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i1.UuidValue>>(
+              jsonSerialization['aNullableUuidList'],
+            ),
+      aListWithNullableUuids: _i4.Protocol().deserialize<List<_i1.UuidValue?>>(
+        jsonSerialization['aListWithNullableUuids'],
+      ),
       aNullableListWithNullableUuids:
-          (jsonSerialization['aNullableListWithNullableUuids'] as List?)
-              ?.map(
-                (e) =>
-                    e == null ? null : _i1.UuidValueJsonExtension.fromJson(e),
-              )
-              .toList(),
-      anIntMap: (jsonSerialization['anIntMap'] as Map).map(
-        (k, v) => MapEntry(
-          k as String,
-          v as int,
-        ),
-      ),
-      aNullableIntMap: (jsonSerialization['aNullableIntMap'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          v as int,
-        ),
-      ),
-      aMapWithNullableInts: (jsonSerialization['aMapWithNullableInts'] as Map)
-          .map(
-            (k, v) => MapEntry(
-              k as String,
-              v as int?,
+          jsonSerialization['aNullableListWithNullableUuids'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i1.UuidValue?>>(
+              jsonSerialization['aNullableListWithNullableUuids'],
             ),
-          ),
+      anIntMap: _i4.Protocol().deserialize<Map<String, int>>(
+        jsonSerialization['anIntMap'],
+      ),
+      aNullableIntMap: jsonSerialization['aNullableIntMap'] == null
+          ? null
+          : _i4.Protocol().deserialize<Map<String, int>>(
+              jsonSerialization['aNullableIntMap'],
+            ),
+      aMapWithNullableInts: _i4.Protocol().deserialize<Map<String, int?>>(
+        jsonSerialization['aMapWithNullableInts'],
+      ),
       aNullableMapWithNullableInts:
-          (jsonSerialization['aNullableMapWithNullableInts'] as Map?)?.map(
-            (k, v) => MapEntry(
-              k as String,
-              v as int?,
+          jsonSerialization['aNullableMapWithNullableInts'] == null
+          ? null
+          : _i4.Protocol().deserialize<Map<String, int?>>(
+              jsonSerialization['aNullableMapWithNullableInts'],
             ),
-          ),
     );
   }
 
@@ -450,6 +433,7 @@ abstract class Nullability implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Nullability',
       'anInt': anInt,
       if (aNullableInt != null) 'aNullableInt': aNullableInt,
       'aDouble': aDouble,

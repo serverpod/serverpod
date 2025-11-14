@@ -114,19 +114,17 @@ abstract class Types implements _i1.SerializableModel {
           : _i4.TestEnumStringified.fromJson(
               (jsonSerialization['aStringifiedEnum'] as String),
             ),
-      aList: (jsonSerialization['aList'] as List?)
-          ?.map((e) => e as int)
-          .toList(),
-      aMap: (jsonSerialization['aMap'] as List?)?.fold<Map<int, int>>(
-        {},
-        (t, e) => {...t, e['k'] as int: e['v'] as int},
-      ),
+      aList: jsonSerialization['aList'] == null
+          ? null
+          : _i5.Protocol().deserialize<List<int>>(jsonSerialization['aList']),
+      aMap: jsonSerialization['aMap'] == null
+          ? null
+          : _i5.Protocol().deserialize<Map<int, int>>(
+              jsonSerialization['aMap'],
+            ),
       aSet: jsonSerialization['aSet'] == null
           ? null
-          : _i1.SetJsonExtension.fromJson(
-              (jsonSerialization['aSet'] as List),
-              itemFromJson: (e) => e as int,
-            ),
+          : _i5.Protocol().deserialize<Set<int>>(jsonSerialization['aSet']),
       aRecord: jsonSerialization['aRecord'] == null
           ? null
           : _i5.Protocol().deserialize<(String, {Uri? optionalUri})?>(
@@ -209,6 +207,7 @@ abstract class Types implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Types',
       if (id != null) 'id': id,
       if (anInt != null) 'anInt': anInt,
       if (aBool != null) 'aBool': aBool,

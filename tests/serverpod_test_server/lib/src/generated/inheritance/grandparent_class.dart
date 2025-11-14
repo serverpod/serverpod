@@ -35,12 +35,18 @@ class GrandparentClass
 
   @override
   Map<String, dynamic> toJson() {
-    return {'grandParentField': grandParentField};
+    return {
+      '__className__': 'GrandparentClass',
+      'grandParentField': grandParentField,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'grandParentField': grandParentField};
+    return {
+      '__className__': 'GrandparentClass',
+      'grandParentField': grandParentField,
+    };
   }
 
   @override

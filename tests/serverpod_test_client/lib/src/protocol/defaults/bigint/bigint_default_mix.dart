@@ -72,6 +72,7 @@ abstract class BigIntDefaultMix implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'BigIntDefaultMix',
       if (id != null) 'id': id,
       'bigIntDefaultAndDefaultModel': bigIntDefaultAndDefaultModel.toJson(),
       'bigIntDefaultAndDefaultPersist': bigIntDefaultAndDefaultPersist.toJson(),

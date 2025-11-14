@@ -56,6 +56,7 @@ abstract class ObjectWithByteData
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithByteData',
       if (id != null) 'id': id,
       'byteData': byteData.toJson(),
     };
@@ -64,6 +65,7 @@ abstract class ObjectWithByteData
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ObjectWithByteData',
       if (id != null) 'id': id,
       'byteData': byteData.toJson(),
     };

@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../../models_with_relations/self_relation/one_to_one/post.dart'
     as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class Post implements _i1.SerializableModel {
   Post._({
@@ -37,15 +38,11 @@ abstract class Post implements _i1.SerializableModel {
       content: jsonSerialization['content'] as String,
       previous: jsonSerialization['previous'] == null
           ? null
-          : _i2.Post.fromJson(
-              (jsonSerialization['previous'] as Map<String, dynamic>),
-            ),
+          : _i3.Protocol().deserialize<_i2.Post>(jsonSerialization['previous']),
       nextId: jsonSerialization['nextId'] as int?,
       next: jsonSerialization['next'] == null
           ? null
-          : _i2.Post.fromJson(
-              (jsonSerialization['next'] as Map<String, dynamic>),
-            ),
+          : _i3.Protocol().deserialize<_i2.Post>(jsonSerialization['next']),
     );
   }
 
@@ -75,6 +72,7 @@ abstract class Post implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Post',
       if (id != null) 'id': id,
       'content': content,
       if (previous != null) 'previous': previous?.toJson(),

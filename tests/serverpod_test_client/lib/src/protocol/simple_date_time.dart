@@ -51,6 +51,7 @@ abstract class SimpleDateTime implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'SimpleDateTime',
       if (id != null) 'id': id,
       'dateTime': dateTime.toJson(),
     };

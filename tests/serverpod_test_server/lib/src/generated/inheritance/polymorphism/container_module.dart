@@ -13,6 +13,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
     as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 /// A class that holds child objects defined in a module.
 abstract class ModulePolymorphicChildContainer
@@ -33,22 +34,17 @@ abstract class ModulePolymorphicChildContainer
     Map<String, dynamic> jsonSerialization,
   ) {
     return ModulePolymorphicChildContainer(
-      moduleObject: _i2.ModulePolymorphicChild.fromJson(
-        (jsonSerialization['moduleObject'] as Map<String, dynamic>),
+      moduleObject: _i3.Protocol().deserialize<_i2.ModulePolymorphicChild>(
+        jsonSerialization['moduleObject'],
       ),
-      moduleObjectList: (jsonSerialization['moduleObjectList'] as List)
-          .map(
-            (e) => _i2.ModulePolymorphicChild.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
-          .toList(),
-      moduleObjectMap: (jsonSerialization['moduleObjectMap'] as Map).map(
-        (k, v) => MapEntry(
-          k as String,
-          _i2.ModulePolymorphicChild.fromJson((v as Map<String, dynamic>)),
-        ),
-      ),
+      moduleObjectList: _i3.Protocol()
+          .deserialize<List<_i2.ModulePolymorphicChild>>(
+            jsonSerialization['moduleObjectList'],
+          ),
+      moduleObjectMap: _i3.Protocol()
+          .deserialize<Map<String, _i2.ModulePolymorphicChild>>(
+            jsonSerialization['moduleObjectMap'],
+          ),
     );
   }
 
@@ -72,6 +68,7 @@ abstract class ModulePolymorphicChildContainer
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ModulePolymorphicChildContainer',
       'moduleObject': moduleObject.toJson(),
       'moduleObjectList': moduleObjectList.toJson(
         valueToJson: (v) => v.toJson(),
@@ -83,6 +80,7 @@ abstract class ModulePolymorphicChildContainer
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ModulePolymorphicChildContainer',
       'moduleObject': moduleObject.toJsonForProtocol(),
       'moduleObjectList': moduleObjectList.toJson(
         valueToJson: (v) => v.toJsonForProtocol(),

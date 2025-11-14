@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../scopes/serverOnly/server_only_class.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class ServerOnlyClassField
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -29,18 +30,16 @@ abstract class ServerOnlyClassField
     Map<String, dynamic> jsonSerialization,
   ) {
     return ServerOnlyClassField(
-      serverOnlyClassList: (jsonSerialization['serverOnlyClassList'] as List?)
-          ?.map(
-            (e) => _i2.ServerOnlyClass.fromJson((e as Map<String, dynamic>)),
-          )
-          .toList(),
-      serverOnlyClassMap: (jsonSerialization['serverOnlyClassMap'] as Map?)
-          ?.map(
-            (k, v) => MapEntry(
-              k as String,
-              _i2.ServerOnlyClass.fromJson((v as Map<String, dynamic>)),
+      serverOnlyClassList: jsonSerialization['serverOnlyClassList'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.ServerOnlyClass>>(
+              jsonSerialization['serverOnlyClassList'],
             ),
-          ),
+      serverOnlyClassMap: jsonSerialization['serverOnlyClassMap'] == null
+          ? null
+          : _i3.Protocol().deserialize<Map<String, _i2.ServerOnlyClass>>(
+              jsonSerialization['serverOnlyClassMap'],
+            ),
     );
   }
 
@@ -58,6 +57,7 @@ abstract class ServerOnlyClassField
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ServerOnlyClassField',
       if (serverOnlyClassList != null)
         'serverOnlyClassList': serverOnlyClassList?.toJson(
           valueToJson: (v) => v.toJson(),
@@ -71,7 +71,7 @@ abstract class ServerOnlyClassField
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {'__className__': 'ServerOnlyClassField'};
   }
 
   @override

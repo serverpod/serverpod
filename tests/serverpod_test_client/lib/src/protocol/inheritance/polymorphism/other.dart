@@ -32,7 +32,10 @@ abstract class SimilarButNotParent implements _i1.SerializableModel {
   SimilarButNotParent copyWith({String? parent});
   @override
   Map<String, dynamic> toJson() {
-    return {'parent': parent};
+    return {
+      '__className__': 'SimilarButNotParent',
+      'parent': parent,
+    };
   }
 
   @override

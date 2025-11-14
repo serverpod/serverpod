@@ -61,6 +61,7 @@ abstract class ModelWithRequiredField implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ModelWithRequiredField',
       if (id != null) 'id': id,
       'name': name,
       if (email != null) 'email': email,
