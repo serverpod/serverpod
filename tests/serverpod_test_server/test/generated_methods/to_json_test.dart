@@ -12,7 +12,7 @@ void main() {
 
       var jsonMap = types.toJson();
 
-      expect(jsonMap, {});
+      expect(jsonMap, {'__className__': 'Types'});
     },
   );
 
@@ -23,7 +23,7 @@ void main() {
 
       var jsonMap = types.toJson();
 
-      expect(jsonMap, {'anInt': 1});
+      expect(jsonMap, {'__className__': 'Types', 'anInt': 1});
     },
   );
 
@@ -34,7 +34,10 @@ void main() {
 
       var jsonMap = types.toJson();
 
-      expect(jsonMap, {'aDouble': 1.0});
+      expect(jsonMap, {
+        '__className__': 'Types',
+        'aDouble': 1.0,
+      });
     },
   );
 
@@ -45,7 +48,7 @@ void main() {
 
       var jsonMap = types.toJson();
 
-      expect(jsonMap, {'aBool': true});
+      expect(jsonMap, {'__className__': 'Types', 'aBool': true});
     },
   );
 
@@ -56,7 +59,10 @@ void main() {
 
       var jsonMap = types.toJson();
 
-      expect(jsonMap, {'aString': 'Hello world!'});
+      expect(jsonMap, {
+        '__className__': 'Types',
+        'aString': 'Hello world!',
+      });
     },
   );
 
@@ -67,7 +73,7 @@ void main() {
 
       var jsonMap = types.toJson();
 
-      expect(jsonMap, {'anEnum': 0});
+      expect(jsonMap, {'__className__': 'Types', 'anEnum': 0});
     },
   );
 
@@ -78,7 +84,10 @@ void main() {
 
       var jsonMap = types.toJson();
 
-      expect(jsonMap, {'aStringifiedEnum': 'one'});
+      expect(jsonMap, {
+        '__className__': 'Types',
+        'aStringifiedEnum': 'one',
+      });
     },
   );
 
@@ -90,7 +99,10 @@ void main() {
 
       var jsonMap = types.toJson();
 
-      expect(jsonMap, {'aUuid': '00000000-0000-0000-0000-000000000000'});
+      expect(jsonMap, {
+        '__className__': 'Types',
+        'aUuid': '00000000-0000-0000-0000-000000000000',
+      });
     },
   );
 
@@ -101,7 +113,10 @@ void main() {
 
       var jsonMap = types.toJson();
 
-      expect(jsonMap, {'aUri': 'https://serverpod.dev/foo#test'});
+      expect(jsonMap, {
+        '__className__': 'Types',
+        'aUri': 'https://serverpod.dev/foo#test',
+      });
     },
   );
 
@@ -112,7 +127,10 @@ void main() {
 
       var jsonMap = types.toJson();
 
-      expect(jsonMap, {'aDuration': 1000});
+      expect(jsonMap, {
+        '__className__': 'Types',
+        'aDuration': 1000,
+      });
     },
   );
 
@@ -123,7 +141,10 @@ void main() {
 
       var jsonMap = types.toJson();
 
-      expect(jsonMap, {'aDateTime': '2024-01-01T00:00:00.000Z'});
+      expect(jsonMap, {
+        '__className__': 'Types',
+        'aDateTime': '2024-01-01T00:00:00.000Z',
+      });
     },
   );
 
@@ -139,7 +160,10 @@ void main() {
 
       var jsonMap = types.toJson();
 
-      expect(jsonMap, {'aByteData': 'decode(\'AAECAwQFBgc=\', \'base64\')'});
+      expect(jsonMap, {
+        '__className__': 'Types',
+        'aByteData': 'decode(\'AAECAwQFBgc=\', \'base64\')',
+      });
     },
   );
 
@@ -152,8 +176,9 @@ void main() {
       var jsonMap = post.toJson();
 
       expect(jsonMap, {
+        '__className__': 'Post',
         'content': 'post',
-        'next': {'content': 'next'},
+        'next': {'__className__': 'Post', 'content': 'next'},
       });
     },
   );
@@ -167,7 +192,8 @@ void main() {
       var jsonMap = object.toJson();
 
       expect(jsonMap, {
-        'object': {'num': 123},
+        '__className__': 'SimpleDataObject',
+        'object': {'__className__': 'SimpleData', 'num': 123},
       });
     },
   );
@@ -183,8 +209,9 @@ void main() {
       var jsonMap = object.toJson();
 
       expect(jsonMap, {
+        '__className__': 'TypesList',
         'anObject': [
-          {'anInt': 123},
+          {'__className__': 'Types', 'anInt': 123},
         ],
       });
     },
@@ -200,6 +227,7 @@ void main() {
       var jsonMap = object.toJson();
 
       expect(jsonMap, {
+        '__className__': 'TypesList',
         'aDateTime': ['2024-01-01T00:00:00.000Z'],
       });
     },
@@ -220,6 +248,7 @@ void main() {
       var jsonMap = object.toJson();
 
       expect(jsonMap, {
+        '__className__': 'TypesList',
         'aByteData': ['decode(\'AAECAwQFBgc=\', \'base64\')'],
       });
     },
@@ -235,6 +264,7 @@ void main() {
       var jsonMap = object.toJson();
 
       expect(jsonMap, {
+        '__className__': 'TypesList',
         'aDuration': [1000],
       });
     },
@@ -251,6 +281,7 @@ void main() {
       var jsonMap = object.toJson();
 
       expect(jsonMap, {
+        '__className__': 'TypesList',
         'aUuid': ['00000000-0000-0000-0000-000000000000'],
       });
     },
@@ -269,6 +300,7 @@ void main() {
       var jsonMap = object.toJson();
 
       expect(jsonMap, {
+        '__className__': 'TypesList',
         'aBigInt': [
           '-12345678901234567890',
           '18446744073709551615',
@@ -287,6 +319,7 @@ void main() {
       var jsonMap = object.toJson();
 
       expect(jsonMap, {
+        '__className__': 'TypesList',
         'anEnum': [0],
       });
     },
@@ -302,6 +335,7 @@ void main() {
       var jsonMap = object.toJson();
 
       expect(jsonMap, {
+        '__className__': 'TypesList',
         'aStringifiedEnum': ['one'],
       });
     },
@@ -320,9 +354,10 @@ void main() {
       var jsonMap = object.toJson();
 
       expect(jsonMap, {
+        '__className__': 'TypesList',
         'aMap': [
           {
-            'key': {'anInt': 123},
+            'key': {'__className__': 'Types', 'anInt': 123},
           },
         ],
       });
@@ -342,9 +377,10 @@ void main() {
       var jsonMap = object.toJson();
 
       expect(jsonMap, {
+        '__className__': 'TypesList',
         'aList': [
           [
-            {'anInt': 123},
+            {'__className__': 'Types', 'anInt': 123},
           ],
         ],
       });
@@ -361,8 +397,9 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesSet',
           'anObject': [
-            {'anInt': 123},
+            {'__className__': 'Types', 'anInt': 123},
           ],
         });
       },
@@ -378,6 +415,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesSet',
           'aDateTime': ['2024-01-01T00:00:00.000Z'],
         });
       },
@@ -398,6 +436,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesSet',
           'aByteData': ['decode(\'AAECAwQFBgc=\', \'base64\')'],
         });
       },
@@ -413,6 +452,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesSet',
           'aDuration': [1000],
         });
       },
@@ -429,6 +469,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesSet',
           'aUuid': ['00000000-0000-0000-0000-000000000000'],
         });
       },
@@ -447,6 +488,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesSet',
           'aBigInt': [
             '-12345678901234567890',
             '18446744073709551615',
@@ -465,6 +507,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesSet',
           'anEnum': [0],
         });
       },
@@ -480,6 +523,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesSet',
           'aStringifiedEnum': ['one'],
         });
       },
@@ -498,9 +542,10 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesSet',
           'aMap': [
             {
-              'key': {'anInt': 123},
+              'key': {'__className__': 'Types', 'anInt': 123},
             },
           ],
         });
@@ -520,9 +565,10 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesSet',
           'aList': [
             [
-              {'anInt': 123},
+              {'__className__': 'Types', 'anInt': 123},
             ],
           ],
         });
@@ -540,8 +586,9 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'anObjectValue': {
-            'key': {'anInt': 123},
+            'key': {'__className__': 'Types', 'anInt': 123},
           },
         });
       },
@@ -557,6 +604,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'aDateTimeValue': {'key': '2024-01-01T00:00:00.000Z'},
         });
       },
@@ -577,6 +625,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'aByteDataValue': {'key': 'decode(\'AAECAwQFBgc=\', \'base64\')'},
         });
       },
@@ -592,6 +641,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'aDurationValue': {'key': 1000},
         });
       },
@@ -608,6 +658,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'aUuidValue': {'key': '00000000-0000-0000-0000-000000000000'},
         });
       },
@@ -623,6 +674,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'anEnumValue': {'key': 0},
         });
       },
@@ -638,6 +690,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'aStringifiedEnumValue': {'key': 'one'},
         });
       },
@@ -656,9 +709,10 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'aMapValue': {
             'key': {
-              'key': {'anInt': 1},
+              'key': {'__className__': 'Types', 'anInt': 1},
             },
           },
         });
@@ -678,9 +732,10 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'aListValue': {
             'key': [
-              {'anInt': 1},
+              {'__className__': 'Types', 'anInt': 1},
             ],
           },
         });
@@ -698,9 +753,10 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'anObjectKey': [
             {
-              'k': {'anInt': 123},
+              'k': {'__className__': 'Types', 'anInt': 123},
               'v': 'value',
             },
           ],
@@ -718,6 +774,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'aDateTimeKey': [
             {'k': '2024-01-01T00:00:00.000Z', 'v': 'value'},
           ],
@@ -740,6 +797,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'aByteDataKey': [
             {'k': 'decode(\'AAECAwQFBgc=\', \'base64\')', 'v': 'value'},
           ],
@@ -757,6 +815,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'aDurationKey': [
             {'k': 1000, 'v': 'value'},
           ],
@@ -775,6 +834,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'aUuidKey': [
             {'k': '00000000-0000-0000-0000-000000000000', 'v': 'value'},
           ],
@@ -792,6 +852,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'anEnumKey': [
             {'k': 0, 'v': 'value'},
           ],
@@ -809,6 +870,7 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'aStringifiedEnumKey': [
             {'k': 'one', 'v': 'value'},
           ],
@@ -829,11 +891,12 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'aMapKey': [
             {
               'k': [
                 {
-                  'k': {'anInt': 1},
+                  'k': {'__className__': 'Types', 'anInt': 1},
                   'v': 'value',
                 },
               ],
@@ -857,10 +920,11 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'TypesMap',
           'aListKey': [
             {
               'k': [
-                {'anInt': 1},
+                {'__className__': 'Types', 'anInt': 1},
               ],
               'v': 'value',
             },
@@ -879,7 +943,11 @@ void main() {
       var jsonMap = object.toJson();
 
       expect(jsonMap, {
-        'serverOnlyScope': {'anInt': 2},
+        '__className__': 'ScopeServerOnlyField',
+        'serverOnlyScope': {
+          '__className__': 'Types',
+          'anInt': 2,
+        },
       });
     });
 
@@ -896,9 +964,14 @@ void main() {
         var jsonMap = object.toJson();
 
         expect(jsonMap, {
+          '__className__': 'ScopeServerOnlyField',
           'nested': {
-            'allScope': {'anInt': 1},
-            'serverOnlyScope': {'anInt': 2},
+            '__className__': 'ScopeServerOnlyField',
+            'allScope': {'__className__': 'Types', 'anInt': 1},
+            'serverOnlyScope': {
+              '__className__': 'Types',
+              'anInt': 2,
+            },
           },
         });
       },

@@ -37,7 +37,10 @@ void main() {
     () {
       SimpleData simpleData = SimpleData.fromJson({'num': 1});
       var typeName = protocol.encodeWithType(simpleData);
-      expect(typeName, '{"className":"SimpleData","data":{"num":1}}');
+      expect(
+        typeName,
+        '{"className":"SimpleData","data":{"__className__":"SimpleData","num":1}}',
+      );
     },
   );
 
@@ -46,7 +49,10 @@ void main() {
     () {
       SimpleData? simpleData = SimpleData.fromJson({'num': 1});
       var typeName = protocol.encodeWithType(simpleData);
-      expect(typeName, '{"className":"SimpleData","data":{"num":1}}');
+      expect(
+        typeName,
+        '{"className":"SimpleData","data":{"__className__":"SimpleData","num":1}}',
+      );
     },
   );
 
@@ -69,7 +75,7 @@ void main() {
 
       expect(
         typeName,
-        '{"className":"serverpod.ClusterServerInfo","data":{"serverId":"Hello World"}}',
+        '{"className":"serverpod.ClusterServerInfo","data":{"__className__":"serverpod.ClusterServerInfo","serverId":"Hello World"}}',
       );
     },
   );
