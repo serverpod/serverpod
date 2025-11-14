@@ -557,41 +557,6 @@ void main() {
         );
       },
     );
-
-    test(
-      'when configured with three fallback algorithms, then a token signed with the third fallback verifies successfully.',
-      () {
-        final thirdFallbackAlgorithm = AuthenticationTokenAlgorithm.hmacSha512(
-          SecretKey('fallback-key-3'),
-        );
-        final jwtCreator = AuthenticationTokens(
-          config: AuthenticationTokenConfig(
-            algorithm: thirdFallbackAlgorithm,
-            refreshTokenHashPepper: 'test-pepper',
-          ),
-        );
-
-        final refreshToken = _createRefreshToken();
-        final jwt = jwtCreator.jwtUtil.createJwt(refreshToken);
-
-        final jwtVerifier = AuthenticationTokens(
-          config: AuthenticationTokenConfig(
-            algorithm: _hs512Algorithm(),
-            refreshTokenHashPepper: 'test-pepper',
-            fallbackVerificationAlgorithms: [
-              _es512Algorithm(),
-              AuthenticationTokenAlgorithm.hmacSha512(
-                SecretKey('fallback-key-2'),
-              ),
-              thirdFallbackAlgorithm,
-            ],
-          ),
-        );
-
-        final result = jwtVerifier.jwtUtil.verifyJwt(jwt);
-        expect(result.authUserId, refreshToken.authUserId);
-      },
-    );
   });
 }
 

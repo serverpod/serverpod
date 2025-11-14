@@ -167,26 +167,23 @@ class JwtUtil {
   /// If reading with the primary algorithm fails, the fallbacks (if configured) are tried in order.
   /// In case none of the keys work, an error is thrown.
   JWT _verifyJwt(final String accessToken) {
-    try {
-      return JWT.verify(
-        accessToken,
-        _algorithm.verificationKey,
-        issuer: _issuer,
-      );
-    } catch (_) {
-      for (final fallbackAlgorithm in _fallbackVerificationAlgorithms) {
-        try {
-          return JWT.verify(
-            accessToken,
-            fallbackAlgorithm.verificationKey,
-            issuer: _issuer,
-          );
-        } catch (_) {
-          continue;
-        }
+    final allAlgorithms = [_algorithm, ..._fallbackVerificationAlgorithms];
+    Object? firstError;
+
+    for (final algorithm in allAlgorithms) {
+      try {
+        return JWT.verify(
+          accessToken,
+          algorithm.verificationKey,
+          issuer: _issuer,
+        );
+      } catch (e) {
+        firstError ??= e;
       }
-      rethrow;
     }
+
+    // Rethrow the first error that occurred
+    throw firstError!;
   }
 
   /// Registered claims as per https://datatracker.ietf.org/doc/html/rfc7519#section-4.1
