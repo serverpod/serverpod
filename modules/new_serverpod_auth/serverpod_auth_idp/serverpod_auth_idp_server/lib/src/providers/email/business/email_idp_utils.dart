@@ -44,6 +44,7 @@ class EmailIDPUtils {
     required final AuthUsers authUsers,
   }) : hashUtil = SecretHashUtil(
          hashPepper: config.secretHashPepper,
+         fallbackHashPepper: config.fallbackSecretHashPepper,
          hashSaltLength: config.secretHashSaltLength,
        ),
        account = EmailIDPAccountUtils() {

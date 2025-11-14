@@ -16,6 +16,15 @@ class AuthSessionsConfig {
   /// as otherwise all sessions become invalid.
   late final String sessionKeyHashPepper;
 
+  /// The fallback pepper used for hashing authentication session keys.
+  ///
+  /// This is used when validation with the primary pepper fails, allowing
+  /// graceful pepper rotation without invalidating existing hashes.
+  ///
+  /// When a session key is validated using the fallback pepper, it will be
+  /// automatically rehashed with the primary pepper.
+  late final String? fallbackSessionKeyHashPepper;
+
   /// Default absolute expiration time for sessions.
   ///
   /// When set, new sessions will expire at creation time + this duration.
@@ -41,10 +50,14 @@ class AuthSessionsConfig {
     this.sessionKeySecretLength = 32,
     this.sessionKeyHashSaltLength = 16,
     required this.sessionKeyHashPepper,
+    this.fallbackSessionKeyHashPepper,
     this.defaultSessionLifetime,
     this.defaultSessionInactivityTimeout,
   }) {
     _validateSessionKeyHashPepper(sessionKeyHashPepper);
+    if (fallbackSessionKeyHashPepper != null) {
+      _validateSessionKeyHashPepper(fallbackSessionKeyHashPepper!);
+    }
     _validateSessionLifetime(defaultSessionLifetime);
     _validateSessionInactivityTimeout(defaultSessionInactivityTimeout);
   }

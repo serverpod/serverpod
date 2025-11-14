@@ -14,14 +14,17 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 final class RefreshTokenSecretHash {
   final int _refreshTokenRotatingSecretSaltLength;
   final String _refreshTokenHashPepper;
+  final String? _fallbackRefreshTokenHashPepper;
 
   /// Creates a new instance of [RefreshTokenSecretHash].
   RefreshTokenSecretHash({
     required final int refreshTokenRotatingSecretSaltLength,
     required final String refreshTokenHashPepper,
+    final String? fallbackRefreshTokenHashPepper,
   }) : _refreshTokenRotatingSecretSaltLength =
            refreshTokenRotatingSecretSaltLength,
-       _refreshTokenHashPepper = refreshTokenHashPepper;
+       _refreshTokenHashPepper = refreshTokenHashPepper,
+       _fallbackRefreshTokenHashPepper = fallbackRefreshTokenHashPepper;
 
   /// Create the hash for the given refresh token secret.
   Future<({Uint8List hash, Uint8List salt})> createHash({
@@ -59,14 +62,34 @@ final class RefreshTokenSecretHash {
   }
 
   /// Verify whether the [secret] can be used to compute the given [hash] with the [salt] applied.
+  ///
+  /// If validation with the primary pepper fails and a fallback pepper is
+  /// configured, the validation will be retried with the fallback pepper.
   Future<bool> validateHash({
     required final Uint8List secret,
     required final Uint8List hash,
     required final Uint8List salt,
   }) async {
-    return uint8ListAreEqual(
-      hash,
-      (await createHash(secret: secret, salt: salt)).hash,
-    );
+    // Try primary pepper first
+    final primaryHash = (await createHash(secret: secret, salt: salt)).hash;
+    if (uint8ListAreEqual(hash, primaryHash)) {
+      return true;
+    }
+
+    // If primary fails and fallback exists, try fallback
+    if (_fallbackRefreshTokenHashPepper != null) {
+      final fallbackPepper = utf8.encode(_fallbackRefreshTokenHashPepper!);
+      final fallbackHash = await _createHash(
+        secret: secret,
+        salt: salt,
+        pepper: fallbackPepper,
+      );
+
+      if (uint8ListAreEqual(hash, fallbackHash.hash)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

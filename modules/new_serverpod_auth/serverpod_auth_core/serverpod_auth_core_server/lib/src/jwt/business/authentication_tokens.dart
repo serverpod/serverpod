@@ -49,6 +49,7 @@ final class AuthenticationTokens {
          refreshTokenRotatingSecretSaltLength:
              config.refreshTokenRotatingSecretSaltLength,
          refreshTokenHashPepper: config.refreshTokenHashPepper,
+         fallbackRefreshTokenHashPepper: config.fallbackRefreshTokenHashPepper,
        );
 
   /// Looks up the `AuthenticationInfo` belonging to the [jwtAccessToken].

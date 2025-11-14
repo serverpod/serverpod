@@ -72,6 +72,15 @@ class AuthenticationTokenConfig {
   /// invalid.
   final String refreshTokenHashPepper;
 
+  /// The fallback pepper used for hashing refresh tokens.
+  ///
+  /// This is used when validation with the primary pepper fails, allowing
+  /// graceful pepper rotation without invalidating existing hashes.
+  ///
+  /// When a refresh token is validated using the fallback pepper, it will be
+  /// automatically rehashed with the primary pepper.
+  final String? fallbackRefreshTokenHashPepper;
+
   /// The lifetime of access tokens.
   ///
   /// This will be encoded in each access token, and for
@@ -142,6 +151,7 @@ class AuthenticationTokenConfig {
   AuthenticationTokenConfig({
     required this.algorithm,
     required this.refreshTokenHashPepper,
+    this.fallbackRefreshTokenHashPepper,
     this.fallbackVerificationAlgorithm,
     this.accessTokenLifetime = const Duration(minutes: 10),
     this.refreshTokenLifetime = const Duration(days: 14),
@@ -152,6 +162,9 @@ class AuthenticationTokenConfig {
     this.extraClaimsProvider,
   }) {
     _validateRefreshTokenHashPepper(refreshTokenHashPepper);
+    if (fallbackRefreshTokenHashPepper != null) {
+      _validateRefreshTokenHashPepper(fallbackRefreshTokenHashPepper!);
+    }
   }
 }
 
