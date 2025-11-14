@@ -81,7 +81,7 @@ final class SecretHashUtil {
 
     // If primary fails and fallback exists, try fallback
     if (_fallbackHashPepper != null) {
-      final fallbackPepper = utf8.encode(_fallbackHashPepper!);
+      final fallbackPepper = utf8.encode(_fallbackHashPepper);
       final fallbackHash = await _createHash(
         secret: value,
         salt: salt,

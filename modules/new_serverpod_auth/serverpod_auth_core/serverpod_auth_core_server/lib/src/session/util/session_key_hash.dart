@@ -53,7 +53,7 @@ final class AuthSessionKeyHash {
 
     // If primary fails and fallback exists, try fallback
     if (_fallbackSessionKeyHashPepper != null) {
-      final fallbackPepper = utf8.encode(_fallbackSessionKeyHashPepper!);
+      final fallbackPepper = utf8.encode(_fallbackSessionKeyHashPepper);
       final fallbackHash = Uint8List.fromList(
         sha512.convert(secret + fallbackPepper).bytes,
       );

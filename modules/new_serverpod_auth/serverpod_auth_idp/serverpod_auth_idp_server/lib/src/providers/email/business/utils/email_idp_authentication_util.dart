@@ -71,7 +71,7 @@ class EmailIDPAuthenticationUtil {
       value: password,
       hash: account.passwordHash.asUint8List,
       salt: account.passwordSalt.asUint8List,
-      onFallbackValidated: (newHash) async {
+      onFallbackValidated: (final newHash) async {
         // Rehash the password with the primary pepper
         await EmailAccount.db.updateRow(
           session,

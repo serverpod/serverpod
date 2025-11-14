@@ -78,7 +78,7 @@ final class RefreshTokenSecretHash {
 
     // If primary fails and fallback exists, try fallback
     if (_fallbackRefreshTokenHashPepper != null) {
-      final fallbackPepper = utf8.encode(_fallbackRefreshTokenHashPepper!);
+      final fallbackPepper = utf8.encode(_fallbackRefreshTokenHashPepper);
       final fallbackHash = await _createHash(
         secret: secret,
         salt: salt,

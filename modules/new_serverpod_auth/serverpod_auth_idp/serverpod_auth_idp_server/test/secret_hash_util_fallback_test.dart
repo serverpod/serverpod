@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:serverpod_auth_idp_server/src/providers/email/business/email_idp_config.dart';
 import 'package:serverpod_auth_idp_server/src/utils/secret_hash_util.dart';
 import 'package:test/test.dart';
@@ -105,7 +103,7 @@ void main() {
           value: testValue,
           hash: hashWithOldPepper.hash,
           salt: hashWithOldPepper.salt,
-          onFallbackValidated: (newHash) async {
+          onFallbackValidated: (final newHash) async {
             rehashedValue = newHash;
           },
         );
@@ -129,7 +127,7 @@ void main() {
           value: testValue,
           hash: newHash.hash,
           salt: newHash.salt,
-          onFallbackValidated: (rehashedValue) async {
+          onFallbackValidated: (final rehashedValue) async {
             callbackInvoked = true;
           },
         );
@@ -149,7 +147,7 @@ void main() {
           value: testValue,
           hash: hashWithOldPepper.hash,
           salt: hashWithOldPepper.salt,
-          onFallbackValidated: (newHash) async {
+          onFallbackValidated: (final newHash) async {
             rehashedValue = newHash;
           },
         );
@@ -190,7 +188,7 @@ void main() {
           value: testValue,
           hash: hash.hash,
           salt: hash.salt,
-          onFallbackValidated: (newHash) async {
+          onFallbackValidated: (final newHash) async {
             callbackInvoked = true;
           },
         );
@@ -225,7 +223,7 @@ void main() {
           value: testValue,
           hash: emptyHash.hash,
           salt: emptyHash.salt,
-          onFallbackValidated: (newHash) async {
+          onFallbackValidated: (final newHash) async {
             callbackInvoked = true;
           },
         );
