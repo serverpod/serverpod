@@ -1,0 +1,9 @@
+### A class that holds child objects defined in a module.
+class: ModulePolymorphicChildContainer
+fields:
+  ### Object from a module.
+  moduleObject: module:module:ModulePolymorphicChild
+  ### List of objects from a module.
+  moduleObjectList: List<module:module:ModulePolymorphicChild>
+  ### Map of objects from a module.
+  moduleObjectMap: Map<String, module:module:ModulePolymorphicChild>
