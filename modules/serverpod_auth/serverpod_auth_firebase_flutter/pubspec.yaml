@@ -30,10 +30,10 @@ dependency_overrides:
     path: ../serverpod_auth_client
   serverpod_auth_shared_flutter:
     path: ../serverpod_auth_shared_flutter
-  serverpod_lints:
-    path: ../../../packages/serverpod_lints
   serverpod_client:
     path: ../../../packages/serverpod_client
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization
 

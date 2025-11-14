@@ -12,9 +12,9 @@ environment:
   sdk: '^3.8.0'
 
 dependencies:
+  meta: ^1.15.0
   serverpod_client: 3.0.0-rc.1
   serverpod_shared: 3.0.0-rc.1
-  meta: ^1.15.0
 
 dev_dependencies:
   serverpod_lints: 3.0.0-rc.1
