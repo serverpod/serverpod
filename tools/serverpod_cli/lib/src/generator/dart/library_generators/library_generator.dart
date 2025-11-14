@@ -136,6 +136,33 @@ class LibraryGenerator {
     protocol.methods.addAll([
       Method(
         (m) => m
+          ..static = true
+          ..name = 'getClassNameFromObjectJson'
+          ..returns = refer('String?')
+          ..lambda = false
+          ..requiredParameters.add(
+            Parameter(
+              (p) => p
+                ..name = 'data'
+                ..type = refer('dynamic'),
+            ),
+          )
+          ..body = Block.of([
+            const Code(
+              'if (data is! Map) return null;'
+              "final className = data['__className__'] as String?;",
+            ),
+            (config.type != PackageType.server)
+                ? Code(
+                    'if (className == null) return null;'
+                    "if (!className.startsWith('${config.name}.')) return className;"
+                    'return className.substring(${config.name.length + 1});',
+                  )
+                : const Code('return className;'),
+          ]),
+      ),
+      Method(
+        (m) => m
           ..annotations.add(refer('override'))
           ..name = 'deserialize'
           ..returns = refer('T')
@@ -155,7 +182,17 @@ class LibraryGenerator {
             ),
           )
           ..body = Block.of([
-            const Code('t ??= T;'),
+            const Code('''
+            t ??= T;
+
+            final dataClassName = getClassNameFromObjectJson(data);
+            if (dataClassName != null && dataClassName != t.toString()) {
+              return deserializeByClassName({
+                'className': dataClassName,
+                'data': data,
+              });
+            }
+          '''),
             ...(<Expression, Code>{
                   for (var classInfo in unsealedModels)
                     refer(
@@ -255,6 +292,12 @@ class LibraryGenerator {
               'String? className = super.getClassNameForObject(data);'
               'if(className != null) return className;',
             ),
+            Code('''
+
+            if (data is Map<String, dynamic> && data['__className__'] is String) {
+              return (data['__className__'] as String).replaceFirst('${config.name}.', '');
+            }
+          '''),
             if (unsealedModels.isNotEmpty ||
                 config.extraClasses.isNotEmpty) ...[
               const Code('switch (data) {'),
