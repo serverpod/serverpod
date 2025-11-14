@@ -23,15 +23,28 @@ final class AuthSessionKeyHash {
   /// Uses SHA512 to create a hash for a string using the specified pepper.
   ({Uint8List hash, Uint8List salt}) createSessionKeyHash({
     required final Uint8List secret,
-    @protected Uint8List? salt,
+    @protected final Uint8List? salt,
   }) {
-    final pepper = utf8.encode(_sessionKeyHashPepper);
+    return _createSessionKeyHash(
+      secret: secret,
+      salt: salt,
+      pepper: _sessionKeyHashPepper,
+    );
+  }
 
-    salt ??= generateRandomBytes(_sessionKeyHashSaltLength);
+  /// Internal method to create a session key hash with a specific pepper.
+  ({Uint8List hash, Uint8List salt}) _createSessionKeyHash({
+    required final Uint8List secret,
+    required final String pepper,
+    final Uint8List? salt,
+  }) {
+    final pepperBytes = utf8.encode(pepper);
 
-    final hash = Uint8List.fromList(sha512.convert(secret + pepper).bytes);
+    final actualSalt = salt ?? generateRandomBytes(_sessionKeyHashSaltLength);
 
-    return (hash: hash, salt: salt);
+    final hash = Uint8List.fromList(sha512.convert(secret + pepperBytes).bytes);
+
+    return (hash: hash, salt: actualSalt);
   }
 
   /// Validates the session key hash
@@ -41,42 +54,32 @@ final class AuthSessionKeyHash {
     required final Uint8List salt,
   }) {
     // Try the primary pepper first (most common case)
-    if (_validateWithPepper(
-      secret: secret,
-      hash: hash,
-      salt: salt,
-      pepper: _sessionKeyHashPepper,
+    if (uint8ListAreEqual(
+      hash,
+      _createSessionKeyHash(
+        secret: secret,
+        salt: salt,
+        pepper: _sessionKeyHashPepper,
+      ).hash,
     )) {
       return true;
     }
 
     // Try fallback peppers if primary didn't match
     for (final fallbackPepper in _fallbackSessionKeyHashPeppers) {
-      if (_validateWithPepper(
-        secret: secret,
-        hash: hash,
-        salt: salt,
-        pepper: fallbackPepper,
+      if (uint8ListAreEqual(
+        hash,
+        _createSessionKeyHash(
+          secret: secret,
+          salt: salt,
+          pepper: fallbackPepper,
+        ).hash,
       )) {
         return true;
       }
     }
 
     return false;
-  }
-
-  /// Internal helper to validate hash with a specific pepper
-  bool _validateWithPepper({
-    required final Uint8List secret,
-    required final Uint8List hash,
-    required final Uint8List salt,
-    required final String pepper,
-  }) {
-    final pepperBytes = utf8.encode(pepper);
-    final computedHash = Uint8List.fromList(
-      sha512.convert(secret + pepperBytes).bytes,
-    );
-    return uint8ListAreEqual(hash, computedHash);
   }
 
   factory AuthSessionKeyHash.fromConfig(final AuthSessionsConfig config) {

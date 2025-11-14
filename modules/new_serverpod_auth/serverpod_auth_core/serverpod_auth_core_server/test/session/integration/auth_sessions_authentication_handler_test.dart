@@ -8,6 +8,8 @@ import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
 
+const _oldPepper = 'old-pepper-123';
+
 void main() {
   final authSessions = AuthSessions(
     config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
@@ -332,7 +334,7 @@ void main() {
 
         // Create session with an old pepper
         final oldPepperAuthSessions = AuthSessions(
-          config: AuthSessionsConfig(sessionKeyHashPepper: 'old-pepper-123'),
+          config: AuthSessionsConfig(sessionKeyHashPepper: _oldPepper),
         );
 
         authUserId = (await oldPepperAuthSessions.authUsers.create(session)).id;
@@ -370,7 +372,7 @@ void main() {
           final rotatedPepperAuthSessions = AuthSessions(
             config: AuthSessionsConfig(
               sessionKeyHashPepper: 'new-pepper-456',
-              fallbackSessionKeyHashPeppers: ['old-pepper-123'],
+              fallbackSessionKeyHashPeppers: [_oldPepper],
             ),
           );
 
@@ -395,7 +397,7 @@ void main() {
               sessionKeyHashPepper: 'newest-pepper',
               fallbackSessionKeyHashPeppers: [
                 'intermediate-pepper',
-                'old-pepper-123',
+                _oldPepper,
                 'oldest-pepper',
               ],
             ),
