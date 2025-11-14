@@ -133,6 +133,13 @@ class LibraryGenerator {
                 ),
         ),
     ]);
+
+    final allFieldsToGenerateSerialization = unsealedModels
+        .whereType<ModelClassDefinition>()
+        .expand((m) => m.fields)
+        .where((f) => f.shouldSerializeField(serverCode))
+        .distinct();
+
     protocol.methods.addAll([
       Method(
         (m) => m
@@ -218,16 +225,12 @@ class LibraryGenerator {
                           '.fromJson(data) :null) as T',
                     ),
                 }..addEntries([
-                  for (var classInfo in unsealedModels)
-                    // Generate deserialization for fields of models.
-                    if (classInfo is ClassDefinition)
-                      for (var field in classInfo.fields.where(
-                        (field) => field.shouldIncludeField(serverCode),
-                      ))
-                        ...field.type.generateDeserialization(
-                          serverCode,
-                          config: config,
-                        ),
+                  // Generate deserialization for fields of models.
+                  for (var field in allFieldsToGenerateSerialization)
+                    ...field.type.generateDeserialization(
+                      serverCode,
+                      config: config,
+                    ),
                   for (var type in allTypesToDeserialize)
                     ...type.generateDeserialization(
                       serverCode,
@@ -2119,4 +2122,16 @@ bool _isMethodInherited(EndpointDefinition? parent, MethodDefinition method) {
     }
   }
   return _isMethodInherited(parent.extendsClass, method);
+}
+
+extension on Iterable<SerializableModelFieldDefinition> {
+  Iterable<SerializableModelFieldDefinition> distinct() sync* {
+    final visited = <String>{};
+    for (final element in this) {
+      final elementType = element.type.toString();
+      if (visited.contains(elementType)) continue;
+      yield element;
+      visited.add(elementType);
+    }
+  }
 }
