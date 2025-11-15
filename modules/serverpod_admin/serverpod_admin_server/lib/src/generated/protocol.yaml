@@ -1,0 +1,7 @@
+admin:
+  - resources:
+  - list:
+  - find:
+  - create:
+  - update:
+  - delete:

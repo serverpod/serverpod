@@ -1,0 +1,48 @@
+# This is the configuration file for your test environment.
+# All ports are set to zero in this file which makes the server find the next available port.
+# This is needed to enable running tests concurrently. To set up your server, you will
+# need to add the name of the database you are connecting to and the user name.
+# The password for the database is stored in the config/passwords.yaml.
+#
+# When running your server locally, the server ports are the same as the public
+# facing ports.
+
+# Configuration for the main API test server.
+apiServer:
+  port: 0
+  publicHost: localhost
+  publicPort: 0
+  publicScheme: http
+
+# Configuration for the Insights test server.
+insightsServer:
+  port: 0
+  publicHost: localhost
+  publicPort: 0
+  publicScheme: http
+
+# Configuration for the web test server.
+webServer:
+  port: 0
+  publicHost: localhost
+  publicPort: 0
+  publicScheme: http
+
+# This is the database setup for your test server.
+database:
+  host: localhost
+  port: 9090
+  name: serverpod_admin_test
+  user: postgres
+
+# This is the setup for your Redis test instance.
+redis:
+  enabled: false
+  host: localhost
+  port: 9091
+  #user: # defaults to empty
+  #requireSsl: true # defaults to false
+
+sessionLogs:
+  persistentEnabled: true
+  consoleEnabled: true
