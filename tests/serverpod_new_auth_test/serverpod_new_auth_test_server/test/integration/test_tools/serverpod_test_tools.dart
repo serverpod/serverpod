@@ -360,6 +360,37 @@ class _AuthTestEndpoint {
     });
   }
 
+  _i3.Future<bool> destroySpecificRefreshToken(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i2.UuidValue refreshTokenId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'authTest',
+            method: 'destroySpecificRefreshToken',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'authTest',
+          methodName: 'destroySpecificRefreshToken',
+          parameters: _i1.testObjectToJson({'refreshTokenId': refreshTokenId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<bool> checkSession(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue authUserId,
