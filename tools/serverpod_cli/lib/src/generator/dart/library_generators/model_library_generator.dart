@@ -1620,7 +1620,7 @@ class SerializableModelLibraryGenerator {
         nullCheckedReference: field.hiddenSerializableField(serverCode),
       );
 
-      final fieldKey = field.columnName;
+      final fieldKey = field.name;
 
       return {
         ...map,
