@@ -1,6 +1,7 @@
 admin:
   - resources:
   - list:
+  - listPage:
   - find:
   - create:
   - update:

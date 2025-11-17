@@ -54,6 +54,36 @@ class Endpoints extends _i1.EndpointDispatch {
             params['resourceKey'],
           ),
         ),
+        'listPage': _i1.MethodConnector(
+          name: 'listPage',
+          params: {
+            'resourceKey': _i1.ParameterDescription(
+              name: 'resourceKey',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['admin'] as _i2.AdminEndpoint).listPage(
+            session,
+            params['resourceKey'],
+            params['offset'],
+            params['limit'],
+          ),
+        ),
         'find': _i1.MethodConnector(
           name: 'find',
           params: {
