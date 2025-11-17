@@ -249,49 +249,72 @@ void main() {
         },
       );
 
-      test(
-        'when calling rotateRefreshToken with an invalid secret, then authenticationRevoked message is published with correct authId',
-        () async {
-          final refreshTokenId = authenticationTokens.jwtUtil
+      group('when calling rotateRefreshToken with an invalid secret', () {
+        late String invalidRefreshToken;
+        late UuidValue refreshTokenId;
+        late String channelName;
+        late List<SerializableModel> revocationMessages;
+
+        setUp(() {
+          refreshTokenId = authenticationTokens.jwtUtil
               .verifyJwt(authSuccess.token)
               .refreshTokenId;
 
           final tokenParts = authSuccess.refreshToken!.split(':');
           tokenParts[3] = 'dGVzdA==';
-          final invalidRefreshToken = tokenParts.join(':');
+          invalidRefreshToken = tokenParts.join(':');
 
-          final channelName =
-              MessageCentralServerpodChannels.revokedAuthentication(
-                authUserId.uuid,
-              );
-          final revocationMessages = <SerializableModel>[];
+          channelName = MessageCentralServerpodChannels.revokedAuthentication(
+            authUserId.uuid,
+          );
+          revocationMessages = <SerializableModel>[];
           session.messages.addListener(
             channelName,
             revocationMessages.add,
           );
+        });
 
-          await expectLater(
-            () => authenticationTokens.rotateRefreshToken(
-              session,
-              refreshToken: invalidRefreshToken,
-            ),
-            throwsA(isA<RefreshTokenInvalidSecretException>()),
-          );
-
+        tearDown(() {
           session.messages.removeListener(
             channelName,
             revocationMessages.add,
           );
+        });
 
-          expect(revocationMessages, [
-            isA<RevokedAuthenticationAuthId>().having(
-              (final m) => m.authId,
-              'authId',
-              refreshTokenId.toString(),
-            ),
-          ]);
-        },
-      );
+        test(
+          'then RefreshTokenInvalidSecretException is thrown',
+          () async {
+            await expectLater(
+              () => authenticationTokens.rotateRefreshToken(
+                session,
+                refreshToken: invalidRefreshToken,
+              ),
+              throwsA(isA<RefreshTokenInvalidSecretException>()),
+            );
+          },
+        );
+
+        test(
+          'then authenticationRevoked message is published with correct authId',
+          () async {
+            await expectLater(
+              () => authenticationTokens.rotateRefreshToken(
+                session,
+                refreshToken: invalidRefreshToken,
+              ),
+              throwsA(anything),
+            );
+
+            expect(revocationMessages, [
+              isA<RevokedAuthenticationAuthId>().having(
+                (final m) => m.authId,
+                'authId',
+                refreshTokenId.toString(),
+              ),
+            ]);
+          },
+        );
+      });
 
       test(
         'when calling destroyRefreshToken, then authenticationRevoked message is published with correct authId',
@@ -854,41 +877,62 @@ void main() {
       );
     });
 
-    test(
-      'when calling rotateRefreshToken with the expired token, then authenticationRevoked message is published with correct authId',
-      () async {
-        final channelName =
-            MessageCentralServerpodChannels.revokedAuthentication(
-              authUserId.uuid,
-            );
-        final revocationMessages = <SerializableModel>[];
+    group('when calling rotateRefreshToken with the expired token', () {
+      late String channelName;
+      late List<SerializableModel> revocationMessages;
+
+      setUp(() {
+        channelName = MessageCentralServerpodChannels.revokedAuthentication(
+          authUserId.uuid,
+        );
+        revocationMessages = <SerializableModel>[];
         session.messages.addListener(
           channelName,
           revocationMessages.add,
         );
+      });
 
-        await expectLater(
-          () => authenticationTokens.rotateRefreshToken(
-            session,
-            refreshToken: authSuccess.refreshToken!,
-          ),
-          throwsA(isA<RefreshTokenExpiredException>()),
-        );
-
+      tearDown(() {
         session.messages.removeListener(
           channelName,
           revocationMessages.add,
         );
+      });
 
-        expect(revocationMessages, [
-          isA<RevokedAuthenticationAuthId>().having(
-            (final m) => m.authId,
-            'authId',
-            tokenId.toString(),
-          ),
-        ]);
-      },
-    );
+      test(
+        'then RefreshTokenExpiredException is thrown',
+        () async {
+          await expectLater(
+            () => authenticationTokens.rotateRefreshToken(
+              session,
+              refreshToken: authSuccess.refreshToken!,
+            ),
+            throwsA(isA<RefreshTokenExpiredException>()),
+          );
+        },
+      );
+
+      test(
+        'then authenticationRevoked message is published with correct authId',
+        () async {
+          await expectLater(
+            () => authenticationTokens.rotateRefreshToken(
+              session,
+              refreshToken: authSuccess.refreshToken!,
+            ),
+            throwsA(anything),
+          );
+
+          expect(revocationMessages, [
+            isA<RevokedAuthenticationAuthId>().having(
+              (final m) => m.authId,
+              'authId',
+              tokenId.toString(),
+            ),
+          ]);
+        },
+      );
+    });
   });
 }
 
