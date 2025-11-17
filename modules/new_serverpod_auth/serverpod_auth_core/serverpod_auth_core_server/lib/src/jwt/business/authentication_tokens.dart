@@ -203,61 +203,48 @@ final class AuthenticationTokens {
   /// Returns a access token while also rotating the refresh token.
   ///
   /// Invalidates the previous refresh token as security best practice.
+  ///
+  /// Automatically registers authentication revocation via
+  /// `session.messages.authenticationRevoked` when refresh tokens are expired or
+  /// have invalid secrets. If this behavior is not desired, use
+  /// [AuthenticationTokensAdmin.rotateRefreshToken] instead.
   Future<AuthSuccess> refreshAccessToken(
     final Session session, {
     required final String refreshToken,
     final Transaction? transaction,
   }) async {
     return _withReplacedServerJwtException(() async {
-      final refreshesTokenPair = await rotateRefreshToken(
-        session,
-        refreshToken: refreshToken,
-        transaction: transaction,
-      );
+      try {
+        final refreshesTokenPair = await admin.rotateRefreshToken(
+          session,
+          refreshToken: refreshToken,
+          transaction: transaction,
+        );
 
-      final jwtData = jwtUtil.verifyJwt(refreshesTokenPair.accessToken);
+        final jwtData = jwtUtil.verifyJwt(refreshesTokenPair.accessToken);
 
-      return AuthSuccess(
-        authStrategy: AuthStrategy.jwt.name,
-        token: refreshesTokenPair.accessToken,
-        tokenExpiresAt: jwtData.tokenExpiresAt,
-        refreshToken: refreshesTokenPair.refreshToken,
-        authUserId: jwtData.authUserId,
-        scopeNames: jwtData.scopes.names,
-      );
+        return AuthSuccess(
+          authStrategy: AuthStrategy.jwt.name,
+          token: refreshesTokenPair.accessToken,
+          tokenExpiresAt: jwtData.tokenExpiresAt,
+          refreshToken: refreshesTokenPair.refreshToken,
+          authUserId: jwtData.authUserId,
+          scopeNames: jwtData.scopes.names,
+        );
+      } on RefreshTokenExpiredServerException catch (e) {
+        await session.messages.authenticationRevoked(
+          e.authUserId.uuid,
+          RevokedAuthenticationAuthId(authId: e.refreshTokenId.toString()),
+        );
+        rethrow;
+      } on RefreshTokenInvalidSecretServerException catch (e) {
+        await session.messages.authenticationRevoked(
+          e.authUserId.uuid,
+          RevokedAuthenticationAuthId(authId: e.refreshTokenId.toString()),
+        );
+        rethrow;
+      }
     });
-  }
-
-  /// {@macro authentication_tokens_admin.rotate_refresh_token}
-  ///
-  /// Automatically registers authentication revocation via
-  /// [session.messages.authenticationRevoked] when refresh tokens are expired or
-  /// have invalid secrets. If this behavior is not desired, use
-  /// [AuthenticationTokensAdmin.rotateRefreshToken] instead.
-  Future<TokenPair> rotateRefreshToken(
-    final Session session, {
-    required final String refreshToken,
-    final Transaction? transaction,
-  }) async {
-    try {
-      return await admin.rotateRefreshToken(
-        session,
-        refreshToken: refreshToken,
-        transaction: transaction,
-      );
-    } on RefreshTokenExpiredServerException catch (e) {
-      await session.messages.authenticationRevoked(
-        e.authUserId.uuid,
-        RevokedAuthenticationAuthId(authId: e.refreshTokenId.toString()),
-      );
-      rethrow;
-    } on RefreshTokenInvalidSecretServerException catch (e) {
-      await session.messages.authenticationRevoked(
-        e.authUserId.uuid,
-        RevokedAuthenticationAuthId(authId: e.refreshTokenId.toString()),
-      );
-      rethrow;
-    }
   }
 
   /// Removes all refresh tokens for the given [authUserId].
@@ -267,7 +254,7 @@ final class AuthenticationTokens {
   /// Active access tokens will continue to work until their expiration time is reached.
   ///
   /// Automatically registers authentication revocation via
-  /// [session.messages.authenticationRevoked] when tokens are deleted. If this
+  /// `session.messages.authenticationRevoked` when tokens are deleted. If this
   /// behavior is not desired, use [AuthenticationTokensAdmin.deleteRefreshTokens] instead.
   Future<List<UuidValue>> destroyAllRefreshTokens(
     final Session session, {
@@ -299,7 +286,7 @@ final class AuthenticationTokens {
   /// until they expire.
   ///
   /// Automatically registers authentication revocation via
-  /// [session.messages.authenticationRevoked] when the token is deleted. If this
+  /// `session.messages.authenticationRevoked` when the token is deleted. If this
   /// behavior is not desired, use [AuthenticationTokensAdmin.deleteRefreshTokens]
   /// instead.
   Future<bool> destroyRefreshToken(

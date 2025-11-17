@@ -2,7 +2,6 @@ import 'package:clock/clock.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/jwt.dart';
-import 'package:serverpod_auth_core_server/src/jwt/business/refresh_token_exceptions.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
@@ -217,24 +216,6 @@ void main() {
       );
 
       test(
-        'when deleting all refresh tokens for the user, then it can not be rotated anymore.',
-        () async {
-          await authenticationTokens.destroyAllRefreshTokens(
-            session,
-            authUserId: authUserId,
-          );
-
-          await expectLater(
-            () => authenticationTokens.rotateRefreshToken(
-              session,
-              refreshToken: authSuccess.refreshToken!,
-            ),
-            throwsA(isA<RefreshTokenNotFoundServerException>()),
-          );
-        },
-      );
-
-      test(
         'when reading the auth token via `listAuthenticationTokens`, then the extra claims can be read as a Map.',
         () async {
           final authTokensForUser = await authenticationTokens
@@ -249,73 +230,6 @@ void main() {
           );
         },
       );
-
-      group('when calling rotateRefreshToken with an invalid secret', () {
-        late String invalidRefreshToken;
-        late UuidValue refreshTokenId;
-        late String channelName;
-        late List<SerializableModel> revocationMessages;
-
-        setUp(() {
-          refreshTokenId = authenticationTokens.jwtUtil
-              .verifyJwt(authSuccess.token)
-              .refreshTokenId;
-
-          final tokenParts = authSuccess.refreshToken!.split(':');
-          tokenParts[3] = 'dGVzdA==';
-          invalidRefreshToken = tokenParts.join(':');
-
-          channelName = MessageCentralServerpodChannels.revokedAuthentication(
-            authUserId.uuid,
-          );
-          revocationMessages = <SerializableModel>[];
-          session.messages.addListener(
-            channelName,
-            revocationMessages.add,
-          );
-        });
-
-        tearDown(() {
-          session.messages.removeListener(
-            channelName,
-            revocationMessages.add,
-          );
-        });
-
-        test(
-          'then RefreshTokenInvalidSecretServerException is thrown',
-          () async {
-            await expectLater(
-              () => authenticationTokens.rotateRefreshToken(
-                session,
-                refreshToken: invalidRefreshToken,
-              ),
-              throwsA(isA<RefreshTokenInvalidSecretServerException>()),
-            );
-          },
-        );
-
-        test(
-          'then authenticationRevoked message is published with correct authId',
-          () async {
-            await expectLater(
-              () => authenticationTokens.rotateRefreshToken(
-                session,
-                refreshToken: invalidRefreshToken,
-              ),
-              throwsA(anything),
-            );
-
-            expect(revocationMessages, [
-              isA<RevokedAuthenticationAuthId>().having(
-                (final m) => m.authId,
-                'authId',
-                refreshTokenId.toString(),
-              ),
-            ]);
-          },
-        );
-      });
 
       test(
         'when calling destroyRefreshToken, then authenticationRevoked message is published with correct authId',
@@ -386,54 +300,6 @@ void main() {
       );
     },
   );
-
-  withServerpod('Given an initial `TokenPair` and its refreshed successor,', (
-    final sessionBuilder,
-    final endpoints,
-  ) {
-    late Session session;
-    late AuthSuccess initialAuthSuccess;
-    late TokenPair refreshedTokenPair;
-
-    setUp(() async {
-      session = sessionBuilder.build();
-
-      final authUser = await authenticationTokens.authUsers.create(session);
-
-      initialAuthSuccess = await authenticationTokens.createTokens(
-        session,
-        authUserId: authUser.id,
-        scopes: {},
-        method: 'test',
-      );
-
-      refreshedTokenPair = await authenticationTokens.rotateRefreshToken(
-        session,
-        refreshToken: initialAuthSuccess.refreshToken!,
-      );
-    });
-
-    test(
-      'when requesting a rotation with the previous (initial) pair, then the current (refreshed) one becomes unusable as well.',
-      () async {
-        await expectLater(
-          () => authenticationTokens.rotateRefreshToken(
-            session,
-            refreshToken: initialAuthSuccess.refreshToken!,
-          ),
-          throwsA(isA<RefreshTokenInvalidSecretServerException>()),
-        );
-
-        await expectLater(
-          () => authenticationTokens.rotateRefreshToken(
-            session,
-            refreshToken: refreshedTokenPair.refreshToken,
-          ),
-          throwsA(isA<RefreshTokenNotFoundServerException>()),
-        );
-      },
-    );
-  });
 
   withServerpod('Given an auth user with an authentication token,', (
     final sessionBuilder,
@@ -698,41 +564,6 @@ void main() {
     );
 
     test(
-      'when rotating tokens created with a provider, then provider claims are preserved.',
-      () async {
-        final authenticationTokensWithHook = AuthenticationTokens(
-          config: AuthenticationTokenConfig(
-            algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
-              key: SecretKey('test-private-key-for-HS512'),
-            ),
-            refreshTokenHashPepper: 'test-pepper',
-            extraClaimsProvider: (final session, final context) async {
-              return {'hookClaim': 'persistsAcrossRotation'};
-            },
-          ),
-        );
-
-        final authSuccess = await authenticationTokensWithHook.createTokens(
-          session,
-          authUserId: authUserId,
-          scopes: {},
-          method: 'test',
-        );
-
-        final rotatedTokenPair = await authenticationTokensWithHook
-            .rotateRefreshToken(
-              session,
-              refreshToken: authSuccess.refreshToken!,
-            );
-
-        final decodedToken = JWT.decode(rotatedTokenPair.accessToken);
-        final payload = decodedToken.payload as Map;
-
-        expect(payload['hookClaim'], 'persistsAcrossRotation');
-      },
-    );
-
-    test(
       'when provider returns null, then no extra claims are added from the provider.',
       () async {
         final authenticationTokensWithHook = AuthenticationTokens(
@@ -878,63 +709,112 @@ void main() {
       );
     });
 
-    group('when calling rotateRefreshToken with the expired token', () {
-      late String channelName;
-      late List<SerializableModel> revocationMessages;
-
-      setUp(() {
-        channelName = MessageCentralServerpodChannels.revokedAuthentication(
-          authUserId.uuid,
-        );
-        revocationMessages = <SerializableModel>[];
+    test(
+      'when calling refreshAccessToken with the expired token, then authenticationRevoked message is published with correct authId.',
+      () async {
+        final channelName =
+            MessageCentralServerpodChannels.revokedAuthentication(
+              authUserId.uuid,
+            );
+        final revocationMessages = <SerializableModel>[];
         session.messages.addListener(
           channelName,
           revocationMessages.add,
         );
-      });
 
-      tearDown(() {
+        await expectLater(
+          () => authenticationTokens.refreshAccessToken(
+            session,
+            refreshToken: authSuccess.refreshToken!,
+          ),
+          throwsA(anything),
+        );
+
         session.messages.removeListener(
           channelName,
           revocationMessages.add,
         );
+
+        expect(revocationMessages, [
+          isA<RevokedAuthenticationAuthId>().having(
+            (final m) => m.authId,
+            'authId',
+            tokenId.toString(),
+          ),
+        ]);
+      },
+    );
+  });
+
+  withServerpod(
+    'Given an auth user with a valid refresh token,',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late UuidValue authUserId;
+      late AuthSuccess authSuccess;
+      late UuidValue refreshTokenId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        final authUser = await authenticationTokens.authUsers.create(session);
+        authUserId = authUser.id;
+
+        authSuccess = await authenticationTokens.createTokens(
+          session,
+          authUserId: authUserId,
+          scopes: {},
+          method: 'test',
+        );
+
+        refreshTokenId = authenticationTokens.jwtUtil
+            .verifyJwt(authSuccess.token)
+            .refreshTokenId;
       });
 
       test(
-        'then RefreshTokenExpiredServerException is thrown',
+        'when calling refreshAccessToken with an invalid secret, then authenticationRevoked message is published with correct authId.',
         () async {
-          await expectLater(
-            () => authenticationTokens.rotateRefreshToken(
-              session,
-              refreshToken: authSuccess.refreshToken!,
-            ),
-            throwsA(isA<RefreshTokenExpiredServerException>()),
-          );
-        },
-      );
+          final tokenParts = authSuccess.refreshToken!.split(':');
+          tokenParts[3] = 'dGVzdA==';
+          final invalidRefreshToken = tokenParts.join(':');
 
-      test(
-        'then authenticationRevoked message is published with correct authId',
-        () async {
+          final channelName =
+              MessageCentralServerpodChannels.revokedAuthentication(
+                authUserId.uuid,
+              );
+          final revocationMessages = <SerializableModel>[];
+          session.messages.addListener(
+            channelName,
+            revocationMessages.add,
+          );
+
           await expectLater(
-            () => authenticationTokens.rotateRefreshToken(
+            () => authenticationTokens.refreshAccessToken(
               session,
-              refreshToken: authSuccess.refreshToken!,
+              refreshToken: invalidRefreshToken,
             ),
             throwsA(anything),
+          );
+
+          session.messages.removeListener(
+            channelName,
+            revocationMessages.add,
           );
 
           expect(revocationMessages, [
             isA<RevokedAuthenticationAuthId>().having(
               (final m) => m.authId,
               'authId',
-              tokenId.toString(),
+              refreshTokenId.toString(),
             ),
           ]);
         },
       );
-    });
-  });
+    },
+  );
 }
 
 UuidValue _extractRefreshTokenId(final String accessToken) {

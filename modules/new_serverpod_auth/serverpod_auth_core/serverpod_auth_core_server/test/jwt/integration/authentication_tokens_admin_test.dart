@@ -29,13 +29,14 @@ void main() {
     late Session session;
     late UuidValue authUserId;
     late UuidValue tokenId;
+    late AuthSuccess authSuccess;
     setUp(() async {
       session = sessionBuilder.build();
 
       final authUser = await authenticationTokens.authUsers.create(session);
       authUserId = authUser.id;
 
-      final authSuccess = await authenticationTokens.createTokens(
+      authSuccess = await authenticationTokens.createTokens(
         session,
         authUserId: authUserId,
         scopes: {},
@@ -232,6 +233,24 @@ void main() {
         expect(deletedTokens, isEmpty);
         expect(remainingTokens, hasLength(1));
         expect(remainingTokens.single.id, tokenId);
+      },
+    );
+
+    test(
+      'when deleting all refresh tokens for the user, then it can not be rotated anymore.',
+      () async {
+        await authenticationTokensAdmin.deleteRefreshTokens(
+          session,
+          authUserId: authUserId,
+        );
+
+        await expectLater(
+          () => authenticationTokensAdmin.rotateRefreshToken(
+            session,
+            refreshToken: authSuccess.refreshToken!,
+          ),
+          throwsA(isA<RefreshTokenNotFoundServerException>()),
+        );
       },
     );
   });
@@ -818,6 +837,105 @@ void main() {
       );
     },
   );
+
+  withServerpod(
+    'Given an auth user with tokens created using extraClaimsProvider,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late UuidValue authUserId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        const authUsers = AuthUsers();
+        final authUser = await authUsers.create(session);
+        authUserId = authUser.id;
+      });
+
+      test(
+        'when rotating tokens created with a provider, then provider claims are preserved.',
+        () async {
+          final authenticationTokensWithHook = AuthenticationTokens(
+            config: AuthenticationTokenConfig(
+              algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+                SecretKey('test-private-key-for-HS512'),
+              ),
+              refreshTokenHashPepper: 'test-pepper',
+              extraClaimsProvider: (final session, final context) async {
+                return {'hookClaim': 'persistsAcrossRotation'};
+              },
+            ),
+          );
+
+          final authSuccess = await authenticationTokensWithHook.createTokens(
+            session,
+            authUserId: authUserId,
+            scopes: {},
+            method: 'test',
+          );
+
+          final rotatedTokenPair = await authenticationTokensWithHook.admin
+              .rotateRefreshToken(
+                session,
+                refreshToken: authSuccess.refreshToken!,
+              );
+
+          final decodedToken = JWT.decode(rotatedTokenPair.accessToken);
+          final payload = decodedToken.payload as Map;
+
+          expect(payload['hookClaim'], 'persistsAcrossRotation');
+        },
+      );
+    },
+  );
+
+  withServerpod('Given an initial TokenPair and its refreshed successor,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
+    late Session session;
+    late AuthSuccess initialAuthSuccess;
+    late TokenPair refreshedTokenPair;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      final authUser = await authenticationTokens.authUsers.create(session);
+
+      initialAuthSuccess = await authenticationTokens.createTokens(
+        session,
+        authUserId: authUser.id,
+        scopes: {},
+        method: 'test',
+      );
+
+      refreshedTokenPair = await authenticationTokensAdmin.rotateRefreshToken(
+        session,
+        refreshToken: initialAuthSuccess.refreshToken!,
+      );
+    });
+
+    test(
+      'when requesting a rotation with the previous (initial) pair, then the current (refreshed) one becomes unusable as well.',
+      () async {
+        await expectLater(
+          () => authenticationTokensAdmin.rotateRefreshToken(
+            session,
+            refreshToken: initialAuthSuccess.refreshToken!,
+          ),
+          throwsA(isA<RefreshTokenInvalidSecretServerException>()),
+        );
+
+        await expectLater(
+          () => authenticationTokensAdmin.rotateRefreshToken(
+            session,
+            refreshToken: refreshedTokenPair.refreshToken,
+          ),
+          throwsA(isA<RefreshTokenNotFoundServerException>()),
+        );
+      },
+    );
+  });
 }
 
 UuidValue _extractRefreshTokenId(final String accessToken) {
