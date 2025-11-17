@@ -71,6 +71,14 @@ class EndpointAuthTest extends _i1.EndpointRef {
         {'authUserId': authUserId},
       );
 
+  /// Destroys a specific refresh token by ID.
+  _i2.Future<bool> destroySpecificRefreshToken(_i1.UuidValue refreshTokenId) =>
+      caller.callServerEndpoint<bool>(
+        'authTest',
+        'destroySpecificRefreshToken',
+        {'refreshTokenId': refreshTokenId},
+      );
+
   /// Checks if the session is authenticated for the test user.
   _i2.Future<bool> checkSession(_i1.UuidValue authUserId) =>
       caller.callServerEndpoint<bool>(
