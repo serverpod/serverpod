@@ -1,0 +1,21 @@
+name: serverpod_admin_dashboard
+description: Reusable Serverpod admin dashboard widget.
+version: 0.1.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+  flutter: '>=3.24.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  serverpod_client: 2.9.1
+  serverpod_admin_client:
+    path: ../serverpod_admin/serverpod_admin_client
+
+dev_dependencies:
+  flutter_lints: '>=3.0.0 <7.0.0'
+
+flutter:
+  uses-material-design: true
