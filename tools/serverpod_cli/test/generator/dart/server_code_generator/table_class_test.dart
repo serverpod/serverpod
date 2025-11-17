@@ -887,21 +887,28 @@ void main() {
         );
 
     group('then the class named ${testClassName}Table', () {
-      test('has the columnName for a general field set to the explicit '
-          'column name provided', () {
-        var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
-          maybeClassNamedExampleTable!,
-          name: null,
-        );
+      test(
+        'has the columnName for a general field set to the explicit '
+        'column name provided, and field name set to the field name provided',
+        () {
+          var constructor =
+              CompilationUnitHelpers.tryFindConstructorDeclaration(
+                maybeClassNamedExampleTable!,
+                name: null,
+              );
 
-        expect(
-          constructor?.toSource(),
-          contains("$fieldName = _i1.Column$columnType('$columnName', this)"),
-          reason:
-              'columnName for $fieldName set to $columnName not found '
-              'in constructor.',
-        );
-      });
+          expect(
+            constructor?.toSource(),
+            contains(
+              "$fieldName = _i1.Column$columnType('$columnName', this, "
+              "fieldName: '$fieldName')",
+            ),
+            reason:
+                'columnName for $fieldName set to $columnName not found '
+                'in constructor.',
+          );
+        },
+      );
 
       test('has the columnName for an enum field set to the explicit '
           'column name provided', () {
@@ -910,12 +917,16 @@ void main() {
           name: null,
         );
 
+        final constructorSource = constructor?.toSource();
         expect(
-          constructor?.toSource(),
-          contains("$enumFieldName = _i1.ColumnEnum('$enumColumnName', this"),
+          constructorSource,
+          contains(
+            "$enumFieldName = _i1.ColumnEnum('$enumColumnName', this, "
+            "_i1.EnumSerialization.byName, fieldName: '$enumFieldName')",
+          ),
           reason:
-              'columnName for $enumFieldName set to $enumColumnName not '
-              'found in constructor.',
+              'columnName for $enumFieldName set to $enumColumnName and '
+              'fieldName set to $enumFieldName not found in constructor.',
         );
       });
     });
