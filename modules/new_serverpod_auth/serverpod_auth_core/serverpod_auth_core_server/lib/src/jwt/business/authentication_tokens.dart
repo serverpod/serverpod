@@ -21,7 +21,7 @@ final class AuthenticationTokens {
   final AuthenticationTokenConfig config;
 
   /// Admin-related functions for managing authentication tokens.
-  late final AuthenticationTokensAdmin admin;
+  final AuthenticationTokensAdmin admin;
 
   /// The JWT utility.
   final JwtUtil jwtUtil;
@@ -32,26 +32,43 @@ final class AuthenticationTokens {
   /// Management functions for auth users.
   final AuthUsers authUsers;
 
+  AuthenticationTokens._(
+    this.config,
+    this.admin,
+    this.jwtUtil,
+    this.refreshTokenSecretHash,
+    this.authUsers,
+  );
+
   /// Creates a new instance of [AuthenticationTokens].
-  AuthenticationTokens({
-    required this.config,
-    this.authUsers = const AuthUsers(),
-  }) : jwtUtil = JwtUtil(
-         accessTokenLifetime: config.accessTokenLifetime,
-         issuer: config.issuer,
-         algorithm: config.algorithm,
-         fallbackVerificationAlgorithm: config.fallbackVerificationAlgorithm,
-       ),
-       refreshTokenSecretHash = RefreshTokenSecretHash(
-         refreshTokenRotatingSecretSaltLength:
-             config.refreshTokenRotatingSecretSaltLength,
-         refreshTokenHashPepper: config.refreshTokenHashPepper,
-       ) {
-    admin = AuthenticationTokensAdmin(
+  factory AuthenticationTokens({
+    required final AuthenticationTokenConfig config,
+    final AuthUsers authUsers = const AuthUsers(),
+  }) {
+    final jwtUtil = JwtUtil(
+      accessTokenLifetime: config.accessTokenLifetime,
+      issuer: config.issuer,
+      algorithm: config.algorithm,
+      fallbackVerificationAlgorithm: config.fallbackVerificationAlgorithm,
+    );
+    final refreshTokenSecretHash = RefreshTokenSecretHash(
+      refreshTokenRotatingSecretSaltLength:
+          config.refreshTokenRotatingSecretSaltLength,
+      refreshTokenHashPepper: config.refreshTokenHashPepper,
+    );
+    final admin = AuthenticationTokensAdmin(
       refreshTokenLifetime: config.refreshTokenLifetime,
       jwtUtil: jwtUtil,
       refreshTokenSecretHash: refreshTokenSecretHash,
       refreshTokenRotatingSecretLength: config.refreshTokenRotatingSecretLength,
+    );
+
+    return AuthenticationTokens._(
+      config,
+      admin,
+      jwtUtil,
+      refreshTokenSecretHash,
+      authUsers,
     );
   }
 
