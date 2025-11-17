@@ -59,6 +59,7 @@ class ParentClass extends _i1.GrandparentClass
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ParentClass',
       if (id != null) 'id': id,
       'grandParentField': grandParentField,
       'parentField': parentField,
@@ -68,6 +69,7 @@ class ParentClass extends _i1.GrandparentClass
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ParentClass',
       if (id != null) 'id': id,
       'grandParentField': grandParentField,
       'parentField': parentField,

@@ -62,6 +62,7 @@ abstract class MethodInfo
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.MethodInfo',
       if (id != null) 'id': id,
       'endpoint': endpoint,
       'method': method,
@@ -71,6 +72,7 @@ abstract class MethodInfo
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.MethodInfo',
       if (id != null) 'id': id,
       'endpoint': endpoint,
       'method': method,

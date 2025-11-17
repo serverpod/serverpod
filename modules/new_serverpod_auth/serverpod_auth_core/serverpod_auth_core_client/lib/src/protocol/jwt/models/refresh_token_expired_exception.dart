@@ -30,7 +30,9 @@ abstract class RefreshTokenExpiredException
   RefreshTokenExpiredException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_core.RefreshTokenExpiredException',
+    };
   }
 
   @override

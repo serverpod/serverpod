@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i2;
 
 abstract class ExceptionWithData
     implements
@@ -37,9 +38,9 @@ abstract class ExceptionWithData
       creationDate: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['creationDate'],
       ),
-      errorFields: (jsonSerialization['errorFields'] as List)
-          .map((e) => e as String)
-          .toList(),
+      errorFields: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['errorFields'],
+      ),
       someNullableField: jsonSerialization['someNullableField'] as int?,
     );
   }
@@ -64,6 +65,7 @@ abstract class ExceptionWithData
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ExceptionWithData',
       'message': message,
       'creationDate': creationDate.toJson(),
       'errorFields': errorFields.toJson(),
@@ -74,6 +76,7 @@ abstract class ExceptionWithData
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ExceptionWithData',
       'message': message,
       'creationDate': creationDate.toJson(),
       'errorFields': errorFields.toJson(),

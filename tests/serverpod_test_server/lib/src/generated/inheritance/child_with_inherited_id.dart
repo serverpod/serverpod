@@ -15,6 +15,7 @@
 import '../protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import '../inheritance/child_with_inherited_id.dart' as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
 
 abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
     implements _i2.TableRow<_i2.UuidValue>, _i2.ProtocolSerialization {
@@ -40,8 +41,8 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
       name: jsonSerialization['name'] as String,
       parent: jsonSerialization['parent'] == null
           ? null
-          : _i3.ChildWithInheritedId.fromJson(
-              (jsonSerialization['parent'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i3.ChildWithInheritedId>(
+              jsonSerialization['parent'],
             ),
       parentId: jsonSerialization['parentId'] == null
           ? null
@@ -78,6 +79,7 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ChildWithInheritedId',
       'id': id.toJson(),
       'name': name,
       if (parent != null) 'parent': parent?.toJson(),

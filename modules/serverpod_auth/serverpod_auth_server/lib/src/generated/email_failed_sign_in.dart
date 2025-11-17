@@ -70,6 +70,7 @@ abstract class EmailFailedSignIn
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.EmailFailedSignIn',
       if (id != null) 'id': id,
       'email': email,
       'time': time.toJson(),
@@ -80,6 +81,7 @@ abstract class EmailFailedSignIn
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth.EmailFailedSignIn',
       if (id != null) 'id': id,
       'email': email,
       'time': time.toJson(),

@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/src/generated/protocol.dart' as _i2;
 
 /// Message sent when authentication scopes for a user are revoked.
 abstract class RevokedAuthenticationScope
@@ -24,9 +25,9 @@ abstract class RevokedAuthenticationScope
     Map<String, dynamic> jsonSerialization,
   ) {
     return RevokedAuthenticationScope(
-      scopes: (jsonSerialization['scopes'] as List)
-          .map((e) => e as String)
-          .toList(),
+      scopes: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['scopes'],
+      ),
     );
   }
 
@@ -38,7 +39,10 @@ abstract class RevokedAuthenticationScope
   RevokedAuthenticationScope copyWith({List<String>? scopes});
   @override
   Map<String, dynamic> toJson() {
-    return {'scopes': scopes.toJson()};
+    return {
+      '__className__': 'serverpod.RevokedAuthenticationScope',
+      'scopes': scopes.toJson(),
+    };
   }
 
   @override

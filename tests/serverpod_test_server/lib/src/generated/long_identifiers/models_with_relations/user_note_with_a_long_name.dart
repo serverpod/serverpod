@@ -60,6 +60,7 @@ abstract class UserNoteWithALongName
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UserNoteWithALongName',
       if (id != null) 'id': id,
       'name': name,
       if (_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId !=
@@ -72,6 +73,7 @@ abstract class UserNoteWithALongName
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'UserNoteWithALongName',
       if (id != null) 'id': id,
       'name': name,
     };

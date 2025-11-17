@@ -14,6 +14,7 @@ import '../protocol.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 import '../types.dart' as _i3;
 import '../scopes/scope_server_only_field.dart' as _i4;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i5;
 
 abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
     implements _i2.SerializableModel {
@@ -35,13 +36,13 @@ abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
     return ScopeServerOnlyFieldChild(
       allScope: jsonSerialization['allScope'] == null
           ? null
-          : _i3.Types.fromJson(
-              (jsonSerialization['allScope'] as Map<String, dynamic>),
+          : _i5.Protocol().deserialize<_i3.Types>(
+              jsonSerialization['allScope'],
             ),
       nested: jsonSerialization['nested'] == null
           ? null
-          : _i4.ScopeServerOnlyField.fromJson(
-              (jsonSerialization['nested'] as Map<String, dynamic>),
+          : _i5.Protocol().deserialize<_i4.ScopeServerOnlyField>(
+              jsonSerialization['nested'],
             ),
       childFoo: jsonSerialization['childFoo'] as String,
     );
@@ -61,6 +62,7 @@ abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ScopeServerOnlyFieldChild',
       if (allScope != null) 'allScope': allScope?.toJson(),
       if (nested != null) 'nested': nested?.toJson(),
       'childFoo': childFoo,

@@ -47,6 +47,7 @@ abstract class ServerOnlyChildClass extends _i1.NonServerOnlyParentClass
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ServerOnlyChildClass',
       'parentField': parentField,
       'childField': childField,
     };

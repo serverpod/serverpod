@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i2;
+import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i3;
 
 /// A fully configured Google account to be used for logins.
 abstract class GoogleAccount
@@ -47,8 +48,8 @@ abstract class GoogleAccount
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>),
+          : _i3.Protocol().deserialize<_i2.AuthUser>(
+              jsonSerialization['authUser'],
             ),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       email: jsonSerialization['email'] as String,
@@ -99,6 +100,7 @@ abstract class GoogleAccount
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_idp.GoogleAccount',
       if (id != null) 'id': id?.toJson(),
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),

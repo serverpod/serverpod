@@ -48,6 +48,7 @@ abstract class EmailPasswordReset
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.EmailPasswordReset',
       if (userName != null) 'userName': userName,
       'email': email,
     };
@@ -56,6 +57,7 @@ abstract class EmailPasswordReset
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth.EmailPasswordReset',
       if (userName != null) 'userName': userName,
       'email': email,
     };

@@ -34,7 +34,10 @@ abstract class BulkQueryColumnDescription implements _i1.SerializableModel {
   BulkQueryColumnDescription copyWith({String? name});
   @override
   Map<String, dynamic> toJson() {
-    return {'name': name};
+    return {
+      '__className__': 'serverpod.BulkQueryColumnDescription',
+      'name': name,
+    };
   }
 
   @override

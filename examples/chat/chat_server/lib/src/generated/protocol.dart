@@ -75,12 +75,27 @@ class Protocol extends _i1.SerializationManagerServer {
     ..._i2.Protocol.targetTableDefinitions,
   ];
 
+  static String? getClassNameFromObjectJson(dynamic data) {
+    if (data is! Map) return null;
+    final className = data['__className__'] as String?;
+    return className;
+  }
+
   @override
   T deserialize<T>(
     dynamic data, [
     Type? t,
   ]) {
     t ??= T;
+
+    final dataClassName = getClassNameFromObjectJson(data);
+    if (dataClassName != null && dataClassName != t.toString()) {
+      return deserializeByClassName({
+        'className': dataClassName,
+        'data': data,
+      });
+    }
+
     if (t == _i5.Channel) {
       return _i5.Channel.fromJson(data) as T;
     }
@@ -107,6 +122,11 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
+
+    if (data is Map<String, dynamic> && data['__className__'] is String) {
+      return (data['__className__'] as String).replaceFirst('chat.', '');
+    }
+
     switch (data) {
       case _i5.Channel():
         return 'Channel';

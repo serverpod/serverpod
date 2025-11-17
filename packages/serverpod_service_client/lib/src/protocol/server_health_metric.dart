@@ -89,6 +89,7 @@ abstract class ServerHealthMetric implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ServerHealthMetric',
       if (id != null) 'id': id,
       'name': name,
       'serverId': serverId,

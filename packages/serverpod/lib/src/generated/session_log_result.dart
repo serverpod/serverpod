@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'session_log_info.dart' as _i2;
+import 'package:serverpod/src/generated/protocol.dart' as _i3;
 
 /// A list of SessionLogInfo.
 abstract class SessionLogResult
@@ -23,9 +24,9 @@ abstract class SessionLogResult
 
   factory SessionLogResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionLogResult(
-      sessionLog: (jsonSerialization['sessionLog'] as List)
-          .map((e) => _i2.SessionLogInfo.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      sessionLog: _i3.Protocol().deserialize<List<_i2.SessionLogInfo>>(
+        jsonSerialization['sessionLog'],
+      ),
     );
   }
 
@@ -38,12 +39,16 @@ abstract class SessionLogResult
   SessionLogResult copyWith({List<_i2.SessionLogInfo>? sessionLog});
   @override
   Map<String, dynamic> toJson() {
-    return {'sessionLog': sessionLog.toJson(valueToJson: (v) => v.toJson())};
+    return {
+      '__className__': 'serverpod.SessionLogResult',
+      'sessionLog': sessionLog.toJson(valueToJson: (v) => v.toJson()),
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.SessionLogResult',
       'sessionLog': sessionLog.toJson(
         valueToJson: (v) => v.toJsonForProtocol(),
       ),

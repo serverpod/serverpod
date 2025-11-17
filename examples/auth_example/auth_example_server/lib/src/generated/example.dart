@@ -45,6 +45,7 @@ abstract class Example
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Example',
       'name': name,
       'data': data,
     };
@@ -53,6 +54,7 @@ abstract class Example
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Example',
       'name': name,
       'data': data,
     };

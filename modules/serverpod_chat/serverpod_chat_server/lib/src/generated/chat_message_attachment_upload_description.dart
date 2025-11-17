@@ -51,6 +51,7 @@ abstract class ChatMessageAttachmentUploadDescription
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_chat.ChatMessageAttachmentUploadDescription',
       'filePath': filePath,
       'uploadDescription': uploadDescription,
     };
@@ -59,6 +60,7 @@ abstract class ChatMessageAttachmentUploadDescription
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_chat.ChatMessageAttachmentUploadDescription',
       'filePath': filePath,
       'uploadDescription': uploadDescription,
     };

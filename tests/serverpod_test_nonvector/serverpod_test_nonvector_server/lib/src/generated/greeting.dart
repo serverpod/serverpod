@@ -71,6 +71,7 @@ abstract class Greeting
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Greeting',
       if (id != null) 'id': id,
       'message': message,
       'author': author,
@@ -81,6 +82,7 @@ abstract class Greeting
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Greeting',
       if (id != null) 'id': id,
       'message': message,
       'author': author,

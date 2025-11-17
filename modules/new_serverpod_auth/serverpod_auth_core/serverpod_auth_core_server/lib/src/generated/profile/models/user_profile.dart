@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../auth_user/models/auth_user.dart' as _i2;
 import '../../profile/models/user_profile_image.dart' as _i3;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i4;
 
 abstract class UserProfile
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -52,8 +53,8 @@ abstract class UserProfile
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i2.AuthUser>(
+              jsonSerialization['authUser'],
             ),
       userName: jsonSerialization['userName'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
@@ -66,8 +67,8 @@ abstract class UserProfile
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['imageId']),
       image: jsonSerialization['image'] == null
           ? null
-          : _i3.UserProfileImage.fromJson(
-              (jsonSerialization['image'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i3.UserProfileImage>(
+              jsonSerialization['image'],
             ),
     );
   }
@@ -126,6 +127,7 @@ abstract class UserProfile
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.UserProfile',
       if (id != null) 'id': id?.toJson(),
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),

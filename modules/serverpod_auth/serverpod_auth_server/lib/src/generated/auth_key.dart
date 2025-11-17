@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_auth_server/src/generated/protocol.dart' as _i2;
 
 /// Provides a method of access for a user to authenticate with the server.
 abstract class AuthKey
@@ -39,9 +40,9 @@ abstract class AuthKey
       userId: jsonSerialization['userId'] as int,
       hash: jsonSerialization['hash'] as String,
       key: jsonSerialization['key'] as String?,
-      scopeNames: (jsonSerialization['scopeNames'] as List)
-          .map((e) => e as String)
-          .toList(),
+      scopeNames: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['scopeNames'],
+      ),
       method: jsonSerialization['method'] as String,
     );
   }
@@ -86,6 +87,7 @@ abstract class AuthKey
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.AuthKey',
       if (id != null) 'id': id,
       'userId': userId,
       'hash': hash,
@@ -98,6 +100,7 @@ abstract class AuthKey
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth.AuthKey',
       if (id != null) 'id': id,
       'userId': userId,
       'hash': hash,

@@ -44,6 +44,7 @@ abstract class Example implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Example',
       'name': name,
       'data': data,
     };

@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/many_to_many/enrollment.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class StudentUuid
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -35,9 +36,11 @@ abstract class StudentUuid
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
-      enrollments: (jsonSerialization['enrollments'] as List?)
-          ?.map((e) => _i2.EnrollmentInt.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      enrollments: jsonSerialization['enrollments'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.EnrollmentInt>>(
+              jsonSerialization['enrollments'],
+            ),
     );
   }
 
@@ -66,6 +69,7 @@ abstract class StudentUuid
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'StudentUuid',
       if (id != null) 'id': id?.toJson(),
       'name': name,
       if (enrollments != null)
@@ -76,6 +80,7 @@ abstract class StudentUuid
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'StudentUuid',
       if (id != null) 'id': id?.toJson(),
       'name': name,
       if (enrollments != null)

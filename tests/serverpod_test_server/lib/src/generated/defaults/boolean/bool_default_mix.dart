@@ -71,6 +71,7 @@ abstract class BoolDefaultMix
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'BoolDefaultMix',
       if (id != null) 'id': id,
       'boolDefaultAndDefaultModel': boolDefaultAndDefaultModel,
       'boolDefaultAndDefaultPersist': boolDefaultAndDefaultPersist,
@@ -81,6 +82,7 @@ abstract class BoolDefaultMix
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'BoolDefaultMix',
       if (id != null) 'id': id,
       'boolDefaultAndDefaultModel': boolDefaultAndDefaultModel,
       'boolDefaultAndDefaultPersist': boolDefaultAndDefaultPersist,

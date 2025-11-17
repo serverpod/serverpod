@@ -33,7 +33,9 @@ abstract class PasskeyChallengeExpiredException
   PasskeyChallengeExpiredException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_idp.PasskeyChallengeExpiredException',
+    };
   }
 
   @override

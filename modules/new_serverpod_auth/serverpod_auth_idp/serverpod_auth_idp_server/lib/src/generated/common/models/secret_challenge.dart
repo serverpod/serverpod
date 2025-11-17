@@ -68,6 +68,7 @@ abstract class SecretChallenge
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_idp.SecretChallenge',
       if (id != null) 'id': id?.toJson(),
       'challengeCodeHash': challengeCodeHash.toJson(),
       'challengeCodeSalt': challengeCodeSalt.toJson(),

@@ -32,7 +32,10 @@ abstract class DefaultServerOnlyClass implements _i1.SerializableModel {
   DefaultServerOnlyClass copyWith({String? foo});
   @override
   Map<String, dynamic> toJson() {
-    return {'foo': foo};
+    return {
+      '__className__': 'DefaultServerOnlyClass',
+      'foo': foo,
+    };
   }
 
   @override

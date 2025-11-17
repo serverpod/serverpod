@@ -108,6 +108,7 @@ abstract class LogSettings implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.LogSettings',
       'logLevel': logLevel.toJson(),
       'logAllSessions': logAllSessions,
       'logAllQueries': logAllQueries,

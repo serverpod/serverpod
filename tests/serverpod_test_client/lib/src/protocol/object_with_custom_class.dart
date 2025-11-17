@@ -70,6 +70,7 @@ abstract class ObjectWithCustomClass implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithCustomClass',
       'customClassWithoutProtocolSerialization':
           customClassWithoutProtocolSerialization.toJson(),
       'customClassWithProtocolSerialization':

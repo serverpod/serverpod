@@ -73,6 +73,7 @@ abstract class UserProfileModel implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.UserProfileModel',
       'authUserId': authUserId.toJson(),
       if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,

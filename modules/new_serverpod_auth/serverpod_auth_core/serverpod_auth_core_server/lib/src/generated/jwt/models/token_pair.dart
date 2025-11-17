@@ -50,6 +50,7 @@ abstract class TokenPair
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.TokenPair',
       'refreshToken': refreshToken,
       'accessToken': accessToken,
     };
@@ -58,6 +59,7 @@ abstract class TokenPair
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth_core.TokenPair',
       'refreshToken': refreshToken,
       'accessToken': accessToken,
     };

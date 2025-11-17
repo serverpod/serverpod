@@ -63,6 +63,7 @@ abstract class UserImage implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.UserImage',
       if (id != null) 'id': id,
       'userId': userId,
       'version': version,

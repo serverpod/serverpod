@@ -49,6 +49,7 @@ abstract class ChatRequestMessageChunk implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_chat.ChatRequestMessageChunk',
       'channel': channel,
       'lastMessageId': lastMessageId,
     };

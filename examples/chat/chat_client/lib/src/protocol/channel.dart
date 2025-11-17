@@ -56,6 +56,7 @@ abstract class Channel implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Channel',
       if (id != null) 'id': id,
       'name': name,
       'channel': channel,

@@ -89,6 +89,7 @@ abstract class ObjectWithVector implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithVector',
       if (id != null) 'id': id,
       'vector': vector.toJson(),
       if (vectorNullable != null) 'vectorNullable': vectorNullable?.toJson(),

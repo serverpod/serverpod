@@ -67,6 +67,7 @@ abstract class DoubleDefaultMix implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DoubleDefaultMix',
       if (id != null) 'id': id,
       'doubleDefaultAndDefaultModel': doubleDefaultAndDefaultModel,
       'doubleDefaultAndDefaultPersist': doubleDefaultAndDefaultPersist,

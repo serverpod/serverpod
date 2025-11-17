@@ -99,6 +99,7 @@ abstract class ObjectWithHalfVector
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithHalfVector',
       if (id != null) 'id': id,
       'halfVector': halfVector.toJson(),
       if (halfVectorNullable != null)
@@ -115,6 +116,7 @@ abstract class ObjectWithHalfVector
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ObjectWithHalfVector',
       if (id != null) 'id': id,
       'halfVector': halfVector.toJson(),
       if (halfVectorNullable != null)

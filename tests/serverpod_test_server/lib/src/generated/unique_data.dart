@@ -59,6 +59,7 @@ abstract class UniqueData
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UniqueData',
       if (id != null) 'id': id,
       'number': number,
       'email': email,
@@ -68,6 +69,7 @@ abstract class UniqueData
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'UniqueData',
       if (id != null) 'id': id,
       'number': number,
       'email': email,

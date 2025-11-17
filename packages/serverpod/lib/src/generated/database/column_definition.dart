@@ -82,6 +82,7 @@ abstract class ColumnDefinition
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ColumnDefinition',
       'name': name,
       'columnType': columnType.toJson(),
       'isNullable': isNullable,
@@ -94,6 +95,7 @@ abstract class ColumnDefinition
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.ColumnDefinition',
       'name': name,
       'columnType': columnType.toJson(),
       'isNullable': isNullable,

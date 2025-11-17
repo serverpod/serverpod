@@ -271,6 +271,14 @@ class TestToolsEndpoint extends Endpoint {
     return records;
   }
 
+  Future<(int, SimpleData)> returnRecordWithSerializableObject(
+    Session session,
+    int number,
+    SimpleData data,
+  ) async {
+    return (number, data);
+  }
+
   Stream<(String, (Map<String, int>, {SimpleData simpleData, bool flag}))>
   recordEchoStream(
     Session session,

@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/table_definition.dart' as _i2;
+import 'package:serverpod/src/generated/protocol.dart' as _i3;
 
 abstract class BulkData
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -27,8 +28,8 @@ abstract class BulkData
 
   factory BulkData.fromJson(Map<String, dynamic> jsonSerialization) {
     return BulkData(
-      tableDefinition: _i2.TableDefinition.fromJson(
-        (jsonSerialization['tableDefinition'] as Map<String, dynamic>),
+      tableDefinition: _i3.Protocol().deserialize<_i2.TableDefinition>(
+        jsonSerialization['tableDefinition'],
       ),
       data: jsonSerialization['data'] as String,
     );
@@ -48,6 +49,7 @@ abstract class BulkData
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.BulkData',
       'tableDefinition': tableDefinition.toJson(),
       'data': data,
     };
@@ -56,6 +58,7 @@ abstract class BulkData
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.BulkData',
       'tableDefinition': tableDefinition.toJsonForProtocol(),
       'data': data,
     };

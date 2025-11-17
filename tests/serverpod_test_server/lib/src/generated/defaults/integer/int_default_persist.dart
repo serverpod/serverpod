@@ -53,6 +53,7 @@ abstract class IntDefaultPersist
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'IntDefaultPersist',
       if (id != null) 'id': id,
       if (intDefaultPersist != null) 'intDefaultPersist': intDefaultPersist,
     };
@@ -61,6 +62,7 @@ abstract class IntDefaultPersist
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'IntDefaultPersist',
       if (id != null) 'id': id,
       if (intDefaultPersist != null) 'intDefaultPersist': intDefaultPersist,
     };

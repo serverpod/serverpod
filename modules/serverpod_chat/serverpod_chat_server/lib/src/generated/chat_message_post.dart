@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'chat_message_attachment.dart' as _i2;
+import 'package:serverpod_chat_server/src/generated/protocol.dart' as _i3;
 
 /// A chat message post request.
 abstract class ChatMessagePost
@@ -35,12 +36,11 @@ abstract class ChatMessagePost
       channel: jsonSerialization['channel'] as String,
       message: jsonSerialization['message'] as String,
       clientMessageId: jsonSerialization['clientMessageId'] as int,
-      attachments: (jsonSerialization['attachments'] as List?)
-          ?.map(
-            (e) =>
-                _i2.ChatMessageAttachment.fromJson((e as Map<String, dynamic>)),
-          )
-          .toList(),
+      attachments: jsonSerialization['attachments'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.ChatMessageAttachment>>(
+              jsonSerialization['attachments'],
+            ),
     );
   }
 
@@ -68,6 +68,7 @@ abstract class ChatMessagePost
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_chat.ChatMessagePost',
       'channel': channel,
       'message': message,
       'clientMessageId': clientMessageId,
@@ -79,6 +80,7 @@ abstract class ChatMessagePost
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_chat.ChatMessagePost',
       'channel': channel,
       'message': message,
       'clientMessageId': clientMessageId,

@@ -72,6 +72,7 @@ abstract class DateTimeDefault implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DateTimeDefault',
       if (id != null) 'id': id,
       'dateTimeDefaultNow': dateTimeDefaultNow.toJson(),
       'dateTimeDefaultStr': dateTimeDefaultStr.toJson(),

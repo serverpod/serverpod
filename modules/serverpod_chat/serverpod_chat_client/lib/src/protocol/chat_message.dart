@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i2;
 import 'chat_message_attachment.dart' as _i3;
+import 'package:serverpod_chat_client/src/protocol/protocol.dart' as _i4;
 
 /// A chat message.
 abstract class ChatMessage implements _i1.SerializableModel {
@@ -51,18 +52,17 @@ abstract class ChatMessage implements _i1.SerializableModel {
       sender: jsonSerialization['sender'] as int,
       senderInfo: jsonSerialization['senderInfo'] == null
           ? null
-          : _i2.UserInfoPublic.fromJson(
-              (jsonSerialization['senderInfo'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i2.UserInfoPublic>(
+              jsonSerialization['senderInfo'],
             ),
       removed: jsonSerialization['removed'] as bool,
       clientMessageId: jsonSerialization['clientMessageId'] as int?,
       sent: jsonSerialization['sent'] as bool?,
-      attachments: (jsonSerialization['attachments'] as List?)
-          ?.map(
-            (e) =>
-                _i3.ChatMessageAttachment.fromJson((e as Map<String, dynamic>)),
-          )
-          .toList(),
+      attachments: jsonSerialization['attachments'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i3.ChatMessageAttachment>>(
+              jsonSerialization['attachments'],
+            ),
     );
   }
 
@@ -116,6 +116,7 @@ abstract class ChatMessage implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_chat.ChatMessage',
       if (id != null) 'id': id,
       'channel': channel,
       'message': message,

@@ -31,7 +31,9 @@ abstract class RefreshTokenInvalidSecretException
   RefreshTokenInvalidSecretException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_core.RefreshTokenInvalidSecretException',
+    };
   }
 
   @override

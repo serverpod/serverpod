@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../changed_id_type/nested_one_to_many/team.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class PlayerUuid implements _i1.SerializableModel {
   PlayerUuid._({
@@ -37,9 +38,7 @@ abstract class PlayerUuid implements _i1.SerializableModel {
       teamId: jsonSerialization['teamId'] as int?,
       team: jsonSerialization['team'] == null
           ? null
-          : _i2.TeamInt.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>),
-            ),
+          : _i3.Protocol().deserialize<_i2.TeamInt>(jsonSerialization['team']),
     );
   }
 
@@ -66,6 +65,7 @@ abstract class PlayerUuid implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'PlayerUuid',
       if (id != null) 'id': id?.toJson(),
       'name': name,
       if (teamId != null) 'teamId': teamId,

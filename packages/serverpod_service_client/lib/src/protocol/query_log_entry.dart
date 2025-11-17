@@ -114,6 +114,7 @@ abstract class QueryLogEntry implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.QueryLogEntry',
       if (id != null) 'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,

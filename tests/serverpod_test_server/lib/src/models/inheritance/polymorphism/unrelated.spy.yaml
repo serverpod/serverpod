@@ -1,0 +1,5 @@
+### A class that is not related to the polymorphism.
+class: UnrelatedToPolymorphism
+fields:
+  ### An unrelated field.
+  unrelated: String

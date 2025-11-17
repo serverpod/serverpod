@@ -56,6 +56,7 @@ abstract class UserProfileData
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.UserProfileData',
       if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,
       if (email != null) 'email': email,

@@ -120,6 +120,7 @@ abstract class StringDefaultPersist
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'StringDefaultPersist',
       if (id != null) 'id': id,
       if (stringDefaultPersist != null)
         'stringDefaultPersist': stringDefaultPersist,
@@ -153,6 +154,7 @@ abstract class StringDefaultPersist
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'StringDefaultPersist',
       if (id != null) 'id': id,
       if (stringDefaultPersist != null)
         'stringDefaultPersist': stringDefaultPersist,

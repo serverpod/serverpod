@@ -50,6 +50,7 @@ abstract class ServerpodSqlException
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ServerpodSqlException',
       'message': message,
       'sql': sql,
     };
@@ -58,6 +59,7 @@ abstract class ServerpodSqlException
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.ServerpodSqlException',
       'message': message,
       'sql': sql,
     };

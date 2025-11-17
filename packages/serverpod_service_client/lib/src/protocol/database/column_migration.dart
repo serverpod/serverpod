@@ -62,6 +62,7 @@ abstract class ColumnMigration implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ColumnMigration',
       'columnName': columnName,
       'addNullable': addNullable,
       'removeNullable': removeNullable,

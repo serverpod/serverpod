@@ -62,6 +62,7 @@ abstract class GoogleRefreshToken
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.GoogleRefreshToken',
       if (id != null) 'id': id,
       'userId': userId,
       'refreshToken': refreshToken,
@@ -71,6 +72,7 @@ abstract class GoogleRefreshToken
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth.GoogleRefreshToken',
       if (id != null) 'id': id,
       'userId': userId,
       'refreshToken': refreshToken,

@@ -69,6 +69,7 @@ abstract class EmailAuth
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.EmailAuth',
       if (id != null) 'id': id,
       'userId': userId,
       'email': email,
@@ -79,6 +80,7 @@ abstract class EmailAuth
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth.EmailAuth',
       if (id != null) 'id': id,
       'userId': userId,
       'email': email,

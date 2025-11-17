@@ -54,6 +54,7 @@ abstract class BigIntDefaultPersist implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'BigIntDefaultPersist',
       if (id != null) 'id': id,
       if (bigIntDefaultPersistStr != null)
         'bigIntDefaultPersistStr': bigIntDefaultPersistStr?.toJson(),

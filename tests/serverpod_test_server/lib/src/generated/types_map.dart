@@ -95,266 +95,176 @@ abstract class TypesMap
 
   factory TypesMap.fromJson(Map<String, dynamic> jsonSerialization) {
     return TypesMap(
-      anIntKey: (jsonSerialization['anIntKey'] as List?)
-          ?.fold<Map<int, String>>(
-            {},
-            (t, e) => {...t, e['k'] as int: e['v'] as String},
-          ),
-      aBoolKey: (jsonSerialization['aBoolKey'] as List?)
-          ?.fold<Map<bool, String>>(
-            {},
-            (t, e) => {...t, e['k'] as bool: e['v'] as String},
-          ),
-      aDoubleKey: (jsonSerialization['aDoubleKey'] as List?)
-          ?.fold<Map<double, String>>(
-            {},
-            (t, e) => {...t, (e['k'] as num).toDouble(): e['v'] as String},
-          ),
-      aDateTimeKey: (jsonSerialization['aDateTimeKey'] as List?)
-          ?.fold<Map<DateTime, String>>(
-            {},
-            (t, e) => {
-              ...t,
-              _i1.DateTimeJsonExtension.fromJson(e['k']): e['v'] as String,
-            },
-          ),
-      aStringKey: (jsonSerialization['aStringKey'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          v as String,
-        ),
-      ),
-      aByteDataKey: (jsonSerialization['aByteDataKey'] as List?)
-          ?.fold<Map<_i2.ByteData, String>>(
-            {},
-            (t, e) => {
-              ...t,
-              _i1.ByteDataJsonExtension.fromJson(e['k']): e['v'] as String,
-            },
-          ),
-      aDurationKey: (jsonSerialization['aDurationKey'] as List?)
-          ?.fold<Map<Duration, String>>(
-            {},
-            (t, e) => {
-              ...t,
-              _i1.DurationJsonExtension.fromJson(e['k']): e['v'] as String,
-            },
-          ),
-      aUuidKey: (jsonSerialization['aUuidKey'] as List?)
-          ?.fold<Map<_i1.UuidValue, String>>(
-            {},
-            (t, e) => {
-              ...t,
-              _i1.UuidValueJsonExtension.fromJson(e['k']): e['v'] as String,
-            },
-          ),
-      aUriKey: (jsonSerialization['aUriKey'] as List?)?.fold<Map<Uri, String>>(
-        {},
-        (t, e) => {
-          ...t,
-          _i1.UriJsonExtension.fromJson(e['k']): e['v'] as String,
-        },
-      ),
-      aBigIntKey: (jsonSerialization['aBigIntKey'] as List?)
-          ?.fold<Map<BigInt, String>>(
-            {},
-            (t, e) => {
-              ...t,
-              _i1.BigIntJsonExtension.fromJson(e['k']): e['v'] as String,
-            },
-          ),
-      anEnumKey: (jsonSerialization['anEnumKey'] as List?)
-          ?.fold<Map<_i3.TestEnum, String>>(
-            {},
-            (t, e) => {
-              ...t,
-              _i3.TestEnum.fromJson((e['k'] as int)): e['v'] as String,
-            },
-          ),
-      aStringifiedEnumKey: (jsonSerialization['aStringifiedEnumKey'] as List?)
-          ?.fold<Map<_i4.TestEnumStringified, String>>(
-            {},
-            (t, e) => {
-              ...t,
-              _i4.TestEnumStringified.fromJson((e['k'] as String)):
-                  e['v'] as String,
-            },
-          ),
-      anObjectKey: (jsonSerialization['anObjectKey'] as List?)
-          ?.fold<Map<_i5.Types, String>>(
-            {},
-            (t, e) => {
-              ...t,
-              _i5.Types.fromJson((e['k'] as Map<String, dynamic>)):
-                  e['v'] as String,
-            },
-          ),
-      aMapKey: (jsonSerialization['aMapKey'] as List?)
-          ?.fold<Map<Map<_i5.Types, String>, String>>(
-            {},
-            (t, e) => {
-              ...t,
-              (e['k'] as List).fold<Map<_i5.Types, String>>(
-                {},
-                (t, e) => {
-                  ...t,
-                  _i5.Types.fromJson((e['k'] as Map<String, dynamic>)):
-                      e['v'] as String,
-                },
-              ): e['v'] as String,
-            },
-          ),
-      aListKey: (jsonSerialization['aListKey'] as List?)
-          ?.fold<Map<List<_i5.Types>, String>>(
-            {},
-            (t, e) => {
-              ...t,
-              (e['k'] as List)
-                      .map(
-                        (e) => _i5.Types.fromJson((e as Map<String, dynamic>)),
-                      )
-                      .toList():
-                  e['v'] as String,
-            },
-          ),
-      aRecordKey: (jsonSerialization['aRecordKey'] as List?)
-          ?.fold<Map<(String,), String>>(
-            {},
-            (t, e) => {
-              ...t,
-              _i6.Protocol().deserialize<(String,)>(
-                (e['k'] as Map<String, dynamic>),
-              ): e['v'] as String,
-            },
-          ),
-      anIntValue: (jsonSerialization['anIntValue'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          v as int,
-        ),
-      ),
-      aBoolValue: (jsonSerialization['aBoolValue'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          v as bool,
-        ),
-      ),
-      aDoubleValue: (jsonSerialization['aDoubleValue'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          (v as num).toDouble(),
-        ),
-      ),
-      aDateTimeValue: (jsonSerialization['aDateTimeValue'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          _i1.DateTimeJsonExtension.fromJson(v),
-        ),
-      ),
-      aStringValue: (jsonSerialization['aStringValue'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          v as String,
-        ),
-      ),
-      aByteDataValue: (jsonSerialization['aByteDataValue'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          _i1.ByteDataJsonExtension.fromJson(v),
-        ),
-      ),
-      aDurationValue: (jsonSerialization['aDurationValue'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          _i1.DurationJsonExtension.fromJson(v),
-        ),
-      ),
-      aUuidValue: (jsonSerialization['aUuidValue'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          _i1.UuidValueJsonExtension.fromJson(v),
-        ),
-      ),
-      aUriValue: (jsonSerialization['aUriValue'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          _i1.UriJsonExtension.fromJson(v),
-        ),
-      ),
-      aBigIntValue: (jsonSerialization['aBigIntValue'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          _i1.BigIntJsonExtension.fromJson(v),
-        ),
-      ),
-      anEnumValue: (jsonSerialization['anEnumValue'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          _i3.TestEnum.fromJson((v as int)),
-        ),
-      ),
-      aStringifiedEnumValue:
-          (jsonSerialization['aStringifiedEnumValue'] as Map?)?.map(
-            (k, v) => MapEntry(
-              k as String,
-              _i4.TestEnumStringified.fromJson((v as String)),
+      anIntKey: jsonSerialization['anIntKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<int, String>>(
+              jsonSerialization['anIntKey'],
             ),
-          ),
-      anObjectValue: (jsonSerialization['anObjectValue'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          _i5.Types.fromJson((v as Map<String, dynamic>)),
-        ),
-      ),
-      aMapValue: (jsonSerialization['aMapValue'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          (v as Map).map(
-            (k, v) => MapEntry(
-              k as String,
-              _i5.Types.fromJson((v as Map<String, dynamic>)),
+      aBoolKey: jsonSerialization['aBoolKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<bool, String>>(
+              jsonSerialization['aBoolKey'],
             ),
-          ),
-        ),
-      ),
-      aListValue: (jsonSerialization['aListValue'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          (v as List)
-              .map((e) => _i5.Types.fromJson((e as Map<String, dynamic>)))
-              .toList(),
-        ),
-      ),
-      aRecordValue: (jsonSerialization['aRecordValue'] as Map?)?.map(
-        (k, v) => MapEntry(
-          k as String,
-          _i6.Protocol().deserialize<(String,)>((v as Map<String, dynamic>)),
-        ),
-      ),
-      aNullableRecordValue: (jsonSerialization['aNullableRecordValue'] as Map?)
-          ?.map(
-            (k, v) => MapEntry(
-              k as String,
-              v == null
-                  ? null
-                  : _i6.Protocol().deserialize<(String,)?>(
-                      (v as Map<String, dynamic>),
-                    ),
+      aDoubleKey: jsonSerialization['aDoubleKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<double, String>>(
+              jsonSerialization['aDoubleKey'],
             ),
-          ),
-      aNullableRecordKey: (jsonSerialization['aNullableRecordKey'] as List?)
-          ?.fold<Map<(String,)?, String>>(
-            {},
-            (t, e) => {
-              ...t,
-              e['k'] == null
-                      ? null
-                      : _i6.Protocol().deserialize<(String,)?>(
-                          (e['k'] as Map<String, dynamic>),
-                        ):
-                  e['v'] as String,
-            },
-          ),
+      aDateTimeKey: jsonSerialization['aDateTimeKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<DateTime, String>>(
+              jsonSerialization['aDateTimeKey'],
+            ),
+      aStringKey: jsonSerialization['aStringKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, String>>(
+              jsonSerialization['aStringKey'],
+            ),
+      aByteDataKey: jsonSerialization['aByteDataKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<_i2.ByteData, String>>(
+              jsonSerialization['aByteDataKey'],
+            ),
+      aDurationKey: jsonSerialization['aDurationKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<Duration, String>>(
+              jsonSerialization['aDurationKey'],
+            ),
+      aUuidKey: jsonSerialization['aUuidKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<_i1.UuidValue, String>>(
+              jsonSerialization['aUuidKey'],
+            ),
+      aUriKey: jsonSerialization['aUriKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<Uri, String>>(
+              jsonSerialization['aUriKey'],
+            ),
+      aBigIntKey: jsonSerialization['aBigIntKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<BigInt, String>>(
+              jsonSerialization['aBigIntKey'],
+            ),
+      anEnumKey: jsonSerialization['anEnumKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<_i3.TestEnum, String>>(
+              jsonSerialization['anEnumKey'],
+            ),
+      aStringifiedEnumKey: jsonSerialization['aStringifiedEnumKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<_i4.TestEnumStringified, String>>(
+              jsonSerialization['aStringifiedEnumKey'],
+            ),
+      anObjectKey: jsonSerialization['anObjectKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<_i5.Types, String>>(
+              jsonSerialization['anObjectKey'],
+            ),
+      aMapKey: jsonSerialization['aMapKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<Map<_i5.Types, String>, String>>(
+              jsonSerialization['aMapKey'],
+            ),
+      aListKey: jsonSerialization['aListKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<List<_i5.Types>, String>>(
+              jsonSerialization['aListKey'],
+            ),
+      aRecordKey: jsonSerialization['aRecordKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<(String,), String>>(
+              jsonSerialization['aRecordKey'],
+            ),
+      anIntValue: jsonSerialization['anIntValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, int>>(
+              jsonSerialization['anIntValue'],
+            ),
+      aBoolValue: jsonSerialization['aBoolValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, bool>>(
+              jsonSerialization['aBoolValue'],
+            ),
+      aDoubleValue: jsonSerialization['aDoubleValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, double>>(
+              jsonSerialization['aDoubleValue'],
+            ),
+      aDateTimeValue: jsonSerialization['aDateTimeValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, DateTime>>(
+              jsonSerialization['aDateTimeValue'],
+            ),
+      aStringValue: jsonSerialization['aStringValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, String>>(
+              jsonSerialization['aStringValue'],
+            ),
+      aByteDataValue: jsonSerialization['aByteDataValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, _i2.ByteData>>(
+              jsonSerialization['aByteDataValue'],
+            ),
+      aDurationValue: jsonSerialization['aDurationValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, Duration>>(
+              jsonSerialization['aDurationValue'],
+            ),
+      aUuidValue: jsonSerialization['aUuidValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, _i1.UuidValue>>(
+              jsonSerialization['aUuidValue'],
+            ),
+      aUriValue: jsonSerialization['aUriValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, Uri>>(
+              jsonSerialization['aUriValue'],
+            ),
+      aBigIntValue: jsonSerialization['aBigIntValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, BigInt>>(
+              jsonSerialization['aBigIntValue'],
+            ),
+      anEnumValue: jsonSerialization['anEnumValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, _i3.TestEnum>>(
+              jsonSerialization['anEnumValue'],
+            ),
+      aStringifiedEnumValue: jsonSerialization['aStringifiedEnumValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, _i4.TestEnumStringified>>(
+              jsonSerialization['aStringifiedEnumValue'],
+            ),
+      anObjectValue: jsonSerialization['anObjectValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, _i5.Types>>(
+              jsonSerialization['anObjectValue'],
+            ),
+      aMapValue: jsonSerialization['aMapValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, Map<String, _i5.Types>>>(
+              jsonSerialization['aMapValue'],
+            ),
+      aListValue: jsonSerialization['aListValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, List<_i5.Types>>>(
+              jsonSerialization['aListValue'],
+            ),
+      aRecordValue: jsonSerialization['aRecordValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, (String,)>>(
+              jsonSerialization['aRecordValue'],
+            ),
+      aNullableRecordValue: jsonSerialization['aNullableRecordValue'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<String, (String,)?>>(
+              jsonSerialization['aNullableRecordValue'],
+            ),
+      aNullableRecordKey: jsonSerialization['aNullableRecordKey'] == null
+          ? null
+          : _i6.Protocol().deserialize<Map<(String,)?, String>>(
+              jsonSerialization['aNullableRecordKey'],
+            ),
     );
   }
 
@@ -468,6 +378,7 @@ abstract class TypesMap
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'TypesMap',
       if (anIntKey != null) 'anIntKey': anIntKey?.toJson(),
       if (aBoolKey != null) 'aBoolKey': aBoolKey?.toJson(),
       if (aDoubleKey != null) 'aDoubleKey': aDoubleKey?.toJson(),
@@ -551,6 +462,7 @@ abstract class TypesMap
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'TypesMap',
       if (anIntKey != null) 'anIntKey': anIntKey?.toJson(),
       if (aBoolKey != null) 'aBoolKey': aBoolKey?.toJson(),
       if (aDoubleKey != null) 'aDoubleKey': aDoubleKey?.toJson(),

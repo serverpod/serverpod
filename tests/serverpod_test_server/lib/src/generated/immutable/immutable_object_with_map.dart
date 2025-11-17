@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i2;
 
 @_i1.immutable
 abstract class ImmutableObjectWithMap
@@ -25,11 +26,8 @@ abstract class ImmutableObjectWithMap
     Map<String, dynamic> jsonSerialization,
   ) {
     return ImmutableObjectWithMap(
-      mapVariable: (jsonSerialization['mapVariable'] as Map).map(
-        (k, v) => MapEntry(
-          k as String,
-          v as String,
-        ),
+      mapVariable: _i2.Protocol().deserialize<Map<String, String>>(
+        jsonSerialization['mapVariable'],
       ),
     );
   }
@@ -64,12 +62,18 @@ abstract class ImmutableObjectWithMap
 
   @override
   Map<String, dynamic> toJson() {
-    return {'mapVariable': mapVariable.toJson()};
+    return {
+      '__className__': 'ImmutableObjectWithMap',
+      'mapVariable': mapVariable.toJson(),
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'mapVariable': mapVariable.toJson()};
+    return {
+      '__className__': 'ImmutableObjectWithMap',
+      'mapVariable': mapVariable.toJson(),
+    };
   }
 
   @override

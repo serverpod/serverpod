@@ -68,6 +68,7 @@ abstract class UserSettingsConfig implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.UserSettingsConfig',
       'canSeeUserName': canSeeUserName,
       'canSeeFullName': canSeeFullName,
       'canEditUserName': canEditUserName,

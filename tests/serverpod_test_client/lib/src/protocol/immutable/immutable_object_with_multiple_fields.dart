@@ -115,6 +115,7 @@ abstract class ImmutableObjectWithMultipleFields
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ImmutableObjectWithMultipleFields',
       if (anInt != null) 'anInt': anInt,
       if (aBool != null) 'aBool': aBool,
       if (aDouble != null) 'aDouble': aDouble,

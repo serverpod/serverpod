@@ -83,6 +83,7 @@ abstract class ObjectWithSparseVector
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithSparseVector',
       if (id != null) 'id': id,
       'sparseVector': sparseVector.toJson(),
       if (sparseVectorNullable != null)
@@ -96,6 +97,7 @@ abstract class ObjectWithSparseVector
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ObjectWithSparseVector',
       if (id != null) 'id': id,
       'sparseVector': sparseVector.toJson(),
       if (sparseVectorNullable != null)

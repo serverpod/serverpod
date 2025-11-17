@@ -68,6 +68,7 @@ abstract class UserInfoPublic implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.UserInfoPublic',
       if (id != null) 'id': id,
       if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,

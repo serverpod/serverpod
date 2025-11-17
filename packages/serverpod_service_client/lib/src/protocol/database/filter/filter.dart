@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../database/filter/filter_constraint.dart' as _i2;
+import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i3;
 
 abstract class Filter implements _i1.SerializableModel {
   Filter._({
@@ -30,11 +31,9 @@ abstract class Filter implements _i1.SerializableModel {
     return Filter(
       name: jsonSerialization['name'] as String,
       table: jsonSerialization['table'] as String,
-      constraints: (jsonSerialization['constraints'] as List)
-          .map(
-            (e) => _i2.FilterConstraint.fromJson((e as Map<String, dynamic>)),
-          )
-          .toList(),
+      constraints: _i3.Protocol().deserialize<List<_i2.FilterConstraint>>(
+        jsonSerialization['constraints'],
+      ),
     );
   }
 
@@ -55,6 +54,7 @@ abstract class Filter implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.Filter',
       'name': name,
       'table': table,
       'constraints': constraints.toJson(valueToJson: (v) => v.toJson()),

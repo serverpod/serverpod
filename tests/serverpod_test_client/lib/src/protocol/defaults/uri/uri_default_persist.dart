@@ -51,6 +51,7 @@ abstract class UriDefaultPersist implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UriDefaultPersist',
       if (id != null) 'id': id,
       if (uriDefaultPersist != null)
         'uriDefaultPersist': uriDefaultPersist?.toJson(),

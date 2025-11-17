@@ -57,6 +57,7 @@ abstract class Greeting
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Greeting',
       'message': message,
       'author': author,
       'timestamp': timestamp.toJson(),
@@ -66,6 +67,7 @@ abstract class Greeting
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Greeting',
       'message': message,
       'author': author,
       'timestamp': timestamp.toJson(),

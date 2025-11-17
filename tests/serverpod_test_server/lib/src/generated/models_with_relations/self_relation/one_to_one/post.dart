@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/self_relation/one_to_one/post.dart'
     as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Post._({
@@ -39,15 +40,11 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       content: jsonSerialization['content'] as String,
       previous: jsonSerialization['previous'] == null
           ? null
-          : _i2.Post.fromJson(
-              (jsonSerialization['previous'] as Map<String, dynamic>),
-            ),
+          : _i3.Protocol().deserialize<_i2.Post>(jsonSerialization['previous']),
       nextId: jsonSerialization['nextId'] as int?,
       next: jsonSerialization['next'] == null
           ? null
-          : _i2.Post.fromJson(
-              (jsonSerialization['next'] as Map<String, dynamic>),
-            ),
+          : _i3.Protocol().deserialize<_i2.Post>(jsonSerialization['next']),
     );
   }
 
@@ -82,6 +79,7 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Post',
       if (id != null) 'id': id,
       'content': content,
       if (previous != null) 'previous': previous?.toJson(),
@@ -93,6 +91,7 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Post',
       if (id != null) 'id': id,
       'content': content,
       if (previous != null) 'previous': previous?.toJsonForProtocol(),

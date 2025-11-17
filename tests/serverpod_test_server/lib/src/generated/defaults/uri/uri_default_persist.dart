@@ -57,6 +57,7 @@ abstract class UriDefaultPersist
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UriDefaultPersist',
       if (id != null) 'id': id,
       if (uriDefaultPersist != null)
         'uriDefaultPersist': uriDefaultPersist?.toJson(),
@@ -66,6 +67,7 @@ abstract class UriDefaultPersist
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'UriDefaultPersist',
       if (id != null) 'id': id,
       if (uriDefaultPersist != null)
         'uriDefaultPersist': uriDefaultPersist?.toJson(),

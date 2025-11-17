@@ -61,6 +61,7 @@ abstract class BoolDefault implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'BoolDefault',
       if (id != null) 'id': id,
       'boolDefaultTrue': boolDefaultTrue,
       'boolDefaultFalse': boolDefaultFalse,

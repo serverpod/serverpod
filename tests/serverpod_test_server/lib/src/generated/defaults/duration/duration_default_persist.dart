@@ -60,6 +60,7 @@ abstract class DurationDefaultPersist
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DurationDefaultPersist',
       if (id != null) 'id': id,
       if (durationDefaultPersist != null)
         'durationDefaultPersist': durationDefaultPersist?.toJson(),
@@ -69,6 +70,7 @@ abstract class DurationDefaultPersist
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'DurationDefaultPersist',
       if (id != null) 'id': id,
       if (durationDefaultPersist != null)
         'durationDefaultPersist': durationDefaultPersist?.toJson(),

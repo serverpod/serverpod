@@ -50,6 +50,7 @@ abstract class ObjectWithByteData implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithByteData',
       if (id != null) 'id': id,
       'byteData': byteData.toJson(),
     };

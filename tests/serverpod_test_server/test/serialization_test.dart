@@ -323,7 +323,10 @@ void main() {
           ],
           'n': {
             'namedSubRecord': {
-              'p': [isA<SimpleData>().having((d) => d.num, 'num', 3), 4.5],
+              'p': [
+                {'__className__': 'SimpleData', 'num': 3},
+                4.5,
+              ],
             },
           },
         }),
@@ -352,9 +355,7 @@ void main() {
             .having((m) => m['foo'], 'foo entry', {
               "p": [
                 1,
-                isA<
-                  SimpleData
-                >(), // will be encoded in the JSON String serialization
+                {'__className__': 'SimpleData', 'num': 2},
               ],
             })
             .having(
@@ -393,9 +394,7 @@ void main() {
             .having((m) => m.last, 'last entry', {
               "p": [
                 1,
-                isA<
-                  SimpleData
-                >(), // will be encoded in the JSON String serialization
+                {'__className__': 'SimpleData', 'num': 2},
               ],
             }),
       );
@@ -429,9 +428,7 @@ void main() {
             .having((m) => m.last, 'last entry', {
               "p": [
                 1,
-                isA<
-                  SimpleData
-                >(), // will be encoded in the JSON String serialization
+                {'__className__': 'SimpleData', 'num': 2},
               ],
             }),
       );
@@ -459,9 +456,7 @@ void main() {
             {
               "p": [
                 1,
-                isA<
-                  SimpleData
-                >(), // will be encoded in the JSON String serialization
+                {'__className__': 'SimpleData', 'num': 2},
               ],
             },
           ],

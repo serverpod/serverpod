@@ -62,6 +62,7 @@ abstract class Channel
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Channel',
       if (id != null) 'id': id,
       'name': name,
       'channel': channel,
@@ -71,6 +72,7 @@ abstract class Channel
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Channel',
       if (id != null) 'id': id,
       'name': name,
       'channel': channel,

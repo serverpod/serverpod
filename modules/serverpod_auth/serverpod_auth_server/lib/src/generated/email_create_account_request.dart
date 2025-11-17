@@ -79,6 +79,7 @@ abstract class EmailCreateAccountRequest
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.EmailCreateAccountRequest',
       if (id != null) 'id': id,
       'userName': userName,
       'email': email,
@@ -90,6 +91,7 @@ abstract class EmailCreateAccountRequest
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth.EmailCreateAccountRequest',
       if (id != null) 'id': id,
       'userName': userName,
       'email': email,

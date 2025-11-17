@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../models_with_list_relations/person.dart' as _i2;
 import '../models_with_list_relations/organization.dart' as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
 
 abstract class City implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   City._({
@@ -35,12 +36,16 @@ abstract class City implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     return City(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      citizens: (jsonSerialization['citizens'] as List?)
-          ?.map((e) => _i2.Person.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      organizations: (jsonSerialization['organizations'] as List?)
-          ?.map((e) => _i3.Organization.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      citizens: jsonSerialization['citizens'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i2.Person>>(
+              jsonSerialization['citizens'],
+            ),
+      organizations: jsonSerialization['organizations'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i3.Organization>>(
+              jsonSerialization['organizations'],
+            ),
     );
   }
 
@@ -72,6 +77,7 @@ abstract class City implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'City',
       if (id != null) 'id': id,
       'name': name,
       if (citizens != null)
@@ -84,6 +90,7 @@ abstract class City implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'City',
       if (id != null) 'id': id,
       'name': name,
       if (citizens != null)

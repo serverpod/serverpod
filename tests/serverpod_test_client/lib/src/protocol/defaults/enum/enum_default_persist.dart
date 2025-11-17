@@ -65,6 +65,7 @@ abstract class EnumDefaultPersist implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'EnumDefaultPersist',
       if (id != null) 'id': id,
       if (byNameEnumDefaultPersist != null)
         'byNameEnumDefaultPersist': byNameEnumDefaultPersist?.toJson(),

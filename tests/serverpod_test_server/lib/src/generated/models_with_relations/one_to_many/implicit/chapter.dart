@@ -56,6 +56,7 @@ abstract class Chapter
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Chapter',
       if (id != null) 'id': id,
       'title': title,
       if (_bookChaptersBookId != null)
@@ -66,6 +67,7 @@ abstract class Chapter
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Chapter',
       if (id != null) 'id': id,
       'title': title,
     };

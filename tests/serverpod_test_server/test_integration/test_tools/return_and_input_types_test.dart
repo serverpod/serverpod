@@ -351,6 +351,22 @@ void main() {
       });
 
       test(
+        'when calling returnRecordWithSerializableObject then should return the record with serialized object',
+        () async {
+          final data = SimpleData(num: 42);
+          var result = await endpoints.testTools
+              .returnRecordWithSerializableObject(
+                sessionBuilder,
+                123,
+                data,
+              );
+          expect(result.$1, 123);
+          expect(result.$2, isA<SimpleData>());
+          expect(result.$2.num, 42);
+        },
+      );
+
+      test(
         'when calling recordEchoStream then should return the records',
         () async {
           final records =

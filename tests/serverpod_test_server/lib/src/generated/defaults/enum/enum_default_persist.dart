@@ -71,6 +71,7 @@ abstract class EnumDefaultPersist
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'EnumDefaultPersist',
       if (id != null) 'id': id,
       if (byNameEnumDefaultPersist != null)
         'byNameEnumDefaultPersist': byNameEnumDefaultPersist?.toJson(),
@@ -82,6 +83,7 @@ abstract class EnumDefaultPersist
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'EnumDefaultPersist',
       if (id != null) 'id': id,
       if (byNameEnumDefaultPersist != null)
         'byNameEnumDefaultPersist': byNameEnumDefaultPersist?.toJson(),

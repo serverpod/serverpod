@@ -56,6 +56,7 @@ abstract class GoogleRefreshToken implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.GoogleRefreshToken',
       if (id != null) 'id': id,
       'userId': userId,
       'refreshToken': refreshToken,

@@ -56,6 +56,7 @@ abstract class ReadWriteTestEntry
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ReadWriteTestEntry',
       if (id != null) 'id': id,
       'number': number,
     };
@@ -64,6 +65,7 @@ abstract class ReadWriteTestEntry
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.ReadWriteTestEntry',
       if (id != null) 'id': id,
       'number': number,
     };

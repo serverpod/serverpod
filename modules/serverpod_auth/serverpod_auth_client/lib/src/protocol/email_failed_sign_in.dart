@@ -64,6 +64,7 @@ abstract class EmailFailedSignIn implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.EmailFailedSignIn',
       if (id != null) 'id': id,
       'email': email,
       'time': time.toJson(),
