@@ -2684,6 +2684,8 @@ class SerializableModelLibraryGenerator {
       if (field.type.isVectorType)
         'dimension': literalNum(field.type.vectorDimension!),
       if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
+      if (field.columnName != field.name)
+        'fieldName': literalString(field.name),
     });
   }
 
@@ -2717,6 +2719,8 @@ class SerializableModelLibraryGenerator {
       ],
       {
         if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
+        if (field.columnName != field.name)
+          'fieldName': literalString(field.name),
       },
     );
   }
