@@ -10,13 +10,13 @@ issue_tracker: https://github.com/serverpod/serverpod/issues
 environment:
   sdk: DART_VERSION
 dependencies:
-  serverpod_client: SERVERPOD_VERSION
   serverpod_auth_client: SERVERPOD_VERSION
+  serverpod_client: SERVERPOD_VERSION
 
 dependency_overrides:
-  serverpod_client:
-    path: ../../../packages/serverpod_client
   serverpod_auth_client:
     path: ../../serverpod_auth/serverpod_auth_client
+  serverpod_client:
+    path: ../../../packages/serverpod_client
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization

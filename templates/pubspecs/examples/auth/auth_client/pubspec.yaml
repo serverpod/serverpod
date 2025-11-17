@@ -7,8 +7,8 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
-  serverpod_client: SERVERPOD_VERSION 
   serverpod_auth_idp_client: SERVERPOD_VERSION
+  serverpod_client: SERVERPOD_VERSION 
 
 dependency_overrides: 
   serverpod_auth_idp_client:

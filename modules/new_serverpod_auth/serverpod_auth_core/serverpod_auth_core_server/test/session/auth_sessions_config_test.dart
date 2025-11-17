@@ -104,5 +104,57 @@ void main() {
         );
       },
     );
+
+    test(
+      'when creating config with valid fallback peppers then config is created successfully.',
+      () {
+        expect(
+          () => AuthSessionsConfig(
+            sessionKeyHashPepper: '1234567890',
+            fallbackSessionKeyHashPeppers: ['old-pepper-1', 'old-pepper-2'],
+          ),
+          returnsNormally,
+        );
+      },
+    );
+
+    test(
+      'when creating config with empty fallback peppers list then config is created successfully.',
+      () {
+        expect(
+          () => AuthSessionsConfig(
+            sessionKeyHashPepper: '1234567890',
+            fallbackSessionKeyHashPeppers: [],
+          ),
+          returnsNormally,
+        );
+      },
+    );
+
+    test(
+      'when creating config with invalid fallback pepper then an error is thrown.',
+      () {
+        expect(
+          () => AuthSessionsConfig(
+            sessionKeyHashPepper: '1234567890',
+            fallbackSessionKeyHashPeppers: ['valid-pepper', 'short'],
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
+
+    test(
+      'when creating config with empty fallback pepper then an error is thrown.',
+      () {
+        expect(
+          () => AuthSessionsConfig(
+            sessionKeyHashPepper: '1234567890',
+            fallbackSessionKeyHashPeppers: [''],
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
   });
 }

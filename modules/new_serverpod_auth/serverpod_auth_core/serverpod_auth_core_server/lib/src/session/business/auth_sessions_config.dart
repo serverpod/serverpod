@@ -14,7 +14,18 @@ class AuthSessionsConfig {
   ///
   /// This influences the stored session hashes, so it must not be changed for a given deployment,
   /// as otherwise all sessions become invalid.
+  ///
+  /// To rotate peppers without invalidating existing sessions, use [fallbackSessionKeyHashPeppers].
   late final String sessionKeyHashPepper;
+
+  /// Fallback peppers for validating session keys created with previous peppers.
+  ///
+  /// When rotating peppers, add the old pepper to this list to allow existing sessions
+  /// to continue working. The system will try [sessionKeyHashPepper] first, then
+  /// each fallback pepper in order until a match is found.
+  ///
+  /// This is optional and defaults to an empty list.
+  final List<String> fallbackSessionKeyHashPeppers;
 
   /// Default absolute expiration time for sessions.
   ///
@@ -41,10 +52,14 @@ class AuthSessionsConfig {
     this.sessionKeySecretLength = 32,
     this.sessionKeyHashSaltLength = 16,
     required this.sessionKeyHashPepper,
+    this.fallbackSessionKeyHashPeppers = const [],
     this.defaultSessionLifetime,
     this.defaultSessionInactivityTimeout,
   }) {
     _validateSessionKeyHashPepper(sessionKeyHashPepper);
+    for (final fallbackPepper in fallbackSessionKeyHashPeppers) {
+      _validateSessionKeyHashPepper(fallbackPepper);
+    }
     _validateSessionLifetime(defaultSessionLifetime);
     _validateSessionInactivityTimeout(defaultSessionInactivityTimeout);
   }
