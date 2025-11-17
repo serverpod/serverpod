@@ -267,10 +267,7 @@ void main() {
     () {
       setUp(() async {
         storedAuthInfo = jwtAuthSuccess.expiring;
-        refreshEndpoint.simulateException = RefreshTokenExpiredException(
-          authUserId: const Uuid().v4obj(),
-          refreshTokenId: const Uuid().v4obj(),
-        );
+        refreshEndpoint.simulateException = RefreshTokenExpiredException();
 
         result = await provider.refreshAuthKey();
       });

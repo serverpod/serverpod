@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/src/jwt/business/refresh_token_exceptions.dart';
 
 import '../../generated/protocol.dart';
 import 'authentication_token_config.dart';
@@ -152,6 +153,27 @@ class JwtUtil {
     final jwt = _verifyJwt(accessToken);
     final payload = (jwt.payload as Map).cast<String, dynamic>();
     return _extractExpirationDate(payload);
+  }
+
+  /// Replaces server-side exceptions by client-side exceptions, hiding details
+  /// that could leak account information.
+  static Future<T> withReplacedServerJwtException<T>(
+    final Future<T> Function() fn,
+  ) async {
+    try {
+      return await fn();
+    } on RefreshTokenServerException catch (e) {
+      switch (e) {
+        case RefreshTokenMalformedServerException():
+          throw RefreshTokenMalformedException();
+        case RefreshTokenNotFoundServerException():
+          throw RefreshTokenNotFoundException();
+        case RefreshTokenExpiredServerException():
+          throw RefreshTokenExpiredException();
+        case RefreshTokenInvalidSecretServerException():
+          throw RefreshTokenInvalidSecretException();
+      }
+    }
   }
 
   DateTime _extractExpirationDate(final Map<String, dynamic> payload) {

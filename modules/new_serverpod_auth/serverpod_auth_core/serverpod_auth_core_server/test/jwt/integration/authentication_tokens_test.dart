@@ -2,6 +2,7 @@ import 'package:clock/clock.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/jwt.dart';
+import 'package:serverpod_auth_core_server/src/jwt/business/refresh_token_exceptions.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
@@ -228,7 +229,7 @@ void main() {
               session,
               refreshToken: authSuccess.refreshToken!,
             ),
-            throwsA(isA<RefreshTokenNotFoundException>()),
+            throwsA(isA<RefreshTokenNotFoundServerException>()),
           );
         },
       );
@@ -282,14 +283,14 @@ void main() {
         });
 
         test(
-          'then RefreshTokenInvalidSecretException is thrown',
+          'then RefreshTokenInvalidSecretServerException is thrown',
           () async {
             await expectLater(
               () => authenticationTokens.rotateRefreshToken(
                 session,
                 refreshToken: invalidRefreshToken,
               ),
-              throwsA(isA<RefreshTokenInvalidSecretException>()),
+              throwsA(isA<RefreshTokenInvalidSecretServerException>()),
             );
           },
         );
@@ -420,7 +421,7 @@ void main() {
             session,
             refreshToken: initialAuthSuccess.refreshToken!,
           ),
-          throwsA(isA<RefreshTokenInvalidSecretException>()),
+          throwsA(isA<RefreshTokenInvalidSecretServerException>()),
         );
 
         await expectLater(
@@ -428,7 +429,7 @@ void main() {
             session,
             refreshToken: refreshedTokenPair.refreshToken,
           ),
-          throwsA(isA<RefreshTokenNotFoundException>()),
+          throwsA(isA<RefreshTokenNotFoundServerException>()),
         );
       },
     );
@@ -900,14 +901,14 @@ void main() {
       });
 
       test(
-        'then RefreshTokenExpiredException is thrown',
+        'then RefreshTokenExpiredServerException is thrown',
         () async {
           await expectLater(
             () => authenticationTokens.rotateRefreshToken(
               session,
               refreshToken: authSuccess.refreshToken!,
             ),
-            throwsA(isA<RefreshTokenExpiredException>()),
+            throwsA(isA<RefreshTokenExpiredServerException>()),
           );
         },
       );

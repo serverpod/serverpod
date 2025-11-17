@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/src/jwt/business/refresh_token_exceptions.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../generated/protocol.dart';
@@ -171,7 +172,7 @@ final class AuthenticationTokensAdmin {
         level: LogLevel.debug,
       );
 
-      throw RefreshTokenMalformedException();
+      throw RefreshTokenMalformedServerException();
     }
 
     var refreshTokenRow = await RefreshToken.db.findById(
@@ -185,7 +186,7 @@ final class AuthenticationTokensAdmin {
           Uint8List.sublistView(refreshTokenRow.fixedSecret),
           refreshTokenData.fixedSecret,
         )) {
-      throw RefreshTokenNotFoundException();
+      throw RefreshTokenNotFoundServerException();
     }
 
     if (refreshTokenRow.isExpired(_refreshTokenLifetime)) {
@@ -195,7 +196,7 @@ final class AuthenticationTokensAdmin {
         transaction: transaction,
       );
 
-      throw RefreshTokenExpiredException(
+      throw RefreshTokenExpiredServerException(
         refreshTokenId: refreshTokenRow.id!,
         authUserId: refreshTokenRow.authUserId,
       );
@@ -212,7 +213,7 @@ final class AuthenticationTokensAdmin {
         transaction: transaction,
       );
 
-      throw RefreshTokenInvalidSecretException(
+      throw RefreshTokenInvalidSecretServerException(
         refreshTokenId: refreshTokenRow.id!,
         authUserId: refreshTokenRow.authUserId,
       );

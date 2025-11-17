@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:clock/clock.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/src/jwt/business/refresh_token_exceptions.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../auth_user/auth_user.dart';
@@ -207,22 +208,24 @@ final class AuthenticationTokens {
     required final String refreshToken,
     final Transaction? transaction,
   }) async {
-    final refreshesTokenPair = await rotateRefreshToken(
-      session,
-      refreshToken: refreshToken,
-      transaction: transaction,
-    );
+    return JwtUtil.withReplacedServerJwtException(() async {
+      final refreshesTokenPair = await rotateRefreshToken(
+        session,
+        refreshToken: refreshToken,
+        transaction: transaction,
+      );
 
-    final jwtData = jwtUtil.verifyJwt(refreshesTokenPair.accessToken);
+      final jwtData = jwtUtil.verifyJwt(refreshesTokenPair.accessToken);
 
-    return AuthSuccess(
-      authStrategy: AuthStrategy.jwt.name,
-      token: refreshesTokenPair.accessToken,
-      tokenExpiresAt: jwtData.tokenExpiresAt,
-      refreshToken: refreshesTokenPair.refreshToken,
-      authUserId: jwtData.authUserId,
-      scopeNames: jwtData.scopes.names,
-    );
+      return AuthSuccess(
+        authStrategy: AuthStrategy.jwt.name,
+        token: refreshesTokenPair.accessToken,
+        tokenExpiresAt: jwtData.tokenExpiresAt,
+        refreshToken: refreshesTokenPair.refreshToken,
+        authUserId: jwtData.authUserId,
+        scopeNames: jwtData.scopes.names,
+      );
+    });
   }
 
   /// {@macro authentication_tokens_admin.rotate_refresh_token}
@@ -242,13 +245,13 @@ final class AuthenticationTokens {
         refreshToken: refreshToken,
         transaction: transaction,
       );
-    } on RefreshTokenExpiredException catch (e) {
+    } on RefreshTokenExpiredServerException catch (e) {
       await session.messages.authenticationRevoked(
         e.authUserId.uuid,
         RevokedAuthenticationAuthId(authId: e.refreshTokenId.toString()),
       );
       rethrow;
-    } on RefreshTokenInvalidSecretException catch (e) {
+    } on RefreshTokenInvalidSecretServerException catch (e) {
       await session.messages.authenticationRevoked(
         e.authUserId.uuid,
         RevokedAuthenticationAuthId(authId: e.refreshTokenId.toString()),

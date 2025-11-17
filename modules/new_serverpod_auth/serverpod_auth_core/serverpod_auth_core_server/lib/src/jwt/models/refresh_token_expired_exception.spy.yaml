@@ -1,5 +1,1 @@
 exception: RefreshTokenExpiredException
-
-fields:
-  authUserId: UuidValue
-  refreshTokenId: UuidValue

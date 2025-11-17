@@ -5,6 +5,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/jwt.dart';
 import 'package:serverpod_auth_core_server/src/generated/jwt/models/refresh_token.dart';
+import 'package:serverpod_auth_core_server/src/jwt/business/refresh_token_exceptions.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
@@ -419,7 +420,7 @@ void main() {
     );
 
     test(
-      'when calling `rotateRefreshToken` with the expired token, then it throws RefreshTokenExpiredException with correct refreshTokenId.',
+      'when calling `rotateRefreshToken` with the expired token, then it throws RefreshTokenExpiredServerException with correct refreshTokenId.',
       () async {
         await expectLater(
           () => authenticationTokensAdmin.rotateRefreshToken(
@@ -427,7 +428,7 @@ void main() {
             refreshToken: authSuccess.refreshToken!,
           ),
           throwsA(
-            isA<RefreshTokenExpiredException>().having(
+            isA<RefreshTokenExpiredServerException>().having(
               (final e) => e.refreshTokenId,
               'refreshTokenId',
               tokenId,
@@ -775,7 +776,7 @@ void main() {
               session,
               refreshToken: authSuccess.refreshToken!,
             ),
-            throwsA(isA<RefreshTokenInvalidSecretException>()),
+            throwsA(isA<RefreshTokenInvalidSecretServerException>()),
           );
         },
       );
@@ -793,7 +794,7 @@ void main() {
               session,
               refreshToken: tokenWithUpdatedFixedSecret,
             ),
-            throwsA(isA<RefreshTokenNotFoundException>()),
+            throwsA(isA<RefreshTokenNotFoundServerException>()),
           );
         },
       );
@@ -811,7 +812,7 @@ void main() {
               session,
               refreshToken: tokenWithUpdatedFixedSecret,
             ),
-            throwsA(isA<RefreshTokenInvalidSecretException>()),
+            throwsA(isA<RefreshTokenInvalidSecretServerException>()),
           );
         },
       );
