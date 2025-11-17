@@ -61,6 +61,17 @@ class AuthTestEndpoint extends Endpoint {
     );
   }
 
+  /// Destroys a specific refresh token by ID.
+  Future<bool> destroySpecificRefreshToken(
+    final Session session,
+    final UuidValue refreshTokenId,
+  ) async {
+    return _authenticationTokens.destroyRefreshToken(
+      session,
+      refreshTokenId: refreshTokenId,
+    );
+  }
+
   /// Checks if the session is authenticated for the test user.
   Future<bool> checkSession(
     final Session session,
