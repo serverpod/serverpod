@@ -162,8 +162,9 @@ class ModifiedColumnNameTable extends _i1.Table<int?> {
       this,
     );
     modifiedColumn = _i1.ColumnString(
-      'modifiedColumn',
+      'modified_column',
       this,
+      fieldName: 'modifiedColumn',
     );
   }
 

@@ -2,4 +2,5 @@ class: ModifiedColumnName
 table: modified_column_name
 fields:
   originalColumn: String
-  modifiedColumn: String
+  # Modified to have explicit column name
+  modifiedColumn: String, column=modified_column
