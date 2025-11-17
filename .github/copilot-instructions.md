@@ -520,6 +520,36 @@ test(
 );
 ```
 
+**CRITICAL**: When using `group()` with `test()`, ensure each statement ("Given", "When", "Then") appears **only once** in the combined description:
+
+```dart
+// CORRECT: "Given" in group, "when/then" in test
+group(
+  'Given a session with slow method call when logging is enabled',
+  () {
+    test(
+      'when session is logged then time field should be set to start time.',
+      () {
+        // Test implementation
+      }
+    );
+  }
+);
+
+// INCORRECT: "Given" repeated in both group and test
+group(
+  'Given a session with slow method call',
+  () {
+    test(
+      'Given a slow method when session is logged then time field is correct.',  // ❌ Duplicate "Given"
+      () {
+        // Test implementation
+      }
+    );
+  }
+);
+```
+
 ### Test Organization
 - Place passing/success test cases at the top of test files
 - Group related test cases using `group()` where appropriate
