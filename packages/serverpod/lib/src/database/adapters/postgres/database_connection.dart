@@ -149,7 +149,7 @@ class DatabaseConnection {
           query,
           transaction: transaction,
         ).then((_mergeResultsWithNonPersistedFields(rows))))
-        .map(_poolManager.serializationManager.deserialize<T>)
+        .map(_poolManager.serializationManager.deserializeFromDatabase<T>)
         .toList();
   }
 
@@ -215,7 +215,7 @@ class DatabaseConnection {
           query,
           transaction: transaction,
         ).then((_mergeResultsWithNonPersistedFields(rows))))
-        .map(_poolManager.serializationManager.deserialize<T>)
+        .map(_poolManager.serializationManager.deserializeFromDatabase<T>)
         .toList();
   }
 
@@ -284,7 +284,9 @@ class DatabaseConnection {
       );
     }
 
-    return _poolManager.serializationManager.deserialize<T>(result.first);
+    return _poolManager.serializationManager.deserializeFromDatabase<T>(
+      result.first,
+    );
   }
 
   /// Updates all rows matching the WHERE expression with the specified column values.
@@ -369,7 +371,10 @@ class DatabaseConnection {
     );
 
     return result
-        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+        .map(
+          (row) =>
+              _poolManager.serializationManager.deserializeFromDatabase<T>(row),
+        )
         .toList();
   }
 
@@ -673,7 +678,10 @@ class DatabaseConnection {
             include: include,
           ),
         )
-        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+        .map(
+          (row) =>
+              _poolManager.serializationManager.deserializeFromDatabase<T>(row),
+        )
         .toList();
   }
 
