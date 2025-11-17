@@ -855,7 +855,7 @@ class DatabaseConnection {
     Iterable<Column> column,
   ) {
     return rows
-        .map((row) => row.toJson() as Map<String, dynamic>)
+        .map((row) => row.toJsonForDatabase() as Map<String, dynamic>)
         .map((row) {
           var values = column
               .map((column) {
