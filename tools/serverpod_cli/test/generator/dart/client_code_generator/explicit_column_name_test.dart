@@ -115,26 +115,29 @@ void main() {
       });
 
       group('then toJson method should return ', () {
-        test('the column mapped to the serialized field name variable for a '
-            'field with column set', () {
-          var toJsonConstructor =
-              CompilationUnitHelpers.tryFindMethodDeclaration(
-                maybeClassNamedExample!,
-                name: 'toJson',
-              );
+        test(
+          'the field name mapped to the field name variable for a '
+          'field with column set',
+          () {
+            var toJsonConstructor =
+                CompilationUnitHelpers.tryFindMethodDeclaration(
+                  maybeClassNamedExample!,
+                  name: 'toJson',
+                );
 
-          var toJsonCode = toJsonConstructor!.toSource();
+            var toJsonCode = toJsonConstructor!.toSource();
 
-          expect(
-            toJsonCode.contains(
-              "'$columnName' : $columnFieldName",
-            ),
-            isTrue,
-            reason:
-                'The toJson method should map the column name to '
-                'the serialized field name variable.',
-          );
-        });
+            expect(
+              toJsonCode,
+              contains(
+                "'$columnFieldName' : $columnFieldName",
+              ),
+              reason:
+                  'The toJson method should map the field name to its '
+                  'serialized variable if the column is set.',
+            );
+          },
+        );
 
         test('the field name mapped to its serialized variable for a field '
             'without column set', () {
