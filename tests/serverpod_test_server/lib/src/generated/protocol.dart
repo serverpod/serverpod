@@ -3521,7 +3521,7 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'String',
         ),
         _i2.ColumnDefinition(
-          name: 'modifiedColumn',
+          name: 'modified_column',
           columnType: _i2.ColumnType.text,
           isNullable: false,
           dartType: 'String',

@@ -1,0 +1,75 @@
+{
+  "actions": [
+    {
+      "type": "deleteTable",
+      "deleteTable": "modified_column_name"
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "modified_column_name",
+        "dartName": "ModifiedColumnName",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('modified_column_name_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "originalColumn",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "modified_column",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "modified_column_name_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "type": "columnDropped",
+      "message": "Column \"modifiedColumn\" of table \"modified_column_name\" will be dropped.",
+      "table": "modified_column_name",
+      "columns": [
+        "modifiedColumn"
+      ],
+      "destrucive": true
+    },
+    {
+      "type": "tableDropped",
+      "message": "One or more columns are added to table \"modified_column_name\" which cannot be added in a table migration. The complete table will be deleted and recreated.",
+      "table": "modified_column_name",
+      "columns": [
+        "modified_column"
+      ],
+      "destrucive": true
+    }
+  ],
+  "migrationApiVersion": 1
+}
