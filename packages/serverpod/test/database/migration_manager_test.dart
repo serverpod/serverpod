@@ -29,8 +29,7 @@ void main() {
         const nonExistentVersion = '20251110140000000';
 
         expect(
-          () =>
-              !migrationManager.availableVersions.contains(nonExistentVersion)
+          () => !migrationManager.availableVersions.contains(nonExistentVersion)
               ? throw Exception(
                   'DB has migration version $nonExistentVersion registered but it is not found in the project files.',
                 )
