@@ -40,22 +40,25 @@ void main() async {
           expect(logs, hasLength(1));
 
           var sessionLogEntry = logs.first.sessionLogEntry;
-          
+
           // The time field should be the start time (not the end time)
           // If duration is set, then the session has completed
           expect(sessionLogEntry.duration, isNotNull);
-          
+
           // The time field should represent the start time
           // Since the method took ~500ms, the difference between time and touched
           // should be approximately equal to the duration
-          var timeDifference = sessionLogEntry.touched.difference(sessionLogEntry.time);
+          var timeDifference = sessionLogEntry.touched.difference(
+            sessionLogEntry.time,
+          );
           var durationInMillis = (sessionLogEntry.duration! * 1000).round();
-          
+
           // Allow for some variance (within 100ms)
           expect(
             timeDifference.inMilliseconds,
             closeTo(durationInMillis, 100),
-            reason: 'time field should be the start time, not the end time. '
+            reason:
+                'time field should be the start time, not the end time. '
                 'Expected difference: $durationInMillis ms, '
                 'Actual difference: ${timeDifference.inMilliseconds} ms',
           );
