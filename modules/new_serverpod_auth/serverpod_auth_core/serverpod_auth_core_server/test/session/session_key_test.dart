@@ -12,14 +12,14 @@ void main() {
     (final sessionBuilder, final endpoints) {
       late Session session;
       final secret = Uint8List.fromList([0, 0, 250]);
-      final authSessionId = const Uuid().v4obj();
+      final serverSideSessionId = const Uuid().v4obj();
       late String sessionKey;
 
       setUp(() {
         session = sessionBuilder.build();
 
         sessionKey = buildSessionKey(
-          authSessionId: authSessionId,
+          serverSideSessionId: serverSideSessionId,
           secret: secret,
         );
       });
@@ -44,7 +44,7 @@ void main() {
         () {
           final keyParts = tryParseSessionKey(session, sessionKey);
 
-          expect(keyParts?.authSessionId, authSessionId);
+          expect(keyParts?.serverSideSessionId, serverSideSessionId);
           expect(keyParts?.secret, secret);
         },
       );

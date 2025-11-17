@@ -5,14 +5,14 @@ import 'package:crypto/crypto.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import '../business/auth_sessions_config.dart';
+import '../business/server_side_sessions_config.dart';
 
 @internal
-final class AuthSessionKeyHash {
+final class ServerSideSessionKeyHash {
   final int _sessionKeyHashSaltLength;
   final String _sessionKeyHashPepper;
   final List<String> _fallbackSessionKeyHashPeppers;
-  AuthSessionKeyHash({
+  ServerSideSessionKeyHash({
     required final int sessionKeyHashSaltLength,
     required final String sessionKeyHashPepper,
     required final List<String> fallbackSessionKeyHashPeppers,
@@ -82,8 +82,10 @@ final class AuthSessionKeyHash {
     return false;
   }
 
-  factory AuthSessionKeyHash.fromConfig(final AuthSessionsConfig config) {
-    return AuthSessionKeyHash(
+  factory ServerSideSessionKeyHash.fromConfig(
+    final ServerSideSessionsConfig config,
+  ) {
+    return ServerSideSessionKeyHash(
       sessionKeyHashSaltLength: config.sessionKeyHashSaltLength,
       sessionKeyHashPepper: config.sessionKeyHashPepper,
       fallbackSessionKeyHashPeppers: config.fallbackSessionKeyHashPeppers,

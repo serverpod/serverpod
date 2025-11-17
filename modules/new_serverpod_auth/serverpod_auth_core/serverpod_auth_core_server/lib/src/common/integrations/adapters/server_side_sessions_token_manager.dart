@@ -2,27 +2,30 @@ import 'package:serverpod/serverpod.dart';
 
 import '../../../../auth_user.dart';
 import '../../../generated/protocol.dart';
-import '../../../session/business/auth_sessions.dart';
-import '../../../session/business/auth_sessions_config.dart';
+import '../../../session/business/server_side_sessions.dart';
+import '../../../session/business/server_side_sessions_config.dart';
 import '../token_manager.dart';
 
-/// Token manager adapter for [AuthSessions].
+/// Token manager adapter for [ServerSideSessions].
 ///
-/// This class is used to bridge the gap between the [AuthSessions] and the
-/// [TokenManager] interface. It delegates all operations to the [AuthSessions]
+/// This class is used to bridge the gap between the [ServerSideSessions] and the
+/// [TokenManager] interface. It delegates all operations to the [ServerSideSessions]
 /// instance.
-class AuthSessionsTokenManager implements TokenManager {
+class ServerSideSessionsTokenManager implements TokenManager {
   /// The name of the token issuer.
   static String get tokenIssuerName => AuthStrategy.session.name;
 
-  /// The [AuthSessions] instance.
-  final AuthSessions authSessions;
+  /// The [ServerSideSessions] instance.
+  final ServerSideSessions serverSideSessions;
 
-  /// Creates a new [AuthSessionsTokenManager] instance.
-  AuthSessionsTokenManager({
-    required final AuthSessionsConfig config,
+  /// Creates a new [ServerSideSessionsTokenManager] instance.
+  ServerSideSessionsTokenManager({
+    required final ServerSideSessionsConfig config,
     final AuthUsers authUsers = const AuthUsers(),
-  }) : authSessions = AuthSessions(config: config, authUsers: authUsers);
+  }) : serverSideSessions = ServerSideSessions(
+         config: config,
+         authUsers: authUsers,
+       );
 
   @override
   Future<AuthSuccess> issueToken(
@@ -32,7 +35,7 @@ class AuthSessionsTokenManager implements TokenManager {
     final Set<Scope>? scopes,
     final Transaction? transaction,
   }) {
-    return authSessions.createSession(
+    return serverSideSessions.createSession(
       session,
       authUserId: authUserId,
       method: method,
@@ -53,7 +56,7 @@ class AuthSessionsTokenManager implements TokenManager {
       return [];
     }
 
-    return (await authSessions.admin.findSessions(
+    return (await serverSideSessions.admin.findSessions(
           session,
           authUserId: authUserId,
           method: method,
@@ -81,7 +84,7 @@ class AuthSessionsTokenManager implements TokenManager {
   }) async {
     if (tokenIssuer != null && tokenIssuer != tokenIssuerName) return;
 
-    final deletedSessions = await authSessions.admin.deleteSessions(
+    final deletedSessions = await serverSideSessions.admin.deleteSessions(
       session,
       transaction: transaction,
       authUserId: authUserId,
@@ -105,18 +108,18 @@ class AuthSessionsTokenManager implements TokenManager {
   }) async {
     if (tokenIssuer != null && tokenIssuer != tokenIssuerName) return;
 
-    final UuidValue authSessionId;
+    final UuidValue serverSideSessionId;
     try {
-      authSessionId = UuidValue.withValidation(tokenId);
+      serverSideSessionId = UuidValue.withValidation(tokenId);
     } catch (e) {
       // Silence if the tokenId is not a valid UUID which can happen when
       // interacting with multiple token managers.
       return;
     }
 
-    final deletedSessions = await authSessions.admin.deleteSessions(
+    final deletedSessions = await serverSideSessions.admin.deleteSessions(
       session,
-      authSessionId: authSessionId,
+      serverSideSessionId: serverSideSessionId,
       transaction: transaction,
     );
 
@@ -141,6 +144,6 @@ class AuthSessionsTokenManager implements TokenManager {
     final Session session,
     final String token,
   ) async {
-    return authSessions.authenticationHandler(session, token);
+    return serverSideSessions.authenticationHandler(session, token);
   }
 }

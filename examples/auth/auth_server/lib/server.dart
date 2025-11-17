@@ -21,16 +21,18 @@ void run(List<String> args) async {
   );
 
   // Configure our token managers.
-  final authSessionsConfig = AuthSessionsConfig(
-    sessionKeyHashPepper: pod.getPassword('authSessionsSessionKeyHashPepper')!,
+  final serverSideSessionsConfig = ServerSideSessionsConfig(
+    sessionKeyHashPepper: pod.getPassword(
+      'serverSideSessionsSessionKeyHashPepper',
+    )!,
   );
 
-  final authenticationTokenConfig = AuthenticationTokenConfig(
+  final jwtTokenConfig = JwtConfig(
     refreshTokenHashPepper: pod.getPassword(
-      'authenticationTokenRefreshTokenHashPepper',
+      'jwtRefreshTokenHashPepper',
     )!,
-    algorithm: AuthenticationTokenAlgorithm.hmacSha512(
-      SecretKey(pod.getPassword('authenticationTokenPrivateKey')!),
+    algorithm: JwtAlgorithm.hmacSha512(
+      SecretKey(pod.getPassword('jwtPrivateKey')!),
     ),
   );
 
@@ -88,7 +90,9 @@ void run(List<String> args) async {
   );
 
   final authServices = AuthServices.set(
-    primaryTokenManager: AuthSessionsTokenManagerFactory(authSessionsConfig),
+    primaryTokenManager: ServerSideSessionsTokenManagerFactory(
+      serverSideSessionsConfig,
+    ),
     identityProviders: [
       GoogleIdentityProviderFactory(googleIDPConfig),
       AppleIdentityProviderFactory(appleIDPConfig),
@@ -96,8 +100,8 @@ void run(List<String> args) async {
       PasskeyIdentityProviderFactory(passkeyIDPConfig),
     ],
     additionalTokenManagers: [
-      AuthenticationTokensTokenManagerFactory(
-        authenticationTokenConfig,
+      JwtTokenManagerFactory(
+        jwtTokenConfig,
       ),
     ],
   );

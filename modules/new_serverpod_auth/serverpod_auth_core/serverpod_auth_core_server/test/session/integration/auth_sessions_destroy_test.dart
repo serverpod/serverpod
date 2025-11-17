@@ -8,8 +8,8 @@ import '../../serverpod_test_tools.dart';
 import '../../test_tags.dart';
 
 void main() {
-  final authSessions = AuthSessions(
-    config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+  final serverSideSessions = ServerSideSessions(
+    config: ServerSideSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
   withServerpod(
@@ -24,9 +24,9 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        authUserId = (await authSessions.authUsers.create(session)).id;
+        authUserId = (await serverSideSessions.authUsers.create(session)).id;
 
-        sessionKey = (await authSessions.createSession(
+        sessionKey = (await serverSideSessions.createSession(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -35,18 +35,21 @@ void main() {
       });
 
       tearDown(() async {
-        await AuthSession.db.deleteWhere(
+        await ServerSideSession.db.deleteWhere(
           session,
           where: (final _) => Constant.bool(true),
         );
       });
 
       test(
-        'when calling `destroySession` with a valid `authSessionId`, then it returns true.',
+        'when calling `destroySession` with a valid `serverSideSessionId`, then it returns true.',
         () async {
-          final deleted = await authSessions.destroySession(
+          final deleted = await serverSideSessions.destroySession(
             session,
-            authSessionId: _extractAuthSessionId(session, sessionKey),
+            serverSideSessionId: _extractServerSideSessionId(
+              session,
+              sessionKey,
+            ),
           );
 
           expect(deleted, isTrue);
@@ -54,11 +57,11 @@ void main() {
       );
 
       test(
-        'when calling `destroySession` with an invalid `authSessionId`, then it returns false.',
+        'when calling `destroySession` with an invalid `serverSideSessionId`, then it returns false.',
         () async {
-          final deleted = await authSessions.destroySession(
+          final deleted = await serverSideSessions.destroySession(
             session,
-            authSessionId: const Uuid().v4obj(),
+            serverSideSessionId: const Uuid().v4obj(),
           );
 
           expect(deleted, isFalse);
@@ -70,22 +73,22 @@ void main() {
         () async {
           final newAuthSuccesses = await List.generate(
             3,
-            (final _) async => authSessions.createSession(
+            (final _) async => serverSideSessions.createSession(
               session,
               authUserId: authUserId,
               method: 'test',
             ),
           ).wait;
 
-          final deletedIds = await authSessions.destroyAllSessions(
+          final deletedIds = await serverSideSessions.destroyAllSessions(
             session,
             authUserId: authUserId,
           );
 
           expect(deletedIds.toSet(), {
-            _extractAuthSessionId(session, sessionKey),
+            _extractServerSideSessionId(session, sessionKey),
             for (final authSuccess in newAuthSuccesses)
-              _extractAuthSessionId(session, authSuccess.token),
+              _extractServerSideSessionId(session, authSuccess.token),
           });
         },
       );
@@ -93,7 +96,7 @@ void main() {
       test(
         'when destroying the auth session, then a message for it is broadcast.',
         () async {
-          final authInfoABeforeRevocation = await authSessions
+          final authInfoABeforeRevocation = await serverSideSessions
               .authenticationHandler(
                 session,
                 sessionKey,
@@ -110,9 +113,9 @@ void main() {
             revocationMessages.add,
           );
 
-          await authSessions.destroySession(
+          await serverSideSessions.destroySession(
             session,
-            authSessionId: authInfoABeforeRevocation.authSessionId,
+            serverSideSessionId: authInfoABeforeRevocation.serverSideSessionId,
           );
 
           session.messages.removeListener(
@@ -144,7 +147,7 @@ void main() {
             revocationMessages.add,
           );
 
-          await authSessions.destroyAllSessions(
+          await serverSideSessions.destroyAllSessions(
             session,
             authUserId: authUserId,
           );
@@ -171,35 +174,35 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        authUserId = (await authSessions.authUsers.create(session)).id;
+        authUserId = (await serverSideSessions.authUsers.create(session)).id;
 
-        destroyedSessionKey = (await authSessions.createSession(
+        destroyedSessionKey = (await serverSideSessions.createSession(
           session,
           authUserId: authUserId,
           scopes: {},
           method: 'test',
         )).token;
-        retainedSessionKey = (await authSessions.createSession(
+        retainedSessionKey = (await serverSideSessions.createSession(
           session,
           authUserId: authUserId,
           scopes: {},
           method: 'test',
         )).token;
 
-        final sessionToDestroy = _extractAuthSessionId(
+        final sessionToDestroy = _extractServerSideSessionId(
           session,
           destroyedSessionKey,
         );
-        await authSessions.destroySession(
+        await serverSideSessions.destroySession(
           session,
-          authSessionId: sessionToDestroy,
+          serverSideSessionId: sessionToDestroy,
         );
       });
 
       test(
         'when calling `authenticationHandler` with the destroyed session key, then it returns `null`.',
         () async {
-          final authInfo = await authSessions.authenticationHandler(
+          final authInfo = await serverSideSessions.authenticationHandler(
             session,
             destroyedSessionKey,
           );
@@ -214,7 +217,7 @@ void main() {
       test(
         'when calling `authenticationHandler` with the retained session key, then it returns the auth info.',
         () async {
-          final authInfo = await authSessions.authenticationHandler(
+          final authInfo = await serverSideSessions.authenticationHandler(
             session,
             retainedSessionKey,
           );
@@ -239,22 +242,22 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        authUserId = (await authSessions.authUsers.create(session)).id;
+        authUserId = (await serverSideSessions.authUsers.create(session)).id;
 
-        sessionKey1 = (await authSessions.createSession(
+        sessionKey1 = (await serverSideSessions.createSession(
           session,
           authUserId: authUserId,
           scopes: {},
           method: 'test',
         )).token;
-        sessionKey2 = (await authSessions.createSession(
+        sessionKey2 = (await serverSideSessions.createSession(
           session,
           authUserId: authUserId,
           scopes: {},
           method: 'test',
         )).token;
 
-        await authSessions.destroyAllSessions(
+        await serverSideSessions.destroyAllSessions(
           session,
           authUserId: authUserId,
         );
@@ -263,7 +266,7 @@ void main() {
       test(
         'when calling the `authenticationHandler` with the first session key, then it returns `null`.',
         () async {
-          final authInfo = await authSessions.authenticationHandler(
+          final authInfo = await serverSideSessions.authenticationHandler(
             session,
             sessionKey1,
           );
@@ -278,7 +281,7 @@ void main() {
       test(
         'when calling the `authenticationHandler` with the  second session key, then it returns `null`.',
         () async {
-          final authInfo = await authSessions.authenticationHandler(
+          final authInfo = await serverSideSessions.authenticationHandler(
             session,
             sessionKey2,
           );
@@ -293,9 +296,9 @@ void main() {
   );
 }
 
-UuidValue _extractAuthSessionId(
+UuidValue _extractServerSideSessionId(
   final Session session,
   final String sessionKey,
 ) {
-  return tryParseSessionKey(session, sessionKey)!.authSessionId;
+  return tryParseSessionKey(session, sessionKey)!.serverSideSessionId;
 }

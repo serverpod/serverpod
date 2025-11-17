@@ -3,11 +3,11 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given empty refresh token hash pepper when creating an AuthenticationTokenConfig then an error is thrown.',
+    'Given empty refresh token hash pepper when creating a JwtConfig then an error is thrown.',
     () {
       expect(
-        () => AuthenticationTokenConfig(
-          algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+        () => JwtConfig(
+          algorithm: JwtAlgorithm.hmacSha512(
             SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: '',
@@ -18,11 +18,11 @@ void main() {
   );
 
   test(
-    'Given a refresh token hash pepper that is less than 10 characters when creating an AuthenticationTokenConfig then an error is thrown.',
+    'Given a refresh token hash pepper that is less than 10 characters when creating a JwtConfig then an error is thrown.',
     () {
       expect(
-        () => AuthenticationTokenConfig(
-          algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+        () => JwtConfig(
+          algorithm: JwtAlgorithm.hmacSha512(
             SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: '123456789',
@@ -33,11 +33,11 @@ void main() {
   );
 
   test(
-    'Given a valid refresh token hash pepper when creating an AuthenticationTokenConfig then the AuthenticationTokenConfig is created successfully.',
+    'Given a valid refresh token hash pepper when creating a JwtConfig then the JwtConfig is created successfully.',
     () {
       expect(
-        () => AuthenticationTokenConfig(
-          algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+        () => JwtConfig(
+          algorithm: JwtAlgorithm.hmacSha512(
             SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: '1234567890',

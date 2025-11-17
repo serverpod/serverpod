@@ -2,26 +2,26 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:clock/clock.dart';
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../auth_user/auth_user.dart';
 import '../../generated/protocol.dart';
 import 'authentication_info_from_jwt.dart';
-import 'authentication_token_config.dart';
-import 'authentication_tokens_admin.dart';
+import 'jwt_admin.dart';
+import 'jwt_config.dart';
 import 'jwt_util.dart';
 import 'refresh_token_secret_hash.dart';
 import 'refresh_token_string.dart';
 
 /// Business logic for handling JWT-based access and refresh tokens.
-final class AuthenticationTokens {
+final class Jwt {
   /// The current JWT authentication module configuration.
-  final AuthenticationTokenConfig config;
+  final JwtConfig config;
 
   /// Admin-related functions for managing authentication tokens.
-  final AuthenticationTokensAdmin admin;
+  final JwtAdmin admin;
 
   /// The JWT utility.
   final JwtUtil jwtUtil;
@@ -32,11 +32,11 @@ final class AuthenticationTokens {
   /// Management functions for auth users.
   final AuthUsers authUsers;
 
-  /// Creates a new instance of [AuthenticationTokens].
-  AuthenticationTokens({
+  /// Creates a new instance of [Jwt].
+  Jwt({
     required this.config,
     this.authUsers = const AuthUsers(),
-  }) : admin = AuthenticationTokensAdmin(
+  }) : admin = JwtAdmin(
          refreshTokenLifetime: config.refreshTokenLifetime,
        ),
        jwtUtil = JwtUtil(
@@ -65,9 +65,9 @@ final class AuthenticationTokens {
       final tokenData = jwtUtil.verifyJwt(jwtAccessToken);
 
       return AuthenticationInfoFromJwt.fromJwtVerificationResult(tokenData);
-    } on JWTUndefinedException catch (_) {
+    } on dart_jsonwebtoken.JWTUndefinedException catch (_) {
       return null;
-    } on JWTException catch (e, stackTrace) {
+    } on dart_jsonwebtoken.JWTException catch (e, stackTrace) {
       // All "known" JWT exceptions, e.g. expired, invalid signature, etc.
       session.log(
         'Invalid JWT access token',
@@ -129,7 +129,7 @@ final class AuthenticationTokens {
     final mergedExtraClaims = config.extraClaimsProvider != null
         ? await config.extraClaimsProvider!(
             session,
-            AuthenticationContext(
+            JwtContext(
               authUserId: authUserId,
               method: method,
               scopes: scopes,
@@ -350,13 +350,13 @@ final class AuthenticationTokens {
     return true;
   }
 
-  /// List all authentication tokens belonging to the given [authUserId].
-  Future<List<AuthenticationTokenInfo>> listAuthenticationTokens(
+  /// List all JWT tokens belonging to the given [authUserId].
+  Future<List<JwtTokenInfo>> listJwtTokens(
     final Session session, {
     required final UuidValue authUserId,
     final Transaction? transaction,
   }) async {
-    return admin.listAuthenticationTokens(
+    return admin.listJwtTokens(
       session,
       authUserId: authUserId,
       transaction: transaction,

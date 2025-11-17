@@ -43,8 +43,8 @@ final class EmailIDPTestFixture {
     tokenManager ??= AuthServices(
       authUsers: authUsers,
       userProfiles: userProfiles,
-      primaryTokenManager: AuthSessionsTokenManagerFactory(
-        AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+      primaryTokenManager: ServerSideSessionsTokenManagerFactory(
+        ServerSideSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
       ),
       identityProviders: [],
     ).tokenManager;

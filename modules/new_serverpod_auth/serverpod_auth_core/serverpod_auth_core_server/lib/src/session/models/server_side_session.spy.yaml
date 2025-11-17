@@ -1,4 +1,4 @@
-class: AuthSession
+class: ServerSideSession
 serverOnly: true
 table: serverpod_auth_core_session
 fields:

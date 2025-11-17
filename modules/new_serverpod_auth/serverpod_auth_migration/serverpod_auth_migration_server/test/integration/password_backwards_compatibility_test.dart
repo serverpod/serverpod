@@ -12,9 +12,12 @@ import 'package:test/test.dart';
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManagerFactory = new_auth_core.AuthSessionsTokenManagerFactory(
-    new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
-  );
+  final tokenManagerFactory =
+      new_auth_core.ServerSideSessionsTokenManagerFactory(
+        new_auth_core.ServerSideSessionsConfig(
+          sessionKeyHashPepper: 'test-pepper',
+        ),
+      );
 
   const newEmailIDPConfig = new_email_idp.EmailIDPConfig(
     secretHashPepper: 'test',

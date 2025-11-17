@@ -11,8 +11,8 @@ import 'package:test/test.dart';
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManager = new_auth_core.AuthSessionsTokenManager(
-    config: new_auth_core.AuthSessionsConfig(
+  final tokenManager = new_auth_core.ServerSideSessionsTokenManager(
+    config: new_auth_core.ServerSideSessionsConfig(
       sessionKeyHashPepper: 'test-pepper',
     ),
   );

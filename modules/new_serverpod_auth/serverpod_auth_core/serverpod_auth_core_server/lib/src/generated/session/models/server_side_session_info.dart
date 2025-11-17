@@ -10,10 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class AuthSessionInfo implements _i1.SerializableModel {
-  AuthSessionInfo._({
+abstract class ServerSideSessionInfo
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+  ServerSideSessionInfo._({
     required this.id,
     required this.authUserId,
     required this.scopeNames,
@@ -24,7 +25,7 @@ abstract class AuthSessionInfo implements _i1.SerializableModel {
     required this.method,
   });
 
-  factory AuthSessionInfo({
+  factory ServerSideSessionInfo({
     required _i1.UuidValue id,
     required _i1.UuidValue authUserId,
     required Set<String> scopeNames,
@@ -33,10 +34,12 @@ abstract class AuthSessionInfo implements _i1.SerializableModel {
     DateTime? expiresAt,
     Duration? expireAfterUnusedFor,
     required String method,
-  }) = _AuthSessionInfoImpl;
+  }) = _ServerSideSessionInfoImpl;
 
-  factory AuthSessionInfo.fromJson(Map<String, dynamic> jsonSerialization) {
-    return AuthSessionInfo(
+  factory ServerSideSessionInfo.fromJson(
+    Map<String, dynamic> jsonSerialization,
+  ) {
+    return ServerSideSessionInfo(
       id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       authUserId: _i1.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
@@ -94,10 +97,10 @@ abstract class AuthSessionInfo implements _i1.SerializableModel {
   /// The method through which this session was created.
   String method;
 
-  /// Returns a shallow copy of this [AuthSessionInfo]
+  /// Returns a shallow copy of this [ServerSideSessionInfo]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  AuthSessionInfo copyWith({
+  ServerSideSessionInfo copyWith({
     _i1.UuidValue? id,
     _i1.UuidValue? authUserId,
     Set<String>? scopeNames,
@@ -123,6 +126,21 @@ abstract class AuthSessionInfo implements _i1.SerializableModel {
   }
 
   @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      'id': id.toJson(),
+      'authUserId': authUserId.toJson(),
+      'scopeNames': scopeNames.toJson(),
+      'created': created.toJson(),
+      'lastUsed': lastUsed.toJson(),
+      if (expiresAt != null) 'expiresAt': expiresAt?.toJson(),
+      if (expireAfterUnusedFor != null)
+        'expireAfterUnusedFor': expireAfterUnusedFor?.toJson(),
+      'method': method,
+    };
+  }
+
+  @override
   String toString() {
     return _i1.SerializationManager.encode(this);
   }
@@ -130,8 +148,8 @@ abstract class AuthSessionInfo implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _AuthSessionInfoImpl extends AuthSessionInfo {
-  _AuthSessionInfoImpl({
+class _ServerSideSessionInfoImpl extends ServerSideSessionInfo {
+  _ServerSideSessionInfoImpl({
     required _i1.UuidValue id,
     required _i1.UuidValue authUserId,
     required Set<String> scopeNames,
@@ -151,11 +169,11 @@ class _AuthSessionInfoImpl extends AuthSessionInfo {
          method: method,
        );
 
-  /// Returns a shallow copy of this [AuthSessionInfo]
+  /// Returns a shallow copy of this [ServerSideSessionInfo]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  AuthSessionInfo copyWith({
+  ServerSideSessionInfo copyWith({
     _i1.UuidValue? id,
     _i1.UuidValue? authUserId,
     Set<String>? scopeNames,
@@ -165,7 +183,7 @@ class _AuthSessionInfoImpl extends AuthSessionInfo {
     Object? expireAfterUnusedFor = _Undefined,
     String? method,
   }) {
-    return AuthSessionInfo(
+    return ServerSideSessionInfo(
       id: id ?? this.id,
       authUserId: authUserId ?? this.authUserId,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),

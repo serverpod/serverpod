@@ -11,8 +11,8 @@ import '../../serverpod_test_tools.dart';
 const _oldPepper = 'old-pepper-123';
 
 void main() {
-  final authSessions = AuthSessions(
-    config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+  final serverSideSessions = ServerSideSessions(
+    config: ServerSideSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
   withServerpod(
@@ -28,7 +28,10 @@ void main() {
         'when calling `authenticationHandler` with an unrelated string, then it returns `null`.',
         () async {
           expect(
-            await authSessions.authenticationHandler(session, 'some string'),
+            await serverSideSessions.authenticationHandler(
+              session,
+              'some string',
+            ),
             isNull,
           );
         },
@@ -38,7 +41,7 @@ void main() {
         'when calling `authenticationHandler` with an invalid string fitting the pattern, then it returns `null`.',
         () async {
           expect(
-            await authSessions.authenticationHandler(
+            await serverSideSessions.authenticationHandler(
               session,
               base64Url.encode([
                 ...utf8.encode('sat'),
@@ -64,9 +67,9 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      authUserId = (await authSessions.authUsers.create(session)).id;
+      authUserId = (await serverSideSessions.authUsers.create(session)).id;
 
-      sessionKey = (await authSessions.createSession(
+      sessionKey = (await serverSideSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
@@ -77,7 +80,7 @@ void main() {
     test(
       'when calling `authenticationHandler` with the session key, then it returns an `AuthenticationInfo` for the user.',
       () async {
-        final authInfo = await authSessions.authenticationHandler(
+        final authInfo = await serverSideSessions.authenticationHandler(
           session,
           sessionKey,
         );
@@ -94,11 +97,11 @@ void main() {
       () async {
         final sessionData = tryParseSessionKey(session, sessionKey)!;
         final sessionKeyWithInvalidSecret = buildSessionKey(
-          authSessionId: sessionData.authSessionId,
+          serverSideSessionId: sessionData.serverSideSessionId,
           secret: utf8.encode('some other secret'),
         );
 
-        final authInfo = await authSessions.authenticationHandler(
+        final authInfo = await serverSideSessions.authenticationHandler(
           session,
           sessionKeyWithInvalidSecret,
         );
@@ -113,11 +116,13 @@ void main() {
     test(
       'when calling `authenticationHandler` after the pepper has been changed, then it returns `null`.',
       () async {
-        final differentPepperAuthSessions = AuthSessions(
-          config: AuthSessionsConfig(sessionKeyHashPepper: 'another pepper'),
+        final differentPepperServerSideSessions = ServerSideSessions(
+          config: ServerSideSessionsConfig(
+            sessionKeyHashPepper: 'another pepper',
+          ),
         );
 
-        final authInfo = await differentPepperAuthSessions
+        final authInfo = await differentPepperServerSideSessions
             .authenticationHandler(
               session,
               sessionKey,
@@ -141,9 +146,11 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUserId = (await authSessions.authUsers.create(session)).id;
+      final authUserId = (await serverSideSessions.authUsers.create(
+        session,
+      )).id;
 
-      sessionKey = (await authSessions.createSession(
+      sessionKey = (await serverSideSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {const Scope('test')},
@@ -154,7 +161,7 @@ void main() {
     test(
       'when calling `authenticationHandler` with the session key, then it returns an `AuthenticationInfo` with the correct scopes.',
       () async {
-        final authInfo = await authSessions.authenticationHandler(
+        final authInfo = await serverSideSessions.authenticationHandler(
           session,
           sessionKey,
         );
@@ -178,9 +185,9 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        authUserId = (await authSessions.authUsers.create(session)).id;
+        authUserId = (await serverSideSessions.authUsers.create(session)).id;
 
-        sessionKey = (await authSessions.createSession(
+        sessionKey = (await serverSideSessions.createSession(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -192,7 +199,7 @@ void main() {
       test(
         'when calling `authenticationHandler` right away, then it returns an `AuthenticationInfo` for the user.',
         () async {
-          final authInfo = await authSessions.authenticationHandler(
+          final authInfo = await serverSideSessions.authenticationHandler(
             session,
             sessionKey,
           );
@@ -209,7 +216,7 @@ void main() {
         () async {
           final authInfo = await withClock(
             Clock.fixed(expiresAt.add(const Duration(seconds: 1))),
-            () => authSessions.authenticationHandler(
+            () => serverSideSessions.authenticationHandler(
               session,
               sessionKey,
             ),
@@ -236,9 +243,9 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      authUserId = (await authSessions.authUsers.create(session)).id;
+      authUserId = (await serverSideSessions.authUsers.create(session)).id;
 
-      sessionKey = (await authSessions.createSession(
+      sessionKey = (await serverSideSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
@@ -250,7 +257,7 @@ void main() {
     test(
       'when calling `authenticationHandler` right away, then it returns an `AuthenticationInfo` for the user.',
       () async {
-        final authInfo = await authSessions.authenticationHandler(
+        final authInfo = await serverSideSessions.authenticationHandler(
           session,
           sessionKey,
         );
@@ -270,7 +277,7 @@ void main() {
         );
         final authInfoBeforeInitialExpiration = await withClock(
           Clock.fixed(firstUseTime),
-          () => authSessions.authenticationHandler(
+          () => serverSideSessions.authenticationHandler(
             session,
             sessionKey,
           ),
@@ -286,7 +293,7 @@ void main() {
         );
         final authInfoAfterExtension = await withClock(
           Clock.fixed(secondUseTime),
-          () => authSessions.authenticationHandler(
+          () => serverSideSessions.authenticationHandler(
             session,
             sessionKey,
           ),
@@ -308,7 +315,7 @@ void main() {
               expireAfterUnusedFor + const Duration(minutes: 1),
             ),
           ),
-          () => authSessions.authenticationHandler(
+          () => serverSideSessions.authenticationHandler(
             session,
             sessionKey,
           ),
@@ -333,13 +340,15 @@ void main() {
         session = sessionBuilder.build();
 
         // Create session with an old pepper
-        final oldPepperAuthSessions = AuthSessions(
-          config: AuthSessionsConfig(sessionKeyHashPepper: _oldPepper),
+        final oldPepperSeverSideSessions = ServerSideSessions(
+          config: ServerSideSessionsConfig(sessionKeyHashPepper: _oldPepper),
         );
 
-        authUserId = (await oldPepperAuthSessions.authUsers.create(session)).id;
+        authUserId = (await oldPepperSeverSideSessions.authUsers.create(
+          session,
+        )).id;
 
-        sessionKey = (await oldPepperAuthSessions.createSession(
+        sessionKey = (await oldPepperSeverSideSessions.createSession(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -350,14 +359,17 @@ void main() {
       test(
         'when calling `authenticationHandler` with the new pepper only then it returns `null`.',
         () async {
-          final newPepperAuthSessions = AuthSessions(
-            config: AuthSessionsConfig(sessionKeyHashPepper: 'new-pepper-456'),
+          final newPepperServerSideSessions = ServerSideSessions(
+            config: ServerSideSessionsConfig(
+              sessionKeyHashPepper: 'new-pepper-456',
+            ),
           );
 
-          final authInfo = await newPepperAuthSessions.authenticationHandler(
-            session,
-            sessionKey,
-          );
+          final authInfo = await newPepperServerSideSessions
+              .authenticationHandler(
+                session,
+                sessionKey,
+              );
 
           expect(
             authInfo,
@@ -369,14 +381,14 @@ void main() {
       test(
         'when calling `authenticationHandler` with the new pepper and old pepper in fallback list then it returns the user.',
         () async {
-          final rotatedPepperAuthSessions = AuthSessions(
-            config: AuthSessionsConfig(
+          final rotatedPepperServerSideSessions = ServerSideSessions(
+            config: ServerSideSessionsConfig(
               sessionKeyHashPepper: 'new-pepper-456',
               fallbackSessionKeyHashPeppers: [_oldPepper],
             ),
           );
 
-          final authInfo = await rotatedPepperAuthSessions
+          final authInfo = await rotatedPepperServerSideSessions
               .authenticationHandler(
                 session,
                 sessionKey,
@@ -392,8 +404,8 @@ void main() {
       test(
         'when calling `authenticationHandler` with multiple fallback peppers then it tries each until a match is found.',
         () async {
-          final rotatedPepperAuthSessions = AuthSessions(
-            config: AuthSessionsConfig(
+          final rotatedPepperServerSideSessions = ServerSideSessions(
+            config: ServerSideSessionsConfig(
               sessionKeyHashPepper: 'newest-pepper',
               fallbackSessionKeyHashPeppers: [
                 'intermediate-pepper',
@@ -403,7 +415,7 @@ void main() {
             ),
           );
 
-          final authInfo = await rotatedPepperAuthSessions
+          final authInfo = await rotatedPepperServerSideSessions
               .authenticationHandler(
                 session,
                 sessionKey,
@@ -429,18 +441,18 @@ void main() {
         session = sessionBuilder.build();
 
         // Create session with the current pepper
-        final currentPepperAuthSessions = AuthSessions(
-          config: AuthSessionsConfig(
+        final currentPepperServerSideSessions = ServerSideSessions(
+          config: ServerSideSessionsConfig(
             sessionKeyHashPepper: 'current-pepper',
             fallbackSessionKeyHashPeppers: ['old-pepper-1', 'old-pepper-2'],
           ),
         );
 
-        authUserId = (await currentPepperAuthSessions.authUsers.create(
+        authUserId = (await currentPepperServerSideSessions.authUsers.create(
           session,
         )).id;
 
-        sessionKey = (await currentPepperAuthSessions.createSession(
+        sessionKey = (await currentPepperServerSideSessions.createSession(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -451,17 +463,18 @@ void main() {
       test(
         'when calling `authenticationHandler` with the current pepper and fallback peppers then it validates successfully.',
         () async {
-          final authSessionsWithFallback = AuthSessions(
-            config: AuthSessionsConfig(
+          final serverSideSessionsWithFallback = ServerSideSessions(
+            config: ServerSideSessionsConfig(
               sessionKeyHashPepper: 'current-pepper',
               fallbackSessionKeyHashPeppers: ['old-pepper-1', 'old-pepper-2'],
             ),
           );
 
-          final authInfo = await authSessionsWithFallback.authenticationHandler(
-            session,
-            sessionKey,
-          );
+          final authInfo = await serverSideSessionsWithFallback
+              .authenticationHandler(
+                session,
+                sessionKey,
+              );
 
           expect(
             authInfo?.authUserId,

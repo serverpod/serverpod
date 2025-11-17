@@ -5,12 +5,12 @@ import 'package:serverpod/serverpod.dart';
 import '../../generated/protocol.dart';
 
 /// Collection of admin functions for managing authentication tokens.
-final class AuthenticationTokensAdmin {
+final class JwtAdmin {
   final Duration _refreshTokenLifetime;
 
   /// Creates a new admin helper class instance.
   @internal
-  AuthenticationTokensAdmin({
+  JwtAdmin({
     required final Duration refreshTokenLifetime,
   }) : _refreshTokenLifetime = refreshTokenLifetime;
 
@@ -30,8 +30,8 @@ final class AuthenticationTokensAdmin {
     );
   }
 
-  /// List all authentication tokens matching the given filters.
-  Future<List<AuthenticationTokenInfo>> listAuthenticationTokens(
+  /// List all JWT tokens matching the given filters.
+  Future<List<JwtTokenInfo>> listJwtTokens(
     final Session session, {
     final UuidValue? authUserId,
     final Transaction? transaction,
@@ -69,9 +69,9 @@ final class AuthenticationTokensAdmin {
       transaction: transaction,
     );
 
-    final authenticationTokenInfos = [
+    final jwtTokenInfos = [
       for (final refreshToken in refreshTokens)
-        AuthenticationTokenInfo(
+        JwtTokenInfo(
           id: refreshToken.id!,
           authUserId: refreshToken.authUserId,
           scopeNames: refreshToken.scopeNames,
@@ -82,7 +82,7 @@ final class AuthenticationTokensAdmin {
         ),
     ];
 
-    return authenticationTokenInfos;
+    return jwtTokenInfos;
   }
 
   /// Deletes the refresh tokens matching the given filters.

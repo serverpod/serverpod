@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
 
 import '../../generated/protocol.dart';
-import 'authentication_token_config.dart';
-import 'authentication_tokens.dart';
+import 'jwt.dart';
+import 'jwt_config.dart';
 
 /// Utility methods for creating and verifying JWT tokens.
 class JwtUtil {
@@ -13,16 +13,15 @@ class JwtUtil {
   JwtUtil({
     required final Duration accessTokenLifetime,
     required final String? issuer,
-    required final AuthenticationTokenAlgorithm algorithm,
-    required final List<AuthenticationTokenAlgorithm>
-    fallbackVerificationAlgorithms,
+    required final JwtAlgorithm algorithm,
+    required final List<JwtAlgorithm> fallbackVerificationAlgorithms,
   }) : _accessTokenLifetime = accessTokenLifetime,
        _issuer = issuer,
        _algorithm = algorithm,
        _fallbackVerificationAlgorithms = fallbackVerificationAlgorithms;
 
-  final AuthenticationTokenAlgorithm _algorithm;
-  final List<AuthenticationTokenAlgorithm> _fallbackVerificationAlgorithms;
+  final JwtAlgorithm _algorithm;
+  final List<JwtAlgorithm> _fallbackVerificationAlgorithms;
   final Duration _accessTokenLifetime;
   final String? _issuer;
 
@@ -56,7 +55,7 @@ class JwtUtil {
       }
     }
 
-    final jwt = JWT(
+    final jwt = dart_jsonwebtoken.JWT(
       {
         ...?extraClaims,
         if (refreshToken.scopeNames.isNotEmpty)
@@ -68,13 +67,18 @@ class JwtUtil {
       issuer: _issuer,
     );
 
-    final (JWTKey key, JWTAlgorithm algorithm) = switch (_algorithm) {
-      HmacSha512AuthenticationTokenAlgorithmConfiguration(:final key) => (
+    final (
+      dart_jsonwebtoken.JWTKey key,
+      dart_jsonwebtoken.JWTAlgorithm algorithm,
+    ) = switch (_algorithm) {
+      HmacSha512JwtAlgorithmConfiguration(:final key) => (
         key,
-        JWTAlgorithm.HS512,
+        dart_jsonwebtoken.JWTAlgorithm.HS512,
       ),
-      EcdsaSha512AuthenticationTokenAlgorithmConfiguration(:final privateKey) =>
-        (privateKey, JWTAlgorithm.ES512),
+      EcdsaSha512JwtAlgorithmConfiguration(:final privateKey) => (
+        privateKey,
+        dart_jsonwebtoken.JWTAlgorithm.ES512,
+      ),
     };
 
     return jwt.sign(
@@ -87,7 +91,7 @@ class JwtUtil {
   /// Verifies and decodes the JWT access token.
   ///
   /// Throws in case of any validation failures (e.g. invalid signature or changed issuer, etc.) and in any case when parsing the expected contained data fails.
-  /// In practice, when this is used via [AuthenticationTokens.authenticationHandler], these errors will all be caught and a `null` `AuthenticationInfo?` will be returned instead.
+  /// In practice, when this is used via [Jwt.authenticationHandler], these errors will all be caught and a `null` `AuthenticationInfo?` will be returned instead.
   VerifiedJwtData verifyJwt(final String accessToken) {
     final jwt = _verifyJwt(accessToken);
     final allClaims = (jwt.payload as Map).cast<String, dynamic>();
@@ -166,13 +170,13 @@ class JwtUtil {
   ///
   /// If reading with the primary algorithm fails, the fallbacks (if configured) are tried in order.
   /// In case none of the keys work, the exception from the first algorithm is thrown.
-  JWT _verifyJwt(final String accessToken) {
+  dart_jsonwebtoken.JWT _verifyJwt(final String accessToken) {
     final allAlgorithms = [_algorithm, ..._fallbackVerificationAlgorithms];
     Object? firstError;
 
     for (final algorithm in allAlgorithms) {
       try {
-        return JWT.verify(
+        return dart_jsonwebtoken.JWT.verify(
           accessToken,
           algorithm.verificationKey,
           issuer: _issuer,
