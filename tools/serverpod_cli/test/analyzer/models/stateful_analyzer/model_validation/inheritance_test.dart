@@ -1,6 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
-import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 
@@ -8,9 +7,7 @@ import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/builders/model_source_builder.dart';
 
 void main() {
-  var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
-    ExperimentalFeature.inheritance,
-  ]).build();
+  var config = GeneratorConfigBuilder().build();
 
   group('Extends property tests', () {
     group('Given a child-class of an existing class', () {
@@ -140,50 +137,6 @@ void main() {
         expect(
           error.message,
           'You can only extend classes from your own project.',
-        );
-      },
-    );
-
-    test(
-      'Given a child-class when inheritance is not enabled, then error is collected that the "extends" property is not allowed',
-      () {
-        var modelSources = [
-          ModelSourceBuilder().withYaml(
-            '''
-          class: Example
-          fields:
-            name: String
-          ''',
-          ).build(),
-          ModelSourceBuilder().withFileName('example2').withYaml(
-            '''
-          class: ExampleChildClass
-          extends: Example
-          fields:
-            age: int
-          ''',
-          ).build(),
-        ];
-
-        var generatorConfig = GeneratorConfigBuilder().build();
-
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(
-          generatorConfig,
-          modelSources,
-          onErrorsCollector(collector),
-        ).validateAll();
-
-        expect(
-          collector.errors,
-          isNotEmpty,
-          reason: 'Expected an error but none was generated.',
-        );
-
-        var error = collector.errors.first;
-        expect(
-          error.message,
-          'The "extends" property is not allowed for class type. Valid keys are {class, immutable, table, managedMigration, serverOnly, fields, indexes}.',
         );
       },
     );
@@ -525,43 +478,6 @@ void main() {
       expect(
         error.message,
         'The value must be a boolean.',
-      );
-    },
-  );
-
-  test(
-    'Given a class using the sealed keyword, when inheritance is not enabled, then an error is collected that the "sealed" property is not allowed',
-    () {
-      var modelSources = [
-        ModelSourceBuilder().withFileName('example1').withYaml(
-          '''
-          class: Example
-          sealed: true
-          fields:
-            name: String
-          ''',
-        ).build(),
-      ];
-
-      var generatorConfig = GeneratorConfigBuilder().build();
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(
-        generatorConfig,
-        modelSources,
-        onErrorsCollector(collector),
-      ).validateAll();
-
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected no error but one was generated.',
-      );
-
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'The "sealed" property is not allowed for class type. Valid keys are {class, immutable, table, managedMigration, serverOnly, fields, indexes}.',
       );
     },
   );
