@@ -104,8 +104,8 @@ void main() {
       });
     });
 
-    group('then toJson method should return ', () {
-      test('the column mapped to the serialized field name variable for a '
+    group('then toJson method should return', () {
+      test('the field name mapped to the serialized field name variable for a '
           'field with column set', () {
         var toJsonConstructor = CompilationUnitHelpers.tryFindMethodDeclaration(
           maybeClassNamedExample!,
@@ -115,13 +115,13 @@ void main() {
         var toJsonCode = toJsonConstructor!.toSource();
 
         expect(
-          toJsonCode.contains(
-            "'$columnName' : $columnFieldName",
+          toJsonCode,
+          contains(
+            "'$columnFieldName' : $columnFieldName",
           ),
-          isTrue,
           reason:
-              'The toJson method should map the column name to '
-              'the serialized field name variable.',
+              'The toJson method should map the field name to its '
+              'serialized variable if the column is set.',
         );
       });
 
@@ -146,8 +146,8 @@ void main() {
       });
     });
 
-    group('then toJsonForProtocol method should return ', () {
-      test('the column mapped to the serialized field name variable for a '
+    group('then toJsonForProtocol method should return', () {
+      test('the field name mapped to its serialized variable for a '
           'field with column set', () {
         var toJsonForProtocolConstructor =
             CompilationUnitHelpers.tryFindMethodDeclaration(
@@ -158,13 +158,13 @@ void main() {
         var toJsonForProtocolCode = toJsonForProtocolConstructor!.toSource();
 
         expect(
-          toJsonForProtocolCode.contains(
-            "'$columnName' : $columnFieldName",
+          toJsonForProtocolCode,
+          contains(
+            "'$columnFieldName' : $columnFieldName",
           ),
-          isTrue,
           reason:
-              'The toJsonForProtocol method should map the column name to '
-              'field name.',
+              'The toJsonForProtocol method should map the field name to '
+              'its serialized value.',
         );
       });
 
