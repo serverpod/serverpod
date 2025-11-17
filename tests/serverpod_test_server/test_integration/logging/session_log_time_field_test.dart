@@ -27,7 +27,7 @@ void main() async {
       });
 
       test(
-        'Given a slow method call when session is logged then time field should be set to start time not end time.',
+        'when session is logged then time field should be set to start time not end time.',
         () async {
           var settings = RuntimeSettingsBuilder().build();
           await server.updateRuntimeSettings(settings);
