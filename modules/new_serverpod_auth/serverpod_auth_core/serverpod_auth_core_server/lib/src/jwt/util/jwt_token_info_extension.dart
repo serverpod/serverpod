@@ -4,8 +4,8 @@ import 'package:serverpod/serverpod.dart';
 
 import '../../generated/protocol.dart';
 
-/// Extensions for [AuthenticationTokenInfo].
-extension AuthenticationTokenInfoExtension on AuthenticationTokenInfo {
+/// Extensions for [JwtTokenInfo].
+extension JwtTokenInfoExtension on JwtTokenInfo {
   /// Returns the `Scope`s for this authentication token.
   Set<Scope> get scopes {
     return scopeNames.map(Scope.new).toSet();

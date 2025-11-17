@@ -9,15 +9,15 @@ import 'package:test/test.dart';
 import '../../serverpod_test_tools.dart';
 
 void main() {
-  final authenticationTokens = AuthenticationTokens(
-    config: AuthenticationTokenConfig(
-      algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+  final jwt = Jwt(
+    config: JwtConfig(
+      algorithm: JwtAlgorithm.hmacSha512(
         SecretKey('test-private-key-for-HS512'),
       ),
       refreshTokenHashPepper: 'test-pepper',
     ),
   );
-  final authenticationTokensAdmin = authenticationTokens.admin;
+  final jwtAdmin = jwt.admin;
 
   withServerpod('Given an auth user with an authentication token,', (
     final sessionBuilder,
@@ -29,24 +29,22 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await authenticationTokens.authUsers.create(session);
+      final authUser = await jwt.authUsers.create(session);
       authUserId = authUser.id;
 
-      final authSuccess = await authenticationTokens.createTokens(
+      final authSuccess = await jwt.createTokens(
         session,
         authUserId: authUserId,
         scopes: {},
         method: 'test',
       );
-      tokenId = authenticationTokens.jwtUtil
-          .verifyJwt(authSuccess.token)
-          .refreshTokenId;
+      tokenId = jwt.jwtUtil.verifyJwt(authSuccess.token).refreshTokenId;
     });
 
     test(
       'when calling `deleteExpiredRefreshTokens`, then it is unaffected.',
       () async {
-        await authenticationTokensAdmin.deleteExpiredRefreshTokens(session);
+        await jwtAdmin.deleteExpiredRefreshTokens(session);
 
         final tokens = await RefreshToken.db.find(session);
 
@@ -60,7 +58,7 @@ void main() {
     test(
       'when calling `findAuthenticationTokens` for all users, then it is returned.',
       () async {
-        final tokens = await authenticationTokensAdmin.listAuthenticationTokens(
+        final tokens = await jwtAdmin.listJwtTokens(
           session,
         );
 
@@ -74,7 +72,7 @@ void main() {
     test(
       'when calling `findAuthenticationTokens` for that specific user, then it is returned.',
       () async {
-        final tokens = await authenticationTokensAdmin.listAuthenticationTokens(
+        final tokens = await jwtAdmin.listJwtTokens(
           session,
           authUserId: authUserId,
         );
@@ -89,7 +87,7 @@ void main() {
     test(
       'when calling `findAuthenticationTokens` for another user, then nothing is returned.',
       () async {
-        final tokens = await authenticationTokensAdmin.listAuthenticationTokens(
+        final tokens = await jwtAdmin.listJwtTokens(
           session,
           authUserId: const Uuid().v4obj(),
         );
@@ -101,7 +99,7 @@ void main() {
     test(
       'when calling `findAuthenticationTokens` with matching method, then it is returned.',
       () async {
-        final tokens = await authenticationTokensAdmin.listAuthenticationTokens(
+        final tokens = await jwtAdmin.listJwtTokens(
           session,
           method: 'test',
         );
@@ -114,7 +112,7 @@ void main() {
     test(
       'when calling `findAuthenticationTokens` with non-matching method, then nothing is returned.',
       () async {
-        final tokens = await authenticationTokensAdmin.listAuthenticationTokens(
+        final tokens = await jwtAdmin.listJwtTokens(
           session,
           method: 'something else',
         );
@@ -126,18 +124,17 @@ void main() {
     group('when calling `deleteRefreshTokens` with that refreshTokenId', () {
       late List<DeletedRefreshToken> deletedTokens;
       setUp(() async {
-        deletedTokens = await authenticationTokensAdmin.deleteRefreshTokens(
+        deletedTokens = await jwtAdmin.deleteRefreshTokens(
           session,
           refreshTokenId: tokenId,
         );
       });
 
       test('then that token is deleted.', () async {
-        final remainingTokens = await authenticationTokensAdmin
-            .listAuthenticationTokens(
-              session,
-              authUserId: authUserId,
-            );
+        final remainingTokens = await jwtAdmin.listJwtTokens(
+          session,
+          authUserId: authUserId,
+        );
 
         expect(remainingTokens, isEmpty);
       });
@@ -152,18 +149,17 @@ void main() {
     test(
       'when calling `deleteRefreshTokens` with refreshTokenId, authUserId, and method all matching, then that token is deleted.',
       () async {
-        await authenticationTokensAdmin.deleteRefreshTokens(
+        await jwtAdmin.deleteRefreshTokens(
           session,
           refreshTokenId: tokenId,
           authUserId: authUserId,
           method: 'test',
         );
 
-        final remainingTokens = await authenticationTokensAdmin
-            .listAuthenticationTokens(
-              session,
-              authUserId: authUserId,
-            );
+        final remainingTokens = await jwtAdmin.listJwtTokens(
+          session,
+          authUserId: authUserId,
+        );
 
         expect(remainingTokens, isEmpty);
       },
@@ -173,17 +169,15 @@ void main() {
       'when calling `deleteRefreshTokens` with a non-existent refreshTokenId then no tokens are deleted.',
       () async {
         final nonExistentId = const Uuid().v4obj();
-        final deletedTokens = await authenticationTokensAdmin
-            .deleteRefreshTokens(
-              session,
-              refreshTokenId: nonExistentId,
-            );
+        final deletedTokens = await jwtAdmin.deleteRefreshTokens(
+          session,
+          refreshTokenId: nonExistentId,
+        );
 
-        final remainingTokens = await authenticationTokensAdmin
-            .listAuthenticationTokens(
-              session,
-              authUserId: authUserId,
-            );
+        final remainingTokens = await jwtAdmin.listJwtTokens(
+          session,
+          authUserId: authUserId,
+        );
         expect(deletedTokens, isEmpty);
         expect(remainingTokens, hasLength(1));
         expect(remainingTokens.single.id, tokenId);
@@ -195,17 +189,15 @@ void main() {
       () async {
         final nonExistentUserId = const Uuid().v4obj();
 
-        final deletedTokens = await authenticationTokensAdmin
-            .deleteRefreshTokens(
-              session,
-              authUserId: nonExistentUserId,
-            );
+        final deletedTokens = await jwtAdmin.deleteRefreshTokens(
+          session,
+          authUserId: nonExistentUserId,
+        );
 
-        final remainingTokens = await authenticationTokensAdmin
-            .listAuthenticationTokens(
-              session,
-              authUserId: authUserId,
-            );
+        final remainingTokens = await jwtAdmin.listJwtTokens(
+          session,
+          authUserId: authUserId,
+        );
         expect(deletedTokens, isEmpty);
         expect(remainingTokens, hasLength(1));
         expect(remainingTokens.single.id, tokenId);
@@ -215,17 +207,15 @@ void main() {
     test(
       'when calling `deleteRefreshTokens` with a non-matching method, then no tokens are deleted.',
       () async {
-        final deletedTokens = await authenticationTokensAdmin
-            .deleteRefreshTokens(
-              session,
-              method: 'non-existent-method',
-            );
+        final deletedTokens = await jwtAdmin.deleteRefreshTokens(
+          session,
+          method: 'non-existent-method',
+        );
 
-        final remainingTokens = await authenticationTokensAdmin
-            .listAuthenticationTokens(
-              session,
-              authUserId: authUserId,
-            );
+        final remainingTokens = await jwtAdmin.listJwtTokens(
+          session,
+          authUserId: authUserId,
+        );
         expect(deletedTokens, isEmpty);
         expect(remainingTokens, hasLength(1));
         expect(remainingTokens.single.id, tokenId);
@@ -247,13 +237,13 @@ void main() {
       setUpAll(() async {
         session = sessionBuilder.build();
 
-        authUserId1 = (await authenticationTokens.authUsers.create(session)).id;
-        authUserId2 = (await authenticationTokens.authUsers.create(session)).id;
+        authUserId1 = (await jwt.authUsers.create(session)).id;
+        authUserId2 = (await jwt.authUsers.create(session)).id;
         refreshTokenIdsInOrderOfCreation = [];
 
         for (var i = 0; i < 100; i++) {
           for (final authUserId in [authUserId1, authUserId2]) {
-            final authSuccess = await authenticationTokens.createTokens(
+            final authSuccess = await jwt.createTokens(
               session,
               authUserId: authUserId,
               scopes: {},
@@ -272,10 +262,9 @@ void main() {
       test(
         'when calling `listAuthenticationTokens`, then it returns the first 100 tokens in order of creation date ASC.',
         () async {
-          final tokens = await authenticationTokensAdmin
-              .listAuthenticationTokens(
-                session,
-              );
+          final tokens = await jwtAdmin.listJwtTokens(
+            session,
+          );
 
           expect(tokens, hasLength(100));
           expect(
@@ -288,11 +277,10 @@ void main() {
       test(
         'when calling `listAuthenticationTokens(offset: 50)`, then it returns the next 100 tokens in order of creation date ASC.',
         () async {
-          final tokens = await authenticationTokensAdmin
-              .listAuthenticationTokens(
-                session,
-                offset: 50,
-              );
+          final tokens = await jwtAdmin.listJwtTokens(
+            session,
+            offset: 50,
+          );
 
           expect(tokens, hasLength(100));
           expect(
@@ -305,12 +293,11 @@ void main() {
       test(
         "when calling `listAuthenticationTokens(limit: 2)` for a specific auth user, then it returns that user's first 2 tokens in order of creation date ASC.",
         () async {
-          final tokens = await authenticationTokensAdmin
-              .listAuthenticationTokens(
-                session,
-                authUserId: authUserId1,
-                limit: 2,
-              );
+          final tokens = await jwtAdmin.listJwtTokens(
+            session,
+            authUserId: authUserId1,
+            limit: 2,
+          );
 
           expect(tokens, hasLength(2));
           expect(
@@ -327,7 +314,7 @@ void main() {
         'when calling `listAuthenticationTokens` with `limit: 0`, then it throws.',
         () async {
           await expectLater(
-            () => authenticationTokensAdmin.listAuthenticationTokens(
+            () => jwtAdmin.listJwtTokens(
               session,
               authUserId: authUserId1,
               limit: 0,
@@ -341,7 +328,7 @@ void main() {
         'when calling `listAuthenticationTokens` with `limit: 1001`, then it throws.',
         () async {
           await expectLater(
-            () => authenticationTokensAdmin.listAuthenticationTokens(
+            () => jwtAdmin.listJwtTokens(
               session,
               authUserId: authUserId1,
               limit: 1001,
@@ -355,7 +342,7 @@ void main() {
         'when calling `listAuthenticationTokens` with `offset: -1`, then it throws.',
         () async {
           await expectLater(
-            () => authenticationTokensAdmin.listAuthenticationTokens(
+            () => jwtAdmin.listJwtTokens(
               session,
               authUserId: authUserId1,
               offset: -1,
@@ -377,7 +364,7 @@ void main() {
     setUp(() async {
       session = sessionBuilder.build();
 
-      final authUser = await authenticationTokens.authUsers.create(
+      final authUser = await jwt.authUsers.create(
         session,
       );
       authUserId = authUser.id;
@@ -385,11 +372,11 @@ void main() {
       await withClock(
         Clock.fixed(
           DateTime.now().subtract(
-            authenticationTokens.config.refreshTokenLifetime,
+            jwt.config.refreshTokenLifetime,
           ),
         ),
         () async {
-          await authenticationTokens.createTokens(
+          await jwt.createTokens(
             session,
             authUserId: authUserId,
             scopes: {},
@@ -402,7 +389,7 @@ void main() {
     test(
       'when calling `deleteExpiredRefreshTokens`, then that token is removed.',
       () async {
-        await authenticationTokensAdmin.deleteExpiredRefreshTokens(session);
+        await jwtAdmin.deleteExpiredRefreshTokens(session);
 
         final tokens = await RefreshToken.db.find(session);
 
@@ -422,30 +409,26 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        final authUser = await authenticationTokens.authUsers.create(session);
+        final authUser = await jwt.authUsers.create(session);
         authUserId = authUser.id;
 
-        final authSuccess1 = await authenticationTokens.createTokens(
+        final authSuccess1 = await jwt.createTokens(
           session,
           authUserId: authUserId,
           scopes: {},
           method: 'test',
         );
-        tokenId1 = authenticationTokens.jwtUtil
-            .verifyJwt(authSuccess1.token)
-            .refreshTokenId;
+        tokenId1 = jwt.jwtUtil.verifyJwt(authSuccess1.token).refreshTokenId;
 
-        final authSuccess2 = await authenticationTokens.createTokens(
+        final authSuccess2 = await jwt.createTokens(
           session,
           authUserId: authUserId,
           scopes: {},
           method: 'test',
         );
-        tokenId2 = authenticationTokens.jwtUtil
-            .verifyJwt(authSuccess2.token)
-            .refreshTokenId;
+        tokenId2 = jwt.jwtUtil.verifyJwt(authSuccess2.token).refreshTokenId;
 
-        await authenticationTokens.createTokens(
+        await jwt.createTokens(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -456,15 +439,14 @@ void main() {
       test(
         'when calling `deleteRefreshTokens` with a specific refreshTokenId, then only that token is deleted.',
         () async {
-          await authenticationTokensAdmin.deleteRefreshTokens(
+          await jwtAdmin.deleteRefreshTokens(
             session,
             refreshTokenId: tokenId1,
           );
 
-          final remainingTokens = await authenticationTokensAdmin
-              .listAuthenticationTokens(
-                session,
-              );
+          final remainingTokens = await jwtAdmin.listJwtTokens(
+            session,
+          );
           expect(remainingTokens, hasLength(2));
           expect(
             remainingTokens.map((final t) => t.id),
@@ -476,7 +458,7 @@ void main() {
       group('when calling `deleteRefreshTokens` with method "test"', () {
         late List<DeletedRefreshToken> deletedTokens;
         setUp(() async {
-          deletedTokens = await authenticationTokensAdmin.deleteRefreshTokens(
+          deletedTokens = await jwtAdmin.deleteRefreshTokens(
             session,
             method: 'test',
           );
@@ -491,10 +473,9 @@ void main() {
         });
 
         test('then only tokens not matching the method remains.', () async {
-          final remainingTokens = await authenticationTokensAdmin
-              .listAuthenticationTokens(
-                session,
-              );
+          final remainingTokens = await jwtAdmin.listJwtTokens(
+            session,
+          );
           expect(remainingTokens, hasLength(1));
           expect(
             remainingTokens.map((final t) => t.method),
@@ -516,37 +497,37 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        final authUser1 = await authenticationTokens.authUsers.create(session);
+        final authUser1 = await jwt.authUsers.create(session);
         firstUserAuthUserId = authUser1.id;
 
-        final authUser2 = await authenticationTokens.authUsers.create(session);
+        final authUser2 = await jwt.authUsers.create(session);
         authUserId2 = authUser2.id;
 
-        final authSuccess1 = await authenticationTokens.createTokens(
+        final authSuccess1 = await jwt.createTokens(
           session,
           authUserId: firstUserAuthUserId,
           scopes: {},
           method: 'test',
         );
-        firstUserTestTokenID = authenticationTokens.jwtUtil
+        firstUserTestTokenID = jwt.jwtUtil
             .verifyJwt(authSuccess1.token)
             .refreshTokenId;
 
-        await authenticationTokens.createTokens(
+        await jwt.createTokens(
           session,
           authUserId: firstUserAuthUserId,
           scopes: {},
           method: 'google',
         );
 
-        await authenticationTokens.createTokens(
+        await jwt.createTokens(
           session,
           authUserId: authUserId2,
           scopes: {},
           method: 'test',
         );
 
-        await authenticationTokens.createTokens(
+        await jwt.createTokens(
           session,
           authUserId: authUserId2,
           scopes: {},
@@ -557,17 +538,15 @@ void main() {
       test(
         "when calling `deleteRefreshTokens` with authUserId for the first user, then only that user's tokens are deleted.",
         () async {
-          final deletedTokens = await authenticationTokensAdmin
-              .deleteRefreshTokens(
-                session,
-                authUserId: firstUserAuthUserId,
-              );
+          final deletedTokens = await jwtAdmin.deleteRefreshTokens(
+            session,
+            authUserId: firstUserAuthUserId,
+          );
 
           expect(deletedTokens, hasLength(2));
-          final remainingTokens = await authenticationTokensAdmin
-              .listAuthenticationTokens(
-                session,
-              );
+          final remainingTokens = await jwtAdmin.listJwtTokens(
+            session,
+          );
           expect(remainingTokens, hasLength(2));
           expect(
             remainingTokens.map((final t) => t.authUserId),
@@ -579,21 +558,19 @@ void main() {
       test(
         "when calling `deleteRefreshTokens` with authUserId and method 'test' for the first user, then only that user's 'test' tokens are deleted",
         () async {
-          final deletedTokens = await authenticationTokensAdmin
-              .deleteRefreshTokens(
-                session,
-                authUserId: firstUserAuthUserId,
-                method: 'test',
-              );
+          final deletedTokens = await jwtAdmin.deleteRefreshTokens(
+            session,
+            authUserId: firstUserAuthUserId,
+            method: 'test',
+          );
 
           expect(deletedTokens, hasLength(1));
           expect(deletedTokens.first.refreshTokenId, firstUserTestTokenID);
           expect(deletedTokens.first.authUserId, firstUserAuthUserId);
 
-          final remainingTokens = await authenticationTokensAdmin
-              .listAuthenticationTokens(
-                session,
-              );
+          final remainingTokens = await jwtAdmin.listJwtTokens(
+            session,
+          );
           expect(remainingTokens, hasLength(3));
         },
       );
@@ -601,14 +578,13 @@ void main() {
       test(
         'when calling `deleteRefreshTokens` with no filters, then all tokens are deleted.',
         () async {
-          await authenticationTokensAdmin.deleteRefreshTokens(
+          await jwtAdmin.deleteRefreshTokens(
             session,
           );
 
-          final remainingTokens = await authenticationTokensAdmin
-              .listAuthenticationTokens(
-                session,
-              );
+          final remainingTokens = await jwtAdmin.listJwtTokens(
+            session,
+          );
           expect(remainingTokens, isEmpty);
         },
       );

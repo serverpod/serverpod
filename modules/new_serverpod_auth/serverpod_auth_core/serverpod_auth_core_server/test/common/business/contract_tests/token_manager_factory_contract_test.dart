@@ -65,10 +65,10 @@ void main() {
     ),
   );
 
-  testSuite<AuthenticationTokensTokenManager>(
-    () => AuthenticationTokensTokenManagerFactory(
-      AuthenticationTokenConfig(
-        algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+  testSuite<JwtTokenManager>(
+    () => JwtTokenManagerFactory(
+      JwtConfig(
+        algorithm: HmacSha512JwtAlgorithmConfiguration(
           key: SecretKey('test-private-key-for-HS512'),
         ),
         refreshTokenHashPepper: 'test-pepper',

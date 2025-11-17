@@ -16,7 +16,7 @@ import 'auth_user/models/auth_user_model.dart' as _i3;
 import 'auth_user/models/auth_user_not_found_exception.dart' as _i4;
 import 'common/models/auth_strategy.dart' as _i5;
 import 'common/models/auth_success.dart' as _i6;
-import 'jwt/models/authentication_token_info.dart' as _i7;
+import 'jwt/models/jwt_token_info.dart' as _i7;
 import 'jwt/models/refresh_token_expired_exception.dart' as _i8;
 import 'jwt/models/refresh_token_invalid_secret_exception.dart' as _i9;
 import 'jwt/models/refresh_token_malformed_exception.dart' as _i10;
@@ -29,7 +29,7 @@ export 'auth_user/models/auth_user_model.dart';
 export 'auth_user/models/auth_user_not_found_exception.dart';
 export 'common/models/auth_strategy.dart';
 export 'common/models/auth_success.dart';
-export 'jwt/models/authentication_token_info.dart';
+export 'jwt/models/jwt_token_info.dart';
 export 'jwt/models/refresh_token_expired_exception.dart';
 export 'jwt/models/refresh_token_invalid_secret_exception.dart';
 export 'jwt/models/refresh_token_malformed_exception.dart';
@@ -67,8 +67,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i6.AuthSuccess) {
       return _i6.AuthSuccess.fromJson(data) as T;
     }
-    if (t == _i7.AuthenticationTokenInfo) {
-      return _i7.AuthenticationTokenInfo.fromJson(data) as T;
+    if (t == _i7.JwtTokenInfo) {
+      return _i7.JwtTokenInfo.fromJson(data) as T;
     }
     if (t == _i8.RefreshTokenExpiredException) {
       return _i8.RefreshTokenExpiredException.fromJson(data) as T;
@@ -110,9 +110,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i6.AuthSuccess?>()) {
       return (data != null ? _i6.AuthSuccess.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i7.AuthenticationTokenInfo?>()) {
-      return (data != null ? _i7.AuthenticationTokenInfo.fromJson(data) : null)
-          as T;
+    if (t == _i1.getType<_i7.JwtTokenInfo?>()) {
+      return (data != null ? _i7.JwtTokenInfo.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i8.RefreshTokenExpiredException?>()) {
       return (data != null
@@ -168,8 +167,8 @@ class Protocol extends _i1.SerializationManager {
         return 'AuthStrategy';
       case _i6.AuthSuccess():
         return 'AuthSuccess';
-      case _i7.AuthenticationTokenInfo():
-        return 'AuthenticationTokenInfo';
+      case _i7.JwtTokenInfo():
+        return 'JwtTokenInfo';
       case _i8.RefreshTokenExpiredException():
         return 'RefreshTokenExpiredException';
       case _i9.RefreshTokenInvalidSecretException():
@@ -209,8 +208,8 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'AuthSuccess') {
       return deserialize<_i6.AuthSuccess>(data['data']);
     }
-    if (dataClassName == 'AuthenticationTokenInfo') {
-      return deserialize<_i7.AuthenticationTokenInfo>(data['data']);
+    if (dataClassName == 'JwtTokenInfo') {
+      return deserialize<_i7.JwtTokenInfo>(data['data']);
     }
     if (dataClassName == 'RefreshTokenExpiredException') {
       return deserialize<_i8.RefreshTokenExpiredException>(data['data']);

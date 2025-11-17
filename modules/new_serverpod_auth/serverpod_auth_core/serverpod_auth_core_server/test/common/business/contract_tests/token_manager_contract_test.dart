@@ -1036,11 +1036,11 @@ void main() {
   );
 
   testSuite(
-    'AuthenticationTokensTokenManager',
+    'JwtTokenManager',
     (final authUsers) {
-      return AuthenticationTokensTokenManager(
-        config: AuthenticationTokenConfig(
-          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+      return JwtTokenManager(
+        config: JwtConfig(
+          algorithm: HmacSha512JwtAlgorithmConfiguration(
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
@@ -1048,7 +1048,7 @@ void main() {
         authUsers: authUsers,
       );
     },
-    tokenIssuer: AuthenticationTokensTokenManager.tokenIssuerName,
+    tokenIssuer: JwtTokenManager.tokenIssuerName,
     authUsers: authUsers,
     isDatabaseBackedManager: true,
     usesRefreshTokens: true,

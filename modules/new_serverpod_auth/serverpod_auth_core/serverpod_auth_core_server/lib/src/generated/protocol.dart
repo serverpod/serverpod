@@ -18,7 +18,7 @@ import 'auth_user/models/auth_user_model.dart' as _i5;
 import 'auth_user/models/auth_user_not_found_exception.dart' as _i6;
 import 'common/models/auth_strategy.dart' as _i7;
 import 'common/models/auth_success.dart' as _i8;
-import 'jwt/models/authentication_token_info.dart' as _i9;
+import 'jwt/models/jwt_token_info.dart' as _i9;
 import 'jwt/models/refresh_token.dart' as _i10;
 import 'jwt/models/refresh_token_expired_exception.dart' as _i11;
 import 'jwt/models/refresh_token_invalid_secret_exception.dart' as _i12;
@@ -37,7 +37,7 @@ export 'auth_user/models/auth_user_model.dart';
 export 'auth_user/models/auth_user_not_found_exception.dart';
 export 'common/models/auth_strategy.dart';
 export 'common/models/auth_success.dart';
-export 'jwt/models/authentication_token_info.dart';
+export 'jwt/models/jwt_token_info.dart';
 export 'jwt/models/refresh_token.dart';
 export 'jwt/models/refresh_token_expired_exception.dart';
 export 'jwt/models/refresh_token_invalid_secret_exception.dart';
@@ -523,8 +523,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i8.AuthSuccess) {
       return _i8.AuthSuccess.fromJson(data) as T;
     }
-    if (t == _i9.AuthenticationTokenInfo) {
-      return _i9.AuthenticationTokenInfo.fromJson(data) as T;
+    if (t == _i9.JwtTokenInfo) {
+      return _i9.JwtTokenInfo.fromJson(data) as T;
     }
     if (t == _i10.RefreshToken) {
       return _i10.RefreshToken.fromJson(data) as T;
@@ -584,9 +584,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i8.AuthSuccess?>()) {
       return (data != null ? _i8.AuthSuccess.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.AuthenticationTokenInfo?>()) {
-      return (data != null ? _i9.AuthenticationTokenInfo.fromJson(data) : null)
-          as T;
+    if (t == _i1.getType<_i9.JwtTokenInfo?>()) {
+      return (data != null ? _i9.JwtTokenInfo.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i10.RefreshToken?>()) {
       return (data != null ? _i10.RefreshToken.fromJson(data) : null) as T;
@@ -662,8 +661,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'AuthStrategy';
       case _i8.AuthSuccess():
         return 'AuthSuccess';
-      case _i9.AuthenticationTokenInfo():
-        return 'AuthenticationTokenInfo';
+      case _i9.JwtTokenInfo():
+        return 'JwtTokenInfo';
       case _i10.RefreshToken():
         return 'RefreshToken';
       case _i11.RefreshTokenExpiredException():
@@ -720,8 +719,8 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'AuthSuccess') {
       return deserialize<_i8.AuthSuccess>(data['data']);
     }
-    if (dataClassName == 'AuthenticationTokenInfo') {
-      return deserialize<_i9.AuthenticationTokenInfo>(data['data']);
+    if (dataClassName == 'JwtTokenInfo') {
+      return deserialize<_i9.JwtTokenInfo>(data['data']);
     }
     if (dataClassName == 'RefreshToken') {
       return deserialize<_i10.RefreshToken>(data['data']);

@@ -25,12 +25,12 @@ void run(List<String> args) async {
     sessionKeyHashPepper: pod.getPassword('authSessionsSessionKeyHashPepper')!,
   );
 
-  final authenticationTokenConfig = AuthenticationTokenConfig(
+  final jwtTokenConfig = JwtConfig(
     refreshTokenHashPepper: pod.getPassword(
-      'authenticationTokenRefreshTokenHashPepper',
+      'jwtRefreshTokenHashPepper',
     )!,
-    algorithm: AuthenticationTokenAlgorithm.hmacSha512(
-      SecretKey(pod.getPassword('authenticationTokenPrivateKey')!),
+    algorithm: JwtAlgorithm.hmacSha512(
+      SecretKey(pod.getPassword('jwtPrivateKey')!),
     ),
   );
 
@@ -96,8 +96,8 @@ void run(List<String> args) async {
       PasskeyIdentityProviderFactory(passkeyIDPConfig),
     ],
     additionalTokenManagers: [
-      AuthenticationTokensTokenManagerFactory(
-        authenticationTokenConfig,
+      JwtTokenManagerFactory(
+        jwtTokenConfig,
       ),
     ],
   );

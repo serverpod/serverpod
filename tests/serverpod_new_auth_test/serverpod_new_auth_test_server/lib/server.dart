@@ -35,10 +35,10 @@ void run(final List<String> args) async {
       ),
     ],
     additionalTokenManagers: [
-      AuthenticationTokensTokenManagerFactory(
-        AuthenticationTokenConfig(
+      JwtTokenManagerFactory(
+        JwtConfig(
           refreshTokenHashPepper: universalHashPepper,
-          algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+          algorithm: JwtAlgorithm.hmacSha512(
             SecretKey('test-private-key-for-HS512'),
           ),
         ),

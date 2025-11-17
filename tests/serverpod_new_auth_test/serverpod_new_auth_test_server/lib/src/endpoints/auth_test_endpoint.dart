@@ -6,9 +6,7 @@ class AuthTestEndpoint extends Endpoint {
   late final AuthSessions _authSessions =
       AuthServices.getTokenManager<AuthSessionsTokenManager>().authSessions;
 
-  late final AuthenticationTokens _authenticationTokens =
-      AuthServices.getTokenManager<AuthenticationTokensTokenManager>()
-          .authenticationTokens;
+  late final Jwt jwt = AuthServices.getTokenManager<JwtTokenManager>().jwt;
 
   /// Creates a new test user.
   Future<UuidValue> createTestUser(final Session session) async {
@@ -42,7 +40,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    return _authenticationTokens.createTokens(
+    return jwt.createTokens(
       session,
       authUserId: authUserId,
       method: 'test',
@@ -55,7 +53,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    await _authenticationTokens.destroyAllRefreshTokens(
+    await jwt.destroyAllRefreshTokens(
       session,
       authUserId: authUserId,
     );

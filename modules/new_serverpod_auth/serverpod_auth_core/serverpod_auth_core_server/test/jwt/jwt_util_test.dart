@@ -13,13 +13,13 @@ void main() {
     late JwtUtil jwtUtil;
 
     setUp(() {
-      final authenticationTokens = AuthenticationTokens(
-        config: AuthenticationTokenConfig(
+      final jwt = Jwt(
+        config: JwtConfig(
           algorithm: _hs512Algorithm(),
           refreshTokenHashPepper: 'test-pepper',
         ),
       );
-      jwtUtil = authenticationTokens.jwtUtil;
+      jwtUtil = jwt.jwtUtil;
     });
 
     group('a plain refresh token,', () {
@@ -259,18 +259,18 @@ void main() {
   test(
     'Given a token issued with HMAC when validated by HMAC with different key then validation fails',
     () {
-      final jwt = AuthenticationTokens(
-        config: AuthenticationTokenConfig(
-          algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+      final jwt = Jwt(
+        config: JwtConfig(
+          algorithm: JwtAlgorithm.hmacSha512(
             SecretKey('First Key'),
           ),
           refreshTokenHashPepper: 'test-pepper',
         ),
       ).jwtUtil.createJwt(_createRefreshToken());
 
-      final differentKeyHS512Util = AuthenticationTokens(
-        config: AuthenticationTokenConfig(
-          algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+      final differentKeyHS512Util = Jwt(
+        config: JwtConfig(
+          algorithm: JwtAlgorithm.hmacSha512(
             SecretKey('Second Key'),
           ),
           refreshTokenHashPepper: 'test-pepper',
@@ -290,8 +290,8 @@ void main() {
       const issuer =
           'https://github.com/serverpod/serverpod/tree/main/modules/new_serverpod_auth/serverpod_auth_jwt_server';
 
-      final jwt = AuthenticationTokens(
-        config: AuthenticationTokenConfig(
+      final jwt = Jwt(
+        config: JwtConfig(
           algorithm: _hs512Algorithm(),
           refreshTokenHashPepper: 'test-pepper',
           issuer: issuer,
@@ -308,8 +308,8 @@ void main() {
   test(
     'Given a HS512 token when validated by a HS512 JWTUtil with a different issuer then validation fails',
     () {
-      final initialHS512Util = AuthenticationTokens(
-        config: AuthenticationTokenConfig(
+      final initialHS512Util = Jwt(
+        config: JwtConfig(
           algorithm: _hs512Algorithm(),
           refreshTokenHashPepper: 'test-pepper',
           issuer: 'some issuer',
@@ -317,8 +317,8 @@ void main() {
       ).jwtUtil;
       final jwt = initialHS512Util.createJwt(_createRefreshToken());
 
-      final differentIssuerHS512Util = AuthenticationTokens(
-        config: AuthenticationTokenConfig(
+      final differentIssuerHS512Util = Jwt(
+        config: JwtConfig(
           algorithm: _hs512Algorithm(),
           refreshTokenHashPepper: 'test-pepper',
           issuer: 'different issuer',
@@ -337,27 +337,27 @@ void main() {
     () {
       late JwtUtil jwtUtil;
       late RefreshToken refreshToken;
-      late String jwt;
+      late String jwtToken;
 
       setUp(() {
-        final authenticationTokens = AuthenticationTokens(
-          config: AuthenticationTokenConfig(
+        final jwt = Jwt(
+          config: JwtConfig(
             algorithm: _es512Algorithm(),
             refreshTokenHashPepper: 'test-pepper',
           ),
         );
 
-        jwtUtil = authenticationTokens.jwtUtil;
+        jwtUtil = jwt.jwtUtil;
 
         refreshToken = _createRefreshToken();
-        jwt = jwtUtil.createJwt(refreshToken);
+        jwtToken = jwtUtil.createJwt(refreshToken);
       });
 
       test(
         'when a JWT is verified, then its data is returned.',
         () {
           expect(
-            jwtUtil.verifyJwt(jwt),
+            jwtUtil.verifyJwt(jwtToken),
             isNotNull,
           );
         },
@@ -367,23 +367,23 @@ void main() {
         'when the JWT is decoded, then it names HS512 as its `alg.',
         () {
           expect(
-            JWT.decode(jwt).header,
+            JWT.decode(jwtToken).header,
             equals({'alg': 'ES512', 'typ': 'JWT'}),
           );
         },
       );
 
       test('when validated by HMAC, then the validation fails.', () {
-        final authenticationTokens = AuthenticationTokens(
-          config: AuthenticationTokenConfig(
+        final jwt = Jwt(
+          config: JwtConfig(
             algorithm: _hs512Algorithm(),
             refreshTokenHashPepper: 'test-pepper',
           ),
         );
-        final hmacJwtUtil = authenticationTokens.jwtUtil;
+        final hmacJwtUtil = jwt.jwtUtil;
 
         expectLater(
-          () => hmacJwtUtil.verifyJwt(jwt),
+          () => hmacJwtUtil.verifyJwt(jwtToken),
           throwsA(isA<Error>()),
         );
       });
@@ -391,16 +391,16 @@ void main() {
       test(
         'when the configuration is changed to HMAC with the previous public key as a fallback, then the validation succeeds.',
         () {
-          final authenticationTokens = AuthenticationTokens(
-            config: AuthenticationTokenConfig(
+          final jwt = Jwt(
+            config: JwtConfig(
               algorithm: _hs512Algorithm(),
               refreshTokenHashPepper: 'test-pepper',
               fallbackVerificationAlgorithm: _es512Algorithm(),
             ),
           );
-          final es512JwtUtil = authenticationTokens.jwtUtil;
+          final es512JwtUtil = jwt.jwtUtil;
 
-          final result = es512JwtUtil.verifyJwt(jwt);
+          final result = es512JwtUtil.verifyJwt(jwtToken);
           expect(result.authUserId, refreshToken.authUserId);
         },
       );
@@ -421,14 +421,14 @@ RefreshToken _createRefreshToken() {
   );
 }
 
-HmacSha512AuthenticationTokenAlgorithmConfiguration _hs512Algorithm() {
-  return AuthenticationTokenAlgorithm.hmacSha512(
+HmacSha512JwtAlgorithmConfiguration _hs512Algorithm() {
+  return JwtAlgorithm.hmacSha512(
     SecretKey('test-private-key-for-HS512'),
   );
 }
 
-EcdsaSha512AuthenticationTokenAlgorithmConfiguration _es512Algorithm() {
-  return AuthenticationTokenAlgorithm.ecdsaSha512(
+EcdsaSha512JwtAlgorithmConfiguration _es512Algorithm() {
+  return JwtAlgorithm.ecdsaSha512(
     privateKey: ECPrivateKey(_testPrivateKey),
     publicKey: ECPublicKey(_testPublicKey),
   );
