@@ -44,6 +44,7 @@ New packages:
 
 
 #### New features
+- feat: Model inheritance is now stable and no longer requires an experimental flag.
 - feat: Adds `-d` / `--directory` flag to the `serverpod generate` command.
 - feat: Adds support for configuring server output modes in the test framework, defaults to logging only errors.
 - feat: Adds support for clearing storage cache on `ClientAuthSessionManager`.
