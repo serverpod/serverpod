@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:serverpod_admin_dashboard/serverpod_admin_dashboard.dart';
 import 'package:serverpod_admin_dashboard/src/controller/admin_dashboard.dart';
+import 'package:serverpod_admin_dashboard/src/export/admin_resources.dart';
+import 'package:serverpod_admin_dashboard/src/widgets/footer.dart';
+import 'package:serverpod_admin_dashboard/src/widgets/record_dialog.dart';
+import 'package:serverpod_admin_dashboard/src/widgets/records_pan.dart';
+import 'package:serverpod_admin_dashboard/src/widgets/side_bar.dart';
 
-class AdminHomePage extends StatefulWidget {
-  const AdminHomePage({
+class Home extends StatefulWidget {
+  const Home({
     super.key,
     required this.controller,
   });
@@ -11,10 +15,10 @@ class AdminHomePage extends StatefulWidget {
   final AdminDashboardController controller;
 
   @override
-  State<AdminHomePage> createState() => _AdminHomePageState();
+  State<Home> createState() => _HomeState();
 }
 
-class _AdminHomePageState extends State<AdminHomePage> {
+class _HomeState extends State<Home> {
   List<AdminResource> _resources = const [];
   AdminResource? _selectedResource;
   String? _errorMessage;
@@ -120,7 +124,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
   ) async {
     final updated = await showDialog<bool>(
       context: context,
-      builder: (context) => _RecordDialog(
+      builder: (context) => RecordDialog(
         resource: resource,
         onSubmit: (payload) => _updateRecord(resource, payload),
         initialValues: record,
@@ -244,7 +248,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
   Future<void> _showCreateDialog(AdminResource resource) async {
     final created = await showDialog<bool>(
       context: context,
-      builder: (context) => _RecordDialog(
+      builder: (context) => RecordDialog(
         resource: resource,
         onSubmit: (payload) => _createRecord(resource, payload),
       ),
@@ -319,7 +323,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
       drawer: isSmallScreen
           ? Drawer(
               child: SafeArea(
-                child: _Sidebar(
+                child: Sidebar(
                   resources: _resources,
                   isLoading: _isLoading,
                   errorMessage: _errorMessage,
@@ -358,7 +362,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                   children: [
                     Expanded(
                       child: isSmallScreen
-                          ? _RecordsPane(
+                          ? RecordsPane(
                               resource: _selectedResource,
                               records: _records,
                               isLoading: _isRecordsLoading,
@@ -399,7 +403,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                     ),
                                   )
                                 else
-                                  _Sidebar(
+                                  Sidebar(
                                     resources: _resources,
                                     isLoading: _isLoading,
                                     errorMessage: _errorMessage,
@@ -415,7 +419,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                   ),
                                 const SizedBox(width: 20),
                                 Expanded(
-                                  child: _RecordsPane(
+                                  child: RecordsPane(
                                     resource: _selectedResource,
                                     records: _records,
                                     isLoading: _isRecordsLoading,
@@ -442,7 +446,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                             ),
                     ),
                     const SizedBox(height: 16),
-                    const _DashboardFooter(),
+                    const Footer(),
                   ],
                 ),
               ),
