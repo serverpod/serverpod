@@ -6,7 +6,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/jwt.dart';
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_core_server/src/jwt/business/jwt_util.dart';
-import 'package:serverpod_auth_core_server/src/jwt/jwt.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -401,7 +400,7 @@ void main() {
             config: JwtConfig(
               algorithm: _hs512Algorithm(),
               refreshTokenHashPepper: 'test-pepper',
-              fallbackVerificationAlgorithm: _es512Algorithm(),
+              fallbackVerificationAlgorithms: [_es512Algorithm()],
             ),
           );
           final es512JwtUtil = jwt.jwtUtil;
@@ -412,6 +411,158 @@ void main() {
       );
     },
   );
+
+  group('Given multiple fallback verification algorithms,', () {
+    test(
+      'when a token is signed with the primary algorithm, then it verifies successfully.',
+      () {
+        final primaryAlgorithm = _hs512Algorithm();
+        final jwt = Jwt(
+          config: JwtConfig(
+            algorithm: primaryAlgorithm,
+            refreshTokenHashPepper: 'test-pepper',
+            fallbackVerificationAlgorithms: [
+              _es512Algorithm(),
+              JwtAlgorithm.hmacSha512(
+                SecretKey('fallback-key-2'),
+              ),
+            ],
+          ),
+        );
+
+        final jwtToken = jwt.jwtUtil.createJwt(
+          _createRefreshToken(),
+        );
+
+        expect(
+          jwt.jwtUtil.verifyJwt(jwtToken),
+          isNotNull,
+        );
+      },
+    );
+
+    test(
+      'when a token is signed with the first fallback algorithm, then it verifies successfully.',
+      () {
+        final firstFallbackAlgorithm = _es512Algorithm();
+        final jwtCreator = Jwt(
+          config: JwtConfig(
+            algorithm: firstFallbackAlgorithm,
+            refreshTokenHashPepper: 'test-pepper',
+          ),
+        );
+
+        final refreshToken = _createRefreshToken();
+        final jwt = jwtCreator.jwtUtil.createJwt(refreshToken);
+
+        final jwtVerifier = Jwt(
+          config: JwtConfig(
+            algorithm: _hs512Algorithm(),
+            refreshTokenHashPepper: 'test-pepper',
+            fallbackVerificationAlgorithms: [
+              firstFallbackAlgorithm,
+              JwtAlgorithm.hmacSha512(
+                SecretKey('fallback-key-2'),
+              ),
+            ],
+          ),
+        );
+
+        final result = jwtVerifier.jwtUtil.verifyJwt(jwt);
+        expect(result.authUserId, refreshToken.authUserId);
+      },
+    );
+
+    test(
+      'when a token is signed with the second fallback algorithm, then it verifies successfully.',
+      () {
+        final secondFallbackAlgorithm = JwtAlgorithm.hmacSha512(
+          SecretKey('fallback-key-2'),
+        );
+        final jwtCreator = Jwt(
+          config: JwtConfig(
+            algorithm: secondFallbackAlgorithm,
+            refreshTokenHashPepper: 'test-pepper',
+          ),
+        );
+
+        final refreshToken = _createRefreshToken();
+        final jwt = jwtCreator.jwtUtil.createJwt(refreshToken);
+
+        final jwtVerifier = Jwt(
+          config: JwtConfig(
+            algorithm: _hs512Algorithm(),
+            refreshTokenHashPepper: 'test-pepper',
+            fallbackVerificationAlgorithms: [
+              _es512Algorithm(),
+              secondFallbackAlgorithm,
+            ],
+          ),
+        );
+
+        final result = jwtVerifier.jwtUtil.verifyJwt(jwt);
+        expect(result.authUserId, refreshToken.authUserId);
+      },
+    );
+
+    test(
+      'when a token is signed with none of the configured algorithms, then verification fails.',
+      () {
+        final unknownAlgorithm = JwtAlgorithm.hmacSha512(
+          SecretKey('unknown-key'),
+        );
+        final jwtCreator = Jwt(
+          config: JwtConfig(
+            algorithm: unknownAlgorithm,
+            refreshTokenHashPepper: 'test-pepper',
+          ),
+        );
+
+        final jwt = jwtCreator.jwtUtil.createJwt(_createRefreshToken());
+
+        final jwtVerifier = Jwt(
+          config: JwtConfig(
+            algorithm: _hs512Algorithm(),
+            refreshTokenHashPepper: 'test-pepper',
+            fallbackVerificationAlgorithms: [
+              _es512Algorithm(),
+              JwtAlgorithm.hmacSha512(
+                SecretKey('fallback-key-2'),
+              ),
+            ],
+          ),
+        );
+
+        expect(
+          () => jwtVerifier.jwtUtil.verifyJwt(jwt),
+          throwsA(isA<Exception>()),
+        );
+      },
+    );
+
+    test(
+      'when configured with an empty fallback list, then only the primary algorithm is used.',
+      () {
+        final primaryAlgorithm = _hs512Algorithm();
+        final jwt = Jwt(
+          config: JwtConfig(
+            algorithm: primaryAlgorithm,
+            refreshTokenHashPepper: 'test-pepper',
+            fallbackVerificationAlgorithms: [],
+          ),
+        );
+
+        final jwtToken = jwt.jwtUtil.createJwt(
+          _createRefreshToken(),
+        );
+
+        expect(
+          jwt.jwtUtil.verifyJwt(jwtToken),
+          isNotNull,
+        );
+      },
+    );
+  });
 }
 
 /// Returns a basic refresh token, without scopes or extra claims

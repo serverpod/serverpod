@@ -117,7 +117,9 @@ class MigrationManager {
 
     var index = availableVersions.indexOf(fromVersion);
     if (index == -1) {
-      throw Exception('Version $fromVersion not found in project.');
+      throw Exception(
+        'DB has migration version $fromVersion registered but it is not found in the project files.',
+      );
     }
     return availableVersions.sublist(index + 1);
   }

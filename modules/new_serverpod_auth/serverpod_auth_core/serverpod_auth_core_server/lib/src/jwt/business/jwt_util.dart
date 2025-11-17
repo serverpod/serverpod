@@ -14,14 +14,14 @@ class JwtUtil {
     required final Duration accessTokenLifetime,
     required final String? issuer,
     required final JwtAlgorithm algorithm,
-    required final JwtAlgorithm? fallbackVerificationAlgorithm,
+    required final List<JwtAlgorithm> fallbackVerificationAlgorithms,
   }) : _accessTokenLifetime = accessTokenLifetime,
        _issuer = issuer,
        _algorithm = algorithm,
-       _fallbackVerificationAlgorithm = fallbackVerificationAlgorithm;
+       _fallbackVerificationAlgorithms = fallbackVerificationAlgorithms;
 
   final JwtAlgorithm _algorithm;
-  final JwtAlgorithm? _fallbackVerificationAlgorithm;
+  final List<JwtAlgorithm> _fallbackVerificationAlgorithms;
   final Duration _accessTokenLifetime;
   final String? _issuer;
 
@@ -168,27 +168,25 @@ class JwtUtil {
 
   /// Verifies the JWT's signature and returns its data.
   ///
-  /// If reading with the primary algorithm fails, the fallback (if configured) is tried.
-  /// In case neither of the keys work, and error is thrown.
+  /// If reading with the primary algorithm fails, the fallbacks (if configured) are tried in order.
+  /// In case none of the keys work, the exception from the first algorithm is thrown.
   dart_jsonwebtoken.JWT _verifyJwt(final String accessToken) {
-    try {
-      return dart_jsonwebtoken.JWT.verify(
-        accessToken,
-        _algorithm.verificationKey,
-        issuer: _issuer,
-      );
-    } catch (_) {
-      final fallbackAlgorithm = _fallbackVerificationAlgorithm;
-      if (fallbackAlgorithm == null) {
-        rethrow;
-      }
+    final allAlgorithms = [_algorithm, ..._fallbackVerificationAlgorithms];
+    Object? firstError;
 
-      return dart_jsonwebtoken.JWT.verify(
-        accessToken,
-        fallbackAlgorithm.verificationKey,
-        issuer: _issuer,
-      );
+    for (final algorithm in allAlgorithms) {
+      try {
+        return dart_jsonwebtoken.JWT.verify(
+          accessToken,
+          algorithm.verificationKey,
+          issuer: _issuer,
+        );
+      } catch (e) {
+        firstError ??= e;
+      }
     }
+
+    throw firstError!;
   }
 
   /// Registered claims as per https://datatracker.ietf.org/doc/html/rfc7519#section-4.1

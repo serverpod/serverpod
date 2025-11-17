@@ -327,7 +327,7 @@ void main() {
       test(
         'when changing the configured pepper, then attempting to rotate the token throws an error.',
         () async {
-          final differentPepperAuthenticationTokens = Jwt(
+          final differentPepperJwt = Jwt(
             config: JwtConfig(
               algorithm: jwt.config.algorithm,
               refreshTokenHashPepper:
@@ -336,7 +336,7 @@ void main() {
           );
 
           await expectLater(
-            () => differentPepperAuthenticationTokens.rotateRefreshToken(
+            () => differentPepperJwt.rotateRefreshToken(
               session,
               refreshToken: authSuccess.refreshToken!,
             ),
@@ -382,15 +382,15 @@ void main() {
       );
 
       test(
-        'when looking at the auth token via `listAuthenticationTokens`, then the extra claims can be read as a Map.',
+        'when looking at the JWT token via `listJwtTokens`, then the extra claims can be read as a Map.',
         () async {
-          final authTokensForUser = await jwt.admin.listJwtTokens(
+          final jwtTokensForUser = await jwt.admin.listJwtTokens(
             session,
             authUserId: authUserId,
           );
 
           expect(
-            authTokensForUser.single.extraClaims,
+            jwtTokensForUser.single.extraClaims,
             {'string': 'foo', 'int': 1},
           );
         },
@@ -446,7 +446,7 @@ void main() {
     );
   });
 
-  withServerpod('Given an auth user with an authentication token,', (
+  withServerpod('Given an auth user with a JWT token,', (
     final sessionBuilder,
     final endpoints,
   ) {
@@ -480,7 +480,7 @@ void main() {
     );
   });
 
-  withServerpod('Given two auth users with an authentication token each,', (
+  withServerpod('Given two auth users with a JWT token each,', (
     final sessionBuilder,
     final endpoints,
   ) {
@@ -626,7 +626,7 @@ void main() {
     );
   });
 
-  withServerpod('Given an AuthenticationTokenConfig with extraClaimsProvider,', (
+  withServerpod('Given a JwtConfig with extraClaimsProvider,', (
     final sessionBuilder,
     final endpoints,
   ) {
@@ -644,7 +644,7 @@ void main() {
     test(
       'when requesting a new token pair with the provider configured, then provider claims are included in the access token.',
       () async {
-        final authenticationTokensWithHook = Jwt(
+        final jwtWithHook = Jwt(
           config: JwtConfig(
             algorithm: HmacSha512JwtAlgorithmConfiguration(
               key: SecretKey('test-private-key-for-HS512'),
@@ -656,7 +656,7 @@ void main() {
           ),
         );
 
-        final authSuccess = await authenticationTokensWithHook.createTokens(
+        final authSuccess = await jwtWithHook.createTokens(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -674,7 +674,7 @@ void main() {
     test(
       'when requesting a new token pair with both provider and extraClaims, then provider can control how claims are merged.',
       () async {
-        final authenticationTokensWithHook = Jwt(
+        final jwtWithHook = Jwt(
           config: JwtConfig(
             algorithm: HmacSha512JwtAlgorithmConfiguration(
               key: SecretKey('test-private-key-for-HS512'),
@@ -691,7 +691,7 @@ void main() {
           ),
         );
 
-        final authSuccess = await authenticationTokensWithHook.createTokens(
+        final authSuccess = await jwtWithHook.createTokens(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -711,7 +711,7 @@ void main() {
     test(
       'when rotating tokens created with a provider, then provider claims are preserved.',
       () async {
-        final authenticationTokensWithHook = Jwt(
+        final jwtWithHook = Jwt(
           config: JwtConfig(
             algorithm: HmacSha512JwtAlgorithmConfiguration(
               key: SecretKey('test-private-key-for-HS512'),
@@ -723,18 +723,17 @@ void main() {
           ),
         );
 
-        final authSuccess = await authenticationTokensWithHook.createTokens(
+        final authSuccess = await jwtWithHook.createTokens(
           session,
           authUserId: authUserId,
           scopes: {},
           method: 'test',
         );
 
-        final rotatedTokenPair = await authenticationTokensWithHook
-            .rotateRefreshToken(
-              session,
-              refreshToken: authSuccess.refreshToken!,
-            );
+        final rotatedTokenPair = await jwtWithHook.rotateRefreshToken(
+          session,
+          refreshToken: authSuccess.refreshToken!,
+        );
 
         final decodedToken = dart_jsonwebtoken.JWT.decode(
           rotatedTokenPair.accessToken,
@@ -748,7 +747,7 @@ void main() {
     test(
       'when provider returns null, then no extra claims are added from the provider.',
       () async {
-        final authenticationTokensWithHook = Jwt(
+        final jwtWithHook = Jwt(
           config: JwtConfig(
             algorithm: HmacSha512JwtAlgorithmConfiguration(
               key: SecretKey('test-private-key-for-HS512'),
@@ -760,7 +759,7 @@ void main() {
           ),
         );
 
-        final authSuccess = await authenticationTokensWithHook.createTokens(
+        final authSuccess = await jwtWithHook.createTokens(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -779,7 +778,7 @@ void main() {
       'when provider accesses session context, then it can fetch additional data.',
       () async {
         const authUsers = AuthUsers();
-        final authenticationTokensWithHook = Jwt(
+        final jwtWithHook = Jwt(
           config: JwtConfig(
             algorithm: HmacSha512JwtAlgorithmConfiguration(
               key: SecretKey('test-private-key-for-HS512'),
@@ -799,7 +798,7 @@ void main() {
           ),
         );
 
-        final authSuccess = await authenticationTokensWithHook.createTokens(
+        final authSuccess = await jwtWithHook.createTokens(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -817,7 +816,7 @@ void main() {
     test(
       'when provider uses method and scopes parameters, then it can customize claims based on them.',
       () async {
-        final authenticationTokensWithHook = Jwt(
+        final jwtWithHook = Jwt(
           config: JwtConfig(
             algorithm: HmacSha512JwtAlgorithmConfiguration(
               key: SecretKey('test-private-key-for-HS512'),
@@ -836,7 +835,7 @@ void main() {
           ),
         );
 
-        final authSuccess = await authenticationTokensWithHook.createTokens(
+        final authSuccess = await jwtWithHook.createTokens(
           session,
           authUserId: authUserId,
           scopes: {const Scope('admin'), const Scope('user')},

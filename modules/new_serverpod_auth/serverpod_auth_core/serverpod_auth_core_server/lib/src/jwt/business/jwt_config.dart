@@ -62,9 +62,9 @@ class JwtConfig {
   /// Supported options are `HmacSha512` and `EcdsaSha512`.
   final JwtAlgorithm algorithm;
 
-  /// The algorithm used to verify the JWT tokens in case the primary
-  /// algorithm fails.
-  final JwtAlgorithm? fallbackVerificationAlgorithm;
+  /// The algorithms used to verify the JWT tokens in case the primary
+  /// algorithm fails. These are tried in order until one succeeds or all fail.
+  final List<JwtAlgorithm> fallbackVerificationAlgorithms;
 
   /// Pepper used for hashing refresh tokens.
   ///
@@ -143,7 +143,7 @@ class JwtConfig {
   JwtConfig({
     required this.algorithm,
     required this.refreshTokenHashPepper,
-    this.fallbackVerificationAlgorithm,
+    this.fallbackVerificationAlgorithms = const [],
     this.accessTokenLifetime = const Duration(minutes: 10),
     this.refreshTokenLifetime = const Duration(days: 14),
     this.issuer,

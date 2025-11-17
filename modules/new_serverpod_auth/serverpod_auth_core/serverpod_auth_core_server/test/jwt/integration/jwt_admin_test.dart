@@ -56,7 +56,7 @@ void main() {
     );
 
     test(
-      'when calling `findAuthenticationTokens` for all users, then it is returned.',
+      'when calling `listJwtTokens` for all users, then it is returned.',
       () async {
         final tokens = await jwtAdmin.listJwtTokens(
           session,
@@ -70,7 +70,7 @@ void main() {
     );
 
     test(
-      'when calling `findAuthenticationTokens` for that specific user, then it is returned.',
+      'when calling `listJwtTokens` for that specific user, then it is returned.',
       () async {
         final tokens = await jwtAdmin.listJwtTokens(
           session,
@@ -85,7 +85,7 @@ void main() {
     );
 
     test(
-      'when calling `findAuthenticationTokens` for another user, then nothing is returned.',
+      'when calling `listJwtTokens` for another user, then nothing is returned.',
       () async {
         final tokens = await jwtAdmin.listJwtTokens(
           session,
@@ -97,7 +97,7 @@ void main() {
     );
 
     test(
-      'when calling `findAuthenticationTokens` with matching method, then it is returned.',
+      'when calling `listJwtTokens` with matching method, then it is returned.',
       () async {
         final tokens = await jwtAdmin.listJwtTokens(
           session,
@@ -110,7 +110,7 @@ void main() {
     );
 
     test(
-      'when calling `findAuthenticationTokens` with non-matching method, then nothing is returned.',
+      'when calling `listJwtTokens` with non-matching method, then nothing is returned.',
       () async {
         final tokens = await jwtAdmin.listJwtTokens(
           session,
@@ -224,7 +224,7 @@ void main() {
   });
 
   withServerpod(
-    'Given two auth user with 100 authentication tokens each,',
+    'Given two auth user with 100 JWT tokens each,',
     // Creating authentication tokens takes time, so we do it once in
     // setUpAll and then rollback the database after all tests in the group are complete.
     rollbackDatabase: RollbackDatabase.afterAll,
@@ -260,7 +260,7 @@ void main() {
       });
 
       test(
-        'when calling `listAuthenticationTokens`, then it returns the first 100 tokens in order of creation date ASC.',
+        'when calling `listJwtTokens`, then it returns the first 100 tokens in order of creation date ASC.',
         () async {
           final tokens = await jwtAdmin.listJwtTokens(
             session,
@@ -275,7 +275,7 @@ void main() {
       );
 
       test(
-        'when calling `listAuthenticationTokens(offset: 50)`, then it returns the next 100 tokens in order of creation date ASC.',
+        'when calling `listJwtTokens(offset: 50)`, then it returns the next 100 tokens in order of creation date ASC.',
         () async {
           final tokens = await jwtAdmin.listJwtTokens(
             session,
@@ -291,7 +291,7 @@ void main() {
       );
 
       test(
-        "when calling `listAuthenticationTokens(limit: 2)` for a specific auth user, then it returns that user's first 2 tokens in order of creation date ASC.",
+        "when calling `listJwtTokens(limit: 2)` for a specific auth user, then it returns that user's first 2 tokens in order of creation date ASC.",
         () async {
           final tokens = await jwtAdmin.listJwtTokens(
             session,
@@ -311,7 +311,7 @@ void main() {
       );
 
       test(
-        'when calling `listAuthenticationTokens` with `limit: 0`, then it throws.',
+        'when calling `listJwtTokens` with `limit: 0`, then it throws.',
         () async {
           await expectLater(
             () => jwtAdmin.listJwtTokens(
@@ -325,7 +325,7 @@ void main() {
       );
 
       test(
-        'when calling `listAuthenticationTokens` with `limit: 1001`, then it throws.',
+        'when calling `listJwtTokens` with `limit: 1001`, then it throws.',
         () async {
           await expectLater(
             () => jwtAdmin.listJwtTokens(
@@ -339,7 +339,7 @@ void main() {
       );
 
       test(
-        'when calling `listAuthenticationTokens` with `offset: -1`, then it throws.',
+        'when calling `listJwtTokens` with `offset: -1`, then it throws.',
         () async {
           await expectLater(
             () => jwtAdmin.listJwtTokens(
@@ -354,7 +354,7 @@ void main() {
     },
   );
 
-  withServerpod('Given an auth user with an expired authentication token,', (
+  withServerpod('Given an auth user with an expired JWT token,', (
     final sessionBuilder,
     final endpoints,
   ) {
