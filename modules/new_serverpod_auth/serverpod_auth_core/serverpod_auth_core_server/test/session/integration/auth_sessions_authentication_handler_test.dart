@@ -8,6 +8,8 @@ import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
 
+const _oldPepper = 'old-pepper-123';
+
 void main() {
   final authSessions = AuthSessions(
     config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
@@ -319,4 +321,154 @@ void main() {
       },
     );
   });
+
+  withServerpod(
+    'Given an auth session created with a previous pepper,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late UuidValue authUserId;
+      late String sessionKey;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        // Create session with an old pepper
+        final oldPepperAuthSessions = AuthSessions(
+          config: AuthSessionsConfig(sessionKeyHashPepper: _oldPepper),
+        );
+
+        authUserId = (await oldPepperAuthSessions.authUsers.create(session)).id;
+
+        sessionKey = (await oldPepperAuthSessions.createSession(
+          session,
+          authUserId: authUserId,
+          scopes: {},
+          method: 'test',
+        )).token;
+      });
+
+      test(
+        'when calling `authenticationHandler` with the new pepper only then it returns `null`.',
+        () async {
+          final newPepperAuthSessions = AuthSessions(
+            config: AuthSessionsConfig(sessionKeyHashPepper: 'new-pepper-456'),
+          );
+
+          final authInfo = await newPepperAuthSessions.authenticationHandler(
+            session,
+            sessionKey,
+          );
+
+          expect(
+            authInfo,
+            isNull,
+          );
+        },
+      );
+
+      test(
+        'when calling `authenticationHandler` with the new pepper and old pepper in fallback list then it returns the user.',
+        () async {
+          final rotatedPepperAuthSessions = AuthSessions(
+            config: AuthSessionsConfig(
+              sessionKeyHashPepper: 'new-pepper-456',
+              fallbackSessionKeyHashPeppers: [_oldPepper],
+            ),
+          );
+
+          final authInfo = await rotatedPepperAuthSessions
+              .authenticationHandler(
+                session,
+                sessionKey,
+              );
+
+          expect(
+            authInfo?.authUserId,
+            authUserId,
+          );
+        },
+      );
+
+      test(
+        'when calling `authenticationHandler` with multiple fallback peppers then it tries each until a match is found.',
+        () async {
+          final rotatedPepperAuthSessions = AuthSessions(
+            config: AuthSessionsConfig(
+              sessionKeyHashPepper: 'newest-pepper',
+              fallbackSessionKeyHashPeppers: [
+                'intermediate-pepper',
+                _oldPepper,
+                'oldest-pepper',
+              ],
+            ),
+          );
+
+          final authInfo = await rotatedPepperAuthSessions
+              .authenticationHandler(
+                session,
+                sessionKey,
+              );
+
+          expect(
+            authInfo?.authUserId,
+            authUserId,
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given a new session created with the current pepper,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late UuidValue authUserId;
+      late String sessionKey;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        // Create session with the current pepper
+        final currentPepperAuthSessions = AuthSessions(
+          config: AuthSessionsConfig(
+            sessionKeyHashPepper: 'current-pepper',
+            fallbackSessionKeyHashPeppers: ['old-pepper-1', 'old-pepper-2'],
+          ),
+        );
+
+        authUserId = (await currentPepperAuthSessions.authUsers.create(
+          session,
+        )).id;
+
+        sessionKey = (await currentPepperAuthSessions.createSession(
+          session,
+          authUserId: authUserId,
+          scopes: {},
+          method: 'test',
+        )).token;
+      });
+
+      test(
+        'when calling `authenticationHandler` with the current pepper and fallback peppers then it validates successfully.',
+        () async {
+          final authSessionsWithFallback = AuthSessions(
+            config: AuthSessionsConfig(
+              sessionKeyHashPepper: 'current-pepper',
+              fallbackSessionKeyHashPeppers: ['old-pepper-1', 'old-pepper-2'],
+            ),
+          );
+
+          final authInfo = await authSessionsWithFallback.authenticationHandler(
+            session,
+            sessionKey,
+          );
+
+          expect(
+            authInfo?.authUserId,
+            authUserId,
+          );
+        },
+      );
+    },
+  );
 }
