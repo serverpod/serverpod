@@ -43,7 +43,7 @@ final class AuthenticationTokens {
          accessTokenLifetime: config.accessTokenLifetime,
          issuer: config.issuer,
          algorithm: config.algorithm,
-         fallbackVerificationAlgorithm: config.fallbackVerificationAlgorithm,
+         fallbackVerificationAlgorithms: config.fallbackVerificationAlgorithms,
        ),
        refreshTokenSecretHash = RefreshTokenSecretHash(
          refreshTokenRotatingSecretSaltLength:

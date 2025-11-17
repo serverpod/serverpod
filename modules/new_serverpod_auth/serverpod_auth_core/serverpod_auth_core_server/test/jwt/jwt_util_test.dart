@@ -395,7 +395,7 @@ void main() {
             config: AuthenticationTokenConfig(
               algorithm: _hs512Algorithm(),
               refreshTokenHashPepper: 'test-pepper',
-              fallbackVerificationAlgorithm: _es512Algorithm(),
+              fallbackVerificationAlgorithms: [_es512Algorithm()],
             ),
           );
           final es512JwtUtil = authenticationTokens.jwtUtil;
@@ -406,6 +406,158 @@ void main() {
       );
     },
   );
+
+  group('Given multiple fallback verification algorithms,', () {
+    test(
+      'when a token is signed with the primary algorithm, then it verifies successfully.',
+      () {
+        final primaryAlgorithm = _hs512Algorithm();
+        final authenticationTokens = AuthenticationTokens(
+          config: AuthenticationTokenConfig(
+            algorithm: primaryAlgorithm,
+            refreshTokenHashPepper: 'test-pepper',
+            fallbackVerificationAlgorithms: [
+              _es512Algorithm(),
+              AuthenticationTokenAlgorithm.hmacSha512(
+                SecretKey('fallback-key-2'),
+              ),
+            ],
+          ),
+        );
+
+        final jwt = authenticationTokens.jwtUtil.createJwt(
+          _createRefreshToken(),
+        );
+
+        expect(
+          authenticationTokens.jwtUtil.verifyJwt(jwt),
+          isNotNull,
+        );
+      },
+    );
+
+    test(
+      'when a token is signed with the first fallback algorithm, then it verifies successfully.',
+      () {
+        final firstFallbackAlgorithm = _es512Algorithm();
+        final jwtCreator = AuthenticationTokens(
+          config: AuthenticationTokenConfig(
+            algorithm: firstFallbackAlgorithm,
+            refreshTokenHashPepper: 'test-pepper',
+          ),
+        );
+
+        final refreshToken = _createRefreshToken();
+        final jwt = jwtCreator.jwtUtil.createJwt(refreshToken);
+
+        final jwtVerifier = AuthenticationTokens(
+          config: AuthenticationTokenConfig(
+            algorithm: _hs512Algorithm(),
+            refreshTokenHashPepper: 'test-pepper',
+            fallbackVerificationAlgorithms: [
+              firstFallbackAlgorithm,
+              AuthenticationTokenAlgorithm.hmacSha512(
+                SecretKey('fallback-key-2'),
+              ),
+            ],
+          ),
+        );
+
+        final result = jwtVerifier.jwtUtil.verifyJwt(jwt);
+        expect(result.authUserId, refreshToken.authUserId);
+      },
+    );
+
+    test(
+      'when a token is signed with the second fallback algorithm, then it verifies successfully.',
+      () {
+        final secondFallbackAlgorithm = AuthenticationTokenAlgorithm.hmacSha512(
+          SecretKey('fallback-key-2'),
+        );
+        final jwtCreator = AuthenticationTokens(
+          config: AuthenticationTokenConfig(
+            algorithm: secondFallbackAlgorithm,
+            refreshTokenHashPepper: 'test-pepper',
+          ),
+        );
+
+        final refreshToken = _createRefreshToken();
+        final jwt = jwtCreator.jwtUtil.createJwt(refreshToken);
+
+        final jwtVerifier = AuthenticationTokens(
+          config: AuthenticationTokenConfig(
+            algorithm: _hs512Algorithm(),
+            refreshTokenHashPepper: 'test-pepper',
+            fallbackVerificationAlgorithms: [
+              _es512Algorithm(),
+              secondFallbackAlgorithm,
+            ],
+          ),
+        );
+
+        final result = jwtVerifier.jwtUtil.verifyJwt(jwt);
+        expect(result.authUserId, refreshToken.authUserId);
+      },
+    );
+
+    test(
+      'when a token is signed with none of the configured algorithms, then verification fails.',
+      () {
+        final unknownAlgorithm = AuthenticationTokenAlgorithm.hmacSha512(
+          SecretKey('unknown-key'),
+        );
+        final jwtCreator = AuthenticationTokens(
+          config: AuthenticationTokenConfig(
+            algorithm: unknownAlgorithm,
+            refreshTokenHashPepper: 'test-pepper',
+          ),
+        );
+
+        final jwt = jwtCreator.jwtUtil.createJwt(_createRefreshToken());
+
+        final jwtVerifier = AuthenticationTokens(
+          config: AuthenticationTokenConfig(
+            algorithm: _hs512Algorithm(),
+            refreshTokenHashPepper: 'test-pepper',
+            fallbackVerificationAlgorithms: [
+              _es512Algorithm(),
+              AuthenticationTokenAlgorithm.hmacSha512(
+                SecretKey('fallback-key-2'),
+              ),
+            ],
+          ),
+        );
+
+        expect(
+          () => jwtVerifier.jwtUtil.verifyJwt(jwt),
+          throwsA(isA<Exception>()),
+        );
+      },
+    );
+
+    test(
+      'when configured with an empty fallback list, then only the primary algorithm is used.',
+      () {
+        final primaryAlgorithm = _hs512Algorithm();
+        final authenticationTokens = AuthenticationTokens(
+          config: AuthenticationTokenConfig(
+            algorithm: primaryAlgorithm,
+            refreshTokenHashPepper: 'test-pepper',
+            fallbackVerificationAlgorithms: [],
+          ),
+        );
+
+        final jwt = authenticationTokens.jwtUtil.createJwt(
+          _createRefreshToken(),
+        );
+
+        expect(
+          authenticationTokens.jwtUtil.verifyJwt(jwt),
+          isNotNull,
+        );
+      },
+    );
+  });
 }
 
 /// Returns a basic refresh token, without scopes or extra claims

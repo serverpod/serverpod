@@ -61,9 +61,9 @@ class AuthenticationTokenConfig {
   /// Supported options are `HmacSha512` and `EcdsaSha512`.
   final AuthenticationTokenAlgorithm algorithm;
 
-  /// The algorithm used to verify the JWT tokens in case the primary
-  /// algorithm fails.
-  final AuthenticationTokenAlgorithm? fallbackVerificationAlgorithm;
+  /// The algorithms used to verify the JWT tokens in case the primary
+  /// algorithm fails. These are tried in order until one succeeds or all fail.
+  final List<AuthenticationTokenAlgorithm> fallbackVerificationAlgorithms;
 
   /// Pepper used for hashing refresh tokens.
   ///
@@ -142,7 +142,7 @@ class AuthenticationTokenConfig {
   AuthenticationTokenConfig({
     required this.algorithm,
     required this.refreshTokenHashPepper,
-    this.fallbackVerificationAlgorithm,
+    this.fallbackVerificationAlgorithms = const [],
     this.accessTokenLifetime = const Duration(minutes: 10),
     this.refreshTokenLifetime = const Duration(days: 14),
     this.issuer,
