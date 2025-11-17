@@ -208,7 +208,7 @@ final class AuthenticationTokens {
     required final String refreshToken,
     final Transaction? transaction,
   }) async {
-    return JwtUtil.withReplacedServerJwtException(() async {
+    return _withReplacedServerJwtException(() async {
       final refreshesTokenPair = await rotateRefreshToken(
         session,
         refreshToken: refreshToken,
@@ -350,6 +350,27 @@ final class AuthenticationTokens {
     return generateRandomBytes(
       config.refreshTokenRotatingSecretLength,
     );
+  }
+
+  /// Replaces server-side exceptions by client-side exceptions, hiding details
+  /// that could leak account information.
+  static Future<T> _withReplacedServerJwtException<T>(
+    final Future<T> Function() fn,
+  ) async {
+    try {
+      return await fn();
+    } on RefreshTokenServerException catch (e) {
+      switch (e) {
+        case RefreshTokenMalformedServerException():
+          throw RefreshTokenMalformedException();
+        case RefreshTokenNotFoundServerException():
+          throw RefreshTokenNotFoundException();
+        case RefreshTokenExpiredServerException():
+          throw RefreshTokenExpiredException();
+        case RefreshTokenInvalidSecretServerException():
+          throw RefreshTokenInvalidSecretException();
+      }
+    }
   }
 }
 
