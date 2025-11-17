@@ -38,6 +38,30 @@ class AdminEndpoint extends Endpoint {
     return serialized;
   }
 
+  Future<List<Map<String, String>>> listPage(
+    Session session,
+    String resourceKey,
+    int offset,
+    int limit,
+  ) async {
+    if (offset < 0 || limit <= 0) {
+      throw ArgumentError(
+        'Invalid pagination arguments. Offset must be >= 0 and limit > 0.',
+      );
+    }
+
+    final entry = _resolve(resourceKey);
+    final all = await entry.list(session);
+    final window = all.skip(offset).take(limit).toList(growable: false);
+
+    session.log(
+      'AdminEndpoint.listPage resource=$resourceKey offset=$offset '
+      'limit=$limit returned=${window.length}',
+    );
+
+    return _stringifyRecords(window);
+  }
+
   Future<Map<String, dynamic>?> find(
     Session session,
     String resourceKey,
