@@ -14,8 +14,8 @@ import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
   const authUsers = AuthUsers();
-  final tokenManager = AuthSessionsTokenManager(
-    config: AuthSessionsConfig(
+  final tokenManager = ServerSideSessionsTokenManager(
+    config: ServerSideSessionsConfig(
       sessionKeyHashPepper: 'test-pepper',
     ),
     authUsers: authUsers,

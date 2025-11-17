@@ -22,8 +22,8 @@ void run(final List<String> args) async {
 
   const universalHashPepper = 'test-pepper';
   final authConfig = AuthServices.set(
-    primaryTokenManager: AuthSessionsTokenManagerFactory(
-      AuthSessionsConfig(sessionKeyHashPepper: universalHashPepper),
+    primaryTokenManager: ServerSideSessionsTokenManagerFactory(
+      ServerSideSessionsConfig(sessionKeyHashPepper: universalHashPepper),
     ),
     identityProviders: [
       EmailIdentityProviderFactory(

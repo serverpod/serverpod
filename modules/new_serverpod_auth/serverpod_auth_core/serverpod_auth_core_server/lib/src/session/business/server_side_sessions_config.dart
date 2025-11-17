@@ -1,5 +1,5 @@
 /// Configuration options for the session module.
-class AuthSessionsConfig {
+class ServerSideSessionsConfig {
   /// Length of the session key secret (which is only stored on the client).
   ///
   /// Defaults to 32 bytes.
@@ -37,7 +37,7 @@ class AuthSessionsConfig {
   final Duration? defaultSessionInactivityTimeout;
 
   /// Create a new user session configuration.
-  AuthSessionsConfig({
+  ServerSideSessionsConfig({
     this.sessionKeySecretLength = 32,
     this.sessionKeyHashSaltLength = 16,
     required this.sessionKeyHashPepper,

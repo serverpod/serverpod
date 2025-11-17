@@ -23,7 +23,7 @@ import 'jwt/models/refresh_token_malformed_exception.dart' as _i10;
 import 'jwt/models/refresh_token_not_found_exception.dart' as _i11;
 import 'jwt/models/token_pair.dart' as _i12;
 import 'profile/models/user_profile_model.dart' as _i13;
-import 'session/models/auth_session_info.dart' as _i14;
+import 'session/models/server_side_session_info.dart' as _i14;
 export 'auth_user/models/auth_user_blocked_exception.dart';
 export 'auth_user/models/auth_user_model.dart';
 export 'auth_user/models/auth_user_not_found_exception.dart';
@@ -36,7 +36,7 @@ export 'jwt/models/refresh_token_malformed_exception.dart';
 export 'jwt/models/refresh_token_not_found_exception.dart';
 export 'jwt/models/token_pair.dart';
 export 'profile/models/user_profile_model.dart';
-export 'session/models/auth_session_info.dart';
+export 'session/models/server_side_session_info.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -88,8 +88,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i13.UserProfileModel) {
       return _i13.UserProfileModel.fromJson(data) as T;
     }
-    if (t == _i14.AuthSessionInfo) {
-      return _i14.AuthSessionInfo.fromJson(data) as T;
+    if (t == _i14.ServerSideSessionInfo) {
+      return _i14.ServerSideSessionInfo.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.AuthUserBlockedException?>()) {
       return (data != null ? _i2.AuthUserBlockedException.fromJson(data) : null)
@@ -143,8 +143,9 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i13.UserProfileModel?>()) {
       return (data != null ? _i13.UserProfileModel.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.AuthSessionInfo?>()) {
-      return (data != null ? _i14.AuthSessionInfo.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i14.ServerSideSessionInfo?>()) {
+      return (data != null ? _i14.ServerSideSessionInfo.fromJson(data) : null)
+          as T;
     }
     if (t == Set<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
@@ -181,8 +182,8 @@ class Protocol extends _i1.SerializationManager {
         return 'TokenPair';
       case _i13.UserProfileModel():
         return 'UserProfileModel';
-      case _i14.AuthSessionInfo():
-        return 'AuthSessionInfo';
+      case _i14.ServerSideSessionInfo():
+        return 'ServerSideSessionInfo';
     }
     return null;
   }
@@ -229,8 +230,8 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'UserProfileModel') {
       return deserialize<_i13.UserProfileModel>(data['data']);
     }
-    if (dataClassName == 'AuthSessionInfo') {
-      return deserialize<_i14.AuthSessionInfo>(data['data']);
+    if (dataClassName == 'ServerSideSessionInfo') {
+      return deserialize<_i14.ServerSideSessionInfo>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

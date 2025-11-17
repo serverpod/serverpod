@@ -6,103 +6,50 @@ import 'package:test/test.dart';
 import '../../serverpod_test_tools.dart';
 
 void main() {
-  group('Given AuthSessions with default session lifetime configured', () {
-    final authSessions = AuthSessions(
-      config: AuthSessionsConfig(
-        sessionKeyHashPepper: 'test-pepper',
-        defaultSessionLifetime: const Duration(days: 7),
-      ),
-    );
+  group(
+    'Given ServerSideSessions with default session lifetime configured',
+    () {
+      final serverSideSessions = ServerSideSessions(
+        config: ServerSideSessionsConfig(
+          sessionKeyHashPepper: 'test-pepper',
+          defaultSessionLifetime: const Duration(days: 7),
+        ),
+      );
 
-    withServerpod(
-      'when creating a session without explicit expiresAt',
-      (final sessionBuilder, final endpoints) {
-        late Session session;
-        late UuidValue authUserId;
-        late String sessionKey;
+      withServerpod(
+        'when creating a session without explicit expiresAt',
+        (final sessionBuilder, final endpoints) {
+          late Session session;
+          late UuidValue authUserId;
+          late String sessionKey;
 
-        setUp(() async {
-          session = sessionBuilder.build();
-          authUserId = (await authSessions.authUsers.create(session)).id;
+          setUp(() async {
+            session = sessionBuilder.build();
+            authUserId = (await serverSideSessions.authUsers.create(
+              session,
+            )).id;
 
-          sessionKey = (await authSessions.createSession(
-            session,
-            authUserId: authUserId,
-            method: 'test',
-          )).token;
-        });
+            sessionKey = (await serverSideSessions.createSession(
+              session,
+              authUserId: authUserId,
+              method: 'test',
+            )).token;
+          });
 
-        test('then session is valid immediately after creation.', () async {
-          final authInfo = await authSessions.authenticationHandler(
-            session,
-            sessionKey,
-          );
-
-          expect(authInfo?.authUserId, equals(authUserId));
-        });
-
-        test('then session expires after default lifetime.', () async {
-          await withClock(
-            Clock.fixed(clock.now().add(const Duration(days: 7, seconds: 1))),
-            () async {
-              final authInfo = await authSessions.authenticationHandler(
-                session,
-                sessionKey,
-              );
-
-              expect(authInfo, isNull);
-            },
-          );
-        });
-
-        test(
-          'then session is valid before default lifetime expires.',
-          () async {
-            await withClock(
-              Clock.fixed(clock.now().add(const Duration(days: 6))),
-              () async {
-                final authInfo = await authSessions.authenticationHandler(
-                  session,
-                  sessionKey,
-                );
-
-                expect(authInfo?.authUserId, equals(authUserId));
-              },
+          test('then session is valid immediately after creation.', () async {
+            final authInfo = await serverSideSessions.authenticationHandler(
+              session,
+              sessionKey,
             );
-          },
-        );
-      },
-    );
 
-    withServerpod(
-      'when creating a session with explicit expiresAt',
-      (final sessionBuilder, final endpoints) {
-        late Session session;
-        late UuidValue authUserId;
-        late String sessionKey;
-        late DateTime explicitExpiresAt;
+            expect(authInfo?.authUserId, equals(authUserId));
+          });
 
-        setUp(() async {
-          session = sessionBuilder.build();
-          authUserId = (await authSessions.authUsers.create(session)).id;
-          explicitExpiresAt = clock.now().add(const Duration(days: 1));
-
-          sessionKey = (await authSessions.createSession(
-            session,
-            authUserId: authUserId,
-            method: 'test',
-            expiresAt: explicitExpiresAt,
-          )).token;
-        });
-
-        test(
-          'then explicit expiresAt takes precedence over default.',
-          () async {
-            // Session should be invalid after explicit expiration (1 day)
+          test('then session expires after default lifetime.', () async {
             await withClock(
-              Clock.fixed(explicitExpiresAt.add(const Duration(seconds: 1))),
+              Clock.fixed(clock.now().add(const Duration(days: 7, seconds: 1))),
               () async {
-                final authInfo = await authSessions.authenticationHandler(
+                final authInfo = await serverSideSessions.authenticationHandler(
                   session,
                   sessionKey,
                 );
@@ -110,17 +57,79 @@ void main() {
                 expect(authInfo, isNull);
               },
             );
-          },
-        );
-      },
-    );
-  });
+          });
+
+          test(
+            'then session is valid before default lifetime expires.',
+            () async {
+              await withClock(
+                Clock.fixed(clock.now().add(const Duration(days: 6))),
+                () async {
+                  final authInfo = await serverSideSessions
+                      .authenticationHandler(
+                        session,
+                        sessionKey,
+                      );
+
+                  expect(authInfo?.authUserId, equals(authUserId));
+                },
+              );
+            },
+          );
+        },
+      );
+
+      withServerpod(
+        'when creating a session with explicit expiresAt',
+        (final sessionBuilder, final endpoints) {
+          late Session session;
+          late UuidValue authUserId;
+          late String sessionKey;
+          late DateTime explicitExpiresAt;
+
+          setUp(() async {
+            session = sessionBuilder.build();
+            authUserId = (await serverSideSessions.authUsers.create(
+              session,
+            )).id;
+            explicitExpiresAt = clock.now().add(const Duration(days: 1));
+
+            sessionKey = (await serverSideSessions.createSession(
+              session,
+              authUserId: authUserId,
+              method: 'test',
+              expiresAt: explicitExpiresAt,
+            )).token;
+          });
+
+          test(
+            'then explicit expiresAt takes precedence over default.',
+            () async {
+              // Session should be invalid after explicit expiration (1 day)
+              await withClock(
+                Clock.fixed(explicitExpiresAt.add(const Duration(seconds: 1))),
+                () async {
+                  final authInfo = await serverSideSessions
+                      .authenticationHandler(
+                        session,
+                        sessionKey,
+                      );
+
+                  expect(authInfo, isNull);
+                },
+              );
+            },
+          );
+        },
+      );
+    },
+  );
 
   group(
-    'Given AuthSessions with default session inactivity timeout configured',
+    'Given ServerSideSessions with default session inactivity timeout configured',
     () {
-      final authSessions = AuthSessions(
-        config: AuthSessionsConfig(
+      final serverSideSessions = ServerSideSessions(
+        config: ServerSideSessionsConfig(
           sessionKeyHashPepper: 'test-pepper',
           defaultSessionInactivityTimeout: const Duration(hours: 2),
         ),
@@ -135,9 +144,11 @@ void main() {
 
           setUp(() async {
             session = sessionBuilder.build();
-            authUserId = (await authSessions.authUsers.create(session)).id;
+            authUserId = (await serverSideSessions.authUsers.create(
+              session,
+            )).id;
 
-            sessionKey = (await authSessions.createSession(
+            sessionKey = (await serverSideSessions.createSession(
               session,
               authUserId: authUserId,
               method: 'test',
@@ -145,7 +156,7 @@ void main() {
           });
 
           test('then session is valid immediately after creation.', () async {
-            final authInfo = await authSessions.authenticationHandler(
+            final authInfo = await serverSideSessions.authenticationHandler(
               session,
               sessionKey,
             );
@@ -161,10 +172,11 @@ void main() {
                   clock.now().add(const Duration(hours: 2, seconds: 1)),
                 ),
                 () async {
-                  final authInfo = await authSessions.authenticationHandler(
-                    session,
-                    sessionKey,
-                  );
+                  final authInfo = await serverSideSessions
+                      .authenticationHandler(
+                        session,
+                        sessionKey,
+                      );
 
                   expect(authInfo, isNull);
                 },
@@ -178,10 +190,11 @@ void main() {
               await withClock(
                 Clock.fixed(clock.now().add(const Duration(hours: 1))),
                 () async {
-                  final authInfo = await authSessions.authenticationHandler(
-                    session,
-                    sessionKey,
-                  );
+                  final authInfo = await serverSideSessions
+                      .authenticationHandler(
+                        session,
+                        sessionKey,
+                      );
 
                   expect(authInfo?.authUserId, equals(authUserId));
                 },
@@ -200,9 +213,11 @@ void main() {
 
           setUp(() async {
             session = sessionBuilder.build();
-            authUserId = (await authSessions.authUsers.create(session)).id;
+            authUserId = (await serverSideSessions.authUsers.create(
+              session,
+            )).id;
 
-            sessionKey = (await authSessions.createSession(
+            sessionKey = (await serverSideSessions.createSession(
               session,
               authUserId: authUserId,
               method: 'test',
@@ -219,10 +234,11 @@ void main() {
                   clock.now().add(const Duration(minutes: 30, seconds: 1)),
                 ),
                 () async {
-                  final authInfo = await authSessions.authenticationHandler(
-                    session,
-                    sessionKey,
-                  );
+                  final authInfo = await serverSideSessions
+                      .authenticationHandler(
+                        session,
+                        sessionKey,
+                      );
 
                   expect(authInfo, isNull);
                 },
@@ -234,9 +250,9 @@ void main() {
     },
   );
 
-  group('Given AuthSessions with no session configuration defaults', () {
-    final authSessions = AuthSessions(
-      config: AuthSessionsConfig(
+  group('Given ServerSideSessions with no session configuration defaults', () {
+    final serverSideSessions = ServerSideSessions(
+      config: ServerSideSessionsConfig(
         sessionKeyHashPepper: 'test-pepper',
       ),
     );
@@ -250,9 +266,9 @@ void main() {
 
         setUp(() async {
           session = sessionBuilder.build();
-          authUserId = (await authSessions.authUsers.create(session)).id;
+          authUserId = (await serverSideSessions.authUsers.create(session)).id;
 
-          sessionKey = (await authSessions.createSession(
+          sessionKey = (await serverSideSessions.createSession(
             session,
             authUserId: authUserId,
             method: 'test',
@@ -260,7 +276,7 @@ void main() {
         });
 
         test('then session is valid without expiration.', () async {
-          final authInfo = await authSessions.authenticationHandler(
+          final authInfo = await serverSideSessions.authenticationHandler(
             session,
             sessionKey,
           );
@@ -272,7 +288,7 @@ void main() {
           await withClock(
             Clock.fixed(clock.now().add(const Duration(days: 365))),
             () async {
-              final authInfo = await authSessions.authenticationHandler(
+              final authInfo = await serverSideSessions.authenticationHandler(
                 session,
                 sessionKey,
               );

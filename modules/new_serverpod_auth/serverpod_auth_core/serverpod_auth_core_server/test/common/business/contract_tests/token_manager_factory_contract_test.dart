@@ -57,9 +57,9 @@ void main() {
     () => FakeTokenManagerFactory(tokenStorage: FakeTokenStorage()),
   );
 
-  testSuite<AuthSessionsTokenManager>(
-    () => AuthSessionsTokenManagerFactory(
-      AuthSessionsConfig(
+  testSuite<ServerSideSessionsTokenManager>(
+    () => ServerSideSessionsTokenManagerFactory(
+      ServerSideSessionsConfig(
         sessionKeyHashPepper: 'test-pepper',
       ),
     ),

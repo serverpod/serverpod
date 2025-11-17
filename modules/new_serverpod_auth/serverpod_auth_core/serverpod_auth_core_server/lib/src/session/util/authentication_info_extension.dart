@@ -1,12 +1,12 @@
 import 'package:serverpod/serverpod.dart';
 
-/// Authentication session ID extension for `AuthenticationInfo`.
-extension AuthenticationInfoAuthSessionId on AuthenticationInfo {
-  /// Returns the auth session ID of the authenticated user.
+/// Server side session ID extension for `AuthenticationInfo`.
+extension AuthenticationInfoServerSideSessionId on AuthenticationInfo {
+  /// Returns the server side session ID of the authenticated user.
   ///
-  /// Assumes that the `authId` is set and the system uses `Uuid` auth session
+  /// Assumes that the `authId` is set and the system uses `Uuid` server side session
   /// IDs, otherwise throws.
-  UuidValue get authSessionId {
+  UuidValue get serverSideSessionId {
     return UuidValue.withValidation(authId!);
   }
 }

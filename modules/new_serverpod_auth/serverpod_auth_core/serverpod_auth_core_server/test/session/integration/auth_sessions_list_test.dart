@@ -6,8 +6,8 @@ import 'package:test/test.dart';
 import '../../serverpod_test_tools.dart';
 
 void main() {
-  final authSessions = AuthSessions(
-    config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+  final serverSideSessions = ServerSideSessions(
+    config: ServerSideSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
   withServerpod('Given an auth session for a user,', (
@@ -16,34 +16,36 @@ void main() {
   ) {
     late Session session;
     late UuidValue authUserId;
-    late UuidValue authSessionId;
+    late UuidValue serverSideSessionId;
 
     setUp(() async {
       session = sessionBuilder.build();
 
-      authUserId = (await authSessions.authUsers.create(session)).id;
+      authUserId = (await serverSideSessions.authUsers.create(session)).id;
 
       // ignore: unused_result
-      await authSessions.createSession(
+      await serverSideSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
         method: 'test',
       );
-      authSessionId = (await AuthSession.db.find(session)).single.id!;
+      serverSideSessionId = (await ServerSideSession.db.find(
+        session,
+      )).single.id!;
     });
 
     test(
       'when calling `listSessions` for the user, then it is returned.',
       () async {
-        final sessions = await authSessions.listSessions(
+        final sessions = await serverSideSessions.listSessions(
           session,
           authUserId: authUserId,
         );
 
         expect(
           sessions.single.id,
-          authSessionId,
+          serverSideSessionId,
         );
       },
     );
@@ -51,7 +53,7 @@ void main() {
     test(
       'when calling `listSessions` for another user, then nothing is returned.',
       () async {
-        final sessions = await authSessions.listSessions(
+        final sessions = await serverSideSessions.listSessions(
           session,
           authUserId: const Uuid().v4obj(),
         );

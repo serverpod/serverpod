@@ -21,8 +21,10 @@ void run(List<String> args) async {
   );
 
   // Configure our token managers.
-  final authSessionsConfig = AuthSessionsConfig(
-    sessionKeyHashPepper: pod.getPassword('authSessionsSessionKeyHashPepper')!,
+  final serverSideSessionsConfig = ServerSideSessionsConfig(
+    sessionKeyHashPepper: pod.getPassword(
+      'serverSideSessionsSessionKeyHashPepper',
+    )!,
   );
 
   final jwtTokenConfig = JwtConfig(
@@ -88,7 +90,9 @@ void run(List<String> args) async {
   );
 
   final authServices = AuthServices.set(
-    primaryTokenManager: AuthSessionsTokenManagerFactory(authSessionsConfig),
+    primaryTokenManager: ServerSideSessionsTokenManagerFactory(
+      serverSideSessionsConfig,
+    ),
     identityProviders: [
       GoogleIdentityProviderFactory(googleIDPConfig),
       AppleIdentityProviderFactory(appleIDPConfig),

@@ -1020,16 +1020,16 @@ void main() {
   );
 
   testSuite(
-    'AuthSessionsTokenManager',
+    'ServerSideSessionsTokenManager',
     (final authUsers) {
-      return AuthSessionsTokenManager(
-        config: AuthSessionsConfig(
+      return ServerSideSessionsTokenManager(
+        config: ServerSideSessionsConfig(
           sessionKeyHashPepper: 'test-pepper',
         ),
         authUsers: authUsers,
       );
     },
-    tokenIssuer: AuthSessionsTokenManager.tokenIssuerName,
+    tokenIssuer: ServerSideSessionsTokenManager.tokenIssuerName,
     authUsers: authUsers,
     isDatabaseBackedManager: true,
     usesRefreshTokens: false,

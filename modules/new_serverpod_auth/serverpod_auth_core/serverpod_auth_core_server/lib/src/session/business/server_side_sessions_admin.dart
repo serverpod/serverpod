@@ -5,25 +5,25 @@ import 'package:serverpod/serverpod.dart';
 import '../../generated/protocol.dart';
 
 /// Collection of admin functions for managing sessions.
-final class AuthSessionsAdmin {
+final class ServerSideSessionsAdmin {
   /// Creates a new admin helper class instance.
   @internal
-  AuthSessionsAdmin();
+  ServerSideSessionsAdmin();
 
-  /// Deletes the session where [AuthSession.expiresAt] has elapsed, or where
-  /// the session has not been used in since [AuthSession.expireAfterUnusedFor] expired it.
+  /// Deletes the session where [ServerSideSession.expiresAt] has elapsed, or where
+  /// the session has not been used in since [ServerSideSession.expireAfterUnusedFor] expired it.
   Future<void> deleteExpiredSessions(
     final Session session, {
 
-    /// Whether to delete sessions which [AuthSession.expiresAt] is in the past.
+    /// Whether to delete sessions which [ServerSideSession.expiresAt] is in the past.
     final bool deleteExpired = true,
 
-    /// Whether to delete sessions which have not been used for [AuthSession.expireAfterUnusedFor].
+    /// Whether to delete sessions which have not been used for [ServerSideSession.expireAfterUnusedFor].
     final bool deleteInactive = true,
     final Transaction? transaction,
   }) async {
     if (deleteExpired) {
-      await AuthSession.db.deleteWhere(
+      await ServerSideSession.db.deleteWhere(
         session,
         where: (final t) => t.expiresAt < clock.now(),
         transaction: transaction,
@@ -32,22 +32,22 @@ final class AuthSessionsAdmin {
 
     if (deleteInactive) {
       await session.db.unsafeQuery(
-        'DELETE FROM ${AuthSession.t.tableName} WHERE '
-        '"${AuthSession.t.expireAfterUnusedFor.columnName}" IS NOT NULL AND '
-        '"${AuthSession.t.lastUsedAt.columnName}" + ("${AuthSession.t.expireAfterUnusedFor.columnName}" * INTERVAL \'1 millisecond\') < \'${SerializationManager.encode(clock.now())}\'',
+        'DELETE FROM ${ServerSideSession.t.tableName} WHERE '
+        '"${ServerSideSession.t.expireAfterUnusedFor.columnName}" IS NOT NULL AND '
+        '"${ServerSideSession.t.lastUsedAt.columnName}" + ("${ServerSideSession.t.expireAfterUnusedFor.columnName}" * INTERVAL \'1 millisecond\') < \'${SerializationManager.encode(clock.now())}\'',
         transaction: transaction,
       );
     }
   }
 
   /// List all sessions matching the given filters.
-  Future<List<AuthSessionInfo>> findSessions(
+  Future<List<ServerSideSessionInfo>> findSessions(
     final Session session, {
     final UuidValue? authUserId,
     final String? method,
     final Transaction? transaction,
   }) async {
-    final authSessions = await AuthSession.db.find(
+    final serverSideSessions = await ServerSideSession.db.find(
       session,
       where: (final t) {
         Expression<dynamic> expression = Constant.bool(true);
@@ -65,17 +65,17 @@ final class AuthSessionsAdmin {
       transaction: transaction,
     );
 
-    final sessionInfos = <AuthSessionInfo>[
-      for (final authSession in authSessions)
-        AuthSessionInfo(
-          id: authSession.id!,
-          authUserId: authSession.authUserId,
-          scopeNames: authSession.scopeNames,
-          created: authSession.createdAt,
-          lastUsed: authSession.lastUsedAt,
-          expiresAt: authSession.expiresAt,
-          expireAfterUnusedFor: authSession.expireAfterUnusedFor,
-          method: authSession.method,
+    final sessionInfos = <ServerSideSessionInfo>[
+      for (final serverSideSession in serverSideSessions)
+        ServerSideSessionInfo(
+          id: serverSideSession.id!,
+          authUserId: serverSideSession.authUserId,
+          scopeNames: serverSideSession.scopeNames,
+          created: serverSideSession.createdAt,
+          lastUsed: serverSideSession.lastUsedAt,
+          expiresAt: serverSideSession.expiresAt,
+          expireAfterUnusedFor: serverSideSession.expireAfterUnusedFor,
+          method: serverSideSession.method,
         ),
     ];
 
@@ -86,17 +86,17 @@ final class AuthSessionsAdmin {
   ///
   /// If [authUserId] is provided, only sessions for that user will be deleted.
   /// If [method] is provided, only sessions created with that method will be deleted.
-  /// If [authSessionId] is provided, only the session with that ID will be deleted.
+  /// If [serverSideSessionId] is provided, only the session with that ID will be deleted.
   ///
   /// Returns a list with [DeletedSession]s.
   Future<List<DeletedSession>> deleteSessions(
     final Session session, {
     final UuidValue? authUserId,
-    final UuidValue? authSessionId,
+    final UuidValue? serverSideSessionId,
     final String? method,
     final Transaction? transaction,
   }) async {
-    final authSessions = await AuthSession.db.deleteWhere(
+    final serverSideSessions = await ServerSideSession.db.deleteWhere(
       session,
       where: (final row) {
         Expression<dynamic> expression = Constant.bool(true);
@@ -105,8 +105,8 @@ final class AuthSessionsAdmin {
           expression &= row.authUserId.equals(authUserId);
         }
 
-        if (authSessionId != null) {
-          expression &= row.id.equals(authSessionId);
+        if (serverSideSessionId != null) {
+          expression &= row.id.equals(serverSideSessionId);
         }
 
         if (method != null) {
@@ -118,7 +118,7 @@ final class AuthSessionsAdmin {
       transaction: transaction,
     );
 
-    return authSessions
+    return serverSideSessions
         .map(
           (final session) => (
             authUserId: session.authUserId,

@@ -8,8 +8,8 @@ import 'package:test/test.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManager = AuthSessionsTokenManager(
-    config: AuthSessionsConfig(
+  final tokenManager = ServerSideSessionsTokenManager(
+    config: ServerSideSessionsConfig(
       sessionKeyHashPepper: 'test-pepper',
     ),
   );
