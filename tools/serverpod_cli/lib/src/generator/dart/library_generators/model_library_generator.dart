@@ -438,6 +438,13 @@ class SerializableModelLibraryGenerator {
           ),
       ]);
 
+      // Add abstract fromJson method for sealed parent classes
+      if (classDefinition.isSealed && classDefinition.isParentClass) {
+        classBuilder.methods.add(
+          _buildAbstractFromJsonMethod(className),
+        );
+      }
+
       if (!classDefinition.isParentClass) {
         classBuilder.methods.add(
           _buildAbstractCopyWithMethod(
@@ -460,6 +467,18 @@ class SerializableModelLibraryGenerator {
             hasImplicitClass: hasImplicitClass,
           ),
         );
+      } else if (classDefinition.isSealed && classDefinition.isParentClass) {
+        // Add abstract copyWith method for sealed parent classes
+        classBuilder.methods.add(
+          _buildAbstractCopyWithMethod(
+            className,
+            fields,
+            shouldOverrideAbstractCopyWith: () => false,
+            subDirParts: classDefinition.subDirParts,
+            inheritedFields: classDefinition.inheritedFields,
+            isIdInherited: classDefinition.isIdInherited,
+          ),
+        );
       }
 
       // Immutability
@@ -468,6 +487,13 @@ class SerializableModelLibraryGenerator {
         classBuilder.methods.add(_buildHashCodeMethod(classDefinition, fields));
         classBuilder.annotations.add(
           refer('immutable', serverpodUrl(serverCode)),
+        );
+      }
+
+      // Add instance fromJson method for children of sealed parents
+      if (!classDefinition.isSealed && parentClass != null && parentClass.isSealed) {
+        classBuilder.methods.add(
+          _buildInstanceFromJsonMethod(className),
         );
       }
 
@@ -719,6 +745,11 @@ class SerializableModelLibraryGenerator {
 
     if (parentClass == null) {
       return false;
+    }
+
+    // If parent is sealed, we need to override its abstract copyWith
+    if (parentClass.isSealed) {
+      return true;
     }
 
     if (classDefinition.everyParentIsSealed) {
@@ -1650,6 +1681,40 @@ class SerializableModelLibraryGenerator {
           })
           .returned
           .statement;
+    });
+  }
+
+  Method _buildAbstractFromJsonMethod(String className) {
+    return Method((methodBuilder) {
+      methodBuilder
+        ..name = 'fromJson'
+        ..requiredParameters.add(
+          Parameter((p) {
+            p.name = 'jsonSerialization';
+            p.type = refer('Map<String,dynamic>');
+          }),
+        )
+        ..returns = refer(className);
+    });
+  }
+
+  Method _buildInstanceFromJsonMethod(String className) {
+    return Method((methodBuilder) {
+      methodBuilder
+        ..name = 'fromJson'
+        ..annotations.add(refer('override'))
+        ..requiredParameters.add(
+          Parameter((p) {
+            p.name = 'jsonSerialization';
+            p.type = refer('Map<String,dynamic>');
+          }),
+        )
+        ..returns = refer(className)
+        ..body = refer(className)
+            .property('fromJson')
+            .call([refer('jsonSerialization')])
+            .returned
+            .statement;
     });
   }
 

@@ -37,12 +37,18 @@ abstract class SealedOtherChild extends _i1.SealedParent
 
   /// Returns a shallow copy of this [SealedOtherChild]
   /// with some or all fields replaced by the given arguments.
+  @override
   @_i2.useResult
   SealedOtherChild copyWith({
     int? sealedInt,
     String? sealedString,
     int? sealedOtherChildField,
   });
+  @override
+  SealedOtherChild fromJson(Map<String, dynamic> jsonSerialization) {
+    return SealedOtherChild.fromJson(jsonSerialization);
+  }
+
   @override
   Map<String, dynamic> toJson() {
     return {

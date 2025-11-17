@@ -16,4 +16,11 @@ sealed class SealedNoChild implements _i1.SerializableModel {
   SealedNoChild({required this.name});
 
   String name;
+
+  SealedNoChild fromJson(Map<String, dynamic> jsonSerialization);
+
+  /// Returns a shallow copy of this [SealedNoChild]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
+  SealedNoChild copyWith({String? name});
 }

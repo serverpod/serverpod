@@ -25,6 +25,16 @@ sealed class SealedParent implements _i2.SerializableModel {
   int sealedInt;
 
   String sealedString;
+
+  SealedParent fromJson(Map<String, dynamic> jsonSerialization);
+
+  /// Returns a shallow copy of this [SealedParent]
+  /// with some or all fields replaced by the given arguments.
+  @_i2.useResult
+  SealedParent copyWith({
+    int? sealedInt,
+    String? sealedString,
+  });
 }
 
 class _Undefined {}

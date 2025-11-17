@@ -44,6 +44,11 @@ class SealedChild extends _i1.SealedParent implements _i2.SerializableModel {
   }
 
   @override
+  SealedChild fromJson(Map<String, dynamic> jsonSerialization) {
+    return SealedChild.fromJson(jsonSerialization);
+  }
+
+  @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'SealedChild',
