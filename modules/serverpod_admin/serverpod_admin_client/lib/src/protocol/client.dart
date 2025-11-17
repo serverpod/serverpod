@@ -35,6 +35,21 @@ class EndpointAdmin extends _i1.EndpointRef {
         {'resourceKey': resourceKey},
       );
 
+  _i2.Future<List<Map<String, String>>> listPage(
+    String resourceKey,
+    int offset,
+    int limit,
+  ) =>
+      caller.callServerEndpoint<List<Map<String, String>>>(
+        'serverpod_admin.admin',
+        'listPage',
+        {
+          'resourceKey': resourceKey,
+          'offset': offset,
+          'limit': limit,
+        },
+      );
+
   _i2.Future<Map<String, dynamic>?> find(
     String resourceKey,
     Object id,

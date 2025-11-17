@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
   serverpod_client: 2.9.1
   serverpod_admin_client:
-    path: ../serverpod_admin/serverpod_admin_client
+    path: ../serverpod_admin_client
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
