@@ -26,136 +26,146 @@ void main() {
   );
 
   group(
-      'Given a class with an explicit column name when generating client code',
-      () {
-    const noColumnFieldName = 'name';
-    const columnFieldName = 'userName';
-    const columnName = 'user_name';
-    const fieldType = 'String';
-    final columnField = FieldDefinitionBuilder()
-        .withName(columnFieldName)
-        .withType(
-          TypeDefinitionBuilder().withClassName('String').build(),
-        )
-        .withColumnNameOverride(columnName)
-        .build();
-    final noColumnField = FieldDefinitionBuilder()
-        .withName(noColumnFieldName)
-        .withType(
-          TypeDefinitionBuilder().withClassName('String').build(),
-        )
-        .build();
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(testClassName)
-          .withFileName(testClassFileName)
-          .withField(columnField)
-          .withField(noColumnField)
-          .build(),
-    ];
+    'Given a class with an explicit column name when generating client code',
+    () {
+      const noColumnFieldName = 'name';
+      const columnFieldName = 'userName';
+      const columnName = 'user_name';
+      const fieldType = 'String';
+      final columnField = FieldDefinitionBuilder()
+          .withName(columnFieldName)
+          .withType(
+            TypeDefinitionBuilder().withClassName('String').build(),
+          )
+          .withColumnNameOverride(columnName)
+          .build();
+      final noColumnField = FieldDefinitionBuilder()
+          .withName(noColumnFieldName)
+          .withType(
+            TypeDefinitionBuilder().withClassName('String').build(),
+          )
+          .build();
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(testClassName)
+            .withFileName(testClassFileName)
+            .withField(columnField)
+            .withField(noColumnField)
+            .build(),
+      ];
 
-    var codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
-
-    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-
-    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: testClassName,
-    );
-
-    group('then fromJson method should get ', () {
-      test('column name from jsonSerialization for field with column set', () {
-        var fromJsonConstructor =
-            CompilationUnitHelpers.tryFindConstructorDeclaration(
-          maybeClassNamedExample!,
-          name: 'fromJson',
-        );
-
-        var fromJsonCode = fromJsonConstructor!.toSource();
-
-        expect(
-          fromJsonCode.contains(
-            "$columnFieldName: jsonSerialization['$columnName'] as $fieldType",
-          ),
-          isTrue,
-          reason: 'The fromJson method should map the field name to '
-              'jsonSerialization of the column name.',
-        );
-      });
-
-      test('field name from jsonSerialization for field with column not set',
-          () {
-        var fromJsonConstructor =
-            CompilationUnitHelpers.tryFindConstructorDeclaration(
-          maybeClassNamedExample!,
-          name: 'fromJson',
-        );
-
-        var fromJsonCode = fromJsonConstructor!.toSource();
-
-        expect(
-          fromJsonCode.contains(
-            "$noColumnFieldName: jsonSerialization['$noColumnFieldName'] as $fieldType",
-          ),
-          isTrue,
-          reason: 'The fromJson method should map the field name to its '
-              'jsonSerialization.',
-        );
-      });
-    });
-
-    group('then toJson method should return ', () {
-      test(
-          'the column mapped to the serialized field name variable for a '
-          'field with column set', () {
-        var toJsonConstructor = CompilationUnitHelpers.tryFindMethodDeclaration(
-          maybeClassNamedExample!,
-          name: 'toJson',
-        );
-
-        var toJsonCode = toJsonConstructor!.toSource();
-
-        expect(
-          toJsonCode.contains(
-            "'$columnName' : $columnFieldName",
-          ),
-          isTrue,
-          reason: 'The toJson method should map the column name to '
-              'the serialized field name variable.',
-        );
-      });
-
-      test(
-          'the field name mapped to its serialized variable for a field '
-          'without column set', () {
-        var toJsonConstructor = CompilationUnitHelpers.tryFindMethodDeclaration(
-          maybeClassNamedExample!,
-          name: 'toJson',
-        );
-
-        var toJsonCode = toJsonConstructor!.toSource();
-
-        expect(
-          toJsonCode.contains(
-            "'$noColumnFieldName' : $noColumnFieldName",
-          ),
-          isTrue,
-          reason: 'The toJson method should map the field name to its '
-              'serialized variable.',
-        );
-      });
-    });
-
-    test('then toJsonForProtocol method is not present', () {
-      var toJsonForProtocolConstructor =
-          CompilationUnitHelpers.tryFindMethodDeclaration(
-        maybeClassNamedExample!,
-        name: 'toJsonForProtocol',
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
       );
-      expect(toJsonForProtocolConstructor, isNull);
-    });
-  });
+
+      var compilationUnit = parseString(
+        content: codeMap[expectedFilePath]!,
+      ).unit;
+
+      var maybeClassNamedExample =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: testClassName,
+          );
+
+      group('then fromJson method should get ', () {
+        test('field name from jsonSerialization for field with column set', () {
+          var fromJsonConstructor =
+              CompilationUnitHelpers.tryFindConstructorDeclaration(
+                maybeClassNamedExample!,
+                name: 'fromJson',
+              );
+
+          var fromJsonCode = fromJsonConstructor!.toSource();
+
+          expect(
+            fromJsonCode,
+            contains(
+              "$columnFieldName: jsonSerialization['$columnFieldName'] as $fieldType",
+            ),
+            reason:
+                'The fromJson method should map the field name to its'
+                'jsonSerialization for a field with explicit column name set.',
+          );
+        });
+
+        test(
+          'field name from jsonSerialization for field with column not set',
+          () {
+            var fromJsonConstructor =
+                CompilationUnitHelpers.tryFindConstructorDeclaration(
+                  maybeClassNamedExample!,
+                  name: 'fromJson',
+                );
+
+            var fromJsonCode = fromJsonConstructor!.toSource();
+
+            expect(
+              fromJsonCode.contains(
+                "$noColumnFieldName: jsonSerialization['$noColumnFieldName'] as $fieldType",
+              ),
+              isTrue,
+              reason:
+                  'The fromJson method should map the field name to its '
+                  'jsonSerialization.',
+            );
+          },
+        );
+      });
+
+      group('then toJson method should return ', () {
+        test('the column mapped to the serialized field name variable for a '
+            'field with column set', () {
+          var toJsonConstructor =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                maybeClassNamedExample!,
+                name: 'toJson',
+              );
+
+          var toJsonCode = toJsonConstructor!.toSource();
+
+          expect(
+            toJsonCode.contains(
+              "'$columnName' : $columnFieldName",
+            ),
+            isTrue,
+            reason:
+                'The toJson method should map the column name to '
+                'the serialized field name variable.',
+          );
+        });
+
+        test('the field name mapped to its serialized variable for a field '
+            'without column set', () {
+          var toJsonConstructor =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                maybeClassNamedExample!,
+                name: 'toJson',
+              );
+
+          var toJsonCode = toJsonConstructor!.toSource();
+
+          expect(
+            toJsonCode.contains(
+              "'$noColumnFieldName' : $noColumnFieldName",
+            ),
+            isTrue,
+            reason:
+                'The toJson method should map the field name to its '
+                'serialized variable.',
+          );
+        });
+      });
+
+      test('then toJsonForProtocol method is not present', () {
+        var toJsonForProtocolConstructor =
+            CompilationUnitHelpers.tryFindMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'toJsonForProtocol',
+            );
+        expect(toJsonForProtocolConstructor, isNull);
+      });
+    },
+  );
 }
