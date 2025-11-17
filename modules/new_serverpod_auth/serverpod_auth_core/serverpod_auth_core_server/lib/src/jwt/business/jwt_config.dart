@@ -1,5 +1,6 @@
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/jwt.dart';
 
 /// Context provided to the [JwtConfig.extraClaimsProvider].
 ///
@@ -33,12 +34,12 @@ class JwtContext {
 /// Configuration for an authentication token algorithm.
 sealed class JwtAlgorithm {
   /// The key used to verify the JWT tokens.
-  JWTKey get verificationKey;
+  dart_jsonwebtoken.JWTKey get verificationKey;
 
   /// Create a new ECDSA SHA-512 authentication token algorithm configuration.
   static EcdsaSha512JwtAlgorithmConfiguration ecdsaSha512({
-    required final ECPrivateKey privateKey,
-    required final ECPublicKey publicKey,
+    required final dart_jsonwebtoken.ECPrivateKey privateKey,
+    required final dart_jsonwebtoken.ECPublicKey publicKey,
   }) {
     return EcdsaSha512JwtAlgorithmConfiguration(
       privateKey: privateKey,
@@ -176,10 +177,10 @@ void _validateRefreshTokenHashPepper(final String refreshTokenHashPepper) {
 /// ECDSA SHA-512 JWT algorithm configuration.
 final class EcdsaSha512JwtAlgorithmConfiguration implements JwtAlgorithm {
   /// The private key to use for the ECDSA SHA-512 algorithm.
-  final ECPrivateKey privateKey;
+  final dart_jsonwebtoken.ECPrivateKey privateKey;
 
   /// The public key used for the ECDSA SHA512 algorithm.
-  final ECPublicKey publicKey;
+  final dart_jsonwebtoken.ECPublicKey publicKey;
 
   /// Create a new ECDSA SHA-512 JWT algorithm configuration.
   EcdsaSha512JwtAlgorithmConfiguration({
@@ -188,7 +189,7 @@ final class EcdsaSha512JwtAlgorithmConfiguration implements JwtAlgorithm {
   });
 
   @override
-  JWTKey get verificationKey => publicKey;
+  dart_jsonwebtoken.JWTKey get verificationKey => publicKey;
 }
 
 /// HMAC SHA-512 JWT algorithm configuration.
@@ -203,5 +204,5 @@ final class HmacSha512JwtAlgorithmConfiguration implements JwtAlgorithm {
   });
 
   @override
-  JWTKey get verificationKey => key;
+  dart_jsonwebtoken.JWTKey get verificationKey => key;
 }

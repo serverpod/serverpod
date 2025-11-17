@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:clock/clock.dart';
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -65,9 +65,9 @@ final class Jwt {
       final tokenData = jwtUtil.verifyJwt(jwtAccessToken);
 
       return AuthenticationInfoFromJwt.fromJwtVerificationResult(tokenData);
-    } on JWTUndefinedException catch (_) {
+    } on dart_jsonwebtoken.JWTUndefinedException catch (_) {
       return null;
-    } on JWTException catch (e, stackTrace) {
+    } on dart_jsonwebtoken.JWTException catch (e, stackTrace) {
       // All "known" JWT exceptions, e.g. expired, invalid signature, etc.
       session.log(
         'Invalid JWT access token',

@@ -1,5 +1,5 @@
 import 'package:clock/clock.dart';
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/jwt.dart';
 import 'package:test/test.dart';
@@ -97,7 +97,7 @@ void main() {
           method: 'test',
         );
 
-        final decodedToken = JWT.decode(authSuccess.token);
+        final decodedToken = dart_jsonwebtoken.JWT.decode(authSuccess.token);
 
         expect((decodedToken.payload as Map)['test'], 123);
       },
@@ -214,8 +214,10 @@ void main() {
             refreshToken: authSuccess.refreshToken!,
           );
 
-          final decodedToken = JWT.decode(authSuccess.token);
-          final newDecodedToken = JWT.decode(newTokenPair.accessToken);
+          final decodedToken = dart_jsonwebtoken.JWT.decode(authSuccess.token);
+          final newDecodedToken = dart_jsonwebtoken.JWT.decode(
+            newTokenPair.accessToken,
+          );
 
           expect(newDecodedToken.jwtId, isNotNull);
           expect(decodedToken.jwtId, isNot(newDecodedToken.jwtId));
@@ -230,7 +232,9 @@ void main() {
             refreshToken: authSuccess.refreshToken!,
           );
 
-          final newDecodedToken = JWT.decode(newTokenPair.accessToken);
+          final newDecodedToken = dart_jsonwebtoken.JWT.decode(
+            newTokenPair.accessToken,
+          );
 
           expect((newDecodedToken.payload as Map)['string'], 'foo');
           expect((newDecodedToken.payload as Map)['int'], 1);
@@ -659,7 +663,7 @@ void main() {
           method: 'test',
         );
 
-        final decodedToken = JWT.decode(authSuccess.token);
+        final decodedToken = dart_jsonwebtoken.JWT.decode(authSuccess.token);
         final payload = decodedToken.payload as Map;
 
         expect(payload['hookClaim'], 'hookValue');
@@ -695,7 +699,7 @@ void main() {
           method: 'test',
         );
 
-        final decodedToken = JWT.decode(authSuccess.token);
+        final decodedToken = dart_jsonwebtoken.JWT.decode(authSuccess.token);
         final payload = decodedToken.payload as Map;
 
         expect(payload['providerClaim'], 'fromProvider');
@@ -732,7 +736,9 @@ void main() {
               refreshToken: authSuccess.refreshToken!,
             );
 
-        final decodedToken = JWT.decode(rotatedTokenPair.accessToken);
+        final decodedToken = dart_jsonwebtoken.JWT.decode(
+          rotatedTokenPair.accessToken,
+        );
         final payload = decodedToken.payload as Map;
 
         expect(payload['hookClaim'], 'persistsAcrossRotation');
@@ -761,7 +767,7 @@ void main() {
           method: 'test',
         );
 
-        final decodedToken = JWT.decode(authSuccess.token);
+        final decodedToken = dart_jsonwebtoken.JWT.decode(authSuccess.token);
         final payload = decodedToken.payload as Map;
 
         // Should only contain standard claims, no custom ones
@@ -800,7 +806,7 @@ void main() {
           method: 'test',
         );
 
-        final decodedToken = JWT.decode(authSuccess.token);
+        final decodedToken = dart_jsonwebtoken.JWT.decode(authSuccess.token);
         final payload = decodedToken.payload as Map;
 
         expect(payload['userId'], authUserId.toString());
@@ -837,7 +843,7 @@ void main() {
           method: 'email',
         );
 
-        final decodedToken = JWT.decode(authSuccess.token);
+        final decodedToken = dart_jsonwebtoken.JWT.decode(authSuccess.token);
         final payload = decodedToken.payload as Map;
 
         expect(payload['authMethod'], 'email');
@@ -849,7 +855,7 @@ void main() {
 }
 
 UuidValue _extractRefreshTokenId(final String accessToken) {
-  final jwt = JWT.decode(accessToken);
+  final jwt = dart_jsonwebtoken.JWT.decode(accessToken);
   const claimName = 'dev.serverpod.refreshTokenId';
   final refreshTokenIdClaim = (jwt.payload as Map)[claimName] as String;
   return UuidValue.withValidation(refreshTokenIdClaim);

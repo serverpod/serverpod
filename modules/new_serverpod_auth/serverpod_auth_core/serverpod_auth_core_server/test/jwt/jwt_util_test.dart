@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/jwt.dart';
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_core_server/src/jwt/business/jwt_util.dart';
 import 'package:serverpod_auth_core_server/src/jwt/jwt.dart';
@@ -120,7 +121,7 @@ void main() {
         'when the JWT is decoded, then it will contain the `authUserId` as `subject`.',
         () {
           expect(
-            JWT.decode(jwt).subject,
+            dart_jsonwebtoken.JWT.decode(jwt).subject,
             refreshToken.authUserId.toString(),
           );
         },
@@ -129,8 +130,11 @@ void main() {
       test(
         'when the JWT is decoded, then it contains an unique `jwtId` that is different from the refresh token ID.',
         () {
-          expect(JWT.decode(jwt).jwtId, isNotNull);
-          expect(JWT.decode(jwt).jwtId, isNot(refreshToken.id!.toString()));
+          expect(dart_jsonwebtoken.JWT.decode(jwt).jwtId, isNotNull);
+          expect(
+            dart_jsonwebtoken.JWT.decode(jwt).jwtId,
+            isNot(refreshToken.id!.toString()),
+          );
         },
       );
 
@@ -138,7 +142,8 @@ void main() {
         'when the JWT is decoded, then it contains the refresh token ID claim.',
         () {
           expect(
-            (JWT.decode(jwt).payload as Map)['dev.serverpod.refreshTokenId'],
+            (dart_jsonwebtoken.JWT.decode(jwt).payload
+                as Map)['dev.serverpod.refreshTokenId'],
             refreshToken.id!.toString(),
           );
         },
@@ -148,7 +153,7 @@ void main() {
         'when the JWT is decoded, then it will contain no issuer per the default configuration.',
         () {
           expect(
-            JWT.decode(jwt).issuer,
+            dart_jsonwebtoken.JWT.decode(jwt).issuer,
             isNull,
           );
         },
@@ -158,7 +163,7 @@ void main() {
         'when the JWT header is decoded, then it names the HS512 as its "alg".',
         () {
           expect(
-            JWT.decode(jwt).header,
+            dart_jsonwebtoken.JWT.decode(jwt).header,
             equals({'alg': 'HS512', 'typ': 'JWT'}),
           );
         },
@@ -168,7 +173,7 @@ void main() {
         'when the JWT without scopes is decoded, then it does not even contain they associated key.',
         () {
           expect(
-            (JWT.decode(jwt).payload as Map).containsKey(
+            (dart_jsonwebtoken.JWT.decode(jwt).payload as Map).containsKey(
               'dev.serverpod.scopeNames',
             ),
             isFalse,
@@ -211,7 +216,8 @@ void main() {
           'when the JWT with scopes is decoded, then it contains the scopes as a List as the claim "dev.serverpod.scopeNames".',
           () {
             expect(
-              (JWT.decode(jwt).payload as Map)['dev.serverpod.scopeNames'],
+              (dart_jsonwebtoken.JWT.decode(jwt).payload
+                  as Map)['dev.serverpod.scopeNames'],
               ['a', 'b', 'c'],
             );
           },
@@ -299,7 +305,7 @@ void main() {
       ).jwtUtil.createJwt(_createRefreshToken());
 
       expect(
-        JWT.decode(jwt).issuer,
+        dart_jsonwebtoken.JWT.decode(jwt).issuer,
         issuer,
       );
     },
@@ -367,7 +373,7 @@ void main() {
         'when the JWT is decoded, then it names HS512 as its `alg.',
         () {
           expect(
-            JWT.decode(jwtToken).header,
+            dart_jsonwebtoken.JWT.decode(jwtToken).header,
             equals({'alg': 'ES512', 'typ': 'JWT'}),
           );
         },
@@ -429,8 +435,8 @@ HmacSha512JwtAlgorithmConfiguration _hs512Algorithm() {
 
 EcdsaSha512JwtAlgorithmConfiguration _es512Algorithm() {
   return JwtAlgorithm.ecdsaSha512(
-    privateKey: ECPrivateKey(_testPrivateKey),
-    publicKey: ECPublicKey(_testPublicKey),
+    privateKey: dart_jsonwebtoken.ECPrivateKey(_testPrivateKey),
+    publicKey: dart_jsonwebtoken.ECPublicKey(_testPublicKey),
   );
 }
 
