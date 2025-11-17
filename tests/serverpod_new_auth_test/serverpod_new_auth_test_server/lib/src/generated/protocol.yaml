@@ -5,6 +5,8 @@ authTest:
   - createJwtToken:
   - deleteJwtRefreshTokens:
   - checkSession:
+authenticatedStreamingTest:
+  - openAuthenticatedStream:
 emailAccountBackwardsCompatibilityTest:
   - createLegacyUser:
   - createLegacySession:
