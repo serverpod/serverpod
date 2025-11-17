@@ -165,7 +165,7 @@ class JwtUtil {
   /// Verifies the JWT's signature and returns its data.
   ///
   /// If reading with the primary algorithm fails, the fallbacks (if configured) are tried in order.
-  /// In case none of the keys work, an error is thrown.
+  /// In case none of the keys work, the exception from the first algorithm is thrown.
   JWT _verifyJwt(final String accessToken) {
     final allAlgorithms = [_algorithm, ..._fallbackVerificationAlgorithms];
     Object? firstError;
@@ -182,7 +182,6 @@ class JwtUtil {
       }
     }
 
-    // Rethrow the first error that occurred
     throw firstError!;
   }
 
