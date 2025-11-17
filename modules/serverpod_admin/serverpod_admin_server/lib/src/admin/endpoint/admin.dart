@@ -1,13 +1,14 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_admin_server/src/admin/admin_entry_base.dart';
 
 import '../../admin/admin.dart';
-import '../../admin/register.dart';
+import '../admin_registry.dart';
 import '../../../serverpod_admin_server.dart' show AdminResource;
 
 class AdminEndpoint extends Endpoint {
   final AdminRegistry _registry = AdminRegistry();
 
-  AdminCrudEntryBase _resolve(String resourceKey) {
+  AdminEntryBase _resolve(String resourceKey) {
     adminRegister();
     final entry = _registry.entryByKey(resourceKey);
     if (entry == null) {
@@ -100,7 +101,7 @@ class AdminEndpoint extends Endpoint {
   }
 
   Map<String, dynamic> _normalizePayload(
-    AdminCrudEntryBase entry,
+    AdminEntryBase entry,
     Map<String, String> data,
   ) {
     final normalized = <String, dynamic>{};

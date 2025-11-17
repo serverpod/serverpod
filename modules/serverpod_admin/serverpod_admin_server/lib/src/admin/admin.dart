@@ -1,4 +1,6 @@
-import 'register.dart';
+import 'package:serverpod_admin_server/src/admin/admin_entry_base.dart';
+
+import 'admin_registry.dart';
 
 typedef AdminConfigurator = void Function(AdminRegistry registry);
 
@@ -13,7 +15,7 @@ void configureAdminModule(AdminConfigurator configurator) {
   AdminRegistry().reset();
 }
 
-List<AdminCrudEntryBase> adminRegister() {
+List<AdminEntryBase> adminRegister() {
   final configurator = _adminConfigurator;
   if (configurator == null) {
     throw StateError(
