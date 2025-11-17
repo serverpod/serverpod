@@ -20,6 +20,12 @@ When working with pull requests in this repository, **ALWAYS**:
 - **Ensure consistency** across all PRs for documentation quality
 - **Reference the template file** directly when generating descriptions
 
+### Documentation and Release Files
+- **Never update** CHANGELOG files unless explicitly instructed by the user
+- **Never update** README files unless explicitly instructed by the user
+- CHANGELOG files are manually updated during release process
+- Only make documentation changes when specifically requested
+
 ## Command Validation Status
 
 **FULLY VALIDATED** (confirmed working in test environment):
