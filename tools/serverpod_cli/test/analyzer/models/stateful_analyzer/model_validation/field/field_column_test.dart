@@ -20,16 +20,19 @@ void main() {
       ModelSourceBuilder().withYaml(
         '''
           class: Example
+          table: example
           fields:
             $noColumnFieldName: $fieldType
             $columnFieldName: $fieldType, column=$columnName
           ''',
-      ).build()
+      ).build(),
     ];
     var collector = CodeGenerationCollector();
-    var definitions =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector))
-            .validateAll();
+    var definitions = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    ).validateAll();
 
     test('then no errors are collected.', () {
       expect(
@@ -49,11 +52,12 @@ void main() {
         ModelSourceBuilder().withYaml(
           '''
           class: Example
+          table: example
           fields:
             fieldOne: String, column=$columnName
             fieldTwo: String, column=$columnName
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
@@ -91,11 +95,12 @@ void main() {
         ModelSourceBuilder().withYaml(
           '''
           class: Example
+          table: example
           fields:
             $columnName: String
             ${columnName}Name: String, column=$columnName
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
@@ -124,8 +129,7 @@ void main() {
     },
   );
 
-  test(
-      'Given a class with an explicit column name longer than 61 characters, '
+  test('Given a class with an explicit column name longer than 61 characters, '
       'then an error is collected.', () {
     const column =
         'thisNameIsExactly62CharsLongAndThereforeInvalidAsTheColumnName';
@@ -133,10 +137,11 @@ void main() {
       ModelSourceBuilder().withYaml(
         '''
         class: Example
+        table: example
         fields:
           longField: String, column=$column
         ''',
-      ).build()
+      ).build(),
     ];
 
     var collector = CodeGenerationCollector();
@@ -174,12 +179,15 @@ void main() {
           fields:
             name: String, column=user_name
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -205,12 +213,15 @@ void main() {
           fields:
             id: int?, column=user_id
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, models, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
