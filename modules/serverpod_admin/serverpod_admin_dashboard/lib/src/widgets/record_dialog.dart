@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_admin_client/serverpod_admin_client.dart';
-import 'package:serverpod_admin_dashboard/src/controller/record_dialog_state.dart';
+import 'package:serverpod_admin_dashboard/src/controller/record_dialog.dart';
 import 'package:serverpod_admin_dashboard/src/widgets/dialog_field.dart';
 
 class RecordDialog extends StatefulWidget {
