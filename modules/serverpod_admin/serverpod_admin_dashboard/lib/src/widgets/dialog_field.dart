@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:serverpod_admin_client/serverpod_admin_client.dart';
-import 'package:serverpod_admin_dashboard/src/controller/validate_value.dart';
+import 'package:serverpod_admin_dashboard/src/helpers/validate_value.dart';
 
 class Field extends StatelessWidget {
   const Field({
