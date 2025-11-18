@@ -1,4 +1,4 @@
-import 'package:serverpod_admin_dashboard/src/export/admin_resources.dart';
+import 'package:serverpod_admin_dashboard/src/helpers/admin_resources.dart';
 
 String formatRecordValue(AdminColumn column, String? value) {
   if (value == null || value.isEmpty) return '';

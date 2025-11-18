@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:serverpod_admin_dashboard/src/helpers/format_value.dart';
-import 'package:serverpod_admin_dashboard/src/export/admin_resources.dart';
+import 'package:serverpod_admin_dashboard/src/helpers/admin_resources.dart';
 import 'package:serverpod_admin_dashboard/src/widgets/pagination_controls.dart';
 
 class RecordsBody extends StatefulWidget {
