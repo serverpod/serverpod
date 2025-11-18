@@ -8596,6 +8596,18 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
+    if (t == List<_i73.Employee>) {
+      return (data as List).map((e) => deserialize<_i73.Employee>(e)).toList()
+          as T;
+    }
+    if (t == _i1.getType<List<_i73.Employee>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_i73.Employee>(e))
+                    .toList()
+              : null)
+          as T;
+    }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
