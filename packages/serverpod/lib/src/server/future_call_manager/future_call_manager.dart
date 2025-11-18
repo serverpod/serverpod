@@ -43,6 +43,7 @@ class FutureCallManager {
 
   late final ServerpodTaskScheduler _scheduler;
   late final FutureCallScanner _scanner;
+  bool _startRequested = false;
 
   /// Creates a new [FutureCallManager]. Typically, this is instantiated
   /// internally by the [Serverpod].
@@ -101,11 +102,18 @@ class FutureCallManager {
     _initializeFutureCall(futureCall, name);
 
     _futureCalls[name] = futureCall;
+
+    if(_startRequested && !_scanner.isRunning) {
+      _scanner.start();
+    }
   }
 
   /// Executes all scheduled future calls that are past their due date. This
   /// method scans the database for overdue tasks and processes them.
   Future<void> runScheduledFutureCalls() async {
+    if(_futureCalls.isEmpty) {
+      return;
+    }
     stdout.writeln('Processing future calls.');
 
     await _scanner.scanFutureCallEntries();
@@ -149,13 +157,20 @@ class FutureCallManager {
   /// Starts the [FutureCallManager], enabling it to monitor the database
   /// for overdue future calls and execute them automatically.
   void start() {
-    _scanner.start();
+    _startRequested = true;
+    if(_futureCalls.isNotEmpty && !_scanner.isRunning) {
+      _scanner.start();
+    }
   }
 
   /// Stops the [FutureCallManager], preventing it from monitoring and
   /// executing overdue future calls.
   Future<void> stop() async {
     await _scanner.stop();
+    _startRequested = false;
+    if(_scanner.isRunning) {
+      _scanner.stop();
+    }
     await _scheduler.drain();
   }
 
