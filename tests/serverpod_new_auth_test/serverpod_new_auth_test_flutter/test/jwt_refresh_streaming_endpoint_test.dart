@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 import 'package:serverpod_new_auth_test_client/serverpod_new_auth_test_client.dart';
 
 import 'utils/test_auth_key_manager.dart';
@@ -26,15 +25,15 @@ void main() {
     'Given a streaming method authenticated with a JWT token that has since been refreshed multiple times,',
     () {
       late UuidValue userId;
-      late AuthSuccess authSuccess;
       late Stream<int> stream;
       late Completer<dynamic> streamClosedCompleter;
       late Completer<int> valueReceivedCompleter;
       late StreamSubscription<int> streamSubscription;
+      late String finalToken;
 
       setUp(() async {
         userId = await client.authTest.createTestUser();
-        authSuccess = await client.authTest.createJwtToken(userId);
+        var authSuccess = await client.authTest.createJwtToken(userId);
 
         await authKeyManager.put(authSuccess.token);
 
@@ -57,7 +56,10 @@ void main() {
         );
 
         await valueReceivedCompleter.future;
-        expect(streamClosedCompleter.isCompleted, isFalse);
+        assert(
+          !streamClosedCompleter.isCompleted,
+          'Stream should be stay open after receiving a value',
+        );
 
         for (var i = 0; i < 3; i++) {
           final newAuthSuccess = await client.jwtRefresh.refreshAccessToken(
@@ -67,8 +69,7 @@ void main() {
           authSuccess = newAuthSuccess;
         }
 
-        // We save the last access token so that we can revoke its authId later.
-        await authKeyManager.put(authSuccess.token);
+        finalToken = authSuccess.token;
       });
 
       tearDown(() async {
@@ -78,7 +79,9 @@ void main() {
       test(
         'when the latest revision is revoked, then the stream closes with a ConnectionClosedException',
         () async {
-          final deleted = await client.authTest.destroySpecificRefreshToken();
+          final deleted = await client.authTest.destroySpecificRefreshToken(
+            finalToken,
+          );
 
           expect(deleted, isTrue);
 
