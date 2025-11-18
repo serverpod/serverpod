@@ -11,7 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../../explicit_column_name/relations/index/service.dart' as _i2;
+import '../../../explicit_column_name/relations/one_to_one/service.dart' as _i2;
 import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class Contractor implements _i1.SerializableModel {
