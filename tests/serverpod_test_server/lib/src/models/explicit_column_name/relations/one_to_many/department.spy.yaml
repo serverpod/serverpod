@@ -2,3 +2,4 @@ class: Department
 table: department
 fields:
   name: String
+  employees: List<Employee>?, relation(name=department_employees)

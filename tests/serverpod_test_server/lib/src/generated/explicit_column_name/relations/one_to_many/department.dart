@@ -9,25 +9,37 @@
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
 
+// ignore_for_file: unnecessary_null_comparison
+
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import '../../../explicit_column_name/relations/one_to_many/employee.dart'
+    as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Department
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Department._({
     this.id,
     required this.name,
+    this.employees,
   });
 
   factory Department({
     int? id,
     required String name,
+    List<_i2.Employee>? employees,
   }) = _DepartmentImpl;
 
   factory Department.fromJson(Map<String, dynamic> jsonSerialization) {
     return Department(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
+      employees: jsonSerialization['employees'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.Employee>>(
+              jsonSerialization['employees'],
+            ),
     );
   }
 
@@ -40,6 +52,8 @@ abstract class Department
 
   String name;
 
+  List<_i2.Employee>? employees;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -49,6 +63,7 @@ abstract class Department
   Department copyWith({
     int? id,
     String? name,
+    List<_i2.Employee>? employees,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -56,6 +71,8 @@ abstract class Department
       '__className__': 'Department',
       if (id != null) 'id': id,
       'name': name,
+      if (employees != null)
+        'employees': employees?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
@@ -65,11 +82,15 @@ abstract class Department
       '__className__': 'Department',
       if (id != null) 'id': id,
       'name': name,
+      if (employees != null)
+        'employees': employees?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
-  static DepartmentInclude include() {
-    return DepartmentInclude._();
+  static DepartmentInclude include({_i2.EmployeeIncludeList? employees}) {
+    return DepartmentInclude._(employees: employees);
   }
 
   static DepartmentIncludeList includeList({
@@ -104,9 +125,11 @@ class _DepartmentImpl extends Department {
   _DepartmentImpl({
     int? id,
     required String name,
+    List<_i2.Employee>? employees,
   }) : super._(
          id: id,
          name: name,
+         employees: employees,
        );
 
   /// Returns a shallow copy of this [Department]
@@ -116,10 +139,14 @@ class _DepartmentImpl extends Department {
   Department copyWith({
     Object? id = _Undefined,
     String? name,
+    Object? employees = _Undefined,
   }) {
     return Department(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
+      employees: employees is List<_i2.Employee>?
+          ? employees
+          : this.employees?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
@@ -146,18 +173,66 @@ class DepartmentTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString name;
 
+  _i2.EmployeeTable? ___employees;
+
+  _i1.ManyRelation<_i2.EmployeeTable>? _employees;
+
+  _i2.EmployeeTable get __employees {
+    if (___employees != null) return ___employees!;
+    ___employees = _i1.createRelationTable(
+      relationFieldName: '__employees',
+      field: Department.t.id,
+      foreignField: _i2.Employee.t.departmentId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.EmployeeTable(tableRelation: foreignTableRelation),
+    );
+    return ___employees!;
+  }
+
+  _i1.ManyRelation<_i2.EmployeeTable> get employees {
+    if (_employees != null) return _employees!;
+    var relationTable = _i1.createRelationTable(
+      relationFieldName: 'employees',
+      field: Department.t.id,
+      foreignField: _i2.Employee.t.departmentId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.EmployeeTable(tableRelation: foreignTableRelation),
+    );
+    _employees = _i1.ManyRelation<_i2.EmployeeTable>(
+      tableWithRelations: relationTable,
+      table: _i2.EmployeeTable(
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
+    );
+    return _employees!;
+  }
+
   @override
   List<_i1.Column> get columns => [
     id,
     name,
   ];
+
+  @override
+  _i1.Table? getRelationTable(String relationField) {
+    if (relationField == 'employees') {
+      return __employees;
+    }
+    return null;
+  }
 }
 
 class DepartmentInclude extends _i1.IncludeObject {
-  DepartmentInclude._();
+  DepartmentInclude._({_i2.EmployeeIncludeList? employees}) {
+    _employees = employees;
+  }
+
+  _i2.EmployeeIncludeList? _employees;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _i1.Include?> get includes => {'employees': _employees};
 
   @override
   _i1.Table<int?> get table => Department.t;
@@ -185,6 +260,10 @@ class DepartmentIncludeList extends _i1.IncludeList {
 
 class DepartmentRepository {
   const DepartmentRepository._();
+
+  final attach = const DepartmentAttachRepository._();
+
+  final attachRow = const DepartmentAttachRowRepository._();
 
   /// Returns a list of [Department]s matching the given query parameters.
   ///
@@ -217,6 +296,7 @@ class DepartmentRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DepartmentTable>? orderByList,
     _i1.Transaction? transaction,
+    DepartmentInclude? include,
   }) async {
     return session.db.find<Department>(
       where: where?.call(Department.t),
@@ -226,6 +306,7 @@ class DepartmentRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -254,6 +335,7 @@ class DepartmentRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DepartmentTable>? orderByList,
     _i1.Transaction? transaction,
+    DepartmentInclude? include,
   }) async {
     return session.db.findFirstRow<Department>(
       where: where?.call(Department.t),
@@ -262,6 +344,7 @@ class DepartmentRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -270,10 +353,12 @@ class DepartmentRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    DepartmentInclude? include,
   }) async {
     return session.db.findById<Department>(
       id,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -431,6 +516,62 @@ class DepartmentRepository {
     return session.db.count<Department>(
       where: where?.call(Department.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+}
+
+class DepartmentAttachRepository {
+  const DepartmentAttachRepository._();
+
+  /// Creates a relation between this [Department] and the given [Employee]s
+  /// by setting each [Employee]'s foreign key `departmentId` to refer to this [Department].
+  Future<void> employees(
+    _i1.Session session,
+    Department department,
+    List<_i2.Employee> employee, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (employee.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('employee.id');
+    }
+    if (department.id == null) {
+      throw ArgumentError.notNull('department.id');
+    }
+
+    var $employee = employee
+        .map((e) => e.copyWith(departmentId: department.id))
+        .toList();
+    await session.db.update<_i2.Employee>(
+      $employee,
+      columns: [_i2.Employee.t.departmentId],
+      transaction: transaction,
+    );
+  }
+}
+
+class DepartmentAttachRowRepository {
+  const DepartmentAttachRowRepository._();
+
+  /// Creates a relation between this [Department] and the given [Employee]
+  /// by setting the [Employee]'s foreign key `departmentId` to refer to this [Department].
+  Future<void> employees(
+    _i1.Session session,
+    Department department,
+    _i2.Employee employee, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (employee.id == null) {
+      throw ArgumentError.notNull('employee.id');
+    }
+    if (department.id == null) {
+      throw ArgumentError.notNull('department.id');
+    }
+
+    var $employee = employee.copyWith(departmentId: department.id);
+    await session.db.updateRow<_i2.Employee>(
+      $employee,
+      columns: [_i2.Employee.t.departmentId],
       transaction: transaction,
     );
   }

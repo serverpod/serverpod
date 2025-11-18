@@ -2,4 +2,4 @@ class: Employee
 table: employee
 fields:
   name: String
-  departmentId: int, relation(parent=department), column=fk_employee_department_id
+  departmentId: int, relation(name=department_employees, parent=department), column=fk_employee_department_id
