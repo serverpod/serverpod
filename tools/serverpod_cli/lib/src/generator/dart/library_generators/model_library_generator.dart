@@ -458,6 +458,18 @@ class SerializableModelLibraryGenerator {
             className: className,
             isParentClass: classDefinition.isParentClass,
             hasImplicitClass: hasImplicitClass,
+            classDefinition: classDefinition,
+          ),
+        );
+      } else if (classDefinition.isSealed && classDefinition.isParentClass) {
+        classBuilder.methods.add(
+          _buildAbstractCopyWithMethod(
+            className,
+            fields,
+            shouldOverrideAbstractCopyWith: () => false,
+            subDirParts: classDefinition.subDirParts,
+            inheritedFields: classDefinition.inheritedFields,
+            isIdInherited: classDefinition.isIdInherited,
           ),
         );
       }
@@ -721,6 +733,10 @@ class SerializableModelLibraryGenerator {
       return false;
     }
 
+    if (parentClass.isSealed) {
+      return true;
+    }
+
     if (classDefinition.everyParentIsSealed) {
       return false;
     }
@@ -768,6 +784,7 @@ class SerializableModelLibraryGenerator {
     required String className,
     required bool isParentClass,
     required hasImplicitClass,
+    ModelClassDefinition? classDefinition,
   }) {
     return Method(
       (m) {
@@ -779,9 +796,21 @@ class SerializableModelLibraryGenerator {
         m.annotations.add(
           refer('useResult', serverpodUrl(serverCode)).expression,
         );
-        if (!isParentClass) {
+
+        var shouldOverride = !isParentClass;
+        if (classDefinition != null) {
+          var parentClass = classDefinition.parentClass;
+          if (parentClass != null && parentClass.isSealed) {
+            shouldOverride = true;
+          }
+        } else {
+          shouldOverride = true;
+        }
+
+        if (shouldOverride) {
           m.annotations.add(refer('override'));
         }
+
         m.optionalParameters.addAll(
           fields.where((field) => field.shouldIncludeField(serverCode)).map(
             (field) {

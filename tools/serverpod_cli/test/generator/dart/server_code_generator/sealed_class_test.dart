@@ -7,6 +7,8 @@ import 'package:test/test.dart';
 
 import '../../../test_util/builders/generator_config_builder.dart';
 import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
+import '../../../test_util/builders/type_definition_builder.dart';
 import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
@@ -92,13 +94,14 @@ void main() {
           expect(serverpodImport, isNotNull);
         });
 
-        test('does NOT have a copyWith method', () {
+        test('does have an abstract copyWith method', () {
           var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
             parentClass!,
             name: 'copyWith',
           );
 
-          expect(copyWithMethod, isNull);
+          expect(copyWithMethod, isNotNull);
+          expect(copyWithMethod!.body, isA<EmptyFunctionBody>());
         });
 
         test('does NOT have a toJson method', () {
@@ -167,6 +170,19 @@ void main() {
           );
 
           expect(copyWithMethod, isNotNull);
+        });
+
+        test('copyWith has @override annotation', () {
+          var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+            childClass!,
+            name: 'copyWith',
+          );
+          var overrideAnnotation = CompilationUnitHelpers.tryFindAnnotation(
+            copyWithMethod!,
+            name: 'override',
+          );
+
+          expect(overrideAnnotation, isNotNull);
         });
 
         test('does have a toJson method', () {
@@ -366,12 +382,13 @@ void main() {
           name: parent.className,
         );
 
-        test('does NOT have a copyWith method', () {
+        test('does have an abstract copyWith method', () {
           var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
             parentClass!,
             name: 'copyWith',
           );
-          expect(copyWithMethod, isNull);
+          expect(copyWithMethod, isNotNull);
+          expect(copyWithMethod!.body, isA<EmptyFunctionBody>());
         });
 
         test('has a part directive with ${child.className} uri', () {
@@ -534,13 +551,13 @@ void main() {
           expect(copyWithMethod, isNotNull);
         });
 
-        test('without the override annotation', () {
+        test('with the override annotation', () {
           var overrideAnnotation = CompilationUnitHelpers.tryFindAnnotation(
             copyWithMethod!,
             name: 'override',
           );
 
-          expect(overrideAnnotation, isNull);
+          expect(overrideAnnotation, isNotNull);
         });
       });
 
@@ -657,13 +674,13 @@ void main() {
         expect(copyWithMethod, isNotNull);
       });
 
-      test('without the override annotation', () {
+      test('with the override annotation', () {
         var overrideAnnotation = CompilationUnitHelpers.tryFindAnnotation(
           copyWithMethod!,
           name: 'override',
         );
 
-        expect(overrideAnnotation, isNull);
+        expect(overrideAnnotation, isNotNull);
       });
     });
   });
@@ -699,13 +716,14 @@ void main() {
         expect(parentClass, isNotNull);
       });
 
-      test('does NOT have a copyWith method', () {
+      test('does have an abstract copyWith method', () {
         var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           parentClass!,
           name: 'copyWith',
         );
 
-        expect(copyWithMethod, isNull);
+        expect(copyWithMethod, isNotNull);
+        expect(copyWithMethod!.body, isA<EmptyFunctionBody>());
       });
 
       var directives = parentCompilationUnit.directives;
@@ -1029,6 +1047,108 @@ void main() {
             partOfDirective,
             isNotNull,
           );
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a model with a sealed class as a field type when generating code',
+    () {
+      var sealedParent = ModelClassDefinitionBuilder()
+          .withClassName('SealedParent')
+          .withFileName('sealed_parent')
+          .withSimpleField('sealedInt', 'int')
+          .withIsSealed(true)
+          .build();
+
+      var sealedChild = ModelClassDefinitionBuilder()
+          .withClassName('SealedChild')
+          .withFileName('sealed_child')
+          .withSimpleField('childField', 'String')
+          .withExtendsClass(sealedParent)
+          .build();
+
+      sealedParent.childClasses.add(ResolvedInheritanceDefinition(sealedChild));
+
+      var modelWithSealedField = ModelClassDefinitionBuilder()
+          .withClassName('ModelWithSealedField')
+          .withFileName('model_with_sealed_field')
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('sealedField')
+                .withType(
+                  TypeDefinitionBuilder()
+                      .withClassName('SealedParent')
+                      .withNullable(false)
+                      .build(),
+                )
+                .build(),
+          )
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('nullableSealedField')
+                .withType(
+                  TypeDefinitionBuilder()
+                      .withClassName('SealedParent')
+                      .withNullable(true)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var models = [
+        sealedParent,
+        sealedChild,
+        modelWithSealedField,
+      ];
+
+      late var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      final expectedFileName = getExpectedFilePath(
+        modelWithSealedField.fileName,
+      );
+
+      test('then model file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+
+      late var compilationUnit = parseString(
+        content: codeMap[expectedFileName]!,
+      ).unit;
+
+      group('then ${modelWithSealedField.className}', () {
+        late var modelClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: modelWithSealedField.className,
+        );
+
+        test('compiles without errors', () {
+          expect(compilationUnit.declarations, isNotEmpty);
+        });
+
+        test('is defined', () {
+          expect(modelClass, isNotNull);
+        });
+
+        test('has a field with sealed class type', () {
+          var field = CompilationUnitHelpers.tryFindFieldDeclaration(
+            modelClass!,
+            name: 'sealedField',
+          );
+          expect(field, isNotNull);
+        });
+
+        test('has a nullable field with sealed class type', () {
+          var field = CompilationUnitHelpers.tryFindFieldDeclaration(
+            modelClass!,
+            name: 'nullableSealedField',
+          );
+          expect(field, isNotNull);
         });
       });
     },
