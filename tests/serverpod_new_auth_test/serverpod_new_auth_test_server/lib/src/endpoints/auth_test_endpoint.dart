@@ -64,11 +64,14 @@ class AuthTestEndpoint extends Endpoint {
   /// Destroys a specific refresh token by ID.
   Future<bool> destroySpecificRefreshToken(
     final Session session,
-    final UuidValue refreshTokenId,
   ) async {
+    final refreshTokenId = session.authenticated?.authId;
+    if (refreshTokenId == null) {
+      throw StateError('Expected caller to be authenticated');
+    }
     return _authenticationTokens.destroyRefreshToken(
       session,
-      refreshTokenId: refreshTokenId,
+      refreshTokenId: UuidValue.withValidation(refreshTokenId),
     );
   }
 
