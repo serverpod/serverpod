@@ -12,6 +12,7 @@ class Sidebar extends StatelessWidget {
     required this.onRetry,
     required this.isCollapsed,
     required this.onToggleCollapse,
+    this.isInDrawer = false,
   });
 
   final List<AdminResource> resources;
@@ -22,6 +23,7 @@ class Sidebar extends StatelessWidget {
   final VoidCallback onRetry;
   final bool isCollapsed;
   final VoidCallback onToggleCollapse;
+  final bool isInDrawer;
 
   @override
   Widget build(BuildContext context) {
@@ -37,16 +39,6 @@ class Sidebar extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  IconButton(
-                    tooltip:
-                        isCollapsed ? 'Expand sidebar' : 'Collapse sidebar',
-                    icon: Icon(
-                      isCollapsed
-                          ? Icons.chevron_right_rounded
-                          : Icons.chevron_left_rounded,
-                    ),
-                    onPressed: onToggleCollapse,
-                  ),
                   Container(
                     height: 36,
                     width: 36,
@@ -81,9 +73,17 @@ class Sidebar extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    tooltip: 'Reload resources',
-                    onPressed: isLoading ? null : onRetry,
-                    icon: const Icon(Icons.refresh_outlined),
+                    tooltip: isInDrawer
+                        ? 'Close drawer'
+                        : (isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'),
+                    icon: Icon(
+                      isInDrawer
+                          ? Icons.close_rounded
+                          : (isCollapsed
+                              ? Icons.chevron_right_rounded
+                              : Icons.chevron_left_rounded),
+                    ),
+                    onPressed: onToggleCollapse,
                   ),
                 ],
               ),
@@ -160,12 +160,6 @@ class Sidebar extends StatelessWidget {
               resource.tableName,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-              ),
-            ),
-            subtitle: Text(
-              resource.key,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
               ),
             ),
             trailing: Icon(

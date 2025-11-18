@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_admin_client/serverpod_admin_client.dart';
+import 'package:serverpod_admin_dashboard/src/controller/record_dialog_state.dart';
 import 'package:serverpod_admin_dashboard/src/widgets/dialog_field.dart';
 
 class RecordDialog extends StatefulWidget {
@@ -23,9 +24,9 @@ class _RecordDialogState extends State<RecordDialog> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, TextEditingController> _controllers = {};
   final Map<String, bool> _readOnlyFields = {};
-  bool _isSubmitting = false;
-  String? _submitError;
   final ScrollController _formScrollController = ScrollController();
+  late final RecordDialogStateController _stateController =
+      RecordDialogStateController();
 
   @override
   void initState() {
@@ -47,6 +48,7 @@ class _RecordDialogState extends State<RecordDialog> {
   @override
   void dispose() {
     _formScrollController.dispose();
+    _stateController.dispose();
     for (final controller in _controllers.values) {
       controller.dispose();
     }
@@ -135,12 +137,17 @@ class _RecordDialogState extends State<RecordDialog> {
                           ],
                         ),
                       ),
-                      IconButton(
-                        tooltip: 'Close dialog',
-                        onPressed: _isSubmitting
-                            ? null
-                            : () => Navigator.of(context).pop(false),
-                        icon: const Icon(Icons.close_rounded),
+                      ListenableBuilder(
+                        listenable: _stateController,
+                        builder: (context, _) {
+                          return IconButton(
+                            tooltip: 'Close dialog',
+                            onPressed: _stateController.isSubmitting
+                                ? null
+                                : () => Navigator.of(context).pop(false),
+                            icon: const Icon(Icons.close_rounded),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -165,20 +172,31 @@ class _RecordDialogState extends State<RecordDialog> {
                               child: Column(
                                 children: [
                                   ...fields,
-                                  if (_submitError != null) ...[
-                                    const SizedBox(height: 14),
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        _submitError!,
-                                        style: theme.textTheme.bodyMedium
-                                            ?.copyWith(
-                                          color: theme.colorScheme.error,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ListenableBuilder(
+                                    listenable: _stateController,
+                                    builder: (context, _) {
+                                      if (_stateController.submitError ==
+                                          null) {
+                                        return const SizedBox.shrink();
+                                      }
+                                      return Column(
+                                        children: [
+                                          const SizedBox(height: 14),
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              _stateController.submitError!,
+                                              style: theme.textTheme.bodyMedium
+                                                  ?.copyWith(
+                                                color: theme.colorScheme.error,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
                                 ],
                               ),
                             ),
@@ -188,34 +206,43 @@ class _RecordDialogState extends State<RecordDialog> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: _isSubmitting
-                            ? null
-                            : () => Navigator.of(context).pop(false),
-                        child: const Text('Cancel'),
-                      ),
-                      const SizedBox(width: 12),
-                      FilledButton.icon(
-                        onPressed: _isSubmitting ? null : _handleSubmit,
-                        icon: _isSubmitting
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Icons.save_alt),
-                        label: Text(
-                          _isSubmitting
-                              ? (widget.isUpdate ? 'Updating...' : 'Saving...')
-                              : (widget.isUpdate ? 'Update' : 'Create'),
-                        ),
-                      ),
-                    ],
+                  ListenableBuilder(
+                    listenable: _stateController,
+                    builder: (context, _) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: _stateController.isSubmitting
+                                ? null
+                                : () => Navigator.of(context).pop(false),
+                            child: const Text('Cancel'),
+                          ),
+                          const SizedBox(width: 12),
+                          FilledButton.icon(
+                            onPressed: _stateController.isSubmitting
+                                ? null
+                                : _handleSubmit,
+                            icon: _stateController.isSubmitting
+                                ? const SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Icon(Icons.check_circle_outline),
+                            label: Text(
+                              _stateController.isSubmitting
+                                  ? (widget.isUpdate
+                                      ? 'Updating...'
+                                      : 'Saving...')
+                                  : (widget.isUpdate ? 'Update' : 'Create'),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
@@ -237,10 +264,7 @@ class _RecordDialogState extends State<RecordDialog> {
       payload[entry.key] = entry.value.text.trim();
     }
 
-    setState(() {
-      _isSubmitting = true;
-      _submitError = null;
-    });
+    _stateController.startSubmission();
 
     final success = await widget.onSubmit(payload);
     if (!mounted) return;
@@ -248,11 +272,10 @@ class _RecordDialogState extends State<RecordDialog> {
     if (success) {
       Navigator.of(context).pop(true);
     } else {
-      setState(() {
-        _isSubmitting = false;
-        _submitError =
-            'Failed to ${widget.isUpdate ? 'update' : 'create'} record. Please try again.';
-      });
+      _stateController.stopSubmission(
+        error:
+            'Failed to ${widget.isUpdate ? 'update' : 'create'} record. Please try again.',
+      );
     }
   }
 }

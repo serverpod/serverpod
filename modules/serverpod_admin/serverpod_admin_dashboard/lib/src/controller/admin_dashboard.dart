@@ -42,6 +42,9 @@ class AdminDashboardController extends ChangeNotifier {
   }
 
   Future<void> loadResources() async {
+    // Prevent concurrent loads
+    if (isResourcesLoading) return;
+
     isResourcesLoading = true;
     resourcesError = null;
     notifyListeners();
@@ -129,5 +132,24 @@ class AdminDashboardController extends ChangeNotifier {
   ) async {
     await adminEndpoint.delete(resource.key, id);
     await loadRecords(resource);
+  }
+
+  /// Resolves the primary key value from a record.
+  String? resolvePrimaryKeyValue(
+    AdminResource resource,
+    Map<String, String> record,
+  ) {
+    final primaryColumn =
+        resource.columns.firstWhere((column) => column.isPrimary, orElse: () {
+      return AdminColumn(
+        name: 'id',
+        dataType: 'String',
+        hasDefault: true,
+        isPrimary: true,
+      );
+    });
+    final raw = record[primaryColumn.name];
+    if (raw == null || raw.isEmpty) return null;
+    return raw;
   }
 }

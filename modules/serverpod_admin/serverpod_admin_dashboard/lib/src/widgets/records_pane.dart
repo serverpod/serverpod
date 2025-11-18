@@ -69,14 +69,6 @@ class RecordsPane extends StatelessWidget {
                           ),
                           avatar: const Icon(Icons.table_rows, size: 18),
                         ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Key: ${resource!.key}',
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: theme.textTheme.labelMedium?.color
-                                ?.withOpacity(0.7),
-                          ),
-                        ),
                       ],
                     ),
                   ],
