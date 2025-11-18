@@ -25,13 +25,13 @@ class AuthenticationInfo {
   ///
   /// For example when using the `serverpod_auth_session` module, this contains
   /// the auth session's ID as a UUID string.
-  final String? authId;
+  final String authId;
 
   /// Creates a new [AuthenticationInfo].
   AuthenticationInfo(
     this.userIdentifier,
     this.scopes, {
-    this.authId,
+    required this.authId,
   }) {
     if (userIdentifier.isEmpty) {
       throw ArgumentError(

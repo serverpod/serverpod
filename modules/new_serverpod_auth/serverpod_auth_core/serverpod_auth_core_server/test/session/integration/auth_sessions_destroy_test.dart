@@ -124,7 +124,7 @@ void main() {
             isA<RevokedAuthenticationAuthId>().having(
               (final m) => m.authId,
               'authId',
-              authInfoABeforeRevocation.authId!,
+              authInfoABeforeRevocation.authId,
             ),
           ]);
         },

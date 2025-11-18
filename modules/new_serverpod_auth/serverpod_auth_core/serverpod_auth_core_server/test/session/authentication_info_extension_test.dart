@@ -22,21 +22,6 @@ void main() {
     );
   });
 
-  group('Given an `AuthenticationInfo` with a `null` `authId`', () {
-    final authenticationInfo = AuthenticationInfo(
-      authUserId.uuid,
-      {},
-      authId: null,
-    );
-
-    test('when reading the `authSessionId` field, then it throws.', () {
-      expect(
-        () => authenticationInfo.authSessionId,
-        throwsA(isA<TypeError>()),
-      );
-    });
-  });
-
   group('Given an `AuthenticationInfo` with a non-UUID `authId`', () {
     final authenticationInfo = AuthenticationInfo(
       '123',
