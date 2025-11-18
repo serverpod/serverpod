@@ -12,6 +12,7 @@ class RecordsBody extends StatefulWidget {
     required this.errorMessage,
     required this.onEdit,
     required this.onDelete,
+    this.onView,
   });
 
   final AdminResource resource;
@@ -20,6 +21,7 @@ class RecordsBody extends StatefulWidget {
   final String? errorMessage;
   final void Function(Map<String, String> record)? onEdit;
   final void Function(Map<String, String> record)? onDelete;
+  final void Function(Map<String, String> record)? onView;
 
   @override
   State<RecordsBody> createState() => _RecordsBodyState();
@@ -159,25 +161,32 @@ class _RecordsBodyState extends State<RecordsBody> {
                                       Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          IconButton(
-                                            tooltip: 'Edit record',
-                                            icon:
-                                                const Icon(Icons.edit_outlined),
-                                            onPressed: widget.onEdit == null
-                                                ? null
-                                                : () => widget.onEdit!(record),
-                                          ),
-                                          IconButton(
-                                            tooltip: 'Delete record',
-                                            icon: Icon(
-                                              Icons.delete_outline,
-                                              color: theme.colorScheme.error,
+                                          if (widget.onView != null)
+                                            IconButton(
+                                              tooltip: 'View details',
+                                              icon: const Icon(
+                                                  Icons.visibility_outlined),
+                                              onPressed: () =>
+                                                  widget.onView!(record),
                                             ),
-                                            onPressed: widget.onDelete == null
-                                                ? null
-                                                : () =>
-                                                    widget.onDelete!(record),
-                                          ),
+                                          if (widget.onEdit != null)
+                                            IconButton(
+                                              tooltip: 'Edit record',
+                                              icon: const Icon(
+                                                  Icons.edit_outlined),
+                                              onPressed: () =>
+                                                  widget.onEdit!(record),
+                                            ),
+                                          if (widget.onDelete != null)
+                                            IconButton(
+                                              tooltip: 'Delete record',
+                                              icon: Icon(
+                                                Icons.delete_outline,
+                                                color: theme.colorScheme.error,
+                                              ),
+                                              onPressed: () =>
+                                                  widget.onDelete!(record),
+                                            ),
                                         ],
                                       ),
                                     ),

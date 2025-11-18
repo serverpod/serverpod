@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_admin_dashboard/src/controller/admin_dashboard.dart';
 import 'package:serverpod_admin_dashboard/src/helpers/admin_resources.dart';
 import 'package:serverpod_admin_dashboard/src/widgets/record_dialog.dart';
+import 'package:serverpod_admin_dashboard/src/screens/record_details.dart';
 
 /// Business logic operations for the Home screen.
 /// Separated from UI to avoid setState usage.
@@ -47,6 +48,23 @@ class HomeOperations {
     if (updated == true) {
       // Records are reloaded in _updateRecord
     }
+  }
+
+  /// Shows the record details page.
+  void showDetailsPage(
+    AdminResource resource,
+    Map<String, String> record,
+  ) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => RecordDetails(
+          resource: resource,
+          record: record,
+          onEdit: (record) => showEditDialog(resource, record),
+          onDelete: (record) => showDeleteConfirmation(resource, record),
+        ),
+      ),
+    );
   }
 
   /// Shows the delete confirmation dialog.

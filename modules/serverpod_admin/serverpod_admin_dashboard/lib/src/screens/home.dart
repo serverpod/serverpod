@@ -157,6 +157,17 @@ class _HomeState extends State<Home> {
                                                         resource, record);
                                               }
                                             },
+                                  onView:
+                                      widget.controller.selectedResource == null
+                                          ? null
+                                          : (record) {
+                                              final resource = widget
+                                                  .controller.selectedResource;
+                                              if (resource != null) {
+                                                operations.showDetailsPage(
+                                                    resource, record);
+                                              }
+                                            },
                                 )
                               : Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,6 +255,19 @@ class _HomeState extends State<Home> {
                                                   operations
                                                       .showDeleteConfirmation(
                                                           resource, record);
+                                                }
+                                              },
+                                        onView: widget.controller
+                                                    .selectedResource ==
+                                                null
+                                            ? null
+                                            : (record) {
+                                                final resource = widget
+                                                    .controller
+                                                    .selectedResource;
+                                                if (resource != null) {
+                                                  operations.showDetailsPage(
+                                                      resource, record);
                                                 }
                                               },
                                       ),
