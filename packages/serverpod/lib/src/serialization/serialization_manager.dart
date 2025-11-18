@@ -29,13 +29,7 @@ abstract class SerializationManagerServer extends SerializationManager {
     }
 
     // Create json with expected field name for SerializableModel
-    final json = {
-      // Preserves non-persisted fields
-      ...data,
-      // map columns to field name
-      for (var column in table.columns)
-        column.fieldName: data[column.columnName],
-    };
+    final json = table.parseRow(data);
     return deserialize(json, t);
   }
 }
