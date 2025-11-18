@@ -47,7 +47,7 @@ void main() {
 
   group('Given a running serverpod server', () {
     test('when it is sent SIGINT '
-        'then it exits with exit code 0', () async {
+        'then it exits with exit code 130', () async {
       final processOutput = await startProcess(
         'dart',
         ['bin/main.dart', '--mode=test'],
@@ -77,7 +77,7 @@ void main() {
       var exitCode = await processOutput.process.exitCode.timeout(
         terminationTimeout,
       );
-      expect(exitCode, 0);
+      expect(exitCode, 130);
     });
 
     test(
@@ -170,7 +170,7 @@ void main() {
 
     test('with an ongoing http request '
         'when it is sent SIGINT '
-        'then it exits with exit code 0', () async {
+        'then it exits with exit code 130', () async {
       final processOutput = await startProcess(
         'dart',
         ['bin/main.dart', '--mode=test'],
@@ -215,7 +215,7 @@ void main() {
       var exitCode = await processOutput.process.exitCode.timeout(
         terminationTimeout,
       );
-      expect(exitCode, 0);
+      expect(exitCode, 130);
     }, skip: 'Dart HTTP server does not support this graceful shutdown');
   });
 }

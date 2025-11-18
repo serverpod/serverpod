@@ -930,8 +930,7 @@ class Serverpod {
       stdout.writeln(
         'SERVERPOD immediate exit, time: ${DateTime.now().toUtc()}',
       );
-      // Immediate exit on double SIGINT is an abnormal termination
-      exit(1);
+      exit(128 + signal.signalNumber);
     }
 
     _interruptSignalSent = true;
@@ -1127,9 +1126,17 @@ class Serverpod {
     );
 
     if (exitProcess) {
-      // For daemon/service processes, exit with 0 for graceful shutdowns
-      // and 1 for shutdowns with errors, regardless of signal type.
-      exit(shutdownError != null ? 1 : 0);
+      // For SIGTERM (daemon shutdown), use exit code 0 for graceful shutdown.
+      // For SIGINT and other signals, use the conventional 128 + signalNumber.
+      int conventionalExitCode;
+      if (signalNumber == ProcessSignal.sigterm.signalNumber) {
+        conventionalExitCode = 0;
+      } else if (signalNumber != null) {
+        conventionalExitCode = 128 + signalNumber;
+      } else {
+        conventionalExitCode = 0;
+      }
+      exit(shutdownError != null ? 1 : conventionalExitCode);
     }
 
     if (shutdownError != null) {
