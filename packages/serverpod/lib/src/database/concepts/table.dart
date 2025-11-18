@@ -105,6 +105,20 @@ class Table<T_ID> {
     }
     return str;
   }
+
+  /// Parse the provided [rowData] and return it with keys matching the
+  /// expected field names
+  Map<String, dynamic> parseRow(
+    Map<String, dynamic> rowData,
+  ) {
+    return {
+      // Preserves non-persisted fields
+      ...rowData,
+      // map columns to field name
+      for (final column in columns)
+        column.fieldName: rowData[column.columnName],
+    };
+  }
 }
 
 /// Creates a new [Table] containing [TableRelation] with information
