@@ -168,10 +168,11 @@ void main() {
       test(
         'when rotating the tokens, then both the old (non-expired) and new access token are valid.',
         () async {
-          final newTokenPair = await authenticationTokens.rotateRefreshToken(
-            session,
-            refreshToken: authSuccess.refreshToken!,
-          );
+          final newTokenPair = await authenticationTokens.admin
+              .rotateRefreshToken(
+                session,
+                refreshToken: authSuccess.refreshToken!,
+              );
 
           expect(
             await authenticationTokens.authenticationHandler(

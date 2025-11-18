@@ -1,18 +1,34 @@
+import 'dart:typed_data';
+
 import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/src/jwt/business/refresh_token_exceptions.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../generated/protocol.dart';
+import 'jwt_util.dart';
+import 'refresh_token_secret_hash.dart';
+import 'refresh_token_string.dart';
 
 /// Collection of admin functions for managing authentication tokens.
 final class AuthenticationTokensAdmin {
   final Duration _refreshTokenLifetime;
+  final JwtUtil _jwtUtil;
+  final RefreshTokenSecretHash _refreshTokenSecretHash;
+  final int _refreshTokenRotatingSecretLength;
 
   /// Creates a new admin helper class instance.
   @internal
   AuthenticationTokensAdmin({
     required final Duration refreshTokenLifetime,
-  }) : _refreshTokenLifetime = refreshTokenLifetime;
+    required final JwtUtil jwtUtil,
+    required final RefreshTokenSecretHash refreshTokenSecretHash,
+    required final int refreshTokenRotatingSecretLength,
+  }) : _refreshTokenLifetime = refreshTokenLifetime,
+       _jwtUtil = jwtUtil,
+       _refreshTokenSecretHash = refreshTokenSecretHash,
+       _refreshTokenRotatingSecretLength = refreshTokenRotatingSecretLength;
 
   /// Removes all expired refresh tokens from the database.
   Future<void> deleteExpiredRefreshTokens(
@@ -129,6 +145,114 @@ final class AuthenticationTokensAdmin {
           ),
         )
         .toList();
+  }
+
+  /// {@template authentication_tokens_admin.rotate_refresh_token}
+  /// Returns a new refresh / access token pair.
+  ///
+  /// This invalidates the previous refresh token.
+  /// Previously created access tokens for this refresh token will continue to work until they expire.
+  /// {@endtemplate}
+  Future<TokenPair> rotateRefreshToken(
+    final Session session, {
+    required final String refreshToken,
+    final Transaction? transaction,
+  }) async {
+    final RefreshTokenStringData refreshTokenData;
+
+    try {
+      refreshTokenData = RefreshTokenString.parseRefreshTokenString(
+        refreshToken,
+      );
+    } catch (e, stackTrace) {
+      session.log(
+        'Received malformed refresh token',
+        exception: e,
+        stackTrace: stackTrace,
+        level: LogLevel.debug,
+      );
+
+      throw RefreshTokenMalformedServerException();
+    }
+
+    var refreshTokenRow = await RefreshToken.db.findById(
+      session,
+      refreshTokenData.id,
+      transaction: transaction,
+    );
+
+    if (refreshTokenRow == null ||
+        !uint8ListAreEqual(
+          Uint8List.sublistView(refreshTokenRow.fixedSecret),
+          refreshTokenData.fixedSecret,
+        )) {
+      throw RefreshTokenNotFoundServerException();
+    }
+
+    if (refreshTokenRow.isExpired(_refreshTokenLifetime)) {
+      await RefreshToken.db.deleteRow(
+        session,
+        refreshTokenRow,
+        transaction: transaction,
+      );
+
+      throw RefreshTokenExpiredServerException(
+        refreshTokenId: refreshTokenRow.id!,
+        authUserId: refreshTokenRow.authUserId,
+      );
+    }
+
+    if (!await _refreshTokenSecretHash.validateHash(
+      secret: refreshTokenData.rotatingSecret,
+      hash: Uint8List.sublistView(refreshTokenRow.rotatingSecretHash),
+      salt: Uint8List.sublistView(refreshTokenRow.rotatingSecretSalt),
+    )) {
+      await RefreshToken.db.deleteRow(
+        session,
+        refreshTokenRow,
+        transaction: transaction,
+      );
+
+      throw RefreshTokenInvalidSecretServerException(
+        refreshTokenId: refreshTokenRow.id!,
+        authUserId: refreshTokenRow.authUserId,
+      );
+    }
+
+    final newSecret = _generateRefreshTokenRotatingSecret();
+    final newHash = await _refreshTokenSecretHash.createHash(secret: newSecret);
+
+    refreshTokenRow = await RefreshToken.db.updateRow(
+      session,
+      refreshTokenRow.copyWith(
+        rotatingSecretHash: ByteData.sublistView(newHash.hash),
+        rotatingSecretSalt: ByteData.sublistView(newHash.salt),
+        lastUpdatedAt: clock.now(),
+      ),
+      transaction: transaction,
+    );
+
+    return TokenPair(
+      refreshToken: RefreshTokenString.buildRefreshTokenString(
+        refreshToken: refreshTokenRow,
+        rotatingSecret: newSecret,
+      ),
+      accessToken: _jwtUtil.createJwt(refreshTokenRow),
+    );
+  }
+
+  Uint8List _generateRefreshTokenRotatingSecret() {
+    return generateRandomBytes(_refreshTokenRotatingSecretLength);
+  }
+}
+
+extension on RefreshToken {
+  bool isExpired(final Duration refreshTokenLifetime) {
+    final oldestAcceptedRefreshTokenDate = clock.now().subtract(
+      refreshTokenLifetime,
+    );
+
+    return lastUpdatedAt.isBefore(oldestAcceptedRefreshTokenDate);
   }
 }
 
