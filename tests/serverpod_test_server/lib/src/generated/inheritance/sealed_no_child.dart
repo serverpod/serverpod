@@ -18,8 +18,6 @@ sealed class SealedNoChild
 
   String name;
 
-  SealedNoChild fromJson(Map<String, dynamic> jsonSerialization);
-
   /// Returns a shallow copy of this [SealedNoChild]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult

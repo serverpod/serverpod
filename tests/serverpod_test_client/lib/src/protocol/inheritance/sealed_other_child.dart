@@ -45,11 +45,6 @@ abstract class SealedOtherChild extends _i1.SealedParent
     int? sealedOtherChildField,
   });
   @override
-  SealedOtherChild fromJson(Map<String, dynamic> jsonSerialization) {
-    return SealedOtherChild.fromJson(jsonSerialization);
-  }
-
-  @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'SealedOtherChild',

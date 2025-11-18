@@ -101,15 +101,6 @@ void main() {
           expect(copyWithMethod, isNotNull);
         });
 
-        test('does have an abstract fromJson method', () {
-          var fromJsonMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            parentClass!,
-            name: 'fromJson',
-          );
-
-          expect(fromJsonMethod, isNotNull);
-        });
-
         test('does NOT have a toJson method', () {
           var toJsonMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
             parentClass!,
@@ -185,28 +176,6 @@ void main() {
           );
           var overrideAnnotation = CompilationUnitHelpers.tryFindAnnotation(
             copyWithMethod!,
-            name: 'override',
-          );
-
-          expect(overrideAnnotation, isNotNull);
-        });
-
-        test('does have an instance fromJson method', () {
-          var fromJsonMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            childClass!,
-            name: 'fromJson',
-          );
-
-          expect(fromJsonMethod, isNotNull);
-        });
-
-        test('fromJson has @override annotation', () {
-          var fromJsonMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            childClass!,
-            name: 'fromJson',
-          );
-          var overrideAnnotation = CompilationUnitHelpers.tryFindAnnotation(
-            fromJsonMethod!,
             name: 'override',
           );
 
@@ -416,14 +385,6 @@ void main() {
             name: 'copyWith',
           );
           expect(copyWithMethod, isNotNull);
-        });
-
-        test('does have an abstract fromJson method', () {
-          var fromJsonMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            parentClass!,
-            name: 'fromJson',
-          );
-          expect(fromJsonMethod, isNotNull);
         });
 
         test('has a part directive with ${child.className} uri', () {
@@ -758,15 +719,6 @@ void main() {
         );
 
         expect(copyWithMethod, isNotNull);
-      });
-
-      test('does have an abstract fromJson method', () {
-        var fromJsonMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-          parentClass!,
-          name: 'fromJson',
-        );
-
-        expect(fromJsonMethod, isNotNull);
       });
 
       var directives = parentCompilationUnit.directives;

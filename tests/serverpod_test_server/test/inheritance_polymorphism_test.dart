@@ -422,4 +422,24 @@ void main() {
       expect(deserialized.grandchild, 'Module grandchild');
     },
   );
+
+  test(
+    'Given a SealedChild object '
+    'when using copyWith through parent reference '
+    'then it correctly creates a copy with updated values.',
+    () {
+      final child = SealedChild(
+        sealedInt: 42,
+        sealedString: 'hello',
+        nullableInt: 10,
+      );
+
+      final SealedParent parent = child;
+      final copied = parent.copyWith(sealedInt: 100);
+
+      expect(copied.sealedInt, equals(100));
+      expect(copied.sealedString, equals('hello'));
+      expect(copied, isA<SealedChild>());
+    },
+  );
 }
