@@ -571,7 +571,9 @@ class ModelParser {
       if (indexName is! String) return null;
 
       var indexFields = _parseIndexFields(nodeDocument, fields);
-      var indexFieldsTypes = fields.where((f) => indexFields.contains(f.name));
+      var indexFieldsTypes = fields.where(
+        (f) => indexFields.contains(f.columnName),
+      );
       var type = _parseIndexType(
         nodeDocument,
         onlyVectorFields:
@@ -611,6 +613,16 @@ class ModelParser {
 
     var stringifiedFields = fieldsNode.value;
     if (stringifiedFields is! String) return [];
+
+    for (var field in fields) {
+      // Use expected column name for all fields
+      if (field.columnName != field.name) {
+        stringifiedFields = (stringifiedFields as String).replaceAll(
+          field.name,
+          field.columnName,
+        );
+      }
+    }
 
     var indexFields = convertIndexList(stringifiedFields);
 
