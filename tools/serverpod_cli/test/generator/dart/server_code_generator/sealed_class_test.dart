@@ -99,6 +99,7 @@ void main() {
           );
 
           expect(copyWithMethod, isNotNull);
+          expect(copyWithMethod!.body, isA<EmptyFunctionBody>());
         });
 
         test('does NOT have a toJson method', () {
@@ -385,6 +386,7 @@ void main() {
             name: 'copyWith',
           );
           expect(copyWithMethod, isNotNull);
+          expect(copyWithMethod!.body, isA<EmptyFunctionBody>());
         });
 
         test('has a part directive with ${child.className} uri', () {
@@ -719,6 +721,7 @@ void main() {
         );
 
         expect(copyWithMethod, isNotNull);
+        expect(copyWithMethod!.body, isA<EmptyFunctionBody>());
       });
 
       var directives = parentCompilationUnit.directives;

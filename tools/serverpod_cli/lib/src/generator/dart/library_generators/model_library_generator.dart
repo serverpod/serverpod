@@ -733,7 +733,6 @@ class SerializableModelLibraryGenerator {
       return false;
     }
 
-    // If parent is sealed, we need to override its abstract copyWith
     if (parentClass.isSealed) {
       return true;
     }
