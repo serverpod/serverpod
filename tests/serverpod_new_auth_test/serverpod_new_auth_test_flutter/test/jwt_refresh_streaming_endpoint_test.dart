@@ -23,95 +23,90 @@ void main() {
     client.close();
   });
 
-  group('Given a streaming endpoint authenticated with JWT', () {
-    late UuidValue userId;
-    late AuthSuccess authSuccess;
-    late Stream<int> stream;
+  group(
+    'Given a streaming method authenticated with a JWT token that has since been refreshed multiple times,',
+    () {
+      late UuidValue userId;
+      late AuthSuccess authSuccess;
+      late Stream<int> stream;
+      late Completer<dynamic> streamClosedCompleter;
+      late Completer<int> valueReceivedCompleter;
+      late StreamSubscription<int> streamSubscription;
+      late UuidValue finalRefreshTokenId;
 
-    setUp(() async {
-      userId = await client.authTest.createTestUser();
-      authSuccess = await client.authTest.createJwtToken(userId);
+      setUp(() async {
+        userId = await client.authTest.createTestUser();
+        authSuccess = await client.authTest.createJwtToken(userId);
 
-      await authKeyManager.put(authSuccess.token);
+        await authKeyManager.put(authSuccess.token);
 
-      stream = client.authenticatedStreamingTest.openAuthenticatedStream();
-    });
+        stream = client.authenticatedStreamingTest.openAuthenticatedStream();
 
-    group(
-      'when calling the streaming endpoint method and refreshing tokens multiple times',
-      () {
-        late Completer<dynamic> streamClosedCompleter;
-        late Completer<int> valueReceivedCompleter;
-        late StreamSubscription<int> streamSubscription;
-        late UuidValue finalRefreshTokenId;
+        streamClosedCompleter = Completer<dynamic>();
+        valueReceivedCompleter = Completer<int>();
 
-        setUp(() async {
-          streamClosedCompleter = Completer<dynamic>();
-          valueReceivedCompleter = Completer<int>();
-
-          streamSubscription = stream.listen(
-            (final event) {
-              if (!valueReceivedCompleter.isCompleted) {
-                valueReceivedCompleter.complete(event);
-              }
-            },
-            onError: (final e) {
-              if (!streamClosedCompleter.isCompleted) {
-                streamClosedCompleter.complete(e);
-              }
-            },
-          );
-
-          await valueReceivedCompleter.future;
-
-          for (var i = 0; i < 3; i++) {
-            final newAuthSuccess = await client.jwtRefresh.refreshAccessToken(
-              refreshToken: authSuccess.refreshToken!,
-            );
-
-            authSuccess = newAuthSuccess;
-            await authKeyManager.put(authSuccess.token);
-
-            await Future<void>.delayed(const Duration(milliseconds: 150));
-          }
-
-          final tokenParts = authSuccess.token.split('.');
-          if (tokenParts.length == 3) {
-            final payload = tokenParts[1];
-            final normalizedPayload = base64Url.normalize(payload);
-            final decodedPayload = utf8.decode(
-              base64Url.decode(normalizedPayload),
-            );
-            final Map<String, dynamic> payloadMap = jsonDecode(decodedPayload);
-            finalRefreshTokenId = UuidValue.fromString(
-              payloadMap['dev.serverpod.refreshTokenId'],
-            );
-          }
-        });
-
-        tearDown(() async {
-          await streamSubscription.cancel();
-        });
-
-        test('then stream remains open', () {
-          expect(streamClosedCompleter.isCompleted, isFalse);
-        });
-
-        test(
-          'when the last refreshed token is revoked, then the stream closes with an error.',
-          () async {
-            final deleted = await client.authTest.destroySpecificRefreshToken(
-              finalRefreshTokenId,
-            );
-
-            expect(deleted, isTrue);
-
-            await expectLater(streamClosedCompleter.future, completes);
-            final exception = await streamClosedCompleter.future;
-            expect(exception, isA<ConnectionClosedException>());
+        streamSubscription = stream.listen(
+          (final event) {
+            if (!valueReceivedCompleter.isCompleted) {
+              valueReceivedCompleter.complete(event);
+            }
+          },
+          onError: (final e) {
+            if (!streamClosedCompleter.isCompleted) {
+              streamClosedCompleter.complete(e);
+            }
           },
         );
-      },
-    );
-  });
+
+        await valueReceivedCompleter.future;
+
+        for (var i = 0; i < 3; i++) {
+          final newAuthSuccess = await client.jwtRefresh.refreshAccessToken(
+            refreshToken: authSuccess.refreshToken!,
+          );
+
+          authSuccess = newAuthSuccess;
+          await authKeyManager.put(authSuccess.token);
+
+          await Future<void>.delayed(const Duration(milliseconds: 150));
+        }
+
+        final tokenParts = authSuccess.token.split('.');
+        if (tokenParts.length == 3) {
+          final payload = tokenParts[1];
+          final normalizedPayload = base64Url.normalize(payload);
+          final decodedPayload = utf8.decode(
+            base64Url.decode(normalizedPayload),
+          );
+          final Map<String, dynamic> payloadMap = jsonDecode(decodedPayload);
+          finalRefreshTokenId = UuidValue.fromString(
+            payloadMap['dev.serverpod.refreshTokenId'],
+          );
+        }
+      });
+
+      tearDown(() async {
+        await streamSubscription.cancel();
+      });
+
+      test('then the stream remains open', () {
+        expect(streamClosedCompleter.isCompleted, isFalse);
+      });
+
+      test(
+        'when the latest revision is revoked, then the stream closes with a ConnectionClosedException',
+        () async {
+          final deleted = await client.authTest.destroySpecificRefreshToken(
+            finalRefreshTokenId,
+          );
+
+          expect(deleted, isTrue);
+
+          await expectLater(streamClosedCompleter.future, completes);
+          final exception = await streamClosedCompleter.future;
+          expect(exception, isA<ConnectionClosedException>());
+        },
+      );
+    },
+  );
 }
