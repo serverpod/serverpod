@@ -1,0 +1,107 @@
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test_server/src/generated/protocol.dart';
+import 'package:serverpod_test_server/test_util/test_serverpod.dart';
+import 'package:test/test.dart';
+import '../../../../../packages/serverpod/lib/src/database/sql_query_builder.dart';
+
+void main() async {
+  var session = await IntegrationTestServer().session();
+
+  group('Given a table with an explicit column name', () {
+    late TableWithExplicitColumnName data;
+    late TableWithExplicitColumnNameRepository db;
+    late TableWithExplicitColumnNameTable table;
+
+    setUp(() {
+      data = TableWithExplicitColumnName(
+        userName: 'userName',
+        description: 'description',
+      );
+      db = TableWithExplicitColumnName.db;
+      table = TableWithExplicitColumnName.t;
+    });
+
+    tearDown(() async {
+      TableWithExplicitColumnName.db.deleteWhere(
+        session,
+        where: (t) => Constant.bool(true),
+      );
+    });
+
+    group('when inserting', () {
+      test('then it is created', () async {
+        final inserted = await db.insertRow(session, data);
+
+        expect(inserted.id, isNotNull);
+      });
+
+      test('the explicit column name is used in the sql', () {
+        final query = InsertQueryBuilder(table: table, rows: [data]).build();
+        expect(
+          query,
+          'INSERT INTO "${table.tableName}" '
+          '("user_name", "user_description") '
+          'VALUES (\'userName\', \'description\') RETURNING *',
+        );
+      });
+    });
+
+    group('when an object is retrieved by its id', () {
+      test('after inserting then the same object is returned', () async {
+        final inserted = await db.insertRow(session, data);
+        final retrieved = await db.findById(session, (await inserted).id!);
+
+        expect(retrieved, isNotNull);
+        expect(retrieved?.id, inserted.id);
+        expect(retrieved?.userName, data.userName);
+        expect(retrieved?.description, data.description);
+      });
+
+      test('the explicit column name is used in the sql', () {
+        final query = SelectQueryBuilder(
+          table: table,
+        ).withSelectFields(TableWithExplicitColumnName.t.columns).build();
+        expect(
+          query,
+          'SELECT "${table.tableName}"."id" AS "${table.tableName}.id", '
+          '"${table.tableName}"."user_name" AS "${table.tableName}.user_name", '
+          '"${table.tableName}"."user_description" AS "${table.tableName}.user_description" '
+          'FROM "${table.tableName}"',
+        );
+      });
+    });
+
+    test('when updating then it is updated', () async {
+      const newUserName = 'newUserName';
+      final inserted = await db.insertRow(session, data);
+      inserted.userName = newUserName;
+      final updated = await db.updateRow(session, inserted);
+
+      expect(updated.userName, newUserName);
+    });
+
+    group('when deleting', () {
+      test('then it is deleted', () async {
+        final inserted = await db.insertRow(session, data);
+        final result = await db.deleteRow(session, inserted);
+
+        expect(result, isNotNull);
+        final retrieved = await db.findById(session, inserted.id!);
+        expect(retrieved, isNull);
+      });
+
+      test('the explicit column name is used in the sql', () {
+        final query = DeleteQueryBuilder(
+          table: table,
+        ).withReturn(Returning.all).withWhere(Constant.bool(true)).build();
+        expect(
+          query,
+          'DELETE FROM "${table.tableName}" WHERE TRUE '
+          'RETURNING "${table.tableName}"."id" AS "${table.tableName}.id", '
+          '"${table.tableName}"."user_name" AS "${table.tableName}.user_name", '
+          '"${table.tableName}"."user_description" AS "${table.tableName}.user_description"',
+        );
+      });
+    });
+  });
+}
