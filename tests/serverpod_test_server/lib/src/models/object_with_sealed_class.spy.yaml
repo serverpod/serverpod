@@ -1,5 +1,4 @@
 class: ObjectWithSealedClass
-table: object_with_sealed_class
 fields:
   sealedField: SealedParent
   nullableSealedField: SealedParent?

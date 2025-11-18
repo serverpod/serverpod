@@ -4348,57 +4348,6 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
-      name: 'object_with_sealed_class',
-      dartName: 'ObjectWithSealedClass',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault:
-              'nextval(\'object_with_sealed_class_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'sealedField',
-          columnType: _i2.ColumnType.json,
-          isNullable: false,
-          dartType: 'protocol:SealedParent',
-        ),
-        _i2.ColumnDefinition(
-          name: 'nullableSealedField',
-          columnType: _i2.ColumnType.json,
-          isNullable: true,
-          dartType: 'protocol:SealedParent?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'sealedList',
-          columnType: _i2.ColumnType.json,
-          isNullable: false,
-          dartType: 'List<protocol:SealedParent>',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'object_with_sealed_class_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
       name: 'object_with_self_parent',
       dartName: 'ObjectWithSelfParent',
       schema: 'public',
@@ -13514,8 +13463,6 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i153.ObjectWithObject.t;
       case _i154.ObjectWithParent:
         return _i154.ObjectWithParent.t;
-      case _i155.ObjectWithSealedClass:
-        return _i155.ObjectWithSealedClass.t;
       case _i156.ObjectWithSelfParent:
         return _i156.ObjectWithSelfParent.t;
       case _i157.ObjectWithSparseVector:
