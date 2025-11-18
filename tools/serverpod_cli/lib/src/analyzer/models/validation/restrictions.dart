@@ -1005,7 +1005,7 @@ class Restrictions {
           'The "${Keyword.table}" property must be defined in the class to set '
           'the ${Keyword.columnKey} on a field.',
           span,
-        )
+        ),
       ];
     }
 
@@ -1014,7 +1014,7 @@ class Restrictions {
         SourceSpanSeverityException(
           'The "${Keyword.columnKey}" key is not allowed on the "id" field.',
           span,
-        )
+        ),
       ];
     }
 
@@ -1024,7 +1024,7 @@ class Restrictions {
           'The column name "$column" exceeds the $_maxColumnNameLength '
           'character column name limitation.',
           span,
-        )
+        ),
       ];
     }
 
@@ -1038,7 +1038,18 @@ class Restrictions {
           SourceSpanSeverityException(
             'The column "$column" should only be used for a single field.',
             span,
-          )
+          ),
+        ];
+      }
+
+      final [field] = fieldsWithColumn;
+      if (field.isSymbolicRelation) {
+        return [
+          SourceSpanSeverityException(
+            'The "${Keyword.columnKey}" key is only allowed on a '
+            'foreign key relation field.',
+            span,
+          ),
         ];
       }
     }
