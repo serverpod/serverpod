@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 import 'package:serverpod_new_auth_test_client/serverpod_new_auth_test_client.dart';
 
 import 'utils/test_auth_key_manager.dart';
