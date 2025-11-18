@@ -362,7 +362,6 @@ class _AuthTestEndpoint {
 
   _i3.Future<bool> destroySpecificRefreshToken(
     _i1.TestSessionBuilder sessionBuilder,
-    _i2.UuidValue refreshTokenId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -375,7 +374,7 @@ class _AuthTestEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'authTest',
           methodName: 'destroySpecificRefreshToken',
-          parameters: _i1.testObjectToJson({'refreshTokenId': refreshTokenId}),
+          parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =

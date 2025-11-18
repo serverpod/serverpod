@@ -184,22 +184,13 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
         'destroySpecificRefreshToken': _i1.MethodConnector(
           name: 'destroySpecificRefreshToken',
-          params: {
-            'refreshTokenId': _i1.ParameterDescription(
-              name: 'refreshTokenId',
-              type: _i1.getType<_i1.UuidValue>(),
-              nullable: false,
-            ),
-          },
+          params: {},
           call:
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async => (endpoints['authTest'] as _i2.AuthTestEndpoint)
-                  .destroySpecificRefreshToken(
-                    session,
-                    params['refreshTokenId'],
-                  ),
+                  .destroySpecificRefreshToken(session),
         ),
         'checkSession': _i1.MethodConnector(
           name: 'checkSession',
