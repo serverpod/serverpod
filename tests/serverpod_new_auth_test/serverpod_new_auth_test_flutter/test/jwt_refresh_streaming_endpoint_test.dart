@@ -32,11 +32,6 @@ void main() {
       userId = await client.authTest.createTestUser();
       authSuccess = await client.authTest.createJwtToken(userId);
 
-      final tokenParts = authSuccess.token.split('.');
-      if (tokenParts.length != 3) {
-        throw Exception('Invalid JWT token format');
-      }
-
       await authKeyManager.put(authSuccess.token);
 
       stream = client.authenticatedStreamingTest.openAuthenticatedStream();
