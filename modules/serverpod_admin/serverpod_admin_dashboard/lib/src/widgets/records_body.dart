@@ -12,7 +12,7 @@ class RecordsBody extends StatefulWidget {
     required this.errorMessage,
     required this.onEdit,
     required this.onDelete,
-    this.onView,
+    this.onShow,
   });
 
   final AdminResource resource;
@@ -21,7 +21,7 @@ class RecordsBody extends StatefulWidget {
   final String? errorMessage;
   final void Function(Map<String, String> record)? onEdit;
   final void Function(Map<String, String> record)? onDelete;
-  final void Function(Map<String, String> record)? onView;
+  final void Function(Map<String, String> record)? onShow;
 
   @override
   State<RecordsBody> createState() => _RecordsBodyState();
@@ -161,13 +161,13 @@ class _RecordsBodyState extends State<RecordsBody> {
                                       Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          if (widget.onView != null)
+                                          if (widget.onShow != null)
                                             IconButton(
-                                              tooltip: 'View details',
+                                              tooltip: 'Show record',
                                               icon: const Icon(
                                                   Icons.visibility_outlined),
                                               onPressed: () =>
-                                                  widget.onView!(record),
+                                                  widget.onShow!(record),
                                             ),
                                           if (widget.onEdit != null)
                                             IconButton(

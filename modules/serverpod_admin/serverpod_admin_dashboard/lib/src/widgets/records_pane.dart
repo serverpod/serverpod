@@ -11,7 +11,7 @@ class RecordsPane extends StatelessWidget {
     required this.onAdd,
     required this.onEdit,
     required this.onDelete,
-    this.onView,
+    this.onShow,
   });
 
   final AdminResource? resource;
@@ -21,7 +21,7 @@ class RecordsPane extends StatelessWidget {
   final VoidCallback? onAdd;
   final void Function(Map<String, String> record)? onEdit;
   final void Function(Map<String, String> record)? onDelete;
-  final void Function(Map<String, String> record)? onView;
+  final void Function(Map<String, String> record)? onShow;
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +94,7 @@ class RecordsPane extends StatelessWidget {
                 errorMessage: errorMessage,
                 onEdit: onEdit,
                 onDelete: onDelete,
-                onView: onView,
+                onShow: onShow,
               ),
             ),
           ),

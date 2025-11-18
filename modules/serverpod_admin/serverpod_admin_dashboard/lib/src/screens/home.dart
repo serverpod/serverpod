@@ -157,7 +157,7 @@ class _HomeState extends State<Home> {
                                                         resource, record);
                                               }
                                             },
-                                  onView:
+                                  onShow:
                                       widget.controller.selectedResource == null
                                           ? null
                                           : (record) {
@@ -257,7 +257,7 @@ class _HomeState extends State<Home> {
                                                           resource, record);
                                                 }
                                               },
-                                        onView: widget.controller
+                                        onShow: widget.controller
                                                     .selectedResource ==
                                                 null
                                             ? null
