@@ -1104,20 +1104,32 @@ void main() {
         modelWithSealedField,
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late var codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
-        content: codeMap[getExpectedFilePath(modelWithSealedField.fileName)]!,
+      final expectedFileName = getExpectedFilePath(
+        modelWithSealedField.fileName,
+      );
+
+      test('then model file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+
+      late var compilationUnit = parseString(
+        content: codeMap[expectedFileName]!,
       ).unit;
 
       group('then ${modelWithSealedField.className}', () {
-        var modelClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        late var modelClass = CompilationUnitHelpers.tryFindClassDeclaration(
           compilationUnit,
           name: modelWithSealedField.className,
         );
+
+        test('compiles without errors', () {
+          expect(compilationUnit.declarations, isNotEmpty);
+        });
 
         test('is defined', () {
           expect(modelClass, isNotNull);
@@ -1137,12 +1149,6 @@ void main() {
             name: 'nullableSealedField',
           );
           expect(field, isNotNull);
-        });
-
-        test('compiles without errors', () {
-          // If we got here, the code was parsed successfully
-          // which means it compiles
-          expect(compilationUnit.declarations, isNotEmpty);
         });
       });
     },
