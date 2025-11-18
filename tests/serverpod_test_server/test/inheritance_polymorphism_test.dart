@@ -442,4 +442,43 @@ void main() {
       expect(copied, isA<SealedChild>());
     },
   );
+
+  test(
+    'Given an ObjectWithSealedClass '
+    'when created with a sealed class field '
+    'then it serializes and deserializes correctly.',
+    () {
+      final sealedChild = SealedChild(
+        sealedInt: 42,
+        sealedString: 'test',
+        nullableInt: 10,
+      );
+
+      final objectWithSealed = ObjectWithSealedClass(
+        sealedField: sealedChild,
+        nullableSealedField: sealedChild,
+        sealedList: [sealedChild],
+      );
+
+      // Test that the object is created correctly
+      expect(objectWithSealed.sealedField, isA<SealedParent>());
+      expect(objectWithSealed.sealedField, isA<SealedChild>());
+      expect(objectWithSealed.nullableSealedField, isNotNull);
+      expect(objectWithSealed.sealedList.length, equals(1));
+
+      // Test serialization
+      final json = objectWithSealed.toJson();
+      expect(json['sealedField'], isNotNull);
+      expect(json['sealedField']['__className__'], equals('SealedChild'));
+
+      // Test deserialization
+      final deserialized = ObjectWithSealedClass.fromJson(json);
+      expect(deserialized.sealedField, isA<SealedChild>());
+      expect((deserialized.sealedField as SealedChild).sealedInt, equals(42));
+      expect(
+        (deserialized.sealedField as SealedChild).sealedString,
+        equals('test'),
+      );
+    },
+  );
 }

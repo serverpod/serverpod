@@ -7,6 +7,8 @@ import 'package:test/test.dart';
 
 import '../../../test_util/builders/generator_config_builder.dart';
 import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
+import '../../../test_util/builders/type_definition_builder.dart';
 import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
@@ -1045,6 +1047,102 @@ void main() {
             partOfDirective,
             isNotNull,
           );
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a model with a sealed class as a field type when generating code',
+    () {
+      var sealedParent = ModelClassDefinitionBuilder()
+          .withClassName('SealedParent')
+          .withFileName('sealed_parent')
+          .withSimpleField('sealedInt', 'int')
+          .withIsSealed(true)
+          .build();
+
+      var sealedChild = ModelClassDefinitionBuilder()
+          .withClassName('SealedChild')
+          .withFileName('sealed_child')
+          .withSimpleField('childField', 'String')
+          .withExtendsClass(sealedParent)
+          .build();
+
+      sealedParent.childClasses.add(ResolvedInheritanceDefinition(sealedChild));
+
+      var modelWithSealedField = ModelClassDefinitionBuilder()
+          .withClassName('ModelWithSealedField')
+          .withFileName('model_with_sealed_field')
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('sealedField')
+                .withType(
+                  TypeDefinitionBuilder()
+                      .withClassName('SealedParent')
+                      .withNullable(false)
+                      .build(),
+                )
+                .build(),
+          )
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('nullableSealedField')
+                .withType(
+                  TypeDefinitionBuilder()
+                      .withClassName('SealedParent')
+                      .withNullable(true)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
+
+      var models = [
+        sealedParent,
+        sealedChild,
+        modelWithSealedField,
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var compilationUnit = parseString(
+        content: codeMap[getExpectedFilePath(modelWithSealedField.fileName)]!,
+      ).unit;
+
+      group('then ${modelWithSealedField.className}', () {
+        var modelClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: modelWithSealedField.className,
+        );
+
+        test('is defined', () {
+          expect(modelClass, isNotNull);
+        });
+
+        test('has a field with sealed class type', () {
+          var field = CompilationUnitHelpers.tryFindFieldDeclaration(
+            modelClass!,
+            name: 'sealedField',
+          );
+          expect(field, isNotNull);
+        });
+
+        test('has a nullable field with sealed class type', () {
+          var field = CompilationUnitHelpers.tryFindFieldDeclaration(
+            modelClass!,
+            name: 'nullableSealedField',
+          );
+          expect(field, isNotNull);
+        });
+
+        test('compiles without errors', () {
+          // If we got here, the code was parsed successfully
+          // which means it compiles
+          expect(compilationUnit.declarations, isNotEmpty);
         });
       });
     },
