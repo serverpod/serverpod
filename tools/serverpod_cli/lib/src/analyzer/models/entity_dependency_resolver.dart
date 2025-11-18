@@ -144,7 +144,7 @@ class ModelDependencyResolver {
     if (indexes.isEmpty) return;
 
     var indexesContainingField = indexes
-        .where((index) => index.fields.contains(fieldDefinition.name))
+        .where((index) => index.fields.contains(fieldDefinition.columnName))
         .toList();
 
     fieldDefinition.indexes = indexesContainingField;
