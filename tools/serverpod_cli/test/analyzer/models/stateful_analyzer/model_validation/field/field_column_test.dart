@@ -237,4 +237,50 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given a class with a symbolic relationship with a column name override, '
+    'then an error is collected.',
+    () {
+      var models = [
+        ModelSourceBuilder().withFileName('example').withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            id: int?
+            company: Company?, relation, column=company_id
+          ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('company').withYaml(
+          '''
+        class: Company
+        table: company
+        fields:
+          name: String
+        ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason:
+            'Expected an error to be collected when column used on symbolic relation field, '
+            'but none was generated.',
+      );
+
+      expect(
+        collector.errors.first.message,
+        'The "column" key is only allowed on a foreign key relation field.',
+      );
+    },
+  );
 }
