@@ -31,12 +31,12 @@ class ClientAuthSessionManager implements core.RefresherClientAuthKeyProvider {
     /// The secure storage to keep user authentication info. If missing, the
     /// session manager will create a [SecureClientAuthInfoStorage].
     core.ClientAuthInfoStorage? storage,
-  })  : _authInfoNotifier = ValueNotifier<core.AuthSuccess?>(null),
-        _delegate = _FlutterSessionManagerDelegate(
-          caller: caller,
-          authKeyProviderDelegates: authKeyProviderDelegates,
-          storage: storage ?? SecureClientAuthInfoStorage(),
-        ) {
+  }) : _authInfoNotifier = ValueNotifier<core.AuthSuccess?>(null),
+       _delegate = _FlutterSessionManagerDelegate(
+         caller: caller,
+         authKeyProviderDelegates: authKeyProviderDelegates,
+         storage: storage ?? SecureClientAuthInfoStorage(),
+       ) {
     // Set up the notifier callback
     (_delegate as _FlutterSessionManagerDelegate)._onAuthInfoChanged = () {
       _authInfoNotifier.value = _delegate.authInfo;
@@ -68,8 +68,7 @@ class ClientAuthSessionManager implements core.RefresherClientAuthKeyProvider {
   /// Restores any existing session from storage and validates with the server.
   Future<bool> initialize({
     Duration timeout = const Duration(seconds: 2),
-  }) =>
-      _delegate.initialize(timeout: timeout);
+  }) => _delegate.initialize(timeout: timeout);
 
   /// Restore the current sign in status from the storage.
   Future<void> restore() => _delegate.restore();
