@@ -137,12 +137,16 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
 
 /// Finds Serverpod server directories from anywhere within a project structure.
 class ServerDirectoryFinder {
+  /// Standard Serverpod sibling directory suffixes.
+  /// Used to find server directories from client/flutter directories.
+  static const _siblingPatterns = ['_flutter', '_client'];
+
   /// The directory finder function configured for Serverpod server directories.
   static final DirectoryFinder<Directory?> _finder =
       serverpodDirectoryFinder<Directory?>(
-        startingDirectory: (arg) => arg,
-        directoryContentCondition: isServerDirectory,
-      );
+    startingDirectory: (arg) => arg,
+    directoryContentCondition: isServerDirectory,
+  );
 
   /// Finds a server directory, prompting the user if multiple are found.
   ///
@@ -199,17 +203,15 @@ class ServerDirectoryFinder {
     var dirName = p.basename(dir.path);
     var parent = dir.parent;
 
-    String? baseName;
-    if (dirName.endsWith('_flutter')) {
-      baseName = dirName.substring(0, dirName.length - 8);
-    } else if (dirName.endsWith('_client')) {
-      baseName = dirName.substring(0, dirName.length - 7);
-    }
-
-    if (baseName != null) {
-      var serverDir = Directory(p.join(parent.path, '${baseName}_server'));
-      if (serverDir.existsSync() && condition(serverDir)) {
-        return serverDir;
+    // Check each sibling pattern until we find a match
+    for (var pattern in _siblingPatterns) {
+      if (dirName.endsWith(pattern)) {
+        var baseName = dirName.substring(0, dirName.length - pattern.length);
+        var serverDir = Directory(p.join(parent.path, '${baseName}_server'));
+        if (serverDir.existsSync() && condition(serverDir)) {
+          return serverDir;
+        }
+        break; // Found a pattern match, no need to check others
       }
     }
 
