@@ -82,7 +82,7 @@ void main() {
 
     test(
       'when it is sent SIGTERM '
-      'then it exits with exit code 143',
+      'then it exits with exit code 0',
       () async {
         final processOutput = await startProcess(
           'dart',
@@ -113,7 +113,7 @@ void main() {
         var exitCode = await processOutput.process.exitCode.timeout(
           terminationTimeout,
         );
-        expect(exitCode, 143);
+        expect(exitCode, 0);
       },
       onPlatform: {
         'windows': Skip('SIGTERM is not supported on Windows'),
