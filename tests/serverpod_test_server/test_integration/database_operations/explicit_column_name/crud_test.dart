@@ -47,7 +47,7 @@ void main() async {
     });
 
     group('when an object is retrieved by its id', () {
-      test('after inserting then the same object is returned', () async {
+      test('it returns the same object after insertion', () async {
         final inserted = await db.insertRow(session, data);
         final retrieved = await db.findById(session, (await inserted).id!);
 
@@ -71,7 +71,8 @@ void main() async {
       });
     });
 
-    test('when updating then it is updated', () async {
+    test('when an object is previously inserted and then updated, '
+        'the updated object is returned', () async {
       const newUserName = 'newUserName';
       final inserted = await db.insertRow(session, data);
       inserted.userName = newUserName;
