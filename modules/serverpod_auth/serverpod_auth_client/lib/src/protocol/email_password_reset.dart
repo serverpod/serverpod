@@ -47,6 +47,7 @@ abstract class EmailPasswordReset implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.EmailPasswordReset',
       if (userName != null) 'userName': userName,
       'email': email,
     };
@@ -65,9 +66,9 @@ class _EmailPasswordResetImpl extends EmailPasswordReset {
     String? userName,
     required String email,
   }) : super._(
-          userName: userName,
-          email: email,
-        );
+         userName: userName,
+         email: email,
+       );
 
   /// Returns a shallow copy of this [EmailPasswordReset]
   /// with some or all fields replaced by the given arguments.

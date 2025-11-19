@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'unique_data.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class RelatedUniqueData
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -37,8 +38,9 @@ abstract class RelatedUniqueData
       uniqueDataId: jsonSerialization['uniqueDataId'] as int,
       uniqueData: jsonSerialization['uniqueData'] == null
           ? null
-          : _i2.UniqueData.fromJson(
-              (jsonSerialization['uniqueData'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.UniqueData>(
+              jsonSerialization['uniqueData'],
+            ),
       number: jsonSerialization['number'] as int,
     );
   }
@@ -71,6 +73,7 @@ abstract class RelatedUniqueData
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'RelatedUniqueData',
       if (id != null) 'id': id,
       'uniqueDataId': uniqueDataId,
       if (uniqueData != null) 'uniqueData': uniqueData?.toJson(),
@@ -81,6 +84,7 @@ abstract class RelatedUniqueData
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'RelatedUniqueData',
       if (id != null) 'id': id,
       'uniqueDataId': uniqueDataId,
       if (uniqueData != null) 'uniqueData': uniqueData?.toJsonForProtocol(),
@@ -127,11 +131,11 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
     _i2.UniqueData? uniqueData,
     required int number,
   }) : super._(
-          id: id,
-          uniqueDataId: uniqueDataId,
-          uniqueData: uniqueData,
-          number: number,
-        );
+         id: id,
+         uniqueDataId: uniqueDataId,
+         uniqueData: uniqueData,
+         number: number,
+       );
 
   /// Returns a shallow copy of this [RelatedUniqueData]
   /// with some or all fields replaced by the given arguments.
@@ -159,19 +163,19 @@ class RelatedUniqueDataUpdateTable
   RelatedUniqueDataUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> uniqueDataId(int value) => _i1.ColumnValue(
-        table.uniqueDataId,
-        value,
-      );
+    table.uniqueDataId,
+    value,
+  );
 
   _i1.ColumnValue<int, int> number(int value) => _i1.ColumnValue(
-        table.number,
-        value,
-      );
+    table.number,
+    value,
+  );
 }
 
 class RelatedUniqueDataTable extends _i1.Table<int?> {
   RelatedUniqueDataTable({super.tableRelation})
-      : super(tableName: 'related_unique_data') {
+    : super(tableName: 'related_unique_data') {
     updateTable = RelatedUniqueDataUpdateTable(this);
     uniqueDataId = _i1.ColumnInt(
       'uniqueDataId',
@@ -206,10 +210,10 @@ class RelatedUniqueDataTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        uniqueDataId,
-        number,
-      ];
+    id,
+    uniqueDataId,
+    number,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -427,7 +431,7 @@ class RelatedUniqueDataRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<RelatedUniqueDataUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<RelatedUniqueData>(
@@ -442,7 +446,7 @@ class RelatedUniqueDataRepository {
   Future<List<RelatedUniqueData>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<RelatedUniqueDataUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     int? limit,
     int? offset,
@@ -535,8 +539,9 @@ class RelatedUniqueDataAttachRowRepository {
       throw ArgumentError.notNull('uniqueData.id');
     }
 
-    var $relatedUniqueData =
-        relatedUniqueData.copyWith(uniqueDataId: uniqueData.id);
+    var $relatedUniqueData = relatedUniqueData.copyWith(
+      uniqueDataId: uniqueData.id,
+    );
     await session.db.updateRow<RelatedUniqueData>(
       $relatedUniqueData,
       columns: [RelatedUniqueData.t.uniqueDataId],

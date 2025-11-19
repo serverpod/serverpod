@@ -22,10 +22,12 @@ class MethodStreaming extends Endpoint {
   ) {
     var controller = StreamController<int>();
     neverEndingStreamController?.complete(controller);
-    controller.addStream(Stream.periodic(
-      Duration(milliseconds: millisecondsDelay),
-      (i) => i,
-    ));
+    controller.addStream(
+      Stream.periodic(
+        Duration(milliseconds: millisecondsDelay),
+        (i) => i,
+      ),
+    );
 
     return controller.stream;
   }
@@ -50,13 +52,17 @@ class MethodStreaming extends Endpoint {
   static const sessionClosedChannelName = 'sessionClosedChannel';
   Stream<int?> getBroadcastStream(Session session) {
     session.addWillCloseListener((localSession) {
-      localSession.messages
-          .postMessage(sessionClosedChannelName, SimpleData(num: 1));
+      localSession.messages.postMessage(
+        sessionClosedChannelName,
+        SimpleData(num: 1),
+      );
     });
     var stream = StreamController<int?>.broadcast(
       onCancel: () {
-        session.messages
-            .postMessage(cancelStreamChannelName, SimpleData(num: 1));
+        session.messages.postMessage(
+          cancelStreamChannelName,
+          SimpleData(num: 1),
+        );
       },
     );
     return stream.stream;
@@ -291,7 +297,10 @@ class MethodStreaming extends Endpoint {
 
   static Completer<Session>? delayedNeverListenedInputStreamCompleter;
   Future<void> delayedNeverListenedInputStream(
-      Session session, int delay, Stream<int> stream) async {
+    Session session,
+    int delay,
+    Stream<int> stream,
+  ) async {
     delayedNeverListenedInputStreamCompleter?.complete(session);
     var uuid = Uuid().v4();
     var completer = Completer<void>();
@@ -306,7 +315,10 @@ class MethodStreaming extends Endpoint {
 
   static Completer<Session>? delayedPausedInputStreamCompleter;
   Future<void> delayedPausedInputStream(
-      Session session, int delay, Stream<int> stream) async {
+    Session session,
+    int delay,
+    Stream<int> stream,
+  ) async {
     delayedPausedInputStreamCompleter?.complete(session);
     var uuid = Uuid().v4();
     var completer = Completer<void>();
@@ -316,9 +328,11 @@ class MethodStreaming extends Endpoint {
       _delayedResponses.remove(uuid)?.complete();
     });
 
-    stream.listen((event) {
-      // Do nothing
-    }).pause(completer.future);
+    stream
+        .listen((event) {
+          // Do nothing
+        })
+        .pause(completer.future);
 
     await completer.future;
   }

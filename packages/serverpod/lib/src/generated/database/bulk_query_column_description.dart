@@ -20,9 +20,11 @@ abstract class BulkQueryColumnDescription
       _BulkQueryColumnDescriptionImpl;
 
   factory BulkQueryColumnDescription.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return BulkQueryColumnDescription(
-        name: jsonSerialization['name'] as String);
+      name: jsonSerialization['name'] as String,
+    );
   }
 
   String name;
@@ -33,12 +35,18 @@ abstract class BulkQueryColumnDescription
   BulkQueryColumnDescription copyWith({String? name});
   @override
   Map<String, dynamic> toJson() {
-    return {'name': name};
+    return {
+      '__className__': 'serverpod.BulkQueryColumnDescription',
+      'name': name,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'name': name};
+    return {
+      '__className__': 'serverpod.BulkQueryColumnDescription',
+      'name': name,
+    };
   }
 
   @override

@@ -20,8 +20,8 @@ final class SecretHashUtil {
   SecretHashUtil({
     required final String hashPepper,
     required final int hashSaltLength,
-  })  : _hashPepper = hashPepper,
-        _hashSaltLength = hashSaltLength;
+  }) : _hashPepper = hashPepper,
+       _hashSaltLength = hashSaltLength;
 
   /// Create the hash for the given [value].
   ///

@@ -14,6 +14,7 @@ final class AuthSessionsAdmin {
   /// the session has not been used in since [AuthSession.expireAfterUnusedFor] expired it.
   Future<void> deleteExpiredSessions(
     final Session session, {
+
     /// Whether to delete sessions which [AuthSession.expiresAt] is in the past.
     final bool deleteExpired = true,
 
@@ -118,10 +119,12 @@ final class AuthSessionsAdmin {
     );
 
     return authSessions
-        .map((final session) => (
-              authUserId: session.authUserId,
-              sessionId: session.id!,
-            ))
+        .map(
+          (final session) => (
+            authUserId: session.authUserId,
+            sessionId: session.id!,
+          ),
+        )
         .toList();
   }
 }

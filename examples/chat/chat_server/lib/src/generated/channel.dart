@@ -62,6 +62,7 @@ abstract class Channel
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Channel',
       if (id != null) 'id': id,
       'name': name,
       'channel': channel,
@@ -71,6 +72,7 @@ abstract class Channel
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Channel',
       if (id != null) 'id': id,
       'name': name,
       'channel': channel,
@@ -115,10 +117,10 @@ class _ChannelImpl extends Channel {
     required String name,
     required String channel,
   }) : super._(
-          id: id,
-          name: name,
-          channel: channel,
-        );
+         id: id,
+         name: name,
+         channel: channel,
+       );
 
   /// Returns a shallow copy of this [Channel]
   /// with some or all fields replaced by the given arguments.
@@ -141,14 +143,14 @@ class ChannelUpdateTable extends _i1.UpdateTable<ChannelTable> {
   ChannelUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<String, String> channel(String value) => _i1.ColumnValue(
-        table.channel,
-        value,
-      );
+    table.channel,
+    value,
+  );
 }
 
 class ChannelTable extends _i1.Table<int?> {
@@ -174,10 +176,10 @@ class ChannelTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        channel,
-      ];
+    id,
+    name,
+    channel,
+  ];
 }
 
 class ChannelInclude extends _i1.IncludeObject {

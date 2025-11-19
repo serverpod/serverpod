@@ -26,21 +26,23 @@ void main() {
       expect(exception.runtimeType.toString(), '_ExceptionWithDataImpl');
     });
 
-    test('Serialize and deserialize custom server exception with data',
-        () async {
-      ExceptionWithData? exceptionWithData;
-      try {
-        await client.exceptionTest.throwExceptionWithData();
-      } on test_client.ExceptionWithData catch (e) {
-        exceptionWithData = e;
-      }
+    test(
+      'Serialize and deserialize custom server exception with data',
+      () async {
+        ExceptionWithData? exceptionWithData;
+        try {
+          await client.exceptionTest.throwExceptionWithData();
+        } on test_client.ExceptionWithData catch (e) {
+          exceptionWithData = e;
+        }
 
-      expect(exceptionWithData?.message, 'Throwing an exception');
-      expect(exceptionWithData?.errorFields, [
-        'first line error',
-        'second line error',
-      ]);
-      expect(exceptionWithData?.someNullableField, 1);
-    });
+        expect(exceptionWithData?.message, 'Throwing an exception');
+        expect(exceptionWithData?.errorFields, [
+          'first line error',
+          'second line error',
+        ]);
+        expect(exceptionWithData?.someNullableField, 1);
+      },
+    );
   });
 }

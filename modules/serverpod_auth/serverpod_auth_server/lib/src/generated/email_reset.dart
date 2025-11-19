@@ -34,8 +34,9 @@ abstract class EmailReset
       id: jsonSerialization['id'] as int?,
       userId: jsonSerialization['userId'] as int,
       verificationCode: jsonSerialization['verificationCode'] as String,
-      expiration:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
+      expiration: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['expiration'],
+      ),
     );
   }
 
@@ -70,6 +71,7 @@ abstract class EmailReset
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.EmailReset',
       if (id != null) 'id': id,
       'userId': userId,
       'verificationCode': verificationCode,
@@ -80,6 +82,7 @@ abstract class EmailReset
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth.EmailReset',
       if (id != null) 'id': id,
       'userId': userId,
       'verificationCode': verificationCode,
@@ -126,11 +129,11 @@ class _EmailResetImpl extends EmailReset {
     required String verificationCode,
     required DateTime expiration,
   }) : super._(
-          id: id,
-          userId: userId,
-          verificationCode: verificationCode,
-          expiration: expiration,
-        );
+         id: id,
+         userId: userId,
+         verificationCode: verificationCode,
+         expiration: expiration,
+       );
 
   /// Returns a shallow copy of this [EmailReset]
   /// with some or all fields replaced by the given arguments.
@@ -155,9 +158,9 @@ class EmailResetUpdateTable extends _i1.UpdateTable<EmailResetTable> {
   EmailResetUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
-        table.userId,
-        value,
-      );
+    table.userId,
+    value,
+  );
 
   _i1.ColumnValue<String, String> verificationCode(String value) =>
       _i1.ColumnValue(
@@ -174,7 +177,7 @@ class EmailResetUpdateTable extends _i1.UpdateTable<EmailResetTable> {
 
 class EmailResetTable extends _i1.Table<int?> {
   EmailResetTable({super.tableRelation})
-      : super(tableName: 'serverpod_email_reset') {
+    : super(tableName: 'serverpod_email_reset') {
     updateTable = EmailResetUpdateTable(this);
     userId = _i1.ColumnInt(
       'userId',
@@ -203,11 +206,11 @@ class EmailResetTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        userId,
-        verificationCode,
-        expiration,
-      ];
+    id,
+    userId,
+    verificationCode,
+    expiration,
+  ];
 }
 
 class EmailResetInclude extends _i1.IncludeObject {

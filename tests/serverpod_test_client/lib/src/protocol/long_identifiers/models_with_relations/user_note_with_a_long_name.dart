@@ -24,7 +24,8 @@ abstract class UserNoteWithALongName implements _i1.SerializableModel {
   }) = _UserNoteWithALongNameImpl;
 
   factory UserNoteWithALongName.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return UserNoteWithALongName(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
@@ -48,6 +49,7 @@ abstract class UserNoteWithALongName implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UserNoteWithALongName',
       if (id != null) 'id': id,
       'name': name,
     };
@@ -66,9 +68,9 @@ class _UserNoteWithALongNameImpl extends UserNoteWithALongName {
     int? id,
     required String name,
   }) : super._(
-          id: id,
-          name: name,
-        );
+         id: id,
+         name: name,
+       );
 
   /// Returns a shallow copy of this [UserNoteWithALongName]
   /// with some or all fields replaced by the given arguments.

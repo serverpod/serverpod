@@ -11,8 +11,10 @@ void main() {
     config: AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
-  withServerpod('Given an auth session,',
-      (final sessionBuilder, final endpoints) {
+  withServerpod('Given an auth session,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
     late Session session;
     late UuidValue authUserId;
     late UuidValue authSessionId;
@@ -145,8 +147,10 @@ void main() {
     );
   });
 
-  withServerpod('Given an auth session,',
-      (final sessionBuilder, final endpoints) {
+  withServerpod('Given an auth session,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
     late Session session;
     late UuidValue authUserId;
     late UuidValue authSessionId;
@@ -299,15 +303,17 @@ void main() {
         );
       });
 
-      test('when calling `deleteExpiredSessions` right away, then it is kept.',
-          () async {
-        await AuthSessionsAdmin().deleteExpiredSessions(session);
+      test(
+        'when calling `deleteExpiredSessions` right away, then it is kept.',
+        () async {
+          await AuthSessionsAdmin().deleteExpiredSessions(session);
 
-        expect(
-          await AuthSession.db.count(session),
-          1,
-        );
-      });
+          expect(
+            await AuthSession.db.count(session),
+            1,
+          );
+        },
+      );
     },
   );
 
@@ -332,29 +338,32 @@ void main() {
         );
       });
 
-      test('when calling `deleteExpiredSessions`, then it is deleted.',
-          () async {
-        await AuthSessionsAdmin().deleteExpiredSessions(session);
+      test(
+        'when calling `deleteExpiredSessions`, then it is deleted.',
+        () async {
+          await AuthSessionsAdmin().deleteExpiredSessions(session);
 
-        expect(
-          await AuthSession.db.count(session),
-          0,
-        );
-      });
+          expect(
+            await AuthSession.db.count(session),
+            0,
+          );
+        },
+      );
 
       test(
-          'when calling `deleteExpiredSessions` with `deleteExpired: false`, then it is kept.',
-          () async {
-        await AuthSessionsAdmin().deleteExpiredSessions(
-          session,
-          deleteExpired: false,
-        );
+        'when calling `deleteExpiredSessions` with `deleteExpired: false`, then it is kept.',
+        () async {
+          await AuthSessionsAdmin().deleteExpiredSessions(
+            session,
+            deleteExpired: false,
+          );
 
-        expect(
-          await AuthSession.db.count(session),
-          1,
-        );
-      });
+          expect(
+            await AuthSession.db.count(session),
+            1,
+          );
+        },
+      );
     },
   );
 
@@ -419,29 +428,32 @@ void main() {
         );
       });
 
-      test('when calling `deleteExpiredSessions`, then it is deleted.',
-          () async {
-        await AuthSessionsAdmin().deleteExpiredSessions(session);
+      test(
+        'when calling `deleteExpiredSessions`, then it is deleted.',
+        () async {
+          await AuthSessionsAdmin().deleteExpiredSessions(session);
 
-        expect(
-          await AuthSession.db.count(session),
-          0,
-        );
-      });
+          expect(
+            await AuthSession.db.count(session),
+            0,
+          );
+        },
+      );
 
       test(
-          'when calling `deleteExpiredSessions` with `deleteInactive: false`, then it is kept.',
-          () async {
-        await AuthSessionsAdmin().deleteExpiredSessions(
-          session,
-          deleteInactive: false,
-        );
+        'when calling `deleteExpiredSessions` with `deleteInactive: false`, then it is kept.',
+        () async {
+          await AuthSessionsAdmin().deleteExpiredSessions(
+            session,
+            deleteInactive: false,
+          );
 
-        expect(
-          await AuthSession.db.count(session),
-          1,
-        );
-      });
+          expect(
+            await AuthSession.db.count(session),
+            1,
+          );
+        },
+      );
     },
   );
 }

@@ -311,7 +311,7 @@ class ColumnCount extends _ValueOperatorColumn<int>
 
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnCount(this.innerWhere, Column column)
-      : super(column.columnName, column.table);
+    : super(column.columnName, column.table);
 
   @override
   Expression _encodeValueForQuery(int value) => Expression(value);
@@ -397,20 +397,24 @@ class ColumnBit extends _ValueOperatorColumn<Bit>
 
   /// Computes the Jaccard distance between this vector column and another vector.
   ColumnVectorDistance<Bit> distanceJaccard(Bit other) {
-    return ColumnVectorDistance<Bit>(VectorDistanceExpression<Bit>(
-      this,
-      _encodeValueForQuery(other),
-      VectorDistanceFunction.jaccard,
-    ));
+    return ColumnVectorDistance<Bit>(
+      VectorDistanceExpression<Bit>(
+        this,
+        _encodeValueForQuery(other),
+        VectorDistanceFunction.jaccard,
+      ),
+    );
   }
 
   /// Computes the Hamming distance between this vector column and another vector.
   ColumnVectorDistance<Bit> distanceHamming(Bit other) {
-    return ColumnVectorDistance<Bit>(VectorDistanceExpression<Bit>(
-      this,
-      _encodeValueForQuery(other),
-      VectorDistanceFunction.hamming,
-    ));
+    return ColumnVectorDistance<Bit>(
+      VectorDistanceExpression<Bit>(
+        this,
+        _encodeValueForQuery(other),
+        VectorDistanceFunction.hamming,
+      ),
+    );
   }
 }
 
@@ -420,7 +424,7 @@ class ColumnVectorDistance<T> extends ColumnDouble {
 
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnVectorDistance(this._expression)
-      : super(_expression.column.columnName, _expression.column.table);
+    : super(_expression.column.columnName, _expression.column.table);
 
   @override
   String toString() => _expression.toString();
@@ -447,8 +451,9 @@ mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
       return Constant.bool(false);
     }
 
-    var valuesAsExpressions =
-        values.map((e) => _encodeValueForQuery(e)).toList();
+    var valuesAsExpressions = values
+        .map((e) => _encodeValueForQuery(e))
+        .toList();
 
     return _InSetExpression(this, valuesAsExpressions);
   }
@@ -461,8 +466,9 @@ mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
       return Constant.bool(true);
     }
 
-    var valuesAsExpressions =
-        values.map((e) => _encodeValueForQuery(e)).toList();
+    var valuesAsExpressions = values
+        .map((e) => _encodeValueForQuery(e))
+        .toList();
 
     return _NotInSetExpression(this, valuesAsExpressions);
   }
@@ -500,8 +506,9 @@ mixin _NullableColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
       return Constant.bool(false);
     }
 
-    var valuesAsExpressions =
-        values.map((e) => _encodeValueForQuery(e)).toList();
+    var valuesAsExpressions = values
+        .map((e) => _encodeValueForQuery(e))
+        .toList();
 
     return _InSetExpression(this, valuesAsExpressions);
   }
@@ -515,8 +522,9 @@ mixin _NullableColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
       return Constant.bool(true);
     }
 
-    var valuesAsExpressions =
-        values.map((e) => _encodeValueForQuery(e)).toList();
+    var valuesAsExpressions = values
+        .map((e) => _encodeValueForQuery(e))
+        .toList();
 
     return _NotInSetExpression(this, valuesAsExpressions) |
         _IsNullExpression(this);
@@ -572,14 +580,20 @@ mixin _ColumnComparisonBetweenOperations<T> on _ValueOperatorColumn<T> {
   /// is between the [min], [max] values.
   Expression between(T min, T max) {
     return _BetweenExpression(
-        this, _encodeValueForQuery(min), _encodeValueForQuery(max));
+      this,
+      _encodeValueForQuery(min),
+      _encodeValueForQuery(max),
+    );
   }
 
   /// Creates an [Expression] checking if the value in the column inclusively
   /// is NOT between the [min], [max] values.
   Expression notBetween(T min, T max) {
     return _NotBetweenExpression(
-        this, _encodeValueForQuery(min), _encodeValueForQuery(max));
+      this,
+      _encodeValueForQuery(min),
+      _encodeValueForQuery(max),
+    );
   }
 }
 
@@ -587,38 +601,46 @@ mixin _ColumnComparisonBetweenOperations<T> on _ValueOperatorColumn<T> {
 mixin _VectorColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
   /// Computes the L2 (Euclidean) distance between this vector column and another vector.
   ColumnVectorDistance<T> distanceL2(T other) {
-    return ColumnVectorDistance<T>(VectorDistanceExpression<T>(
-      this,
-      _encodeValueForQuery(other),
-      VectorDistanceFunction.l2,
-    ));
+    return ColumnVectorDistance<T>(
+      VectorDistanceExpression<T>(
+        this,
+        _encodeValueForQuery(other),
+        VectorDistanceFunction.l2,
+      ),
+    );
   }
 
   /// Computes the inner product distance between this vector column and another vector.
   ColumnVectorDistance<T> distanceInnerProduct(T other) {
-    return ColumnVectorDistance<T>(VectorDistanceExpression<T>(
-      this,
-      _encodeValueForQuery(other),
-      VectorDistanceFunction.innerProduct,
-    ));
+    return ColumnVectorDistance<T>(
+      VectorDistanceExpression<T>(
+        this,
+        _encodeValueForQuery(other),
+        VectorDistanceFunction.innerProduct,
+      ),
+    );
   }
 
   /// Computes the cosine distance between this vector column and another vector.
   ColumnVectorDistance<T> distanceCosine(T other) {
-    return ColumnVectorDistance<T>(VectorDistanceExpression<T>(
-      this,
-      _encodeValueForQuery(other),
-      VectorDistanceFunction.cosine,
-    ));
+    return ColumnVectorDistance<T>(
+      VectorDistanceExpression<T>(
+        this,
+        _encodeValueForQuery(other),
+        VectorDistanceFunction.cosine,
+      ),
+    );
   }
 
   /// Computes the L1 (Manhattan) distance between this vector column and another vector.
   ColumnVectorDistance<T> distanceL1(T other) {
-    return ColumnVectorDistance<T>(VectorDistanceExpression<T>(
-      this,
-      _encodeValueForQuery(other),
-      VectorDistanceFunction.l1,
-    ));
+    return ColumnVectorDistance<T>(
+      VectorDistanceExpression<T>(
+        this,
+        _encodeValueForQuery(other),
+        VectorDistanceFunction.l1,
+      ),
+    );
   }
 }
 
@@ -848,8 +870,11 @@ abstract class _MinMaxColumnExpression<T> extends ColumnExpression<T> {
   }
 
   @override
-  List<Column> get columns =>
-      [...super.columns, ...min.columns, ...max.columns];
+  List<Column> get columns => [
+    ...super.columns,
+    ...min.columns,
+    ...max.columns,
+  ];
 }
 
 class _BetweenExpression<T> extends _MinMaxColumnExpression<T> {
@@ -872,8 +897,10 @@ abstract class _SetColumnExpression<T> extends ColumnExpression<T> {
   _SetColumnExpression(super.column, this.values);
 
   @override
-  List<Column> get columns =>
-      [...super.columns, ...values.expand((value) => value.columns)];
+  List<Column> get columns => [
+    ...super.columns,
+    ...values.expand((value) => value.columns),
+  ];
 
   @override
   String toString() {

@@ -56,56 +56,60 @@ class VerificationCodeInput extends StatefulWidget {
 class _VerificationCodeInputState extends State<VerificationCodeInput> {
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final itemWidth = constraints.maxWidth / widget.length;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final itemWidth = constraints.maxWidth / widget.length;
 
-      final idpTheme = Theme.of(context).idpTheme;
-      final defaultPinTheme =
-          idpTheme.defaultPinTheme.copyWith(width: itemWidth);
-      final focusedPinTheme =
-          idpTheme.focusedPinTheme.copyWith(width: itemWidth);
-      final errorPinTheme = idpTheme.errorPinTheme.copyWith(width: itemWidth);
+        final idpTheme = Theme.of(context).idpTheme;
+        final defaultPinTheme = idpTheme.defaultPinTheme.copyWith(
+          width: itemWidth,
+        );
+        final focusedPinTheme = idpTheme.focusedPinTheme.copyWith(
+          width: itemWidth,
+        );
+        final errorPinTheme = idpTheme.errorPinTheme.copyWith(width: itemWidth);
 
-      final allowedCharactersPattern = widget.allowedCharactersPattern;
-      final inputFormatters = [
-        LetterCaseTextFormatter(letterCase: widget.allowedLetterCase),
-        if (allowedCharactersPattern != null)
-          FilteringTextInputFormatter.allow(allowedCharactersPattern),
-      ];
+        final allowedCharactersPattern = widget.allowedCharactersPattern;
+        final inputFormatters = [
+          LetterCaseTextFormatter(letterCase: widget.allowedLetterCase),
+          if (allowedCharactersPattern != null)
+            FilteringTextInputFormatter.allow(allowedCharactersPattern),
+        ];
 
-      return Container(
-        height: math.max(itemWidth, 48),
-        alignment: Alignment.center,
-        child: Pinput(
-          controller: widget.verificationCodeController,
-          length: widget.length,
-          showCursor: false,
-          enableInteractiveSelection: true,
-          keyboardType: widget.keyboardType,
-          textCapitalization: widget.allowedLetterCase == LetterCase.uppercase
-              ? TextCapitalization.characters
-              : TextCapitalization.none,
-          inputFormatters: inputFormatters,
-          onClipboardFound: (value) {
-            if (value.length != widget.length) return;
-            final formattedValue = inputFormatters.apply(value);
-            if (formattedValue.length != value.length) return;
+        return Container(
+          height: math.max(itemWidth, 48),
+          alignment: Alignment.center,
+          child: Pinput(
+            controller: widget.verificationCodeController,
+            length: widget.length,
+            showCursor: false,
+            enableInteractiveSelection: true,
+            keyboardType: widget.keyboardType,
+            textCapitalization: widget.allowedLetterCase == LetterCase.uppercase
+                ? TextCapitalization.characters
+                : TextCapitalization.none,
+            inputFormatters: inputFormatters,
+            onClipboardFound: (value) {
+              if (value.length != widget.length) return;
+              final formattedValue = inputFormatters.apply(value);
+              if (formattedValue.length != value.length) return;
 
-            setState(() {
-              widget.verificationCodeController.text = formattedValue;
-            });
-          },
-          separatorBuilder: (index) => idpTheme.separator,
-          autofocus: true,
-          enabled: !widget.isLoading,
-          focusNode: widget.focusNode,
-          defaultPinTheme: defaultPinTheme,
-          onCompleted: (_) => widget.onCompleted(),
-          focusedPinTheme: focusedPinTheme,
-          errorPinTheme: errorPinTheme,
-        ),
-      );
-    });
+              setState(() {
+                widget.verificationCodeController.text = formattedValue;
+              });
+            },
+            separatorBuilder: (index) => idpTheme.separator,
+            autofocus: true,
+            enabled: !widget.isLoading,
+            focusNode: widget.focusNode,
+            defaultPinTheme: defaultPinTheme,
+            onCompleted: (_) => widget.onCompleted(),
+            focusedPinTheme: focusedPinTheme,
+            errorPinTheme: errorPinTheme,
+          ),
+        );
+      },
+    );
   }
 }
 

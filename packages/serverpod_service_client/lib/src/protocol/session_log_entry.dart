@@ -137,6 +137,7 @@ abstract class SessionLogEntry implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.SessionLogEntry',
       if (id != null) 'id': id,
       'serverId': serverId,
       'time': time.toJson(),
@@ -179,21 +180,21 @@ class _SessionLogEntryImpl extends SessionLogEntry {
     bool? isOpen,
     required DateTime touched,
   }) : super._(
-          id: id,
-          serverId: serverId,
-          time: time,
-          module: module,
-          endpoint: endpoint,
-          method: method,
-          duration: duration,
-          numQueries: numQueries,
-          slow: slow,
-          error: error,
-          stackTrace: stackTrace,
-          userId: userId,
-          isOpen: isOpen,
-          touched: touched,
-        );
+         id: id,
+         serverId: serverId,
+         time: time,
+         module: module,
+         endpoint: endpoint,
+         method: method,
+         duration: duration,
+         numQueries: numQueries,
+         slow: slow,
+         error: error,
+         stackTrace: stackTrace,
+         userId: userId,
+         isOpen: isOpen,
+         touched: touched,
+       );
 
   /// Returns a shallow copy of this [SessionLogEntry]
   /// with some or all fields replaced by the given arguments.

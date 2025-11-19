@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "default" enum fields,', () {
-    tearDownAll(() async => EnumDefault.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => EnumDefault.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "default=byName1" field value should be byName1',
@@ -155,10 +157,14 @@ void main() async {
         () async {
           expect(
             () => ByIndexEnum.fromJson(-1),
-            throwsA(predicate((e) =>
-                e is ArgumentError &&
-                e.message ==
-                    'Value "-1" cannot be converted to "ByIndexEnum"')),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is ArgumentError &&
+                    e.message ==
+                        'Value "-1" cannot be converted to "ByIndexEnum"',
+              ),
+            ),
           );
         },
       );
@@ -168,10 +174,14 @@ void main() async {
         () async {
           expect(
             () => ByNameEnum.fromJson('Invalid'),
-            throwsA(predicate((e) =>
-                e is ArgumentError &&
-                e.message ==
-                    'Value "Invalid" cannot be converted to "ByNameEnum"')),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is ArgumentError &&
+                    e.message ==
+                        'Value "Invalid" cannot be converted to "ByNameEnum"',
+              ),
+            ),
           );
         },
       );

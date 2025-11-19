@@ -11,7 +11,7 @@ class ServiceKeyManager extends BearerAuthenticationKeyManager {
 
   /// Creates a new [ServiceKeyManager].
   ServiceKeyManager(this.name, ServerpodConfig config)
-      : serviceSecret = config.serviceSecret;
+    : serviceSecret = config.serviceSecret;
 
   /// Creates a new [ServiceKeyManager] with a service secret.
   ServiceKeyManager.withServiceSecret(

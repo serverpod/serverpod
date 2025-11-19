@@ -233,9 +233,12 @@ void main() async {
 
         var fetchedCats = await Cat.db.find(
           session,
-          where: (t) => t.kittens.count(
-              // All cats with more than 1 kitten with more than 1 kittens named Zelda
-              (o) => o.kittens.count((c) => c.name.ilike('zelda%')) > 1) > 1,
+          where: (t) =>
+              t.kittens.count(
+                // All cats with more than 1 kitten with more than 1 kittens named Zelda
+                (o) => o.kittens.count((c) => c.name.ilike('zelda%')) > 1,
+              ) >
+              1,
         );
 
         var catNames = fetchedCats.map((e) => e.name);

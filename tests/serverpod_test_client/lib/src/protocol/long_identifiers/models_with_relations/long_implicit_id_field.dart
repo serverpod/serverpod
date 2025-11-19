@@ -47,6 +47,7 @@ abstract class LongImplicitIdField implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'LongImplicitIdField',
       if (id != null) 'id': id,
       'name': name,
     };
@@ -65,9 +66,9 @@ class _LongImplicitIdFieldImpl extends LongImplicitIdField {
     int? id,
     required String name,
   }) : super._(
-          id: id,
-          name: name,
-        );
+         id: id,
+         name: name,
+       );
 
   /// Returns a shallow copy of this [LongImplicitIdField]
   /// with some or all fields replaced by the given arguments.

@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'chat_message.dart' as _i2;
+import 'package:serverpod_chat_client/src/protocol/protocol.dart' as _i3;
 
 /// A chunk of chat messages.
 abstract class ChatMessageChunk implements _i1.SerializableModel {
@@ -30,9 +31,9 @@ abstract class ChatMessageChunk implements _i1.SerializableModel {
   factory ChatMessageChunk.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChatMessageChunk(
       channel: jsonSerialization['channel'] as String,
-      messages: (jsonSerialization['messages'] as List)
-          .map((e) => _i2.ChatMessage.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      messages: _i3.Protocol().deserialize<List<_i2.ChatMessage>>(
+        jsonSerialization['messages'],
+      ),
       hasOlderMessages: jsonSerialization['hasOlderMessages'] as bool,
     );
   }
@@ -57,6 +58,7 @@ abstract class ChatMessageChunk implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_chat.ChatMessageChunk',
       'channel': channel,
       'messages': messages.toJson(valueToJson: (v) => v.toJson()),
       'hasOlderMessages': hasOlderMessages,
@@ -75,10 +77,10 @@ class _ChatMessageChunkImpl extends ChatMessageChunk {
     required List<_i2.ChatMessage> messages,
     required bool hasOlderMessages,
   }) : super._(
-          channel: channel,
-          messages: messages,
-          hasOlderMessages: hasOlderMessages,
-        );
+         channel: channel,
+         messages: messages,
+         hasOlderMessages: hasOlderMessages,
+       );
 
   /// Returns a shallow copy of this [ChatMessageChunk]
   /// with some or all fields replaced by the given arguments.

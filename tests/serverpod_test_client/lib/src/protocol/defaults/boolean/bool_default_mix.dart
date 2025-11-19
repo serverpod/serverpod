@@ -18,10 +18,10 @@ abstract class BoolDefaultMix implements _i1.SerializableModel {
     bool? boolDefaultAndDefaultModel,
     bool? boolDefaultAndDefaultPersist,
     bool? boolDefaultModelAndDefaultPersist,
-  })  : boolDefaultAndDefaultModel = boolDefaultAndDefaultModel ?? false,
-        boolDefaultAndDefaultPersist = boolDefaultAndDefaultPersist ?? true,
-        boolDefaultModelAndDefaultPersist =
-            boolDefaultModelAndDefaultPersist ?? true;
+  }) : boolDefaultAndDefaultModel = boolDefaultAndDefaultModel ?? false,
+       boolDefaultAndDefaultPersist = boolDefaultAndDefaultPersist ?? true,
+       boolDefaultModelAndDefaultPersist =
+           boolDefaultModelAndDefaultPersist ?? true;
 
   factory BoolDefaultMix({
     int? id,
@@ -65,6 +65,7 @@ abstract class BoolDefaultMix implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'BoolDefaultMix',
       if (id != null) 'id': id,
       'boolDefaultAndDefaultModel': boolDefaultAndDefaultModel,
       'boolDefaultAndDefaultPersist': boolDefaultAndDefaultPersist,
@@ -87,11 +88,11 @@ class _BoolDefaultMixImpl extends BoolDefaultMix {
     bool? boolDefaultAndDefaultPersist,
     bool? boolDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          boolDefaultAndDefaultModel: boolDefaultAndDefaultModel,
-          boolDefaultAndDefaultPersist: boolDefaultAndDefaultPersist,
-          boolDefaultModelAndDefaultPersist: boolDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         boolDefaultAndDefaultModel: boolDefaultAndDefaultModel,
+         boolDefaultAndDefaultPersist: boolDefaultAndDefaultPersist,
+         boolDefaultModelAndDefaultPersist: boolDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [BoolDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -109,7 +110,8 @@ class _BoolDefaultMixImpl extends BoolDefaultMix {
           boolDefaultAndDefaultModel ?? this.boolDefaultAndDefaultModel,
       boolDefaultAndDefaultPersist:
           boolDefaultAndDefaultPersist ?? this.boolDefaultAndDefaultPersist,
-      boolDefaultModelAndDefaultPersist: boolDefaultModelAndDefaultPersist ??
+      boolDefaultModelAndDefaultPersist:
+          boolDefaultModelAndDefaultPersist ??
           this.boolDefaultModelAndDefaultPersist,
     );
   }

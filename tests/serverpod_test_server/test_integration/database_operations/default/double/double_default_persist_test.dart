@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "defaultPersist" fields,', () {
-    tearDownAll(() async => DoubleDefaultPersist.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => DoubleDefaultPersist.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "defaultPersist=10.5" field should be 10.5',
@@ -33,8 +35,9 @@ void main() async {
         VALUES (DEFAULT);
         ''',
         );
-        var databaseObject =
-            await DoubleDefaultPersist.db.findFirstRow(session);
+        var databaseObject = await DoubleDefaultPersist.db.findFirstRow(
+          session,
+        );
         expect(databaseObject?.doubleDefaultPersist, equals(10.5));
       },
     );

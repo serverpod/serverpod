@@ -45,7 +45,8 @@ class LogSettingsBuilder {
   }
 
   LogSettingsBuilder withLogStreamingSessionsContinuously(
-      bool logStreamingSessionsContinuously) {
+    bool logStreamingSessionsContinuously,
+  ) {
     _logStreamingSessionsContinuously = logStreamingSessionsContinuously;
     return this;
   }

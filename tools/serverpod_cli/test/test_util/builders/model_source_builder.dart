@@ -11,12 +11,12 @@ class ModelSourceBuilder {
   String fileExtension;
 
   ModelSourceBuilder()
-      : fileExtension = '.yaml',
-        subDirPathParts = [],
-        fileName = 'example',
-        yamlSourcePathParts = ['lib', 'src', 'model'],
-        moduleAlias = defaultModuleAlias,
-        yaml = '''
+    : fileExtension = '.yaml',
+      subDirPathParts = [],
+      fileName = 'example',
+      yamlSourcePathParts = ['lib', 'src', 'model'],
+      moduleAlias = defaultModuleAlias,
+      yaml = '''
     class: Example
     fields:
       name: String
@@ -64,7 +64,7 @@ class ModelSourceBuilder {
           'module',
           moduleAlias,
           ...yamlSourcePathParts,
-          '$fileName$fileExtension'
+          '$fileName$fileExtension',
         ],
       ),
     );

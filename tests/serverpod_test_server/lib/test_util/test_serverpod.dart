@@ -16,12 +16,12 @@ class IntegrationTestServer extends TestServerpod {
     ServerpodConfig? config,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
   }) : super(
-          _integrationTestFlags,
-          Protocol(),
-          Endpoints(),
-          config: config,
-          runtimeParametersBuilder: runtimeParametersBuilder,
-        );
+         _integrationTestFlags,
+         Protocol(),
+         Endpoints(),
+         config: config,
+         runtimeParametersBuilder: runtimeParametersBuilder,
+       );
 
   static Serverpod create({
     ServerpodConfig? config,
@@ -45,8 +45,9 @@ class IntegrationTestServer extends TestServerpod {
 }
 
 class TestServerpod {
-  static final Finalizer<Session> _sessionFinalizer =
-      Finalizer((session) async => await session.close());
+  static final Finalizer<Session> _sessionFinalizer = Finalizer(
+    (session) async => await session.close(),
+  );
 
   late final Serverpod _serverpod;
 

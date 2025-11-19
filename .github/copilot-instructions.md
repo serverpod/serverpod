@@ -20,6 +20,12 @@ When working with pull requests in this repository, **ALWAYS**:
 - **Ensure consistency** across all PRs for documentation quality
 - **Reference the template file** directly when generating descriptions
 
+### Documentation and Release Files
+- **Never update** CHANGELOG files unless explicitly instructed by the user
+- **Never update** README files unless explicitly instructed by the user
+- CHANGELOG files are manually updated during release process
+- Only make documentation changes when specifically requested
+
 ## Command Validation Status
 
 **FULLY VALIDATED** (confirmed working in test environment):
@@ -44,10 +50,8 @@ When working with pull requests in this repository, **ALWAYS**:
 **CRITICAL**: Install these exact versions to ensure compatibility:
 
 ### Required Tools
-1. **Dart SDK**: `>=3.5.0 <4.0.0` (required)
-2. **Flutter SDK**: `>=3.24.0` (required for Flutter components)
-   - **Tested versions**: 3.24.0, 3.32.1 (latest)
-   - **Project default**: 3.24.5 (from `.fvmrc`)
+1. **Dart SDK**: `^3.8.0` (required)
+2. **Flutter SDK**: `^3.32.0` (required for Flutter components)
 3. **Git**: Any recent version
 4. **Docker & Docker Compose**: Required for integration tests and local development
 5. **Melos**: For monorepo management (`dart pub global activate melos`)
@@ -55,14 +59,12 @@ When working with pull requests in this repository, **ALWAYS**:
 
 ### Installation Commands (Run these exactly)
 
-**NOTE**: The repository uses FVM and has `.fvmrc` configured for Flutter 3.24.5.
-
 ```bash
 # Install Flutter (choose one method)
 # Method 1: Using FVM (Recommended if you have Dart already)
 dart pub global activate fvm
-fvm install 3.24.5
-fvm use 3.24.5
+fvm install 3.32.0
+fvm use 3.32.0
 
 # Method 2: Manual Flutter installation
 cd /opt
@@ -76,8 +78,8 @@ sudo snap install flutter --classic
 dart pub global activate melos
 
 # Verify installations
-dart --version     # Should be >= 3.5.0
-flutter --version  # Should be >= 3.24.0
+dart --version     # Should be ^3.8.0
+flutter --version  # Should be ^3.32.0
 docker --version   # Should work
 git --version      # Should work
 ```
@@ -520,6 +522,36 @@ test(
   'Given [initial state] when [action performed] then [expected outcome].',
   () {
     // Test implementation
+  }
+);
+```
+
+**CRITICAL**: When using `group()` with `test()`, ensure each statement ("Given", "When", "Then") appears **only once** in the combined description:
+
+```dart
+// CORRECT: "Given" in group, "when/then" in test
+group(
+  'Given a session with slow method call when logging is enabled',
+  () {
+    test(
+      'when session is logged then time field should be set to start time.',
+      () {
+        // Test implementation
+      }
+    );
+  }
+);
+
+// INCORRECT: "Given" repeated in both group and test
+group(
+  'Given a session with slow method call',
+  () {
+    test(
+      'Given a slow method when session is logged then time field is correct.',  // ❌ Duplicate "Given"
+      () {
+        // Test implementation
+      }
+    );
   }
 );
 ```

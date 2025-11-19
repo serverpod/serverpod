@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../long_identifiers/models_with_relations/user_note_with_a_long_name.dart'
     as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class UserNoteCollectionWithALongName
     implements _i1.SerializableModel {
@@ -29,14 +30,16 @@ abstract class UserNoteCollectionWithALongName
   }) = _UserNoteCollectionWithALongNameImpl;
 
   factory UserNoteCollectionWithALongName.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return UserNoteCollectionWithALongName(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      notes: (jsonSerialization['notes'] as List?)
-          ?.map((e) =>
-              _i2.UserNoteWithALongName.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      notes: jsonSerialization['notes'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.UserNoteWithALongName>>(
+              jsonSerialization['notes'],
+            ),
     );
   }
 
@@ -60,6 +63,7 @@ abstract class UserNoteCollectionWithALongName
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UserNoteCollectionWithALongName',
       if (id != null) 'id': id,
       'name': name,
       if (notes != null) 'notes': notes?.toJson(valueToJson: (v) => v.toJson()),
@@ -81,10 +85,10 @@ class _UserNoteCollectionWithALongNameImpl
     required String name,
     List<_i2.UserNoteWithALongName>? notes,
   }) : super._(
-          id: id,
-          name: name,
-          notes: notes,
-        );
+         id: id,
+         name: name,
+         notes: notes,
+       );
 
   /// Returns a shallow copy of this [UserNoteCollectionWithALongName]
   /// with some or all fields replaced by the given arguments.

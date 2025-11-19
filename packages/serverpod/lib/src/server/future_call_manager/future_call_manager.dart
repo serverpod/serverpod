@@ -12,10 +12,11 @@ import 'serverpod_task_scheduler.dart';
 typedef FutureCallSessionBuilder = Session Function(String futureCallName);
 
 /// A function that initializes a [FutureCall].
-typedef InitializeFutureCall = void Function(
-  FutureCall futureCall,
-  String name,
-);
+typedef InitializeFutureCall =
+    void Function(
+      FutureCall futureCall,
+      String name,
+    );
 
 /// The [FutureCallManager] is responsible for managing and executing
 /// [FutureCall]s in the [Serverpod] framework. A [FutureCall] is a task
@@ -60,10 +61,10 @@ class FutureCallManager {
     required Session internalSession,
     required FutureCallSessionBuilder sessionProvider,
     required InitializeFutureCall initializeFutureCall,
-  })  : _diagnosticsService = diagnosticsService,
-        _internalSession = internalSession,
-        _sessionBuilder = sessionProvider,
-        _initializeFutureCall = initializeFutureCall {
+  }) : _diagnosticsService = diagnosticsService,
+       _internalSession = internalSession,
+       _sessionBuilder = sessionProvider,
+       _initializeFutureCall = initializeFutureCall {
     _scheduler = ServerpodTaskScheduler(
       concurrencyLimit: _config.concurrencyLimit,
     );
@@ -171,9 +172,9 @@ class FutureCallManager {
       }
 
       return () => _runFutureCall(
-            futureCallEntry: entry,
-            futureCall: futureCall,
-          );
+        futureCallEntry: entry,
+        futureCall: futureCall,
+      );
     });
 
     _scheduler.addTaskCallbacks(callbacks.nonNulls.toList());

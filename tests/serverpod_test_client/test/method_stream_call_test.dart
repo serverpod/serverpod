@@ -12,30 +12,32 @@ void main() {
   );
 
   test(
-      'Given method call with stream response when exception occurs during call setup then exception is received in stream.',
-      () async {
-    var stream = Stream<int>.fromIterable([1, 2, 3]);
-    var methodStream = client.methodStreaming.intEchoStream(stream);
+    'Given method call with stream response when exception occurs during call setup then exception is received in stream.',
+    () async {
+      var stream = Stream<int>.fromIterable([1, 2, 3]);
+      var methodStream = client.methodStreaming.intEchoStream(stream);
 
-    var errorCompleter = Completer<dynamic>();
-    methodStream.listen(
-      (event) {},
-      onError: (e) => errorCompleter.complete(e),
-    );
+      var errorCompleter = Completer<dynamic>();
+      methodStream.listen(
+        (event) {},
+        onError: (e) => errorCompleter.complete(e),
+      );
 
-    await expectLater(errorCompleter.future, completes);
-    var error = await errorCompleter.future;
-    expect(error, isA<WebSocketConnectException>());
-  });
+      await expectLater(errorCompleter.future, completes);
+      var error = await errorCompleter.future;
+      expect(error, isA<WebSocketConnectException>());
+    },
+  );
 
   test(
-      'Given method call with future response when exception occurs during call setup then future is resolved with exception.',
-      () async {
-    var stream = Stream<int>.fromIterable([1, 2, 3]);
+    'Given method call with future response when exception occurs during call setup then future is resolved with exception.',
+    () async {
+      var stream = Stream<int>.fromIterable([1, 2, 3]);
 
-    await expectLater(
-      client.methodStreaming.intReturnFromStream(stream),
-      throwsA(isA<WebSocketConnectException>()),
-    );
-  });
+      await expectLater(
+        client.methodStreaming.intReturnFromStream(stream),
+        throwsA(isA<WebSocketConnectException>()),
+      );
+    },
+  );
 }

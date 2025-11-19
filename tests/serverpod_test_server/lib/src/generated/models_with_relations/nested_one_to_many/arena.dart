@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Arena._({
@@ -34,8 +35,7 @@ abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       name: jsonSerialization['name'] as String,
       team: jsonSerialization['team'] == null
           ? null
-          : _i2.Team.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.Team>(jsonSerialization['team']),
     );
   }
 
@@ -64,6 +64,7 @@ abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Arena',
       if (id != null) 'id': id,
       'name': name,
       if (team != null) 'team': team?.toJson(),
@@ -73,6 +74,7 @@ abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Arena',
       if (id != null) 'id': id,
       'name': name,
       if (team != null) 'team': team?.toJsonForProtocol(),
@@ -117,10 +119,10 @@ class _ArenaImpl extends Arena {
     required String name,
     _i2.Team? team,
   }) : super._(
-          id: id,
-          name: name,
-          team: team,
-        );
+         id: id,
+         name: name,
+         team: team,
+       );
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
@@ -143,9 +145,9 @@ class ArenaUpdateTable extends _i1.UpdateTable<ArenaTable> {
   ArenaUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 }
 
 class ArenaTable extends _i1.Table<int?> {
@@ -178,9 +180,9 @@ class ArenaTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

@@ -16,6 +16,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i3;
+import 'package:serverpod_auth_migration_server/src/generated/protocol.dart'
+    as _i4;
 
 abstract class MigratedUser
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -41,14 +43,17 @@ abstract class MigratedUser
       oldUserId: jsonSerialization['oldUserId'] as int,
       oldUser: jsonSerialization['oldUser'] == null
           ? null
-          : _i2.UserInfo.fromJson(
-              (jsonSerialization['oldUser'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i2.UserInfo>(
+              jsonSerialization['oldUser'],
+            ),
       newAuthUserId: _i1.UuidValueJsonExtension.fromJson(
-          jsonSerialization['newAuthUserId']),
+        jsonSerialization['newAuthUserId'],
+      ),
       newAuthUser: jsonSerialization['newAuthUser'] == null
           ? null
-          : _i3.AuthUser.fromJson(
-              (jsonSerialization['newAuthUser'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i3.AuthUser>(
+              jsonSerialization['newAuthUser'],
+            ),
     );
   }
 
@@ -85,6 +90,7 @@ abstract class MigratedUser
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_migration.MigratedUser',
       if (id != null) 'id': id,
       'oldUserId': oldUserId,
       if (oldUser != null) 'oldUser': oldUser?.toJson(),
@@ -144,12 +150,12 @@ class _MigratedUserImpl extends MigratedUser {
     required _i1.UuidValue newAuthUserId,
     _i3.AuthUser? newAuthUser,
   }) : super._(
-          id: id,
-          oldUserId: oldUserId,
-          oldUser: oldUser,
-          newAuthUserId: newAuthUserId,
-          newAuthUser: newAuthUser,
-        );
+         id: id,
+         oldUserId: oldUserId,
+         oldUser: oldUser,
+         newAuthUserId: newAuthUserId,
+         newAuthUser: newAuthUser,
+       );
 
   /// Returns a shallow copy of this [MigratedUser]
   /// with some or all fields replaced by the given arguments.
@@ -178,21 +184,21 @@ class MigratedUserUpdateTable extends _i1.UpdateTable<MigratedUserTable> {
   MigratedUserUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> oldUserId(int value) => _i1.ColumnValue(
-        table.oldUserId,
-        value,
-      );
+    table.oldUserId,
+    value,
+  );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> newAuthUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.newAuthUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.newAuthUserId,
+    value,
+  );
 }
 
 class MigratedUserTable extends _i1.Table<int?> {
   MigratedUserTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_migration_migrated_user') {
+    : super(tableName: 'serverpod_auth_migration_migrated_user') {
     updateTable = MigratedUserUpdateTable(this);
     oldUserId = _i1.ColumnInt(
       'oldUserId',
@@ -244,10 +250,10 @@ class MigratedUserTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        oldUserId,
-        newAuthUserId,
-      ];
+    id,
+    oldUserId,
+    newAuthUserId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -276,9 +282,9 @@ class MigratedUserInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'oldUser': _oldUser,
-        'newAuthUser': _newAuthUser,
-      };
+    'oldUser': _oldUser,
+    'newAuthUser': _newAuthUser,
+  };
 
   @override
   _i1.Table<int?> get table => MigratedUser.t;

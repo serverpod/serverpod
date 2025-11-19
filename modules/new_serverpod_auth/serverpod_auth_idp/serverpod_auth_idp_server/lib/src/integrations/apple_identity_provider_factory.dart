@@ -20,7 +20,7 @@ class AppleIdentityProviderFactory extends IdentityProviderFactory<AppleIDP> {
   }) {
     return AppleIDP(
       config,
-      tokenIssuer: tokenManager,
+      tokenManager: tokenManager,
       authUsers: authUsers,
       userProfiles: userProfiles,
     );

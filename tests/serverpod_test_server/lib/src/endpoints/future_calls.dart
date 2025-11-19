@@ -11,7 +11,9 @@ class FutureCallsEndpoint extends Endpoint {
   }
 
   Future<void> makeFutureCallThatThrows(
-      Session session, SimpleData? data) async {
+    Session session,
+    SimpleData? data,
+  ) async {
     await session.serverpod.futureCallWithDelay(
       'testExceptionCall',
       data,

@@ -34,8 +34,8 @@ packages:
     source: hosted
     version: "1.18.0"
 sdks:
-  dart: ">=3.5.0 <4.0.0"
-  flutter: ">=3.24.0"
+  dart: "^3.8.0"
+  flutter: "^3.32.0"
 ''';
 
     group('when calling PubspecLockParser.parse', () {
@@ -59,8 +59,8 @@ sdks:
       });
 
       test('then it returns correct SDK constraints', () {
-        expect(parser.dartSdkConstraint?.toString(), '>=3.5.0 <4.0.0');
-        expect(parser.flutterSdkConstraint?.toString(), '>=3.24.0');
+        expect(parser.dartSdkConstraint?.toString(), '^3.8.0');
+        expect(parser.flutterSdkConstraint?.toString(), '^3.32.0');
       });
 
       test('then analyzer package has correct dependency type', () {
@@ -83,8 +83,10 @@ sdks:
 
       test('then analyzer package has correct sha256', () {
         final analyzer = packagesByName['analyzer']!;
-        expect(analyzer.sha256,
-            '1f14db053a8c23e260789e9b0980fa27f2680dd640932cae5e1137cce0e46e1e');
+        expect(
+          analyzer.sha256,
+          '1f14db053a8c23e260789e9b0980fa27f2680dd640932cae5e1137cce0e46e1e',
+        );
       });
 
       test('then analyzer package has HostedDependency', () {
@@ -118,11 +120,13 @@ sdks:
         expect(parser.devDependencies.first.name, 'test');
       });
 
-      test('then transitiveDependencies returns only transitive dependencies',
-          () {
-        expect(parser.transitiveDependencies, hasLength(1));
-        expect(parser.transitiveDependencies.first.name, 'collection');
-      });
+      test(
+        'then transitiveDependencies returns only transitive dependencies',
+        () {
+          expect(parser.transitiveDependencies, hasLength(1));
+          expect(parser.transitiveDependencies.first.name, 'collection');
+        },
+      );
 
       test('then hostedPackages returns all hosted packages', () {
         expect(parser.hostedPackages, hasLength(3));
@@ -392,8 +396,9 @@ sdks:
       });
 
       test('then getPackagesByType returns overridden package', () {
-        final overridden =
-            parser.getPackagesByType(DependencyType.directOverridden);
+        final overridden = parser.getPackagesByType(
+          DependencyType.directOverridden,
+        );
         expect(overridden, hasLength(1));
         expect(overridden.first.name, 'overridden_package');
       });

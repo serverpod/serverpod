@@ -145,7 +145,8 @@ class GoogleSignInWidget extends StatefulWidget {
     required GoogleSignInStyle style,
     required Widget child,
     required VoidCallback? onPressed,
-  })? buttonWrapper;
+  })?
+  buttonWrapper;
 
   /// Creates a Google Sign-In widget.
   const GoogleSignInWidget({
@@ -160,17 +161,17 @@ class GoogleSignInWidget extends StatefulWidget {
     this.size = GSIButtonSize.large,
     this.text = GSIButtonText.continueWith,
     this.shape = GSIButtonShape.pill,
-    this.logoAlignment = GSIButtonLogoAlignment.left,
+    this.logoAlignment = GSIButtonLogoAlignment.center,
     this.minimumWidth = 240,
     this.getButtonText,
     this.locale,
     this.buttonWrapper = GoogleSignInBaseButton.wrapAsOutline,
     super.key,
   }) : assert(
-          (controller == null || client == null),
-          'Either controller or client must be provided, but not both. When '
-          'passing a controller, only the `webButton` parameter is used. ',
-        );
+         (controller == null || client == null),
+         'Either controller or client must be provided, but not both. When '
+         'passing a controller, only the `webButton` parameter is used. ',
+       );
 
   @override
   State<GoogleSignInWidget> createState() => _GoogleSignInWidgetState();
@@ -182,7 +183,8 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ??
+    _controller =
+        widget.controller ??
         GoogleAuthController(
           client: widget.client!,
           onAuthenticated: widget.onAuthenticated,
@@ -237,7 +239,7 @@ class _GoogleSignInWidgetState extends State<GoogleSignInWidget> {
             minimumWidth: widget.minimumWidth,
             locale: widget.locale,
             buttonWrapper: widget.buttonWrapper,
-          )
+          ),
       ],
     );
   }

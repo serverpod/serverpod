@@ -26,14 +26,15 @@ void main() {
     });
 
     test(
-        'when user attempts to authenticate, then authentication fails with reason "blocked"',
-        () async {
-      var session = sessionBuilder.build();
-      var result = await Emails.authenticate(session, email, password);
+      'when user attempts to authenticate, then authentication fails with reason "blocked"',
+      () async {
+        var session = sessionBuilder.build();
+        var result = await Emails.authenticate(session, email, password);
 
-      expect(result.success, isFalse);
-      expect(result.failReason, AuthenticationFailReason.blocked);
-    });
+        expect(result.success, isFalse);
+        expect(result.failReason, AuthenticationFailReason.blocked);
+      },
+    );
   });
 
   withServerpod('Given a previously blocked user', (sessionBuilder, _) {
@@ -57,12 +58,14 @@ void main() {
       await Users.unblockUser(session, userId);
     });
 
-    test('when user attempts to authenticate, then authentication succeeds',
-        () async {
-      var session = sessionBuilder.build();
-      var result = await Emails.authenticate(session, email, password);
+    test(
+      'when user attempts to authenticate, then authentication succeeds',
+      () async {
+        var session = sessionBuilder.build();
+        var result = await Emails.authenticate(session, email, password);
 
-      expect(result.success, isTrue);
-    });
+        expect(result.success, isTrue);
+      },
+    );
   });
 }

@@ -10,6 +10,6 @@ abstract class ServerpodCommand<O extends OptionDefinition>
   ServerpodCommand({
     super.options,
   }) : super(
-          wrapTextColumn: log.wrapTextColumn,
-        );
+         wrapTextColumn: log.wrapTextColumn,
+       );
 }

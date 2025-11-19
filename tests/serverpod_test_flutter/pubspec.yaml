@@ -9,22 +9,22 @@ description: Part of tests for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
-  flutter: '>=3.24.0'
+  sdk: '^3.8.0'
+  flutter: '^3.32.0'
 
 dependencies:
+  cupertino_icons: ^1.0.5
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  test: ^1.25.5
-  serverpod_test_client:
-    path: ../serverpod_test_client
   serverpod_auth_shared_flutter:
     path: ../../modules/serverpod_auth/serverpod_auth_shared_flutter
+  serverpod_test_client:
+    path: ../serverpod_test_client
+  test: ^1.25.5
 
 dependency_overrides:
   serverpod_auth_client:

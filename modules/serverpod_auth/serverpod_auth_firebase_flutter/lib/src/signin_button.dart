@@ -44,7 +44,8 @@ class SignInWithFirebaseButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      style: style ??
+      style:
+          style ??
           ElevatedButton.styleFrom(
             backgroundColor: Colors.blue[900],
             foregroundColor: Colors.white,

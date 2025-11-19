@@ -17,8 +17,8 @@ abstract class StringDefault implements _i1.SerializableModel {
     this.id,
     String? stringDefault,
     String? stringDefaultNull,
-  })  : stringDefault = stringDefault ?? 'This is a default value',
-        stringDefaultNull = stringDefaultNull ?? 'This is a default null value';
+  }) : stringDefault = stringDefault ?? 'This is a default value',
+       stringDefaultNull = stringDefaultNull ?? 'This is a default null value';
 
   factory StringDefault({
     int? id,
@@ -54,6 +54,7 @@ abstract class StringDefault implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'StringDefault',
       if (id != null) 'id': id,
       'stringDefault': stringDefault,
       if (stringDefaultNull != null) 'stringDefaultNull': stringDefaultNull,
@@ -74,10 +75,10 @@ class _StringDefaultImpl extends StringDefault {
     String? stringDefault,
     String? stringDefaultNull,
   }) : super._(
-          id: id,
-          stringDefault: stringDefault,
-          stringDefaultNull: stringDefaultNull,
-        );
+         id: id,
+         stringDefault: stringDefault,
+         stringDefaultNull: stringDefaultNull,
+       );
 
   /// Returns a shallow copy of this [StringDefault]
   /// with some or all fields replaced by the given arguments.

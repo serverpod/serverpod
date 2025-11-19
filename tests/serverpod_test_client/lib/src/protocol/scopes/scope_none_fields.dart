@@ -32,7 +32,10 @@ abstract class ScopeNoneFields implements _i1.SerializableModel {
   ScopeNoneFields copyWith({int? id});
   @override
   Map<String, dynamic> toJson() {
-    return {if (id != null) 'id': id};
+    return {
+      '__className__': 'ScopeNoneFields',
+      if (id != null) 'id': id,
+    };
   }
 
   @override

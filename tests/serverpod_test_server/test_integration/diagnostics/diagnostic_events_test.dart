@@ -22,8 +22,7 @@ class ExceptionRoute extends WidgetRoute {
 void main() {
   const timeout = Duration(seconds: 3);
 
-  group(
-      'Given a serverpod server with a diagnostic event handler, '
+  group('Given a serverpod server with a diagnostic event handler, '
       'when starting serverpod with its web server port already in use', () {
     var exceptionHandler = TestExceptionHandler();
     late Serverpod pod;
@@ -65,72 +64,87 @@ void main() {
       exceptionHandler.eventsStreamController.close();
     });
 
-    test('then the diagnostic event handler gets called with a SocketException',
-        () async {
-      expect(record.event.exception, isA<SocketException>());
-    });
+    test(
+      'then the diagnostic event handler gets called with a SocketException',
+      () async {
+        expect(record.event.exception, isA<SocketException>());
+      },
+    );
 
     test('then the diagnostic event exception message is correct', () async {
-      expect((record.event.exception as SocketException).message,
-          contains('Failed to create server socket'));
+      expect(
+        (record.event.exception as SocketException).message,
+        contains('Failed to create server socket'),
+      );
     });
 
     test('then the diagnostic event space is framework', () async {
       expect(record.space, equals(OriginSpace.framework));
     });
 
-    test('then the diagnostic event context is a DiagnosticEventContext',
-        () async {
-      expect(record.context.runtimeType, DiagnosticEventContext);
-    });
+    test(
+      'then the diagnostic event context is a DiagnosticEventContext',
+      () async {
+        expect(record.context.runtimeType, DiagnosticEventContext);
+      },
+    );
 
-    test('then the diagnostic event context has the expected content',
-        () async {
-      expect(
+    test(
+      'then the diagnostic event context has the expected content',
+      () async {
+        expect(
           record.context.toJson(),
           allOf([
             containsPair('serverId', 'default'),
             containsPair('serverName', 'Server default'),
             containsPair('serverRunMode', 'production'),
-          ]));
-    });
+          ]),
+        );
+      },
+    );
   });
 
   group(
-      'Given a serverpod server with future calls and a diagnostic event handler',
-      () {
-    var client = Client('http://localhost:8080/');
-    var exceptionHandler = TestExceptionHandler();
-    late Serverpod pod;
+    'Given a serverpod server with future calls and a diagnostic event handler',
+    () {
+      var client = Client('http://localhost:8080/');
+      var exceptionHandler = TestExceptionHandler();
+      late Serverpod pod;
 
-    setUp(() async {
-      exceptionHandler = TestExceptionHandler();
-      pod = IntegrationTestServer.create(
-        experimentalFeatures: ExperimentalFeatures(
-          diagnosticEventHandlers: [exceptionHandler],
-        ),
-      );
-      pod.registerFutureCall(TestExceptionCall(), 'testExceptionCall');
-      await pod.start();
-    });
+      setUp(() async {
+        exceptionHandler = TestExceptionHandler();
+        pod = IntegrationTestServer.create(
+          experimentalFeatures: ExperimentalFeatures(
+            diagnosticEventHandlers: [exceptionHandler],
+          ),
+        );
+        pod.registerFutureCall(TestExceptionCall(), 'testExceptionCall');
+        await pod.start();
+      });
 
-    tearDown(() async {
-      await pod.shutdown(exitProcess: false);
-      exceptionHandler.eventsStreamController.close();
-    });
+      tearDown(() async {
+        await pod.shutdown(exitProcess: false);
+        exceptionHandler.eventsStreamController.close();
+      });
 
-    test(
+      test(
         'when a client calls an endpoint method that schedules a future call that throws '
-        'then the diagnostic event handler gets called', () async {
-      await client.futureCalls.makeFutureCallThatThrows(SimpleData(num: 42));
+        'then the diagnostic event handler gets called',
+        () async {
+          await client.futureCalls.makeFutureCallThatThrows(
+            SimpleData(num: 42),
+          );
 
-      final record = await exceptionHandler.events.first
-          .timeout(const Duration(seconds: 6));
-      expect(record.event.exception, isA<Exception>());
-      expect(record.space, equals(OriginSpace.application));
-      expect(record.context, isA<FutureCallOpContext>());
-    });
-  });
+          final record = await exceptionHandler.events.first.timeout(
+            const Duration(seconds: 6),
+          );
+          expect(record.event.exception, isA<Exception>());
+          expect(record.space, equals(OriginSpace.application));
+          expect(record.context, isA<FutureCallOpContext>());
+        },
+      );
+    },
+  );
 
   group('Given a serverpod server with a diagnostic event handler', () {
     var client = Client('http://localhost:8080/');
@@ -152,8 +166,7 @@ void main() {
       exceptionHandler.eventsStreamController.close();
     });
 
-    test(
-        'when a client calls an endpoint method that throws an exception '
+    test('when a client calls an endpoint method that throws an exception '
         'then the diagnostic event handler gets called', () async {
       final result = client.exceptionTest.throwNormalException();
       await expectLater(result, throwsA(isA<Exception>()));
@@ -163,23 +176,23 @@ void main() {
       expect(record.space, equals(OriginSpace.application));
       expect(record.context, isA<MethodCallOpContext>());
       expect(
-          record.context.toJson(),
-          allOf([
-            containsPair('serverId', 'default'),
-            containsPair('serverName', 'Server default'),
-            containsPair('serverRunMode', 'production'),
-            containsPair('operationType', 'OperationType.method'),
-            contains('sessionId'),
-            containsPair('userAuthInfo', null),
-            contains('remoteInfo'),
-            containsPair('uri', 'http://localhost:8080/exceptionTest'),
-            containsPair('endpoint', 'exceptionTest'),
-            containsPair('methodName', 'throwNormalException'),
-          ]));
+        record.context.toJson(),
+        allOf([
+          containsPair('serverId', 'default'),
+          containsPair('serverName', 'Server default'),
+          containsPair('serverRunMode', 'production'),
+          containsPair('operationType', 'OperationType.method'),
+          contains('sessionId'),
+          containsPair('userAuthInfo', null),
+          contains('remoteInfo'),
+          containsPair('uri', 'http://localhost:8080/exceptionTest'),
+          containsPair('endpoint', 'exceptionTest'),
+          containsPair('methodName', 'throwNormalException'),
+        ]),
+      );
     });
 
-    test(
-        'when a client calls streaming method outStreamThrowsException '
+    test('when a client calls streaming method outStreamThrowsException '
         'then the diagnostic event handler gets called', () async {
       final stream = client.methodStreaming.outStreamThrowsException();
       await expectLater(stream, emitsError(isA<ConnectionClosedException>()));
@@ -194,32 +207,35 @@ void main() {
     });
 
     test(
-        'when a client calls streaming method outStreamThrowsSerializableException '
-        'then the diagnostic event handler gets called', () async {
-      var stream =
-          client.methodStreaming.outStreamThrowsSerializableException();
-      await expectLater(stream, emitsError(isA<ExceptionWithData>()));
+      'when a client calls streaming method outStreamThrowsSerializableException '
+      'then the diagnostic event handler gets called',
+      () async {
+        var stream = client.methodStreaming
+            .outStreamThrowsSerializableException();
+        await expectLater(stream, emitsError(isA<ExceptionWithData>()));
 
-      final record = await exceptionHandler.events.first.timeout(timeout);
-      expect(record.event.exception, isA<Exception>());
-      expect(record.space, equals(OriginSpace.application));
-      expect(record.context, isA<StreamOpContext>());
-    });
-
-    test(
-        'when a client calls streaming method exceptionThrownBeforeStreamReturn '
-        'then the diagnostic event handler gets called', () async {
-      var stream = client.methodStreaming.exceptionThrownBeforeStreamReturn();
-      await expectLater(stream, emitsError(isA<ConnectionClosedException>()));
-
-      final record = await exceptionHandler.events.first.timeout(timeout);
-      expect(record.event.exception, isA<Exception>());
-      expect(record.space, equals(OriginSpace.application));
-      expect(record.context, isA<StreamOpContext>());
-    });
+        final record = await exceptionHandler.events.first.timeout(timeout);
+        expect(record.event.exception, isA<Exception>());
+        expect(record.space, equals(OriginSpace.application));
+        expect(record.context, isA<StreamOpContext>());
+      },
+    );
 
     test(
-        'when a client calls streaming method exceptionThrownInStreamReturn '
+      'when a client calls streaming method exceptionThrownBeforeStreamReturn '
+      'then the diagnostic event handler gets called',
+      () async {
+        var stream = client.methodStreaming.exceptionThrownBeforeStreamReturn();
+        await expectLater(stream, emitsError(isA<ConnectionClosedException>()));
+
+        final record = await exceptionHandler.events.first.timeout(timeout);
+        expect(record.event.exception, isA<Exception>());
+        expect(record.space, equals(OriginSpace.application));
+        expect(record.context, isA<StreamOpContext>());
+      },
+    );
+
+    test('when a client calls streaming method exceptionThrownInStreamReturn '
         'then the diagnostic event handler gets called', () async {
       var stream = client.methodStreaming.exceptionThrownInStreamReturn();
       await expectLater(stream, emitsError(isA<ConnectionClosedException>()));
@@ -230,8 +246,7 @@ void main() {
       expect(record.context, isA<StreamOpContext>());
     });
 
-    test(
-        'when a client calls method url with malformed json '
+    test('when a client calls method url with malformed json '
         'then the diagnostic event handler gets called', () async {
       var response = http.post(
         Uri.parse('http://localhost:8080/simple/hello'),
@@ -246,118 +261,131 @@ void main() {
   });
 
   group(
-      'Given a serverpod server with a web route and a diagnostic event handler',
-      () {
-    var exceptionHandler = TestExceptionHandler();
-    late Serverpod pod;
+    'Given a serverpod server with a web route and a diagnostic event handler',
+    () {
+      var exceptionHandler = TestExceptionHandler();
+      late Serverpod pod;
 
-    setUp(() async {
-      exceptionHandler = TestExceptionHandler();
-      pod = IntegrationTestServer.create(
-        experimentalFeatures: ExperimentalFeatures(
-          diagnosticEventHandlers: [exceptionHandler],
-        ),
-      );
-      pod.webServer.addRoute(ExceptionRoute(), '/exception');
-      await pod.start();
-    });
+      setUp(() async {
+        exceptionHandler = TestExceptionHandler();
+        pod = IntegrationTestServer.create(
+          experimentalFeatures: ExperimentalFeatures(
+            diagnosticEventHandlers: [exceptionHandler],
+          ),
+        );
+        pod.webServer.addRoute(ExceptionRoute(), '/exception');
+        await pod.start();
+      });
 
-    tearDown(() async {
-      await pod.shutdown(exitProcess: false);
-      exceptionHandler.eventsStreamController.close();
-    });
+      tearDown(() async {
+        await pod.shutdown(exitProcess: false);
+        exceptionHandler.eventsStreamController.close();
+      });
 
-    test(
-        'when a client calls web url with malformed json '
-        'then the diagnostic event handler gets called', () async {
-      var response = http.get(
-        Uri.parse('http://localhost:8082/exception'),
-      );
-      await response;
+      test('when a client calls web url with malformed json '
+          'then the diagnostic event handler gets called', () async {
+        var response = http.get(
+          Uri.parse('http://localhost:8082/exception'),
+        );
+        await response;
 
-      final record = await exceptionHandler.events.first.timeout(timeout);
-      expect(record.event.exception, isA<UnimplementedError>());
-      expect(record.space, equals(OriginSpace.application));
-      expect(record.context, isA<WebCallOpContext>());
-    });
-  });
+        final record = await exceptionHandler.events.first.timeout(timeout);
+        expect(record.event.exception, isA<UnimplementedError>());
+        expect(record.space, equals(OriginSpace.application));
+        expect(record.context, isA<WebCallOpContext>());
+      });
+    },
+  );
 
   group(
-      'Given a serverpod server with a diagnostic event handler and a missing database, '
-      'when starting serverpod', () {
-    var exceptionHandler = TestExceptionHandler();
-    late Serverpod pod;
-    late DiagnosticEventRecord<ExceptionEvent> record;
+    'Given a serverpod server with a diagnostic event handler and a missing database, '
+    'when starting serverpod',
+    () {
+      var exceptionHandler = TestExceptionHandler();
+      late Serverpod pod;
+      late DiagnosticEventRecord<ExceptionEvent> record;
 
-    setUpAll(() async {
-      exceptionHandler = TestExceptionHandler();
+      setUpAll(() async {
+        exceptionHandler = TestExceptionHandler();
 
-      final config = ServerpodConfig(
-        database: DatabaseConfig(
-          host: 'localhost',
-          port: 9999,
-          user: 'postgres',
-          password: 'postgres',
-          name: 'postgres',
-        ),
-        apiServer: ServerConfig(
-          port: 8080,
-          publicHost: 'localhost',
-          publicPort: 8080,
-          publicScheme: 'http',
-        ),
+        final config = ServerpodConfig(
+          database: DatabaseConfig(
+            host: 'localhost',
+            port: 9999,
+            user: 'postgres',
+            password: 'postgres',
+            name: 'postgres',
+          ),
+          apiServer: ServerConfig(
+            port: 8080,
+            publicHost: 'localhost',
+            publicPort: 8080,
+            publicScheme: 'http',
+          ),
+        );
+        pod = IntegrationTestServer.create(
+          config: config,
+          experimentalFeatures: ExperimentalFeatures(
+            diagnosticEventHandlers: [exceptionHandler],
+          ),
+        );
+        final result = pod
+            .start(runInGuardedZone: false)
+            .timeout(const Duration(seconds: 2));
+        await expectLater(result, throwsA(isA<TimeoutException>()));
+        record = await exceptionHandler.events.first.timeout(timeout);
+      });
+
+      tearDownAll(() async {
+        await pod.shutdown(exitProcess: false);
+        exceptionHandler.eventsStreamController.close();
+      });
+
+      test(
+        'then the diagnostic event handler gets called with a Exception',
+        () async {
+          expect(record.event.exception, isA<SocketException>());
+        },
       );
-      pod = IntegrationTestServer.create(
-        config: config,
-        experimentalFeatures: ExperimentalFeatures(
-          diagnosticEventHandlers: [exceptionHandler],
-        ),
+
+      test('then the diagnostic event exception message is correct', () async {
+        expect(
+          (record.event.exception as SocketException).message,
+          contains('Connection refused'),
+        );
+      });
+
+      test('then the diagnostic event message is correct', () async {
+        expect(
+          record.event.message,
+          startsWith('Failed to connect to the database'),
+        );
+      });
+
+      test('then the diagnostic event space is framework', () async {
+        expect(record.space, equals(OriginSpace.framework));
+      });
+
+      test(
+        'then the diagnostic event context is a DiagnosticEventContext',
+        () async {
+          expect(record.context.runtimeType, DiagnosticEventContext);
+        },
       );
-      final result = pod
-          .start(runInGuardedZone: false)
-          .timeout(const Duration(seconds: 2));
-      await expectLater(result, throwsA(isA<TimeoutException>()));
-      record = await exceptionHandler.events.first.timeout(timeout);
-    });
 
-    tearDownAll(() async {
-      await pod.shutdown(exitProcess: false);
-      exceptionHandler.eventsStreamController.close();
-    });
-
-    test('then the diagnostic event handler gets called with a Exception',
+      test(
+        'then the diagnostic event context has the expected content',
         () async {
-      expect(record.event.exception, isA<SocketException>());
-    });
-
-    test('then the diagnostic event exception message is correct', () async {
-      expect((record.event.exception as SocketException).message,
-          contains('Connection refused'));
-    });
-
-    test('then the diagnostic event message is correct', () async {
-      expect(record.event.message,
-          startsWith('Failed to connect to the database'));
-    });
-
-    test('then the diagnostic event space is framework', () async {
-      expect(record.space, equals(OriginSpace.framework));
-    });
-
-    test('then the diagnostic event context is a DiagnosticEventContext',
-        () async {
-      expect(record.context.runtimeType, DiagnosticEventContext);
-    });
-
-    test('then the diagnostic event context has the expected content',
-        () async {
-      expect(
-          record.context.toJson(),
-          allOf([
-            containsPair('serverId', 'default'),
-            containsPair('serverName', ''),
-            containsPair('serverRunMode', 'production'),
-          ]));
-    });
-  });
+          expect(
+            record.context.toJson(),
+            allOf([
+              containsPair('serverId', 'default'),
+              containsPair('serverName', ''),
+              containsPair('serverRunMode', 'production'),
+            ]),
+          );
+        },
+      );
+    },
+  );
 }

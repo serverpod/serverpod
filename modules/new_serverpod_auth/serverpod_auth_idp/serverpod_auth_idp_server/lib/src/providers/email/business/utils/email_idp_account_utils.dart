@@ -67,18 +67,22 @@ class EmailIDPAccountUtils {
   }) async {
     final normalizedEmail = email?.normalizedEmail;
 
-    return EmailAccount.db.find(session, where: (final t) {
-      Expression expression = Constant.bool(true);
+    return EmailAccount.db.find(
+      session,
+      where: (final t) {
+        Expression expression = Constant.bool(true);
 
-      if (normalizedEmail != null) {
-        expression = expression & t.email.equals(normalizedEmail);
-      }
+        if (normalizedEmail != null) {
+          expression = expression & t.email.equals(normalizedEmail);
+        }
 
-      if (authUserId != null) {
-        expression = expression & t.authUserId.equals(authUserId);
-      }
+        if (authUserId != null) {
+          expression = expression & t.authUserId.equals(authUserId);
+        }
 
-      return expression;
-    }, transaction: transaction);
+        return expression;
+      },
+      transaction: transaction,
+    );
   }
 }

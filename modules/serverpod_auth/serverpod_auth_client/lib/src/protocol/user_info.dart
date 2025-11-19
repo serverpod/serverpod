@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_auth_client/src/protocol/protocol.dart' as _i2;
 
 /// Information about a user. The [UserInfo] should only be shared with the user
 /// itself as it may contain sensitive information, such as the users email.
@@ -51,9 +52,9 @@ abstract class UserInfo implements _i1.SerializableModel {
       email: jsonSerialization['email'] as String?,
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       imageUrl: jsonSerialization['imageUrl'] as String?,
-      scopeNames: (jsonSerialization['scopeNames'] as List)
-          .map((e) => e as String)
-          .toList(),
+      scopeNames: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['scopeNames'],
+      ),
       blocked: jsonSerialization['blocked'] as bool,
     );
   }
@@ -105,6 +106,7 @@ abstract class UserInfo implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.UserInfo',
       if (id != null) 'id': id,
       'userIdentifier': userIdentifier,
       if (userName != null) 'userName': userName,
@@ -137,16 +139,16 @@ class _UserInfoImpl extends UserInfo {
     required List<String> scopeNames,
     required bool blocked,
   }) : super._(
-          id: id,
-          userIdentifier: userIdentifier,
-          userName: userName,
-          fullName: fullName,
-          email: email,
-          created: created,
-          imageUrl: imageUrl,
-          scopeNames: scopeNames,
-          blocked: blocked,
-        );
+         id: id,
+         userIdentifier: userIdentifier,
+         userName: userName,
+         fullName: fullName,
+         email: email,
+         created: created,
+         imageUrl: imageUrl,
+         scopeNames: scopeNames,
+         blocked: blocked,
+       );
 
   /// Returns a shallow copy of this [UserInfo]
   /// with some or all fields replaced by the given arguments.

@@ -15,10 +15,11 @@ class _PostgresDatabaseResultSchema implements DatabaseResultSchema {
   _PostgresDatabaseResultSchema(this._schema);
 
   @override
-  Iterable<DatabaseResultSchemaColumn> get columns =>
-      _schema.columns.map((columnSchema) => _PostgresDatabaseResultSchemaColumn(
-            columnName: columnSchema.columnName,
-          ));
+  Iterable<DatabaseResultSchemaColumn> get columns => _schema.columns.map(
+    (columnSchema) => _PostgresDatabaseResultSchemaColumn(
+      columnName: columnSchema.columnName,
+    ),
+  );
 }
 
 class _PostgresDatabaseResultRow extends DatabaseResultRow {
@@ -38,8 +39,8 @@ class PostgresDatabaseResult extends DatabaseResult {
 
   /// Creates a new database result from a postgres result.
   PostgresDatabaseResult(pg.Result result)
-      : _result = result,
-        super(result.map((row) => _PostgresDatabaseResultRow(row)));
+    : _result = result,
+      super(result.map((row) => _PostgresDatabaseResultRow(row)));
 
   @override
   int get affectedRowCount => _result.affectedRows;

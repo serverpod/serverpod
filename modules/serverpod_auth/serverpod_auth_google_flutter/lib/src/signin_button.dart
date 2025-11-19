@@ -65,7 +65,8 @@ class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      style: widget.style ??
+      style:
+          widget.style ??
           ElevatedButton.styleFrom(
             backgroundColor: Colors.white,
             foregroundColor: Colors.grey[700],
@@ -80,23 +81,28 @@ class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
 
         // Attempt to sign in the user.
         signInWithGoogle(
-          widget.caller,
-          clientId: widget.clientId,
-          serverClientId: widget.serverClientId,
-          additionalScopes: widget.additionalScopes,
-          redirectUri: widget.redirectUri,
-        ).then((UserInfo? userInfo) {
-          // Notify the parent.
-          if (userInfo != null) {
-            widget.onSignedIn?.call();
-          } else {
-            widget.onFailure?.call();
-          }
-        }).onError((error, stackTrace) {
-          widget.onFailure?.call();
-        }).whenComplete(() =>
-            // Pop the loading barrier
-            navigator.pop());
+              widget.caller,
+              clientId: widget.clientId,
+              serverClientId: widget.serverClientId,
+              additionalScopes: widget.additionalScopes,
+              redirectUri: widget.redirectUri,
+            )
+            .then((UserInfo? userInfo) {
+              // Notify the parent.
+              if (userInfo != null) {
+                widget.onSignedIn?.call();
+              } else {
+                widget.onFailure?.call();
+              }
+            })
+            .onError((error, stackTrace) {
+              widget.onFailure?.call();
+            })
+            .whenComplete(
+              () =>
+                  // Pop the loading barrier
+                  navigator.pop(),
+            );
       },
       label: Text(widget.label ?? 'Sign in with Google'),
       icon: Image.asset(

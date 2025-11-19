@@ -19,7 +19,8 @@ abstract class RefreshTokenNotFoundException
   factory RefreshTokenNotFoundException() = _RefreshTokenNotFoundExceptionImpl;
 
   factory RefreshTokenNotFoundException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return RefreshTokenNotFoundException();
   }
 
@@ -29,7 +30,9 @@ abstract class RefreshTokenNotFoundException
   RefreshTokenNotFoundException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_core.RefreshTokenNotFoundException',
+    };
   }
 
   @override

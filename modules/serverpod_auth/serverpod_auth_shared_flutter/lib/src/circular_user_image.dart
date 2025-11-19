@@ -83,16 +83,17 @@ class CircularUserImage extends StatelessWidget {
           color: borderColor,
           clipBehavior: Clip.none,
           child: Center(
-              child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.grey[500],
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey[500],
+              ),
+              clipBehavior: Clip.antiAlias,
+              width: size - borderWidth * 2,
+              height: size - borderWidth * 2,
+              child: child,
             ),
-            clipBehavior: Clip.antiAlias,
-            width: size - borderWidth * 2,
-            height: size - borderWidth * 2,
-            child: child,
-          )),
+          ),
         ),
       );
     }

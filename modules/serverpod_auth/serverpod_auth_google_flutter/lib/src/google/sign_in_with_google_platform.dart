@@ -16,9 +16,10 @@ class ClientAuthTokens {
 
 /// Provides a function that attempts to Sign in with Google.
 /// Returns a [ClientAuthTokens] with the serverAuthCode or tokenId.
-typedef SignInWithGooglePlatform = Future<ClientAuthTokens> Function({
-  String? clientId,
-  String? serverClientId,
-  required List<String> scopes,
-  required Uri redirectUri,
-});
+typedef SignInWithGooglePlatform =
+    Future<ClientAuthTokens> Function({
+      String? clientId,
+      String? serverClientId,
+      required List<String> scopes,
+      required Uri redirectUri,
+    });

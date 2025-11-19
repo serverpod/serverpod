@@ -15,9 +15,9 @@ class RedisCache extends GlobalCache {
     SerializationManager serializationManager,
     this.redisController,
   ) : super(
-          -1,
-          serializationManager,
-        );
+        -1,
+        serializationManager,
+      );
 
   @override
   Future<void> clear() async {
@@ -92,8 +92,12 @@ class RedisCache extends GlobalCache {
       throw UnimplementedError('No local keys are used in RedisCache');
 
   @override
-  Future<void> put(String key, SerializableModel object,
-      {Duration? lifetime, String? group}) async {
+  Future<void> put(
+    String key,
+    SerializableModel object, {
+    Duration? lifetime,
+    String? group,
+  }) async {
     if (group != null) {
       throw UnimplementedError('Groups are not yet supported in RedisCache');
     }

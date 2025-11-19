@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/many_to_many/enrollment.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class StudentUuid
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -35,9 +36,11 @@ abstract class StudentUuid
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
-      enrollments: (jsonSerialization['enrollments'] as List?)
-          ?.map((e) => _i2.EnrollmentInt.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      enrollments: jsonSerialization['enrollments'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.EnrollmentInt>>(
+              jsonSerialization['enrollments'],
+            ),
     );
   }
 
@@ -66,6 +69,7 @@ abstract class StudentUuid
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'StudentUuid',
       if (id != null) 'id': id?.toJson(),
       'name': name,
       if (enrollments != null)
@@ -76,16 +80,19 @@ abstract class StudentUuid
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'StudentUuid',
       if (id != null) 'id': id?.toJson(),
       'name': name,
       if (enrollments != null)
-        'enrollments':
-            enrollments?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+        'enrollments': enrollments?.toJson(
+          valueToJson: (v) => v.toJsonForProtocol(),
+        ),
     };
   }
 
-  static StudentUuidInclude include(
-      {_i2.EnrollmentIntIncludeList? enrollments}) {
+  static StudentUuidInclude include({
+    _i2.EnrollmentIntIncludeList? enrollments,
+  }) {
     return StudentUuidInclude._(enrollments: enrollments);
   }
 
@@ -123,10 +130,10 @@ class _StudentUuidImpl extends StudentUuid {
     required String name,
     List<_i2.EnrollmentInt>? enrollments,
   }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+         id: id,
+         name: name,
+         enrollments: enrollments,
+       );
 
   /// Returns a shallow copy of this [StudentUuid]
   /// with some or all fields replaced by the given arguments.
@@ -151,9 +158,9 @@ class StudentUuidUpdateTable extends _i1.UpdateTable<StudentUuidTable> {
   StudentUuidUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 }
 
 class StudentUuidTable extends _i1.Table<_i1.UuidValue?> {
@@ -199,16 +206,17 @@ class StudentUuidTable extends _i1.Table<_i1.UuidValue?> {
     _enrollments = _i1.ManyRelation<_i2.EnrollmentIntTable>(
       tableWithRelations: relationTable,
       table: _i2.EnrollmentIntTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _enrollments!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

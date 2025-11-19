@@ -10,7 +10,7 @@ void main() {
     const pubspecString = '''
 name: x_server
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: '^3.8.0'
 
 dependencies:
   serverpod: 2.3.1

@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/one_to_many/customer.dart' as _i2;
 import '../../models_with_relations/one_to_many/comment.dart' as _i3;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
 abstract class Order implements _i1.SerializableModel {
   Order._({
@@ -38,11 +39,14 @@ abstract class Order implements _i1.SerializableModel {
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization['customer'] == null
           ? null
-          : _i2.Customer.fromJson(
-              (jsonSerialization['customer'] as Map<String, dynamic>)),
-      comments: (jsonSerialization['comments'] as List?)
-          ?.map((e) => _i3.Comment.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+          : _i4.Protocol().deserialize<_i2.Customer>(
+              jsonSerialization['customer'],
+            ),
+      comments: jsonSerialization['comments'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i3.Comment>>(
+              jsonSerialization['comments'],
+            ),
     );
   }
 
@@ -72,6 +76,7 @@ abstract class Order implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Order',
       if (id != null) 'id': id,
       'description': description,
       'customerId': customerId,
@@ -97,12 +102,12 @@ class _OrderImpl extends Order {
     _i2.Customer? customer,
     List<_i3.Comment>? comments,
   }) : super._(
-          id: id,
-          description: description,
-          customerId: customerId,
-          customer: customer,
-          comments: comments,
-        );
+         id: id,
+         description: description,
+         customerId: customerId,
+         customer: customer,
+         comments: comments,
+       );
 
   /// Returns a shallow copy of this [Order]
   /// with some or all fields replaced by the given arguments.
@@ -119,8 +124,9 @@ class _OrderImpl extends Order {
       id: id is int? ? id : this.id,
       description: description ?? this.description,
       customerId: customerId ?? this.customerId,
-      customer:
-          customer is _i2.Customer? ? customer : this.customer?.copyWith(),
+      customer: customer is _i2.Customer?
+          ? customer
+          : this.customer?.copyWith(),
       comments: comments is List<_i3.Comment>?
           ? comments
           : this.comments?.map((e0) => e0.copyWith()).toList(),

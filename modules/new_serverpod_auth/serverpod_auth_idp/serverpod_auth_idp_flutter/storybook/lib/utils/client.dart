@@ -127,8 +127,25 @@ class GoogleIDPEndpoint extends EndpointGoogleIDPBase {
   Future<AuthSuccess> login({
     required String idToken,
     required String? accessToken,
-  }) =>
-      Future.value(_mockData.authSuccess);
+  }) => Future.value(_mockData.authSuccess);
+}
+
+class AppleIDPEndpoint extends EndpointAppleIDPBase {
+  AppleIDPEndpoint(super.caller);
+
+  final _mockData = MockAuthData();
+
+  @override
+  String get name => 'appleIDP';
+
+  @override
+  Future<AuthSuccess> login({
+    required String identityToken,
+    required String authorizationCode,
+    required bool isNativeApplePlatformSignIn,
+    String? firstName,
+    String? lastName,
+  }) => Future.value(_mockData.authSuccess);
 }
 
 class Modules {
@@ -141,14 +158,15 @@ class Modules {
 
 class Client extends ServerpodClientShared {
   Client(String host)
-      : super(
-          host,
-          Protocol(),
-          connectionTimeout: const Duration(seconds: 1),
-          streamingConnectionTimeout: const Duration(seconds: 1),
-        ) {
+    : super(
+        host,
+        Protocol(),
+        connectionTimeout: const Duration(seconds: 1),
+        streamingConnectionTimeout: const Duration(seconds: 1),
+      ) {
     authEmail = EndpointAuthEmail(this);
     googleIDP = GoogleIDPEndpoint(this);
+    appleIDP = AppleIDPEndpoint(this);
     modules = Modules(this);
   }
 
@@ -156,18 +174,21 @@ class Client extends ServerpodClientShared {
 
   late final GoogleIDPEndpoint googleIDP;
 
+  late final AppleIDPEndpoint appleIDP;
+
   late final Modules modules;
 
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
-        'emailAuth': authEmail,
-        'googleIDP': googleIDP,
-      };
+    'emailAuth': authEmail,
+    'googleIDP': googleIDP,
+    'appleIDP': appleIDP,
+  };
 
   @override
   Map<String, ModuleEndpointCaller> get moduleLookup => {
-        'serverpod_auth_core': modules.auth,
-      };
+    'serverpod_auth_core': modules.auth,
+  };
 
   @override
   Future<T> callServerEndpoint<T>(
@@ -196,9 +217,9 @@ class MockAuthData {
   UuidValue? passwordResetRequestId;
 
   AuthSuccess get authSuccess => AuthSuccess(
-        authStrategy: AuthStrategy.session.name,
-        token: 'session-key',
-        authUserId: authUserId,
-        scopeNames: {},
-      );
+    authStrategy: AuthStrategy.session.name,
+    token: 'session-key',
+    authUserId: authUserId,
+    scopeNames: {},
+  );
 }

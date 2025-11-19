@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'log_settings.dart' as _i2;
 import 'log_settings_override.dart' as _i3;
+import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i4;
 
 /// Runtime settings of the server.
 abstract class RuntimeSettings implements _i1.SerializableModel {
@@ -35,12 +36,13 @@ abstract class RuntimeSettings implements _i1.SerializableModel {
   factory RuntimeSettings.fromJson(Map<String, dynamic> jsonSerialization) {
     return RuntimeSettings(
       id: jsonSerialization['id'] as int?,
-      logSettings: _i2.LogSettings.fromJson(
-          (jsonSerialization['logSettings'] as Map<String, dynamic>)),
-      logSettingsOverrides: (jsonSerialization['logSettingsOverrides'] as List)
-          .map((e) =>
-              _i3.LogSettingsOverride.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      logSettings: _i4.Protocol().deserialize<_i2.LogSettings>(
+        jsonSerialization['logSettings'],
+      ),
+      logSettingsOverrides: _i4.Protocol()
+          .deserialize<List<_i3.LogSettingsOverride>>(
+            jsonSerialization['logSettingsOverrides'],
+          ),
       logServiceCalls: jsonSerialization['logServiceCalls'] as bool,
       logMalformedCalls: jsonSerialization['logMalformedCalls'] as bool,
     );
@@ -76,10 +78,12 @@ abstract class RuntimeSettings implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.RuntimeSettings',
       if (id != null) 'id': id,
       'logSettings': logSettings.toJson(),
-      'logSettingsOverrides':
-          logSettingsOverrides.toJson(valueToJson: (v) => v.toJson()),
+      'logSettingsOverrides': logSettingsOverrides.toJson(
+        valueToJson: (v) => v.toJson(),
+      ),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };
@@ -101,12 +105,12 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
     required bool logServiceCalls,
     required bool logMalformedCalls,
   }) : super._(
-          id: id,
-          logSettings: logSettings,
-          logSettingsOverrides: logSettingsOverrides,
-          logServiceCalls: logServiceCalls,
-          logMalformedCalls: logMalformedCalls,
-        );
+         id: id,
+         logSettings: logSettings,
+         logSettingsOverrides: logSettingsOverrides,
+         logServiceCalls: logServiceCalls,
+         logMalformedCalls: logMalformedCalls,
+       );
 
   /// Returns a shallow copy of this [RuntimeSettings]
   /// with some or all fields replaced by the given arguments.
@@ -122,7 +126,8 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
     return RuntimeSettings(
       id: id is int? ? id : this.id,
       logSettings: logSettings ?? this.logSettings.copyWith(),
-      logSettingsOverrides: logSettingsOverrides ??
+      logSettingsOverrides:
+          logSettingsOverrides ??
           this.logSettingsOverrides.map((e0) => e0.copyWith()).toList(),
       logServiceCalls: logServiceCalls ?? this.logServiceCalls,
       logMalformedCalls: logMalformedCalls ?? this.logMalformedCalls,

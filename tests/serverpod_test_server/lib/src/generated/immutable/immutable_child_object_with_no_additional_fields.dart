@@ -19,14 +19,16 @@ abstract class ImmutableChildObjectWithNoAdditionalFields
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
   const ImmutableChildObjectWithNoAdditionalFields._({required super.variable});
 
-  const factory ImmutableChildObjectWithNoAdditionalFields(
-          {required String variable}) =
-      _ImmutableChildObjectWithNoAdditionalFieldsImpl;
+  const factory ImmutableChildObjectWithNoAdditionalFields({
+    required String variable,
+  }) = _ImmutableChildObjectWithNoAdditionalFieldsImpl;
 
   factory ImmutableChildObjectWithNoAdditionalFields.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableChildObjectWithNoAdditionalFields(
-        variable: jsonSerialization['variable'] as String);
+      variable: jsonSerialization['variable'] as String,
+    );
   }
 
   /// Returns a shallow copy of this [ImmutableChildObjectWithNoAdditionalFields]
@@ -59,12 +61,18 @@ abstract class ImmutableChildObjectWithNoAdditionalFields
 
   @override
   Map<String, dynamic> toJson() {
-    return {'variable': variable};
+    return {
+      '__className__': 'ImmutableChildObjectWithNoAdditionalFields',
+      'variable': variable,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'variable': variable};
+    return {
+      '__className__': 'ImmutableChildObjectWithNoAdditionalFields',
+      'variable': variable,
+    };
   }
 
   @override
@@ -75,9 +83,9 @@ abstract class ImmutableChildObjectWithNoAdditionalFields
 
 class _ImmutableChildObjectWithNoAdditionalFieldsImpl
     extends ImmutableChildObjectWithNoAdditionalFields {
-  const _ImmutableChildObjectWithNoAdditionalFieldsImpl(
-      {required String variable})
-      : super._(variable: variable);
+  const _ImmutableChildObjectWithNoAdditionalFieldsImpl({
+    required String variable,
+  }) : super._(variable: variable);
 
   /// Returns a shallow copy of this [ImmutableChildObjectWithNoAdditionalFields]
   /// with some or all fields replaced by the given arguments.
@@ -85,6 +93,7 @@ class _ImmutableChildObjectWithNoAdditionalFieldsImpl
   @override
   ImmutableChildObjectWithNoAdditionalFields copyWith({String? variable}) {
     return ImmutableChildObjectWithNoAdditionalFields(
-        variable: variable ?? this.variable);
+      variable: variable ?? this.variable,
+    );
   }
 }

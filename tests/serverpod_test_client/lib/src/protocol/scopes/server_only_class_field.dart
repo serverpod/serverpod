@@ -18,7 +18,8 @@ abstract class ServerOnlyClassField implements _i1.SerializableModel {
   factory ServerOnlyClassField() = _ServerOnlyClassFieldImpl;
 
   factory ServerOnlyClassField.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ServerOnlyClassField();
   }
 
@@ -28,7 +29,7 @@ abstract class ServerOnlyClassField implements _i1.SerializableModel {
   ServerOnlyClassField copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {'__className__': 'ServerOnlyClassField'};
   }
 
   @override

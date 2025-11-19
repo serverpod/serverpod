@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'test_enum.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class ObjectWithEnum
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -40,17 +41,15 @@ abstract class ObjectWithEnum
       nullableEnum: jsonSerialization['nullableEnum'] == null
           ? null
           : _i2.TestEnum.fromJson((jsonSerialization['nullableEnum'] as int)),
-      enumList: (jsonSerialization['enumList'] as List)
-          .map((e) => _i2.TestEnum.fromJson((e as int)))
-          .toList(),
-      nullableEnumList: (jsonSerialization['nullableEnumList'] as List)
-          .map((e) => e == null ? null : _i2.TestEnum.fromJson((e as int)))
-          .toList(),
-      enumListList: (jsonSerialization['enumListList'] as List)
-          .map((e) => (e as List)
-              .map((e) => _i2.TestEnum.fromJson((e as int)))
-              .toList())
-          .toList(),
+      enumList: _i3.Protocol().deserialize<List<_i2.TestEnum>>(
+        jsonSerialization['enumList'],
+      ),
+      nullableEnumList: _i3.Protocol().deserialize<List<_i2.TestEnum?>>(
+        jsonSerialization['nullableEnumList'],
+      ),
+      enumListList: _i3.Protocol().deserialize<List<List<_i2.TestEnum>>>(
+        jsonSerialization['enumListList'],
+      ),
     );
   }
 
@@ -88,28 +87,34 @@ abstract class ObjectWithEnum
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithEnum',
       if (id != null) 'id': id,
       'testEnum': testEnum.toJson(),
       if (nullableEnum != null) 'nullableEnum': nullableEnum?.toJson(),
       'enumList': enumList.toJson(valueToJson: (v) => v.toJson()),
-      'nullableEnumList':
-          nullableEnumList.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableEnumList': nullableEnumList.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       'enumListList': enumListList.toJson(
-          valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+        valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
+      ),
     };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ObjectWithEnum',
       if (id != null) 'id': id,
       'testEnum': testEnum.toJson(),
       if (nullableEnum != null) 'nullableEnum': nullableEnum?.toJson(),
       'enumList': enumList.toJson(valueToJson: (v) => v.toJson()),
-      'nullableEnumList':
-          nullableEnumList.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableEnumList': nullableEnumList.toJson(
+        valueToJson: (v) => v?.toJson(),
+      ),
       'enumListList': enumListList.toJson(
-          valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+        valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
+      ),
     };
   }
 
@@ -154,13 +159,13 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
     required List<_i2.TestEnum?> nullableEnumList,
     required List<List<_i2.TestEnum>> enumListList,
   }) : super._(
-          id: id,
-          testEnum: testEnum,
-          nullableEnum: nullableEnum,
-          enumList: enumList,
-          nullableEnumList: nullableEnumList,
-          enumListList: enumListList,
-        );
+         id: id,
+         testEnum: testEnum,
+         nullableEnum: nullableEnum,
+         enumList: enumList,
+         nullableEnumList: nullableEnumList,
+         enumListList: enumListList,
+       );
 
   /// Returns a shallow copy of this [ObjectWithEnum]
   /// with some or all fields replaced by the given arguments.
@@ -177,12 +182,14 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
     return ObjectWithEnum(
       id: id is int? ? id : this.id,
       testEnum: testEnum ?? this.testEnum,
-      nullableEnum:
-          nullableEnum is _i2.TestEnum? ? nullableEnum : this.nullableEnum,
+      nullableEnum: nullableEnum is _i2.TestEnum?
+          ? nullableEnum
+          : this.nullableEnum,
       enumList: enumList ?? this.enumList.map((e0) => e0).toList(),
       nullableEnumList:
           nullableEnumList ?? this.nullableEnumList.map((e0) => e0).toList(),
-      enumListList: enumListList ??
+      enumListList:
+          enumListList ??
           this.enumListList.map((e0) => e0.map((e1) => e1).toList()).toList(),
     );
   }
@@ -198,36 +205,36 @@ class ObjectWithEnumUpdateTable extends _i1.UpdateTable<ObjectWithEnumTable> {
       );
 
   _i1.ColumnValue<_i2.TestEnum, _i2.TestEnum> nullableEnum(
-          _i2.TestEnum? value) =>
-      _i1.ColumnValue(
-        table.nullableEnum,
-        value,
-      );
+    _i2.TestEnum? value,
+  ) => _i1.ColumnValue(
+    table.nullableEnum,
+    value,
+  );
 
   _i1.ColumnValue<List<_i2.TestEnum>, List<_i2.TestEnum>> enumList(
-          List<_i2.TestEnum> value) =>
-      _i1.ColumnValue(
-        table.enumList,
-        value,
-      );
+    List<_i2.TestEnum> value,
+  ) => _i1.ColumnValue(
+    table.enumList,
+    value,
+  );
 
   _i1.ColumnValue<List<_i2.TestEnum?>, List<_i2.TestEnum?>> nullableEnumList(
-          List<_i2.TestEnum?> value) =>
-      _i1.ColumnValue(
-        table.nullableEnumList,
-        value,
-      );
+    List<_i2.TestEnum?> value,
+  ) => _i1.ColumnValue(
+    table.nullableEnumList,
+    value,
+  );
 
   _i1.ColumnValue<List<List<_i2.TestEnum>>, List<List<_i2.TestEnum>>>
-      enumListList(List<List<_i2.TestEnum>> value) => _i1.ColumnValue(
-            table.enumListList,
-            value,
-          );
+  enumListList(List<List<_i2.TestEnum>> value) => _i1.ColumnValue(
+    table.enumListList,
+    value,
+  );
 }
 
 class ObjectWithEnumTable extends _i1.Table<int?> {
   ObjectWithEnumTable({super.tableRelation})
-      : super(tableName: 'object_with_enum') {
+    : super(tableName: 'object_with_enum') {
     updateTable = ObjectWithEnumUpdateTable(this);
     testEnum = _i1.ColumnEnum(
       'testEnum',
@@ -267,13 +274,13 @@ class ObjectWithEnumTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        testEnum,
-        nullableEnum,
-        enumList,
-        nullableEnumList,
-        enumListList,
-      ];
+    id,
+    testEnum,
+    nullableEnum,
+    enumList,
+    nullableEnumList,
+    enumListList,
+  ];
 }
 
 class ObjectWithEnumInclude extends _i1.IncludeObject {

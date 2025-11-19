@@ -14,12 +14,12 @@ class ExceptionClassDefinitionBuilder {
   List<String>? _documentation;
 
   ExceptionClassDefinitionBuilder()
-      : _fileName = 'example',
-        _sourceFileName = 'example.yaml',
-        _className = 'Example',
-        _fields = [],
-        _subDirParts = [],
-        _serverOnly = false;
+    : _fileName = 'example',
+      _sourceFileName = 'example.yaml',
+      _className = 'Example',
+      _fields = [],
+      _subDirParts = [],
+      _serverOnly = false;
 
   ExceptionClassDefinition build() {
     return ExceptionClassDefinition(
@@ -60,7 +60,8 @@ class ExceptionClassDefinitionBuilder {
   }
 
   ExceptionClassDefinitionBuilder withField(
-      SerializableModelFieldDefinition field) {
+    SerializableModelFieldDefinition field,
+  ) {
     _fields.add(() => field);
     return this;
   }
@@ -68,12 +69,18 @@ class ExceptionClassDefinitionBuilder {
   ExceptionClassDefinitionBuilder withFields(
     List<SerializableModelFieldDefinition> fields,
   ) {
-    _fields = fields.map((f) => () => f).toList();
+    _fields = fields
+        .map(
+          (f) =>
+              () => f,
+        )
+        .toList();
     return this;
   }
 
   ExceptionClassDefinitionBuilder withDocumentation(
-      List<String>? documentation) {
+    List<String>? documentation,
+  ) {
     _documentation = documentation;
     return this;
   }

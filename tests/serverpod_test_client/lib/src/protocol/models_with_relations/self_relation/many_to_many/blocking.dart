@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../../models_with_relations/self_relation/many_to_many/member.dart'
     as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class Blocking implements _i1.SerializableModel {
   Blocking._({
@@ -37,13 +38,15 @@ abstract class Blocking implements _i1.SerializableModel {
       blockedId: jsonSerialization['blockedId'] as int,
       blocked: jsonSerialization['blocked'] == null
           ? null
-          : _i2.Member.fromJson(
-              (jsonSerialization['blocked'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.Member>(
+              jsonSerialization['blocked'],
+            ),
       blockedById: jsonSerialization['blockedById'] as int,
       blockedBy: jsonSerialization['blockedBy'] == null
           ? null
-          : _i2.Member.fromJson(
-              (jsonSerialization['blockedBy'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.Member>(
+              jsonSerialization['blockedBy'],
+            ),
     );
   }
 
@@ -73,6 +76,7 @@ abstract class Blocking implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Blocking',
       if (id != null) 'id': id,
       'blockedId': blockedId,
       if (blocked != null) 'blocked': blocked?.toJson(),
@@ -97,12 +101,12 @@ class _BlockingImpl extends Blocking {
     required int blockedById,
     _i2.Member? blockedBy,
   }) : super._(
-          id: id,
-          blockedId: blockedId,
-          blocked: blocked,
-          blockedById: blockedById,
-          blockedBy: blockedBy,
-        );
+         id: id,
+         blockedId: blockedId,
+         blocked: blocked,
+         blockedById: blockedById,
+         blockedBy: blockedBy,
+       );
 
   /// Returns a shallow copy of this [Blocking]
   /// with some or all fields replaced by the given arguments.
@@ -120,8 +124,9 @@ class _BlockingImpl extends Blocking {
       blockedId: blockedId ?? this.blockedId,
       blocked: blocked is _i2.Member? ? blocked : this.blocked?.copyWith(),
       blockedById: blockedById ?? this.blockedById,
-      blockedBy:
-          blockedBy is _i2.Member? ? blockedBy : this.blockedBy?.copyWith(),
+      blockedBy: blockedBy is _i2.Member?
+          ? blockedBy
+          : this.blockedBy?.copyWith(),
     );
   }
 }

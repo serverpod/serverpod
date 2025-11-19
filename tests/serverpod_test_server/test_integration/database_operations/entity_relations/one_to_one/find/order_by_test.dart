@@ -21,7 +21,10 @@ Future<void> _createTestDatabase(Session session) async {
 
   // Citizens
   var alex = Citizen(
-      name: 'Alex', companyId: serverpod.id!, oldCompanyId: systemair.id!);
+    name: 'Alex',
+    companyId: serverpod.id!,
+    oldCompanyId: systemair.id!,
+  );
   var isak = Citizen(name: 'Isak', companyId: serverpod.id!);
   var lina = Citizen(name: 'Lina', companyId: systemair.id!);
   var joanna = Citizen(name: 'Joanna', companyId: systemair.id!);
@@ -50,17 +53,27 @@ Future<void> _createTestDatabase(Session session) async {
 }
 
 Future<int> deleteAll(Session session) async {
-  var addressDeletions =
-      await Address.db.deleteWhere(session, where: (_) => Constant.bool(true));
-  var citizenDeletions =
-      await Citizen.db.deleteWhere(session, where: (_) => Constant.bool(true));
-  var companyDeletions =
-      await Company.db.deleteWhere(session, where: (_) => Constant.bool(true));
-  var townDeletions =
-      await Town.db.deleteWhere(session, where: (_) => Constant.bool(true));
+  var addressDeletions = await Address.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
+  var citizenDeletions = await Citizen.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
+  var companyDeletions = await Company.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
+  var townDeletions = await Town.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
 
-  var postDeletions =
-      await Post.db.deleteWhere(session, where: (_) => Constant.bool(true));
+  var postDeletions = await Post.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
 
   return townDeletions.length +
       companyDeletions.length +
@@ -74,90 +87,98 @@ void main() async {
 
   group('Given models with one to one relation', () {
     tearDown(() async {
-      await Company.db
-          .deleteWhere(session, where: (_) => db.Constant.bool(true));
+      await Company.db.deleteWhere(
+        session,
+        where: (_) => db.Constant.bool(true),
+      );
       await Town.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
     });
 
     test(
-        'when fetching models ordered by relation attributes then result is as expected.',
-        () async {
-      var towns = await Town.db.insert(session, [
-        Town(name: 'Stockholm'),
-        Town(name: 'San Francisco'),
-      ]);
-      await Company.db.insert(session, [
-        Company(name: 'Serverpod', townId: towns[0].id!),
-        Company(name: 'Apple', townId: towns[1].id!),
-        Company(name: 'Google', townId: towns[1].id!),
-      ]);
+      'when fetching models ordered by relation attributes then result is as expected.',
+      () async {
+        var towns = await Town.db.insert(session, [
+          Town(name: 'Stockholm'),
+          Town(name: 'San Francisco'),
+        ]);
+        await Company.db.insert(session, [
+          Company(name: 'Serverpod', townId: towns[0].id!),
+          Company(name: 'Apple', townId: towns[1].id!),
+          Company(name: 'Google', townId: towns[1].id!),
+        ]);
 
-      var companiesFetched = await Company.db.find(
-        session,
-        // Order by company town name and then company name
-        orderByList: (t) => [
-          db.Order(column: t.town.name),
-          db.Order(column: t.name),
-        ],
-      );
+        var companiesFetched = await Company.db.find(
+          session,
+          // Order by company town name and then company name
+          orderByList: (t) => [
+            db.Order(column: t.town.name),
+            db.Order(column: t.name),
+          ],
+        );
 
-      var companyNames = companiesFetched.map((c) => c.name);
-      expect(companyNames, [
-        'Apple',
-        'Google',
-        'Serverpod',
-      ]);
-    });
+        var companyNames = companiesFetched.map((c) => c.name);
+        expect(companyNames, [
+          'Apple',
+          'Google',
+          'Serverpod',
+        ]);
+      },
+    );
   });
 
   group('Given models with nested one to one relations', () {
     tearDown(() async {
-      await Citizen.db
-          .deleteWhere(session, where: (_) => db.Constant.bool(true));
-      await Company.db
-          .deleteWhere(session, where: (_) => db.Constant.bool(true));
+      await Citizen.db.deleteWhere(
+        session,
+        where: (_) => db.Constant.bool(true),
+      );
+      await Company.db.deleteWhere(
+        session,
+        where: (_) => db.Constant.bool(true),
+      );
       await Town.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
     });
 
     test(
-        'when fetching models ordered by nested relation attributes then result is as expected.',
-        () async {
-      var towns = await Town.db.insert(session, [
-        Town(name: 'Stockholm'),
-        Town(name: 'San Francisco'),
-        Town(name: 'Tokyo'),
-      ]);
-      var companies = await Company.db.insert(session, [
-        Company(name: 'Serverpod', townId: towns[0].id!),
-        Company(name: 'Apple', townId: towns[1].id!),
-        Company(name: 'Honda', townId: towns[2].id!),
-      ]);
-      await Citizen.db.insert(session, [
-        Citizen(name: 'Alex', companyId: companies[0].id!),
-        Citizen(name: 'Isak', companyId: companies[0].id!),
-        Citizen(name: 'Lina', companyId: companies[1].id!),
-        Citizen(name: 'Marc', companyId: companies[1].id!),
-        Citizen(name: 'Yuko', companyId: companies[2].id!),
-      ]);
+      'when fetching models ordered by nested relation attributes then result is as expected.',
+      () async {
+        var towns = await Town.db.insert(session, [
+          Town(name: 'Stockholm'),
+          Town(name: 'San Francisco'),
+          Town(name: 'Tokyo'),
+        ]);
+        var companies = await Company.db.insert(session, [
+          Company(name: 'Serverpod', townId: towns[0].id!),
+          Company(name: 'Apple', townId: towns[1].id!),
+          Company(name: 'Honda', townId: towns[2].id!),
+        ]);
+        await Citizen.db.insert(session, [
+          Citizen(name: 'Alex', companyId: companies[0].id!),
+          Citizen(name: 'Isak', companyId: companies[0].id!),
+          Citizen(name: 'Lina', companyId: companies[1].id!),
+          Citizen(name: 'Marc', companyId: companies[1].id!),
+          Citizen(name: 'Yuko', companyId: companies[2].id!),
+        ]);
 
-      var citizens = await Citizen.db.find(
-        session,
-        // Order by citizen company town name and then citizen name
-        orderByList: (t) => [
-          db.Order(column: t.company.town.name),
-          db.Order(column: t.name),
-        ],
-      );
+        var citizens = await Citizen.db.find(
+          session,
+          // Order by citizen company town name and then citizen name
+          orderByList: (t) => [
+            db.Order(column: t.company.town.name),
+            db.Order(column: t.name),
+          ],
+        );
 
-      var citizenNames = citizens.map((c) => c.name);
-      expect(citizenNames, [
-        'Lina',
-        'Marc',
-        'Alex',
-        'Isak',
-        'Yuko',
-      ]);
-    });
+        var citizenNames = citizens.map((c) => c.name);
+        expect(citizenNames, [
+          'Lina',
+          'Marc',
+          'Alex',
+          'Isak',
+          'Yuko',
+        ]);
+      },
+    );
   });
 
   group('Given models with relations when ordering on relation attributes', () {
@@ -179,22 +200,30 @@ void main() async {
   });
 
   group(
-      'Given models with relations when ordering on nested relation attributes',
-      () {
-    late List<Citizen> citizensOrderedByCompanyTownName;
-    setUpAll(() async {
-      await _createTestDatabase(session);
-      citizensOrderedByCompanyTownName = await Citizen.db.find(
-        session,
-        orderBy: (t) => t.company.town.name,
-      );
-    });
+    'Given models with relations when ordering on nested relation attributes',
+    () {
+      late List<Citizen> citizensOrderedByCompanyTownName;
+      setUpAll(() async {
+        await _createTestDatabase(session);
+        citizensOrderedByCompanyTownName = await Citizen.db.find(
+          session,
+          orderBy: (t) => t.company.town.name,
+        );
+      });
 
-    tearDownAll(() async => await deleteAll(session));
+      tearDownAll(() async => await deleteAll(session));
 
-    test('then models returned are in expected order.', () {
-      var citizenNames = citizensOrderedByCompanyTownName.map((e) => e.name);
-      expect(citizenNames, ['Lina', 'Joanna', 'Alex', 'Isak', 'Theo', 'Haris']);
-    });
-  });
+      test('then models returned are in expected order.', () {
+        var citizenNames = citizensOrderedByCompanyTownName.map((e) => e.name);
+        expect(citizenNames, [
+          'Lina',
+          'Joanna',
+          'Alex',
+          'Isak',
+          'Theo',
+          'Haris',
+        ]);
+      });
+    },
+  );
 }

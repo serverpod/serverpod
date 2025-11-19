@@ -102,8 +102,9 @@ List<ModuleConfig> _loadModuleConfigs({
 
       var packageSrcRoot = packageInfo.root;
 
-      var generatorConfigUri =
-          packageSrcRoot.resolve(path.joinAll(['config', 'generator.yaml']));
+      var generatorConfigUri = packageSrcRoot.resolve(
+        path.joinAll(['config', 'generator.yaml']),
+      );
 
       var generatorConfigFile = File.fromUri(generatorConfigUri);
       if (!generatorConfigFile.existsSync()) {
@@ -150,8 +151,9 @@ List<String> findAllMigrationVersionsSync({
 
     var migrationsDir = migrationRoot.listSync().whereType<Directory>();
 
-    var migrationVersions =
-        migrationsDir.map((dir) => path.split(dir.path).last).toList();
+    var migrationVersions = migrationsDir
+        .map((dir) => path.split(dir.path).last)
+        .toList();
 
     migrationVersions.sort();
     return migrationVersions;

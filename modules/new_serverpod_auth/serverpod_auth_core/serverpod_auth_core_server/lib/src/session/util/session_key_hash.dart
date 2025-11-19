@@ -11,24 +11,40 @@ import '../business/auth_sessions_config.dart';
 final class AuthSessionKeyHash {
   final int _sessionKeyHashSaltLength;
   final String _sessionKeyHashPepper;
+  final List<String> _fallbackSessionKeyHashPeppers;
   AuthSessionKeyHash({
     required final int sessionKeyHashSaltLength,
     required final String sessionKeyHashPepper,
-  })  : _sessionKeyHashSaltLength = sessionKeyHashSaltLength,
-        _sessionKeyHashPepper = sessionKeyHashPepper;
+    required final List<String> fallbackSessionKeyHashPeppers,
+  }) : _sessionKeyHashSaltLength = sessionKeyHashSaltLength,
+       _sessionKeyHashPepper = sessionKeyHashPepper,
+       _fallbackSessionKeyHashPeppers = fallbackSessionKeyHashPeppers;
 
   /// Uses SHA512 to create a hash for a string using the specified pepper.
   ({Uint8List hash, Uint8List salt}) createSessionKeyHash({
     required final Uint8List secret,
-    @protected Uint8List? salt,
+    @protected final Uint8List? salt,
   }) {
-    final pepper = utf8.encode(_sessionKeyHashPepper);
+    return _createSessionKeyHash(
+      secret: secret,
+      salt: salt,
+      pepper: _sessionKeyHashPepper,
+    );
+  }
 
-    salt ??= generateRandomBytes(_sessionKeyHashSaltLength);
+  /// Internal method to create a session key hash with a specific pepper.
+  ({Uint8List hash, Uint8List salt}) _createSessionKeyHash({
+    required final Uint8List secret,
+    required final String pepper,
+    final Uint8List? salt,
+  }) {
+    final pepperBytes = utf8.encode(pepper);
 
-    final hash = Uint8List.fromList(sha512.convert(secret + pepper).bytes);
+    final actualSalt = salt ?? generateRandomBytes(_sessionKeyHashSaltLength);
 
-    return (hash: hash, salt: salt);
+    final hash = Uint8List.fromList(sha512.convert(secret + pepperBytes).bytes);
+
+    return (hash: hash, salt: actualSalt);
   }
 
   /// Validates the session key hash
@@ -37,16 +53,40 @@ final class AuthSessionKeyHash {
     required final Uint8List hash,
     required final Uint8List salt,
   }) {
-    return uint8ListAreEqual(
+    // Try the primary pepper first (most common case)
+    if (uint8ListAreEqual(
       hash,
-      createSessionKeyHash(secret: secret, salt: salt).hash,
-    );
+      _createSessionKeyHash(
+        secret: secret,
+        salt: salt,
+        pepper: _sessionKeyHashPepper,
+      ).hash,
+    )) {
+      return true;
+    }
+
+    // Try fallback peppers if primary didn't match
+    for (final fallbackPepper in _fallbackSessionKeyHashPeppers) {
+      if (uint8ListAreEqual(
+        hash,
+        _createSessionKeyHash(
+          secret: secret,
+          salt: salt,
+          pepper: fallbackPepper,
+        ).hash,
+      )) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   factory AuthSessionKeyHash.fromConfig(final AuthSessionsConfig config) {
     return AuthSessionKeyHash(
       sessionKeyHashSaltLength: config.sessionKeyHashSaltLength,
       sessionKeyHashPepper: config.sessionKeyHashPepper,
+      fallbackSessionKeyHashPeppers: config.fallbackSessionKeyHashPeppers,
     );
   }
 }

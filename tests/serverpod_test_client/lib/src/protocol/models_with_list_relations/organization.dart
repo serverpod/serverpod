@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../models_with_list_relations/person.dart' as _i2;
 import '../models_with_list_relations/city.dart' as _i3;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
 abstract class Organization implements _i1.SerializableModel {
   Organization._({
@@ -35,14 +36,15 @@ abstract class Organization implements _i1.SerializableModel {
     return Organization(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      people: (jsonSerialization['people'] as List?)
-          ?.map((e) => _i2.Person.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      people: jsonSerialization['people'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i2.Person>>(
+              jsonSerialization['people'],
+            ),
       cityId: jsonSerialization['cityId'] as int?,
       city: jsonSerialization['city'] == null
           ? null
-          : _i3.City.fromJson(
-              (jsonSerialization['city'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i3.City>(jsonSerialization['city']),
     );
   }
 
@@ -72,6 +74,7 @@ abstract class Organization implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Organization',
       if (id != null) 'id': id,
       'name': name,
       if (people != null)
@@ -97,12 +100,12 @@ class _OrganizationImpl extends Organization {
     int? cityId,
     _i3.City? city,
   }) : super._(
-          id: id,
-          name: name,
-          people: people,
-          cityId: cityId,
-          city: city,
-        );
+         id: id,
+         name: name,
+         people: people,
+         cityId: cityId,
+         city: city,
+       );
 
   /// Returns a shallow copy of this [Organization]
   /// with some or all fields replaced by the given arguments.

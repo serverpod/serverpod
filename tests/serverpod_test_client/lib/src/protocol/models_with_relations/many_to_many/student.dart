@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class Student implements _i1.SerializableModel {
   Student._({
@@ -30,9 +31,11 @@ abstract class Student implements _i1.SerializableModel {
     return Student(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      enrollments: (jsonSerialization['enrollments'] as List?)
-          ?.map((e) => _i2.Enrollment.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      enrollments: jsonSerialization['enrollments'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.Enrollment>>(
+              jsonSerialization['enrollments'],
+            ),
     );
   }
 
@@ -56,6 +59,7 @@ abstract class Student implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Student',
       if (id != null) 'id': id,
       'name': name,
       if (enrollments != null)
@@ -77,10 +81,10 @@ class _StudentImpl extends Student {
     required String name,
     List<_i2.Enrollment>? enrollments,
   }) : super._(
-          id: id,
-          name: name,
-          enrollments: enrollments,
-        );
+         id: id,
+         name: name,
+         enrollments: enrollments,
+       );
 
   /// Returns a shallow copy of this [Student]
   /// with some or all fields replaced by the given arguments.

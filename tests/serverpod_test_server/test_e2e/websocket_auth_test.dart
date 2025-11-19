@@ -18,6 +18,7 @@ void main() {
     });
 
     tearDown(() async {
+      // ignore: deprecated_member_use
       await client.authenticationKeyManager?.remove();
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
@@ -29,27 +30,31 @@ void main() {
     });
 
     test(
-        'when sending a message to a restricted endpoint without authentication '
-        'then the message should be ignored', () async {
-      await client.openStreamingConnection(
-        disconnectOnLostInternetConnection: false,
-      );
+      'when sending a message to a restricted endpoint without authentication '
+      'then the message should be ignored',
+      () async {
+        // ignore: deprecated_member_use
+        await client.openStreamingConnection(
+          disconnectOnLostInternetConnection: false,
+        );
 
-      // This should be ignored by the server as user isn't authenticated.
-      await client.signInRequired.sendStreamMessage(SimpleData(num: 666));
-      var streamingStream = client.signInRequired.stream.timeout(
-        const Duration(seconds: 2),
-      );
-      var receivedData = streamingStream.single;
+        // This should be ignored by the server as user isn't authenticated.
+        await client.signInRequired.sendStreamMessage(SimpleData(num: 666));
+        var streamingStream = client.signInRequired.stream.timeout(
+          const Duration(seconds: 2),
+        );
+        var receivedData = streamingStream.single;
 
-      expect(receivedData, throwsA(isA<TimeoutException>()));
-    });
+        expect(receivedData, throwsA(isA<TimeoutException>()));
+      },
+    );
 
-    test(
-        'when sending a message to a restricted endpoint with authentication '
+    test('when sending a message to a restricted endpoint with authentication '
         'then the message should succeed', () async {
-      var response =
-          await client.authentication.authenticate('test@foo.bar', 'password');
+      var response = await client.authentication.authenticate(
+        'test@foo.bar',
+        'password',
+      );
       expect(response.success, isTrue);
       expect(response.userInfo, isNotNull);
       expect(response.key, isNotNull);
@@ -58,6 +63,7 @@ void main() {
       var key = '${response.keyId}:${response.key}';
       await authKeyManager.put(key);
 
+      // ignore: deprecated_member_use
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );

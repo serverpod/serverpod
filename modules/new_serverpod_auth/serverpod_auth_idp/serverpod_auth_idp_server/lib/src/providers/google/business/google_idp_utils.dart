@@ -99,14 +99,14 @@ class GoogleIDPUtils {
 
     final AuthUserModel authUser = switch (createNewUser) {
       true => await _authUsers.create(
-          session,
-          transaction: transaction,
-        ),
+        session,
+        transaction: transaction,
+      ),
       false => await _authUsers.get(
-          session,
-          authUserId: googleAccount!.authUserId,
-          transaction: transaction,
-        ),
+        session,
+        authUserId: googleAccount!.authUserId,
+        transaction: transaction,
+      ),
     };
 
     if (createNewUser) {

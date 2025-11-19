@@ -14,14 +14,15 @@ class JwtUtil {
     required final Duration accessTokenLifetime,
     required final String? issuer,
     required final AuthenticationTokenAlgorithm algorithm,
-    required final AuthenticationTokenAlgorithm? fallbackVerificationAlgorithm,
-  })  : _accessTokenLifetime = accessTokenLifetime,
-        _issuer = issuer,
-        _algorithm = algorithm,
-        _fallbackVerificationAlgorithm = fallbackVerificationAlgorithm;
+    required final List<AuthenticationTokenAlgorithm>
+    fallbackVerificationAlgorithms,
+  }) : _accessTokenLifetime = accessTokenLifetime,
+       _issuer = issuer,
+       _algorithm = algorithm,
+       _fallbackVerificationAlgorithms = fallbackVerificationAlgorithms;
 
   final AuthenticationTokenAlgorithm _algorithm;
-  final AuthenticationTokenAlgorithm? _fallbackVerificationAlgorithm;
+  final List<AuthenticationTokenAlgorithm> _fallbackVerificationAlgorithms;
   final Duration _accessTokenLifetime;
   final String? _issuer;
 
@@ -69,11 +70,11 @@ class JwtUtil {
 
     final (JWTKey key, JWTAlgorithm algorithm) = switch (_algorithm) {
       HmacSha512AuthenticationTokenAlgorithmConfiguration(:final key) => (
-          key,
-          JWTAlgorithm.HS512
-        ),
+        key,
+        JWTAlgorithm.HS512,
+      ),
       EcdsaSha512AuthenticationTokenAlgorithmConfiguration(:final privateKey) =>
-        (privateKey, JWTAlgorithm.ES512)
+        (privateKey, JWTAlgorithm.ES512),
     };
 
     return jwt.sign(
@@ -130,10 +131,12 @@ class JwtUtil {
     }
 
     final extraClaims = Map.fromEntries(
-      allClaims.entries.where((final e) =>
-          !_registeredClaims.contains(e.key) &&
-          e.key != _serverpodScopeNamesClaimKey &&
-          e.key != _serverpodRefreshTokenIdClaimKey),
+      allClaims.entries.where(
+        (final e) =>
+            !_registeredClaims.contains(e.key) &&
+            e.key != _serverpodScopeNamesClaimKey &&
+            e.key != _serverpodRefreshTokenIdClaimKey,
+      ),
     );
 
     return (
@@ -161,27 +164,25 @@ class JwtUtil {
 
   /// Verifies the JWT's signature and returns its data.
   ///
-  /// If reading with the primary algorithm fails, the fallback (if configured) is tried.
-  /// In case neither of the keys work, and error is thrown.
+  /// If reading with the primary algorithm fails, the fallbacks (if configured) are tried in order.
+  /// In case none of the keys work, the exception from the first algorithm is thrown.
   JWT _verifyJwt(final String accessToken) {
-    try {
-      return JWT.verify(
-        accessToken,
-        _algorithm.verificationKey,
-        issuer: _issuer,
-      );
-    } catch (_) {
-      final fallbackAlgorithm = _fallbackVerificationAlgorithm;
-      if (fallbackAlgorithm == null) {
-        rethrow;
-      }
+    final allAlgorithms = [_algorithm, ..._fallbackVerificationAlgorithms];
+    Object? firstError;
 
-      return JWT.verify(
-        accessToken,
-        fallbackAlgorithm.verificationKey,
-        issuer: _issuer,
-      );
+    for (final algorithm in allAlgorithms) {
+      try {
+        return JWT.verify(
+          accessToken,
+          algorithm.verificationKey,
+          issuer: _issuer,
+        );
+      } catch (e) {
+        firstError ??= e;
+      }
     }
+
+    throw firstError!;
   }
 
   /// Registered claims as per https://datatracker.ietf.org/doc/html/rfc7519#section-4.1

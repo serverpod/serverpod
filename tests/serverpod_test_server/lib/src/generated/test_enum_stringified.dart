@@ -28,7 +28,8 @@ enum TestEnumStringified implements _i1.SerializableModel {
         return TestEnumStringified.three;
       default:
         throw ArgumentError(
-            'Value "$name" cannot be converted to "TestEnumStringified"');
+          'Value "$name" cannot be converted to "TestEnumStringified"',
+        );
     }
   }
 

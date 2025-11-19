@@ -33,7 +33,9 @@ abstract class Contents implements Built<Contents, ContentsBuilder> {
 
   static Contents fromJson(String jsonString) {
     return serializers.deserializeWith(
-        Contents.serializer, json.decode(jsonString))!;
+      Contents.serializer,
+      json.decode(jsonString),
+    )!;
   }
 
   static Serializer<Contents> get serializer => _$contentsSerializer;

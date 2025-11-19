@@ -34,8 +34,8 @@ T unsafeConvertToEnum<T extends Enum>({
   );
 }
 
-typedef DeepNestedNodeHandler = YamlMap Function(
-    String? content, SourceSpan span);
+typedef DeepNestedNodeHandler =
+    YamlMap Function(String? content, SourceSpan span);
 
 YamlMap convertStringifiedNestedNodesToYamlMap(
   String? content,
@@ -132,18 +132,21 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
     var keyValueSpan = _extractSubSpan(content, span, stringifiedKeyValuePair);
 
     if (_hasNestedStringifiedValues(stringifiedKeyValuePair)) {
-      var nestedComponents =
-          stringifiedKeyValuePair.replaceAll(')', '').split('(');
+      var nestedComponents = stringifiedKeyValuePair
+          .replaceAll(')', '')
+          .split('(');
 
       var key = nestedComponents.first;
       var stringifiedContent = nestedComponents.last;
 
       if (stringifiedContent == '') {
-        fieldPairs.add(_createdYamlScalarNode(
-          key,
-          null,
-          keyValueSpan,
-        ));
+        fieldPairs.add(
+          _createdYamlScalarNode(
+            key,
+            null,
+            keyValueSpan,
+          ),
+        );
         continue;
       } else {
         var nestedSpan = _extractSubSpan(content, span, stringifiedContent);
@@ -175,11 +178,13 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
       }
     }
 
-    fieldPairs.add(_createdYamlScalarNode(
-      key,
-      value,
-      keyValueSpan,
-    ));
+    fieldPairs.add(
+      _createdYamlScalarNode(
+        key,
+        value,
+        keyValueSpan,
+      ),
+    );
     continue;
   }
 

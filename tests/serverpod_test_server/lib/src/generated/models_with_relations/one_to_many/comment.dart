@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_many/order.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Comment
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -38,8 +39,7 @@ abstract class Comment
       orderId: jsonSerialization['orderId'] as int,
       order: jsonSerialization['order'] == null
           ? null
-          : _i2.Order.fromJson(
-              (jsonSerialization['order'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.Order>(jsonSerialization['order']),
     );
   }
 
@@ -71,6 +71,7 @@ abstract class Comment
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Comment',
       if (id != null) 'id': id,
       'description': description,
       'orderId': orderId,
@@ -81,6 +82,7 @@ abstract class Comment
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Comment',
       if (id != null) 'id': id,
       'description': description,
       'orderId': orderId,
@@ -127,11 +129,11 @@ class _CommentImpl extends Comment {
     required int orderId,
     _i2.Order? order,
   }) : super._(
-          id: id,
-          description: description,
-          orderId: orderId,
-          order: order,
-        );
+         id: id,
+         description: description,
+         orderId: orderId,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [Comment]
   /// with some or all fields replaced by the given arguments.
@@ -156,14 +158,14 @@ class CommentUpdateTable extends _i1.UpdateTable<CommentTable> {
   CommentUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
-        table.description,
-        value,
-      );
+    table.description,
+    value,
+  );
 
   _i1.ColumnValue<int, int> orderId(int value) => _i1.ColumnValue(
-        table.orderId,
-        value,
-      );
+    table.orderId,
+    value,
+  );
 }
 
 class CommentTable extends _i1.Table<int?> {
@@ -202,10 +204,10 @@ class CommentTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        description,
-        orderId,
-      ];
+    id,
+    description,
+    orderId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

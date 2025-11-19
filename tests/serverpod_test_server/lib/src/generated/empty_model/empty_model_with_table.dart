@@ -38,12 +38,18 @@ abstract class EmptyModelWithTable
   EmptyModelWithTable copyWith({int? id});
   @override
   Map<String, dynamic> toJson() {
-    return {if (id != null) 'id': id};
+    return {
+      '__className__': 'EmptyModelWithTable',
+      if (id != null) 'id': id,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {if (id != null) 'id': id};
+    return {
+      '__className__': 'EmptyModelWithTable',
+      if (id != null) 'id': id,
+    };
   }
 
   static EmptyModelWithTableInclude include() {
@@ -97,7 +103,7 @@ class EmptyModelWithTableUpdateTable
 
 class EmptyModelWithTableTable extends _i1.Table<int?> {
   EmptyModelWithTableTable({super.tableRelation})
-      : super(tableName: 'empty_model_with_table') {
+    : super(tableName: 'empty_model_with_table') {
     updateTable = EmptyModelWithTableUpdateTable(this);
   }
 
@@ -302,7 +308,7 @@ class EmptyModelWithTableRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<EmptyModelWithTableUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<EmptyModelWithTable>(
@@ -317,7 +323,7 @@ class EmptyModelWithTableRepository {
   Future<List<EmptyModelWithTable>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<EmptyModelWithTableUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<EmptyModelWithTableTable> where,
     int? limit,
     int? offset,

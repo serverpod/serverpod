@@ -40,8 +40,8 @@ class PartOfAllocator implements Allocator {
     List<String>? doNotPrefix,
     required String currentPath,
     required ImportCollector importCollector,
-  })  : _currentPath = currentPath,
-        _importCollector = importCollector {
+  }) : _currentPath = currentPath,
+       _importCollector = importCollector {
     _doNotPrefix.addAll(doNotPrefix ?? []);
   }
 

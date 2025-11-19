@@ -17,10 +17,12 @@ abstract class BigIntDefaultModel implements _i1.SerializableModel {
     this.id,
     BigInt? bigIntDefaultModelStr,
     BigInt? bigIntDefaultModelStrNull,
-  })  : bigIntDefaultModelStr = bigIntDefaultModelStr ??
-            BigInt.parse('1234567890123456789099999999'),
-        bigIntDefaultModelStrNull = bigIntDefaultModelStrNull ??
-            BigInt.parse('-1234567890123456789099999999');
+  }) : bigIntDefaultModelStr =
+           bigIntDefaultModelStr ??
+           BigInt.parse('1234567890123456789099999999'),
+       bigIntDefaultModelStrNull =
+           bigIntDefaultModelStrNull ??
+           BigInt.parse('-1234567890123456789099999999');
 
   factory BigIntDefaultModel({
     int? id,
@@ -32,12 +34,14 @@ abstract class BigIntDefaultModel implements _i1.SerializableModel {
     return BigIntDefaultModel(
       id: jsonSerialization['id'] as int?,
       bigIntDefaultModelStr: _i1.BigIntJsonExtension.fromJson(
-          jsonSerialization['bigIntDefaultModelStr']),
+        jsonSerialization['bigIntDefaultModelStr'],
+      ),
       bigIntDefaultModelStrNull:
           jsonSerialization['bigIntDefaultModelStrNull'] == null
-              ? null
-              : _i1.BigIntJsonExtension.fromJson(
-                  jsonSerialization['bigIntDefaultModelStrNull']),
+          ? null
+          : _i1.BigIntJsonExtension.fromJson(
+              jsonSerialization['bigIntDefaultModelStrNull'],
+            ),
     );
   }
 
@@ -61,6 +65,7 @@ abstract class BigIntDefaultModel implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'BigIntDefaultModel',
       if (id != null) 'id': id,
       'bigIntDefaultModelStr': bigIntDefaultModelStr.toJson(),
       if (bigIntDefaultModelStrNull != null)
@@ -82,10 +87,10 @@ class _BigIntDefaultModelImpl extends BigIntDefaultModel {
     BigInt? bigIntDefaultModelStr,
     BigInt? bigIntDefaultModelStrNull,
   }) : super._(
-          id: id,
-          bigIntDefaultModelStr: bigIntDefaultModelStr,
-          bigIntDefaultModelStrNull: bigIntDefaultModelStrNull,
-        );
+         id: id,
+         bigIntDefaultModelStr: bigIntDefaultModelStr,
+         bigIntDefaultModelStrNull: bigIntDefaultModelStrNull,
+       );
 
   /// Returns a shallow copy of this [BigIntDefaultModel]
   /// with some or all fields replaced by the given arguments.

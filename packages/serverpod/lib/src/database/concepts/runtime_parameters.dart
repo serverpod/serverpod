@@ -13,8 +13,8 @@ abstract class RuntimeParameters {
 
   /// Returns a list with the SQL statements to set each runtime parameters.
   /// If [isLocal] is true, options are set for the current transaction only.
-  Iterable<String> buildStatements({required bool isLocal}) =>
-      options.entries.map((e) {
+  Iterable<String> buildStatements({required bool isLocal}) => options.entries
+      .map((e) {
         var value = e.value;
         if (value is String) value = DatabasePoolManager.encoder.convert(value);
         if (value is RuntimeParameters) return value.build(isLocal: isLocal);
@@ -32,7 +32,8 @@ abstract class RuntimeParameters {
           value = '= $value';
         }
         return 'SET ${isLocal ? 'LOCAL ' : ''}${e.key} $value;';
-      }).where((e) => e != '');
+      })
+      .where((e) => e != '');
 
   /// Returns the SQL statement to set the runtime parameters. If [isLocal] is
   /// true, options are set for the current transaction only and not globally.
@@ -82,11 +83,11 @@ class HnswIndexQueryOptions extends RuntimeParameters {
 
   @override
   Map<String, dynamic> get options => <String, dynamic>{
-        'hnsw.ef_search': efSearch,
-        'hnsw.iterative_scan': iterativeScan,
-        'hnsw.max_scan_tuples': maxScanTuples,
-        'hnsw.scan_mem_multiplier': scanMemMultiplier,
-      };
+    'hnsw.ef_search': efSearch,
+    'hnsw.iterative_scan': iterativeScan,
+    'hnsw.max_scan_tuples': maxScanTuples,
+    'hnsw.scan_mem_multiplier': scanMemMultiplier,
+  };
 }
 
 /// Query options for the IVFFLAT index.
@@ -105,15 +106,17 @@ class IvfflatIndexQueryOptions extends RuntimeParameters {
     this.probes = 1,
     this.iterativeScan = IterativeScan.off,
     this.maxProbes = 32768,
-  }) : assert(iterativeScan != IterativeScan.strict,
-            'Strict iterative scan is not supported for IVFFLAT indexes');
+  }) : assert(
+         iterativeScan != IterativeScan.strict,
+         'Strict iterative scan is not supported for IVFFLAT indexes',
+       );
 
   @override
   Map<String, dynamic> get options => <String, dynamic>{
-        'ivfflat.probes': probes,
-        'ivfflat.iterative_scan': iterativeScan,
-        'ivfflat.max_probes': maxProbes,
-      };
+    'ivfflat.probes': probes,
+    'ivfflat.iterative_scan': iterativeScan,
+    'ivfflat.max_probes': maxProbes,
+  };
 }
 
 /// Query options for vector indexes.
@@ -152,14 +155,14 @@ class VectorIndexQueryOptions extends RuntimeParameters {
 
   @override
   Map<String, dynamic> get options => <String, dynamic>{
-        'enable_indexscan': enableIndexScan,
-        'enable_seqscan': enableSeqScan,
-        'min_parallel_table_scan_size': minParallelTableScanSize,
-        'parallel_setup_cost': parallelSetupCost,
-        'maintenance_work_mem': maintenanceWorkMem,
-        'max_parallel_maintenance_workers': maxParallelMaintenanceWorkers,
-        'max_parallel_workers_per_gather': maxParallelWorkersPerGather,
-      };
+    'enable_indexscan': enableIndexScan,
+    'enable_seqscan': enableSeqScan,
+    'min_parallel_table_scan_size': minParallelTableScanSize,
+    'parallel_setup_cost': parallelSetupCost,
+    'maintenance_work_mem': maintenanceWorkMem,
+    'max_parallel_maintenance_workers': maxParallelMaintenanceWorkers,
+    'max_parallel_workers_per_gather': maxParallelWorkersPerGather,
+  };
 }
 
 /// Search path configuration for database schema resolution.
@@ -170,13 +173,15 @@ class SearchPathsConfig extends RuntimeParameters {
   /// Creates a new search path runtime parameters object.
   const SearchPathsConfig({
     this.searchPaths,
-  }) : assert(searchPaths == null || searchPaths.length > 0,
-            'Search paths cannot be empty.');
+  }) : assert(
+         searchPaths == null || searchPaths.length > 0,
+         'Search paths cannot be empty.',
+       );
 
   @override
   Map<String, dynamic> get options => <String, dynamic>{
-        'search_path': searchPaths,
-      };
+    'search_path': searchPaths,
+  };
 }
 
 /// Automatically scan more of the index until enough results are found.
@@ -207,13 +212,12 @@ class RuntimeParametersBuilder {
     IterativeScan iterativeScan = IterativeScan.off,
     int maxScanTuples = 20000,
     int scanMemMultiplier = 1,
-  }) =>
-      HnswIndexQueryOptions(
-        efSearch: efSearch,
-        iterativeScan: iterativeScan,
-        maxScanTuples: maxScanTuples,
-        scanMemMultiplier: scanMemMultiplier,
-      );
+  }) => HnswIndexQueryOptions(
+    efSearch: efSearch,
+    iterativeScan: iterativeScan,
+    maxScanTuples: maxScanTuples,
+    scanMemMultiplier: scanMemMultiplier,
+  );
 
   /// Creates IVFFLAT index query options for vector similarity search. For more
   /// information on each parameter, refer to the [IvfflatIndexQueryOptions] class.
@@ -221,12 +225,11 @@ class RuntimeParametersBuilder {
     int probes = 1,
     IterativeScan iterativeScan = IterativeScan.off,
     int maxProbes = 32768,
-  }) =>
-      IvfflatIndexQueryOptions(
-        probes: probes,
-        iterativeScan: iterativeScan,
-        maxProbes: maxProbes,
-      );
+  }) => IvfflatIndexQueryOptions(
+    probes: probes,
+    iterativeScan: iterativeScan,
+    maxProbes: maxProbes,
+  );
 
   /// Creates vector index query options for general vector operations. For more
   /// information on each parameter, refer to the [VectorIndexQueryOptions] class.
@@ -238,32 +241,31 @@ class RuntimeParametersBuilder {
     int maintenanceWorkMem = 65536,
     int maxParallelMaintenanceWorkers = 2,
     int maxParallelWorkersPerGather = 2,
-  }) =>
-      VectorIndexQueryOptions(
-        enableIndexScan: enableIndexScan,
-        enableSeqScan: enableSeqScan,
-        minParallelTableScanSize: minParallelTableScanSize,
-        parallelSetupCost: parallelSetupCost,
-        maintenanceWorkMem: maintenanceWorkMem,
-        maxParallelMaintenanceWorkers: maxParallelMaintenanceWorkers,
-        maxParallelWorkersPerGather: maxParallelWorkersPerGather,
-      );
+  }) => VectorIndexQueryOptions(
+    enableIndexScan: enableIndexScan,
+    enableSeqScan: enableSeqScan,
+    minParallelTableScanSize: minParallelTableScanSize,
+    parallelSetupCost: parallelSetupCost,
+    maintenanceWorkMem: maintenanceWorkMem,
+    maxParallelMaintenanceWorkers: maxParallelMaintenanceWorkers,
+    maxParallelWorkersPerGather: maxParallelWorkersPerGather,
+  );
 
   /// Define search paths for database schema resolution. Set to null to revert
   /// to the default search paths.
   SearchPathsConfig searchPaths([
     List<String>? searchPaths,
-  ]) =>
-      SearchPathsConfig(
-        searchPaths: searchPaths,
-      );
+  ]) => SearchPathsConfig(
+    searchPaths: searchPaths,
+  );
 }
 
 /// A function that returns a list of [RuntimeParameters] for configuring
 /// database runtime parameters.
-typedef RuntimeParametersListBuilder = List<RuntimeParameters> Function(
-  RuntimeParametersBuilder params,
-);
+typedef RuntimeParametersListBuilder =
+    List<RuntimeParameters> Function(
+      RuntimeParametersBuilder params,
+    );
 
 /// Extension to add vector specific utilities to the database.
 extension VectorDatabase on Database {

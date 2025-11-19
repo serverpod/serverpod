@@ -90,426 +90,483 @@ class _TestSerializableException
 
 void main() {
   test(
-      'Given message that has no data when building websocket message then data keyword is not included',
-      () {
-    var message = PingCommand.buildMessage();
-    expect(message, isNot(contains(WebSocketMessageKey.data)));
-  });
+    'Given message that has no data when building websocket message then data keyword is not included',
+    () {
+      var message = PingCommand.buildMessage();
+      expect(message, isNot(contains(WebSocketMessageKey.data)));
+    },
+  );
 
   test(
-      'Given a Ping command message when building websocket message from string then PingCommand is returned.',
-      () {
-    var message = PingCommand.buildMessage();
-    var result = WebSocketMessage.fromJsonString(
-      message,
-      _TestSerializationManager(),
-    );
-    expect(result, isA<PingCommand>());
-  });
-
-  test(
-      'Given a Pong command message when building websocket message from string then PongCommand is returned.',
-      () {
-    var message = PongCommand.buildMessage();
-    var result = WebSocketMessage.fromJsonString(
-      message,
-      _TestSerializationManager(),
-    );
-    expect(result, isA<PongCommand>());
-  });
-
-  test(
-      'Given a bad request message when building websocket message from string then BadRequestMessage is returned.',
-      () {
-    var message = BadRequestMessage.buildMessage('This is a bad request');
-    var result = WebSocketMessage.fromJsonString(
-      message,
-      _TestSerializationManager(),
-    );
-    expect(result, isA<BadRequestMessage>());
-  });
-
-  test(
-      'Given a bad request message without mandatory field building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
-      () {
-    var message = BadRequestMessage.buildMessage('testRequest');
-
-    /// Missing mandatory field 'request'
-    message = message.replaceAll(
-        '"${WebSocketMessageDataKey.request}":"testRequest"', '');
-    expect(
-      () => WebSocketMessage.fromJsonString(
+    'Given a Ping command message when building websocket message from string then PingCommand is returned.',
+    () {
+      var message = PingCommand.buildMessage();
+      var result = WebSocketMessage.fromJsonString(
         message,
         _TestSerializationManager(),
-      ),
-      throwsA(
-        isA<UnknownMessageException>()
-            .having((e) => e.error, 'error', isA<TypeError>()),
-      ),
-    );
-  });
+      );
+      expect(result, isA<PingCommand>());
+    },
+  );
 
   test(
-      'Given a upper cased command message when building websocket message from string then UnknownMessageException is thrown.',
-      () {
-    var message = PingCommand.buildMessage().toUpperCase();
-    expect(
-      () => WebSocketMessage.fromJsonString(
+    'Given a Pong command message when building websocket message from string then PongCommand is returned.',
+    () {
+      var message = PongCommand.buildMessage();
+      var result = WebSocketMessage.fromJsonString(
         message,
         _TestSerializationManager(),
-      ),
-      throwsA(isA<UnknownMessageException>()),
-    );
-  });
+      );
+      expect(result, isA<PongCommand>());
+    },
+  );
 
   test(
-      'Given an unknown command json String when building websocket message from string then UnknownMessageException is thrown.',
-      () {
-    var message =
-        '{"${WebSocketMessageKey.type}": "this is not a known message type"}';
-    expect(
-      () => WebSocketMessage.fromJsonString(
+    'Given a bad request message when building websocket message from string then BadRequestMessage is returned.',
+    () {
+      var message = BadRequestMessage.buildMessage('This is a bad request');
+      var result = WebSocketMessage.fromJsonString(
         message,
         _TestSerializationManager(),
-      ),
-      throwsA(isA<UnknownMessageException>()
-          .having((e) => e.error, 'error', 'Unknown message type')),
-    );
-  });
+      );
+      expect(result, isA<BadRequestMessage>());
+    },
+  );
 
   test(
-      'Given an invalid json String when building websocket message from string then UnknownMessageException is thrown having FormatException error type.',
-      () {
-    var message = 'This is not a valid json string';
-    expect(
-      () => WebSocketMessage.fromJsonString(
+    'Given a bad request message without mandatory field building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
+    () {
+      var message = BadRequestMessage.buildMessage('testRequest');
+
+      /// Missing mandatory field 'request'
+      message = message.replaceAll(
+        '"${WebSocketMessageDataKey.request}":"testRequest"',
+        '',
+      );
+      expect(
+        () => WebSocketMessage.fromJsonString(
+          message,
+          _TestSerializationManager(),
+        ),
+        throwsA(
+          isA<UnknownMessageException>().having(
+            (e) => e.error,
+            'error',
+            isA<TypeError>(),
+          ),
+        ),
+      );
+    },
+  );
+
+  test(
+    'Given a upper cased command message when building websocket message from string then UnknownMessageException is thrown.',
+    () {
+      var message = PingCommand.buildMessage().toUpperCase();
+      expect(
+        () => WebSocketMessage.fromJsonString(
+          message,
+          _TestSerializationManager(),
+        ),
+        throwsA(isA<UnknownMessageException>()),
+      );
+    },
+  );
+
+  test(
+    'Given an unknown command json String when building websocket message from string then UnknownMessageException is thrown.',
+    () {
+      var message =
+          '{"${WebSocketMessageKey.type}": "this is not a known message type"}';
+      expect(
+        () => WebSocketMessage.fromJsonString(
+          message,
+          _TestSerializationManager(),
+        ),
+        throwsA(
+          isA<UnknownMessageException>().having(
+            (e) => e.error,
+            'error',
+            'Unknown message type',
+          ),
+        ),
+      );
+    },
+  );
+
+  test(
+    'Given an invalid json String when building websocket message from string then UnknownMessageException is thrown having FormatException error type.',
+    () {
+      var message = 'This is not a valid json string';
+      expect(
+        () => WebSocketMessage.fromJsonString(
+          message,
+          _TestSerializationManager(),
+        ),
+        throwsA(
+          isA<UnknownMessageException>().having(
+            (e) => e.error,
+            'error',
+            isA<FormatException>(),
+          ),
+        ),
+      );
+    },
+  );
+
+  test(
+    'Given a null messageType when building websocket message from string then UnknownMessageException is thrown.',
+    () {
+      var message = '{"${WebSocketMessageKey.type}": null}';
+      expect(
+        () => WebSocketMessage.fromJsonString(
+          message,
+          _TestSerializationManager(),
+        ),
+        throwsA(isA<UnknownMessageException>()),
+      );
+    },
+  );
+
+  test(
+    'Given an open method stream command when building websocket message from string then OpenMethodStreamCommand is returned.',
+    () {
+      var message = OpenMethodStreamCommand.buildMessage(
+        endpoint: 'endpoint',
+        method: 'method',
+        args: {'arg1': 'value1', 'arg2': 2},
+        connectionId: const Uuid().v4obj(),
+        authentication: 'auth',
+        inputStreams: ['input1'],
+      );
+      var result = WebSocketMessage.fromJsonString(
         message,
         _TestSerializationManager(),
-      ),
-      throwsA(
-        isA<UnknownMessageException>()
-            .having((e) => e.error, 'error', isA<FormatException>()),
-      ),
-    );
-  });
+      );
+      expect(result, isA<OpenMethodStreamCommand>());
+    },
+  );
 
   test(
-      'Given a null messageType when building websocket message from string then UnknownMessageException is thrown.',
-      () {
-    var message = '{"${WebSocketMessageKey.type}": null}';
-    expect(
-      () => WebSocketMessage.fromJsonString(
+    'Given an invalid open method stream command json String that has int for input stream when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
+    () {
+      var message = OpenMethodStreamCommand.buildMessage(
+        endpoint: 'endpoint',
+        method: 'method',
+        args: {'arg1': 'value1', 'arg2': 2},
+        connectionId: const Uuid().v4obj(),
+        authentication: 'auth',
+        inputStreams: ['input1'],
+      );
+
+      // This message uses an unsupported type for input stream.
+      message = message.replaceAll('"input1"', '1');
+
+      expect(
+        () => WebSocketMessage.fromJsonString(
+          message,
+          _TestSerializationManager(),
+        ),
+        throwsA(
+          isA<UnknownMessageException>().having(
+            (e) => e.error,
+            'error',
+            isA<TypeError>(),
+          ),
+        ),
+      );
+    },
+  );
+
+  test(
+    'Given an invalid open method stream command json String that is missing mandatory endpoint field when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
+    () {
+      var message = OpenMethodStreamCommand.buildMessage(
+        endpoint: 'endpoint',
+        method: 'method',
+        args: {'arg1': 'value1', 'arg2': 2},
+        connectionId: const Uuid().v4obj(),
+        authentication: 'auth',
+        inputStreams: ['input1'],
+      );
+
+      // This message is missing the mandatory endpoint field.
+      message = message.replaceAll(
+        '"${WebSocketMessageDataKey.endpoint}":"endpoint",',
+        '',
+      );
+
+      expect(
+        () => WebSocketMessage.fromJsonString(
+          message,
+          _TestSerializationManager(),
+        ),
+        throwsA(
+          isA<UnknownMessageException>().having(
+            (e) => e.error,
+            'error',
+            isA<TypeError>(),
+          ),
+        ),
+      );
+    },
+  );
+
+  test(
+    'Given an open method stream response when building websocket message from string then OpenMethodStreamResponse is returned.',
+    () {
+      var message = OpenMethodStreamResponse.buildMessage(
+        endpoint: 'endpoint',
+        method: 'method',
+        connectionId: const Uuid().v4obj(),
+        responseType: OpenMethodStreamResponseType.success,
+      );
+      var result = WebSocketMessage.fromJsonString(
         message,
         _TestSerializationManager(),
-      ),
-      throwsA(isA<UnknownMessageException>()),
-    );
-  });
+      );
+      expect(result, isA<OpenMethodStreamResponse>());
+    },
+  );
 
   test(
-      'Given an open method stream command when building websocket message from string then OpenMethodStreamCommand is returned.',
-      () {
-    var message = OpenMethodStreamCommand.buildMessage(
-      endpoint: 'endpoint',
-      method: 'method',
-      args: {'arg1': 'value1', 'arg2': 2},
-      connectionId: const Uuid().v4obj(),
-      authentication: 'auth',
-      inputStreams: ['input1'],
-    );
-    var result = WebSocketMessage.fromJsonString(
-      message,
-      _TestSerializationManager(),
-    );
-    expect(result, isA<OpenMethodStreamCommand>());
-  });
+    'Given an open method stream response with an invalid response type when building websocket message from string then UnknownMessageException is thrown.',
+    () {
+      var message = OpenMethodStreamResponse.buildMessage(
+        endpoint: 'endpoint',
+        method: 'method',
+        connectionId: const Uuid().v4obj(),
+        responseType: OpenMethodStreamResponseType.success,
+      );
+
+      message = message.replaceAll(
+        OpenMethodStreamResponseType.success.name,
+        'this response type does not exist',
+      );
+
+      expect(
+        () => WebSocketMessage.fromJsonString(
+          message,
+          _TestSerializationManager(),
+        ),
+        throwsA(isA<UnknownMessageException>()),
+      );
+    },
+  );
 
   test(
-      'Given an invalid open method stream command json String that has int for input stream when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
-      () {
-    var message = OpenMethodStreamCommand.buildMessage(
-      endpoint: 'endpoint',
-      method: 'method',
-      args: {'arg1': 'value1', 'arg2': 2},
-      connectionId: const Uuid().v4obj(),
-      authentication: 'auth',
-      inputStreams: ['input1'],
-    );
-
-    // This message uses an unsupported type for input stream.
-    message = message.replaceAll('"input1"', '1');
-
-    expect(
-      () => WebSocketMessage.fromJsonString(
+    'Given a close method stream command when building websocket message from string then CloseMethodStreamCommand is returned.',
+    () {
+      var message = CloseMethodStreamCommand.buildMessage(
+        connectionId: const Uuid().v4obj(),
+        endpoint: 'endpoint',
+        parameter: 'parameter',
+        method: 'method',
+        reason: CloseReason.done,
+      );
+      var result = WebSocketMessage.fromJsonString(
         message,
         _TestSerializationManager(),
-      ),
-      throwsA(
-        isA<UnknownMessageException>()
-            .having((e) => e.error, 'error', isA<TypeError>()),
-      ),
-    );
-  });
+      );
+      expect(result, isA<CloseMethodStreamCommand>());
+    },
+  );
 
   test(
-      'Given an invalid open method stream command json String that is missing mandatory endpoint field when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
-      () {
-    var message = OpenMethodStreamCommand.buildMessage(
-      endpoint: 'endpoint',
-      method: 'method',
-      args: {'arg1': 'value1', 'arg2': 2},
-      connectionId: const Uuid().v4obj(),
-      authentication: 'auth',
-      inputStreams: ['input1'],
-    );
+    'Given an invalid close method stream command json String that is missing mandatory connectionId field when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
+    () {
+      var connectionId = const Uuid().v4obj();
+      var message = CloseMethodStreamCommand.buildMessage(
+        connectionId: connectionId,
+        endpoint: 'endpoint',
+        parameter: 'parameter',
+        method: 'method',
+        reason: CloseReason.done,
+      );
 
-    // This message is missing the mandatory endpoint field.
-    message = message.replaceAll(
-        '"${WebSocketMessageDataKey.endpoint}":"endpoint",', '');
+      // This message is missing the mandatory connectionId field.
+      message = message.replaceAll(
+        '"${WebSocketMessageDataKey.connectionId}":${SerializationManager.encodeForProtocol(connectionId)},',
+        '',
+      );
 
-    expect(
-      () => WebSocketMessage.fromJsonString(
+      expect(
+        () => WebSocketMessage.fromJsonString(
+          message,
+          _TestSerializationManager(),
+        ),
+        throwsA(
+          isA<UnknownMessageException>().having(
+            (e) => e.error,
+            'error',
+            isA<TypeError>(),
+          ),
+        ),
+      );
+    },
+  );
+
+  test(
+    'Given an close method stream command with an invalid reason when building websocket message from string then UnknownMessageException is thrown.',
+    () {
+      var message = CloseMethodStreamCommand.buildMessage(
+        connectionId: const Uuid().v4obj(),
+        endpoint: 'endpoint',
+        parameter: 'parameter',
+        method: 'method',
+        reason: CloseReason.done,
+      );
+
+      message = message.replaceAll(
+        CloseReason.done.name,
+        'this reason does not exist',
+      );
+
+      expect(
+        () => WebSocketMessage.fromJsonString(
+          message,
+          _TestSerializationManager(),
+        ),
+        throwsA(isA<UnknownMessageException>()),
+      );
+    },
+  );
+
+  test(
+    'Given a method stream message when building websocket message from string then MethodStreamMessage is returned.',
+    () {
+      var serializationManager = _TestSerializationManager();
+      var message = MethodStreamMessage.buildMessage(
+        endpoint: 'endpoint',
+        method: 'method',
+        connectionId: const Uuid().v4obj(),
+        object: _SimpleData('hello world'),
+        serializationManager: serializationManager,
+      );
+      var result = WebSocketMessage.fromJsonString(
         message,
         _TestSerializationManager(),
-      ),
-      throwsA(
-        isA<UnknownMessageException>()
-            .having((e) => e.error, 'error', isA<TypeError>()),
-      ),
-    );
-  });
+      );
+      expect(result, isA<MethodStreamMessage>());
+    },
+  );
 
   test(
-      'Given an open method stream response when building websocket message from string then OpenMethodStreamResponse is returned.',
-      () {
-    var message = OpenMethodStreamResponse.buildMessage(
-      endpoint: 'endpoint',
-      method: 'method',
-      connectionId: const Uuid().v4obj(),
-      responseType: OpenMethodStreamResponseType.success,
-    );
-    var result = WebSocketMessage.fromJsonString(
-      message,
-      _TestSerializationManager(),
-    );
-    expect(result, isA<OpenMethodStreamResponse>());
-  });
+    'Given serializable model with server only field when building MethodStreamMessage then server only field is not included in serialization.',
+    () {
+      var serializationManager = _TestSerializationManager();
+      var message = MethodStreamMessage.buildMessage(
+        endpoint: 'endpoint',
+        method: 'method',
+        connectionId: const Uuid().v4obj(),
+        object: _SimpleData('hello world', serverOnlyField: 'this is awesome'),
+        serializationManager: serializationManager,
+      );
+
+      expect(message, isNot(contains('serverOnlyField')));
+    },
+  );
 
   test(
-      'Given an open method stream response with an invalid response type when building websocket message from string then UnknownMessageException is thrown.',
-      () {
-    var message = OpenMethodStreamResponse.buildMessage(
-      endpoint: 'endpoint',
-      method: 'method',
-      connectionId: const Uuid().v4obj(),
-      responseType: OpenMethodStreamResponseType.success,
-    );
+    'Given an invalid method stream message json String that is missing mandatory endpoint field when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
+    () {
+      var serializationManager = _TestSerializationManager();
+      var message = MethodStreamMessage.buildMessage(
+        endpoint: 'endpoint',
+        method: 'method',
+        connectionId: const Uuid().v4obj(),
+        object: _SimpleData('hello world'),
+        serializationManager: serializationManager,
+      );
 
-    message = message.replaceAll(
-      OpenMethodStreamResponseType.success.name,
-      'this response type does not exist',
-    );
+      // This message is missing the mandatory endpoint field.
+      message = message.replaceAll(
+        '"${WebSocketMessageDataKey.endpoint}":"endpoint",',
+        '',
+      );
 
-    expect(
-      () => WebSocketMessage.fromJsonString(
+      expect(
+        () => WebSocketMessage.fromJsonString(
+          message,
+          _TestSerializationManager(),
+        ),
+        throwsA(
+          isA<UnknownMessageException>().having(
+            (e) => e.error,
+            'error',
+            isA<TypeError>(),
+          ),
+        ),
+      );
+    },
+  );
+
+  test(
+    'Given method stream serializable exception when building websocket message from string then MethodStreamSerializableException is returned.',
+    () {
+      var serializationManager = _TestSerializationManager();
+      var message = MethodStreamSerializableException.buildMessage(
+        endpoint: 'endpoint',
+        method: 'method',
+        connectionId: const Uuid().v4obj(),
+        object: _TestSerializableException(),
+        serializationManager: serializationManager,
+      );
+      var result = WebSocketMessage.fromJsonString(
         message,
         _TestSerializationManager(),
-      ),
-      throwsA(isA<UnknownMessageException>()),
-    );
-  });
+      );
+      expect(result, isA<MethodStreamSerializableException>());
+    },
+  );
 
   test(
-      'Given a close method stream command when building websocket message from string then CloseMethodStreamCommand is returned.',
-      () {
-    var message = CloseMethodStreamCommand.buildMessage(
-      connectionId: const Uuid().v4obj(),
-      endpoint: 'endpoint',
-      parameter: 'parameter',
-      method: 'method',
-      reason: CloseReason.done,
-    );
-    var result = WebSocketMessage.fromJsonString(
-      message,
-      _TestSerializationManager(),
-    );
-    expect(result, isA<CloseMethodStreamCommand>());
-  });
+    'Given serializable exception with server only field when building MethodStreamSerializableException message then server only field is not included in serialization',
+    () {
+      var serializationManager = _TestSerializationManager();
+      var message = MethodStreamSerializableException.buildMessage(
+        endpoint: 'endpoint',
+        method: 'method',
+        connectionId: const Uuid().v4obj(),
+        object: _TestSerializableException(),
+        serializationManager: serializationManager,
+      );
+
+      expect(message, isNot(contains('serverOnlyField')));
+    },
+  );
 
   test(
-      'Given an invalid close method stream command json String that is missing mandatory connectionId field when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
-      () {
-    var connectionId = const Uuid().v4obj();
-    var message = CloseMethodStreamCommand.buildMessage(
-      connectionId: connectionId,
-      endpoint: 'endpoint',
-      parameter: 'parameter',
-      method: 'method',
-      reason: CloseReason.done,
-    );
+    'Given invalid method stream serializable exception json String when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
+    () {
+      var serializationManager = _TestSerializationManager();
+      var message = MethodStreamSerializableException.buildMessage(
+        endpoint: 'endpoint',
+        method: 'method',
+        connectionId: const Uuid().v4obj(),
+        object: _TestSerializableException(),
+        serializationManager: serializationManager,
+      );
 
-    // This message is missing the mandatory connectionId field.
-    message = message.replaceAll(
-      '"${WebSocketMessageDataKey.connectionId}":${SerializationManager.encodeForProtocol(connectionId)},',
-      '',
-    );
+      // This message is missing the mandatory endpoint field.
+      message = message.replaceAll(
+        '"${WebSocketMessageDataKey.endpoint}":"endpoint",',
+        '',
+      );
 
-    expect(
-      () => WebSocketMessage.fromJsonString(
-        message,
-        _TestSerializationManager(),
-      ),
-      throwsA(
-        isA<UnknownMessageException>()
-            .having((e) => e.error, 'error', isA<TypeError>()),
-      ),
-    );
-  });
-
-  test(
-      'Given an close method stream command with an invalid reason when building websocket message from string then UnknownMessageException is thrown.',
-      () {
-    var message = CloseMethodStreamCommand.buildMessage(
-      connectionId: const Uuid().v4obj(),
-      endpoint: 'endpoint',
-      parameter: 'parameter',
-      method: 'method',
-      reason: CloseReason.done,
-    );
-
-    message = message.replaceAll(
-      CloseReason.done.name,
-      'this reason does not exist',
-    );
-
-    expect(
-      () => WebSocketMessage.fromJsonString(
-        message,
-        _TestSerializationManager(),
-      ),
-      throwsA(isA<UnknownMessageException>()),
-    );
-  });
-
-  test(
-      'Given a method stream message when building websocket message from string then MethodStreamMessage is returned.',
-      () {
-    var serializationManager = _TestSerializationManager();
-    var message = MethodStreamMessage.buildMessage(
-      endpoint: 'endpoint',
-      method: 'method',
-      connectionId: const Uuid().v4obj(),
-      object: _SimpleData('hello world'),
-      serializationManager: serializationManager,
-    );
-    var result = WebSocketMessage.fromJsonString(
-      message,
-      _TestSerializationManager(),
-    );
-    expect(result, isA<MethodStreamMessage>());
-  });
-
-  test(
-      'Given serializable model with server only field when building MethodStreamMessage then server only field is not included in serialization.',
-      () {
-    var serializationManager = _TestSerializationManager();
-    var message = MethodStreamMessage.buildMessage(
-      endpoint: 'endpoint',
-      method: 'method',
-      connectionId: const Uuid().v4obj(),
-      object: _SimpleData('hello world', serverOnlyField: 'this is awesome'),
-      serializationManager: serializationManager,
-    );
-
-    expect(message, isNot(contains('serverOnlyField')));
-  });
-
-  test(
-      'Given an invalid method stream message json String that is missing mandatory endpoint field when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
-      () {
-    var serializationManager = _TestSerializationManager();
-    var message = MethodStreamMessage.buildMessage(
-      endpoint: 'endpoint',
-      method: 'method',
-      connectionId: const Uuid().v4obj(),
-      object: _SimpleData('hello world'),
-      serializationManager: serializationManager,
-    );
-
-    // This message is missing the mandatory endpoint field.
-    message = message.replaceAll(
-        '"${WebSocketMessageDataKey.endpoint}":"endpoint",', '');
-
-    expect(
-      () => WebSocketMessage.fromJsonString(
-        message,
-        _TestSerializationManager(),
-      ),
-      throwsA(
-        isA<UnknownMessageException>()
-            .having((e) => e.error, 'error', isA<TypeError>()),
-      ),
-    );
-  });
-
-  test(
-      'Given method stream serializable exception when building websocket message from string then MethodStreamSerializableException is returned.',
-      () {
-    var serializationManager = _TestSerializationManager();
-    var message = MethodStreamSerializableException.buildMessage(
-      endpoint: 'endpoint',
-      method: 'method',
-      connectionId: const Uuid().v4obj(),
-      object: _TestSerializableException(),
-      serializationManager: serializationManager,
-    );
-    var result = WebSocketMessage.fromJsonString(
-      message,
-      _TestSerializationManager(),
-    );
-    expect(result, isA<MethodStreamSerializableException>());
-  });
-
-  test(
-      'Given serializable exception with server only field when building MethodStreamSerializableException message then server only field is not included in serialization',
-      () {
-    var serializationManager = _TestSerializationManager();
-    var message = MethodStreamSerializableException.buildMessage(
-      endpoint: 'endpoint',
-      method: 'method',
-      connectionId: const Uuid().v4obj(),
-      object: _TestSerializableException(),
-      serializationManager: serializationManager,
-    );
-
-    expect(message, isNot(contains('serverOnlyField')));
-  });
-
-  test(
-      'Given invalid method stream serializable exception json String when building websocket message from string then UnknownMessageException is thrown having TypeError error type.',
-      () {
-    var serializationManager = _TestSerializationManager();
-    var message = MethodStreamSerializableException.buildMessage(
-      endpoint: 'endpoint',
-      method: 'method',
-      connectionId: const Uuid().v4obj(),
-      object: _TestSerializableException(),
-      serializationManager: serializationManager,
-    );
-
-    // This message is missing the mandatory endpoint field.
-    message = message.replaceAll(
-        '"${WebSocketMessageDataKey.endpoint}":"endpoint",', '');
-
-    expect(
-      () => WebSocketMessage.fromJsonString(
-        message,
-        _TestSerializationManager(),
-      ),
-      throwsA(
-        isA<UnknownMessageException>()
-            .having((e) => e.error, 'error', isA<TypeError>()),
-      ),
-    );
-  });
+      expect(
+        () => WebSocketMessage.fromJsonString(
+          message,
+          _TestSerializationManager(),
+        ),
+        throwsA(
+          isA<UnknownMessageException>().having(
+            (e) => e.error,
+            'error',
+            isA<TypeError>(),
+          ),
+        ),
+      );
+    },
+  );
 }

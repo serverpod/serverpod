@@ -29,8 +29,8 @@ class EmailIDPPasswordResetUtil {
   EmailIDPPasswordResetUtil({
     required final EmailIDPPasswordResetUtilsConfig config,
     required final SecretHashUtil passwordHashUtils,
-  })  : _config = config,
-        _passwordHashUtil = passwordHashUtils;
+  }) : _config = config,
+       _passwordHashUtil = passwordHashUtils;
 
   /// Sends out a password reset email for the given account, if it exists and
   /// returns a password reset request ID, which can be used to complete the
@@ -249,8 +249,9 @@ class EmailIDPPasswordResetUtil {
       throw EmailPasswordResetPasswordPolicyViolationException();
     }
 
-    final credentials =
-        _tryDecodeCompletePasswordResetToken(completePasswordResetToken);
+    final credentials = _tryDecodeCompletePasswordResetToken(
+      completePasswordResetToken,
+    );
     if (credentials == null) {
       throw EmailPasswordResetInvalidVerificationCodeException();
     }
@@ -342,8 +343,9 @@ class EmailIDPPasswordResetUtil {
 
     final updated = await EmailAccountPasswordResetRequest.db.updateWhere(
       session,
-      columnValues: (final t) =>
-          [t.setPasswordChallengeId(setPasswordChallenge.id!)],
+      columnValues: (final t) => [
+        t.setPasswordChallengeId(setPasswordChallenge.id!),
+      ],
       where: (final t) =>
           t.id.equals(resetRequestId) & t.setPasswordChallengeId.equals(null),
       transaction: transaction,
@@ -465,13 +467,13 @@ class EmailIDPPasswordResetUtil {
           transaction: transaction,
         );
 
-        final attempts =
-            await EmailAccountPasswordResetCompleteAttempt.db.count(
-          session,
-          where: (final t) =>
-              t.passwordResetRequestId.equals(passwordResetRequestId),
-          transaction: transaction,
-        );
+        final attempts = await EmailAccountPasswordResetCompleteAttempt.db
+            .count(
+              session,
+              where: (final t) =>
+                  t.passwordResetRequestId.equals(passwordResetRequestId),
+              transaction: transaction,
+            );
 
         if (attempts > _config.passwordResetVerificationCodeAllowedAttempts) {
           await savePoint.rollback();
@@ -504,17 +506,17 @@ class EmailIDPPasswordResetUtil {
       );
 
       final oldestRelevantAttemptTimestamp = clock.now().subtract(
-            _config.maxPasswordResetAttempts.timeframe,
-          );
-
-      final recentRequests =
-          await EmailAccountPasswordResetRequestAttempt.db.count(
-        session,
-        where: (final t) =>
-            t.email.equals(email) &
-            (t.attemptedAt > oldestRelevantAttemptTimestamp),
-        transaction: transaction,
+        _config.maxPasswordResetAttempts.timeframe,
       );
+
+      final recentRequests = await EmailAccountPasswordResetRequestAttempt.db
+          .count(
+            session,
+            where: (final t) =>
+                t.email.equals(email) &
+                (t.attemptedAt > oldestRelevantAttemptTimestamp),
+            transaction: transaction,
+          );
 
       if (recentRequests > _config.maxPasswordResetAttempts.maxAttempts) {
         await savePoint.rollback();
@@ -587,7 +589,7 @@ class EmailIDPPasswordResetUtilsConfig {
 
   /// Callback to be invoked for sending out the password reset verification code.
   final SendPasswordResetVerificationCodeFunction?
-      sendPasswordResetVerificationCode;
+  sendPasswordResetVerificationCode;
 
   /// Creates a new [EmailIDPPasswordResetUtilsConfig] instance.
   EmailIDPPasswordResetUtilsConfig({
@@ -603,7 +605,8 @@ class EmailIDPPasswordResetUtilsConfig {
   /// Creates a new [EmailIDPPasswordResetUtilsConfig] instance from an
   /// [EmailIDPConfig] instance.
   factory EmailIDPPasswordResetUtilsConfig.fromEmailIDPConfig(
-      final EmailIDPConfig config) {
+    final EmailIDPConfig config,
+  ) {
     return EmailIDPPasswordResetUtilsConfig(
       passwordValidationFunction: config.passwordValidationFunction,
       passwordResetVerificationCodeAllowedAttempts:

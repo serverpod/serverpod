@@ -11,8 +11,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../types.dart' as _i2;
-import '../scopes/scope_server_only_field.dart' as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i2;
+import '../types.dart' as _i3;
+import '../scopes/scope_server_only_field.dart' as _i4;
 
 class ScopeServerOnlyField
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -23,28 +24,32 @@ class ScopeServerOnlyField
   });
 
   factory ScopeServerOnlyField.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ScopeServerOnlyField(
       allScope: jsonSerialization['allScope'] == null
           ? null
-          : _i2.Types.fromJson(
-              (jsonSerialization['allScope'] as Map<String, dynamic>)),
+          : _i2.Protocol().deserialize<_i3.Types>(
+              jsonSerialization['allScope'],
+            ),
       serverOnlyScope: jsonSerialization['serverOnlyScope'] == null
           ? null
-          : _i2.Types.fromJson(
-              (jsonSerialization['serverOnlyScope'] as Map<String, dynamic>)),
+          : _i2.Protocol().deserialize<_i3.Types>(
+              jsonSerialization['serverOnlyScope'],
+            ),
       nested: jsonSerialization['nested'] == null
           ? null
-          : _i3.ScopeServerOnlyField.fromJson(
-              (jsonSerialization['nested'] as Map<String, dynamic>)),
+          : _i2.Protocol().deserialize<_i4.ScopeServerOnlyField>(
+              jsonSerialization['nested'],
+            ),
     );
   }
 
-  _i2.Types? allScope;
+  _i3.Types? allScope;
 
-  _i2.Types? serverOnlyScope;
+  _i3.Types? serverOnlyScope;
 
-  _i3.ScopeServerOnlyField? nested;
+  _i4.ScopeServerOnlyField? nested;
 
   /// Returns a shallow copy of this [ScopeServerOnlyField]
   /// with some or all fields replaced by the given arguments.
@@ -55,11 +60,11 @@ class ScopeServerOnlyField
     Object? nested = _Undefined,
   }) {
     return ScopeServerOnlyField(
-      allScope: allScope is _i2.Types? ? allScope : this.allScope?.copyWith(),
-      serverOnlyScope: serverOnlyScope is _i2.Types?
+      allScope: allScope is _i3.Types? ? allScope : this.allScope?.copyWith(),
+      serverOnlyScope: serverOnlyScope is _i3.Types?
           ? serverOnlyScope
           : this.serverOnlyScope?.copyWith(),
-      nested: nested is _i3.ScopeServerOnlyField?
+      nested: nested is _i4.ScopeServerOnlyField?
           ? nested
           : this.nested?.copyWith(),
     );
@@ -68,6 +73,7 @@ class ScopeServerOnlyField
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ScopeServerOnlyField',
       if (allScope != null) 'allScope': allScope?.toJson(),
       if (serverOnlyScope != null) 'serverOnlyScope': serverOnlyScope?.toJson(),
       if (nested != null) 'nested': nested?.toJson(),
@@ -77,6 +83,7 @@ class ScopeServerOnlyField
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ScopeServerOnlyField',
       if (allScope != null) 'allScope': allScope?.toJsonForProtocol(),
       if (nested != null) 'nested': nested?.toJsonForProtocol(),
     };

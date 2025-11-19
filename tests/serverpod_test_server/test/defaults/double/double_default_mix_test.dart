@@ -48,8 +48,9 @@ void main() async {
       test(
         'when an object of the class is created with a value for "doubleDefaultModelAndDefaultPersist", then the field value should match the provided value',
         () {
-          var object =
-              DoubleDefaultMix(doubleDefaultModelAndDefaultPersist: 30.5);
+          var object = DoubleDefaultMix(
+            doubleDefaultModelAndDefaultPersist: 30.5,
+          );
           expect(object.doubleDefaultModelAndDefaultPersist, equals(30.5));
         },
       );

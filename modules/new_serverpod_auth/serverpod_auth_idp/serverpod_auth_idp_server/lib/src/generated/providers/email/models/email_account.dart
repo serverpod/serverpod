@@ -16,6 +16,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i2;
 import 'dart:typed_data' as _i3;
+import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i4;
 
 /// A fully configured email account to be used for logins.
 abstract class EmailAccount
@@ -45,19 +46,24 @@ abstract class EmailAccount
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+          : _i4.Protocol().deserialize<_i2.AuthUser>(
+              jsonSerialization['authUser'],
+            ),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
       email: jsonSerialization['email'] as String,
-      passwordHash:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordHash']),
-      passwordSalt:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['passwordSalt']),
+      passwordHash: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['passwordHash'],
+      ),
+      passwordSalt: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['passwordSalt'],
+      ),
     );
   }
 
@@ -107,6 +113,7 @@ abstract class EmailAccount
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_idp.EmailAccount',
       if (id != null) 'id': id?.toJson(),
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),
@@ -164,14 +171,14 @@ class _EmailAccountImpl extends EmailAccount {
     required _i3.ByteData passwordHash,
     required _i3.ByteData passwordSalt,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          authUser: authUser,
-          createdAt: createdAt,
-          email: email,
-          passwordHash: passwordHash,
-          passwordSalt: passwordSalt,
-        );
+         id: id,
+         authUserId: authUserId,
+         authUser: authUser,
+         createdAt: createdAt,
+         email: email,
+         passwordHash: passwordHash,
+         passwordSalt: passwordSalt,
+       );
 
   /// Returns a shallow copy of this [EmailAccount]
   /// with some or all fields replaced by the given arguments.
@@ -189,8 +196,9 @@ class _EmailAccountImpl extends EmailAccount {
     return EmailAccount(
       id: id is _i1.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser:
-          authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
+      authUser: authUser is _i2.AuthUser?
+          ? authUser
+          : this.authUser?.copyWith(),
       createdAt: createdAt ?? this.createdAt,
       email: email ?? this.email,
       passwordHash: passwordHash ?? this.passwordHash.clone(),
@@ -203,11 +211,11 @@ class EmailAccountUpdateTable extends _i1.UpdateTable<EmailAccountTable> {
   EmailAccountUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.authUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.authUserId,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
       _i1.ColumnValue(
@@ -216,28 +224,28 @@ class EmailAccountUpdateTable extends _i1.UpdateTable<EmailAccountTable> {
       );
 
   _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
-        table.email,
-        value,
-      );
+    table.email,
+    value,
+  );
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> passwordHash(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.passwordHash,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(
+    table.passwordHash,
+    value,
+  );
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> passwordSalt(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.passwordSalt,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(
+    table.passwordSalt,
+    value,
+  );
 }
 
 class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
   EmailAccountTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_idp_email_account') {
+    : super(tableName: 'serverpod_auth_idp_email_account') {
     updateTable = EmailAccountUpdateTable(this);
     authUserId = _i1.ColumnUuid(
       'authUserId',
@@ -299,13 +307,13 @@ class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        authUserId,
-        createdAt,
-        email,
-        passwordHash,
-        passwordSalt,
-      ];
+    id,
+    authUserId,
+    createdAt,
+    email,
+    passwordHash,
+    passwordSalt,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

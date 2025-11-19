@@ -32,19 +32,20 @@ abstract class ModuleDatatype implements _i1.SerializableModel {
 
   factory ModuleDatatype.fromJson(Map<String, dynamic> jsonSerialization) {
     return ModuleDatatype(
-      model: _i2.ModuleClass.fromJson(
-          (jsonSerialization['model'] as Map<String, dynamic>)),
-      list: (jsonSerialization['list'] as List)
-          .map((e) => _i2.ModuleClass.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      map: (jsonSerialization['map'] as Map).map((k, v) => MapEntry(
-            k as String,
-            _i2.ModuleClass.fromJson((v as Map<String, dynamic>)),
-          )),
+      model: _i3.Protocol().deserialize<_i2.ModuleClass>(
+        jsonSerialization['model'],
+      ),
+      list: _i3.Protocol().deserialize<List<_i2.ModuleClass>>(
+        jsonSerialization['list'],
+      ),
+      map: _i3.Protocol().deserialize<Map<String, _i2.ModuleClass>>(
+        jsonSerialization['map'],
+      ),
       record: jsonSerialization['record'] == null
           ? null
           : _i3.Protocol().deserialize<(_i2.ModuleClass,)?>(
-              (jsonSerialization['record'] as Map<String, dynamic>)),
+              (jsonSerialization['record'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -68,6 +69,7 @@ abstract class ModuleDatatype implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ModuleDatatype',
       'model': model.toJson(),
       'list': list.toJson(valueToJson: (v) => v.toJson()),
       'map': map.toJson(valueToJson: (v) => v.toJson()),
@@ -90,11 +92,11 @@ class _ModuleDatatypeImpl extends ModuleDatatype {
     required Map<String, _i2.ModuleClass> map,
     (_i2.ModuleClass,)? record,
   }) : super._(
-          model: model,
-          list: list,
-          map: map,
-          record: record,
-        );
+         model: model,
+         list: list,
+         map: map,
+         record: record,
+       );
 
   /// Returns a shallow copy of this [ModuleDatatype]
   /// with some or all fields replaced by the given arguments.
@@ -109,20 +111,22 @@ class _ModuleDatatypeImpl extends ModuleDatatype {
     return ModuleDatatype(
       model: model ?? this.model.copyWith(),
       list: list ?? this.list.map((e0) => e0.copyWith()).toList(),
-      map: map ??
-          this.map.map((
-                key0,
-                value0,
-              ) =>
-                  MapEntry(
-                    key0,
-                    value0.copyWith(),
-                  )),
+      map:
+          map ??
+          this.map.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0.copyWith(),
+            ),
+          ),
       record: record is (_i2.ModuleClass,)?
           ? record
           : this.record == null
-              ? null
-              : (this.record!.$1.copyWith(),),
+          ? null
+          : (this.record!.$1.copyWith(),),
     );
   }
 }

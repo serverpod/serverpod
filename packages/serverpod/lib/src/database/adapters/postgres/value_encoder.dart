@@ -64,8 +64,10 @@ class ValueEncoder extends PostgresTextEncoder {
       return super.convert(input, escapeStrings: escapeStrings);
     } catch (e) {
       // super.convert failed, therefore value must be a json serializable type.
-      return super.convert(SerializationManager.encode(input),
-          escapeStrings: escapeStrings);
+      return super.convert(
+        SerializationManager.encode(input),
+        escapeStrings: escapeStrings,
+      );
     }
   }
 }

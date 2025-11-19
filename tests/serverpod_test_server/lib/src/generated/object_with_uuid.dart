@@ -33,7 +33,8 @@ abstract class ObjectWithUuid
       uuidNullable: jsonSerialization['uuidNullable'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(
-              jsonSerialization['uuidNullable']),
+              jsonSerialization['uuidNullable'],
+            ),
     );
   }
 
@@ -62,6 +63,7 @@ abstract class ObjectWithUuid
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithUuid',
       if (id != null) 'id': id,
       'uuid': uuid.toJson(),
       if (uuidNullable != null) 'uuidNullable': uuidNullable?.toJson(),
@@ -71,6 +73,7 @@ abstract class ObjectWithUuid
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ObjectWithUuid',
       if (id != null) 'id': id,
       'uuid': uuid.toJson(),
       if (uuidNullable != null) 'uuidNullable': uuidNullable?.toJson(),
@@ -115,10 +118,10 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
     required _i1.UuidValue uuid,
     _i1.UuidValue? uuidNullable,
   }) : super._(
-          id: id,
-          uuid: uuid,
-          uuidNullable: uuidNullable,
-        );
+         id: id,
+         uuid: uuid,
+         uuidNullable: uuidNullable,
+       );
 
   /// Returns a shallow copy of this [ObjectWithUuid]
   /// with some or all fields replaced by the given arguments.
@@ -132,8 +135,9 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
     return ObjectWithUuid(
       id: id is int? ? id : this.id,
       uuid: uuid ?? this.uuid,
-      uuidNullable:
-          uuidNullable is _i1.UuidValue? ? uuidNullable : this.uuidNullable,
+      uuidNullable: uuidNullable is _i1.UuidValue?
+          ? uuidNullable
+          : this.uuidNullable,
     );
   }
 }
@@ -148,16 +152,16 @@ class ObjectWithUuidUpdateTable extends _i1.UpdateTable<ObjectWithUuidTable> {
       );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidNullable(
-          _i1.UuidValue? value) =>
-      _i1.ColumnValue(
-        table.uuidNullable,
-        value,
-      );
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
+    table.uuidNullable,
+    value,
+  );
 }
 
 class ObjectWithUuidTable extends _i1.Table<int?> {
   ObjectWithUuidTable({super.tableRelation})
-      : super(tableName: 'object_with_uuid') {
+    : super(tableName: 'object_with_uuid') {
     updateTable = ObjectWithUuidUpdateTable(this);
     uuid = _i1.ColumnUuid(
       'uuid',
@@ -177,10 +181,10 @@ class ObjectWithUuidTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        uuid,
-        uuidNullable,
-      ];
+    id,
+    uuid,
+    uuidNullable,
+  ];
 }
 
 class ObjectWithUuidInclude extends _i1.IncludeObject {

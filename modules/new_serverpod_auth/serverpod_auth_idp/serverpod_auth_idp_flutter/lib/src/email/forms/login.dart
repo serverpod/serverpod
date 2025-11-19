@@ -44,7 +44,8 @@ class LoginForm extends StatelessWidget {
         ],
       ),
       actionButton: ActionButton(
-        onPressed: controller.emailController.text.isNotEmpty &&
+        onPressed:
+            controller.emailController.text.isNotEmpty &&
                 controller.passwordController.text.isNotEmpty &&
                 controller.state == EmailAuthState.idle
             ? controller.login

@@ -16,8 +16,12 @@ const generator = DartServerCodeGenerator();
 void main() {
   var testClassName = 'Example';
   var testClassFileName = 'example';
-  var expectedFilePath =
-      path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+  var expectedFilePath = path.join(
+    'lib',
+    'src',
+    'generated',
+    '$testClassFileName.dart',
+  );
 
   group('Given class $testClassName when generating code', () {
     var models = [
@@ -35,7 +39,7 @@ void main() {
                 )
                 .build(),
           )
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -51,34 +55,35 @@ void main() {
     );
 
     test(
-        'then fromJson method should pass data as dynamic to custom class fromJson',
-        () {
-      var fromJsonConstructor =
-          CompilationUnitHelpers.tryFindConstructorDeclaration(
-        maybeClassNamedExample!,
-        name: 'fromJson',
-      );
+      'then fromJson method should pass data as dynamic to custom class fromJson',
+      () {
+        var fromJsonConstructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+              maybeClassNamedExample!,
+              name: 'fromJson',
+            );
 
-      var fromJsonCode = fromJsonConstructor!.toSource();
+        var fromJsonCode = fromJsonConstructor!.toSource();
 
-      expect(
-        fromJsonCode.contains(
-          "CustomClass.fromJson(jsonSerialization['customClassField'])",
-        ),
-        isTrue,
-        reason:
-            'The fromJson method should pass data as dynamic to CustomClass.fromJson but doesn\'t.',
-      );
-    });
+        expect(
+          fromJsonCode.contains(
+            "CustomClass.fromJson(jsonSerialization['customClassField'])",
+          ),
+          isTrue,
+          reason:
+              'The fromJson method should pass data as dynamic to CustomClass.fromJson but doesn\'t.',
+        );
+      },
+    );
 
     test(
       'then toJsonForProtocol method should correctly serialize customClassField by calling the appropriate toJson method',
       () {
         var toJsonForProtocolMethod =
             CompilationUnitHelpers.tryFindMethodDeclaration(
-          maybeClassNamedExample!,
-          name: 'toJsonForProtocol',
-        );
+              maybeClassNamedExample!,
+              name: 'toJsonForProtocol',
+            );
 
         var toJsonForProtocolCode = toJsonForProtocolMethod!.toSource();
 

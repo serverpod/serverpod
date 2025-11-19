@@ -21,7 +21,9 @@ class KeyValueClientAuthInfoStorage implements ClientAuthInfoStorage {
   @override
   Future<void> set(AuthSuccess? data) async {
     await keyValueStorage.set(
-        _storageKey, data != null ? SerializationManager.encode(data) : null);
+      _storageKey,
+      data != null ? SerializationManager.encode(data) : null,
+    );
   }
 
   @override

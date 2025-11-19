@@ -19,7 +19,8 @@ abstract class RefreshTokenExpiredException
   factory RefreshTokenExpiredException() = _RefreshTokenExpiredExceptionImpl;
 
   factory RefreshTokenExpiredException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return RefreshTokenExpiredException();
   }
 
@@ -29,7 +30,9 @@ abstract class RefreshTokenExpiredException
   RefreshTokenExpiredException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_core.RefreshTokenExpiredException',
+    };
   }
 
   @override

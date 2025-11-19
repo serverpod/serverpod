@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../../models_with_relations/one_to_many/implicit/chapter.dart'
     as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class Book implements _i1.SerializableModel {
   Book._({
@@ -31,9 +32,11 @@ abstract class Book implements _i1.SerializableModel {
     return Book(
       id: jsonSerialization['id'] as int?,
       title: jsonSerialization['title'] as String,
-      chapters: (jsonSerialization['chapters'] as List?)
-          ?.map((e) => _i2.Chapter.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      chapters: jsonSerialization['chapters'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.Chapter>>(
+              jsonSerialization['chapters'],
+            ),
     );
   }
 
@@ -57,6 +60,7 @@ abstract class Book implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Book',
       if (id != null) 'id': id,
       'title': title,
       if (chapters != null)
@@ -78,10 +82,10 @@ class _BookImpl extends Book {
     required String title,
     List<_i2.Chapter>? chapters,
   }) : super._(
-          id: id,
-          title: title,
-          chapters: chapters,
-        );
+         id: id,
+         title: title,
+         chapters: chapters,
+       );
 
   /// Returns a shallow copy of this [Book]
   /// with some or all fields replaced by the given arguments.

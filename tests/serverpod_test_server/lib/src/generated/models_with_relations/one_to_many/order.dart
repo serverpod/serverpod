@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_many/customer.dart' as _i2;
 import '../../models_with_relations/one_to_many/comment.dart' as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
 
 abstract class Order implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Order._({
@@ -40,11 +41,14 @@ abstract class Order implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization['customer'] == null
           ? null
-          : _i2.Customer.fromJson(
-              (jsonSerialization['customer'] as Map<String, dynamic>)),
-      comments: (jsonSerialization['comments'] as List?)
-          ?.map((e) => _i3.Comment.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+          : _i4.Protocol().deserialize<_i2.Customer>(
+              jsonSerialization['customer'],
+            ),
+      comments: jsonSerialization['comments'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i3.Comment>>(
+              jsonSerialization['comments'],
+            ),
     );
   }
 
@@ -79,6 +83,7 @@ abstract class Order implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Order',
       if (id != null) 'id': id,
       'description': description,
       'customerId': customerId,
@@ -91,6 +96,7 @@ abstract class Order implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Order',
       if (id != null) 'id': id,
       'description': description,
       'customerId': customerId,
@@ -146,12 +152,12 @@ class _OrderImpl extends Order {
     _i2.Customer? customer,
     List<_i3.Comment>? comments,
   }) : super._(
-          id: id,
-          description: description,
-          customerId: customerId,
-          customer: customer,
-          comments: comments,
-        );
+         id: id,
+         description: description,
+         customerId: customerId,
+         customer: customer,
+         comments: comments,
+       );
 
   /// Returns a shallow copy of this [Order]
   /// with some or all fields replaced by the given arguments.
@@ -168,8 +174,9 @@ class _OrderImpl extends Order {
       id: id is int? ? id : this.id,
       description: description ?? this.description,
       customerId: customerId ?? this.customerId,
-      customer:
-          customer is _i2.Customer? ? customer : this.customer?.copyWith(),
+      customer: customer is _i2.Customer?
+          ? customer
+          : this.customer?.copyWith(),
       comments: comments is List<_i3.Comment>?
           ? comments
           : this.comments?.map((e0) => e0.copyWith()).toList(),
@@ -181,14 +188,14 @@ class OrderUpdateTable extends _i1.UpdateTable<OrderTable> {
   OrderUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
-        table.description,
-        value,
-      );
+    table.description,
+    value,
+  );
 
   _i1.ColumnValue<int, int> customerId(int value) => _i1.ColumnValue(
-        table.customerId,
-        value,
-      );
+    table.customerId,
+    value,
+  );
 }
 
 class OrderTable extends _i1.Table<int?> {
@@ -255,17 +262,18 @@ class OrderTable extends _i1.Table<int?> {
     _comments = _i1.ManyRelation<_i3.CommentTable>(
       tableWithRelations: relationTable,
       table: _i3.CommentTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _comments!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        description,
-        customerId,
-      ];
+    id,
+    description,
+    customerId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -294,9 +302,9 @@ class OrderInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'customer': _customer,
-        'comments': _comments,
-      };
+    'customer': _customer,
+    'comments': _comments,
+  };
 
   @override
   _i1.Table<int?> get table => Order.t;

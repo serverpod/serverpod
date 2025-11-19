@@ -68,6 +68,7 @@ abstract class UserInfoPublic implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.UserInfoPublic',
       if (id != null) 'id': id,
       if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,
@@ -92,12 +93,12 @@ class _UserInfoPublicImpl extends UserInfoPublic {
     required DateTime created,
     String? imageUrl,
   }) : super._(
-          id: id,
-          userName: userName,
-          fullName: fullName,
-          created: created,
-          imageUrl: imageUrl,
-        );
+         id: id,
+         userName: userName,
+         fullName: fullName,
+         created: created,
+         imageUrl: imageUrl,
+       );
 
   /// Returns a shallow copy of this [UserInfoPublic]
   /// with some or all fields replaced by the given arguments.

@@ -22,10 +22,10 @@ class ServerpodClientException implements Exception {
 class ServerpodClientBadRequest extends ServerpodClientException {
   /// Creates a Bad Request Exception
   ServerpodClientBadRequest([String? message])
-      : super(
-          'Bad request${message != null && message != '' ? ': $message' : ''}',
-          HttpStatus.badRequest,
-        );
+    : super(
+        'Bad request${message != null && message != '' ? ': $message' : ''}',
+        HttpStatus.badRequest,
+      );
 }
 
 /// Thrown if the client fails to authenticate and is therefore
@@ -33,7 +33,7 @@ class ServerpodClientBadRequest extends ServerpodClientException {
 class ServerpodClientUnauthorized extends ServerpodClientException {
   /// Creates an Unauthorized Exception
   ServerpodClientUnauthorized()
-      : super('Unauthorized', HttpStatus.unauthorized);
+    : super('Unauthorized', HttpStatus.unauthorized);
 }
 
 /// Thrown if the client is forbidden to perform the request.
@@ -54,5 +54,5 @@ class ServerpodClientNotFound extends ServerpodClientException {
 class ServerpodClientInternalServerError extends ServerpodClientException {
   /// Creates an Internal Server Error Exception
   ServerpodClientInternalServerError()
-      : super('Internal server error', HttpStatus.internalServerError);
+    : super('Internal server error', HttpStatus.internalServerError);
 }

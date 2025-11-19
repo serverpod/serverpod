@@ -91,9 +91,9 @@ class ModelAllocatorContext {
   static Iterable<ModelClassDefinition> _getSealedTopNodeClasses(
     List<SerializableModelDefinition> models,
   ) {
-    return models
-        .whereType<ModelClassDefinition>()
-        .where((element) => element.isSealedTopNode);
+    return models.whereType<ModelClassDefinition>().where(
+      (element) => element.isSealedTopNode,
+    );
   }
 
   /// Returns a list of sealed hierarchies.
@@ -117,9 +117,9 @@ extension SerializableModelPath on SerializableModelDefinition {
   /// Returns a String with the file path.
   /// Consisting of `subDirParts` + `filename.dart`
   String get filePath => p.joinAll([
-        ...subDirParts,
-        '$fileName.dart',
-      ]);
+    ...subDirParts,
+    '$fileName.dart',
+  ]);
 
   /// Returns a String with the full server or client path followed by
   /// `filename.dart`.

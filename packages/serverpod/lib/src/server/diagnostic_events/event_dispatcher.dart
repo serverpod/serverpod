@@ -25,9 +25,11 @@ class DiagnosticEventDispatcher implements DiagnosticEventHandler {
     required OriginSpace space,
     required DiagnosticEventContext context,
   }) {
-    var futures = _handlers.map((handler) => Future(
-          () => handler.handleEvent(event, space: space, context: context),
-        ));
+    var futures = _handlers.map(
+      (handler) => Future(
+        () => handler.handleEvent(event, space: space, context: context),
+      ),
+    );
 
     var to = timeout;
     if (to != null) {

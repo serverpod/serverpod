@@ -15,11 +15,14 @@ const _authMethod = 'apple';
 class AppleEndpoint extends Endpoint {
   /// Authenticates a user with Apple.
   Future<AuthenticationResponse> authenticate(
-      Session session, AppleAuthInfo authInfo) async {
+    Session session,
+    AppleAuthInfo authInfo,
+  ) async {
     // Load public keys
     if (_applePublicKeys == null) {
-      var result =
-          await http.get(Uri.parse('https://appleid.apple.com/auth/keys'));
+      var result = await http.get(
+        Uri.parse('https://appleid.apple.com/auth/keys'),
+      );
       if (result.statusCode != 200) {
         return AuthenticationResponse(
           success: false,

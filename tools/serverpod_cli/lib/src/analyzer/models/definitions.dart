@@ -24,8 +24,8 @@ sealed class SerializableModelDefinition {
   /// Generate the file reference [String] to this file.
   String fileRef() {
     return p.posix
-        // ignore: prefer_interpolation_to_compose_strings
-        .joinAll([...subDirParts, '$fileName.dart']);
+    // ignore: prefer_interpolation_to_compose_strings
+    .joinAll([...subDirParts, '$fileName.dart']);
   }
 }
 
@@ -187,8 +187,8 @@ final class ModelClassDefinition extends ClassDefinition {
   List<ModelClassDefinition> _computeDescendantClasses() {
     List<ModelClassDefinition> descendants = [];
 
-    var resolvedChildClasses =
-        childClasses.whereType<ResolvedInheritanceDefinition>();
+    var resolvedChildClasses = childClasses
+        .whereType<ResolvedInheritanceDefinition>();
 
     for (var child in resolvedChildClasses) {
       descendants.add(child.classDefinition);
@@ -527,9 +527,9 @@ class UnresolvableObjectRelationDefinition extends RelationDefinition {
     this.objectRelationDefinition,
     this.reason,
   ) : super(
-          objectRelationDefinition.name,
-          objectRelationDefinition.isForeignKeyOrigin,
-        );
+        objectRelationDefinition.name,
+        objectRelationDefinition.isForeignKeyOrigin,
+      );
 }
 
 class UnresolvedObjectRelationDefinition extends RelationDefinition {

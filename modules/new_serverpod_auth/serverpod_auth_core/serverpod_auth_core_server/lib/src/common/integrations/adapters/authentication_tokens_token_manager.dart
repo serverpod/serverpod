@@ -24,9 +24,9 @@ class AuthenticationTokensTokenManager implements TokenManager {
     required final AuthenticationTokenConfig config,
     final AuthUsers authUsers = const AuthUsers(),
   }) : authenticationTokens = AuthenticationTokens(
-          config: config,
-          authUsers: authUsers,
-        );
+         config: config,
+         authUsers: authUsers,
+       );
 
   @override
   Future<AuthSuccess> issueToken(
@@ -46,28 +46,32 @@ class AuthenticationTokensTokenManager implements TokenManager {
   }
 
   @override
-  Future<List<TokenInfo>> listTokens(final Session session,
-      {required final UuidValue? authUserId,
-      final String? method,
-      final String? tokenIssuer,
-      final Transaction? transaction}) async {
+  Future<List<TokenInfo>> listTokens(
+    final Session session, {
+    required final UuidValue? authUserId,
+    final String? method,
+    final String? tokenIssuer,
+    final Transaction? transaction,
+  }) async {
     if (_isNotTargetedTokenIssuer(tokenIssuer)) {
       return [];
     }
 
     return (await authenticationTokens.admin.listAuthenticationTokens(
-      session,
-      authUserId: authUserId,
-      method: method,
-      transaction: transaction,
-    ))
-        .map((final element) => TokenInfo(
-              userId: element.authUserId.toString(),
-              tokenId: element.id.toString(),
-              tokenIssuer: tokenIssuerName,
-              scopes: element.scopeNames.map(Scope.new).toSet(),
-              method: element.method,
-            ))
+          session,
+          authUserId: authUserId,
+          method: method,
+          transaction: transaction,
+        ))
+        .map(
+          (final element) => TokenInfo(
+            userId: element.authUserId.toString(),
+            tokenId: element.id.toString(),
+            tokenIssuer: tokenIssuerName,
+            scopes: element.scopeNames.map(Scope.new).toSet(),
+            method: element.method,
+          ),
+        )
         .toList();
   }
 
@@ -83,13 +87,13 @@ class AuthenticationTokensTokenManager implements TokenManager {
       return;
     }
 
-    final deletedRefreshTokens =
-        await authenticationTokens.admin.deleteRefreshTokens(
-      session,
-      authUserId: authUserId,
-      method: method,
-      transaction: transaction,
-    );
+    final deletedRefreshTokens = await authenticationTokens.admin
+        .deleteRefreshTokens(
+          session,
+          authUserId: authUserId,
+          method: method,
+          transaction: transaction,
+        );
 
     for (final (:authUserId, :refreshTokenId) in deletedRefreshTokens) {
       await session.messages.authenticationRevoked(
@@ -119,18 +123,19 @@ class AuthenticationTokensTokenManager implements TokenManager {
       return;
     }
 
-    final deletedRefreshToken =
-        await authenticationTokens.admin.deleteRefreshTokens(
-      session,
-      refreshTokenId: refreshTokenId,
-      transaction: transaction,
-    );
+    final deletedRefreshToken = await authenticationTokens.admin
+        .deleteRefreshTokens(
+          session,
+          refreshTokenId: refreshTokenId,
+          transaction: transaction,
+        );
 
     if (deletedRefreshToken.isEmpty) return;
 
     if (deletedRefreshToken.length != 1) {
       throw StateError(
-          'Expected 1 refresh token to be deleted, but got ${deletedRefreshToken.length}');
+        'Expected 1 refresh token to be deleted, but got ${deletedRefreshToken.length}',
+      );
     }
 
     final (:authUserId, refreshTokenId: _) = deletedRefreshToken.first;

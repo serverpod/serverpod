@@ -52,6 +52,7 @@ abstract class SealedGrandChild extends _i1.SealedChild
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'SealedGrandChild',
       'sealedInt': sealedInt,
       'sealedString': sealedString,
       if (nullableInt != null) 'nullableInt': nullableInt,
@@ -72,11 +73,11 @@ class _SealedGrandChildImpl extends SealedGrandChild {
     int? nullableInt,
     required String sealedGrandchildField,
   }) : super._(
-          sealedInt: sealedInt,
-          sealedString: sealedString,
-          nullableInt: nullableInt,
-          sealedGrandchildField: sealedGrandchildField,
-        );
+         sealedInt: sealedInt,
+         sealedString: sealedString,
+         nullableInt: nullableInt,
+         sealedGrandchildField: sealedGrandchildField,
+       );
 
   /// Returns a shallow copy of this [SealedGrandChild]
   /// with some or all fields replaced by the given arguments.

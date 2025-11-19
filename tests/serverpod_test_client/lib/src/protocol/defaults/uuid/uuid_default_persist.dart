@@ -32,18 +32,21 @@ abstract class UuidDefaultPersist implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       uuidDefaultPersistRandom:
           jsonSerialization['uuidDefaultPersistRandom'] == null
-              ? null
-              : _i1.UuidValueJsonExtension.fromJson(
-                  jsonSerialization['uuidDefaultPersistRandom']),
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidDefaultPersistRandom'],
+            ),
       uuidDefaultPersistRandomV7:
           jsonSerialization['uuidDefaultPersistRandomV7'] == null
-              ? null
-              : _i1.UuidValueJsonExtension.fromJson(
-                  jsonSerialization['uuidDefaultPersistRandomV7']),
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidDefaultPersistRandomV7'],
+            ),
       uuidDefaultPersistStr: jsonSerialization['uuidDefaultPersistStr'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(
-              jsonSerialization['uuidDefaultPersistStr']),
+              jsonSerialization['uuidDefaultPersistStr'],
+            ),
     );
   }
 
@@ -70,6 +73,7 @@ abstract class UuidDefaultPersist implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UuidDefaultPersist',
       if (id != null) 'id': id,
       if (uuidDefaultPersistRandom != null)
         'uuidDefaultPersistRandom': uuidDefaultPersistRandom?.toJson(),
@@ -95,11 +99,11 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
     _i1.UuidValue? uuidDefaultPersistRandomV7,
     _i1.UuidValue? uuidDefaultPersistStr,
   }) : super._(
-          id: id,
-          uuidDefaultPersistRandom: uuidDefaultPersistRandom,
-          uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7,
-          uuidDefaultPersistStr: uuidDefaultPersistStr,
-        );
+         id: id,
+         uuidDefaultPersistRandom: uuidDefaultPersistRandom,
+         uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7,
+         uuidDefaultPersistStr: uuidDefaultPersistStr,
+       );
 
   /// Returns a shallow copy of this [UuidDefaultPersist]
   /// with some or all fields replaced by the given arguments.

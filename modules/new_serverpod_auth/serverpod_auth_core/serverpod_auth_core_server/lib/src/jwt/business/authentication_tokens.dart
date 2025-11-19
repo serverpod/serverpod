@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:clock/clock.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/src/jwt/business/refresh_token_exceptions.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../auth_user/auth_user.dart';
@@ -32,24 +33,45 @@ final class AuthenticationTokens {
   /// Management functions for auth users.
   final AuthUsers authUsers;
 
+  AuthenticationTokens._(
+    this.config,
+    this.admin,
+    this.jwtUtil,
+    this.refreshTokenSecretHash,
+    this.authUsers,
+  );
+
   /// Creates a new instance of [AuthenticationTokens].
-  AuthenticationTokens({
-    required this.config,
-    this.authUsers = const AuthUsers(),
-  })  : admin = AuthenticationTokensAdmin(
-          refreshTokenLifetime: config.refreshTokenLifetime,
-        ),
-        jwtUtil = JwtUtil(
-          accessTokenLifetime: config.accessTokenLifetime,
-          issuer: config.issuer,
-          algorithm: config.algorithm,
-          fallbackVerificationAlgorithm: config.fallbackVerificationAlgorithm,
-        ),
-        refreshTokenSecretHash = RefreshTokenSecretHash(
-          refreshTokenRotatingSecretSaltLength:
-              config.refreshTokenRotatingSecretSaltLength,
-          refreshTokenHashPepper: config.refreshTokenHashPepper,
-        );
+  factory AuthenticationTokens({
+    required final AuthenticationTokenConfig config,
+    final AuthUsers authUsers = const AuthUsers(),
+  }) {
+    final jwtUtil = JwtUtil(
+      accessTokenLifetime: config.accessTokenLifetime,
+      issuer: config.issuer,
+      algorithm: config.algorithm,
+      fallbackVerificationAlgorithms: config.fallbackVerificationAlgorithms,
+    );
+    final refreshTokenSecretHash = RefreshTokenSecretHash(
+      refreshTokenRotatingSecretSaltLength:
+          config.refreshTokenRotatingSecretSaltLength,
+      refreshTokenHashPepper: config.refreshTokenHashPepper,
+    );
+    final admin = AuthenticationTokensAdmin(
+      refreshTokenLifetime: config.refreshTokenLifetime,
+      jwtUtil: jwtUtil,
+      refreshTokenSecretHash: refreshTokenSecretHash,
+      refreshTokenRotatingSecretLength: config.refreshTokenRotatingSecretLength,
+    );
+
+    return AuthenticationTokens._(
+      config,
+      admin,
+      jwtUtil,
+      refreshTokenSecretHash,
+      authUsers,
+    );
+  }
 
   /// Looks up the `AuthenticationInfo` belonging to the [jwtAccessToken].
   ///
@@ -139,8 +161,8 @@ final class AuthenticationTokens {
         : extraClaims;
     final encodedExtraClaims =
         mergedExtraClaims != null && mergedExtraClaims.isNotEmpty
-            ? jsonEncode(mergedExtraClaims)
-            : null;
+        ? jsonEncode(mergedExtraClaims)
+        : null;
 
     final secret = _generateRefreshTokenRotatingSecret();
     final newHash = await refreshTokenSecretHash.createHash(secret: secret);
@@ -181,115 +203,48 @@ final class AuthenticationTokens {
   /// Returns a access token while also rotating the refresh token.
   ///
   /// Invalidates the previous refresh token as security best practice.
+  ///
+  /// Automatically registers authentication revocation via
+  /// `session.messages.authenticationRevoked` when refresh tokens are expired or
+  /// have invalid secrets. If this behavior is not desired, use
+  /// [AuthenticationTokensAdmin.rotateRefreshToken] instead.
   Future<AuthSuccess> refreshAccessToken(
     final Session session, {
     required final String refreshToken,
     final Transaction? transaction,
   }) async {
-    final refreshesTokenPair = await rotateRefreshToken(
-      session,
-      refreshToken: refreshToken,
-      transaction: transaction,
-    );
+    return _withReplacedServerJwtException(() async {
+      try {
+        final refreshesTokenPair = await admin.rotateRefreshToken(
+          session,
+          refreshToken: refreshToken,
+          transaction: transaction,
+        );
 
-    final jwtData = jwtUtil.verifyJwt(refreshesTokenPair.accessToken);
+        final jwtData = jwtUtil.verifyJwt(refreshesTokenPair.accessToken);
 
-    return AuthSuccess(
-      authStrategy: AuthStrategy.jwt.name,
-      token: refreshesTokenPair.accessToken,
-      tokenExpiresAt: jwtData.tokenExpiresAt,
-      refreshToken: refreshesTokenPair.refreshToken,
-      authUserId: jwtData.authUserId,
-      scopeNames: jwtData.scopes.names,
-    );
-  }
-
-  /// Returns a new refresh / access token pair.
-  ///
-  /// This invalidates the previous refresh token.
-  /// Previously created access tokens for this refresh token will continue to work until they expire.
-  Future<TokenPair> rotateRefreshToken(
-    final Session session, {
-    required final String refreshToken,
-    final Transaction? transaction,
-  }) async {
-    final RefreshTokenStringData refreshTokenData;
-
-    try {
-      refreshTokenData = RefreshTokenString.parseRefreshTokenString(
-        refreshToken,
-      );
-    } catch (e, stackTrace) {
-      session.log(
-        'Received malformed refresh token',
-        exception: e,
-        stackTrace: stackTrace,
-        level: LogLevel.debug,
-      );
-
-      throw RefreshTokenMalformedException();
-    }
-
-    var refreshTokenRow = await RefreshToken.db.findById(
-      session,
-      refreshTokenData.id,
-      transaction: transaction,
-    );
-
-    if (refreshTokenRow == null ||
-        !uint8ListAreEqual(
-          Uint8List.sublistView(refreshTokenRow.fixedSecret),
-          refreshTokenData.fixedSecret,
-        )) {
-      // If the `fixedSecret` does not match, we do not delete the refresh token.
-      // (Since the `id` is encoded on every access token and thus might be known to 3rd parties or leak, even after the access token itself has expired.)
-      throw RefreshTokenNotFoundException();
-    }
-
-    if (refreshTokenRow.isExpired(config.refreshTokenLifetime)) {
-      await RefreshToken.db.deleteRow(
-        session,
-        refreshTokenRow,
-        transaction: transaction,
-      );
-
-      throw RefreshTokenExpiredException();
-    }
-
-    if (!await refreshTokenSecretHash.validateHash(
-      secret: refreshTokenData.rotatingSecret,
-      hash: Uint8List.sublistView(refreshTokenRow.rotatingSecretHash),
-      salt: Uint8List.sublistView(refreshTokenRow.rotatingSecretSalt),
-    )) {
-      await RefreshToken.db.deleteRow(
-        session,
-        refreshTokenRow,
-        transaction: transaction,
-      );
-
-      throw RefreshTokenInvalidSecretException();
-    }
-
-    final newSecret = _generateRefreshTokenRotatingSecret();
-    final newHash = await refreshTokenSecretHash.createHash(secret: newSecret);
-
-    refreshTokenRow = await RefreshToken.db.updateRow(
-      session,
-      refreshTokenRow.copyWith(
-        rotatingSecretHash: ByteData.sublistView(newHash.hash),
-        rotatingSecretSalt: ByteData.sublistView(newHash.salt),
-        lastUpdatedAt: clock.now(),
-      ),
-      transaction: transaction,
-    );
-
-    return TokenPair(
-      refreshToken: RefreshTokenString.buildRefreshTokenString(
-        refreshToken: refreshTokenRow,
-        rotatingSecret: newSecret,
-      ),
-      accessToken: jwtUtil.createJwt(refreshTokenRow),
-    );
+        return AuthSuccess(
+          authStrategy: AuthStrategy.jwt.name,
+          token: refreshesTokenPair.accessToken,
+          tokenExpiresAt: jwtData.tokenExpiresAt,
+          refreshToken: refreshesTokenPair.refreshToken,
+          authUserId: jwtData.authUserId,
+          scopeNames: jwtData.scopes.names,
+        );
+      } on RefreshTokenExpiredServerException catch (e) {
+        await session.messages.authenticationRevoked(
+          e.authUserId.uuid,
+          RevokedAuthenticationAuthId(authId: e.refreshTokenId.toString()),
+        );
+        rethrow;
+      } on RefreshTokenInvalidSecretServerException catch (e) {
+        await session.messages.authenticationRevoked(
+          e.authUserId.uuid,
+          RevokedAuthenticationAuthId(authId: e.refreshTokenId.toString()),
+        );
+        rethrow;
+      }
+    });
   }
 
   /// Removes all refresh tokens for the given [authUserId].
@@ -297,6 +252,10 @@ final class AuthenticationTokens {
   /// Returns the list of IDs of the deleted tokens.
   ///
   /// Active access tokens will continue to work until their expiration time is reached.
+  ///
+  /// Automatically registers authentication revocation via
+  /// `session.messages.authenticationRevoked` when tokens are deleted. If this
+  /// behavior is not desired, use [AuthenticationTokensAdmin.deleteRefreshTokens] instead.
   Future<List<UuidValue>> destroyAllRefreshTokens(
     final Session session, {
     required final UuidValue authUserId,
@@ -325,6 +284,11 @@ final class AuthenticationTokens {
   ///
   /// Any access tokens associated with this refresh token will continue to work
   /// until they expire.
+  ///
+  /// Automatically registers authentication revocation via
+  /// `session.messages.authenticationRevoked` when the token is deleted. If this
+  /// behavior is not desired, use [AuthenticationTokensAdmin.deleteRefreshTokens]
+  /// instead.
   Future<bool> destroyRefreshToken(
     final Session session, {
     required final UuidValue refreshTokenId,
@@ -334,8 +298,7 @@ final class AuthenticationTokens {
       session,
       refreshTokenId: refreshTokenId,
       transaction: transaction,
-    ))
-        .firstOrNull;
+    )).firstOrNull;
 
     if (refreshToken == null) {
       return false;
@@ -375,20 +338,32 @@ final class AuthenticationTokens {
       config.refreshTokenRotatingSecretLength,
     );
   }
+
+  /// Replaces server-side exceptions by client-side exceptions, hiding details
+  /// that could leak account information.
+  static Future<T> _withReplacedServerJwtException<T>(
+    final Future<T> Function() fn,
+  ) async {
+    try {
+      return await fn();
+    } on RefreshTokenServerException catch (e) {
+      switch (e) {
+        case RefreshTokenMalformedServerException():
+          throw RefreshTokenMalformedException();
+        case RefreshTokenNotFoundServerException():
+          throw RefreshTokenNotFoundException();
+        case RefreshTokenExpiredServerException():
+          throw RefreshTokenExpiredException();
+        case RefreshTokenInvalidSecretServerException():
+          throw RefreshTokenInvalidSecretException();
+      }
+    }
+  }
 }
 
 extension on Set<Scope> {
   Set<String> get names => {
-        for (final scope in this)
-          if (scope.name != null) scope.name!,
-      };
-}
-
-extension on RefreshToken {
-  bool isExpired(final Duration refreshTokenLifetime) {
-    final oldestAcceptedRefreshTokenDate =
-        clock.now().subtract(refreshTokenLifetime);
-
-    return lastUpdatedAt.isBefore(oldestAcceptedRefreshTokenDate);
-  }
+    for (final scope in this)
+      if (scope.name != null) scope.name!,
+  };
 }

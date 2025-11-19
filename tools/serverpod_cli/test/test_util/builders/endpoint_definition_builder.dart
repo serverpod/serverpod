@@ -18,7 +18,8 @@ class EndpointDefinitionBuilder {
   }
 
   EndpointDefinitionBuilder withDocumentationComment(
-      String? documentationComment) {
+    String? documentationComment,
+  ) {
     _documentationComment = documentationComment;
     return this;
   }

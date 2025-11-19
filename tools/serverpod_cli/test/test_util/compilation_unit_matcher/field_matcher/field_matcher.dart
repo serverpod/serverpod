@@ -30,7 +30,9 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
       if (type != null) '$type',
       'field "$fieldName"',
     ], ' ');
-    return parent.describe(description).add(
+    return parent
+        .describe(description)
+        .add(
           output.toString(),
         );
   }
@@ -60,7 +62,8 @@ class _FieldMatcherImpl extends Matcher implements FieldMatcher {
           .join(', ');
 
       return mismatchDescription.add(
-          'does not contain field "$fieldName". Found fields: [$fieldNames]');
+        'does not contain field "$fieldName". Found fields: [$fieldNames]',
+      );
     }
 
     var output = StringBuffer('contains field "$fieldName" but the field is ');

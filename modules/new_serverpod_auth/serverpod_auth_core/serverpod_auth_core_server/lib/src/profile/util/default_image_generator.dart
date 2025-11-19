@@ -29,7 +29,9 @@ int _colorFromHexStr(final String hexStr) {
 
 /// The default [UserImageGenerator], mimics the default avatars used by Google.
 Future<Image> defaultUserImageGenerator(
-    final UserProfileModel userInfo, final int imageSize) {
+  final UserProfileModel userInfo,
+  final int imageSize,
+) {
   return Isolate.run(() {
     final image = Image(width: 256, height: 256);
 
@@ -50,11 +52,18 @@ Future<Image> defaultUserImageGenerator(
     final yPos = 128 - chHeight ~/ 2;
 
     // Pick color based on user id from the default colors (from material design).
-    final color = _defaultUserImageColors[
-        userInfo.authUserId.hashCode % _defaultUserImageColors.length];
-    fill(image,
-        color: ColorUint8.rgba((color >> 16) & 0xff, (color >> 16) & 0xff,
-            color & 0xff, (color >> 24) & 0xff));
+    final color =
+        _defaultUserImageColors[userInfo.authUserId.hashCode %
+            _defaultUserImageColors.length];
+    fill(
+      image,
+      color: ColorUint8.rgba(
+        (color >> 16) & 0xff,
+        (color >> 16) & 0xff,
+        color & 0xff,
+        (color >> 24) & 0xff,
+      ),
+    );
 
     // Draw the character on top of the solid filled image.
     drawString(

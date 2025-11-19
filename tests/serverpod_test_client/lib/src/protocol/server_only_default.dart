@@ -20,7 +20,8 @@ abstract class ServerOnlyDefault implements _i1.SerializableModel {
 
   factory ServerOnlyDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return ServerOnlyDefault(
-        normalField: jsonSerialization['normalField'] as String);
+      normalField: jsonSerialization['normalField'] as String,
+    );
   }
 
   String normalField;
@@ -31,7 +32,10 @@ abstract class ServerOnlyDefault implements _i1.SerializableModel {
   ServerOnlyDefault copyWith({String? normalField});
   @override
   Map<String, dynamic> toJson() {
-    return {'normalField': normalField};
+    return {
+      '__className__': 'ServerOnlyDefault',
+      'normalField': normalField,
+    };
   }
 
   @override
@@ -42,7 +46,7 @@ abstract class ServerOnlyDefault implements _i1.SerializableModel {
 
 class _ServerOnlyDefaultImpl extends ServerOnlyDefault {
   _ServerOnlyDefaultImpl({required String normalField})
-      : super._(normalField: normalField);
+    : super._(normalField: normalField);
 
   /// Returns a shallow copy of this [ServerOnlyDefault]
   /// with some or all fields replaced by the given arguments.

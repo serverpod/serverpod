@@ -15,6 +15,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i2;
+import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart'
+    as _i3;
 
 abstract class LegacySession
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -39,15 +41,17 @@ abstract class LegacySession
   factory LegacySession.fromJson(Map<String, dynamic> jsonSerialization) {
     return LegacySession(
       id: jsonSerialization['id'] as int?,
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
+          : _i3.Protocol().deserialize<_i2.AuthUser>(
+              jsonSerialization['authUser'],
+            ),
+      scopeNames: _i3.Protocol().deserialize<Set<String>>(
+        jsonSerialization['scopeNames'],
+      ),
       hash: jsonSerialization['hash'] as String,
       method: jsonSerialization['method'] as String,
     );
@@ -93,6 +97,7 @@ abstract class LegacySession
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_bridge.LegacySession',
       if (id != null) 'id': id,
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),
@@ -148,13 +153,13 @@ class _LegacySessionImpl extends LegacySession {
     required String hash,
     required String method,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          authUser: authUser,
-          scopeNames: scopeNames,
-          hash: hash,
-          method: method,
-        );
+         id: id,
+         authUserId: authUserId,
+         authUser: authUser,
+         scopeNames: scopeNames,
+         hash: hash,
+         method: method,
+       );
 
   /// Returns a shallow copy of this [LegacySession]
   /// with some or all fields replaced by the given arguments.
@@ -171,8 +176,9 @@ class _LegacySessionImpl extends LegacySession {
     return LegacySession(
       id: id is int? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser:
-          authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
+      authUser: authUser is _i2.AuthUser?
+          ? authUser
+          : this.authUser?.copyWith(),
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       hash: hash ?? this.hash,
       method: method ?? this.method,
@@ -184,11 +190,11 @@ class LegacySessionUpdateTable extends _i1.UpdateTable<LegacySessionTable> {
   LegacySessionUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.authUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.authUserId,
+    value,
+  );
 
   _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
       _i1.ColumnValue(
@@ -197,19 +203,19 @@ class LegacySessionUpdateTable extends _i1.UpdateTable<LegacySessionTable> {
       );
 
   _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
-        table.hash,
-        value,
-      );
+    table.hash,
+    value,
+  );
 
   _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
-        table.method,
-        value,
-      );
+    table.method,
+    value,
+  );
 }
 
 class LegacySessionTable extends _i1.Table<int?> {
   LegacySessionTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_bridge_session') {
+    : super(tableName: 'serverpod_auth_bridge_session') {
     updateTable = LegacySessionUpdateTable(this);
     authUserId = _i1.ColumnUuid(
       'authUserId',
@@ -262,12 +268,12 @@ class LegacySessionTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        authUserId,
-        scopeNames,
-        hash,
-        method,
-      ];
+    id,
+    authUserId,
+    scopeNames,
+    hash,
+    method,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

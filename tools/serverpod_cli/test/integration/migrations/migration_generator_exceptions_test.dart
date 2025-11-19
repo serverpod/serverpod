@@ -11,12 +11,17 @@ import '../../test_util/builders/generator_config_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  var testAssetsPath =
-      path.join('test', 'integration', 'migrations', 'test_assets');
+  var testAssetsPath = path.join(
+    'test',
+    'integration',
+    'migrations',
+    'test_assets',
+  );
 
   group('Given a latest version migration folder that is empty', () {
-    var projectDirectory =
-        Directory(path.join(testAssetsPath, 'empty_migration'));
+    var projectDirectory = Directory(
+      path.join(testAssetsPath, 'empty_migration'),
+    );
     var projectName = 'test_project';
     var generator = MigrationGenerator(
       directory: projectDirectory,
@@ -27,13 +32,24 @@ void main() {
       test('then migration version load exception is thrown.', () async {
         expect(
           generator.createMigration(force: false, config: config),
-          throwsA(isA<MigrationVersionLoadException>()
-              .having((e) => e.moduleName, 'Matching module name',
-                  equals(projectName))
-              .having((e) => e.versionName, 'Matching version name',
-                  '00000000000000')
-              .having((e) => e.exception, 'Matching exception',
-                  startsWith('PathNotFoundException: Cannot open file'))),
+          throwsA(
+            isA<MigrationVersionLoadException>()
+                .having(
+                  (e) => e.moduleName,
+                  'Matching module name',
+                  equals(projectName),
+                )
+                .having(
+                  (e) => e.versionName,
+                  'Matching version name',
+                  '00000000000000',
+                )
+                .having(
+                  (e) => e.exception,
+                  'Matching exception',
+                  startsWith('PathNotFoundException: Cannot open file'),
+                ),
+          ),
         );
       });
     });
@@ -46,13 +62,24 @@ void main() {
                 CreateRepairMigrationOption.runModes.first /* development */,
             force: false,
           ),
-          throwsA(isA<MigrationVersionLoadException>()
-              .having((e) => e.moduleName, 'Matching module name',
-                  equals(projectName))
-              .having((e) => e.versionName, 'Matching version name',
-                  '00000000000000')
-              .having((e) => e.exception, 'Matching exception',
-                  startsWith('PathNotFoundException: Cannot open file'))),
+          throwsA(
+            isA<MigrationVersionLoadException>()
+                .having(
+                  (e) => e.moduleName,
+                  'Matching module name',
+                  equals(projectName),
+                )
+                .having(
+                  (e) => e.versionName,
+                  'Matching version name',
+                  '00000000000000',
+                )
+                .having(
+                  (e) => e.exception,
+                  'Matching exception',
+                  startsWith('PathNotFoundException: Cannot open file'),
+                ),
+          ),
         );
       });
     });

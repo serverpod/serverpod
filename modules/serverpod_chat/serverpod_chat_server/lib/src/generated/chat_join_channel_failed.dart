@@ -26,7 +26,8 @@ abstract class ChatJoinChannelFailed
   }) = _ChatJoinChannelFailedImpl;
 
   factory ChatJoinChannelFailed.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ChatJoinChannelFailed(
       channel: jsonSerialization['channel'] as String,
       reason: jsonSerialization['reason'] as String,
@@ -49,6 +50,7 @@ abstract class ChatJoinChannelFailed
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_chat.ChatJoinChannelFailed',
       'channel': channel,
       'reason': reason,
     };
@@ -57,6 +59,7 @@ abstract class ChatJoinChannelFailed
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_chat.ChatJoinChannelFailed',
       'channel': channel,
       'reason': reason,
     };
@@ -73,9 +76,9 @@ class _ChatJoinChannelFailedImpl extends ChatJoinChannelFailed {
     required String channel,
     required String reason,
   }) : super._(
-          channel: channel,
-          reason: reason,
-        );
+         channel: channel,
+         reason: reason,
+       );
 
   /// Returns a shallow copy of this [ChatJoinChannelFailed]
   /// with some or all fields replaced by the given arguments.

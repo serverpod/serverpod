@@ -13,7 +13,9 @@ void main() {
 
   tearDown(() {
     AuthServices.set(
-        primaryTokenManager: tokenManagerFactory, identityProviders: []);
+      primaryTokenManager: tokenManagerFactory,
+      identityProviders: [],
+    );
   });
 
   withServerpod(
@@ -32,33 +34,34 @@ void main() {
         // Create a legacy user (non-migrated)
         legacyUserId = await endpoints.emailAccountBackwardsCompatibilityTest
             .createLegacyUser(
-          sessionBuilder,
-          email: email,
-          password: legacyPassword,
-        );
+              sessionBuilder,
+              email: email,
+              password: legacyPassword,
+            );
 
         // Verify the user is NOT migrated
         expect(
           await endpoints.emailAccountBackwardsCompatibilityTest
               .getNewAuthUserId(
-            sessionBuilder,
-            userId: legacyUserId,
-          ),
+                sessionBuilder,
+                userId: legacyUserId,
+              ),
           isNull,
         );
 
         // Configure EmailAccounts for password reset verification
         final config = EmailIDPConfig(
           secretHashPepper: 'test',
-          sendPasswordResetVerificationCode: (
-            final session, {
-            required final email,
-            required final passwordResetRequestId,
-            required final transaction,
-            required final verificationCode,
-          }) {
-            receivedVerificationCode = verificationCode;
-          },
+          sendPasswordResetVerificationCode:
+              (
+                final session, {
+                required final email,
+                required final passwordResetRequestId,
+                required final transaction,
+                required final verificationCode,
+              }) {
+                receivedVerificationCode = verificationCode;
+              },
         );
         AuthServices.set(
           identityProviders: [
@@ -99,9 +102,9 @@ void main() {
           expect(
             await endpoints.emailAccountBackwardsCompatibilityTest
                 .getNewAuthUserId(
-              sessionBuilder,
-              userId: legacyUserId,
-            ),
+                  sessionBuilder,
+                  userId: legacyUserId,
+                ),
             isNotNull,
           );
 
@@ -139,10 +142,10 @@ void main() {
         // Create a legacy user
         legacyUserId = await endpoints.emailAccountBackwardsCompatibilityTest
             .createLegacyUser(
-          sessionBuilder,
-          email: email,
-          password: legacyPassword,
-        );
+              sessionBuilder,
+              email: email,
+              password: legacyPassword,
+            );
 
         // Migrate the user without setting a password (simulating migration without login)
         await endpoints.emailAccountBackwardsCompatibilityTest.migrateUser(
@@ -154,24 +157,25 @@ void main() {
         final newAuthUserIdResult = await endpoints
             .emailAccountBackwardsCompatibilityTest
             .getNewAuthUserId(
-          sessionBuilder,
-          userId: legacyUserId,
-        );
+              sessionBuilder,
+              userId: legacyUserId,
+            );
         newAuthUserId = newAuthUserIdResult!;
 
         // Configure EmailAccounts for password reset verification
         final config = EmailIDPConfig(
           secretHashPepper: 'test',
-          sendPasswordResetVerificationCode: (
-            final session, {
-            required final email,
-            required final passwordResetRequestId,
-            required final transaction,
-            required final verificationCode,
-          }) {
-            receivedPasswordResetRequestId = passwordResetRequestId;
-            receivedVerificationCode = verificationCode;
-          },
+          sendPasswordResetVerificationCode:
+              (
+                final session, {
+                required final email,
+                required final passwordResetRequestId,
+                required final transaction,
+                required final verificationCode,
+              }) {
+                receivedPasswordResetRequestId = passwordResetRequestId;
+                receivedVerificationCode = verificationCode;
+              },
           onPasswordResetCompleted:
               AuthBackwardsCompatibility.clearLegacyPassword,
         );
@@ -195,12 +199,12 @@ void main() {
             email: email,
           );
 
-          final finishPasswordResetToken =
-              await endpoints.emailAccount.verifyPasswordResetCode(
-            sessionBuilder,
-            passwordResetRequestId: receivedPasswordResetRequestId!,
-            verificationCode: receivedVerificationCode!,
-          );
+          final finishPasswordResetToken = await endpoints.emailAccount
+              .verifyPasswordResetCode(
+                sessionBuilder,
+                passwordResetRequestId: receivedPasswordResetRequestId!,
+                verificationCode: receivedVerificationCode!,
+              );
 
           final passwordReset = endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
@@ -221,12 +225,12 @@ void main() {
             email: email,
           );
 
-          final finishPasswordResetToken =
-              await endpoints.emailAccount.verifyPasswordResetCode(
-            sessionBuilder,
-            passwordResetRequestId: receivedPasswordResetRequestId!,
-            verificationCode: receivedVerificationCode!,
-          );
+          final finishPasswordResetToken = await endpoints.emailAccount
+              .verifyPasswordResetCode(
+                sessionBuilder,
+                passwordResetRequestId: receivedPasswordResetRequestId!,
+                verificationCode: receivedVerificationCode!,
+              );
 
           await endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
@@ -241,11 +245,11 @@ void main() {
             password: newPassword,
           );
 
-          final authInfo =
-              await AuthServices.instance.tokenManager.validateToken(
-            sessionBuilder.build(),
-            authSuccess.token,
-          );
+          final authInfo = await AuthServices.instance.tokenManager
+              .validateToken(
+                sessionBuilder.build(),
+                authSuccess.token,
+              );
 
           expect(authInfo, isNotNull);
           expect(authInfo!.authUserId, newAuthUserId);
@@ -259,10 +263,10 @@ void main() {
           expect(
             await endpoints.emailAccountBackwardsCompatibilityTest
                 .checkLegacyPassword(
-              sessionBuilder,
-              email: email,
-              password: legacyPassword,
-            ),
+                  sessionBuilder,
+                  email: email,
+                  password: legacyPassword,
+                ),
             isTrue,
           );
 
@@ -272,12 +276,12 @@ void main() {
             email: email,
           );
 
-          final finishPasswordResetToken =
-              await endpoints.emailAccount.verifyPasswordResetCode(
-            sessionBuilder,
-            passwordResetRequestId: receivedPasswordResetRequestId!,
-            verificationCode: receivedVerificationCode!,
-          );
+          final finishPasswordResetToken = await endpoints.emailAccount
+              .verifyPasswordResetCode(
+                sessionBuilder,
+                passwordResetRequestId: receivedPasswordResetRequestId!,
+                verificationCode: receivedVerificationCode!,
+              );
 
           await endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
@@ -289,10 +293,10 @@ void main() {
           expect(
             await endpoints.emailAccountBackwardsCompatibilityTest
                 .checkLegacyPassword(
-              sessionBuilder,
-              email: email,
-              password: legacyPassword,
-            ),
+                  sessionBuilder,
+                  email: email,
+                  password: legacyPassword,
+                ),
             isFalse,
           );
         },
@@ -307,12 +311,12 @@ void main() {
             email: email,
           );
 
-          final finishPasswordResetToken =
-              await endpoints.emailAccount.verifyPasswordResetCode(
-            sessionBuilder,
-            passwordResetRequestId: receivedPasswordResetRequestId!,
-            verificationCode: receivedVerificationCode!,
-          );
+          final finishPasswordResetToken = await endpoints.emailAccount
+              .verifyPasswordResetCode(
+                sessionBuilder,
+                passwordResetRequestId: receivedPasswordResetRequestId!,
+                verificationCode: receivedVerificationCode!,
+              );
 
           await endpoints.emailAccount.finishPasswordReset(
             sessionBuilder,
@@ -324,10 +328,10 @@ void main() {
           expect(
             await endpoints.emailAccountBackwardsCompatibilityTest
                 .checkLegacyPassword(
-              sessionBuilder,
-              email: email,
-              password: legacyPassword,
-            ),
+                  sessionBuilder,
+                  email: email,
+                  password: legacyPassword,
+                ),
             isFalse,
           );
 
@@ -342,10 +346,10 @@ void main() {
           expect(
             await endpoints.emailAccountBackwardsCompatibilityTest
                 .checkLegacyPassword(
-              sessionBuilder,
-              email: email,
-              password: legacyPassword,
-            ),
+                  sessionBuilder,
+                  email: email,
+                  password: legacyPassword,
+                ),
             isFalse,
           );
 
@@ -360,10 +364,10 @@ void main() {
           expect(
             await endpoints.emailAccountBackwardsCompatibilityTest
                 .checkLegacyPassword(
-              sessionBuilder,
-              email: email,
-              password: legacyPassword,
-            ),
+                  sessionBuilder,
+                  email: email,
+                  password: legacyPassword,
+                ),
             isFalse,
           );
         },

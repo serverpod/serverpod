@@ -16,6 +16,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i2;
 import 'dart:typed_data' as _i3;
+import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i4;
 
 /// A fully configured passkey to be used for logins.
 abstract class PasskeyAccount
@@ -49,22 +50,28 @@ abstract class PasskeyAccount
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>)),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+          : _i4.Protocol().deserialize<_i2.AuthUser>(
+              jsonSerialization['authUser'],
+            ),
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
       keyId: _i1.ByteDataJsonExtension.fromJson(jsonSerialization['keyId']),
       keyIdBase64: jsonSerialization['keyIdBase64'] as String,
       clientDataJSON: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['clientDataJSON']),
+        jsonSerialization['clientDataJSON'],
+      ),
       attestationObject: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['attestationObject']),
+        jsonSerialization['attestationObject'],
+      ),
       originalChallenge: _i1.ByteDataJsonExtension.fromJson(
-          jsonSerialization['originalChallenge']),
+        jsonSerialization['originalChallenge'],
+      ),
     );
   }
 
@@ -118,6 +125,7 @@ abstract class PasskeyAccount
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_idp.PasskeyAccount',
       if (id != null) 'id': id?.toJson(),
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),
@@ -179,16 +187,16 @@ class _PasskeyAccountImpl extends PasskeyAccount {
     required _i3.ByteData attestationObject,
     required _i3.ByteData originalChallenge,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          authUser: authUser,
-          createdAt: createdAt,
-          keyId: keyId,
-          keyIdBase64: keyIdBase64,
-          clientDataJSON: clientDataJSON,
-          attestationObject: attestationObject,
-          originalChallenge: originalChallenge,
-        );
+         id: id,
+         authUserId: authUserId,
+         authUser: authUser,
+         createdAt: createdAt,
+         keyId: keyId,
+         keyIdBase64: keyIdBase64,
+         clientDataJSON: clientDataJSON,
+         attestationObject: attestationObject,
+         originalChallenge: originalChallenge,
+       );
 
   /// Returns a shallow copy of this [PasskeyAccount]
   /// with some or all fields replaced by the given arguments.
@@ -208,8 +216,9 @@ class _PasskeyAccountImpl extends PasskeyAccount {
     return PasskeyAccount(
       id: id is _i1.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser:
-          authUser is _i2.AuthUser? ? authUser : this.authUser?.copyWith(),
+      authUser: authUser is _i2.AuthUser?
+          ? authUser
+          : this.authUser?.copyWith(),
       createdAt: createdAt ?? this.createdAt,
       keyId: keyId ?? this.keyId.clone(),
       keyIdBase64: keyIdBase64 ?? this.keyIdBase64,
@@ -224,11 +233,11 @@ class PasskeyAccountUpdateTable extends _i1.UpdateTable<PasskeyAccountTable> {
   PasskeyAccountUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.authUserId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.authUserId,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
       _i1.ColumnValue(
@@ -243,35 +252,35 @@ class PasskeyAccountUpdateTable extends _i1.UpdateTable<PasskeyAccountTable> {
       );
 
   _i1.ColumnValue<String, String> keyIdBase64(String value) => _i1.ColumnValue(
-        table.keyIdBase64,
-        value,
-      );
+    table.keyIdBase64,
+    value,
+  );
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> clientDataJSON(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.clientDataJSON,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(
+    table.clientDataJSON,
+    value,
+  );
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> attestationObject(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.attestationObject,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(
+    table.attestationObject,
+    value,
+  );
 
   _i1.ColumnValue<_i3.ByteData, _i3.ByteData> originalChallenge(
-          _i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.originalChallenge,
-        value,
-      );
+    _i3.ByteData value,
+  ) => _i1.ColumnValue(
+    table.originalChallenge,
+    value,
+  );
 }
 
 class PasskeyAccountTable extends _i1.Table<_i1.UuidValue?> {
   PasskeyAccountTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_idp_passkey_account') {
+    : super(tableName: 'serverpod_auth_idp_passkey_account') {
     updateTable = PasskeyAccountUpdateTable(this);
     authUserId = _i1.ColumnUuid(
       'authUserId',
@@ -343,15 +352,15 @@ class PasskeyAccountTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        authUserId,
-        createdAt,
-        keyId,
-        keyIdBase64,
-        clientDataJSON,
-        attestationObject,
-        originalChallenge,
-      ];
+    id,
+    authUserId,
+    createdAt,
+    keyId,
+    keyIdBase64,
+    clientDataJSON,
+    attestationObject,
+    originalChallenge,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/many_to_many/student.dart' as _i2;
 import '../../changed_id_type/many_to_many/course.dart' as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
 
 abstract class EnrollmentInt
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -37,18 +38,22 @@ abstract class EnrollmentInt
   factory EnrollmentInt.fromJson(Map<String, dynamic> jsonSerialization) {
     return EnrollmentInt(
       id: jsonSerialization['id'] as int?,
-      studentId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['studentId']),
+      studentId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['studentId'],
+      ),
       student: jsonSerialization['student'] == null
           ? null
-          : _i2.StudentUuid.fromJson(
-              (jsonSerialization['student'] as Map<String, dynamic>)),
-      courseId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['courseId']),
+          : _i4.Protocol().deserialize<_i2.StudentUuid>(
+              jsonSerialization['student'],
+            ),
+      courseId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['courseId'],
+      ),
       course: jsonSerialization['course'] == null
           ? null
-          : _i3.CourseUuid.fromJson(
-              (jsonSerialization['course'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i3.CourseUuid>(
+              jsonSerialization['course'],
+            ),
     );
   }
 
@@ -83,6 +88,7 @@ abstract class EnrollmentInt
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'EnrollmentInt',
       if (id != null) 'id': id,
       'studentId': studentId.toJson(),
       if (student != null) 'student': student?.toJson(),
@@ -94,6 +100,7 @@ abstract class EnrollmentInt
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'EnrollmentInt',
       if (id != null) 'id': id,
       'studentId': studentId.toJson(),
       if (student != null) 'student': student?.toJsonForProtocol(),
@@ -148,12 +155,12 @@ class _EnrollmentIntImpl extends EnrollmentInt {
     required _i1.UuidValue courseId,
     _i3.CourseUuid? course,
   }) : super._(
-          id: id,
-          studentId: studentId,
-          student: student,
-          courseId: courseId,
-          course: course,
-        );
+         id: id,
+         studentId: studentId,
+         student: student,
+         courseId: courseId,
+         course: course,
+       );
 
   /// Returns a shallow copy of this [EnrollmentInt]
   /// with some or all fields replaced by the given arguments.
@@ -180,11 +187,11 @@ class EnrollmentIntUpdateTable extends _i1.UpdateTable<EnrollmentIntTable> {
   EnrollmentIntUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> studentId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.studentId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.studentId,
+    value,
+  );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> courseId(_i1.UuidValue value) =>
       _i1.ColumnValue(
@@ -195,7 +202,7 @@ class EnrollmentIntUpdateTable extends _i1.UpdateTable<EnrollmentIntTable> {
 
 class EnrollmentIntTable extends _i1.Table<int?> {
   EnrollmentIntTable({super.tableRelation})
-      : super(tableName: 'enrollment_int') {
+    : super(tableName: 'enrollment_int') {
     updateTable = EnrollmentIntUpdateTable(this);
     studentId = _i1.ColumnUuid(
       'studentId',
@@ -245,10 +252,10 @@ class EnrollmentIntTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        studentId,
-        courseId,
-      ];
+    id,
+    studentId,
+    courseId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -277,9 +284,9 @@ class EnrollmentIntInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'student': _student,
-        'course': _course,
-      };
+    'student': _student,
+    'course': _course,
+  };
 
   @override
   _i1.Table<int?> get table => EnrollmentInt.t;

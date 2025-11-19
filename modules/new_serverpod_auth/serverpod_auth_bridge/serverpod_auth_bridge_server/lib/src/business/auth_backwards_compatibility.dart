@@ -211,20 +211,20 @@ abstract final class AuthBackwardsCompatibility {
     required final String? accessToken,
     final Transaction? transaction,
   }) async {
-    final accountDetails =
-        await AuthServices.instance.googleIDP.admin.fetchAccountDetails(
-      session,
-      idToken: idToken,
-      accessToken: accessToken,
-    );
+    final accountDetails = await AuthServices.instance.googleIDP.admin
+        .fetchAccountDetails(
+          session,
+          idToken: idToken,
+          accessToken: accessToken,
+        );
 
-    final legacyUserIdentifier =
-        await LegacyExternalUserIdentifier.db.findFirstRow(
-      session,
-      where: (final t) =>
-          t.userIdentifier.equals(accountDetails.userIdentifier),
-      transaction: transaction,
-    );
+    final legacyUserIdentifier = await LegacyExternalUserIdentifier.db
+        .findFirstRow(
+          session,
+          where: (final t) =>
+              t.userIdentifier.equals(accountDetails.userIdentifier),
+          transaction: transaction,
+        );
 
     if (legacyUserIdentifier != null) {
       await DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (

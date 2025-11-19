@@ -8,3 +8,6 @@ analyzer:
 linter:
   rules:
     unnecessary_parenthesis: true
+
+formatter:
+  trailing_commas: preserve

@@ -28,8 +28,9 @@ abstract class SimpleDateTime
   factory SimpleDateTime.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDateTime(
       id: jsonSerialization['id'] as int?,
-      dateTime:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['dateTime']),
+      dateTime: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['dateTime'],
+      ),
     );
   }
 
@@ -56,6 +57,7 @@ abstract class SimpleDateTime
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'SimpleDateTime',
       if (id != null) 'id': id,
       'dateTime': dateTime.toJson(),
     };
@@ -64,6 +66,7 @@ abstract class SimpleDateTime
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'SimpleDateTime',
       if (id != null) 'id': id,
       'dateTime': dateTime.toJson(),
     };
@@ -106,9 +109,9 @@ class _SimpleDateTimeImpl extends SimpleDateTime {
     int? id,
     required DateTime dateTime,
   }) : super._(
-          id: id,
-          dateTime: dateTime,
-        );
+         id: id,
+         dateTime: dateTime,
+       );
 
   /// Returns a shallow copy of this [SimpleDateTime]
   /// with some or all fields replaced by the given arguments.
@@ -137,7 +140,7 @@ class SimpleDateTimeUpdateTable extends _i1.UpdateTable<SimpleDateTimeTable> {
 
 class SimpleDateTimeTable extends _i1.Table<int?> {
   SimpleDateTimeTable({super.tableRelation})
-      : super(tableName: 'simple_date_time') {
+    : super(tableName: 'simple_date_time') {
     updateTable = SimpleDateTimeUpdateTable(this);
     dateTime = _i1.ColumnDateTime(
       'dateTime',
@@ -152,9 +155,9 @@ class SimpleDateTimeTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        dateTime,
-      ];
+    id,
+    dateTime,
+  ];
 }
 
 class SimpleDateTimeInclude extends _i1.IncludeObject {

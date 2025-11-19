@@ -54,7 +54,10 @@ class ImmutableObject implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return {'variable': variable};
+    return {
+      '__className__': 'ImmutableObject',
+      'variable': variable,
+    };
   }
 
   @override

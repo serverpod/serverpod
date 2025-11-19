@@ -47,6 +47,7 @@ abstract class ChatJoinChannel implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_chat.ChatJoinChannel',
       'channel': channel,
       if (userName != null) 'userName': userName,
     };
@@ -65,9 +66,9 @@ class _ChatJoinChannelImpl extends ChatJoinChannel {
     required String channel,
     String? userName,
   }) : super._(
-          channel: channel,
-          userName: userName,
-        );
+         channel: channel,
+         userName: userName,
+       );
 
   /// Returns a shallow copy of this [ChatJoinChannel]
   /// with some or all fields replaced by the given arguments.

@@ -14,8 +14,12 @@ const generator = DartServerCodeGenerator();
 void main() {
   var testClassName = 'ExampleWithVector';
   var testClassFileName = 'example_with_vector';
-  var expectedFilePath =
-      path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+  var expectedFilePath = path.join(
+    'lib',
+    'src',
+    'generated',
+    '$testClassFileName.dart',
+  );
   var tableName = 'example_with_vector_table';
 
   group('Given a class with a vector field when generating code', () {
@@ -25,7 +29,7 @@ void main() {
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .withVectorField('vector', dimension: 512)
-          .build()
+          .build(),
     ];
 
     late final codeMap = generator.generateSerializableModelsCode(
@@ -33,14 +37,15 @@ void main() {
       config: config,
     );
 
-    late final compilationUnit =
-        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
     late final maybeClassNamedExampleWithVectorTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: '${testClassName}Table',
-    );
+          compilationUnit,
+          name: '${testClassName}Table',
+        );
 
     test('then a class named ${testClassName}Table is generated.', () {
       expect(
@@ -51,29 +56,31 @@ void main() {
     });
 
     group('then the class named ${testClassName}Table', () {
-      test('has a vector field declaration with correct dimension parameter',
-          () {
-        final constructorDeclaration =
-            CompilationUnitHelpers.tryFindConstructorDeclaration(
-          maybeClassNamedExampleWithVectorTable!,
-          name: null,
-        );
+      test(
+        'has a vector field declaration with correct dimension parameter',
+        () {
+          final constructorDeclaration =
+              CompilationUnitHelpers.tryFindConstructorDeclaration(
+                maybeClassNamedExampleWithVectorTable!,
+                name: null,
+              );
 
-        expect(
-          constructorDeclaration,
-          isNotNull,
-          reason: 'Missing constructor declaration in ${testClassName}Table',
-        );
+          expect(
+            constructorDeclaration,
+            isNotNull,
+            reason: 'Missing constructor declaration in ${testClassName}Table',
+          );
 
-        final constructorSource = constructorDeclaration!.toSource();
-        expect(
-          constructorSource.contains(
-            "ColumnVector('vector', this, dimension: 512)",
-          ),
-          isTrue,
-          reason: 'Constructor should initialize vector with dimension: 512',
-        );
-      });
+          final constructorSource = constructorDeclaration!.toSource();
+          expect(
+            constructorSource.contains(
+              "ColumnVector('vector', this, dimension: 512)",
+            ),
+            isTrue,
+            reason: 'Constructor should initialize vector with dimension: 512',
+          );
+        },
+      );
     });
   });
 
@@ -88,7 +95,7 @@ void main() {
             dimension: 768,
             vectorType: 'HalfVector',
           )
-          .build()
+          .build(),
     ];
 
     late final codeMap = generator.generateSerializableModelsCode(
@@ -96,14 +103,15 @@ void main() {
       config: config,
     );
 
-    late final compilationUnit =
-        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
     late final maybeClassNamedExampleWithHalfVectorTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: '${testClassName}Table',
-    );
+          compilationUnit,
+          name: '${testClassName}Table',
+        );
 
     test('then a class named ${testClassName}Table is generated.', () {
       expect(
@@ -115,30 +123,31 @@ void main() {
 
     group('then the class named ${testClassName}Table', () {
       test(
-          'has a half vector field declaration with correct dimension parameter',
-          () {
-        final constructorDeclaration =
-            CompilationUnitHelpers.tryFindConstructorDeclaration(
-          maybeClassNamedExampleWithHalfVectorTable!,
-          name: null,
-        );
+        'has a half vector field declaration with correct dimension parameter',
+        () {
+          final constructorDeclaration =
+              CompilationUnitHelpers.tryFindConstructorDeclaration(
+                maybeClassNamedExampleWithHalfVectorTable!,
+                name: null,
+              );
 
-        expect(
-          constructorDeclaration,
-          isNotNull,
-          reason: 'Missing constructor declaration in ${testClassName}Table',
-        );
+          expect(
+            constructorDeclaration,
+            isNotNull,
+            reason: 'Missing constructor declaration in ${testClassName}Table',
+          );
 
-        final constructorSource = constructorDeclaration!.toSource();
-        expect(
-          constructorSource.contains(
-            "ColumnHalfVector('embedding', this, dimension: 768)",
-          ),
-          isTrue,
-          reason:
-              'Constructor should initialize half vector with dimension: 768',
-        );
-      });
+          final constructorSource = constructorDeclaration!.toSource();
+          expect(
+            constructorSource.contains(
+              "ColumnHalfVector('embedding', this, dimension: 768)",
+            ),
+            isTrue,
+            reason:
+                'Constructor should initialize half vector with dimension: 768',
+          );
+        },
+      );
     });
   });
 
@@ -153,7 +162,7 @@ void main() {
             dimension: 1024,
             vectorType: 'SparseVector',
           )
-          .build()
+          .build(),
     ];
 
     late final codeMap = generator.generateSerializableModelsCode(
@@ -161,14 +170,15 @@ void main() {
       config: config,
     );
 
-    late final compilationUnit =
-        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
     late final maybeClassNamedExampleWithSparseVectorTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: '${testClassName}Table',
-    );
+          compilationUnit,
+          name: '${testClassName}Table',
+        );
 
     test('then a class named ${testClassName}Table is generated.', () {
       expect(
@@ -180,30 +190,31 @@ void main() {
 
     group('then the class named ${testClassName}Table', () {
       test(
-          'has a sparse vector field declaration with correct dimension parameter',
-          () {
-        final constructorDeclaration =
-            CompilationUnitHelpers.tryFindConstructorDeclaration(
-          maybeClassNamedExampleWithSparseVectorTable!,
-          name: null,
-        );
+        'has a sparse vector field declaration with correct dimension parameter',
+        () {
+          final constructorDeclaration =
+              CompilationUnitHelpers.tryFindConstructorDeclaration(
+                maybeClassNamedExampleWithSparseVectorTable!,
+                name: null,
+              );
 
-        expect(
-          constructorDeclaration,
-          isNotNull,
-          reason: 'Missing constructor declaration in ${testClassName}Table',
-        );
+          expect(
+            constructorDeclaration,
+            isNotNull,
+            reason: 'Missing constructor declaration in ${testClassName}Table',
+          );
 
-        final constructorSource = constructorDeclaration!.toSource();
-        expect(
-          constructorSource.contains(
-            "ColumnSparseVector('sparse_data', this, dimension: 1024)",
-          ),
-          isTrue,
-          reason:
-              'Constructor should initialize sparse vector with dimension: 1024',
-        );
-      });
+          final constructorSource = constructorDeclaration!.toSource();
+          expect(
+            constructorSource.contains(
+              "ColumnSparseVector('sparse_data', this, dimension: 1024)",
+            ),
+            isTrue,
+            reason:
+                'Constructor should initialize sparse vector with dimension: 1024',
+          );
+        },
+      );
     });
   });
 
@@ -214,7 +225,7 @@ void main() {
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .withVectorField('signature', dimension: 64, vectorType: 'Bit')
-          .build()
+          .build(),
     ];
 
     late final codeMap = generator.generateSerializableModelsCode(
@@ -222,14 +233,15 @@ void main() {
       config: config,
     );
 
-    late final compilationUnit =
-        parseString(content: codeMap[expectedFilePath]!).unit;
+    late final compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
 
     late final maybeClassNamedExampleWithBitTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: '${testClassName}Table',
-    );
+          compilationUnit,
+          name: '${testClassName}Table',
+        );
 
     test('then a class named ${testClassName}Table is generated.', () {
       expect(
@@ -241,29 +253,30 @@ void main() {
 
     group('then the class named ${testClassName}Table', () {
       test(
-          'has a bit vector field declaration with correct dimension parameter',
-          () {
-        final constructorDeclaration =
-            CompilationUnitHelpers.tryFindConstructorDeclaration(
-          maybeClassNamedExampleWithBitTable!,
-          name: null,
-        );
+        'has a bit vector field declaration with correct dimension parameter',
+        () {
+          final constructorDeclaration =
+              CompilationUnitHelpers.tryFindConstructorDeclaration(
+                maybeClassNamedExampleWithBitTable!,
+                name: null,
+              );
 
-        expect(
-          constructorDeclaration,
-          isNotNull,
-          reason: 'Missing constructor declaration in ${testClassName}Table',
-        );
+          expect(
+            constructorDeclaration,
+            isNotNull,
+            reason: 'Missing constructor declaration in ${testClassName}Table',
+          );
 
-        final constructorSource = constructorDeclaration!.toSource();
-        expect(
-          constructorSource.contains(
-            "ColumnBit('signature', this, dimension: 64)",
-          ),
-          isTrue,
-          reason: 'Constructor should initialize bit with dimension: 64',
-        );
-      });
+          final constructorSource = constructorDeclaration!.toSource();
+          expect(
+            constructorSource.contains(
+              "ColumnBit('signature', this, dimension: 64)",
+            ),
+            isTrue,
+            reason: 'Constructor should initialize bit with dimension: 64',
+          );
+        },
+      );
     });
   });
 }

@@ -56,6 +56,7 @@ abstract class Channel implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Channel',
       if (id != null) 'id': id,
       'name': name,
       'channel': channel,
@@ -76,10 +77,10 @@ class _ChannelImpl extends Channel {
     required String name,
     required String channel,
   }) : super._(
-          id: id,
-          name: name,
-          channel: channel,
-        );
+         id: id,
+         name: name,
+         channel: channel,
+       );
 
   /// Returns a shallow copy of this [Channel]
   /// with some or all fields replaced by the given arguments.

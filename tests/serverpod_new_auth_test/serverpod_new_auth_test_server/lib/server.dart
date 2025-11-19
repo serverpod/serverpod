@@ -22,27 +22,29 @@ void run(final List<String> args) async {
 
   const universalHashPepper = 'test-pepper';
   final authConfig = AuthServices.set(
-      primaryTokenManager: AuthSessionsTokenManagerFactory(
-        AuthSessionsConfig(sessionKeyHashPepper: universalHashPepper),
+    primaryTokenManager: AuthSessionsTokenManagerFactory(
+      AuthSessionsConfig(sessionKeyHashPepper: universalHashPepper),
+    ),
+    identityProviders: [
+      EmailIdentityProviderFactory(
+        EmailIDPConfig(
+          secretHashPepper: pod.getPassword(
+            'serverpod_auth_idp_email_secretHashPepper',
+          )!,
+        ),
       ),
-      identityProviders: [
-        EmailIdentityProviderFactory(
-          EmailIDPConfig(
-            secretHashPepper:
-                pod.getPassword('serverpod_auth_idp_email_secretHashPepper')!,
+    ],
+    additionalTokenManagers: [
+      AuthenticationTokensTokenManagerFactory(
+        AuthenticationTokenConfig(
+          refreshTokenHashPepper: universalHashPepper,
+          algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+            SecretKey('test-private-key-for-HS512'),
           ),
         ),
-      ],
-      additionalTokenManagers: [
-        AuthenticationTokensTokenManagerFactory(
-          AuthenticationTokenConfig(
-            refreshTokenHashPepper: universalHashPepper,
-            algorithm: AuthenticationTokenAlgorithm.hmacSha512(
-              SecretKey('test-private-key-for-HS512'),
-            ),
-          ),
-        ),
-      ]);
+      ),
+    ],
+  );
 
   pod.authenticationHandler = authConfig.authenticationHandler;
 

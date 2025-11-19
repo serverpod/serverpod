@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../database/database_migration_warning_type.dart' as _i2;
+import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i3;
 
 abstract class DatabaseMigrationWarning implements _i1.SerializableModel {
   DatabaseMigrationWarning._({
@@ -31,15 +32,17 @@ abstract class DatabaseMigrationWarning implements _i1.SerializableModel {
   }) = _DatabaseMigrationWarningImpl;
 
   factory DatabaseMigrationWarning.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DatabaseMigrationWarning(
       type: _i2.DatabaseMigrationWarningType.fromJson(
-          (jsonSerialization['type'] as String)),
+        (jsonSerialization['type'] as String),
+      ),
       message: jsonSerialization['message'] as String,
       table: jsonSerialization['table'] as String,
-      columns: (jsonSerialization['columns'] as List)
-          .map((e) => e as String)
-          .toList(),
+      columns: _i3.Protocol().deserialize<List<String>>(
+        jsonSerialization['columns'],
+      ),
       destrucive: jsonSerialization['destrucive'] as bool,
     );
   }
@@ -67,6 +70,7 @@ abstract class DatabaseMigrationWarning implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.DatabaseMigrationWarning',
       'type': type.toJson(),
       'message': message,
       'table': table,
@@ -89,12 +93,12 @@ class _DatabaseMigrationWarningImpl extends DatabaseMigrationWarning {
     required List<String> columns,
     required bool destrucive,
   }) : super._(
-          type: type,
-          message: message,
-          table: table,
-          columns: columns,
-          destrucive: destrucive,
-        );
+         type: type,
+         message: message,
+         table: table,
+         columns: columns,
+         destrucive: destrucive,
+       );
 
   /// Returns a shallow copy of this [DatabaseMigrationWarning]
   /// with some or all fields replaced by the given arguments.

@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i2;
 
 abstract class AuthSessionInfo
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -39,21 +40,24 @@ abstract class AuthSessionInfo
   factory AuthSessionInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return AuthSessionInfo(
       id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
+      scopeNames: _i2.Protocol().deserialize<Set<String>>(
+        jsonSerialization['scopeNames'],
+      ),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
-      lastUsed:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUsed']),
+      lastUsed: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['lastUsed'],
+      ),
       expiresAt: jsonSerialization['expiresAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiresAt']),
       expireAfterUnusedFor: jsonSerialization['expireAfterUnusedFor'] == null
           ? null
           : _i1.DurationJsonExtension.fromJson(
-              jsonSerialization['expireAfterUnusedFor']),
+              jsonSerialization['expireAfterUnusedFor'],
+            ),
       method: jsonSerialization['method'] as String,
     );
   }
@@ -107,6 +111,7 @@ abstract class AuthSessionInfo
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.AuthSessionInfo',
       'id': id.toJson(),
       'authUserId': authUserId.toJson(),
       'scopeNames': scopeNames.toJson(),
@@ -122,6 +127,7 @@ abstract class AuthSessionInfo
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth_core.AuthSessionInfo',
       'id': id.toJson(),
       'authUserId': authUserId.toJson(),
       'scopeNames': scopeNames.toJson(),
@@ -153,15 +159,15 @@ class _AuthSessionInfoImpl extends AuthSessionInfo {
     Duration? expireAfterUnusedFor,
     required String method,
   }) : super._(
-          id: id,
-          authUserId: authUserId,
-          scopeNames: scopeNames,
-          created: created,
-          lastUsed: lastUsed,
-          expiresAt: expiresAt,
-          expireAfterUnusedFor: expireAfterUnusedFor,
-          method: method,
-        );
+         id: id,
+         authUserId: authUserId,
+         scopeNames: scopeNames,
+         created: created,
+         lastUsed: lastUsed,
+         expiresAt: expiresAt,
+         expireAfterUnusedFor: expireAfterUnusedFor,
+         method: method,
+       );
 
   /// Returns a shallow copy of this [AuthSessionInfo]
   /// with some or all fields replaced by the given arguments.

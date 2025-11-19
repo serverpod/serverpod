@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../models_with_list_relations/organization.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class Person implements _i1.SerializableModel {
   Person._({
@@ -35,8 +36,9 @@ abstract class Person implements _i1.SerializableModel {
       organizationId: jsonSerialization['organizationId'] as int?,
       organization: jsonSerialization['organization'] == null
           ? null
-          : _i2.Organization.fromJson(
-              (jsonSerialization['organization'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.Organization>(
+              jsonSerialization['organization'],
+            ),
     );
   }
 
@@ -63,6 +65,7 @@ abstract class Person implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Person',
       if (id != null) 'id': id,
       'name': name,
       if (organizationId != null) 'organizationId': organizationId,
@@ -85,11 +88,11 @@ class _PersonImpl extends Person {
     int? organizationId,
     _i2.Organization? organization,
   }) : super._(
-          id: id,
-          name: name,
-          organizationId: organizationId,
-          organization: organization,
-        );
+         id: id,
+         name: name,
+         organizationId: organizationId,
+         organization: organization,
+       );
 
   /// Returns a shallow copy of this [Person]
   /// with some or all fields replaced by the given arguments.
@@ -104,8 +107,9 @@ class _PersonImpl extends Person {
     return Person(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      organizationId:
-          organizationId is int? ? organizationId : this.organizationId,
+      organizationId: organizationId is int?
+          ? organizationId
+          : this.organizationId,
       organization: organization is _i2.Organization?
           ? organization
           : this.organization?.copyWith(),

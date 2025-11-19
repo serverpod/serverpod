@@ -47,11 +47,27 @@ enum RollbackDatabase {
   disabled,
 }
 
+/// Options for controlling test server output during test execution.
+enum TestServerOutputMode {
+  /// Default mode - only stderr is printed (stdout suppressed).
+  /// This hides normal startup/shutdown logs while preserving error messages.
+  normal,
+
+  /// All logging - both stdout and stderr are printed.
+  /// Useful for debugging when you need to see all server output.
+  verbose,
+
+  /// No logging - both stdout and stderr are suppressed.
+  /// Completely silent mode, useful when you don't want any server output.
+  silent,
+}
+
 /// The test closure that is called by the `withServerpod` test helper.
-typedef TestClosure<T> = void Function(
-  TestSessionBuilder testSession,
-  T endpoints,
-);
+typedef TestClosure<T> =
+    void Function(
+      TestSessionBuilder testSession,
+      T endpoints,
+    );
 
 /// The default integration test tag used by `withServerpod`.
 const String defaultIntegrationTestTag = 'integration';
@@ -60,13 +76,14 @@ const String defaultIntegrationTestTag = 'integration';
 /// Used by the generated code.
 /// Note: The [testGroupName] parameter is needed to enable IDE support.
 void Function(TestClosure<T>)
-    buildWithServerpod<T extends InternalTestEndpoints>(
+buildWithServerpod<T extends InternalTestEndpoints>(
   String testGroupName,
   TestServerpod<T> testServerpod, {
   required RollbackDatabase? maybeRollbackDatabase,
   required bool? maybeEnableSessionLogging,
   required List<String>? maybeTestGroupTagsOverride,
   required Duration? maybeServerpodStartTimeout,
+  required TestServerOutputMode? maybeTestServerOutputMode,
 }) {
   var rollbackDatabase = maybeRollbackDatabase ?? RollbackDatabase.afterEach;
 
@@ -108,11 +125,11 @@ void Function(TestClosure<T>)
 
   InternalTestSessionBuilder mainTestSessionBuilder =
       InternalTestSessionBuilder(
-    testServerpod,
-    allTestSessions: allTestSessions,
-    enableLogging: maybeEnableSessionLogging ?? false,
-    mainServerpodSession: mainServerpodSession,
-  );
+        testServerpod,
+        allTestSessions: allTestSessions,
+        enableLogging: maybeEnableSessionLogging ?? false,
+        mainServerpodSession: mainServerpodSession,
+      );
 
   bool startServerpodFailed = false;
 
@@ -124,13 +141,16 @@ void Function(TestClosure<T>)
       () {
         setUpAll(() async {
           try {
-            await testServerpod.start().timeout(startTimeout, onTimeout: () {
-              throw InitializationException(
-                'Serverpod did not start within the timeout of $startTimeout. '
-                'This might indicate that Serverpod cannot connect to the database. '
-                'Ensure that you have run `docker compose up` and check the logs for more information.',
-              );
-            });
+            await testServerpod.start().timeout(
+              startTimeout,
+              onTimeout: () {
+                throw InitializationException(
+                  'Serverpod did not start within the timeout of $startTimeout. '
+                  'This might indicate that Serverpod cannot connect to the database. '
+                  'Ensure that you have run `docker compose up` and check the logs for more information.',
+                );
+              },
+            );
           } catch (_) {
             startServerpodFailed = true;
             rethrow;

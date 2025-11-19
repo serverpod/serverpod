@@ -95,8 +95,9 @@ void main() async {
 
         var fetchedCats = await Cat.db.find(
           session,
-          where: (t) => t.kittens
-              .any((t) => t.name.ilike('kitt%') | t.name.equals('Smulan II')),
+          where: (t) => t.kittens.any(
+            (t) => t.name.ilike('kitt%') | t.name.equals('Smulan II'),
+          ),
         );
 
         var catNames = fetchedCats.map((e) => e.name);
@@ -188,7 +189,8 @@ void main() async {
         var fetchedCats = await Cat.db.find(
           session,
           where: (t) => t.kittens.any(
-              (o) => o.kittens.any((o) => o.name.equals('Nested Kitten1'))),
+            (o) => o.kittens.any((o) => o.name.equals('Nested Kitten1')),
+          ),
         );
 
         var catNames = fetchedCats.map((e) => e.name);

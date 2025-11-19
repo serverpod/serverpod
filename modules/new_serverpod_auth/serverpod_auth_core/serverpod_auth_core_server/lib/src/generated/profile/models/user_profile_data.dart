@@ -56,6 +56,7 @@ abstract class UserProfileData
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.UserProfileData',
       if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,
       if (email != null) 'email': email,
@@ -81,10 +82,10 @@ class _UserProfileDataImpl extends UserProfileData {
     String? fullName,
     String? email,
   }) : super._(
-          userName: userName,
-          fullName: fullName,
-          email: email,
-        );
+         userName: userName,
+         fullName: fullName,
+         email: email,
+       );
 
   /// Returns a shallow copy of this [UserProfileData]
   /// with some or all fields replaced by the given arguments.

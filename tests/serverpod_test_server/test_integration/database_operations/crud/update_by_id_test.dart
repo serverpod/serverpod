@@ -228,8 +228,10 @@ void main() {
           updated = await Types.db.updateById(
             session,
             existingEntry.id!,
-            columnValues: (t) =>
-                [t.anInt(updatedInt), t.aString(updatedString)],
+            columnValues: (t) => [
+              t.anInt(updatedInt),
+              t.aString(updatedString),
+            ],
           );
         });
 
@@ -274,7 +276,7 @@ void main() {
             aSet: {1, 2, 3},
             aRecord: (
               'original',
-              optionalUri: Uri.parse('https://example.com')
+              optionalUri: Uri.parse('https://example.com'),
             ),
           ),
         );
@@ -296,7 +298,8 @@ void main() {
               t.aByteData(ByteData.view(Uint8List.fromList([4, 5, 6]).buffer)),
               t.aDuration(Duration(minutes: 5)),
               t.aUuid(
-                  UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000')),
+                UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'),
+              ),
               t.aUri(Uri.parse('https://example.com')),
               t.aBigInt(BigInt.from(987654321)),
               t.aVector(Vector([4.0, 5.0, 6.0])),
@@ -323,15 +326,18 @@ void main() {
           expect(updated!.aDateTime, DateTime.utc(2024, 12, 31));
           expect(updated!.aString, 'updated');
           expect(
-              Uint8List.view(
-                updated!.aByteData!.buffer,
-                updated!.aByteData!.offsetInBytes,
-                updated!.aByteData!.lengthInBytes,
-              ).toList(),
-              [4, 5, 6]);
+            Uint8List.view(
+              updated!.aByteData!.buffer,
+              updated!.aByteData!.offsetInBytes,
+              updated!.aByteData!.lengthInBytes,
+            ).toList(),
+            [4, 5, 6],
+          );
           expect(updated!.aDuration, Duration(minutes: 5));
-          expect(updated!.aUuid,
-              UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'));
+          expect(
+            updated!.aUuid,
+            UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'),
+          );
           expect(updated!.aUri, Uri.parse('https://example.com'));
           expect(updated!.aBigInt, BigInt.from(987654321));
           expect(updated!.aVector, Vector([4.0, 5.0, 6.0]));
@@ -343,8 +349,10 @@ void main() {
           expect(updated!.aList, [4, 5, 6]);
           expect(updated!.aMap, {3: 30, 4: 40});
           expect(updated!.aSet, {4, 5, 6});
-          expect(updated!.aRecord,
-              ('updated', optionalUri: Uri.parse('https://updated.com')));
+          expect(updated!.aRecord, (
+            'updated',
+            optionalUri: Uri.parse('https://updated.com'),
+          ));
         });
 
         test('then all data types are updated in the database', () async {
@@ -356,15 +364,18 @@ void main() {
           expect(dbRow.aDateTime, DateTime.utc(2024, 12, 31));
           expect(dbRow.aString, 'updated');
           expect(
-              Uint8List.view(
-                dbRow.aByteData!.buffer,
-                dbRow.aByteData!.offsetInBytes,
-                dbRow.aByteData!.lengthInBytes,
-              ).toList(),
-              [4, 5, 6]);
+            Uint8List.view(
+              dbRow.aByteData!.buffer,
+              dbRow.aByteData!.offsetInBytes,
+              dbRow.aByteData!.lengthInBytes,
+            ).toList(),
+            [4, 5, 6],
+          );
           expect(dbRow.aDuration, Duration(minutes: 5));
-          expect(dbRow.aUuid,
-              UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'));
+          expect(
+            dbRow.aUuid,
+            UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'),
+          );
           expect(dbRow.aUri, Uri.parse('https://example.com'));
           expect(dbRow.aBigInt, BigInt.from(987654321));
           expect(dbRow.aVector, Vector([4.0, 5.0, 6.0]));
@@ -376,8 +387,10 @@ void main() {
           expect(dbRow.aList, [4, 5, 6]);
           expect(dbRow.aMap, {3: 30, 4: 40});
           expect(dbRow.aSet, {4, 5, 6});
-          expect(dbRow.aRecord,
-              ('updated', optionalUri: Uri.parse('https://updated.com')));
+          expect(dbRow.aRecord, (
+            'updated',
+            optionalUri: Uri.parse('https://updated.com'),
+          ));
         });
       });
     },
@@ -389,16 +402,17 @@ void main() {
       var session = testSession.build();
 
       test(
-          'when updating by non-existent id then DatabaseUpdateRowException is thrown',
-          () async {
-        var updated = Types.db.updateById(
-          session,
-          999999,
-          columnValues: (t) => [t.anInt(123)],
-        );
+        'when updating by non-existent id then DatabaseUpdateRowException is thrown',
+        () async {
+          var updated = Types.db.updateById(
+            session,
+            999999,
+            columnValues: (t) => [t.anInt(123)],
+          );
 
-        expect(updated, throwsA(isA<DatabaseUpdateRowException>()));
-      });
+          expect(updated, throwsA(isA<DatabaseUpdateRowException>()));
+        },
+      );
     },
   );
 }

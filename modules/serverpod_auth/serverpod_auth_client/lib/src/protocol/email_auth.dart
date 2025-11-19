@@ -63,6 +63,7 @@ abstract class EmailAuth implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.EmailAuth',
       if (id != null) 'id': id,
       'userId': userId,
       'email': email,
@@ -85,11 +86,11 @@ class _EmailAuthImpl extends EmailAuth {
     required String email,
     required String hash,
   }) : super._(
-          id: id,
-          userId: userId,
-          email: email,
-          hash: hash,
-        );
+         id: id,
+         userId: userId,
+         email: email,
+         hash: hash,
+       );
 
   /// Returns a shallow copy of this [EmailAuth]
   /// with some or all fields replaced by the given arguments.

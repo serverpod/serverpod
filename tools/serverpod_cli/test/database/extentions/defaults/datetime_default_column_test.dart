@@ -13,13 +13,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should not have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"dateTime" timestamp without time zone NOT NULL',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should not have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"dateTime" timestamp without time zone NOT NULL',
+          );
+        },
+      );
     });
 
     group('with CURRENT_TIMESTAMP as default value', () {
@@ -32,13 +33,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"dateTime" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"dateTime" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP',
+          );
+        },
+      );
     });
 
     group('with a specific timestamp as default value', () {
@@ -52,13 +54,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"dateTime" timestamp without time zone NOT NULL DEFAULT \'2024-01-01T01:01:01.000Z\'::timestamp without time zone',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"dateTime" timestamp without time zone NOT NULL DEFAULT \'2024-01-01T01:01:01.000Z\'::timestamp without time zone',
+          );
+        },
+      );
     });
 
     group('with nullable column and no default value', () {
@@ -70,13 +73,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"dateTime" timestamp without time zone',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"dateTime" timestamp without time zone',
+          );
+        },
+      );
     });
 
     group('with nullable column and default value', () {
@@ -89,13 +93,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"dateTime" timestamp without time zone DEFAULT CURRENT_TIMESTAMP',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"dateTime" timestamp without time zone DEFAULT CURRENT_TIMESTAMP',
+          );
+        },
+      );
     });
   });
 }

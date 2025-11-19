@@ -1,1 +1,7 @@
 include: package:serverpod_lints/public_flutter.yaml
+analyzer:
+  errors:
+    deprecated_member_use: ignore
+
+formatter:
+  trailing_commas: preserve

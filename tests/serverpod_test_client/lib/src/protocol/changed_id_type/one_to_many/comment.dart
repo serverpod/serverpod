@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../changed_id_type/one_to_many/order.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class CommentInt implements _i1.SerializableModel {
   CommentInt._({
@@ -32,12 +33,14 @@ abstract class CommentInt implements _i1.SerializableModel {
     return CommentInt(
       id: jsonSerialization['id'] as int?,
       description: jsonSerialization['description'] as String,
-      orderId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['orderId']),
+      orderId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['orderId'],
+      ),
       order: jsonSerialization['order'] == null
           ? null
-          : _i2.OrderUuid.fromJson(
-              (jsonSerialization['order'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.OrderUuid>(
+              jsonSerialization['order'],
+            ),
     );
   }
 
@@ -64,6 +67,7 @@ abstract class CommentInt implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'CommentInt',
       if (id != null) 'id': id,
       'description': description,
       'orderId': orderId.toJson(),
@@ -86,11 +90,11 @@ class _CommentIntImpl extends CommentInt {
     required _i1.UuidValue orderId,
     _i2.OrderUuid? order,
   }) : super._(
-          id: id,
-          description: description,
-          orderId: orderId,
-          order: order,
-        );
+         id: id,
+         description: description,
+         orderId: orderId,
+         order: order,
+       );
 
   /// Returns a shallow copy of this [CommentInt]
   /// with some or all fields replaced by the given arguments.

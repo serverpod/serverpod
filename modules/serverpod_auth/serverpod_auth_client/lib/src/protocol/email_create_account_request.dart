@@ -32,7 +32,8 @@ abstract class EmailCreateAccountRequest implements _i1.SerializableModel {
   }) = _EmailCreateAccountRequestImpl;
 
   factory EmailCreateAccountRequest.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return EmailCreateAccountRequest(
       id: jsonSerialization['id'] as int?,
       userName: jsonSerialization['userName'] as String,
@@ -72,6 +73,7 @@ abstract class EmailCreateAccountRequest implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.EmailCreateAccountRequest',
       if (id != null) 'id': id,
       'userName': userName,
       'email': email,
@@ -96,12 +98,12 @@ class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
     required String hash,
     required String verificationCode,
   }) : super._(
-          id: id,
-          userName: userName,
-          email: email,
-          hash: hash,
-          verificationCode: verificationCode,
-        );
+         id: id,
+         userName: userName,
+         email: email,
+         hash: hash,
+         verificationCode: verificationCode,
+       );
 
   /// Returns a shallow copy of this [EmailCreateAccountRequest]
   /// with some or all fields replaced by the given arguments.

@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/one_to_one/citizen.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class AddressUuid
     implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
@@ -38,8 +39,9 @@ abstract class AddressUuid
       inhabitantId: jsonSerialization['inhabitantId'] as int?,
       inhabitant: jsonSerialization['inhabitant'] == null
           ? null
-          : _i2.CitizenInt.fromJson(
-              (jsonSerialization['inhabitant'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.CitizenInt>(
+              jsonSerialization['inhabitant'],
+            ),
     );
   }
 
@@ -71,6 +73,7 @@ abstract class AddressUuid
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'AddressUuid',
       'id': id.toJson(),
       'street': street,
       if (inhabitantId != null) 'inhabitantId': inhabitantId,
@@ -81,6 +84,7 @@ abstract class AddressUuid
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'AddressUuid',
       'id': id.toJson(),
       'street': street,
       if (inhabitantId != null) 'inhabitantId': inhabitantId,
@@ -127,11 +131,11 @@ class _AddressUuidImpl extends AddressUuid {
     int? inhabitantId,
     _i2.CitizenInt? inhabitant,
   }) : super._(
-          id: id,
-          street: street,
-          inhabitantId: inhabitantId,
-          inhabitant: inhabitant,
-        );
+         id: id,
+         street: street,
+         inhabitantId: inhabitantId,
+         inhabitant: inhabitant,
+       );
 
   /// Returns a shallow copy of this [AddressUuid]
   /// with some or all fields replaced by the given arguments.
@@ -158,14 +162,14 @@ class AddressUuidUpdateTable extends _i1.UpdateTable<AddressUuidTable> {
   AddressUuidUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> street(String value) => _i1.ColumnValue(
-        table.street,
-        value,
-      );
+    table.street,
+    value,
+  );
 
   _i1.ColumnValue<int, int> inhabitantId(int? value) => _i1.ColumnValue(
-        table.inhabitantId,
-        value,
-      );
+    table.inhabitantId,
+    value,
+  );
 }
 
 class AddressUuidTable extends _i1.Table<_i1.UuidValue> {
@@ -204,10 +208,10 @@ class AddressUuidTable extends _i1.Table<_i1.UuidValue> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        street,
-        inhabitantId,
-      ];
+    id,
+    street,
+    inhabitantId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

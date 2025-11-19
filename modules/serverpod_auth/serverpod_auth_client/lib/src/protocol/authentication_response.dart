@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'user_info.dart' as _i2;
 import 'authentication_fail_reason.dart' as _i3;
+import 'package:serverpod_auth_client/src/protocol/protocol.dart' as _i4;
 
 /// Provides a response to an authentication attempt.
 abstract class AuthenticationResponse implements _i1.SerializableModel {
@@ -33,19 +34,22 @@ abstract class AuthenticationResponse implements _i1.SerializableModel {
   }) = _AuthenticationResponseImpl;
 
   factory AuthenticationResponse.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return AuthenticationResponse(
       success: jsonSerialization['success'] as bool,
       key: jsonSerialization['key'] as String?,
       keyId: jsonSerialization['keyId'] as int?,
       userInfo: jsonSerialization['userInfo'] == null
           ? null
-          : _i2.UserInfo.fromJson(
-              (jsonSerialization['userInfo'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i2.UserInfo>(
+              jsonSerialization['userInfo'],
+            ),
       failReason: jsonSerialization['failReason'] == null
           ? null
           : _i3.AuthenticationFailReason.fromJson(
-              (jsonSerialization['failReason'] as int)),
+              (jsonSerialization['failReason'] as int),
+            ),
     );
   }
 
@@ -79,6 +83,7 @@ abstract class AuthenticationResponse implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.AuthenticationResponse',
       'success': success,
       if (key != null) 'key': key,
       if (keyId != null) 'keyId': keyId,
@@ -103,12 +108,12 @@ class _AuthenticationResponseImpl extends AuthenticationResponse {
     _i2.UserInfo? userInfo,
     _i3.AuthenticationFailReason? failReason,
   }) : super._(
-          success: success,
-          key: key,
-          keyId: keyId,
-          userInfo: userInfo,
-          failReason: failReason,
-        );
+         success: success,
+         key: key,
+         keyId: keyId,
+         userInfo: userInfo,
+         failReason: failReason,
+       );
 
   /// Returns a shallow copy of this [AuthenticationResponse]
   /// with some or all fields replaced by the given arguments.
@@ -125,8 +130,9 @@ class _AuthenticationResponseImpl extends AuthenticationResponse {
       success: success ?? this.success,
       key: key is String? ? key : this.key,
       keyId: keyId is int? ? keyId : this.keyId,
-      userInfo:
-          userInfo is _i2.UserInfo? ? userInfo : this.userInfo?.copyWith(),
+      userInfo: userInfo is _i2.UserInfo?
+          ? userInfo
+          : this.userInfo?.copyWith(),
       failReason: failReason is _i3.AuthenticationFailReason?
           ? failReason
           : this.failReason,

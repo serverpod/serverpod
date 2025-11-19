@@ -28,8 +28,9 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
               if (column.shouldSerializeFieldForDatabase(true))
                 ColumnDefinition(
                   name: column.name,
-                  columnType:
-                      ColumnType.values.byName(column.type.databaseTypeEnum),
+                  columnType: ColumnType.values.byName(
+                    column.type.databaseTypeEnum,
+                  ),
                   // The id column is not null, since it is auto generated.
                   isNullable: column.name != 'id' && column.type.nullable,
                   dartType: column.type.toString(),
@@ -39,7 +40,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                     classDefinition.tableName!,
                   ),
                   vectorDimension: column.type.vectorDimension,
-                )
+                ),
           ],
           foreignKeys: _createForeignKeys(classDefinition),
           indexes: [
@@ -47,7 +48,9 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
               indexName: '${classDefinition.tableName!}_pkey',
               elements: [
                 IndexElementDefinition(
-                    definition: 'id', type: IndexElementDefinitionType.column)
+                  definition: 'id',
+                  type: IndexElementDefinitionType.column,
+                ),
               ],
               type: 'btree',
               isUnique: true,
@@ -59,8 +62,9 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                 elements: [
                   for (var field in index.fields)
                     IndexElementDefinition(
-                        type: IndexElementDefinitionType.column,
-                        definition: field)
+                      type: IndexElementDefinitionType.column,
+                      definition: field,
+                    ),
                 ],
                 type: index.type,
                 isUnique: index.unique,
@@ -69,12 +73,16 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                     ? index.vectorDistanceFunction ?? VectorDistanceFunction.l2
                     : null,
                 vectorColumnType: index.isVectorIndex
-                    ? ColumnType.values.firstWhere((type) =>
-                        type.name ==
-                        classDefinition.fields
-                            .firstWhere((f) => index.fields.contains(f.name))
-                            .type
-                            .databaseTypeEnum)
+                    ? ColumnType.values.firstWhere(
+                        (type) =>
+                            type.name ==
+                            classDefinition.fields
+                                .firstWhere(
+                                  (f) => index.fields.contains(f.name),
+                                )
+                                .type
+                                .databaseTypeEnum,
+                      )
                     : null,
                 parameters: index.parameters,
               ),
@@ -90,20 +98,23 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
     moduleName: moduleName,
     tables: tables,
     migrationApiVersion: DatabaseConstants.migrationApiVersion,
-    installedModules:
-        allModules.where((module) => module.migrationVersions.isNotEmpty).map(
-      (module) {
-        return DatabaseMigrationVersion(
-          module: module.name,
-          version: module.migrationVersions.last,
-        );
-      },
-    ).toList(),
+    installedModules: allModules
+        .where((module) => module.migrationVersions.isNotEmpty)
+        .map(
+          (module) {
+            return DatabaseMigrationVersion(
+              module: module.name,
+              version: module.migrationVersions.last,
+            );
+          },
+        )
+        .toList(),
   );
 }
 
 List<ForeignKeyDefinition> _createForeignKeys(
-    ModelClassDefinition classDefinition) {
+  ModelClassDefinition classDefinition,
+) {
   var fields = classDefinition.fields
       .where((field) => field.relation is ForeignRelationDefinition)
       .toList();
@@ -112,15 +123,17 @@ List<ForeignKeyDefinition> _createForeignKeys(
   for (var i = 0; i < fields.length; i++) {
     var field = fields[i];
     var relation = field.relation as ForeignRelationDefinition;
-    foreignKeys.add(ForeignKeyDefinition(
-      constraintName: '${classDefinition.tableName!}_fk_$i',
-      columns: [field.name],
-      referenceTable: relation.parentTable,
-      referenceTableSchema: 'public',
-      referenceColumns: ['id'],
-      onDelete: relation.onDelete,
-      onUpdate: relation.onUpdate,
-    ));
+    foreignKeys.add(
+      ForeignKeyDefinition(
+        constraintName: '${classDefinition.tableName!}_fk_$i',
+        columns: [field.name],
+        referenceTable: relation.parentTable,
+        referenceTableSchema: 'public',
+        referenceColumns: ['id'],
+        onDelete: relation.onDelete,
+        onUpdate: relation.onUpdate,
+      ),
+    );
   }
 
   return foreignKeys;

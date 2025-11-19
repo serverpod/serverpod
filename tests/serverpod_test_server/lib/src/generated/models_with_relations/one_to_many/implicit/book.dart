@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/one_to_many/implicit/chapter.dart'
     as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Book._({
@@ -33,9 +34,11 @@ abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     return Book(
       id: jsonSerialization['id'] as int?,
       title: jsonSerialization['title'] as String,
-      chapters: (jsonSerialization['chapters'] as List?)
-          ?.map((e) => _i2.Chapter.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      chapters: jsonSerialization['chapters'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.Chapter>>(
+              jsonSerialization['chapters'],
+            ),
     );
   }
 
@@ -64,6 +67,7 @@ abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Book',
       if (id != null) 'id': id,
       'title': title,
       if (chapters != null)
@@ -74,6 +78,7 @@ abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Book',
       if (id != null) 'id': id,
       'title': title,
       if (chapters != null)
@@ -119,10 +124,10 @@ class _BookImpl extends Book {
     required String title,
     List<_i2.Chapter>? chapters,
   }) : super._(
-          id: id,
-          title: title,
-          chapters: chapters,
-        );
+         id: id,
+         title: title,
+         chapters: chapters,
+       );
 
   /// Returns a shallow copy of this [Book]
   /// with some or all fields replaced by the given arguments.
@@ -147,9 +152,9 @@ class BookUpdateTable extends _i1.UpdateTable<BookTable> {
   BookUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> title(String value) => _i1.ColumnValue(
-        table.title,
-        value,
-      );
+    table.title,
+    value,
+  );
 }
 
 class BookTable extends _i1.Table<int?> {
@@ -195,16 +200,17 @@ class BookTable extends _i1.Table<int?> {
     _chapters = _i1.ManyRelation<_i2.ChapterTable>(
       tableWithRelations: relationTable,
       table: _i2.ChapterTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _chapters!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        title,
-      ];
+    id,
+    title,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -535,10 +541,12 @@ class BookAttachRepository {
     }
 
     var $chapter = chapter
-        .map((e) => _i2.ChapterImplicit(
-              e,
-              $_bookChaptersBookId: book.id,
-            ))
+        .map(
+          (e) => _i2.ChapterImplicit(
+            e,
+            $_bookChaptersBookId: book.id,
+          ),
+        )
         .toList();
     await session.db.update<_i2.Chapter>(
       $chapter,
@@ -596,10 +604,12 @@ class BookDetachRepository {
     }
 
     var $chapter = chapter
-        .map((e) => _i2.ChapterImplicit(
-              e,
-              $_bookChaptersBookId: null,
-            ))
+        .map(
+          (e) => _i2.ChapterImplicit(
+            e,
+            $_bookChaptersBookId: null,
+          ),
+        )
         .toList();
     await session.db.update<_i2.Chapter>(
       $chapter,

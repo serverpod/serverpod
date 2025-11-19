@@ -27,8 +27,8 @@ final class AuthSessions {
   AuthSessions({
     required final AuthSessionsConfig config,
     this.authUsers = const AuthUsers(),
-  })  : _config = config,
-        _sessionKeyHash = AuthSessionKeyHash.fromConfig(config);
+  }) : _config = config,
+       _sessionKeyHash = AuthSessionKeyHash.fromConfig(config);
 
   /// Admin-related functions for managing session.
   final admin = AuthSessionsAdmin();
@@ -102,8 +102,9 @@ final class AuthSessions {
       return null;
     }
 
-    if (authSession.lastUsedAt
-        .isBefore(clock.now().subtract(const Duration(minutes: 1)))) {
+    if (authSession.lastUsedAt.isBefore(
+      clock.now().subtract(const Duration(minutes: 1)),
+    )) {
       authSession = await AuthSession.db.updateRow(
         session,
         authSession.copyWith(lastUsedAt: clock.now()),
@@ -176,7 +177,8 @@ final class AuthSessions {
     }
 
     // Apply default values from config
-    final effectiveExpiresAt = expiresAt ??
+    final effectiveExpiresAt =
+        expiresAt ??
         (_config.defaultSessionLifetime != null
             ? clock.now().add(_config.defaultSessionLifetime!)
             : null);
@@ -240,6 +242,10 @@ final class AuthSessions {
   ///
   /// Note: The method will not do anything if no authentication information is
   /// found for the user.
+  ///
+  /// Automatically registers authentication revocation via
+  /// `session.messages.authenticationRevoked` when sessions are deleted. If this
+  /// behavior is not desired, use [AuthSessionsAdmin.deleteSessions] instead.
   Future<List<UuidValue>> destroyAllSessions(
     final Session session, {
     required final UuidValue authUserId,
@@ -272,6 +278,10 @@ final class AuthSessions {
   /// if the token was found and deleted, `false` otherwise.
   ///
   /// If the session does not exist, this method will have no effect.
+  ///
+  /// Automatically registers authentication revocation via
+  /// `session.messages.authenticationRevoked` when the session is deleted. If this
+  /// behavior is not desired, use [AuthSessionsAdmin.deleteSessions] instead.
   Future<bool> destroySession(
     final Session session, {
     required final UuidValue authSessionId,
@@ -282,8 +292,7 @@ final class AuthSessions {
       session,
       where: (final row) => row.id.equals(authSessionId),
       transaction: transaction,
-    ))
-        .firstOrNull;
+    )).firstOrNull;
 
     if (authSession == null) {
       return false;

@@ -21,30 +21,33 @@ void testSuite<T extends TokenManager>(
       });
 
       test(
-          'when constructing a token manager the token manager should be constructed',
-          () {
-        final tokenManager = factory.construct(authUsers: authUsers);
-        expect(tokenManager, isNotNull);
-        expect(tokenManager, isA<T>());
-      });
+        'when constructing a token manager the token manager should be constructed',
+        () {
+          final tokenManager = factory.construct(authUsers: authUsers);
+          expect(tokenManager, isNotNull);
+          expect(tokenManager, isA<T>());
+        },
+      );
 
       test(
-          'when constructing multiple token managers the token managers should be unique',
-          () {
-        final tokenManager1 = factory.construct(authUsers: authUsers);
-        final tokenManager2 = factory.construct(authUsers: authUsers);
-        expect(tokenManager1, isNot(same(tokenManager2)));
-      });
+        'when constructing multiple token managers the token managers should be unique',
+        () {
+          final tokenManager1 = factory.construct(authUsers: authUsers);
+          final tokenManager2 = factory.construct(authUsers: authUsers);
+          expect(tokenManager1, isNot(same(tokenManager2)));
+        },
+      );
 
       test(
-          'when constructing with different authUsers instances, then different instances are created',
-          () {
-        const authUsers1 = AuthUsers();
-        const authUsers2 = AuthUsers();
-        final tokenManager1 = factory.construct(authUsers: authUsers1);
-        final tokenManager2 = factory.construct(authUsers: authUsers2);
-        expect(tokenManager1, isNot(same(tokenManager2)));
-      });
+        'when constructing with different authUsers instances, then different instances are created',
+        () {
+          const authUsers1 = AuthUsers();
+          const authUsers2 = AuthUsers();
+          final tokenManager1 = factory.construct(authUsers: authUsers1);
+          final tokenManager2 = factory.construct(authUsers: authUsers2);
+          expect(tokenManager1, isNot(same(tokenManager2)));
+        },
+      );
     },
   );
 }

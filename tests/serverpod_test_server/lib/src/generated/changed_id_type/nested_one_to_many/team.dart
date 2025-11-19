@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/nested_one_to_many/arena.dart' as _i2;
 import '../../changed_id_type/nested_one_to_many/player.dart' as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
 
 abstract class TeamInt
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -43,11 +44,14 @@ abstract class TeamInt
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['arenaId']),
       arena: jsonSerialization['arena'] == null
           ? null
-          : _i2.ArenaUuid.fromJson(
-              (jsonSerialization['arena'] as Map<String, dynamic>)),
-      players: (jsonSerialization['players'] as List?)
-          ?.map((e) => _i3.PlayerUuid.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+          : _i4.Protocol().deserialize<_i2.ArenaUuid>(
+              jsonSerialization['arena'],
+            ),
+      players: jsonSerialization['players'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i3.PlayerUuid>>(
+              jsonSerialization['players'],
+            ),
     );
   }
 
@@ -82,6 +86,7 @@ abstract class TeamInt
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'TeamInt',
       if (id != null) 'id': id,
       'name': name,
       if (arenaId != null) 'arenaId': arenaId?.toJson(),
@@ -94,6 +99,7 @@ abstract class TeamInt
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'TeamInt',
       if (id != null) 'id': id,
       'name': name,
       if (arenaId != null) 'arenaId': arenaId?.toJson(),
@@ -149,12 +155,12 @@ class _TeamIntImpl extends TeamInt {
     _i2.ArenaUuid? arena,
     List<_i3.PlayerUuid>? players,
   }) : super._(
-          id: id,
-          name: name,
-          arenaId: arenaId,
-          arena: arena,
-          players: players,
-        );
+         id: id,
+         name: name,
+         arenaId: arenaId,
+         arena: arena,
+         players: players,
+       );
 
   /// Returns a shallow copy of this [TeamInt]
   /// with some or all fields replaced by the given arguments.
@@ -183,9 +189,9 @@ class TeamIntUpdateTable extends _i1.UpdateTable<TeamIntTable> {
   TeamIntUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> arenaId(_i1.UuidValue? value) =>
       _i1.ColumnValue(
@@ -258,17 +264,18 @@ class TeamIntTable extends _i1.Table<int?> {
     _players = _i1.ManyRelation<_i3.PlayerUuidTable>(
       tableWithRelations: relationTable,
       table: _i3.PlayerUuidTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _players!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        arenaId,
-      ];
+    id,
+    name,
+    arenaId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -297,9 +304,9 @@ class TeamIntInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'arena': _arena,
-        'players': _players,
-      };
+    'arena': _arena,
+    'players': _players,
+  };
 
   @override
   _i1.Table<int?> get table => TeamInt.t;
@@ -610,8 +617,9 @@ class TeamIntAttachRepository {
       throw ArgumentError.notNull('teamInt.id');
     }
 
-    var $playerUuid =
-        playerUuid.map((e) => e.copyWith(teamId: teamInt.id)).toList();
+    var $playerUuid = playerUuid
+        .map((e) => e.copyWith(teamId: teamInt.id))
+        .toList();
     await session.db.update<_i3.PlayerUuid>(
       $playerUuid,
       columns: [_i3.PlayerUuid.t.teamId],

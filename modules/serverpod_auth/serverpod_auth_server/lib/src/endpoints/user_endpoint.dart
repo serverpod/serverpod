@@ -33,7 +33,10 @@ class UserEndpoint extends Endpoint {
 
     var userId = session.authenticated?.userId;
     return await UserImages.setUserImageFromBytes(
-        session, userId!, image.buffer.asUint8List());
+      session,
+      userId!,
+      image.buffer.asUint8List(),
+    );
   }
 
   /// Changes the name of a user.

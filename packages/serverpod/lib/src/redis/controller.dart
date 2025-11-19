@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:redis/redis.dart';
 
 /// Callback when messages are received on a specific channel from Redis.
-typedef RedisSubscriptionCallback = void Function(
-    String channel, String message);
+typedef RedisSubscriptionCallback =
+    void Function(String channel, String message);
 
 /// The [RedisController] maintains an active connection to the Redis server. It
 /// handles caching, publishing, and subscriptions of strings. If the connection
@@ -84,7 +84,8 @@ class RedisController {
       return command;
     } catch (e, stackTrace) {
       stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis.');
+        '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis.',
+      );
       stderr.writeln('$e');
       stderr.writeln('$stackTrace');
       return null;
@@ -129,18 +130,22 @@ class RedisController {
       return false;
     }
 
-    runZonedGuarded(() {
-      _pubSub = PubSub(_pubSubCommand!);
-    }, (e, stackTrace) {
-      _invalidatePubSub();
+    runZonedGuarded(
+      () {
+        _pubSub = PubSub(_pubSubCommand!);
+      },
+      (e, stackTrace) {
+        _invalidatePubSub();
 
-      stderr.writeln(
-          '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis when creating PubSub.');
-      stderr.writeln('$e');
-      stderr.writeln('$stackTrace');
-      stderr.writeln('Local stacktrace:');
-      stderr.writeln('${StackTrace.current}');
-    });
+        stderr.writeln(
+          '${DateTime.now().toUtc()} Internal server error. Failed to connect to Redis when creating PubSub.',
+        );
+        stderr.writeln('$e');
+        stderr.writeln('$stackTrace');
+        stderr.writeln('Local stacktrace:');
+        stderr.writeln('${StackTrace.current}');
+      },
+    );
 
     var stream = _pubSub!.getStream();
     unawaited(_listenToSubscriptions(stream));

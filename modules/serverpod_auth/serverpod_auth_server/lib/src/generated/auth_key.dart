@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_auth_server/src/generated/protocol.dart' as _i2;
 
 /// Provides a method of access for a user to authenticate with the server.
 abstract class AuthKey
@@ -39,9 +40,9 @@ abstract class AuthKey
       userId: jsonSerialization['userId'] as int,
       hash: jsonSerialization['hash'] as String,
       key: jsonSerialization['key'] as String?,
-      scopeNames: (jsonSerialization['scopeNames'] as List)
-          .map((e) => e as String)
-          .toList(),
+      scopeNames: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['scopeNames'],
+      ),
       method: jsonSerialization['method'] as String,
     );
   }
@@ -86,6 +87,7 @@ abstract class AuthKey
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.AuthKey',
       if (id != null) 'id': id,
       'userId': userId,
       'hash': hash,
@@ -98,6 +100,7 @@ abstract class AuthKey
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth.AuthKey',
       if (id != null) 'id': id,
       'userId': userId,
       'hash': hash,
@@ -148,13 +151,13 @@ class _AuthKeyImpl extends AuthKey {
     required List<String> scopeNames,
     required String method,
   }) : super._(
-          id: id,
-          userId: userId,
-          hash: hash,
-          key: key,
-          scopeNames: scopeNames,
-          method: method,
-        );
+         id: id,
+         userId: userId,
+         hash: hash,
+         key: key,
+         scopeNames: scopeNames,
+         method: method,
+       );
 
   /// Returns a shallow copy of this [AuthKey]
   /// with some or all fields replaced by the given arguments.
@@ -183,14 +186,14 @@ class AuthKeyUpdateTable extends _i1.UpdateTable<AuthKeyTable> {
   AuthKeyUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
-        table.userId,
-        value,
-      );
+    table.userId,
+    value,
+  );
 
   _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
-        table.hash,
-        value,
-      );
+    table.hash,
+    value,
+  );
 
   _i1.ColumnValue<List<String>, List<String>> scopeNames(List<String> value) =>
       _i1.ColumnValue(
@@ -199,9 +202,9 @@ class AuthKeyUpdateTable extends _i1.UpdateTable<AuthKeyTable> {
       );
 
   _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
-        table.method,
-        value,
-      );
+    table.method,
+    value,
+  );
 }
 
 class AuthKeyTable extends _i1.Table<int?> {
@@ -242,12 +245,12 @@ class AuthKeyTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        userId,
-        hash,
-        scopeNames,
-        method,
-      ];
+    id,
+    userId,
+    hash,
+    scopeNames,
+    method,
+  ];
 }
 
 class AuthKeyInclude extends _i1.IncludeObject {

@@ -15,8 +15,12 @@ void main() {
   var testClassName = 'Example';
   var repositoryClassName = '${testClassName}Repository';
   var testClassFileName = 'example';
-  var expectedFilePath =
-      path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+  var expectedFilePath = path.join(
+    'lib',
+    'src',
+    'generated',
+    '$testClassFileName.dart',
+  );
 
   group('Given a class with table name when generating code', () {
     var tableName = 'example_table';
@@ -24,7 +28,7 @@ void main() {
       ModelClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -217,14 +221,15 @@ void main() {
         });
 
         test(
-            'that takes the orderDescending as a named param with the default value false',
-            () {
-          var params = findRowMethod?.parameters?.toSource();
-          expect(
-            params,
-            contains('bool orderDescending = false'),
-          );
-        });
+          'that takes the orderDescending as a named param with the default value false',
+          () {
+            var params = findRowMethod?.parameters?.toSource();
+            expect(
+              params,
+              contains('bool orderDescending = false'),
+            );
+          },
+        );
 
         test('that takes the transaction object as an optional param', () {
           expect(
@@ -685,18 +690,19 @@ void main() {
         });
 
         test(
-            'that returns a future with an optional instance of the base class',
-            () {
-          expect(
-            updateByIdMethod?.returnType?.toSource(),
-            contains('Future'),
-          );
+          'that returns a future with an optional instance of the base class',
+          () {
+            expect(
+              updateByIdMethod?.returnType?.toSource(),
+              contains('Future'),
+            );
 
-          expect(
-            updateByIdMethod?.returnType?.toSource(),
-            contains('$testClassName?'),
-          );
-        });
+            expect(
+              updateByIdMethod?.returnType?.toSource(),
+              contains('$testClassName?'),
+            );
+          },
+        );
 
         test('that takes the session as a required param', () {
           expect(
@@ -717,7 +723,8 @@ void main() {
           expect(
             params,
             contains(
-                'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues'),
+              'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues',
+            ),
           );
         });
 
@@ -768,7 +775,8 @@ void main() {
           expect(
             params,
             contains(
-                'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues'),
+              'required _i1.ColumnValueListBuilder<${testClassName}UpdateTable> columnValues',
+            ),
           );
         });
 
@@ -777,7 +785,8 @@ void main() {
           expect(
             params,
             contains(
-                'required _i1.WhereExpressionBuilder<${testClassName}Table> where'),
+              'required _i1.WhereExpressionBuilder<${testClassName}Table> where',
+            ),
           );
         });
 
@@ -806,7 +815,8 @@ void main() {
           expect(
             updateWhereMethod?.parameters?.toSource(),
             contains(
-                '_i1.OrderByListBuilder<${testClassName}Table>? orderByList'),
+              '_i1.OrderByListBuilder<${testClassName}Table>? orderByList',
+            ),
           );
         });
 

@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/one_to_one/address.dart' as _i2;
 import '../../models_with_relations/one_to_one/company.dart' as _i3;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
 abstract class Citizen implements _i1.SerializableModel {
   Citizen._({
@@ -41,18 +42,21 @@ abstract class Citizen implements _i1.SerializableModel {
       name: jsonSerialization['name'] as String,
       address: jsonSerialization['address'] == null
           ? null
-          : _i2.Address.fromJson(
-              (jsonSerialization['address'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i2.Address>(
+              jsonSerialization['address'],
+            ),
       companyId: jsonSerialization['companyId'] as int,
       company: jsonSerialization['company'] == null
           ? null
-          : _i3.Company.fromJson(
-              (jsonSerialization['company'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i3.Company>(
+              jsonSerialization['company'],
+            ),
       oldCompanyId: jsonSerialization['oldCompanyId'] as int?,
       oldCompany: jsonSerialization['oldCompany'] == null
           ? null
-          : _i3.Company.fromJson(
-              (jsonSerialization['oldCompany'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i3.Company>(
+              jsonSerialization['oldCompany'],
+            ),
     );
   }
 
@@ -88,6 +92,7 @@ abstract class Citizen implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Citizen',
       if (id != null) 'id': id,
       'name': name,
       if (address != null) 'address': address?.toJson(),
@@ -116,14 +121,14 @@ class _CitizenImpl extends Citizen {
     int? oldCompanyId,
     _i3.Company? oldCompany,
   }) : super._(
-          id: id,
-          name: name,
-          address: address,
-          companyId: companyId,
-          company: company,
-          oldCompanyId: oldCompanyId,
-          oldCompany: oldCompany,
-        );
+         id: id,
+         name: name,
+         address: address,
+         companyId: companyId,
+         company: company,
+         oldCompanyId: oldCompanyId,
+         oldCompany: oldCompany,
+       );
 
   /// Returns a shallow copy of this [Citizen]
   /// with some or all fields replaced by the given arguments.
@@ -145,8 +150,9 @@ class _CitizenImpl extends Citizen {
       companyId: companyId ?? this.companyId,
       company: company is _i3.Company? ? company : this.company?.copyWith(),
       oldCompanyId: oldCompanyId is int? ? oldCompanyId : this.oldCompanyId,
-      oldCompany:
-          oldCompany is _i3.Company? ? oldCompany : this.oldCompany?.copyWith(),
+      oldCompany: oldCompany is _i3.Company?
+          ? oldCompany
+          : this.oldCompany?.copyWith(),
     );
   }
 }

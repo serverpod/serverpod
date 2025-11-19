@@ -31,33 +31,39 @@ class PasswordRequirement {
 
   /// Creates a [PasswordRequirement] for a minimum length.
   factory PasswordRequirement.minLength(int length) => PasswordRequirement(
-      description: 'At least $length characters',
-      validator: (password) => password.length >= length);
+    description: 'At least $length characters',
+    validator: (password) => password.length >= length,
+  );
 
   /// Creates a [PasswordRequirement] for a maximum length.
   factory PasswordRequirement.maxLength(int length) => PasswordRequirement(
-      description: 'At most $length characters',
-      validator: (password) => password.length <= length);
+    description: 'At most $length characters',
+    validator: (password) => password.length <= length,
+  );
 
   /// Creates a [PasswordRequirement] for at least one lowercase letter.
   factory PasswordRequirement.containsLowercase() => PasswordRequirement(
-      description: 'Contains at least one lowercase letter',
-      validator: (password) => password.contains(lowercaseLetters));
+    description: 'Contains at least one lowercase letter',
+    validator: (password) => password.contains(lowercaseLetters),
+  );
 
   /// Creates a [PasswordRequirement] for at least one uppercase letter.
   factory PasswordRequirement.containsUppercase() => PasswordRequirement(
-      description: 'Contains at least one uppercase letter',
-      validator: (password) => password.contains(uppercaseLetters));
+    description: 'Contains at least one uppercase letter',
+    validator: (password) => password.contains(uppercaseLetters),
+  );
 
   /// Creates a [PasswordRequirement] for at least one number.
   factory PasswordRequirement.containsNumber() => PasswordRequirement(
-      description: 'Contains at least one number',
-      validator: (password) => password.contains(numbers));
+    description: 'Contains at least one number',
+    validator: (password) => password.contains(numbers),
+  );
 
   /// Creates a [PasswordRequirement] for at least one special character.
   factory PasswordRequirement.containsSpecialCharacter() => PasswordRequirement(
-      description: 'Contains at least one special character',
-      validator: (password) => password.contains(specialCharacters));
+    description: 'Contains at least one special character',
+    validator: (password) => password.contains(specialCharacters),
+  );
 
   /// Static list of default password requirements.
   static final List<PasswordRequirement> defaultRequirements = [
@@ -94,7 +100,8 @@ class PasswordRequirements extends StatelessWidget {
     }
 
     final theme = Theme.of(context);
-    final textStyle = theme.textTheme.bodySmall?.copyWith(color: Colors.grey) ??
+    final textStyle =
+        theme.textTheme.bodySmall?.copyWith(color: Colors.grey) ??
         const TextStyle(fontSize: 12, color: Colors.grey);
 
     return Column(
@@ -120,8 +127,8 @@ class PasswordRequirements extends StatelessWidget {
                   style: password.isEmpty
                       ? textStyle
                       : requirement.validator(password)
-                          ? textStyle.copyWith(color: Colors.green)
-                          : textStyle,
+                      ? textStyle.copyWith(color: Colors.green)
+                      : textStyle,
                 ),
               ],
             ),

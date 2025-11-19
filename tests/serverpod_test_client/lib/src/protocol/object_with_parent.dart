@@ -47,6 +47,7 @@ abstract class ObjectWithParent implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithParent',
       if (id != null) 'id': id,
       'other': other,
     };
@@ -65,9 +66,9 @@ class _ObjectWithParentImpl extends ObjectWithParent {
     int? id,
     required int other,
   }) : super._(
-          id: id,
-          other: other,
-        );
+         id: id,
+         other: other,
+       );
 
   /// Returns a shallow copy of this [ObjectWithParent]
   /// with some or all fields replaced by the given arguments.

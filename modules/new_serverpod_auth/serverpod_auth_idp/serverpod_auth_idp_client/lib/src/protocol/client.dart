@@ -206,12 +206,14 @@ abstract class EndpointPasskeyIDPBase extends _i1.EndpointRef {
   /// Registers a Passkey for the [session]'s current user.
   ///
   /// Throws if the user is not authenticated.
-  _i2.Future<void> register(
-      {required _i5.PasskeyRegistrationRequest registrationRequest});
+  _i2.Future<void> register({
+    required _i5.PasskeyRegistrationRequest registrationRequest,
+  });
 
   /// Authenticates the user related to the given Passkey.
-  _i2.Future<_i3.AuthSuccess> login(
-      {required _i6.PasskeyLoginRequest loginRequest});
+  _i2.Future<_i3.AuthSuccess> login({
+    required _i6.PasskeyLoginRequest loginRequest,
+  });
 }
 
 class Caller extends _i1.ModuleEndpointCaller {

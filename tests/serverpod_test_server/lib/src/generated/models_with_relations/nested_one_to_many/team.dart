@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/arena.dart' as _i2;
 import '../../models_with_relations/nested_one_to_many/player.dart' as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
 
 abstract class Team implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Team._({
@@ -40,11 +41,12 @@ abstract class Team implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       arenaId: jsonSerialization['arenaId'] as int?,
       arena: jsonSerialization['arena'] == null
           ? null
-          : _i2.Arena.fromJson(
-              (jsonSerialization['arena'] as Map<String, dynamic>)),
-      players: (jsonSerialization['players'] as List?)
-          ?.map((e) => _i3.Player.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+          : _i4.Protocol().deserialize<_i2.Arena>(jsonSerialization['arena']),
+      players: jsonSerialization['players'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i3.Player>>(
+              jsonSerialization['players'],
+            ),
     );
   }
 
@@ -79,6 +81,7 @@ abstract class Team implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Team',
       if (id != null) 'id': id,
       'name': name,
       if (arenaId != null) 'arenaId': arenaId,
@@ -91,6 +94,7 @@ abstract class Team implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Team',
       if (id != null) 'id': id,
       'name': name,
       if (arenaId != null) 'arenaId': arenaId,
@@ -146,12 +150,12 @@ class _TeamImpl extends Team {
     _i2.Arena? arena,
     List<_i3.Player>? players,
   }) : super._(
-          id: id,
-          name: name,
-          arenaId: arenaId,
-          arena: arena,
-          players: players,
-        );
+         id: id,
+         name: name,
+         arenaId: arenaId,
+         arena: arena,
+         players: players,
+       );
 
   /// Returns a shallow copy of this [Team]
   /// with some or all fields replaced by the given arguments.
@@ -180,14 +184,14 @@ class TeamUpdateTable extends _i1.UpdateTable<TeamTable> {
   TeamUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> arenaId(int? value) => _i1.ColumnValue(
-        table.arenaId,
-        value,
-      );
+    table.arenaId,
+    value,
+  );
 }
 
 class TeamTable extends _i1.Table<int?> {
@@ -254,17 +258,18 @@ class TeamTable extends _i1.Table<int?> {
     _players = _i1.ManyRelation<_i3.PlayerTable>(
       tableWithRelations: relationTable,
       table: _i3.PlayerTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _players!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        arenaId,
-      ];
+    id,
+    name,
+    arenaId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -293,9 +298,9 @@ class TeamInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'arena': _arena,
-        'players': _players,
-      };
+    'arena': _arena,
+    'players': _players,
+  };
 
   @override
   _i1.Table<int?> get table => Team.t;

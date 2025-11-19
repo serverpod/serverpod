@@ -46,10 +46,10 @@ final class EmailIDPAdmin {
       transaction,
       (final transaction) =>
           _utils.accountCreation.deleteEmailAccountRequestById(
-        session,
-        accountRequestId,
-        transaction: transaction,
-      ),
+            session,
+            accountRequestId,
+            transaction: transaction,
+          ),
     );
   }
 
@@ -63,9 +63,9 @@ final class EmailIDPAdmin {
       transaction,
       (final transaction) =>
           _utils.accountCreation.deleteExpiredAccountRequests(
-        session,
-        transaction: transaction,
-      ),
+            session,
+            transaction: transaction,
+          ),
     );
   }
 
@@ -83,11 +83,11 @@ final class EmailIDPAdmin {
       transaction,
       (final transaction) =>
           _utils.passwordReset.deletePasswordResetRequestAttempts(
-        session,
-        olderThan: Duration.zero,
-        email: email,
-        transaction: transaction,
-      ),
+            session,
+            olderThan: Duration.zero,
+            email: email,
+            transaction: transaction,
+          ),
     );
   }
 
@@ -201,8 +201,7 @@ final class EmailIDPAdmin {
         email: email,
         transaction: transaction,
       ),
-    ))
-        .firstOrNull;
+    )).firstOrNull;
   }
 
   /// {@macro email_idp_account_creation_util.find_active_email_account_request}
@@ -216,10 +215,10 @@ final class EmailIDPAdmin {
       transaction,
       (final transaction) =>
           _utils.accountCreation.findActiveEmailAccountRequest(
-        session,
-        accountRequestId: accountRequestId,
-        transaction: transaction,
-      ),
+            session,
+            accountRequestId: accountRequestId,
+            transaction: transaction,
+          ),
     );
   }
 
@@ -246,8 +245,7 @@ final class EmailIDPAdmin {
           session,
           email: email,
           transaction: transaction,
-        ))
-            .singleOrNull;
+        )).singleOrNull;
 
         if (account == null) {
           throw EmailAccountNotFoundException();

@@ -175,8 +175,9 @@ Future<void> _importProfile(
     transaction: transaction,
   );
 
-  final profileImageUrl =
-      userInfo.imageUrl != null ? Uri.tryParse(userInfo.imageUrl!) : null;
+  final profileImageUrl = userInfo.imageUrl != null
+      ? Uri.tryParse(userInfo.imageUrl!)
+      : null;
   if (profileImageUrl != null) {
     try {
       await userProfiles.setUserImageFromUrl(

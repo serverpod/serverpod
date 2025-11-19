@@ -61,7 +61,8 @@ class SignInWithEmailButtonState extends State<SignInWithEmailButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      style: widget.style ??
+      style:
+          widget.style ??
           ElevatedButton.styleFrom(
             backgroundColor: Colors.lightBlue,
             foregroundColor: Colors.white,

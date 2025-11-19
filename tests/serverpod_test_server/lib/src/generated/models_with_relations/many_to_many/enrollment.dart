@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/many_to_many/student.dart' as _i2;
 import '../../models_with_relations/many_to_many/course.dart' as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
 
 abstract class Enrollment
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -40,13 +41,13 @@ abstract class Enrollment
       studentId: jsonSerialization['studentId'] as int,
       student: jsonSerialization['student'] == null
           ? null
-          : _i2.Student.fromJson(
-              (jsonSerialization['student'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i2.Student>(
+              jsonSerialization['student'],
+            ),
       courseId: jsonSerialization['courseId'] as int,
       course: jsonSerialization['course'] == null
           ? null
-          : _i3.Course.fromJson(
-              (jsonSerialization['course'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i3.Course>(jsonSerialization['course']),
     );
   }
 
@@ -81,6 +82,7 @@ abstract class Enrollment
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Enrollment',
       if (id != null) 'id': id,
       'studentId': studentId,
       if (student != null) 'student': student?.toJson(),
@@ -92,6 +94,7 @@ abstract class Enrollment
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Enrollment',
       if (id != null) 'id': id,
       'studentId': studentId,
       if (student != null) 'student': student?.toJsonForProtocol(),
@@ -146,12 +149,12 @@ class _EnrollmentImpl extends Enrollment {
     required int courseId,
     _i3.Course? course,
   }) : super._(
-          id: id,
-          studentId: studentId,
-          student: student,
-          courseId: courseId,
-          course: course,
-        );
+         id: id,
+         studentId: studentId,
+         student: student,
+         courseId: courseId,
+         course: course,
+       );
 
   /// Returns a shallow copy of this [Enrollment]
   /// with some or all fields replaced by the given arguments.
@@ -178,14 +181,14 @@ class EnrollmentUpdateTable extends _i1.UpdateTable<EnrollmentTable> {
   EnrollmentUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> studentId(int value) => _i1.ColumnValue(
-        table.studentId,
-        value,
-      );
+    table.studentId,
+    value,
+  );
 
   _i1.ColumnValue<int, int> courseId(int value) => _i1.ColumnValue(
-        table.courseId,
-        value,
-      );
+    table.courseId,
+    value,
+  );
 }
 
 class EnrollmentTable extends _i1.Table<int?> {
@@ -239,10 +242,10 @@ class EnrollmentTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        studentId,
-        courseId,
-      ];
+    id,
+    studentId,
+    courseId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -271,9 +274,9 @@ class EnrollmentInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'student': _student,
-        'course': _course,
-      };
+    'student': _student,
+    'course': _course,
+  };
 
   @override
   _i1.Table<int?> get table => Enrollment.t;

@@ -46,9 +46,11 @@ void main() {
         );
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, localModels, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          localModels,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -73,9 +75,11 @@ void main() {
         );
 
         var collector = CodeGenerationCollector();
-        var definitions =
-            StatefulAnalyzer(config, localModels, onErrorsCollector(collector))
-                .validateAll();
+        var definitions = StatefulAnalyzer(
+          config,
+          localModels,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isEmpty);
 
@@ -100,8 +104,11 @@ void main() {
         );
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, localModels, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          localModels,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -129,8 +136,11 @@ void main() {
         );
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, localModels, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          localModels,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -158,8 +168,11 @@ void main() {
         );
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, localModels, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          localModels,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -187,8 +200,11 @@ void main() {
         );
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, localModels, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          localModels,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 
@@ -216,8 +232,11 @@ void main() {
         );
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(config, localModels, onErrorsCollector(collector))
-            .validateAll();
+        StatefulAnalyzer(
+          config,
+          localModels,
+          onErrorsCollector(collector),
+        ).validateAll();
 
         expect(collector.errors, isNotEmpty);
 

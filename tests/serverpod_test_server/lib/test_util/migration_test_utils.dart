@@ -14,8 +14,10 @@ abstract class MigrationTestUtils {
     String tag = 'test',
   }) async {
     for (var protocols in migrationProtocols) {
-      var exitCode =
-          await createMigrationFromProtocols(protocols: protocols, tag: tag);
+      var exitCode = await createMigrationFromProtocols(
+        protocols: protocols,
+        tag: tag,
+      );
 
       assert(
         exitCode == 0,
@@ -38,10 +40,12 @@ abstract class MigrationTestUtils {
     _migrationProtocolTestDirectory().createSync(recursive: true);
 
     protocols.forEach((fileName, contents) {
-      var protocolFile = File(path.join(
-        _migrationProtocolTestDirectory().path,
-        '$fileName.yaml',
-      ));
+      var protocolFile = File(
+        path.join(
+          _migrationProtocolTestDirectory().path,
+          '$fileName.yaml',
+        ),
+      );
 
       protocolFile.writeAsStringSync(contents);
     });
@@ -66,10 +70,12 @@ abstract class MigrationTestUtils {
   }
 
   static String readMigrationRegistryFile() {
-    var migrationRegistryFile = File(path.join(
-      _migrationsProjectDirectory().path,
-      'migration_registry.txt',
-    ));
+    var migrationRegistryFile = File(
+      path.join(
+        _migrationsProjectDirectory().path,
+        'migration_registry.txt',
+      ),
+    );
 
     return migrationRegistryFile.readAsStringSync();
   }
@@ -95,8 +101,9 @@ abstract class MigrationTestUtils {
   }
 
   static void _recreateMigrationRegistryFile() {
-    var migrationRegistry =
-        MigrationRegistry.load(_migrationsProjectDirectory());
+    var migrationRegistry = MigrationRegistry.load(
+      _migrationsProjectDirectory(),
+    );
     migrationRegistry.write();
   }
 
@@ -208,23 +215,29 @@ abstract class MigrationTestUtils {
     _moduleName = moduleName;
   }
 
-  static Directory _migrationProtocolTestDirectory() => Directory(path.join(
-        Directory.current.path,
-        'lib',
-        'src',
-        'protocol',
-        'migration_test_protocol_files',
-      ));
+  static Directory _migrationProtocolTestDirectory() => Directory(
+    path.join(
+      Directory.current.path,
+      'lib',
+      'src',
+      'protocol',
+      'migration_test_protocol_files',
+    ),
+  );
 
-  static Directory _repairMigrationDirectory() => Directory(path.join(
-        Directory.current.path,
-        'repair-migration',
-      ));
+  static Directory _repairMigrationDirectory() => Directory(
+    path.join(
+      Directory.current.path,
+      'repair-migration',
+    ),
+  );
 
-  static Directory _migrationsProjectDirectory() => Directory(path.join(
-        Directory.current.path,
-        'migrations',
-      ));
+  static Directory _migrationsProjectDirectory() => Directory(
+    path.join(
+      Directory.current.path,
+      'migrations',
+    ),
+  );
 
   static void _removeMigrationTestProtocolFolder() {
     var protocolDirectory = _migrationProtocolTestDirectory();

@@ -26,8 +26,9 @@ abstract class EndpointClassAnalyzer {
   ) {
     var className = element.displayName;
     var endpointName = _formatEndpointName(className);
-    if (endpointDefinitions
-        .any((e) => e.className == className && e.filePath == filePath)) {
+    if (endpointDefinitions.any(
+      (e) => e.className == className && e.filePath == filePath,
+    )) {
       return;
     }
 
@@ -61,8 +62,9 @@ abstract class EndpointClassAnalyzer {
     endpointDefinitions.add(
       EndpointDefinition(
         name: endpointName,
-        documentationComment:
-            stripDocumentationTemplateMarkers(classDocumentationComment),
+        documentationComment: stripDocumentationTemplateMarkers(
+          classDocumentationComment,
+        ),
         className: className,
         methods: _parseEndpointMethods(element, validationErrors, filePath),
         filePath: filePath,
@@ -87,10 +89,12 @@ abstract class EndpointClassAnalyzer {
     for (var method in endpointMethods) {
       var parameters = EndpointParameterAnalyzer.parse(method.formalParameters);
 
-      methodDefs.add(EndpointMethodAnalyzer.parse(
-        method,
-        parameters,
-      ));
+      methodDefs.add(
+        EndpointMethodAnalyzer.parse(
+          method,
+          parameters,
+        ),
+      );
     }
 
     return methodDefs;
@@ -164,8 +168,10 @@ abstract class EndpointClassAnalyzer {
 
     var endpointName = '${className[0].toLowerCase()}${className.substring(1)}';
     if (endpointName.endsWith(removeEnding)) {
-      endpointName =
-          endpointName.substring(0, endpointName.length - removeEnding.length);
+      endpointName = endpointName.substring(
+        0,
+        endpointName.length - removeEnding.length,
+      );
     }
 
     return endpointName;

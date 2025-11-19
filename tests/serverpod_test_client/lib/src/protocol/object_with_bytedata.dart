@@ -27,8 +27,9 @@ abstract class ObjectWithByteData implements _i1.SerializableModel {
   factory ObjectWithByteData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithByteData(
       id: jsonSerialization['id'] as int?,
-      byteData:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['byteData']),
+      byteData: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['byteData'],
+      ),
     );
   }
 
@@ -49,6 +50,7 @@ abstract class ObjectWithByteData implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithByteData',
       if (id != null) 'id': id,
       'byteData': byteData.toJson(),
     };
@@ -67,9 +69,9 @@ class _ObjectWithByteDataImpl extends ObjectWithByteData {
     int? id,
     required _i2.ByteData byteData,
   }) : super._(
-          id: id,
-          byteData: byteData,
-        );
+         id: id,
+         byteData: byteData,
+       );
 
   /// Returns a shallow copy of this [ObjectWithByteData]
   /// with some or all fields replaced by the given arguments.

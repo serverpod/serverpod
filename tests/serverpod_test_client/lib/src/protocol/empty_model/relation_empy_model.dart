@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../empty_model/empty_model_relation_item.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class RelationEmptyModel implements _i1.SerializableModel {
   RelationEmptyModel._({
@@ -27,10 +28,11 @@ abstract class RelationEmptyModel implements _i1.SerializableModel {
   factory RelationEmptyModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return RelationEmptyModel(
       id: jsonSerialization['id'] as int?,
-      items: (jsonSerialization['items'] as List?)
-          ?.map((e) =>
-              _i2.EmptyModelRelationItem.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      items: jsonSerialization['items'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.EmptyModelRelationItem>>(
+              jsonSerialization['items'],
+            ),
     );
   }
 
@@ -51,6 +53,7 @@ abstract class RelationEmptyModel implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'RelationEmptyModel',
       if (id != null) 'id': id,
       if (items != null) 'items': items?.toJson(valueToJson: (v) => v.toJson()),
     };
@@ -69,9 +72,9 @@ class _RelationEmptyModelImpl extends RelationEmptyModel {
     int? id,
     List<_i2.EmptyModelRelationItem>? items,
   }) : super._(
-          id: id,
-          items: items,
-        );
+         id: id,
+         items: items,
+       );
 
   /// Returns a shallow copy of this [RelationEmptyModel]
   /// with some or all fields replaced by the given arguments.

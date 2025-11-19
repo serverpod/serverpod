@@ -20,7 +20,8 @@ abstract class DistributedCacheEntry implements _i1.SerializableModel {
       _DistributedCacheEntryImpl;
 
   factory DistributedCacheEntry.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DistributedCacheEntry(data: jsonSerialization['data'] as String);
   }
 
@@ -33,7 +34,10 @@ abstract class DistributedCacheEntry implements _i1.SerializableModel {
   DistributedCacheEntry copyWith({String? data});
   @override
   Map<String, dynamic> toJson() {
-    return {'data': data};
+    return {
+      '__className__': 'serverpod.DistributedCacheEntry',
+      'data': data,
+    };
   }
 
   @override

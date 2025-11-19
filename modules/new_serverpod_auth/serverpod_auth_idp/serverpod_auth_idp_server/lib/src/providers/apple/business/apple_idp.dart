@@ -50,13 +50,14 @@ final class AppleIDP {
   /// Creates a new instance of [AppleIDP].
   factory AppleIDP(
     final AppleIDPConfig config, {
-    required final TokenIssuer tokenIssuer,
+    required final TokenManager tokenManager,
     final AuthUsers authUsers = const AuthUsers(),
     final UserProfiles userProfiles = const UserProfiles(),
   }) {
     final signInWithAppleConfig = config.toSignInWithAppleConfiguration();
 
     final utils = AppleIDPUtils(
+      tokenManager: tokenManager,
       signInWithApple: SignInWithApple(config: signInWithAppleConfig),
       authUsers: authUsers,
     );
@@ -64,7 +65,7 @@ final class AppleIDP {
 
     return AppleIDP._(
       config,
-      tokenIssuer,
+      tokenManager,
       utils,
       admin,
       userProfiles,
@@ -86,64 +87,53 @@ final class AppleIDP {
     final Transaction? transaction,
   }) async {
     return await DatabaseUtil.runInTransactionOrSavepoint(
-        session.db, transaction, (final transaction) async {
-      final account = await utils.authenticate(
-        session,
-        identityToken: identityToken,
-        authorizationCode: authorizationCode,
-        isNativeApplePlatformSignIn: isNativeApplePlatformSignIn,
-        firstName: firstName,
-        lastName: lastName,
-        transaction: transaction,
-      );
-
-      if (account.newAccount) {
-        await _userProfiles.createUserProfile(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final account = await utils.authenticate(
           session,
-          account.authUserId,
-          UserProfileData(
-            fullName: [account.details.firstName, account.details.lastName]
-                .nonNulls
-                .map((final n) => n.trim())
-                .where((final n) => n.isNotEmpty)
-                .join(' '),
-            email: account.details.isVerifiedEmail == true
-                ? account.details.email
-                : null,
-          ),
+          identityToken: identityToken,
+          authorizationCode: authorizationCode,
+          isNativeApplePlatformSignIn: isNativeApplePlatformSignIn,
+          firstName: firstName,
+          lastName: lastName,
           transaction: transaction,
         );
-      }
 
-      return _tokenIssuer.issueToken(
-        session,
-        authUserId: account.authUserId,
-        method: method,
-        transaction: transaction,
-        scopes: account.scopes,
-      );
-    });
+        if (account.newAccount) {
+          await _userProfiles.createUserProfile(
+            session,
+            account.authUserId,
+            UserProfileData(
+              fullName: [account.details.firstName, account.details.lastName]
+                  .nonNulls
+                  .map((final n) => n.trim())
+                  .where((final n) => n.isNotEmpty)
+                  .join(' '),
+              email: account.details.isVerifiedEmail == true
+                  ? account.details.email
+                  : null,
+            ),
+            transaction: transaction,
+          );
+        }
+
+        return _tokenIssuer.issueToken(
+          session,
+          authUserId: account.authUserId,
+          method: method,
+          transaction: transaction,
+          scopes: account.scopes,
+        );
+      },
+    );
   }
 
-  /// {@template apple_idp.revokedNotificationRoute}
-  /// Route for handling revoking sessions based on server-to-server
-  /// notifications coming from Apple.
-  ///
-  /// To be mounted as a `POST` handler under the URL configured in Apple's
-  /// developer portal, for example:
-  ///
-  /// ```dart
-  ///  pod.webServer.addRoute(
-  ///    appleIDP.revokedNotificationRoute(),
-  ///    '/hooks/apple-notification',
-  /// );
-  /// ```
-  ///
-  /// If the notification is of type [AppleServerNotificationConsentRevoked] or
-  /// [AppleServerNotificationAccountDelete], all sessions based on the Apple
-  /// authentication for that account will be revoked.
-  /// {@endtemplate}
-  Route revokedNotificationRoute() {
-    return AppleRevokedNotificationRoute(utils: utils);
-  }
+  /// {@macro apple_idp.revokedNotificationRoute}
+  Route revokedNotificationRoute() =>
+      AppleRevokedNotificationRoute(utils: utils);
+
+  /// {@macro apple_idp.webAuthenticationCallbackRoute}
+  Route webAuthenticationCallbackRoute() =>
+      AppleWebAuthenticationCallbackRoute(utils: utils);
 }

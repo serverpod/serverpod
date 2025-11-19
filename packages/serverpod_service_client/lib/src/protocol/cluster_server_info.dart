@@ -32,7 +32,10 @@ abstract class ClusterServerInfo implements _i1.SerializableModel {
   ClusterServerInfo copyWith({String? serverId});
   @override
   Map<String, dynamic> toJson() {
-    return {'serverId': serverId};
+    return {
+      '__className__': 'serverpod.ClusterServerInfo',
+      'serverId': serverId,
+    };
   }
 
   @override
@@ -43,7 +46,7 @@ abstract class ClusterServerInfo implements _i1.SerializableModel {
 
 class _ClusterServerInfoImpl extends ClusterServerInfo {
   _ClusterServerInfoImpl({required String serverId})
-      : super._(serverId: serverId);
+    : super._(serverId: serverId);
 
   /// Returns a shallow copy of this [ClusterServerInfo]
   /// with some or all fields replaced by the given arguments.

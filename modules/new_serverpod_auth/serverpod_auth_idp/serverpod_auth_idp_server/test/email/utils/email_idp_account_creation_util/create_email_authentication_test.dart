@@ -32,18 +32,20 @@ void main() {
           createEmailAuthenticationFuture = session.db.transaction(
             (final transaction) =>
                 fixture.accountCreationUtil.createEmailAuthentication(
-              session,
-              authUserId: authUserId,
-              email: email,
-              password: password,
-              transaction: transaction,
-            ),
+                  session,
+                  authUserId: authUserId,
+                  email: email,
+                  password: password,
+                  transaction: transaction,
+                ),
           );
         });
 
         test('when it completes with account id', () {
           expectLater(
-              createEmailAuthenticationFuture, completion(isA<UuidValue>()));
+            createEmailAuthenticationFuture,
+            completion(isA<UuidValue>()),
+          );
         });
 
         test('then user can authenticate with password', () async {
@@ -63,59 +65,61 @@ void main() {
       });
 
       test(
-          'when create email authentication is called with null password then user cannot authenticate with empty password',
-          () async {
-        await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.createEmailAuthentication(
-            session,
-            authUserId: authUserId,
-            email: email,
-            password: null,
-            transaction: transaction,
-          ),
-        );
+        'when create email authentication is called with null password then user cannot authenticate with empty password',
+        () async {
+          await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.createEmailAuthentication(
+                  session,
+                  authUserId: authUserId,
+                  email: email,
+                  password: null,
+                  transaction: transaction,
+                ),
+          );
 
-        final authResult = session.db.transaction(
-          (final transaction) => fixture.authenticationUtil.authenticate(
-            session,
-            email: email,
-            password: '',
-            transaction: transaction,
-          ),
-        );
+          final authResult = session.db.transaction(
+            (final transaction) => fixture.authenticationUtil.authenticate(
+              session,
+              email: email,
+              password: '',
+              transaction: transaction,
+            ),
+          );
 
-        await expectLater(
-          authResult,
-          throwsA(isA<EmailAuthenticationInvalidCredentialsException>()),
-        );
-      });
+          await expectLater(
+            authResult,
+            throwsA(isA<EmailAuthenticationInvalidCredentialsException>()),
+          );
+        },
+      );
 
       test(
-          'when create email authentication is called with empty password then user can authenticate with empty password',
-          () async {
-        await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.createEmailAuthentication(
-            session,
-            authUserId: authUserId,
-            email: email,
-            password: '',
-            transaction: transaction,
-          ),
-        );
+        'when create email authentication is called with empty password then user can authenticate with empty password',
+        () async {
+          await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.createEmailAuthentication(
+                  session,
+                  authUserId: authUserId,
+                  email: email,
+                  password: '',
+                  transaction: transaction,
+                ),
+          );
 
-        final authResult = await session.db.transaction(
-          (final transaction) => fixture.authenticationUtil.authenticate(
-            session,
-            email: email,
-            password: '',
-            transaction: transaction,
-          ),
-        );
+          final authResult = await session.db.transaction(
+            (final transaction) => fixture.authenticationUtil.authenticate(
+              session,
+              email: email,
+              password: '',
+              transaction: transaction,
+            ),
+          );
 
-        expect(authResult, equals(authUserId));
-      });
+          expect(authResult, equals(authUserId));
+        },
+      );
     },
   );
 }

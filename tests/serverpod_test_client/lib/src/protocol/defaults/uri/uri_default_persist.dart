@@ -29,7 +29,8 @@ abstract class UriDefaultPersist implements _i1.SerializableModel {
       uriDefaultPersist: jsonSerialization['uriDefaultPersist'] == null
           ? null
           : _i1.UriJsonExtension.fromJson(
-              jsonSerialization['uriDefaultPersist']),
+              jsonSerialization['uriDefaultPersist'],
+            ),
     );
   }
 
@@ -50,6 +51,7 @@ abstract class UriDefaultPersist implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UriDefaultPersist',
       if (id != null) 'id': id,
       if (uriDefaultPersist != null)
         'uriDefaultPersist': uriDefaultPersist?.toJson(),
@@ -69,9 +71,9 @@ class _UriDefaultPersistImpl extends UriDefaultPersist {
     int? id,
     Uri? uriDefaultPersist,
   }) : super._(
-          id: id,
-          uriDefaultPersist: uriDefaultPersist,
-        );
+         id: id,
+         uriDefaultPersist: uriDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [UriDefaultPersist]
   /// with some or all fields replaced by the given arguments.

@@ -10,7 +10,7 @@ void main() {
   var serverId = null;
   var passwords = {
     'serviceSecret': 'longpasswordthatisrequired',
-    'database': 'dbpassword'
+    'database': 'dbpassword',
   };
 
   test(
@@ -157,7 +157,8 @@ sessionLogs:
             (e) => e.message,
             'message',
             contains(
-                'The `persistentEnabled` setting was enabled in the configuration, but this project was created without database support.'),
+              'The `persistentEnabled` setting was enabled in the configuration, but this project was created without database support.',
+            ),
           ),
         ),
       );
@@ -341,8 +342,13 @@ sessionLogs:
           passwords,
           loadYaml(serverpodConfig),
         ),
-        throwsA(isA<ArgumentError>().having((e) => e.message, 'message',
-            'Invalid console log format: "invalid_value". Valid values are: json, text')),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'Invalid console log format: "invalid_value". Valid values are: json, text',
+          ),
+        ),
       );
     },
   );

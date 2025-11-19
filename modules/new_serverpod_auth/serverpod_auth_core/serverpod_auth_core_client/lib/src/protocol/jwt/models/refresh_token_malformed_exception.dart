@@ -20,7 +20,8 @@ abstract class RefreshTokenMalformedException
       _RefreshTokenMalformedExceptionImpl;
 
   factory RefreshTokenMalformedException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return RefreshTokenMalformedException();
   }
 
@@ -30,7 +31,9 @@ abstract class RefreshTokenMalformedException
   RefreshTokenMalformedException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_core.RefreshTokenMalformedException',
+    };
   }
 
   @override

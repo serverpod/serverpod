@@ -9,3 +9,6 @@ linter:
     prefer_final_locals: false
     prefer_final_parameters: false
     sort_pub_dependencies: false
+
+formatter:
+  trailing_commas: preserve

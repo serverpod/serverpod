@@ -24,8 +24,8 @@ class EmailIDPAuthenticationUtil {
   EmailIDPAuthenticationUtil({
     required final SecretHashUtil hashUtil,
     required final RateLimit failedLoginRateLimit,
-  })  : _hashUtil = hashUtil,
-        _failedLoginRateLimit = failedLoginRateLimit;
+  }) : _hashUtil = hashUtil,
+       _failedLoginRateLimit = failedLoginRateLimit;
 
   /// Returns the [AuthUser]'s ID upon successful email/password verification.
   ///
@@ -116,16 +116,17 @@ class EmailIDPAuthenticationUtil {
     final String email, {
     required final Transaction? transaction,
   }) async {
-    final oldestRelevantAttempt =
-        clock.now().subtract(_failedLoginRateLimit.timeframe);
-
-    final failedLoginAttemptCount =
-        await EmailAccountFailedLoginAttempt.db.count(
-      session,
-      where: (final t) =>
-          t.email.equals(email) & (t.attemptedAt > oldestRelevantAttempt),
-      transaction: transaction,
+    final oldestRelevantAttempt = clock.now().subtract(
+      _failedLoginRateLimit.timeframe,
     );
+
+    final failedLoginAttemptCount = await EmailAccountFailedLoginAttempt.db
+        .count(
+          session,
+          where: (final t) =>
+              t.email.equals(email) & (t.attemptedAt > oldestRelevantAttempt),
+          transaction: transaction,
+        );
 
     return failedLoginAttemptCount >= _failedLoginRateLimit.maxAttempts;
   }

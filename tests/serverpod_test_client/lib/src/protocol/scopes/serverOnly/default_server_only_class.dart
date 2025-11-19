@@ -19,7 +19,8 @@ abstract class DefaultServerOnlyClass implements _i1.SerializableModel {
       _DefaultServerOnlyClassImpl;
 
   factory DefaultServerOnlyClass.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DefaultServerOnlyClass(foo: jsonSerialization['foo'] as String);
   }
 
@@ -31,7 +32,10 @@ abstract class DefaultServerOnlyClass implements _i1.SerializableModel {
   DefaultServerOnlyClass copyWith({String? foo});
   @override
   Map<String, dynamic> toJson() {
-    return {'foo': foo};
+    return {
+      '__className__': 'DefaultServerOnlyClass',
+      'foo': foo,
+    };
   }
 
   @override

@@ -22,6 +22,10 @@ cd $CLI_DIR
 dart pub get
 cd $BASE
 
+echo "Sort all pubspecs dependencies"
+pubspecs=$(find . -name "pubspec.yaml" -type f)
+echo "$pubspecs" | xargs -P $(nproc) -I {} bash -c 'dart run sort_pubspec_dependencies --pubspec-path="{}" > /dev/null'
+
 echo "Update all pubspecs. Version is $VERSION (Dart version: $DART_VERSION, Flutter version: $FLUTTER_VERSION)."
 
 dart $CLI generate-pubspecs --version "$VERSION" --dart-version "$DART_VERSION" --flutter-version "$FLUTTER_VERSION" --mode development

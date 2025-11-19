@@ -20,12 +20,12 @@ class ValidateNode {
   /// If set, the key must match the restriction if an error is returned the key
   /// is considered invalid.
   List<SourceSpanException>? Function(String, String, SourceSpan?)?
-      keyRestriction;
+  keyRestriction;
 
   /// If set, the value must match the restriction if an error is returned the
   /// value is considered invalid.
   List<SourceSpanException>? Function(String, dynamic, SourceSpan?)?
-      valueRestriction;
+  valueRestriction;
 
   /// A set of keys that are mutually exclusive with this key.
   late Set<String> mutuallyExclusiveKeys;
@@ -72,7 +72,8 @@ class ValidateNode {
   }) {
     if (allowStringifiedNestedValue.isAllowed && nested.isEmpty) {
       throw ArgumentError(
-          'allowStringifiedNestedValue can only be true if nested is not empty.');
+        'allowStringifiedNestedValue can only be true if nested is not empty.',
+      );
     }
   }
 }

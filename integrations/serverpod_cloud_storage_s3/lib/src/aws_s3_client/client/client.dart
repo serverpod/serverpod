@@ -90,8 +90,11 @@ class AwsS3Client {
 
     final payload = SigV4.hashCanonicalRequest('');
     final datetime = SigV4.generateDatetime();
-    final credentialScope =
-        SigV4.buildCredentialScope(datetime, _region, _service);
+    final credentialScope = SigV4.buildCredentialScope(
+      datetime,
+      _region,
+      _service,
+    );
 
     final canonicalQuery = SigV4.buildCanonicalQueryString(queryParams);
 
@@ -141,8 +144,10 @@ $payload''';
     required String key,
     Map<String, String>? queryParams,
   }) async {
-    final SignedRequestParams params =
-        buildSignedParams(key: key, queryParams: queryParams);
+    final SignedRequestParams params = buildSignedParams(
+      key: key,
+      queryParams: queryParams,
+    );
     return _client.get(params.uri, headers: params.headers);
   }
 
@@ -150,8 +155,11 @@ $payload''';
     required String key,
     Map<String, String>? queryParams,
   }) async {
-    final SignedRequestParams params =
-        buildSignedParams(key: key, queryParams: queryParams, method: 'HEAD');
+    final SignedRequestParams params = buildSignedParams(
+      key: key,
+      queryParams: queryParams,
+      method: 'HEAD',
+    );
     return _client.head(params.uri, headers: params.headers);
   }
 
@@ -159,8 +167,11 @@ $payload''';
     required String key,
     Map<String, String>? queryParams,
   }) async {
-    final SignedRequestParams params =
-        buildSignedParams(key: key, queryParams: queryParams, method: 'DELETE');
+    final SignedRequestParams params = buildSignedParams(
+      key: key,
+      queryParams: queryParams,
+      method: 'DELETE',
+    );
     return _client.delete(params.uri, headers: params.headers);
   }
 
@@ -194,8 +205,9 @@ ListBucketResult? _parseListObjectResponse(String responseXml) {
   String jsonString = myTransformer.toParker();
   //parse json to src.model objects
   try {
-    ListBucketResult? parsedObj =
-        ListBucketResultParker.fromJson(jsonString).result;
+    ListBucketResult? parsedObj = ListBucketResultParker.fromJson(
+      jsonString,
+    ).result;
 
     return parsedObj;
   } on DeserializationError {
@@ -203,8 +215,9 @@ ListBucketResult? _parseListObjectResponse(String responseXml) {
     //issue due to json/xml transform: Lists with 1 element are transformed to json objects instead of lists
     final fixedJson = json.decode(jsonString);
 
-    fixedJson["ListBucketResult"]
-        ["Contents"] = [fixedJson["ListBucketResult"]["Contents"]];
+    fixedJson["ListBucketResult"]["Contents"] = [
+      fixedJson["ListBucketResult"]["Contents"],
+    ];
 
     return ListBucketResultParker.fromJsonMap(fixedJson).result;
   }

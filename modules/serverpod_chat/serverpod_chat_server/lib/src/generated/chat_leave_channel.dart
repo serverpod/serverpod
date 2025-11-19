@@ -32,12 +32,18 @@ abstract class ChatLeaveChannel
   ChatLeaveChannel copyWith({String? channel});
   @override
   Map<String, dynamic> toJson() {
-    return {'channel': channel};
+    return {
+      '__className__': 'serverpod_chat.ChatLeaveChannel',
+      'channel': channel,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'channel': channel};
+    return {
+      '__className__': 'serverpod_chat.ChatLeaveChannel',
+      'channel': channel,
+    };
   }
 
   @override

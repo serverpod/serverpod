@@ -139,7 +139,7 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
-        )
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -149,7 +149,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -162,7 +162,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'lastUpdatedAt',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: false,
@@ -252,7 +252,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -265,7 +265,7 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'authUserId',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
@@ -329,7 +329,7 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
-        )
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -339,12 +339,12 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
           isPrimary: true,
-        )
+        ),
       ],
       managed: true,
     ),
@@ -428,7 +428,7 @@ class Protocol extends _i1.SerializationManagerServer {
           onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
-        )
+        ),
       ],
       indexes: [
         _i2.IndexDefinition(
@@ -438,12 +438,12 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
           isPrimary: true,
-        )
+        ),
       ],
       managed: true,
     ),
@@ -488,16 +488,24 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'id',
-            )
+            ),
           ],
           type: 'btree',
           isUnique: true,
           isPrimary: true,
-        )
+        ),
       ],
       managed: true,
     ),
   ];
+
+  static String? getClassNameFromObjectJson(dynamic data) {
+    if (data is! Map) return null;
+    final className = data['__className__'] as String?;
+    if (className == null) return null;
+    if (!className.startsWith('serverpod_auth_core.')) return className;
+    return className.substring(20);
+  }
 
   @override
   T deserialize<T>(
@@ -505,6 +513,15 @@ class Protocol extends _i1.SerializationManagerServer {
     Type? t,
   ]) {
     t ??= T;
+
+    final dataClassName = getClassNameFromObjectJson(data);
+    if (dataClassName != null && dataClassName != t.toString()) {
+      return deserializeByClassName({
+        'className': dataClassName,
+        'data': data,
+      });
+    }
+
     if (t == _i3.AuthUser) {
       return _i3.AuthUser.fromJson(data) as T;
     }
@@ -574,8 +591,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i6.AuthUserNotFoundException?>()) {
       return (data != null
-          ? _i6.AuthUserNotFoundException.fromJson(data)
-          : null) as T;
+              ? _i6.AuthUserNotFoundException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i7.AuthStrategy?>()) {
       return (data != null ? _i7.AuthStrategy.fromJson(data) : null) as T;
@@ -592,23 +610,27 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i11.RefreshTokenExpiredException?>()) {
       return (data != null
-          ? _i11.RefreshTokenExpiredException.fromJson(data)
-          : null) as T;
+              ? _i11.RefreshTokenExpiredException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i12.RefreshTokenInvalidSecretException?>()) {
       return (data != null
-          ? _i12.RefreshTokenInvalidSecretException.fromJson(data)
-          : null) as T;
+              ? _i12.RefreshTokenInvalidSecretException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i13.RefreshTokenMalformedException?>()) {
       return (data != null
-          ? _i13.RefreshTokenMalformedException.fromJson(data)
-          : null) as T;
+              ? _i13.RefreshTokenMalformedException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i14.RefreshTokenNotFoundException?>()) {
       return (data != null
-          ? _i14.RefreshTokenNotFoundException.fromJson(data)
-          : null) as T;
+              ? _i14.RefreshTokenNotFoundException.fromJson(data)
+              : null)
+          as T;
     }
     if (t == _i1.getType<_i15.TokenPair?>()) {
       return (data != null ? _i15.TokenPair.fromJson(data) : null) as T;
@@ -644,6 +666,14 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
+
+    if (data is Map<String, dynamic> && data['__className__'] is String) {
+      return (data['__className__'] as String).replaceFirst(
+        'serverpod_auth_core.',
+        '',
+      );
+    }
+
     switch (data) {
       case _i3.AuthUser():
         return 'AuthUser';

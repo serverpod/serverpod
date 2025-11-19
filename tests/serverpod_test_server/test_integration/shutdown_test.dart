@@ -3,7 +3,6 @@
 @Timeout(Duration(minutes: 1))
 // Note, this test shall run non-concurrently,
 // which means the test tag 'integration' is not used.
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -16,8 +15,7 @@ void main() {
   const terminationTimeout = Duration(seconds: 10);
   const verbose = true;
 
-  test(
-      'Given a serverpod server with db '
+  test('Given a serverpod server with db '
       'when run in maintenance mode '
       'then it automatically exits with exit code 0', () async {
     final processOutput = await startProcess(
@@ -48,8 +46,7 @@ void main() {
   }, timeout: const Timeout(Duration(seconds: 120)));
 
   group('Given a running serverpod server', () {
-    test(
-        'when it is sent SIGINT '
+    test('when it is sent SIGINT '
         'then it exits with exit code 130', () async {
       final processOutput = await startProcess(
         'dart',
@@ -84,44 +81,46 @@ void main() {
     });
 
     test(
-        'when it is sent SIGTERM '
-        'then it exits with exit code 143', () async {
-      final processOutput = await startProcess(
-        'dart',
-        ['bin/main.dart', '--mode=test'],
-        verbose: verbose,
-      );
+      'when it is sent SIGTERM '
+      'then it exits with exit code 143',
+      () async {
+        final processOutput = await startProcess(
+          'dart',
+          ['bin/main.dart', '--mode=test'],
+          verbose: verbose,
+        );
 
-      await expectLater(
-        processOutput.outQueue,
-        emitsThrough(contains('SERVERPOD initialized')),
-      );
+        await expectLater(
+          processOutput.outQueue,
+          emitsThrough(contains('SERVERPOD initialized')),
+        );
 
-      await Future.delayed(signalDelay);
-      if (verbose) {
-        print('sending process signal...');
-      }
-      processOutput.process.kill(ProcessSignal.sigterm);
+        await Future.delayed(signalDelay);
+        if (verbose) {
+          print('sending process signal...');
+        }
+        processOutput.process.kill(ProcessSignal.sigterm);
 
-      await expectLater(
-        processOutput.outQueue,
-        emitsInOrder([
-          emitsThrough(contains('SIGTERM (15) received')),
-          emitsThrough(contains('SERVERPOD initiating shutdown')),
-          emitsThrough(contains('SERVERPOD shutdown completed')),
-        ]),
-      );
+        await expectLater(
+          processOutput.outQueue,
+          emitsInOrder([
+            emitsThrough(contains('SIGTERM (15) received')),
+            emitsThrough(contains('SERVERPOD initiating shutdown')),
+            emitsThrough(contains('SERVERPOD shutdown completed')),
+          ]),
+        );
 
-      var exitCode = await processOutput.process.exitCode.timeout(
-        terminationTimeout,
-      );
-      expect(exitCode, 143);
-    }, onPlatform: {
-      'windows': Skip('SIGTERM is not supported on Windows'),
-    });
+        var exitCode = await processOutput.process.exitCode.timeout(
+          terminationTimeout,
+        );
+        expect(exitCode, 143);
+      },
+      onPlatform: {
+        'windows': Skip('SIGTERM is not supported on Windows'),
+      },
+    );
 
-    test(
-        'with shutdown test auditor enabled '
+    test('with shutdown test auditor enabled '
         'when it is sent SIGINT '
         'then it exits with exit code 1', () async {
       final processOutput = await startProcess(
@@ -158,7 +157,8 @@ void main() {
         emitsInOrder([
           emitsThrough(contains('serverpod shutdown test auditor enabled')),
           emitsThrough(
-              contains('Exception: serverpod shutdown test auditor throwing')),
+            contains('Exception: serverpod shutdown test auditor throwing'),
+          ),
         ]),
       );
 
@@ -168,8 +168,7 @@ void main() {
       expect(exitCode, 1);
     });
 
-    test(
-        'with an ongoing http request '
+    test('with an ongoing http request '
         'when it is sent SIGINT '
         'then it exits with exit code 130', () async {
       final processOutput = await startProcess(
@@ -237,20 +236,21 @@ Stream<String> _streamTransformer(
       .transform(const Utf8Decoder())
       .transform(const LineSplitter())
       .map((line) {
-    if (verbose) print('$startOfLine$line');
-    return line;
-  }).asBroadcastStream(
-    onCancel: (controller) {
-      if (verbose) print('<pausing ${prefix ?? ''} stream>');
-      controller.pause();
-    },
-    onListen: (controller) async {
-      if (controller.isPaused) {
-        if (verbose) print('<resuming ${prefix ?? ''} stream>');
-        controller.resume();
-      }
-    },
-  );
+        if (verbose) print('$startOfLine$line');
+        return line;
+      })
+      .asBroadcastStream(
+        onCancel: (controller) {
+          if (verbose) print('<pausing ${prefix ?? ''} stream>');
+          controller.pause();
+        },
+        onListen: (controller) async {
+          if (controller.isPaused) {
+            if (verbose) print('<resuming ${prefix ?? ''} stream>');
+            controller.resume();
+          }
+        },
+      );
 }
 
 Future<ProcessOutput> startProcess(

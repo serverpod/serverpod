@@ -48,15 +48,16 @@ void main() {
       });
 
       test(
-          'then the last column should have the correct default value in milliseconds',
-          () {
-        var table = databaseDefinition.tables.first;
-        var column = table.columns.last;
-        expect(
-          column.columnDefault,
-          '94230100', // 1 day, 2 hours, 10 minutes, 30 seconds, 100 milliseconds in total
-        );
-      });
+        'then the last column should have the correct default value in milliseconds',
+        () {
+          var table = databaseDefinition.tables.first;
+          var column = table.columns.last;
+          expect(
+            column.columnDefault,
+            '94230100', // 1 day, 2 hours, 10 minutes, 30 seconds, 100 milliseconds in total
+          );
+        },
+      );
     });
 
     group('when no "defaultPersist" is set', () {
@@ -151,15 +152,16 @@ void main() {
       });
 
       test(
-          'then the last column should have the correct default value in milliseconds',
-          () {
-        var table = databaseDefinition.tables.first;
-        var column = table.columns.last;
-        expect(
-          column.columnDefault,
-          '94230100', // 1 day, 2 hours, 10 minutes, 30 seconds, 100 milliseconds in total
-        );
-      });
+        'then the last column should have the correct default value in milliseconds',
+        () {
+          var table = databaseDefinition.tables.first;
+          var column = table.columns.last;
+          expect(
+            column.columnDefault,
+            '94230100', // 1 day, 2 hours, 10 minutes, 30 seconds, 100 milliseconds in total
+          );
+        },
+      );
 
       test('then the last column should be nullable', () {
         var table = databaseDefinition.tables.first;

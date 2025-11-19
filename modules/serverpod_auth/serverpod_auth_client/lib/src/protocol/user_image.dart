@@ -63,6 +63,7 @@ abstract class UserImage implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth.UserImage',
       if (id != null) 'id': id,
       'userId': userId,
       'version': version,
@@ -85,11 +86,11 @@ class _UserImageImpl extends UserImage {
     required int version,
     required String url,
   }) : super._(
-          id: id,
-          userId: userId,
-          version: version,
-          url: url,
-        );
+         id: id,
+         userId: userId,
+         version: version,
+         url: url,
+       );
 
   /// Returns a shallow copy of this [UserImage]
   /// with some or all fields replaced by the given arguments.

@@ -32,39 +32,41 @@ class ModelParser {
     var tableName = _parseTableName(documentContents);
 
     return _initializeFromClassFields(
-        documentTypeName: documentTypeName,
-        protocolSource: protocolSource,
-        outFileName: outFileName,
-        documentContents: documentContents,
-        docsExtractor: docsExtractor,
-        extraClasses: extraClasses,
-        hasTable: tableName != null,
-        initialize: ({
-          required String className,
-          required TypeDefinition classType,
-          required bool serverOnly,
-          required List<SerializableModelFieldDefinition> fields,
-          required List<String>? classDocumentation,
-        }) {
-          var indexes = _parseIndexes(documentContents, fields);
+      documentTypeName: documentTypeName,
+      protocolSource: protocolSource,
+      outFileName: outFileName,
+      documentContents: documentContents,
+      docsExtractor: docsExtractor,
+      extraClasses: extraClasses,
+      hasTable: tableName != null,
+      initialize:
+          ({
+            required String className,
+            required TypeDefinition classType,
+            required bool serverOnly,
+            required List<SerializableModelFieldDefinition> fields,
+            required List<String>? classDocumentation,
+          }) {
+            var indexes = _parseIndexes(documentContents, fields);
 
-          return ModelClassDefinition(
-            className: className,
-            isSealed: isSealed,
-            isImmutable: isImmutable,
-            extendsClass: extendsClass,
-            sourceFileName: protocolSource.yamlSourceUri.path,
-            tableName: tableName,
-            manageMigration: manageMigration,
-            fileName: outFileName,
-            fields: fields,
-            indexes: indexes,
-            subDirParts: protocolSource.subDirPathParts,
-            documentation: classDocumentation,
-            serverOnly: serverOnly,
-            type: classType,
-          );
-        });
+            return ModelClassDefinition(
+              className: className,
+              isSealed: isSealed,
+              isImmutable: isImmutable,
+              extendsClass: extendsClass,
+              sourceFileName: protocolSource.yamlSourceUri.path,
+              tableName: tableName,
+              manageMigration: manageMigration,
+              fileName: outFileName,
+              fields: fields,
+              indexes: indexes,
+              subDirParts: protocolSource.subDirPathParts,
+              documentation: classDocumentation,
+              serverOnly: serverOnly,
+              type: classType,
+            );
+          },
+    );
   }
 
   static SerializableModelDefinition? serializeExceptionClassFile(
@@ -83,23 +85,23 @@ class ModelParser {
       docsExtractor: docsExtractor,
       extraClasses: extraClasses,
       hasTable: false,
-      initialize: ({
-        required String className,
-        required TypeDefinition classType,
-        required bool serverOnly,
-        required List<SerializableModelFieldDefinition> fields,
-        required List<String>? classDocumentation,
-      }) =>
-          ExceptionClassDefinition(
-        className: className,
-        fields: fields,
-        fileName: outFileName,
-        serverOnly: serverOnly,
-        sourceFileName: protocolSource.yamlSourceUri.path,
-        type: classType,
-        subDirParts: protocolSource.subDirPathParts,
-        documentation: classDocumentation,
-      ),
+      initialize:
+          ({
+            required String className,
+            required TypeDefinition classType,
+            required bool serverOnly,
+            required List<SerializableModelFieldDefinition> fields,
+            required List<String>? classDocumentation,
+          }) => ExceptionClassDefinition(
+            className: className,
+            fields: fields,
+            fileName: outFileName,
+            serverOnly: serverOnly,
+            sourceFileName: protocolSource.yamlSourceUri.path,
+            type: classType,
+            subDirParts: protocolSource.subDirPathParts,
+            documentation: classDocumentation,
+          ),
     );
   }
 
@@ -122,7 +124,8 @@ class ModelParser {
       required bool serverOnly,
       required List<SerializableModelFieldDefinition> fields,
       required List<String>? classDocumentation,
-    }) initialize,
+    })
+    initialize,
   }) {
     YamlNode? classNode = documentContents.nodes[documentTypeName];
 
@@ -182,8 +185,10 @@ class ModelParser {
       '${protocolSource.moduleAlias}:$className',
       extraClasses: [],
     );
-    var defaultEnumDefinitionValue =
-        _parseEnumDefaultValue(documentContents, values);
+    var defaultEnumDefinitionValue = _parseEnumDefaultValue(
+      documentContents,
+      values,
+    );
 
     var enumDef = EnumDefinition(
       fileName: outFileName,
@@ -259,14 +264,16 @@ class ModelParser {
     var fieldsNode = documentContents.nodes[Keyword.fields];
     if (fieldsNode is YamlMap) {
       var fieldsNodeEntries = fieldsNode.nodes.entries;
-      fields.addAll(fieldsNodeEntries.expand((fieldNode) {
-        return _parseModelFieldDefinition(
-          fieldNode,
-          docsExtractor,
-          extraClasses,
-          serverOnlyClass,
-        );
-      }).toList());
+      fields.addAll(
+        fieldsNodeEntries.expand((fieldNode) {
+          return _parseModelFieldDefinition(
+            fieldNode,
+            docsExtractor,
+            extraClasses,
+            serverOnlyClass,
+          );
+        }).toList(),
+      );
     }
 
     return fields;
@@ -338,7 +345,7 @@ class ModelParser {
         defaultModelValue: defaultModelValue,
         defaultPersistValue: defaultPersistValue,
         isRequired: isRequired,
-      )
+      ),
     ];
   }
 
@@ -562,12 +569,16 @@ class ModelParser {
       var indexFieldsTypes = fields.where((f) => indexFields.contains(f.name));
       var type = _parseIndexType(
         nodeDocument,
-        onlyVectorFields: indexFieldsTypes.isNotEmpty &&
+        onlyVectorFields:
+            indexFieldsTypes.isNotEmpty &&
             indexFieldsTypes.every((f) => f.type.isVectorType),
       );
       var unique = _parseUniqueKey(nodeDocument);
-      var distanceFunction =
-          _parseDistanceFunction(nodeDocument, type, indexFieldsTypes);
+      var distanceFunction = _parseDistanceFunction(
+        nodeDocument,
+        type,
+        indexFieldsTypes,
+      );
       var parameters = _parseParametersKey(nodeDocument);
 
       return SerializableModelIndexDefinition(
@@ -632,8 +643,8 @@ class ModelParser {
     if (nodeValue is! String) {
       return VectorIndexType.values.any((e) => e.name == indexType)
           ? (indexFieldsTypes.any((field) => field.type.className == 'Bit')
-              ? VectorDistanceFunction.hamming
-              : VectorDistanceFunction.l2)
+                ? VectorDistanceFunction.hamming
+                : VectorDistanceFunction.l2)
           : null;
     }
 
@@ -668,8 +679,10 @@ class ModelParser {
     YamlMap documentContents,
     List<ProtocolEnumValueDefinition> values,
   ) {
-    final defaultValue =
-        _parseDefaultValue(documentContents, Keyword.defaultKey);
+    final defaultValue = _parseDefaultValue(
+      documentContents,
+      Keyword.defaultKey,
+    );
     return values.where((value) => value.name == defaultValue).firstOrNull;
   }
 
@@ -687,10 +700,12 @@ class ModelParser {
       var start = node.span.start;
       // 2 is the length of '- ' in '- enumValue'
       var valueDocumentation = docsExtractor.getDocumentation(
-        SourceLocation(start.offset - 2,
-            column: start.column - 2,
-            line: start.line,
-            sourceUrl: start.sourceUrl),
+        SourceLocation(
+          start.offset - 2,
+          column: start.column - 2,
+          line: start.line,
+          sourceUrl: start.sourceUrl,
+        ),
       );
 
       return ProtocolEnumValueDefinition(value, valueDocumentation);

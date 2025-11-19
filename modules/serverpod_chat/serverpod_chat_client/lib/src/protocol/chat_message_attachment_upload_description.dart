@@ -26,7 +26,8 @@ abstract class ChatMessageAttachmentUploadDescription
   }) = _ChatMessageAttachmentUploadDescriptionImpl;
 
   factory ChatMessageAttachmentUploadDescription.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ChatMessageAttachmentUploadDescription(
       filePath: jsonSerialization['filePath'] as String,
       uploadDescription: jsonSerialization['uploadDescription'] as String,
@@ -50,6 +51,7 @@ abstract class ChatMessageAttachmentUploadDescription
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_chat.ChatMessageAttachmentUploadDescription',
       'filePath': filePath,
       'uploadDescription': uploadDescription,
     };
@@ -67,9 +69,9 @@ class _ChatMessageAttachmentUploadDescriptionImpl
     required String filePath,
     required String uploadDescription,
   }) : super._(
-          filePath: filePath,
-          uploadDescription: uploadDescription,
-        );
+         filePath: filePath,
+         uploadDescription: uploadDescription,
+       );
 
   /// Returns a shallow copy of this [ChatMessageAttachmentUploadDescription]
   /// with some or all fields replaced by the given arguments.

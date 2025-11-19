@@ -418,15 +418,17 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     var password = _passwordController.text;
     if (password.length < widget.minPasswordLength) {
       setState(() {
-        _passwordIssue =
-            _localization.minimumLengthMessage(widget.minPasswordLength);
+        _passwordIssue = _localization.minimumLengthMessage(
+          widget.minPasswordLength,
+        );
       });
       return;
     }
     if (password.length > widget.maxPasswordLength) {
       setState(() {
-        _passwordIssue =
-            _localization.maximumLengthMessage(widget.maxPasswordLength);
+        _passwordIssue = _localization.maximumLengthMessage(
+          widget.maxPasswordLength,
+        );
       });
       return;
     }
@@ -510,8 +512,9 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     var password = _passwordController.text;
     if (password.length < widget.minPasswordLength) {
       setState(() {
-        _passwordIssue =
-            _localization.minimumLengthMessage(widget.minPasswordLength);
+        _passwordIssue = _localization.minimumLengthMessage(
+          widget.minPasswordLength,
+        );
       });
       return;
     }
@@ -563,8 +566,9 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
     _resetIssues();
     if (_passwordController.text.length < widget.minPasswordLength) {
       setState(() {
-        _passwordIssue =
-            _localization.minimumLengthMessage(widget.minPasswordLength);
+        _passwordIssue = _localization.minimumLengthMessage(
+          widget.minPasswordLength,
+        );
       });
       return;
     }

@@ -87,8 +87,9 @@ void main() {
   test(
     'Given a UuidValue object, when passed to UuidValueJsonExtension.fromJson, then it remains unchanged',
     () {
-      UuidValue value =
-          UuidValue.fromString('00000000-0000-0000-0000-000000000000');
+      UuidValue value = UuidValue.fromString(
+        '00000000-0000-0000-0000-000000000000',
+      );
       UuidValue uuidValue = UuidValueJsonExtension.fromJson(value);
 
       expect(
@@ -99,12 +100,15 @@ void main() {
   );
 
   test(
-      'Given invalid UUID string, when deserialized to a UuidValue, then it throws an exception',
-      () {
-    String value = 'hello world';
-    expect(() => UuidValueJsonExtension.fromJson(value),
-        throwsA(isA<FormatException>()));
-  });
+    'Given invalid UUID string, when deserialized to a UuidValue, then it throws an exception',
+    () {
+      String value = 'hello world';
+      expect(
+        () => UuidValueJsonExtension.fromJson(value),
+        throwsA(isA<FormatException>()),
+      );
+    },
+  );
   test(
     'Given a base64-encoded string, when deserialized to ByteData and then serialized back to a string, then it matches the original string',
     () {
@@ -123,7 +127,8 @@ void main() {
     () {
       String strValue = 'decode(\'AAECAwQFBgc=\', \'base64\')';
       ByteData value = ByteData.view(
-          base64Decode(strValue.substring(8, strValue.length - 12)).buffer);
+        base64Decode(strValue.substring(8, strValue.length - 12)).buffer,
+      );
       ByteData byteData = ByteDataJsonExtension.fromJson(value);
 
       expect(

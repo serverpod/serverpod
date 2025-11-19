@@ -32,31 +32,33 @@ void main() {
       });
 
       test(
-          'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` immediately, then the challenge is kept.',
-          () async {
-        await passKeyIDP.admin.deleteExpiredChallenges(session);
+        'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` immediately, then the challenge is kept.',
+        () async {
+          await passKeyIDP.admin.deleteExpiredChallenges(session);
 
-        expect(
-          await PasskeyChallenge.db.find(session),
-          hasLength(1),
-        );
-      });
+          expect(
+            await PasskeyChallenge.db.find(session),
+            hasLength(1),
+          );
+        },
+      );
 
       test(
-          'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` after the expiration time, then the challenge is removed.',
-          () async {
-        await withClock(
-          Clock.fixed(
-            DateTime.now().add(passKeyIDP.config.challengeLifetime),
-          ),
-          () => passKeyIDP.admin.deleteExpiredChallenges(session),
-        );
+        'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` after the expiration time, then the challenge is removed.',
+        () async {
+          await withClock(
+            Clock.fixed(
+              DateTime.now().add(passKeyIDP.config.challengeLifetime),
+            ),
+            () => passKeyIDP.admin.deleteExpiredChallenges(session),
+          );
 
-        expect(
-          await PasskeyChallenge.db.find(session),
-          isEmpty,
-        );
-      });
+          expect(
+            await PasskeyChallenge.db.find(session),
+            isEmpty,
+          );
+        },
+      );
     },
   );
 }

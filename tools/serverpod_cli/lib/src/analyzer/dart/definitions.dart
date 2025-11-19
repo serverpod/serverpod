@@ -75,10 +75,10 @@ abstract base class MethodDefinition {
   final List<ParameterDefinition> parametersNamed;
 
   List<ParameterDefinition> get allParameters => [
-        ...parameters,
-        ...parametersPositional,
-        ...parametersNamed,
-      ];
+    ...parameters,
+    ...parametersPositional,
+    ...parametersNamed,
+  ];
 
   const MethodDefinition({
     required this.name,

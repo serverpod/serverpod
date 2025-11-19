@@ -32,85 +32,100 @@ void main() async {
       expect(result.length, 3);
     });
 
-    test('when filtering using equals then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBool.equals(true),
-      );
+    test(
+      'when filtering using equals then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBool.equals(true),
+        );
 
-      expect(result.first.aBool, isTrue);
-    });
-
-    test('when filtering using equals with null then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBool.equals(null),
-      );
-
-      expect(result.first.aBool, isNull);
-    });
-
-    test('when filtering using notEquals then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBool.notEquals(true),
-      );
-
-      expect(result.length, 2);
-    });
+        expect(result.first.aBool, isTrue);
+      },
+    );
 
     test(
-        'when filtering using notEquals with null then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBool.notEquals(null),
-      );
+      'when filtering using equals with null then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBool.equals(null),
+        );
 
-      expect(result.length, 2);
-    });
+        expect(result.first.aBool, isNull);
+      },
+    );
 
-    test('when filtering using inSet then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBool.inSet({true, false}),
-      );
+    test(
+      'when filtering using notEquals then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBool.notEquals(true),
+        );
 
-      expect(result.length, 2);
-    });
+        expect(result.length, 2);
+      },
+    );
 
-    test('when filtering using empty inSet then no rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBool.inSet({}),
-      );
+    test(
+      'when filtering using notEquals with null then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBool.notEquals(null),
+        );
 
-      expect(result, isEmpty);
-    });
+        expect(result.length, 2);
+      },
+    );
 
-    test('when filtering using notInSet then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBool.notInSet({true}),
-      );
+    test(
+      'when filtering using inSet then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBool.inSet({true, false}),
+        );
 
-      expect(result.length, 2);
-    });
+        expect(result.length, 2);
+      },
+    );
 
-    test('when filtering using empty notInSet then all rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aBool.notInSet({}),
-      );
+    test(
+      'when filtering using empty inSet then no rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBool.inSet({}),
+        );
 
-      expect(result.length, 3);
-    });
+        expect(result, isEmpty);
+      },
+    );
+
+    test(
+      'when filtering using notInSet then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBool.notInSet({true}),
+        );
+
+        expect(result.length, 2);
+      },
+    );
+
+    test(
+      'when filtering using empty notInSet then all rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aBool.notInSet({}),
+        );
+
+        expect(result.length, 3);
+      },
+    );
   });
 }

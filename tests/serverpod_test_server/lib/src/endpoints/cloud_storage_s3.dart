@@ -12,7 +12,10 @@ class S3CloudStorageEndpoint extends Endpoint {
   // }
 
   Future<void> storePublicFile(
-      Session session, String path, ByteData byteData) async {
+    Session session,
+    String path,
+    ByteData byteData,
+  ) async {
     await session.storage.storeFile(
       storageId: 's3',
       path: path,
@@ -47,12 +50,16 @@ class S3CloudStorageEndpoint extends Endpoint {
   }
 
   Future<String?> getDirectFilePostUrl(Session session, String path) async {
-    return await session.storage
-        .createDirectFileUploadDescription(storageId: 's3', path: path);
+    return await session.storage.createDirectFileUploadDescription(
+      storageId: 's3',
+      path: path,
+    );
   }
 
   Future<bool> verifyDirectFileUpload(Session session, String path) async {
-    return await session.storage
-        .verifyDirectFileUpload(storageId: 's3', path: path);
+    return await session.storage.verifyDirectFileUpload(
+      storageId: 's3',
+      path: path,
+    );
   }
 }

@@ -13,6 +13,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'chat_message_chunk.dart' as _i2;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
+import 'package:serverpod_chat_server/src/generated/protocol.dart' as _i4;
 
 /// A message passed to a user when it joins a channel.
 abstract class ChatJoinedChannel
@@ -34,11 +35,13 @@ abstract class ChatJoinedChannel
   factory ChatJoinedChannel.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChatJoinedChannel(
       channel: jsonSerialization['channel'] as String,
-      initialMessageChunk: _i2.ChatMessageChunk.fromJson(
-          (jsonSerialization['initialMessageChunk'] as Map<String, dynamic>)),
+      initialMessageChunk: _i4.Protocol().deserialize<_i2.ChatMessageChunk>(
+        jsonSerialization['initialMessageChunk'],
+      ),
       lastReadMessageId: jsonSerialization['lastReadMessageId'] as int,
-      userInfo: _i3.UserInfo.fromJson(
-          (jsonSerialization['userInfo'] as Map<String, dynamic>)),
+      userInfo: _i4.Protocol().deserialize<_i3.UserInfo>(
+        jsonSerialization['userInfo'],
+      ),
     );
   }
 
@@ -66,6 +69,7 @@ abstract class ChatJoinedChannel
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_chat.ChatJoinedChannel',
       'channel': channel,
       'initialMessageChunk': initialMessageChunk.toJson(),
       'lastReadMessageId': lastReadMessageId,
@@ -76,6 +80,7 @@ abstract class ChatJoinedChannel
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_chat.ChatJoinedChannel',
       'channel': channel,
       'initialMessageChunk': initialMessageChunk.toJsonForProtocol(),
       'lastReadMessageId': lastReadMessageId,
@@ -96,11 +101,11 @@ class _ChatJoinedChannelImpl extends ChatJoinedChannel {
     required int lastReadMessageId,
     required _i3.UserInfo userInfo,
   }) : super._(
-          channel: channel,
-          initialMessageChunk: initialMessageChunk,
-          lastReadMessageId: lastReadMessageId,
-          userInfo: userInfo,
-        );
+         channel: channel,
+         initialMessageChunk: initialMessageChunk,
+         lastReadMessageId: lastReadMessageId,
+         userInfo: userInfo,
+       );
 
   /// Returns a shallow copy of this [ChatJoinedChannel]
   /// with some or all fields replaced by the given arguments.

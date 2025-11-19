@@ -20,8 +20,10 @@ void main() {
     });
 
     test('when calling get then it uses the default key.', () async {
-      await storage.delegate
-          .write(key: defaultKey, value: _authSuccess.toString());
+      await storage.delegate.write(
+        key: defaultKey,
+        value: _authSuccess.toString(),
+      );
 
       final result = await storage.get();
 
@@ -34,8 +36,9 @@ void main() {
 
     setUp(() {
       FlutterSecureStorage.setMockInitialValues({});
-      storage =
-          TestSecureKeyValueStorage.create(authSuccessStorageKey: customKey);
+      storage = TestSecureKeyValueStorage.create(
+        authSuccessStorageKey: customKey,
+      );
     });
 
     test('when calling set then it uses the custom key', () async {
@@ -45,8 +48,10 @@ void main() {
     });
 
     test('when calling get then it uses the custom key.', () async {
-      await storage.delegate
-          .write(key: customKey, value: _authSuccess.toString());
+      await storage.delegate.write(
+        key: customKey,
+        value: _authSuccess.toString(),
+      );
 
       final result = await storage.get();
 
@@ -67,14 +72,15 @@ void main() {
     });
 
     test(
-        'when calling set with AuthSuccess data then it encodes and stores the data as JSON string.',
-        () async {
-      await storage.set(_authSuccess);
+      'when calling set with AuthSuccess data then it encodes and stores the data as JSON string.',
+      () async {
+        await storage.set(_authSuccess);
 
-      final value = await storage.delegate.read(key: key);
+        final value = await storage.delegate.read(key: key);
 
-      expect(value, _authSuccess.toString());
-    });
+        expect(value, _authSuccess.toString());
+      },
+    );
   });
 
   group('Given a SecureClientAuthInfoStorage with data in storage', () {
@@ -84,16 +90,18 @@ void main() {
       await storage.delegate.write(key: key, value: _authSuccess.toString());
     });
 
-    test('when decoding stored value then original object is returned.',
-        () async {
-      final value = await storage.delegate.read(key: key);
+    test(
+      'when decoding stored value then original object is returned.',
+      () async {
+        final value = await storage.delegate.read(key: key);
 
-      expect(value, isNotNull);
-      expect(() => Protocol().decode<AuthSuccess>(value!), returnsNormally);
+        expect(value, isNotNull);
+        expect(() => Protocol().decode<AuthSuccess>(value!), returnsNormally);
 
-      final decoded = Protocol().decode<AuthSuccess>(value!);
-      expect(decoded.toString(), _authSuccess.toString());
-    });
+        final decoded = Protocol().decode<AuthSuccess>(value!);
+        expect(decoded.toString(), _authSuccess.toString());
+      },
+    );
 
     test('when calling get then data is retrieved from storage', () async {
       final result = await storage.get();
@@ -103,15 +111,16 @@ void main() {
     });
 
     test(
-        'when calling set with a new AuthSuccess data then new data replaces old stored data.',
-        () async {
-      final authSuccessNew = _authSuccess.copyWith(token: 'different-token');
-      await storage.set(authSuccessNew);
+      'when calling set with a new AuthSuccess data then new data replaces old stored data.',
+      () async {
+        final authSuccessNew = _authSuccess.copyWith(token: 'different-token');
+        await storage.set(authSuccessNew);
 
-      final stored = await storage.get();
+        final stored = await storage.get();
 
-      expect(stored.toString(), authSuccessNew.toString());
-    });
+        expect(stored.toString(), authSuccessNew.toString());
+      },
+    );
 
     test('when calling set with null then stored data is null.', () async {
       await storage.set(null);
@@ -123,15 +132,16 @@ void main() {
   });
 
   test(
-      'Given a SecureClientAuthInfoStorage with invalid JSON data in storage, when calling get then it throws an exception.',
-      () async {
-    FlutterSecureStorage.setMockInitialValues({});
-    storage = TestSecureKeyValueStorage.create(authSuccessStorageKey: key);
+    'Given a SecureClientAuthInfoStorage with invalid JSON data in storage, when calling get then it throws an exception.',
+    () async {
+      FlutterSecureStorage.setMockInitialValues({});
+      storage = TestSecureKeyValueStorage.create(authSuccessStorageKey: key);
 
-    await storage.delegate.write(key: key, value: 'invalid-json');
+      await storage.delegate.write(key: key, value: 'invalid-json');
 
-    await expectLater(() => storage.get(), throwsA(isA<Exception>()));
-  });
+      await expectLater(() => storage.get(), throwsA(isA<Exception>()));
+    },
+  );
 }
 
 /// A [SecureClientAuthInfoStorage] implementation for testing that exposes the

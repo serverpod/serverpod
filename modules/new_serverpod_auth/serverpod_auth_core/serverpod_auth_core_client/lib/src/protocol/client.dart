@@ -28,24 +28,24 @@ class EndpointStatus extends _i1.EndpointRef {
 
   /// Returns true if the client user is signed in.
   _i2.Future<bool> isSignedIn() => caller.callServerEndpoint<bool>(
-        'serverpod_auth_core.status',
-        'isSignedIn',
-        {},
-      );
+    'serverpod_auth_core.status',
+    'isSignedIn',
+    {},
+  );
 
   /// Signs out a user from the current device.
   _i2.Future<void> signOutDevice() => caller.callServerEndpoint<void>(
-        'serverpod_auth_core.status',
-        'signOutDevice',
-        {},
-      );
+    'serverpod_auth_core.status',
+    'signOutDevice',
+    {},
+  );
 
   /// Signs out a user from all active devices.
   _i2.Future<void> signOutAllDevices() => caller.callServerEndpoint<void>(
-        'serverpod_auth_core.status',
-        'signOutAllDevices',
-        {},
-      );
+    'serverpod_auth_core.status',
+    'signOutAllDevices',
+    {},
+  );
 }
 
 /// Endpoint for JWT tokens management.
@@ -71,8 +71,9 @@ abstract class EndpointRefreshJwtTokens extends _i1.EndpointRef {
   ///
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
-  _i2.Future<_i3.AuthSuccess> refreshAccessToken(
-      {required String refreshToken});
+  _i2.Future<_i3.AuthSuccess> refreshAccessToken({
+    required String refreshToken,
+  });
 }
 
 /// Endpoint for read-only access to user profile information.
@@ -100,8 +101,9 @@ class EndpointUserProfileInfo extends _i1.EndpointRef {
 abstract class EndpointUserProfileEditBase extends EndpointUserProfileInfo {
   EndpointUserProfileEditBase(_i1.EndpointCaller caller) : super(caller);
 
-  /// Removes the users uploaded image, replacing it with the default user
-  /// image.
+  /// Removes the user's uploaded image, setting it to null.
+  ///
+  /// The client should handle displaying a placeholder for users without images.
   _i2.Future<_i4.UserProfileModel> removeUserImage();
 
   /// Sets a new user image for the signed in user.
@@ -130,7 +132,7 @@ class Caller extends _i1.ModuleEndpointCaller {
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
-        'serverpod_auth_core.status': status,
-        'serverpod_auth_core.userProfileInfo': userProfileInfo,
-      };
+    'serverpod_auth_core.status': status,
+    'serverpod_auth_core.userProfileInfo': userProfileInfo,
+  };
 }

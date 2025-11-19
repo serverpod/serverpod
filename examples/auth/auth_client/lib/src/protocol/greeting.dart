@@ -30,8 +30,9 @@ abstract class Greeting implements _i1.SerializableModel {
     return Greeting(
       message: jsonSerialization['message'] as String,
       author: jsonSerialization['author'] as String,
-      timestamp:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
+      timestamp: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['timestamp'],
+      ),
     );
   }
 
@@ -55,6 +56,7 @@ abstract class Greeting implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Greeting',
       'message': message,
       'author': author,
       'timestamp': timestamp.toJson(),
@@ -73,10 +75,10 @@ class _GreetingImpl extends Greeting {
     required String author,
     required DateTime timestamp,
   }) : super._(
-          message: message,
-          author: author,
-          timestamp: timestamp,
-        );
+         message: message,
+         author: author,
+         timestamp: timestamp,
+       );
 
   /// Returns a shallow copy of this [Greeting]
   /// with some or all fields replaced by the given arguments.

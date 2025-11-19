@@ -33,12 +33,27 @@ class Protocol extends _i1.SerializationManagerServer {
     ..._i2.Protocol.targetTableDefinitions,
   ];
 
+  static String? getClassNameFromObjectJson(dynamic data) {
+    if (data is! Map) return null;
+    final className = data['__className__'] as String?;
+    return className;
+  }
+
   @override
   T deserialize<T>(
     dynamic data, [
     Type? t,
   ]) {
     t ??= T;
+
+    final dataClassName = getClassNameFromObjectJson(data);
+    if (dataClassName != null && dataClassName != t.toString()) {
+      return deserializeByClassName({
+        'className': dataClassName,
+        'data': data,
+      });
+    }
+
     if (t == _i5.Greeting) {
       return _i5.Greeting.fromJson(data) as T;
     }
@@ -47,10 +62,12 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<({_i6.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-        challenge:
-            deserialize<_i6.ByteData>(((data as Map)['n'] as Map)['challenge']),
-        id: deserialize<_i1.UuidValue>(data['n']['id']),
-      ) as T;
+            challenge: deserialize<_i6.ByteData>(
+              ((data as Map)['n'] as Map)['challenge'],
+            ),
+            id: deserialize<_i1.UuidValue>(data['n']['id']),
+          )
+          as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
@@ -68,6 +85,11 @@ class Protocol extends _i1.SerializationManagerServer {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
+
+    if (data is Map<String, dynamic> && data['__className__'] is String) {
+      return (data['__className__'] as String).replaceFirst('auth.', '');
+    }
+
     switch (data) {
       case _i5.Greeting():
         return 'Greeting';
@@ -202,7 +224,7 @@ Object? mapContainerToJson(Object obj) {
           {
             'k': mapIfNeeded(entry.key),
             'v': mapIfNeeded(entry.value),
-          }
+          },
       ];
 
     case Iterable():

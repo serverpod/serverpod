@@ -34,7 +34,8 @@ abstract class ChatMessageAttachment
   }) = _ChatMessageAttachmentImpl;
 
   factory ChatMessageAttachment.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ChatMessageAttachment(
       fileName: jsonSerialization['fileName'] as String,
       url: jsonSerialization['url'] as String,
@@ -77,6 +78,7 @@ abstract class ChatMessageAttachment
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_chat.ChatMessageAttachment',
       'fileName': fileName,
       'url': url,
       'contentType': contentType,
@@ -89,6 +91,7 @@ abstract class ChatMessageAttachment
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_chat.ChatMessageAttachment',
       'fileName': fileName,
       'url': url,
       'contentType': contentType,
@@ -115,13 +118,13 @@ class _ChatMessageAttachmentImpl extends ChatMessageAttachment {
     int? previewWidth,
     int? previewHeight,
   }) : super._(
-          fileName: fileName,
-          url: url,
-          contentType: contentType,
-          previewImage: previewImage,
-          previewWidth: previewWidth,
-          previewHeight: previewHeight,
-        );
+         fileName: fileName,
+         url: url,
+         contentType: contentType,
+         previewImage: previewImage,
+         previewWidth: previewWidth,
+         previewHeight: previewHeight,
+       );
 
   /// Returns a shallow copy of this [ChatMessageAttachment]
   /// with some or all fields replaced by the given arguments.

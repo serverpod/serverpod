@@ -48,7 +48,8 @@ sealed class AuthenticationTokenAlgorithm {
 
   /// Create a new HMAC SHA-512 authentication token algorithm configuration.
   static HmacSha512AuthenticationTokenAlgorithmConfiguration hmacSha512(
-      final SecretKey key) {
+    final SecretKey key,
+  ) {
     return HmacSha512AuthenticationTokenAlgorithmConfiguration(key: key);
   }
 }
@@ -60,9 +61,9 @@ class AuthenticationTokenConfig {
   /// Supported options are `HmacSha512` and `EcdsaSha512`.
   final AuthenticationTokenAlgorithm algorithm;
 
-  /// The algorithm used to verify the JWT tokens in case the primary
-  /// algorithm fails.
-  final AuthenticationTokenAlgorithm? fallbackVerificationAlgorithm;
+  /// The algorithms used to verify the JWT tokens in case the primary
+  /// algorithm fails. These are tried in order until one succeeds or all fail.
+  final List<AuthenticationTokenAlgorithm> fallbackVerificationAlgorithms;
 
   /// Pepper used for hashing refresh tokens.
   ///
@@ -134,13 +135,14 @@ class AuthenticationTokenConfig {
   final Future<Map<String, dynamic>?> Function(
     Session session,
     AuthenticationContext context,
-  )? extraClaimsProvider;
+  )?
+  extraClaimsProvider;
 
   /// Create a new user profile configuration.
   AuthenticationTokenConfig({
     required this.algorithm,
     required this.refreshTokenHashPepper,
-    this.fallbackVerificationAlgorithm,
+    this.fallbackVerificationAlgorithms = const [],
     this.accessTokenLifetime = const Duration(minutes: 10),
     this.refreshTokenLifetime = const Duration(days: 14),
     this.issuer,

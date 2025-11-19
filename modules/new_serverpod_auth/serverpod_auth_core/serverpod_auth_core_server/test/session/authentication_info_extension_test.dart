@@ -14,10 +14,12 @@ void main() {
       authId: authId.uuid,
     );
 
-    test('when reading the `authSessionId` field, then the UUID is returned.',
-        () {
-      expect(authenticationInfo.authSessionId, authId);
-    });
+    test(
+      'when reading the `authSessionId` field, then the UUID is returned.',
+      () {
+        expect(authenticationInfo.authSessionId, authId);
+      },
+    );
   });
 
   group('Given an `AuthenticationInfo` with a `null` `authId`', () {

@@ -34,8 +34,9 @@ abstract class Greeting
       id: jsonSerialization['id'] as int?,
       message: jsonSerialization['message'] as String,
       author: jsonSerialization['author'] as String,
-      timestamp:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
+      timestamp: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['timestamp'],
+      ),
     );
   }
 
@@ -70,6 +71,7 @@ abstract class Greeting
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Greeting',
       if (id != null) 'id': id,
       'message': message,
       'author': author,
@@ -80,6 +82,7 @@ abstract class Greeting
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Greeting',
       if (id != null) 'id': id,
       'message': message,
       'author': author,
@@ -126,11 +129,11 @@ class _GreetingImpl extends Greeting {
     required String author,
     required DateTime timestamp,
   }) : super._(
-          id: id,
-          message: message,
-          author: author,
-          timestamp: timestamp,
-        );
+         id: id,
+         message: message,
+         author: author,
+         timestamp: timestamp,
+       );
 
   /// Returns a shallow copy of this [Greeting]
   /// with some or all fields replaced by the given arguments.
@@ -155,14 +158,14 @@ class GreetingUpdateTable extends _i1.UpdateTable<GreetingTable> {
   GreetingUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> message(String value) => _i1.ColumnValue(
-        table.message,
-        value,
-      );
+    table.message,
+    value,
+  );
 
   _i1.ColumnValue<String, String> author(String value) => _i1.ColumnValue(
-        table.author,
-        value,
-      );
+    table.author,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> timestamp(DateTime value) =>
       _i1.ColumnValue(
@@ -201,11 +204,11 @@ class GreetingTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        message,
-        author,
-        timestamp,
-      ];
+    id,
+    message,
+    author,
+    timestamp,
+  ];
 }
 
 class GreetingInclude extends _i1.IncludeObject {

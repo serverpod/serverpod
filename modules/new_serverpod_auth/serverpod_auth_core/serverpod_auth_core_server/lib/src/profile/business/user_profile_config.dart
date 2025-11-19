@@ -70,10 +70,11 @@ class UserProfileConfig {
 
 /// Generates a default user image (avatar) for a user who hasn't uploaded a
 /// user image.
-typedef UserImageGenerator = Future<Image> Function(
-  UserProfileModel userProfile,
-  int imageSize,
-);
+typedef UserImageGenerator =
+    Future<Image> Function(
+      UserProfileModel userProfile,
+      int imageSize,
+    );
 
 /// Defines the format of stored user images.
 enum UserProfileImageType {
@@ -85,34 +86,38 @@ enum UserProfileImageType {
 }
 
 /// Callback to be invoked with the new user profile data before it gets created.
-typedef BeforeUserProfileCreatedHandler = FutureOr<UserProfileData> Function(
-  Session session,
-  UuidValue authUserId,
-  UserProfileData userProfile, {
-  required Transaction transaction,
-});
+typedef BeforeUserProfileCreatedHandler =
+    FutureOr<UserProfileData> Function(
+      Session session,
+      UuidValue authUserId,
+      UserProfileData userProfile, {
+      required Transaction transaction,
+    });
 
 /// Callback to be invoked with the new user profile after it has been created.
-typedef AfterUserProfileCreatedHandler = FutureOr<void> Function(
-  Session session,
-  UserProfileModel userProfile, {
-  required Transaction transaction,
-});
+typedef AfterUserProfileCreatedHandler =
+    FutureOr<void> Function(
+      Session session,
+      UserProfileModel userProfile, {
+      required Transaction transaction,
+    });
 
 /// Callback to be invoked with the new user profile before it will be updated.
-typedef BeforeUserProfileUpdatedHandler = FutureOr<UserProfileData> Function(
-  Session session,
-  UuidValue authUserId,
-  UserProfileData userProfile, {
-  required Transaction transaction,
-});
+typedef BeforeUserProfileUpdatedHandler =
+    FutureOr<UserProfileData> Function(
+      Session session,
+      UuidValue authUserId,
+      UserProfileData userProfile, {
+      required Transaction transaction,
+    });
 
 /// Callback to be invoked with the updated user profile after it has been updated.
-typedef AfterUserProfileUpdatedHandler = FutureOr<void> Function(
-  Session session,
-  UserProfileModel userProfile, {
-  required Transaction transaction,
-});
+typedef AfterUserProfileUpdatedHandler =
+    FutureOr<void> Function(
+      Session session,
+      UserProfileModel userProfile, {
+      required Transaction transaction,
+    });
 
 Future<Uint8List> _defaultImageFetch(final Uri url) async {
   final result = await http.get(url);

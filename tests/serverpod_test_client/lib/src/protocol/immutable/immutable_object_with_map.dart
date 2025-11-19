@@ -11,22 +11,24 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
 
 @_i1.immutable
 abstract class ImmutableObjectWithMap implements _i1.SerializableModel {
   const ImmutableObjectWithMap._({required this.mapVariable});
 
-  const factory ImmutableObjectWithMap(
-      {required Map<String, String> mapVariable}) = _ImmutableObjectWithMapImpl;
+  const factory ImmutableObjectWithMap({
+    required Map<String, String> mapVariable,
+  }) = _ImmutableObjectWithMapImpl;
 
   factory ImmutableObjectWithMap.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithMap(
-        mapVariable:
-            (jsonSerialization['mapVariable'] as Map).map((k, v) => MapEntry(
-                  k as String,
-                  v as String,
-                )));
+      mapVariable: _i2.Protocol().deserialize<Map<String, String>>(
+        jsonSerialization['mapVariable'],
+      ),
+    );
   }
 
   final Map<String, String> mapVariable;
@@ -59,7 +61,10 @@ abstract class ImmutableObjectWithMap implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return {'mapVariable': mapVariable.toJson()};
+    return {
+      '__className__': 'ImmutableObjectWithMap',
+      'mapVariable': mapVariable.toJson(),
+    };
   }
 
   @override
@@ -70,7 +75,7 @@ abstract class ImmutableObjectWithMap implements _i1.SerializableModel {
 
 class _ImmutableObjectWithMapImpl extends ImmutableObjectWithMap {
   const _ImmutableObjectWithMapImpl({required Map<String, String> mapVariable})
-      : super._(mapVariable: mapVariable);
+    : super._(mapVariable: mapVariable);
 
   /// Returns a shallow copy of this [ImmutableObjectWithMap]
   /// with some or all fields replaced by the given arguments.
@@ -78,14 +83,17 @@ class _ImmutableObjectWithMapImpl extends ImmutableObjectWithMap {
   @override
   ImmutableObjectWithMap copyWith({Map<String, String>? mapVariable}) {
     return ImmutableObjectWithMap(
-        mapVariable: mapVariable ??
-            this.mapVariable.map((
-                  key0,
-                  value0,
-                ) =>
-                    MapEntry(
-                      key0,
-                      value0,
-                    )));
+      mapVariable:
+          mapVariable ??
+          this.mapVariable.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0,
+            ),
+          ),
+    );
   }
 }

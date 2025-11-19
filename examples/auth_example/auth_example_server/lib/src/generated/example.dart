@@ -45,6 +45,7 @@ abstract class Example
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Example',
       'name': name,
       'data': data,
     };
@@ -53,6 +54,7 @@ abstract class Example
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Example',
       'name': name,
       'data': data,
     };
@@ -69,9 +71,9 @@ class _ExampleImpl extends Example {
     required String name,
     required int data,
   }) : super._(
-          name: name,
-          data: data,
-        );
+         name: name,
+         data: data,
+       );
 
   /// Returns a shallow copy of this [Example]
   /// with some or all fields replaced by the given arguments.

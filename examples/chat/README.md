@@ -1,5 +1,7 @@
 # Chat example
 
+**Deprecated:** This example displays the deprecated chat module and is not suitable for new projects.
+
 This example showcases Serverpod's chat and auth modules. It demonstrates how to build a basic chat application with multiple chat channels.
 
 To run the example on your local machine, make sure you have Serverpod installed on your system. Then start the Docker containers associated with the project.

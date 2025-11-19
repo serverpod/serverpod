@@ -192,8 +192,9 @@ final class StreamOpContext extends MethodCallOpContext {
   Map<String, dynamic> toJson() {
     return {
       ...super.toJson(),
-      'streamConnectionId':
-          streamConnectionId != null ? '$streamConnectionId' : null,
+      'streamConnectionId': streamConnectionId != null
+          ? '$streamConnectionId'
+          : null,
     };
   }
 }

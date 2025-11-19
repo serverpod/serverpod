@@ -54,8 +54,9 @@ class MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body:
-          sessionManager.isSignedIn ? const AccountPage() : const SignInPage(),
+      body: sessionManager.isSignedIn
+          ? const AccountPage()
+          : const SignInPage(),
     );
   }
 }

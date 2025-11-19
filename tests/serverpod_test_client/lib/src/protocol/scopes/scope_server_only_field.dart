@@ -11,8 +11,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../types.dart' as _i2;
-import '../scopes/scope_server_only_field.dart' as _i3;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
+import '../types.dart' as _i3;
+import '../scopes/scope_server_only_field.dart' as _i4;
 
 class ScopeServerOnlyField implements _i1.SerializableModel {
   ScopeServerOnlyField({
@@ -21,22 +22,25 @@ class ScopeServerOnlyField implements _i1.SerializableModel {
   });
 
   factory ScopeServerOnlyField.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ScopeServerOnlyField(
       allScope: jsonSerialization['allScope'] == null
           ? null
-          : _i2.Types.fromJson(
-              (jsonSerialization['allScope'] as Map<String, dynamic>)),
+          : _i2.Protocol().deserialize<_i3.Types>(
+              jsonSerialization['allScope'],
+            ),
       nested: jsonSerialization['nested'] == null
           ? null
-          : _i3.ScopeServerOnlyField.fromJson(
-              (jsonSerialization['nested'] as Map<String, dynamic>)),
+          : _i2.Protocol().deserialize<_i4.ScopeServerOnlyField>(
+              jsonSerialization['nested'],
+            ),
     );
   }
 
-  _i2.Types? allScope;
+  _i3.Types? allScope;
 
-  _i3.ScopeServerOnlyField? nested;
+  _i4.ScopeServerOnlyField? nested;
 
   /// Returns a shallow copy of this [ScopeServerOnlyField]
   /// with some or all fields replaced by the given arguments.
@@ -46,8 +50,8 @@ class ScopeServerOnlyField implements _i1.SerializableModel {
     Object? nested = _Undefined,
   }) {
     return ScopeServerOnlyField(
-      allScope: allScope is _i2.Types? ? allScope : this.allScope?.copyWith(),
-      nested: nested is _i3.ScopeServerOnlyField?
+      allScope: allScope is _i3.Types? ? allScope : this.allScope?.copyWith(),
+      nested: nested is _i4.ScopeServerOnlyField?
           ? nested
           : this.nested?.copyWith(),
     );
@@ -56,6 +60,7 @@ class ScopeServerOnlyField implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ScopeServerOnlyField',
       if (allScope != null) 'allScope': allScope?.toJson(),
       if (nested != null) 'nested': nested?.toJson(),
     };

@@ -16,8 +16,9 @@ void main() {
     new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
-  const newEmailIDPConfig =
-      new_auth_idp.EmailIDPConfig(secretHashPepper: 'test');
+  const newEmailIDPConfig = new_auth_idp.EmailIDPConfig(
+    secretHashPepper: 'test',
+  );
   late final new_auth_idp.EmailIDP newEmailIDP;
 
   setUpAll(() async {
@@ -154,10 +155,7 @@ void main() {
         expect(
           (await new_auth_idp.EmailAccount.db.find(
             session,
-          ))
-              .single
-              .passwordHash
-              .lengthInBytes,
+          )).single.passwordHash.lengthInBytes,
           greaterThan(0),
         );
       });
@@ -184,14 +182,15 @@ void main() {
           await expectLater(
             AuthMigrations.migrateUsers(
               session,
-              userMigration: (
-                final session, {
-                required final newAuthUserId,
-                required final oldUserId,
-                final transaction,
-              }) {
-                throw UnimplementedError();
-              },
+              userMigration:
+                  (
+                    final session, {
+                    required final newAuthUserId,
+                    required final oldUserId,
+                    final transaction,
+                  }) {
+                    throw UnimplementedError();
+                  },
             ),
             throwsUnimplementedError,
           );
@@ -224,14 +223,18 @@ void main() {
 
         await AuthMigrations.migrateUsers(
           session,
-          userMigration: (
-            final session, {
-            required final newAuthUserId,
-            required final oldUserId,
-            final transaction,
-          }) async {
-            migratedUser = (oldUserId: oldUserId, newAuthUserId: newAuthUserId);
-          },
+          userMigration:
+              (
+                final session, {
+                required final newAuthUserId,
+                required final oldUserId,
+                final transaction,
+              }) async {
+                migratedUser = (
+                  oldUserId: oldUserId,
+                  newAuthUserId: newAuthUserId,
+                );
+              },
           legacyUserId: userInfo.id!,
         );
 
@@ -244,8 +247,7 @@ void main() {
         authUserId = (await newEmailIDP.admin.findAccount(
           session,
           email: email,
-        ))!
-            .authUserId;
+        ))!.authUserId;
       });
 
       test(
@@ -293,8 +295,10 @@ void main() {
         'when reading the profile, then it matches the original user info.',
         () async {
           const userProfiles = new_auth_profile.UserProfiles();
-          final profile =
-              await userProfiles.findUserProfileByUserId(session, authUserId);
+          final profile = await userProfiles.findUserProfileByUserId(
+            session,
+            authUserId,
+          );
 
           expect(profile.email, userInfo.email);
           expect(profile.userName, userInfo.userName);
@@ -333,8 +337,7 @@ void main() {
         authUserId = (await newEmailIDP.admin.findAccount(
           session,
           email: email,
-        ))!
-            .authUserId;
+        ))!.authUserId;
       });
 
       test(
@@ -376,21 +379,24 @@ void main() {
 
         await AuthMigrations.migrateUsers(
           session,
-          userMigration: (
-            final session, {
-            required final newAuthUserId,
-            required final oldUserId,
-            final transaction,
-          }) async {
-            migratedUser = (oldUserId: oldUserId, newAuthUserId: newAuthUserId);
-          },
+          userMigration:
+              (
+                final session, {
+                required final newAuthUserId,
+                required final oldUserId,
+                final transaction,
+              }) async {
+                migratedUser = (
+                  oldUserId: oldUserId,
+                  newAuthUserId: newAuthUserId,
+                );
+              },
         );
 
         authUserId = (await newEmailIDP.admin.findAccount(
           session,
           email: email,
-        ))!
-            .authUserId;
+        ))!.authUserId;
       });
 
       test(
@@ -485,8 +491,11 @@ void main() {
               password: wrongPassword,
               transaction: session.transaction,
             ),
-            throwsA(isA<
-                new_auth_idp.EmailAuthenticationInvalidCredentialsException>()),
+            throwsA(
+              isA<
+                new_auth_idp.EmailAuthenticationInvalidCredentialsException
+              >(),
+            ),
           );
         },
       );
@@ -503,8 +512,11 @@ void main() {
               password: password,
               transaction: session.transaction,
             ),
-            throwsA(isA<
-                new_auth_idp.EmailAuthenticationInvalidCredentialsException>()),
+            throwsA(
+              isA<
+                new_auth_idp.EmailAuthenticationInvalidCredentialsException
+              >(),
+            ),
           );
         },
       );
@@ -513,8 +525,10 @@ void main() {
         'when reading the profile, then it matches the original user info.',
         () async {
           const userProfiles = new_auth_profile.UserProfiles();
-          final profile =
-              await userProfiles.findUserProfileByUserId(session, authUserId);
+          final profile = await userProfiles.findUserProfileByUserId(
+            session,
+            authUserId,
+          );
 
           expect(profile.email, userInfo.email);
           expect(profile.userName, userInfo.userName);

@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../long_identifiers/models_with_relations/long_implicit_id_field.dart'
     as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class LongImplicitIdFieldCollection
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -28,21 +29,22 @@ abstract class LongImplicitIdFieldCollection
     int? id,
     required String name,
     List<_i2.LongImplicitIdField>?
-        thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+    thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
   }) = _LongImplicitIdFieldCollectionImpl;
 
   factory LongImplicitIdFieldCollection.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return LongImplicitIdFieldCollection(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
-          (jsonSerialization[
-                      'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa']
-                  as List?)
-              ?.map((e) =>
-                  _i2.LongImplicitIdField.fromJson((e as Map<String, dynamic>)))
-              .toList(),
+          jsonSerialization['thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa'] ==
+              null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.LongImplicitIdField>>(
+              jsonSerialization['thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa'],
+            ),
     );
   }
 
@@ -56,7 +58,7 @@ abstract class LongImplicitIdFieldCollection
   String name;
 
   List<_i2.LongImplicitIdField>?
-      thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
+  thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
 
   @override
   _i1.Table<int?> get table => t;
@@ -68,11 +70,12 @@ abstract class LongImplicitIdFieldCollection
     int? id,
     String? name,
     List<_i2.LongImplicitIdField>?
-        thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+    thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'LongImplicitIdFieldCollection',
       if (id != null) 'id': id,
       'name': name,
       if (thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa != null)
@@ -85,6 +88,7 @@ abstract class LongImplicitIdFieldCollection
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'LongImplicitIdFieldCollection',
       if (id != null) 'id': id,
       'name': name,
       if (thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa != null)
@@ -94,12 +98,14 @@ abstract class LongImplicitIdFieldCollection
     };
   }
 
-  static LongImplicitIdFieldCollectionInclude include(
-      {_i2.LongImplicitIdFieldIncludeList?
-          thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa}) {
+  static LongImplicitIdFieldCollectionInclude include({
+    _i2.LongImplicitIdFieldIncludeList?
+    thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+  }) {
     return LongImplicitIdFieldCollectionInclude._(
-        thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
-            thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa);
+      thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
+          thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+    );
   }
 
   static LongImplicitIdFieldCollectionIncludeList includeList({
@@ -135,13 +141,13 @@ class _LongImplicitIdFieldCollectionImpl extends LongImplicitIdFieldCollection {
     int? id,
     required String name,
     List<_i2.LongImplicitIdField>?
-        thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+    thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
   }) : super._(
-          id: id,
-          name: name,
-          thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
-              thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
-        );
+         id: id,
+         name: name,
+         thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
+             thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+       );
 
   /// Returns a shallow copy of this [LongImplicitIdFieldCollection]
   /// with some or all fields replaced by the given arguments.
@@ -158,12 +164,11 @@ class _LongImplicitIdFieldCollectionImpl extends LongImplicitIdFieldCollection {
       name: name ?? this.name,
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
           thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-                  is List<_i2.LongImplicitIdField>?
-              ? thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-              : this
-                  .thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-                  ?.map((e0) => e0.copyWith())
-                  .toList(),
+              is List<_i2.LongImplicitIdField>?
+          ? thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
+          : this.thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
+                ?.map((e0) => e0.copyWith())
+                .toList(),
     );
   }
 }
@@ -173,14 +178,14 @@ class LongImplicitIdFieldCollectionUpdateTable
   LongImplicitIdFieldCollectionUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 }
 
 class LongImplicitIdFieldCollectionTable extends _i1.Table<int?> {
   LongImplicitIdFieldCollectionTable({super.tableRelation})
-      : super(tableName: 'long_implicit_id_field_collection') {
+    : super(tableName: 'long_implicit_id_field_collection') {
     updateTable = LongImplicitIdFieldCollectionUpdateTable(this);
     name = _i1.ColumnString(
       'name',
@@ -193,39 +198,43 @@ class LongImplicitIdFieldCollectionTable extends _i1.Table<int?> {
   late final _i1.ColumnString name;
 
   _i2.LongImplicitIdFieldTable?
-      ___thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
+  ___thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
 
   _i1.ManyRelation<_i2.LongImplicitIdFieldTable>?
-      _thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
+  _thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
 
   _i2.LongImplicitIdFieldTable
-      get __thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa {
+  get __thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa {
     if (___thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa !=
         null)
       return ___thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa!;
-    ___thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa =
-        _i1.createRelationTable(
-      relationFieldName:
-          '__thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa',
-      field: LongImplicitIdFieldCollection.t.id,
-      foreignField: _i2.LongImplicitIdField.t
-          .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
-      tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.LongImplicitIdFieldTable(tableRelation: foreignTableRelation),
-    );
+    ___thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa = _i1
+        .createRelationTable(
+          relationFieldName:
+              '__thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa',
+          field: LongImplicitIdFieldCollection.t.id,
+          foreignField: _i2
+              .LongImplicitIdField
+              .t
+              .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
+          tableRelation: tableRelation,
+          createTable: (foreignTableRelation) =>
+              _i2.LongImplicitIdFieldTable(tableRelation: foreignTableRelation),
+        );
     return ___thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa!;
   }
 
   _i1.ManyRelation<_i2.LongImplicitIdFieldTable>
-      get thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa {
+  get thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa {
     if (_thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa != null)
       return _thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa!;
     var relationTable = _i1.createRelationTable(
       relationFieldName:
           'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa',
       field: LongImplicitIdFieldCollection.t.id,
-      foreignField: _i2.LongImplicitIdField.t
+      foreignField: _i2
+          .LongImplicitIdField
+          .t
           .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
@@ -233,18 +242,19 @@ class LongImplicitIdFieldCollectionTable extends _i1.Table<int?> {
     );
     _thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa =
         _i1.ManyRelation<_i2.LongImplicitIdFieldTable>(
-      tableWithRelations: relationTable,
-      table: _i2.LongImplicitIdFieldTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
-    );
+          tableWithRelations: relationTable,
+          table: _i2.LongImplicitIdFieldTable(
+            tableRelation: relationTable.tableRelation!.lastRelation,
+          ),
+        );
     return _thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -257,21 +267,22 @@ class LongImplicitIdFieldCollectionTable extends _i1.Table<int?> {
 }
 
 class LongImplicitIdFieldCollectionInclude extends _i1.IncludeObject {
-  LongImplicitIdFieldCollectionInclude._(
-      {_i2.LongImplicitIdFieldIncludeList?
-          thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa}) {
+  LongImplicitIdFieldCollectionInclude._({
+    _i2.LongImplicitIdFieldIncludeList?
+    thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+  }) {
     _thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa =
         thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
   }
 
   _i2.LongImplicitIdFieldIncludeList?
-      _thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
+  _thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa':
-            _thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-      };
+    'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa':
+        _thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+  };
 
   @override
   _i1.Table<int?> get table => LongImplicitIdFieldCollection.t;
@@ -475,9 +486,10 @@ class LongImplicitIdFieldCollectionRepository {
   Future<LongImplicitIdFieldCollection?> updateById(
     _i1.Session session,
     int id, {
-    required _i1
-        .ColumnValueListBuilder<LongImplicitIdFieldCollectionUpdateTable>
-        columnValues,
+    required _i1.ColumnValueListBuilder<
+      LongImplicitIdFieldCollectionUpdateTable
+    >
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<LongImplicitIdFieldCollection>(
@@ -491,11 +503,12 @@ class LongImplicitIdFieldCollectionRepository {
   /// Returns the list of updated rows.
   Future<List<LongImplicitIdFieldCollection>> updateWhere(
     _i1.Session session, {
-    required _i1
-        .ColumnValueListBuilder<LongImplicitIdFieldCollectionUpdateTable>
-        columnValues,
+    required _i1.ColumnValueListBuilder<
+      LongImplicitIdFieldCollectionUpdateTable
+    >
+    columnValues,
     required _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>
-        where,
+    where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<LongImplicitIdFieldCollectionTable>? orderBy,
@@ -545,7 +558,7 @@ class LongImplicitIdFieldCollectionRepository {
   Future<List<LongImplicitIdFieldCollection>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>
-        where,
+    where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<LongImplicitIdFieldCollection>(
@@ -589,17 +602,21 @@ class LongImplicitIdFieldCollectionAttachRepository {
     }
 
     var $longImplicitIdField = longImplicitIdField
-        .map((e) => _i2.LongImplicitIdFieldImplicit(
-              e,
-              $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id:
-                  longImplicitIdFieldCollection.id,
-            ))
+        .map(
+          (e) => _i2.LongImplicitIdFieldImplicit(
+            e,
+            $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id:
+                longImplicitIdFieldCollection.id,
+          ),
+        )
         .toList();
     await session.db.update<_i2.LongImplicitIdField>(
       $longImplicitIdField,
       columns: [
-        _i2.LongImplicitIdField.t
-            .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
+        _i2
+            .LongImplicitIdField
+            .t
+            .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
       ],
       transaction: transaction,
     );
@@ -632,8 +649,10 @@ class LongImplicitIdFieldCollectionAttachRowRepository {
     await session.db.updateRow<_i2.LongImplicitIdField>(
       $longImplicitIdField,
       columns: [
-        _i2.LongImplicitIdField.t
-            .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
+        _i2
+            .LongImplicitIdField
+            .t
+            .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
       ],
       transaction: transaction,
     );
@@ -658,17 +677,21 @@ class LongImplicitIdFieldCollectionDetachRepository {
     }
 
     var $longImplicitIdField = longImplicitIdField
-        .map((e) => _i2.LongImplicitIdFieldImplicit(
-              e,
-              $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id:
-                  null,
-            ))
+        .map(
+          (e) => _i2.LongImplicitIdFieldImplicit(
+            e,
+            $_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id:
+                null,
+          ),
+        )
         .toList();
     await session.db.update<_i2.LongImplicitIdField>(
       $longImplicitIdField,
       columns: [
-        _i2.LongImplicitIdField.t
-            .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
+        _i2
+            .LongImplicitIdField
+            .t
+            .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
       ],
       transaction: transaction,
     );
@@ -699,8 +722,10 @@ class LongImplicitIdFieldCollectionDetachRowRepository {
     await session.db.updateRow<_i2.LongImplicitIdField>(
       $longImplicitIdField,
       columns: [
-        _i2.LongImplicitIdField.t
-            .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id
+        _i2
+            .LongImplicitIdField
+            .t
+            .$_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
       ],
       transaction: transaction,
     );

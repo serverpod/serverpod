@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../changed_id_type/many_to_many/student.dart' as _i2;
 import '../../changed_id_type/many_to_many/course.dart' as _i3;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
 abstract class EnrollmentInt implements _i1.SerializableModel {
   EnrollmentInt._({
@@ -34,18 +35,22 @@ abstract class EnrollmentInt implements _i1.SerializableModel {
   factory EnrollmentInt.fromJson(Map<String, dynamic> jsonSerialization) {
     return EnrollmentInt(
       id: jsonSerialization['id'] as int?,
-      studentId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['studentId']),
+      studentId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['studentId'],
+      ),
       student: jsonSerialization['student'] == null
           ? null
-          : _i2.StudentUuid.fromJson(
-              (jsonSerialization['student'] as Map<String, dynamic>)),
-      courseId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['courseId']),
+          : _i4.Protocol().deserialize<_i2.StudentUuid>(
+              jsonSerialization['student'],
+            ),
+      courseId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['courseId'],
+      ),
       course: jsonSerialization['course'] == null
           ? null
-          : _i3.CourseUuid.fromJson(
-              (jsonSerialization['course'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i3.CourseUuid>(
+              jsonSerialization['course'],
+            ),
     );
   }
 
@@ -75,6 +80,7 @@ abstract class EnrollmentInt implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'EnrollmentInt',
       if (id != null) 'id': id,
       'studentId': studentId.toJson(),
       if (student != null) 'student': student?.toJson(),
@@ -99,12 +105,12 @@ class _EnrollmentIntImpl extends EnrollmentInt {
     required _i1.UuidValue courseId,
     _i3.CourseUuid? course,
   }) : super._(
-          id: id,
-          studentId: studentId,
-          student: student,
-          courseId: courseId,
-          course: course,
-        );
+         id: id,
+         studentId: studentId,
+         student: student,
+         courseId: courseId,
+         course: course,
+       );
 
   /// Returns a shallow copy of this [EnrollmentInt]
   /// with some or all fields replaced by the given arguments.

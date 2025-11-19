@@ -20,9 +20,11 @@ abstract class AccessDeniedException
       _AccessDeniedExceptionImpl;
 
   factory AccessDeniedException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return AccessDeniedException(
-        message: jsonSerialization['message'] as String);
+      message: jsonSerialization['message'] as String,
+    );
   }
 
   String message;
@@ -33,7 +35,10 @@ abstract class AccessDeniedException
   AccessDeniedException copyWith({String? message});
   @override
   Map<String, dynamic> toJson() {
-    return {'message': message};
+    return {
+      '__className__': 'serverpod.AccessDeniedException',
+      'message': message,
+    };
   }
 
   @override
@@ -44,7 +49,7 @@ abstract class AccessDeniedException
 
 class _AccessDeniedExceptionImpl extends AccessDeniedException {
   _AccessDeniedExceptionImpl({required String message})
-      : super._(message: message);
+    : super._(message: message);
 
   /// Returns a shallow copy of this [AccessDeniedException]
   /// with some or all fields replaced by the given arguments.

@@ -22,7 +22,9 @@ class BasicTypesStreamingEndpoint extends Endpoint {
   }
 
   Stream<DateTime?> testDateTime(
-      Session session, Stream<DateTime?> value) async* {
+    Session session,
+    Stream<DateTime?> value,
+  ) async* {
     await for (var v in value) {
       yield v;
     }
@@ -35,21 +37,27 @@ class BasicTypesStreamingEndpoint extends Endpoint {
   }
 
   Stream<ByteData?> testByteData(
-      Session session, Stream<ByteData?> value) async* {
+    Session session,
+    Stream<ByteData?> value,
+  ) async* {
     await for (var v in value) {
       yield v;
     }
   }
 
   Stream<Duration?> testDuration(
-      Session session, Stream<Duration?> value) async* {
+    Session session,
+    Stream<Duration?> value,
+  ) async* {
     await for (var v in value) {
       yield v;
     }
   }
 
   Stream<UuidValue?> testUuid(
-      Session session, Stream<UuidValue?> value) async* {
+    Session session,
+    Stream<UuidValue?> value,
+  ) async* {
     await for (var v in value) {
       yield v;
     }

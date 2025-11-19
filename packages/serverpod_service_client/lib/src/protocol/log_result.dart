@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'log_entry.dart' as _i2;
+import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i3;
 
 /// A list of log entries, used to return logging data.
 abstract class LogResult implements _i1.SerializableModel {
@@ -21,9 +22,10 @@ abstract class LogResult implements _i1.SerializableModel {
 
   factory LogResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return LogResult(
-        entries: (jsonSerialization['entries'] as List)
-            .map((e) => _i2.LogEntry.fromJson((e as Map<String, dynamic>)))
-            .toList());
+      entries: _i3.Protocol().deserialize<List<_i2.LogEntry>>(
+        jsonSerialization['entries'],
+      ),
+    );
   }
 
   /// The log entries in this result.
@@ -35,7 +37,10 @@ abstract class LogResult implements _i1.SerializableModel {
   LogResult copyWith({List<_i2.LogEntry>? entries});
   @override
   Map<String, dynamic> toJson() {
-    return {'entries': entries.toJson(valueToJson: (v) => v.toJson())};
+    return {
+      '__className__': 'serverpod.LogResult',
+      'entries': entries.toJson(valueToJson: (v) => v.toJson()),
+    };
   }
 
   @override
@@ -46,7 +51,7 @@ abstract class LogResult implements _i1.SerializableModel {
 
 class _LogResultImpl extends LogResult {
   _LogResultImpl({required List<_i2.LogEntry> entries})
-      : super._(entries: entries);
+    : super._(entries: entries);
 
   /// Returns a shallow copy of this [LogResult]
   /// with some or all fields replaced by the given arguments.
@@ -54,6 +59,7 @@ class _LogResultImpl extends LogResult {
   @override
   LogResult copyWith({List<_i2.LogEntry>? entries}) {
     return LogResult(
-        entries: entries ?? this.entries.map((e0) => e0.copyWith()).toList());
+      entries: entries ?? this.entries.map((e0) => e0.copyWith()).toList(),
+    );
   }
 }

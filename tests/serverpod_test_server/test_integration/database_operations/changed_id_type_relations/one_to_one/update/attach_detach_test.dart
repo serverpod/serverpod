@@ -23,17 +23,27 @@ Future<void> _createTestDatabase(Session session) async {
 }
 
 Future<int> deleteAll(Session session) async {
-  var addressDeletions = await AddressUuid.db
-      .deleteWhere(session, where: (_) => Constant.bool(true));
-  var citizenDeletions = await CitizenInt.db
-      .deleteWhere(session, where: (_) => Constant.bool(true));
-  var companyDeletions = await CompanyUuid.db
-      .deleteWhere(session, where: (_) => Constant.bool(true));
-  var townDeletions =
-      await TownInt.db.deleteWhere(session, where: (_) => Constant.bool(true));
+  var addressDeletions = await AddressUuid.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
+  var citizenDeletions = await CitizenInt.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
+  var companyDeletions = await CompanyUuid.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
+  var townDeletions = await TownInt.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
 
-  var postDeletions =
-      await Post.db.deleteWhere(session, where: (_) => Constant.bool(true));
+  var postDeletions = await Post.db.deleteWhere(
+    session,
+    where: (_) => Constant.bool(true),
+  );
 
   return townDeletions.length +
       companyDeletions.length +
@@ -55,90 +65,99 @@ void main() async {
 
     tearDown(() async => await deleteAll(session));
     test(
-        'when attaching an address from the foreign key side the object holding the foreign key is updated in the database',
-        () async {
-      var alice = citizens.first;
-      var address = AddressUuid(street: 'Street');
-      address = await AddressUuid.db.insertRow(session, address);
+      'when attaching an address from the foreign key side the object holding the foreign key is updated in the database',
+      () async {
+        var alice = citizens.first;
+        var address = AddressUuid(street: 'Street');
+        address = await AddressUuid.db.insertRow(session, address);
 
-      await AddressUuid.db.attachRow.inhabitant(session, address, alice);
-
-      var updatedAddress = await AddressUuid.db.findById(session, address.id);
-
-      expect(updatedAddress?.inhabitantId, alice.id);
-    });
-
-    test(
-        'when detaching an address from the foreign key side the object holding the foreign key has the foreign key set to null.',
-        () async {
-      var addresses = await AddressUuid.db.find(session, orderBy: (t) => t.id);
-      var address = addresses.first;
-
-      await AddressUuid.db.detachRow.inhabitant(session, address);
-
-      var updatedAddress = await AddressUuid.db.findById(session, address.id);
-
-      expect(updatedAddress?.inhabitantId, null);
-    });
-
-    test(
-        'when attaching an address with modified values only the foreign key field is modified.',
-        () async {
-      var alice = citizens.first;
-      var address = AddressUuid(street: 'Street');
-      address = await AddressUuid.db.insertRow(session, address);
-
-      var copy = address.copyWith(street: 'New street');
-
-      AddressUuid.db.attachRow.inhabitant(session, copy, alice);
-
-      var updatedAddress = await AddressUuid.db.findById(session, address.id);
-
-      expect(updatedAddress?.street, 'Street');
-    });
-
-    test(
-        'when trying to attach a citizen to an address that is not stored in the database then an exception is thrown',
-        () async {
-      var alice = citizens.first;
-      var address = AddressUuid(street: 'Street');
-
-      try {
         await AddressUuid.db.attachRow.inhabitant(session, address, alice);
-        fail('Expected an exception to be thrown');
-      } catch (e) {
-        expect(e, isA<DatabaseUpdateRowException>());
-      }
-    });
+
+        var updatedAddress = await AddressUuid.db.findById(session, address.id);
+
+        expect(updatedAddress?.inhabitantId, alice.id);
+      },
+    );
 
     test(
-        'when trying to attach a citizen that is not stored in the db to an address then an exception is thrown',
-        () async {
-      var carol = CitizenInt(name: 'Carol', companyId: Uuid().v4obj());
-      var address = AddressUuid(street: 'Street');
-      address = await AddressUuid.db.insertRow(session, address);
+      'when detaching an address from the foreign key side the object holding the foreign key has the foreign key set to null.',
+      () async {
+        var addresses = await AddressUuid.db.find(
+          session,
+          orderBy: (t) => t.id,
+        );
+        var address = addresses.first;
 
-      try {
-        await AddressUuid.db.attachRow.inhabitant(session, address, carol);
-        fail('Expected an exception to be thrown');
-      } catch (e) {
-        expect(e, isA<ArgumentError>());
-        expect((e as ArgumentError).name, 'inhabitant.id');
-      }
-    });
-
-    test(
-        'when trying to detach a citizen from an address that is not stored in the database then an exception is thrown',
-        () async {
-      var address = AddressUuid(street: 'Street');
-
-      try {
         await AddressUuid.db.detachRow.inhabitant(session, address);
-        fail('Expected an exception to be thrown');
-      } catch (e) {
-        expect(e, isA<DatabaseUpdateRowException>());
-      }
-    });
+
+        var updatedAddress = await AddressUuid.db.findById(session, address.id);
+
+        expect(updatedAddress?.inhabitantId, null);
+      },
+    );
+
+    test(
+      'when attaching an address with modified values only the foreign key field is modified.',
+      () async {
+        var alice = citizens.first;
+        var address = AddressUuid(street: 'Street');
+        address = await AddressUuid.db.insertRow(session, address);
+
+        var copy = address.copyWith(street: 'New street');
+
+        AddressUuid.db.attachRow.inhabitant(session, copy, alice);
+
+        var updatedAddress = await AddressUuid.db.findById(session, address.id);
+
+        expect(updatedAddress?.street, 'Street');
+      },
+    );
+
+    test(
+      'when trying to attach a citizen to an address that is not stored in the database then an exception is thrown',
+      () async {
+        var alice = citizens.first;
+        var address = AddressUuid(street: 'Street');
+
+        try {
+          await AddressUuid.db.attachRow.inhabitant(session, address, alice);
+          fail('Expected an exception to be thrown');
+        } catch (e) {
+          expect(e, isA<DatabaseUpdateRowException>());
+        }
+      },
+    );
+
+    test(
+      'when trying to attach a citizen that is not stored in the db to an address then an exception is thrown',
+      () async {
+        var carol = CitizenInt(name: 'Carol', companyId: Uuid().v4obj());
+        var address = AddressUuid(street: 'Street');
+        address = await AddressUuid.db.insertRow(session, address);
+
+        try {
+          await AddressUuid.db.attachRow.inhabitant(session, address, carol);
+          fail('Expected an exception to be thrown');
+        } catch (e) {
+          expect(e, isA<ArgumentError>());
+          expect((e as ArgumentError).name, 'inhabitant.id');
+        }
+      },
+    );
+
+    test(
+      'when trying to detach a citizen from an address that is not stored in the database then an exception is thrown',
+      () async {
+        var address = AddressUuid(street: 'Street');
+
+        try {
+          await AddressUuid.db.detachRow.inhabitant(session, address);
+          fail('Expected an exception to be thrown');
+        } catch (e) {
+          expect(e, isA<DatabaseUpdateRowException>());
+        }
+      },
+    );
   });
 
   group('Given a citizen ', () {
@@ -154,161 +173,180 @@ void main() async {
     tearDown(() async => await deleteAll(session));
 
     test(
-        'when attaching an address from the non foreign key side the object holding the foreign key is updated in the database',
-        () async {
-      var alice = citizens.first;
-      var address = AddressUuid(street: 'Street');
-      address = await AddressUuid.db.insertRow(session, address);
+      'when attaching an address from the non foreign key side the object holding the foreign key is updated in the database',
+      () async {
+        var alice = citizens.first;
+        var address = AddressUuid(street: 'Street');
+        address = await AddressUuid.db.insertRow(session, address);
 
-      await CitizenInt.db.attachRow.address(session, alice, address);
-
-      var updatedAddress = await AddressUuid.db.findById(session, address.id);
-
-      expect(updatedAddress?.inhabitantId, alice.id);
-    });
-
-    test(
-        'when detaching an address from the non foreign key side the object holding the foreign key has the foreign key set to null.',
-        () async {
-      var bob = citizens.last;
-
-      var addresses = await AddressUuid.db.find(
-        session,
-        orderBy: (t) => t.id,
-        include: AddressUuid.include(
-          inhabitant: CitizenInt.include(),
-        ),
-      );
-      var address = addresses.first;
-
-      var bobCopy = bob.copyWith(address: address);
-
-      await CitizenInt.db.detachRow.address(session, bobCopy);
-
-      var updatedAddress = await AddressUuid.db.findById(session, address.id);
-
-      expect(updatedAddress?.inhabitantId, null);
-    });
-
-    test(
-        'when inside a transaction and attaching an address from the non foreign key side the object holding the foreign key is updated in the database',
-        () async {
-      var alice = citizens.first;
-      var address = AddressUuid(street: 'Street');
-      address = await AddressUuid.db.insertRow(session, address);
-
-      await session.db.transaction((transaction) async {
-        await CitizenInt.db.attachRow
-            .address(session, alice, address, transaction: transaction);
-      });
-      var updatedAddress = await AddressUuid.db.findById(session, address.id);
-
-      expect(updatedAddress?.inhabitantId, alice.id);
-    });
-
-    test(
-        'when inside a transaction and detaching an address from the non foreign key side the object holding the foreign key has the foreign key set to null.',
-        () async {
-      var bob = citizens.last;
-
-      var addresses = await AddressUuid.db.find(
-        session,
-        orderBy: (t) => t.id,
-        include: AddressUuid.include(
-          inhabitant: CitizenInt.include(),
-        ),
-      );
-      var address = addresses.first;
-
-      var bobCopy = bob.copyWith(address: address);
-
-      await session.db.transaction((transaction) async {
-        await CitizenInt.db.detachRow
-            .address(session, bobCopy, transaction: transaction);
-      });
-
-      var updatedAddress = await AddressUuid.db.findById(session, address.id);
-
-      expect(updatedAddress?.inhabitantId, null);
-    });
-
-    test(
-        'when attaching to an object that already have an entry then the new value is set in the database',
-        () async {
-      var citizen = citizens.first;
-      var company = companies.last;
-
-      await CitizenInt.db.attachRow.company(session, citizen, company);
-
-      var alice = await CitizenInt.db.findById(
-        session,
-        citizen.id!,
-        include: CitizenInt.include(company: CompanyUuid.include()),
-      );
-
-      expect(alice?.companyId, company.id);
-    });
-
-    test(
-        'when trying to attach a citizen to an address that is not stored in the database then an exception is thrown',
-        () async {
-      var alice = citizens.first;
-      var address = AddressUuid(street: 'Street');
-
-      try {
         await CitizenInt.db.attachRow.address(session, alice, address);
-        fail('Expected an exception to be thrown');
-      } catch (e) {
-        expect(e, isA<DatabaseUpdateRowException>());
-      }
-    });
+
+        var updatedAddress = await AddressUuid.db.findById(session, address.id);
+
+        expect(updatedAddress?.inhabitantId, alice.id);
+      },
+    );
 
     test(
-        'when trying to attach a citizen that is not stored in the db to an address then an exception is thrown',
-        () async {
-      var carol = CitizenInt(name: 'Carol', companyId: Uuid().v4obj());
-      var address = AddressUuid(street: 'Street');
-      address = await AddressUuid.db.insertRow(session, address);
+      'when detaching an address from the non foreign key side the object holding the foreign key has the foreign key set to null.',
+      () async {
+        var bob = citizens.last;
 
-      try {
-        await CitizenInt.db.attachRow.address(session, carol, address);
-        fail('Expected an exception to be thrown');
-      } catch (e) {
-        expect(e, isA<ArgumentError>());
-        expect((e as ArgumentError).name, 'citizenInt.id');
-      }
-    });
+        var addresses = await AddressUuid.db.find(
+          session,
+          orderBy: (t) => t.id,
+          include: AddressUuid.include(
+            inhabitant: CitizenInt.include(),
+          ),
+        );
+        var address = addresses.first;
 
-    test(
-        'when trying to detach an address from a citizen that is not stored in the database then an exception is thrown',
-        () async {
-      var address = AddressUuid(street: 'Street');
-      address = await AddressUuid.db.insertRow(session, address);
+        var bobCopy = bob.copyWith(address: address);
 
-      var carol = CitizenInt(
-          name: 'Carol', companyId: Uuid().v4obj(), address: address);
+        await CitizenInt.db.detachRow.address(session, bobCopy);
 
-      try {
-        await CitizenInt.db.detachRow.address(session, carol);
-        fail('Expected an exception to be thrown');
-      } catch (e) {
-        expect(e, isA<ArgumentError>());
-        expect((e as ArgumentError).name, 'citizenInt.id');
-      }
-    });
+        var updatedAddress = await AddressUuid.db.findById(session, address.id);
+
+        expect(updatedAddress?.inhabitantId, null);
+      },
+    );
 
     test(
-        'when trying to detach an address from a citizen that has no address in the passed object then an exception is thrown',
-        () async {
-      var alice = citizens.first;
+      'when inside a transaction and attaching an address from the non foreign key side the object holding the foreign key is updated in the database',
+      () async {
+        var alice = citizens.first;
+        var address = AddressUuid(street: 'Street');
+        address = await AddressUuid.db.insertRow(session, address);
 
-      try {
-        await CitizenInt.db.detachRow.address(session, alice);
-        fail('Expected an exception to be thrown');
-      } catch (e) {
-        expect(e, isA<ArgumentError>());
-        expect((e as ArgumentError).name, 'citizenInt.address');
-      }
-    });
+        await session.db.transaction((transaction) async {
+          await CitizenInt.db.attachRow.address(
+            session,
+            alice,
+            address,
+            transaction: transaction,
+          );
+        });
+        var updatedAddress = await AddressUuid.db.findById(session, address.id);
+
+        expect(updatedAddress?.inhabitantId, alice.id);
+      },
+    );
+
+    test(
+      'when inside a transaction and detaching an address from the non foreign key side the object holding the foreign key has the foreign key set to null.',
+      () async {
+        var bob = citizens.last;
+
+        var addresses = await AddressUuid.db.find(
+          session,
+          orderBy: (t) => t.id,
+          include: AddressUuid.include(
+            inhabitant: CitizenInt.include(),
+          ),
+        );
+        var address = addresses.first;
+
+        var bobCopy = bob.copyWith(address: address);
+
+        await session.db.transaction((transaction) async {
+          await CitizenInt.db.detachRow.address(
+            session,
+            bobCopy,
+            transaction: transaction,
+          );
+        });
+
+        var updatedAddress = await AddressUuid.db.findById(session, address.id);
+
+        expect(updatedAddress?.inhabitantId, null);
+      },
+    );
+
+    test(
+      'when attaching to an object that already have an entry then the new value is set in the database',
+      () async {
+        var citizen = citizens.first;
+        var company = companies.last;
+
+        await CitizenInt.db.attachRow.company(session, citizen, company);
+
+        var alice = await CitizenInt.db.findById(
+          session,
+          citizen.id!,
+          include: CitizenInt.include(company: CompanyUuid.include()),
+        );
+
+        expect(alice?.companyId, company.id);
+      },
+    );
+
+    test(
+      'when trying to attach a citizen to an address that is not stored in the database then an exception is thrown',
+      () async {
+        var alice = citizens.first;
+        var address = AddressUuid(street: 'Street');
+
+        try {
+          await CitizenInt.db.attachRow.address(session, alice, address);
+          fail('Expected an exception to be thrown');
+        } catch (e) {
+          expect(e, isA<DatabaseUpdateRowException>());
+        }
+      },
+    );
+
+    test(
+      'when trying to attach a citizen that is not stored in the db to an address then an exception is thrown',
+      () async {
+        var carol = CitizenInt(name: 'Carol', companyId: Uuid().v4obj());
+        var address = AddressUuid(street: 'Street');
+        address = await AddressUuid.db.insertRow(session, address);
+
+        try {
+          await CitizenInt.db.attachRow.address(session, carol, address);
+          fail('Expected an exception to be thrown');
+        } catch (e) {
+          expect(e, isA<ArgumentError>());
+          expect((e as ArgumentError).name, 'citizenInt.id');
+        }
+      },
+    );
+
+    test(
+      'when trying to detach an address from a citizen that is not stored in the database then an exception is thrown',
+      () async {
+        var address = AddressUuid(street: 'Street');
+        address = await AddressUuid.db.insertRow(session, address);
+
+        var carol = CitizenInt(
+          name: 'Carol',
+          companyId: Uuid().v4obj(),
+          address: address,
+        );
+
+        try {
+          await CitizenInt.db.detachRow.address(session, carol);
+          fail('Expected an exception to be thrown');
+        } catch (e) {
+          expect(e, isA<ArgumentError>());
+          expect((e as ArgumentError).name, 'citizenInt.id');
+        }
+      },
+    );
+
+    test(
+      'when trying to detach an address from a citizen that has no address in the passed object then an exception is thrown',
+      () async {
+        var alice = citizens.first;
+
+        try {
+          await CitizenInt.db.detachRow.address(session, alice);
+          fail('Expected an exception to be thrown');
+        } catch (e) {
+          expect(e, isA<ArgumentError>());
+          expect((e as ArgumentError).name, 'citizenInt.address');
+        }
+      },
+    );
   });
 }

@@ -19,7 +19,8 @@ abstract class AuthUserNotFoundException
   factory AuthUserNotFoundException() = _AuthUserNotFoundExceptionImpl;
 
   factory AuthUserNotFoundException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return AuthUserNotFoundException();
   }
 
@@ -29,7 +30,7 @@ abstract class AuthUserNotFoundException
   AuthUserNotFoundException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {'__className__': 'serverpod_auth_core.AuthUserNotFoundException'};
   }
 
   @override

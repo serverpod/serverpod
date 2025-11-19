@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/one_to_one/town.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class CompanyUuid
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -40,8 +41,7 @@ abstract class CompanyUuid
       townId: jsonSerialization['townId'] as int,
       town: jsonSerialization['town'] == null
           ? null
-          : _i2.TownInt.fromJson(
-              (jsonSerialization['town'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.TownInt>(jsonSerialization['town']),
     );
   }
 
@@ -73,6 +73,7 @@ abstract class CompanyUuid
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'CompanyUuid',
       if (id != null) 'id': id?.toJson(),
       'name': name,
       'townId': townId,
@@ -83,6 +84,7 @@ abstract class CompanyUuid
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'CompanyUuid',
       if (id != null) 'id': id?.toJson(),
       'name': name,
       'townId': townId,
@@ -129,11 +131,11 @@ class _CompanyUuidImpl extends CompanyUuid {
     required int townId,
     _i2.TownInt? town,
   }) : super._(
-          id: id,
-          name: name,
-          townId: townId,
-          town: town,
-        );
+         id: id,
+         name: name,
+         townId: townId,
+         town: town,
+       );
 
   /// Returns a shallow copy of this [CompanyUuid]
   /// with some or all fields replaced by the given arguments.
@@ -158,14 +160,14 @@ class CompanyUuidUpdateTable extends _i1.UpdateTable<CompanyUuidTable> {
   CompanyUuidUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> townId(int value) => _i1.ColumnValue(
-        table.townId,
-        value,
-      );
+    table.townId,
+    value,
+  );
 }
 
 class CompanyUuidTable extends _i1.Table<_i1.UuidValue?> {
@@ -204,10 +206,10 @@ class CompanyUuidTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        townId,
-      ];
+    id,
+    name,
+    townId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

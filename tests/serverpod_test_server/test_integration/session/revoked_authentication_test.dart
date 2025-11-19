@@ -21,34 +21,37 @@ void main() async {
     });
 
     test(
-        'and a non valid message type when broadcasting revoked authentication event then exception is thrown',
-        () {
-      expect(
-        () => session.messages.authenticationRevoked('1', EmptyModel()),
-        throwsA(isA<ArgumentError>()),
-      );
-    });
+      'and a non valid message type when broadcasting revoked authentication event then exception is thrown',
+      () {
+        expect(
+          () => session.messages.authenticationRevoked('1', EmptyModel()),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
 
     test(
-        'and a valid message type when broadcasting revoked authentication event then event is broadcasted',
-        () async {
-      var eventCompleter = Completer<RevokedAuthenticationUser>();
-      session.messages
-          .createStream(
-              MessageCentralServerpodChannels.revokedAuthentication('1'))
-          .listen(
-            (event) => eventCompleter.complete(event),
-          );
+      'and a valid message type when broadcasting revoked authentication event then event is broadcasted',
+      () async {
+        var eventCompleter = Completer<RevokedAuthenticationUser>();
+        session.messages
+            .createStream(
+              MessageCentralServerpodChannels.revokedAuthentication('1'),
+            )
+            .listen(
+              (event) => eventCompleter.complete(event),
+            );
 
-      var message = RevokedAuthenticationUser();
-      var event = await session.messages.authenticationRevoked('1', message);
+        var message = RevokedAuthenticationUser();
+        var event = await session.messages.authenticationRevoked('1', message);
 
-      expect(event, isTrue);
-      await expectLater(
-        eventCompleter.future,
-        completion(isA<RevokedAuthenticationUser>()),
-      );
-    });
+        expect(event, isTrue);
+        await expectLater(
+          eventCompleter.future,
+          completion(isA<RevokedAuthenticationUser>()),
+        );
+      },
+    );
   });
 
   group('Given redis is disabled', () {
@@ -56,13 +59,15 @@ void main() async {
     late Serverpod server;
     setUp(() async {
       server = IntegrationTestServer.create(
-          config: ServerpodConfig(
-              apiServer: ServerConfig(
-        port: 8080,
-        publicHost: 'localhost',
-        publicPort: 8080,
-        publicScheme: 'http',
-      )));
+        config: ServerpodConfig(
+          apiServer: ServerConfig(
+            port: 8080,
+            publicHost: 'localhost',
+            publicPort: 8080,
+            publicScheme: 'http',
+          ),
+        ),
+      );
 
       await server.start();
       session = await server.createSession();
@@ -74,24 +79,26 @@ void main() async {
     });
 
     test(
-        'and a valid message type when broadcasting revoked authentication event then event is broadcasted',
-        () async {
-      var eventCompleter = Completer<RevokedAuthenticationUser>();
-      session.messages
-          .createStream(
-              MessageCentralServerpodChannels.revokedAuthentication('1'))
-          .listen(
-            (event) => eventCompleter.complete(event),
-          );
+      'and a valid message type when broadcasting revoked authentication event then event is broadcasted',
+      () async {
+        var eventCompleter = Completer<RevokedAuthenticationUser>();
+        session.messages
+            .createStream(
+              MessageCentralServerpodChannels.revokedAuthentication('1'),
+            )
+            .listen(
+              (event) => eventCompleter.complete(event),
+            );
 
-      var message = RevokedAuthenticationUser();
-      var event = await session.messages.authenticationRevoked('1', message);
+        var message = RevokedAuthenticationUser();
+        var event = await session.messages.authenticationRevoked('1', message);
 
-      expect(event, isTrue);
-      await expectLater(
-        eventCompleter.future,
-        completion(isA<RevokedAuthenticationUser>()),
-      );
-    });
+        expect(event, isTrue);
+        await expectLater(
+          eventCompleter.future,
+          completion(isA<RevokedAuthenticationUser>()),
+        );
+      },
+    );
   });
 }

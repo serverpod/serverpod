@@ -28,8 +28,9 @@ abstract class ObjectWithByteData
   factory ObjectWithByteData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithByteData(
       id: jsonSerialization['id'] as int?,
-      byteData:
-          _i1.ByteDataJsonExtension.fromJson(jsonSerialization['byteData']),
+      byteData: _i1.ByteDataJsonExtension.fromJson(
+        jsonSerialization['byteData'],
+      ),
     );
   }
 
@@ -55,6 +56,7 @@ abstract class ObjectWithByteData
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithByteData',
       if (id != null) 'id': id,
       'byteData': byteData.toJson(),
     };
@@ -63,6 +65,7 @@ abstract class ObjectWithByteData
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ObjectWithByteData',
       if (id != null) 'id': id,
       'byteData': byteData.toJson(),
     };
@@ -105,9 +108,9 @@ class _ObjectWithByteDataImpl extends ObjectWithByteData {
     int? id,
     required _i2.ByteData byteData,
   }) : super._(
-          id: id,
-          byteData: byteData,
-        );
+         id: id,
+         byteData: byteData,
+       );
 
   /// Returns a shallow copy of this [ObjectWithByteData]
   /// with some or all fields replaced by the given arguments.
@@ -137,7 +140,7 @@ class ObjectWithByteDataUpdateTable
 
 class ObjectWithByteDataTable extends _i1.Table<int?> {
   ObjectWithByteDataTable({super.tableRelation})
-      : super(tableName: 'object_with_bytedata') {
+    : super(tableName: 'object_with_bytedata') {
     updateTable = ObjectWithByteDataUpdateTable(this);
     byteData = _i1.ColumnByteData(
       'byteData',
@@ -151,9 +154,9 @@ class ObjectWithByteDataTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        byteData,
-      ];
+    id,
+    byteData,
+  ];
 }
 
 class ObjectWithByteDataInclude extends _i1.IncludeObject {
@@ -351,7 +354,7 @@ class ObjectWithByteDataRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectWithByteDataUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithByteData>(
@@ -366,7 +369,7 @@ class ObjectWithByteDataRepository {
   Future<List<ObjectWithByteData>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithByteDataUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithByteDataTable> where,
     int? limit,
     int? offset,

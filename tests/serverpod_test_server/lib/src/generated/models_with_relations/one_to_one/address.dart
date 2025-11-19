@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Address
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -38,8 +39,9 @@ abstract class Address
       inhabitantId: jsonSerialization['inhabitantId'] as int?,
       inhabitant: jsonSerialization['inhabitant'] == null
           ? null
-          : _i2.Citizen.fromJson(
-              (jsonSerialization['inhabitant'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.Citizen>(
+              jsonSerialization['inhabitant'],
+            ),
     );
   }
 
@@ -71,6 +73,7 @@ abstract class Address
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Address',
       if (id != null) 'id': id,
       'street': street,
       if (inhabitantId != null) 'inhabitantId': inhabitantId,
@@ -81,6 +84,7 @@ abstract class Address
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Address',
       if (id != null) 'id': id,
       'street': street,
       if (inhabitantId != null) 'inhabitantId': inhabitantId,
@@ -127,11 +131,11 @@ class _AddressImpl extends Address {
     int? inhabitantId,
     _i2.Citizen? inhabitant,
   }) : super._(
-          id: id,
-          street: street,
-          inhabitantId: inhabitantId,
-          inhabitant: inhabitant,
-        );
+         id: id,
+         street: street,
+         inhabitantId: inhabitantId,
+         inhabitant: inhabitant,
+       );
 
   /// Returns a shallow copy of this [Address]
   /// with some or all fields replaced by the given arguments.
@@ -147,8 +151,9 @@ class _AddressImpl extends Address {
       id: id is int? ? id : this.id,
       street: street ?? this.street,
       inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
-      inhabitant:
-          inhabitant is _i2.Citizen? ? inhabitant : this.inhabitant?.copyWith(),
+      inhabitant: inhabitant is _i2.Citizen?
+          ? inhabitant
+          : this.inhabitant?.copyWith(),
     );
   }
 }
@@ -157,14 +162,14 @@ class AddressUpdateTable extends _i1.UpdateTable<AddressTable> {
   AddressUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> street(String value) => _i1.ColumnValue(
-        table.street,
-        value,
-      );
+    table.street,
+    value,
+  );
 
   _i1.ColumnValue<int, int> inhabitantId(int? value) => _i1.ColumnValue(
-        table.inhabitantId,
-        value,
-      );
+    table.inhabitantId,
+    value,
+  );
 }
 
 class AddressTable extends _i1.Table<int?> {
@@ -203,10 +208,10 @@ class AddressTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        street,
-        inhabitantId,
-      ];
+    id,
+    street,
+    inhabitantId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

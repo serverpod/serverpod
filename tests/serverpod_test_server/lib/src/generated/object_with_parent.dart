@@ -53,6 +53,7 @@ abstract class ObjectWithParent
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithParent',
       if (id != null) 'id': id,
       'other': other,
     };
@@ -61,6 +62,7 @@ abstract class ObjectWithParent
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ObjectWithParent',
       if (id != null) 'id': id,
       'other': other,
     };
@@ -103,9 +105,9 @@ class _ObjectWithParentImpl extends ObjectWithParent {
     int? id,
     required int other,
   }) : super._(
-          id: id,
-          other: other,
-        );
+         id: id,
+         other: other,
+       );
 
   /// Returns a shallow copy of this [ObjectWithParent]
   /// with some or all fields replaced by the given arguments.
@@ -127,14 +129,14 @@ class ObjectWithParentUpdateTable
   ObjectWithParentUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> other(int value) => _i1.ColumnValue(
-        table.other,
-        value,
-      );
+    table.other,
+    value,
+  );
 }
 
 class ObjectWithParentTable extends _i1.Table<int?> {
   ObjectWithParentTable({super.tableRelation})
-      : super(tableName: 'object_with_parent') {
+    : super(tableName: 'object_with_parent') {
     updateTable = ObjectWithParentUpdateTable(this);
     other = _i1.ColumnInt(
       'other',
@@ -148,9 +150,9 @@ class ObjectWithParentTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        other,
-      ];
+    id,
+    other,
+  ];
 }
 
 class ObjectWithParentInclude extends _i1.IncludeObject {
@@ -348,7 +350,7 @@ class ObjectWithParentRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectWithParentUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithParent>(
@@ -363,7 +365,7 @@ class ObjectWithParentRepository {
   Future<List<ObjectWithParent>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithParentUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithParentTable> where,
     int? limit,
     int? offset,
