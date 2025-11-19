@@ -203,6 +203,10 @@ class ModelDependencyResolver {
     var tableName = referenceClass.tableName;
     if (tableName is! String) return;
 
+    // Skip resolution if the class defining the relation doesn't have a table.
+    // The validation layer will report the appropriate error message.
+    if (classDefinition.tableName == null) return;
+
     var foreignField = _findForeignFieldByRelationName(
       classDefinition,
       referenceClass,
@@ -454,6 +458,10 @@ class ModelDependencyResolver {
 
     var tableName = classDefinition.tableName;
     if (tableName == null) return;
+
+    // Skip resolution if the referenced class doesn't have a table.
+    // The validation layer will report the appropriate error message.
+    if (referenceClass.tableName == null) return;
 
     if (relation.name == null) {
       var foreignFieldName = _createImplicitListForeignFieldName(
