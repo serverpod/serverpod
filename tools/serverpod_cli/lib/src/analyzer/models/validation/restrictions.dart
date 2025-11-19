@@ -182,12 +182,11 @@ class Restrictions {
       ];
     }
 
-    var duplicateExtraClass = config.extraClasses
-        .cast<TypeDefinition?>()
-        .firstWhere(
-          (extraClass) => extraClass?.className == className,
-          orElse: () => null,
-        );
+    var duplicateExtraClass =
+        config.extraClasses.cast<TypeDefinition?>().firstWhere(
+              (extraClass) => extraClass?.className == className,
+              orElse: () => null,
+            );
 
     if (duplicateExtraClass != null) {
       return [
@@ -1377,14 +1376,13 @@ class Restrictions {
 
     var duplicatesCount = _duplicatesCount(indexFields);
 
-    var duplicateFieldErrors = duplicatesCount.entries
-        .where((entry) => entry.value > 1)
-        .map(
-          (entry) => SourceSpanSeverityException(
-            'Duplicated field name "name", can only reference a field once per index.',
-            span,
-          ),
-        );
+    var duplicateFieldErrors =
+        duplicatesCount.entries.where((entry) => entry.value > 1).map(
+              (entry) => SourceSpanSeverityException(
+                'Duplicated field name "name", can only reference a field once per index.',
+                span,
+              ),
+            );
 
     var hasVectorField = fields
         .where((f) => indexFields.contains(f.name))
@@ -1539,16 +1537,13 @@ class Restrictions {
       if (efConstruction < 2 * m) {
         String suggestion;
         if (!content.containsKey('m')) {
-          suggestion =
-              'Set "ef_construction" >= ${2 * m} or declare "m" with '
+          suggestion = 'Set "ef_construction" >= ${2 * m} or declare "m" with '
               'a value <= ${efConstruction ~/ 2}';
         } else if (!content.containsKey('ef_construction')) {
-          suggestion =
-              'Set "m" <= ${efConstruction ~/ 2} or declare '
+          suggestion = 'Set "m" <= ${efConstruction ~/ 2} or declare '
               '"ef_construction" with a value >= ${2 * m}';
         } else {
-          suggestion =
-              'Set "m" <= ${efConstruction ~/ 2} or increase '
+          suggestion = 'Set "m" <= ${efConstruction ~/ 2} or increase '
               '"ef_construction" to a value >= ${2 * m}';
         }
         errors.add(
@@ -1892,6 +1887,108 @@ class Restrictions {
     });
 
     return nodeExceptions.whereType<SourceSpanSeverityException>().toList();
+  }
+
+  List<SourceSpanSeverityException> validateEnumProperties(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    if (content is! YamlMap) {
+      return [
+        SourceSpanSeverityException(
+          'The "properties" property must be a map.',
+          span,
+        ),
+      ];
+    }
+
+    var errors = <SourceSpanSeverityException>[];
+
+    for (var entry in content.entries) {
+      var propertyName = entry.key;
+      var propertyValue = entry.value;
+
+      // Validate property name
+      if (propertyName is! String) {
+        errors.add(
+          SourceSpanSeverityException(
+            'Property names must be strings.',
+            entry.key.span,
+          ),
+        );
+        continue;
+      }
+
+      if (!StringValidators.isValidFieldName(propertyName)) {
+        errors.add(
+          SourceSpanSeverityException(
+            'Property names must be valid Dart variable names (e.g. camelCaseString).',
+            entry.key.span,
+          ),
+        );
+      }
+
+      if (_globallyRestrictedKeywords.contains(propertyName)) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The property name "$propertyName" is reserved and cannot be used.',
+            entry.key.span,
+          ),
+        );
+      }
+
+      // Validate property value (should be a string like "int" or "String, default='value'")
+      if (propertyValue is! String) {
+        errors.add(
+          SourceSpanSeverityException(
+            'Property values must be a type string (e.g. "int" or "String, default=\'value\'").',
+            entry.value.span,
+          ),
+        );
+        continue;
+      }
+
+      // Parse and validate the property type
+      var parts = propertyValue.split(',').map((s) => s.trim()).toList();
+      var type = parts[0];
+
+      // Validate type is a supported primitive type
+      var supportedPropertyTypes = [
+        'int',
+        'int?',
+        'double',
+        'double?',
+        'bool',
+        'bool?',
+        'String',
+        'String?',
+      ];
+
+      if (!supportedPropertyTypes.contains(type)) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The property type "$type" is not supported. Supported types are: ${supportedPropertyTypes.join(', ')}.',
+            entry.value.span,
+          ),
+        );
+      }
+
+      // Validate modifiers (default=value)
+      for (var i = 1; i < parts.length; i++) {
+        var modifier = parts[i];
+        if (!modifier.startsWith('default=')) {
+          errors.add(
+            SourceSpanSeverityException(
+              'Invalid property modifier "$modifier". Only "default=value" is supported.',
+              entry.value.span,
+            ),
+          );
+        }
+      }
+    }
+
+    return errors;
   }
 
   List<SourceSpanSeverityException> validateDefaultKey(
