@@ -37,7 +37,7 @@ class AmbiguousSearchException implements Exception {
 /// 1. Checks the current directory
 /// 2. Searches child directories (depth 2)
 /// 3. Checks for sibling directories with standard naming patterns (only if not at boundary)
-/// 4. Searches upward through parent directories (max 5 levels or until boundary)
+/// 4. Searches upward through parent directories (max [maxUpwardLevels] or until boundary)
 /// 5. At each parent level, checks its children for server directories
 ///
 /// The search stops at repository boundaries (e.g., .git directory) to avoid
@@ -50,6 +50,7 @@ class AmbiguousSearchException implements Exception {
 DirectoryFinder<T> serverpodDirectoryFinder<T>({
   Directory? Function(T arg)? startingDirectory,
   DirectoryContentCondition? directoryContentCondition,
+  int maxUpwardLevels = 5,
 }) {
   return (T arg) {
     final start = startingDirectory?.call(arg) ?? Directory.current;
@@ -88,7 +89,7 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
 
       // 4. Search upward through parent directories
       var current = start.parent;
-      for (var i = 0; i < 5; i++) {
+      for (var i = 0; i < maxUpwardLevels; i++) {
         if (current.path == current.parent.path) break;
 
         if (condition(current)) {
