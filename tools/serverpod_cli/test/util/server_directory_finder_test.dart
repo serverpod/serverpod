@@ -276,92 +276,55 @@ dependencies:
     );
 
     test(
-      'Given .git directory exists in parent, '
-      'when searching upward, '
-      'then it stops at the repository boundary',
+      'Given .git directory blocks upward search, '
+      'when searching from below .git boundary, '
+      'then it does not find server above the boundary',
       () async {
-        await d.dir('repo', [
-          d.dir('.git', []),
-          d.dir('subdir', [
-            d.dir('server', [
-              d.file('pubspec.yaml', '''
+        await d.dir('server', [
+          d.file('pubspec.yaml', '''
 name: server
 dependencies:
   serverpod: ^2.0.0
 '''),
-              d.dir('lib', [
-                d.dir('src', [
-                  d.dir('models', []),
-                ]),
-              ]),
-            ]),
+          d.dir('subdir', [
+            d.dir('.git', []),
+            d.dir('secondSubdir', []),
           ]),
         ]).create();
 
-        var actualServerDir =
-            Directory(path.join(d.sandbox, 'repo', 'subdir', 'server'));
-        var result = ServerDirectoryFinder.search(actualServerDir);
-        expect(result, isNotNull);
-        expect(
-          path.basename(result!.path),
-          equals('server'),
-        );
+        // Search from below the .git boundary
+        var searchDir =
+            Directory(path.join(d.sandbox, 'server', 'subdir', 'secondSubdir'));
+        var result = ServerDirectoryFinder.search(searchDir);
 
-        var deepDir = Directory(path.join(
-            d.sandbox, 'repo', 'subdir', 'server', 'lib', 'src', 'models'));
-        result = ServerDirectoryFinder.search(deepDir);
-        expect(result, isNotNull);
-        expect(
-          path.basename(result!.path),
-          equals('server'),
-        );
+        // Should NOT find the server directory above .git
+        expect(result, isNull);
       },
     );
 
     test(
-      'Given melos.yaml exists in parent, '
-      'when searching upward, '
-      'then it stops at the workspace boundary',
+      'Given melos.yaml blocks upward search, '
+      'when searching from below melos.yaml boundary, '
+      'then it does not find server above the boundary',
       () async {
-        await d.dir('workspace', [
-          d.file(
-              'melos.yaml', 'name: my_workspace\npackages:\n  - packages/**\n'),
-          d.dir('packages', [
-            serverDir('server'),
+        await d.dir('server', [
+          d.file('pubspec.yaml', '''
+name: server
+dependencies:
+  serverpod: ^2.0.0
+'''),
+          d.dir('subdir', [
+            d.file('melos.yaml', 'name: my_workspace\npackages:\n  - **\n'),
+            d.dir('secondSubdir', []),
           ]),
-          d.dir('outside', []),
         ]).create();
 
-        var actualServerDir =
-            Directory(path.join(d.sandbox, 'workspace', 'packages', 'server'));
-        var result = ServerDirectoryFinder.search(actualServerDir);
+        // Search from below the melos.yaml boundary
+        var searchDir =
+            Directory(path.join(d.sandbox, 'server', 'subdir', 'secondSubdir'));
+        var result = ServerDirectoryFinder.search(searchDir);
 
-        expect(result, isNotNull);
-        expect(
-          path.basename(result!.path),
-          equals('server'),
-        );
-      },
-    );
-
-    test(
-      'Given nested structure with server outside repository boundary, '
-      'when searching from inside boundary, '
-      'then it does not find server outside boundary',
-      () async {
-        await d.dir('outside_repo', [
-          serverDir('server_outside'),
-        ]).create();
-
-        await d.dir('inside_repo', [
-          d.dir('.git', []),
-          d.dir('inside', []),
-        ]).create();
-
-        var insideDir =
-            Directory(path.join(d.sandbox, 'inside_repo', 'inside'));
-        var result = ServerDirectoryFinder.search(insideDir);
-
+        // Should NOT find the server directory above melos.yaml
         expect(result, isNull);
       },
     );
