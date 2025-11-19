@@ -49,7 +49,7 @@ dependencies:
     );
 
     test(
-      'Given sibling directory with _flutter suffix, '
+      'Given _flutter suffix directory with sibling server directory, '
       'when search is called, '
       'then it finds the _server sibling',
       () async {
@@ -71,7 +71,7 @@ dependencies:
     );
 
     test(
-      'Given sibling directory with _client suffix, '
+      'Given _client suffix directory with sibling server directory, '
       'when search is called, '
       'then it finds the _server sibling',
       () async {
