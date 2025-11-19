@@ -1126,16 +1126,13 @@ class Serverpod {
     );
 
     if (exitProcess) {
-      // For SIGTERM (daemon shutdown), use exit code 0 for graceful shutdown.
+      // For SIGTERM, use exit code 0 for graceful shutdown.
       // For SIGINT and other signals, use the conventional 128 + signalNumber.
-      int conventionalExitCode;
-      if (signalNumber == ProcessSignal.sigterm.signalNumber) {
-        conventionalExitCode = 0;
-      } else if (signalNumber != null) {
-        conventionalExitCode = 128 + signalNumber;
-      } else {
-        conventionalExitCode = 0;
-      }
+      final conventionalExitCode = switch (signalNumber) {
+        15 => 0, // SIGTERM
+        null => 0,
+        _ => 128 + signalNumber,
+      };
       exit(shutdownError != null ? 1 : conventionalExitCode);
     }
 
