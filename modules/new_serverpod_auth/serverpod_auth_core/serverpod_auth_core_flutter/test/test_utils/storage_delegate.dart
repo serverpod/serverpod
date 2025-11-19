@@ -1,5 +1,4 @@
-import 'package:serverpod_auth_core_flutter/src/storage/client_auth_info_storage.dart';
-import 'package:serverpod_auth_core_flutter/src/storage/key_value_client_auth_info_storage.dart';
+import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
 /// A [ClientAuthInfoStorage] implementation for testing.
 class TestClientAuthInfoStorage
@@ -12,6 +11,40 @@ class TestClientAuthInfoStorage
 
   @override
   Future<AuthSuccess?> get() async => _get(_keyName);
+}
+
+/// A [CachedClientAuthInfoStorage] wrapper for testing.
+class TestCachedAuthInfoStorage extends CachedClientAuthInfoStorage {
+  final TestClientAuthInfoStorage delegate;
+
+  TestCachedAuthInfoStorage._({
+    required this.delegate,
+  }) : super(delegate: delegate);
+
+  factory TestCachedAuthInfoStorage.create() {
+    return TestCachedAuthInfoStorage._(
+      delegate: TestClientAuthInfoStorage(),
+    );
+  }
+}
+
+/// A [KeyValueClientAuthInfoStorage] wrapper for testing.
+class TestKeyValueAuthInfoStorage extends KeyValueClientAuthInfoStorage {
+  final TestKeyValueStorage delegate;
+
+  TestKeyValueAuthInfoStorage._({
+    required this.delegate,
+    super.authSuccessStorageKey,
+  }) : super(keyValueStorage: delegate);
+
+  factory TestKeyValueAuthInfoStorage.create({
+    String? authSuccessStorageKey,
+  }) {
+    return TestKeyValueAuthInfoStorage._(
+      delegate: TestKeyValueStorage(),
+      authSuccessStorageKey: authSuccessStorageKey,
+    );
+  }
 }
 
 /// A [KeyValueStorage] implementation for testing.

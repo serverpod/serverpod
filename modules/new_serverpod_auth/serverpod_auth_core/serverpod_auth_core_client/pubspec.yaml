@@ -6,6 +6,7 @@ environment:
   sdk: '^3.8.0'
 
 dependencies:
+  clock: ^1.1.1
   serverpod_client: 3.0.0-rc.1
 
 dependency_overrides:
