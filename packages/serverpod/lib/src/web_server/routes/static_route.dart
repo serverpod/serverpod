@@ -18,15 +18,16 @@ class StaticRoute extends Route {
       (_, _) => CacheControlHeader(noStore: true);
 
   /// Returns a [CacheControlHeader] with public, and possibly max-age set to [maxAge].
-  static CacheControlFactory public({int? maxAge}) =>
-      (_, _) => CacheControlHeader(publicCache: true, maxAge: maxAge);
+  static CacheControlFactory public({Duration? maxAge}) =>
+      (_, _) =>
+          CacheControlHeader(publicCache: true, maxAge: maxAge?.inSeconds);
 
   /// Returns a [CacheControlHeader] with public, immutable, and possibly max-age set to [maxAge].
-  static CacheControlFactory publicImmutable({int? maxAge}) =>
+  static CacheControlFactory publicImmutable({Duration? maxAge}) =>
       (_, _) => CacheControlHeader(
         publicCache: true,
         immutable: true,
-        maxAge: maxAge,
+        maxAge: maxAge?.inSeconds,
       );
 
   final Handler _handler;
