@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
@@ -279,20 +280,17 @@ class ServerDirectoryFinder {
   static Future<Directory> _promptUserSelection(
     List<Directory> candidates,
   ) async {
-    log.info('Multiple Serverpod server projects found:');
-    for (var i = 0; i < candidates.length; i++) {
-      log.info('  ${i + 1}. ${candidates[i].path}');
-    }
+    var options = candidates.map((dir) => Option(dir.path)).toList();
 
-    stdout.write('\nSelect project (1-${candidates.length}): ');
-    var input = stdin.readLineSync();
-    var selection = int.tryParse(input ?? '');
+    var selected = await select(
+      'Multiple Serverpod server projects found. Select one:',
+      options: options,
+      logger: log,
+    );
 
-    if (selection == null || selection < 1 || selection > candidates.length) {
-      throw const ServerpodProjectNotFoundException('Invalid selection');
-    }
-
-    return candidates[selection - 1];
+    // Find the directory that matches the selected option
+    var index = options.indexWhere((opt) => opt.name == selected.name);
+    return candidates[index];
   }
 
   /// Checks if a directory is a repository or workspace boundary.
