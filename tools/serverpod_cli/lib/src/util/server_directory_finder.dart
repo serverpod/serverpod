@@ -33,12 +33,12 @@ class AmbiguousSearchException implements Exception {
 /// If [directoryContentCondition] is provided, it is called with each
 /// directory found. If it returns false, the directory is not considered a match.
 ///
-/// The search strategy:
-/// 1. Checks the current directory
-/// 2. Searches child directories (depth 2)
-/// 3. Checks for sibling directories with standard naming patterns (only if not at boundary)
+/// The search strategy (stops at first successful tier):
+/// 1. Checks the current directory (returns immediately if match)
+/// 2. Searches child directories (depth 2, returns if any found)
+/// 3. Checks for sibling directories with standard naming patterns (returns if found, only if not at boundary)
 /// 4. Searches upward through parent directories (max [maxUpwardLevels] or until boundary)
-/// 5. At each parent level, checks its children for server directories
+///    - At each parent level, checks its children for server directories
 ///
 /// The search stops at repository boundaries (e.g., .git directory) to avoid
 /// escaping the project and triggering permission checks on system directories.
@@ -74,6 +74,11 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
       ),
     );
 
+    // Early return if we found candidates in children
+    if (candidates.isNotEmpty) {
+      return _returnCandidates(candidates);
+    }
+
     // Determine if we should search upward/outward
     var atBoundary = ServerDirectoryFinder._isRepositoryBoundary(start);
 
@@ -84,7 +89,8 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
         condition,
       );
       if (siblingServer != null) {
-        candidates.add(siblingServer);
+        // Found sibling match, return immediately
+        return siblingServer;
       }
 
       // 4. Search upward through parent directories
@@ -115,25 +121,32 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
       }
     }
 
-    // Remove duplicates by normalized path
-    var uniquePaths = <String>{};
-    candidates = candidates.where((dir) {
-      var normalized = p.normalize(dir.path);
-      if (uniquePaths.contains(normalized)) {
-        return false;
-      }
-      uniquePaths.add(normalized);
-      return true;
-    }).toList();
-
-    if (candidates.isEmpty) {
-      return null;
-    } else if (candidates.length == 1) {
-      return candidates.first;
-    } else {
-      throw AmbiguousSearchException(candidates);
-    }
+    // Remove duplicates and return result
+    return _returnCandidates(candidates);
   };
+}
+
+/// Helper function to handle candidate results.
+/// Returns single directory, throws exception for multiple, or returns null.
+Directory? _returnCandidates(List<Directory> candidates) {
+  // Remove duplicates by normalized path
+  var uniquePaths = <String>{};
+  candidates = candidates.where((dir) {
+    var normalized = p.normalize(dir.path);
+    if (uniquePaths.contains(normalized)) {
+      return false;
+    }
+    uniquePaths.add(normalized);
+    return true;
+  }).toList();
+
+  if (candidates.isEmpty) {
+    return null;
+  } else if (candidates.length == 1) {
+    return candidates.first;
+  } else {
+    throw AmbiguousSearchException(candidates);
+  }
 }
 
 /// Finds Serverpod server directories from anywhere within a project structure.
