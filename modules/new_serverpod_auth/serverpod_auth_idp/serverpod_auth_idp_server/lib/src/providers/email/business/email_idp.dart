@@ -64,7 +64,7 @@ final class EmailIDP {
   }
 
   /// {@macro email_account_base_endpoint.finish_password_reset}
-  Future<void> finishPasswordReset(
+  Future<UuidValue> finishPasswordReset(
     final Session session, {
     required final String finishPasswordResetToken,
     required final String newPassword,
@@ -88,6 +88,8 @@ final class EmailIDP {
               method: method,
               transaction: transaction,
             );
+
+            return authUserId;
           }),
     );
   }

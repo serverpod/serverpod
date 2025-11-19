@@ -192,7 +192,7 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
     required final String finishPasswordResetToken,
     required final String newPassword,
   }) async {
-    return emailIDP.finishPasswordReset(
+    await emailIDP.finishPasswordReset(
       session,
       finishPasswordResetToken: finishPasswordResetToken,
       newPassword: newPassword,
