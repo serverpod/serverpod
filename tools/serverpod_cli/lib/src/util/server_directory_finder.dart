@@ -78,8 +78,10 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
 
     if (!atBoundary) {
       // 3. Check for standard naming pattern siblings
-      var siblingServer =
-          ServerDirectoryFinder._findSiblingServer(start, condition);
+      var siblingServer = ServerDirectoryFinder._findSiblingServer(
+        start,
+        condition,
+      );
       if (siblingServer != null) {
         candidates.add(siblingServer);
       }
@@ -138,9 +140,9 @@ class ServerDirectoryFinder {
   /// The directory finder function configured for Serverpod server directories.
   static final DirectoryFinder<Directory?> _finder =
       serverpodDirectoryFinder<Directory?>(
-    startingDirectory: (arg) => arg,
-    directoryContentCondition: isServerDirectory,
-  );
+        startingDirectory: (arg) => arg,
+        directoryContentCondition: isServerDirectory,
+      );
 
   /// Finds a server directory, prompting the user if multiple are found.
   ///
@@ -186,6 +188,10 @@ class ServerDirectoryFinder {
   }
 
   /// Attempts to find a sibling server directory based on naming conventions.
+  ///
+  /// Checks for standard Serverpod naming patterns:
+  /// - myapp_flutter → myapp_server
+  /// - myapp_client → myapp_server
   static Directory? _findSiblingServer(
     Directory dir,
     DirectoryContentCondition condition,
@@ -198,8 +204,6 @@ class ServerDirectoryFinder {
       baseName = dirName.substring(0, dirName.length - 8);
     } else if (dirName.endsWith('_client')) {
       baseName = dirName.substring(0, dirName.length - 7);
-    } else if (dirName.endsWith('_app')) {
-      baseName = dirName.substring(0, dirName.length - 4);
     }
 
     if (baseName != null) {
