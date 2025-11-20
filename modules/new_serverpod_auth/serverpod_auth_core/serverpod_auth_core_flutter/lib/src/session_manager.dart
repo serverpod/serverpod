@@ -52,15 +52,8 @@ class FlutterAuthSessionManager extends core.ClientAuthSessionManager {
   }
 }
 
-/// Backward compatibility alias for [FlutterAuthSessionManager].
-///
-/// This typedef maintains backward compatibility for existing Flutter applications
-/// that use `ClientAuthSessionManager`. New code should use [FlutterAuthSessionManager]
-/// for Flutter applications or [core.ClientAuthSessionManager] for platform-agnostic code.
-typedef ClientAuthSessionManager = FlutterAuthSessionManager;
-
 /// Extension for ServerpodClientShared to provide auth session management.
-extension ClientAuthSessionManagerExtension on core.ServerpodClientShared {
+extension FlutterAuthSessionManagerExtension on core.ServerpodClientShared {
   /// The authentication session manager to sign in and manage user sessions.
   FlutterAuthSessionManager get auth {
     final currentProvider = authKeyProvider;

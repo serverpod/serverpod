@@ -29,7 +29,7 @@ void main() {
 
   client = Client(serverUrl)
     ..connectivityMonitor = FlutterConnectivityMonitor()
-    ..authSessionManager = ClientAuthSessionManager();
+    ..authSessionManager = FlutterAuthSessionManager();
 
   client.auth.initialize();
 
