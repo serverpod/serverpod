@@ -37,7 +37,9 @@ void main() {
       'when storage has auth data then restore updates the auth info.',
       () async {
         final authSuccess = AuthSuccess(
-          authUserId: UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          authUserId: UuidValue.fromString(
+            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+          ),
           token: 'test-token',
           authStrategy: 'session',
           scopeNames: {},
@@ -47,8 +49,10 @@ void main() {
         await sessionManager.restore();
 
         expect(sessionManager.isAuthenticated, isTrue);
-        expect(sessionManager.authInfo?.authUserId.toString(),
-            equals('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'));
+        expect(
+          sessionManager.authInfo?.authUserId.toString(),
+          equals('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+        );
         expect(sessionManager.authInfo?.token, equals('test-token'));
       },
     );
@@ -57,7 +61,9 @@ void main() {
       'when updateSignedInUser is called then storage and auth info are updated.',
       () async {
         final authSuccess = AuthSuccess(
-          authUserId: UuidValue.fromString('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22'),
+          authUserId: UuidValue.fromString(
+            'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22',
+          ),
           token: 'new-token',
           authStrategy: 'jwt',
           scopeNames: {},
@@ -74,8 +80,10 @@ void main() {
         await storage.set(authSuccess);
         await sessionManager.restore();
 
-        expect(sessionManager.authInfo?.authUserId.toString(),
-            equals('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22'));
+        expect(
+          sessionManager.authInfo?.authUserId.toString(),
+          equals('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22'),
+        );
         expect(sessionManager.authInfo?.token, equals('new-token'));
         expect(sessionManager.authInfo?.authStrategy, equals('jwt'));
       },
@@ -92,7 +100,9 @@ void main() {
       'when auth info is set then isAuthenticated returns true.',
       () async {
         final authSuccess = AuthSuccess(
-          authUserId: UuidValue.fromString('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33'),
+          authUserId: UuidValue.fromString(
+            'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33',
+          ),
           token: 'another-token',
           authStrategy: 'session',
           scopeNames: {},
@@ -116,7 +126,9 @@ void main() {
 
     test('when calling get multiple times then data is cached.', () async {
       final authSuccess = AuthSuccess(
-        authUserId: UuidValue.fromString('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44'),
+        authUserId: UuidValue.fromString(
+          'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44',
+        ),
         token: 'test-token',
         authStrategy: 'session',
         scopeNames: {},
@@ -127,67 +139,85 @@ void main() {
       final second = await cachedStorage.get();
 
       expect(first, equals(second));
-      expect(first?.authUserId.toString(),
-          equals('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44'));
+      expect(
+        first?.authUserId.toString(),
+        equals('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44'),
+      );
     });
 
-    test('when clearCache is called then next get retrieves from delegate.',
-        () async {
-      final authSuccess = AuthSuccess(
-        authUserId: UuidValue.fromString('e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55'),
-        token: 'test-token',
-        authStrategy: 'session',
-        scopeNames: {},
-      );
-      await cachedStorage.set(authSuccess);
-      await cachedStorage.get();
+    test(
+      'when clearCache is called then next get retrieves from delegate.',
+      () async {
+        final authSuccess = AuthSuccess(
+          authUserId: UuidValue.fromString(
+            'e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55',
+          ),
+          token: 'test-token',
+          authStrategy: 'session',
+          scopeNames: {},
+        );
+        await cachedStorage.set(authSuccess);
+        await cachedStorage.get();
 
-      // Update the delegate directly
-      final newAuthSuccess = AuthSuccess(
-        authUserId: UuidValue.fromString('f0eebc99-9c0b-4ef8-bb6d-6bb9bd380a66'),
-        token: 'new-token',
-        authStrategy: 'session',
-        scopeNames: {},
-      );
-      await delegateStorage.set(newAuthSuccess);
+        // Update the delegate directly
+        final newAuthSuccess = AuthSuccess(
+          authUserId: UuidValue.fromString(
+            'f0eebc99-9c0b-4ef8-bb6d-6bb9bd380a66',
+          ),
+          token: 'new-token',
+          authStrategy: 'session',
+          scopeNames: {},
+        );
+        await delegateStorage.set(newAuthSuccess);
 
-      // Should still return old cached value
-      var result = await cachedStorage.get();
-      expect(result?.authUserId.toString(),
-          equals('e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55'));
+        // Should still return old cached value
+        var result = await cachedStorage.get();
+        expect(
+          result?.authUserId.toString(),
+          equals('e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55'),
+        );
 
-      // Clear cache
-      await cachedStorage.clearCache();
+        // Clear cache
+        await cachedStorage.clearCache();
 
-      // Should now return new value from delegate
-      result = await cachedStorage.get();
-      expect(result?.authUserId.toString(),
-          equals('f0eebc99-9c0b-4ef8-bb6d-6bb9bd380a66'));
-    });
+        // Should now return new value from delegate
+        result = await cachedStorage.get();
+        expect(
+          result?.authUserId.toString(),
+          equals('f0eebc99-9c0b-4ef8-bb6d-6bb9bd380a66'),
+        );
+      },
+    );
   });
 
   group('Given a KeyValueClientAuthInfoStorage', () {
-    test('when storing and retrieving AuthSuccess then data is preserved.',
-        () async {
-      final storage = KeyValueClientAuthInfoStorage(
-        keyValueStorage: _InMemoryKeyValueStorage(),
-      );
+    test(
+      'when storing and retrieving AuthSuccess then data is preserved.',
+      () async {
+        final storage = KeyValueClientAuthInfoStorage(
+          keyValueStorage: _InMemoryKeyValueStorage(),
+        );
 
-      final authSuccess = AuthSuccess(
-        authUserId: UuidValue.fromString('10eebc99-9c0b-4ef8-bb6d-6bb9bd380a77'),
-        token: 'kvs-token',
-        authStrategy: 'jwt',
-        scopeNames: {},
-      );
+        final authSuccess = AuthSuccess(
+          authUserId: UuidValue.fromString(
+            '10eebc99-9c0b-4ef8-bb6d-6bb9bd380a77',
+          ),
+          token: 'kvs-token',
+          authStrategy: 'jwt',
+          scopeNames: {},
+        );
 
-      await storage.set(authSuccess);
-      final retrieved = await storage.get();
+        await storage.set(authSuccess);
+        final retrieved = await storage.get();
 
-      expect(retrieved?.authUserId.toString(),
-          equals('10eebc99-9c0b-4ef8-bb6d-6bb9bd380a77'));
-      expect(retrieved?.token, equals('kvs-token'));
-      expect(retrieved?.authStrategy, equals('jwt'));
-    });
+        expect(
+          retrieved?.authUserId.toString(),
+          equals('10eebc99-9c0b-4ef8-bb6d-6bb9bd380a77'),
+        );
+        expect(retrieved?.token, equals('kvs-token'));
+        expect(retrieved?.authStrategy, equals('jwt'));
+      },
+    );
 
     test('when setting null then stored data is null.', () async {
       final storage = KeyValueClientAuthInfoStorage(
@@ -195,7 +225,9 @@ void main() {
       );
 
       final authSuccess = AuthSuccess(
-        authUserId: UuidValue.fromString('20eebc99-9c0b-4ef8-bb6d-6bb9bd380a88'),
+        authUserId: UuidValue.fromString(
+          '20eebc99-9c0b-4ef8-bb6d-6bb9bd380a88',
+        ),
         token: 'kvs-token',
         authStrategy: 'jwt',
         scopeNames: {},
