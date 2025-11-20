@@ -9,16 +9,12 @@ void main() {
   withServerpod(
     'Given AuthServices is being configured',
     (final sessionBuilder, final endpoints) {
-      late FakeTokenManagerFactory fakeTokenManagerFactory;
       late List<IdentityProviderFactory<Object>> identityProviderFactories;
       late List<TokenManagerFactory> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
 
       setUp(() {
         fakeTokenStorage = FakeTokenStorage();
-        fakeTokenManagerFactory = FakeTokenManagerFactory(
-          tokenStorage: fakeTokenStorage,
-        );
 
         identityProviderFactories = [
           FakeIdentityProviderFactory(),
@@ -33,13 +29,15 @@ void main() {
         late AuthServices authServices;
 
         setUp(() {
-          authServices = AuthServices.set(
+          AuthServices.set(
             primaryTokenManager: FakeTokenManagerFactory(
               tokenStorage: fakeTokenStorage,
             ),
             identityProviders: identityProviderFactories,
             additionalTokenManagers: tokenManagers,
           );
+
+          authServices = AuthServices.instance;
         });
 
         test('then a token manager is accessible', () {
@@ -50,25 +48,25 @@ void main() {
       group('when AuthServices.set is called multiple times', () {
         late AuthServices firstAuthServices;
         late AuthServices secondAuthServices;
-        late FakeTokenManagerFactory secondTokenManagerFactory;
-        late FakeTokenStorage secondTokenStorage;
 
         setUp(() {
-          firstAuthServices = AuthServices.set(
-            primaryTokenManager: fakeTokenManagerFactory,
+          AuthServices.set(
+            primaryTokenManager: FakeTokenManagerFactory(
+              tokenStorage: FakeTokenStorage(),
+            ),
             identityProviders: identityProviderFactories,
             additionalTokenManagers: tokenManagers,
           );
+          firstAuthServices = AuthServices.instance;
 
-          secondTokenStorage = FakeTokenStorage();
-          secondTokenManagerFactory = FakeTokenManagerFactory(
-            tokenStorage: secondTokenStorage,
-          );
-          secondAuthServices = AuthServices.set(
-            primaryTokenManager: secondTokenManagerFactory,
+          AuthServices.set(
+            primaryTokenManager: FakeTokenManagerFactory(
+              tokenStorage: FakeTokenStorage(),
+            ),
             identityProviders: identityProviderFactories,
             additionalTokenManagers: tokenManagers,
           );
+          secondAuthServices = AuthServices.instance;
         });
 
         test('then the instance is replaced with the new configuration', () {
@@ -240,11 +238,13 @@ void main() {
           FakeTokenManagerFactory(tokenStorage: fakeTokenStorage),
         ];
 
-        authServices = AuthServices.set(
+        AuthServices.set(
           primaryTokenManager: fakeTokenManagerFactory,
           identityProviders: identityProviderFactories,
           additionalTokenManagers: tokenManagers,
         );
+
+        authServices = AuthServices.instance;
         authUserId = (await authServices.authUsers.create(session)).id;
       });
 

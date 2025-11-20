@@ -89,7 +89,7 @@ void run(List<String> args) async {
     hostname: 'localhost',
   );
 
-  final authServices = AuthServices.set(
+  AuthServices.set(
     primaryTokenManager: ServerSideSessionsTokenManagerFactory(
       serverSideSessionsConfig,
     ),
@@ -106,7 +106,7 @@ void run(List<String> args) async {
     ],
   );
 
-  pod.authenticationHandler = authServices.authenticationHandler;
+  pod.authenticationHandler = AuthServices.instance.authenticationHandler;
 
   pod.webServer
     ..addRoute(

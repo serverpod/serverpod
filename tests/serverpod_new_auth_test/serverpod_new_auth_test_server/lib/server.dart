@@ -21,7 +21,8 @@ void run(final List<String> args) async {
   );
 
   const universalHashPepper = 'test-pepper';
-  final authConfig = AuthServices.set(
+
+  AuthServices.set(
     primaryTokenManager: ServerSideSessionsTokenManagerFactory(
       ServerSideSessionsConfig(sessionKeyHashPepper: universalHashPepper),
     ),
@@ -46,7 +47,7 @@ void run(final List<String> args) async {
     ],
   );
 
-  pod.authenticationHandler = authConfig.authenticationHandler;
+  pod.authenticationHandler = AuthServices.instance.authenticationHandler;
 
   // Setup a default page at the web root.
   pod.webServer.addRoute(RootRoute(), '/');

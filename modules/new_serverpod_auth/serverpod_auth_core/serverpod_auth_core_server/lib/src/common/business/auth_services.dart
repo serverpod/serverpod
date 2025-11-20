@@ -35,7 +35,7 @@ class AuthServices {
   ///
   /// These are passed to the [AuthServices] constructor to create the instance.
   /// {@macro auth_services_constructor}
-  factory AuthServices.set({
+  static void set({
     final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
     final UserProfileConfig userProfileConfig = const UserProfileConfig(),
     required final TokenManagerFactory primaryTokenManager,
@@ -49,7 +49,7 @@ class AuthServices {
       identityProviders: identityProviders,
       additionalTokenManagers: additionalTokenManagers,
     );
-    return _instance = instance;
+    _instance = instance;
   }
 
   /// Creates a new [AuthServices] instance.
