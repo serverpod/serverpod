@@ -58,6 +58,10 @@ class ClientAuthSessionManager implements core.RefresherClientAuthKeyProvider {
   /// The storage to keep user authentication info.
   core.ClientAuthInfoStorage get storage => _delegate.storage;
 
+  /// The authentication key provider to use for the current auth strategy.
+  core.ClientAuthKeyProvider? get authKeyProviderDelegate =>
+      _delegate.authKeyProviderDelegate;
+
   @override
   Future<String?> get authHeaderValue => _delegate.authHeaderValue;
 
