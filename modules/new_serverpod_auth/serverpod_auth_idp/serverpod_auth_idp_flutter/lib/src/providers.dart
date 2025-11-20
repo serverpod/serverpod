@@ -37,7 +37,7 @@ class AvailableIDPs {
 }
 
 /// Extension to provide information about available identity providers.
-extension IDPExtension on ClientAuthSessionManager {
+extension IDPExtension on FlutterAuthSessionManager {
   /// Provides information about available identity providers.
   ///
   /// Use this getter to check which identity providers are available on the

@@ -21,8 +21,9 @@ void main() {
     'when updateSignedInUser is called, '
     'then the client authKeyProvider provides the correct auth header.',
     () async {
-      final client = Client('http://localhost:8080/')
-        ..authSessionManager = ClientAuthSessionManager(storage: TestStorage());
+      final client = Client(
+        'http://localhost:8080/',
+      )..authSessionManager = FlutterAuthSessionManager(storage: TestStorage());
 
       await client.auth.updateSignedInUser(_authSuccess);
 
@@ -37,8 +38,9 @@ void main() {
     'when signing out, '
     'then authKeyProvider should return null.',
     () async {
-      final client = Client('http://localhost:8080/')
-        ..authSessionManager = ClientAuthSessionManager(storage: TestStorage());
+      final client = Client(
+        'http://localhost:8080/',
+      )..authSessionManager = FlutterAuthSessionManager(storage: TestStorage());
 
       await client.auth.updateSignedInUser(_authSuccess);
       expect(await client.authKeyProvider?.authHeaderValue, _authHeaderValue);

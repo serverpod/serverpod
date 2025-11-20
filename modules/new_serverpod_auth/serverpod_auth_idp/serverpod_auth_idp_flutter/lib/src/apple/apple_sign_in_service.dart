@@ -63,8 +63,8 @@ class AppleSignInService {
   }
 }
 
-/// Expose convenient methods on [ClientAuthSessionManager].
-extension AppleSignInExtension on ClientAuthSessionManager {
+/// Expose convenient methods on [FlutterAuthSessionManager].
+extension AppleSignInExtension on FlutterAuthSessionManager {
   /// Initializes Apple Sign-In for the client.
   ///
   /// This method is idempotent and can be called multiple times, but only the

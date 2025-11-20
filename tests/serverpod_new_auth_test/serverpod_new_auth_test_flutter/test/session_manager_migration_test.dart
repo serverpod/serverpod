@@ -86,8 +86,9 @@ void main() {
         isNull, // the session has not been migrated yet
       );
 
-      final newSessionClient = Client('http://localhost:8080/')
-        ..authSessionManager = ClientAuthSessionManager(storage: TestStorage());
+      final newSessionClient = Client(
+        'http://localhost:8080/',
+      )..authSessionManager = FlutterAuthSessionManager(storage: TestStorage());
 
       await newSessionClient.auth.initAndImportLegacySessionIfNeeded(
         newSessionClient.modules.serverpod_auth_bridge,

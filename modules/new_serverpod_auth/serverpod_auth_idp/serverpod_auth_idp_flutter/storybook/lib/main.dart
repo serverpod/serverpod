@@ -11,7 +11,7 @@ import 'utils/client.dart';
 import 'utils/wrapper.dart';
 
 final client = Client('http://localhost:8080/')
-  ..authSessionManager = ClientAuthSessionManager();
+  ..authSessionManager = FlutterAuthSessionManager();
 
 void main() {
   client.auth.initialize();

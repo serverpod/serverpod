@@ -10,8 +10,9 @@ void main() {
   late AuthSuccess sasAuthSuccess;
 
   setUp(() async {
-    client = Client('http://localhost:8080/')
-      ..authSessionManager = ClientAuthSessionManager(storage: TestStorage());
+    client = Client(
+      'http://localhost:8080/',
+    )..authSessionManager = FlutterAuthSessionManager(storage: TestStorage());
 
     final testUserId = await client.authTest.createTestUser();
 
@@ -207,7 +208,7 @@ void main() {
 
       customUsrProvider = UsrAuthKeyProvider();
 
-      client.authSessionManager = ClientAuthSessionManager(
+      client.authSessionManager = FlutterAuthSessionManager(
         storage: TestStorage(),
         authKeyProviderDelegates: {
           AuthStrategy.jwt.name: customJwtProvider,

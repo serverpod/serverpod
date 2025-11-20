@@ -89,7 +89,7 @@ class SignInWidget extends StatefulWidget {
 }
 
 class _SignInWidgetState extends State<SignInWidget> {
-  ClientAuthSessionManager get auth => widget.client.auth;
+  FlutterAuthSessionManager get auth => widget.client.auth;
 
   bool get hasEmail => auth.idp.hasEmail && !widget.disableEmailSignInWidget;
   bool get hasGoogle => auth.idp.hasGoogle && !widget.disableGoogleSignInWidget;
