@@ -77,29 +77,14 @@ extension AuthServicesInit on Serverpod {
     if (identityProviders
         .whereType<AppleIdentityProviderFactory>()
         .isNotEmpty) {
-      final revokedNotificationRoute = getConfig(
-        'appleRevokedNotificationRoute',
-      );
-      final webAuthenticationCallbackRoute = getConfig(
-        'appleWebAuthenticationCallbackRoute',
-      );
-
-      if (revokedNotificationRoute == null ||
-          webAuthenticationCallbackRoute == null) {
-        throw StateError(
-          'Apple revoked notification route and web authentication callback '
-          'route must be configured. Set both "appleRevokedNotificationRoute" '
-          'and "appleWebAuthenticationCallbackRoute" in the configuration.',
-        );
-      }
-
+      final appleIDP = AuthServices.instance.appleIDP;
       webServer.addRoute(
-        AuthServices.instance.appleIDP.revokedNotificationRoute(),
-        revokedNotificationRoute,
+        appleIDP.revokedNotificationRoute(),
+        appleIDP.config.revokedNotificationRoute,
       );
       webServer.addRoute(
-        AuthServices.instance.appleIDP.webAuthenticationCallbackRoute(),
-        webAuthenticationCallbackRoute,
+        appleIDP.webAuthenticationCallbackRoute(),
+        appleIDP.config.webAuthenticationCallbackRoute,
       );
     }
   }
@@ -197,13 +182,21 @@ AppleIdentityProviderFactory? _getAppleIdentityProvider(
   final appleTeamId = getConfig('appleTeamId');
   final appleKeyId = getConfig('appleKeyId');
   final appleKey = getConfig('appleKey');
+  final appleRevokedNotificationRoute = getConfig(
+    'appleRevokedNotificationRoute',
+  );
+  final appleWebAuthenticationCallbackRoute = getConfig(
+    'appleWebAuthenticationCallbackRoute',
+  );
 
   if (appleServiceIdentifier == null ||
       appleBundleIdentifier == null ||
       appleRedirectUri == null ||
       appleTeamId == null ||
       appleKeyId == null ||
-      appleKey == null) {
+      appleKey == null ||
+      appleRevokedNotificationRoute == null ||
+      appleWebAuthenticationCallbackRoute == null) {
     return null;
   }
 
@@ -215,6 +208,8 @@ AppleIdentityProviderFactory? _getAppleIdentityProvider(
       teamId: appleTeamId,
       keyId: appleKeyId,
       key: appleKey,
+      revokedNotificationRoute: appleRevokedNotificationRoute,
+      webAuthenticationCallbackRoute: appleWebAuthenticationCallbackRoute,
     ),
   );
 }

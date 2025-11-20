@@ -48,6 +48,10 @@ void run(List<String> args) async {
     teamId: pod.getPassword('appleTeamId')!,
     keyId: pod.getPassword('appleKeyId')!,
     key: pod.getPassword('appleKey')!,
+    revokedNotificationRoute: pod.getPassword('appleRevokedNotificationRoute')!,
+    webAuthenticationCallbackRoute: pod.getPassword(
+      'appleWebAuthenticationCallbackRoute',
+    )!,
   );
 
   final emailIDPConfig = EmailIDPConfig(
@@ -104,14 +108,16 @@ void run(List<String> args) async {
 
   pod.authenticationHandler = AuthServices.instance.authenticationHandler;
 
+  final appleIDP = AuthServices.instance.appleIDP;
+
   pod.webServer
     ..addRoute(
-      AuthServices.instance.appleIDP.revokedNotificationRoute(),
-      '/hooks/apple-notification', // must match path configured on apple
+      appleIDP.revokedNotificationRoute(),
+      appleIDP.config.revokedNotificationRoute,
     )
     ..addRoute(
-      AuthServices.instance.appleIDP.webAuthenticationCallbackRoute(),
-      '/auth/callback', // must match path configured on apple
+      appleIDP.webAuthenticationCallbackRoute(),
+      appleIDP.config.webAuthenticationCallbackRoute,
     );
 
   // Start the server.
