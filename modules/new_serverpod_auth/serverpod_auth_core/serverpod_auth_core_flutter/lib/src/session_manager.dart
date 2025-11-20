@@ -14,22 +14,48 @@ import 'storage/secure_client_auth_info_storage.dart';
 /// reactive primitives ([ValueNotifier] and [ValueListenable]) for state
 /// management.
 class FlutterAuthSessionManager extends core.ClientAuthSessionManager {
-  final _authInfoNotifier = ValueNotifier<core.AuthSuccess?>(null);
+  final ValueNotifier<core.AuthSuccess?> _authInfoNotifier;
 
   /// Creates a new [FlutterAuthSessionManager].
-  FlutterAuthSessionManager({
+  FlutterAuthSessionManager._internal({
+    required ValueNotifier<core.AuthSuccess?> authInfoNotifier,
+    required super.storage,
+    required void Function() onAuthInfoChanged,
+    super.caller,
+    super.authKeyProviderDelegates,
+  }) : _authInfoNotifier = authInfoNotifier,
+       super(onAuthInfoChanged: onAuthInfoChanged);
+
+  /// Creates a new [FlutterAuthSessionManager].
+  factory FlutterAuthSessionManager({
     /// Optionally override the caller. If not provided directly, the caller
     /// must be set before usage by calling [setCaller].
-    super.caller,
+    core.Caller? caller,
 
     /// The authentication key provider to use for each auth strategy. If not
     /// provided, a default one will be created as needed.
-    super.authKeyProviderDelegates,
+    Map<String, core.ClientAuthKeyProvider>? authKeyProviderDelegates,
 
     /// The storage to keep user authentication info. If missing, the
     /// session manager will create a [SecureClientAuthInfoStorage].
     core.ClientAuthInfoStorage? storage,
-  }) : super(storage: storage ?? SecureClientAuthInfoStorage());
+  }) {
+    final authInfoNotifier = ValueNotifier<core.AuthSuccess?>(null);
+    late final FlutterAuthSessionManager manager;
+
+    manager = FlutterAuthSessionManager._internal(
+      caller: caller,
+      authKeyProviderDelegates: authKeyProviderDelegates,
+      storage: storage ?? SecureClientAuthInfoStorage(),
+      authInfoNotifier: authInfoNotifier,
+      onAuthInfoChanged: () {
+        // This closure captures the manager and notifier, updating when called
+        authInfoNotifier.value = manager.authInfo;
+      },
+    );
+
+    return manager;
+  }
 
   /// A listenable that provides access to the signed in user for Flutter apps.
   ///
@@ -45,11 +71,6 @@ class FlutterAuthSessionManager extends core.ClientAuthSessionManager {
   /// To get the current auth info value directly, use the [authInfo] property.
   ValueListenable<core.AuthSuccess?> get authInfoListenable =>
       _authInfoNotifier;
-
-  @override
-  void onAuthInfoChanged() {
-    _authInfoNotifier.value = authInfo;
-  }
 }
 
 /// Extension for ServerpodClientShared to provide auth session management.

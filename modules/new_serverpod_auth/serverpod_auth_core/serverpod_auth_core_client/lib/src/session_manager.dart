@@ -17,6 +17,9 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   /// The secure storage to keep user authentication info.
   final ClientAuthInfoStorage storage;
 
+  /// Optional callback that is invoked when the auth info changes.
+  final void Function()? onAuthInfoChanged;
+
   /// Creates a new [ClientAuthSessionManager].
   ClientAuthSessionManager({
     /// Optionally override the caller. If not provided directly, the caller
@@ -30,6 +33,10 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
     /// The storage to keep user authentication info. This is required for
     /// the platform-agnostic session manager.
     required this.storage,
+
+    /// Optional callback that is invoked when the auth info changes.
+    /// This can be used to notify listeners or update UI state.
+    this.onAuthInfoChanged,
   }) : _caller = caller {
     _authKeyProviderDelegates = authKeyProviderDelegates ?? {};
   }
@@ -137,20 +144,14 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
       await storage.clearCache();
     }
     _authInfo = await storage.get();
-    onAuthInfoChanged();
-  }
-
-  /// Called when the auth info changes. Subclasses can override this to
-  /// provide additional functionality such as notifying listeners.
-  void onAuthInfoChanged() {
-    // Default implementation does nothing
+    onAuthInfoChanged?.call();
   }
 
   /// Updates the signed in user on the storage and for open connections.
   Future<void> updateSignedInUser(AuthSuccess? authInfo) async {
     await storage.set(authInfo);
     _authInfo = authInfo;
-    onAuthInfoChanged();
+    onAuthInfoChanged?.call();
     // ignore: deprecated_member_use
     await caller.client.updateStreamingConnectionAuthenticationKey();
   }
