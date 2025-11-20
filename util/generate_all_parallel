@@ -65,43 +65,8 @@ trap cleanup SIGINT SIGTERM
 
 trap 'rm -f "$FAILURE_FILE"' EXIT
 
-# Function to get CPU core count (cross-platform)
-getCoreCount() {
-    local cores
-    
-    # Try getconf first (works on Linux, macOS, Windows Git Bash)
-    if command -v getconf >/dev/null 2>&1; then
-        cores=$(getconf _NPROCESSORS_ONLN 2>/dev/null)
-        if [ -n "$cores" ] && [ "$cores" -gt 0 ]; then
-            echo "$cores"
-            return
-        fi
-    fi
-    
-    # Fallback to sysctl for macOS/BSD
-    if command -v sysctl >/dev/null 2>&1; then
-        cores=$(sysctl -n hw.ncpu 2>/dev/null)
-        if [ -n "$cores" ] && [ "$cores" -gt 0 ]; then
-            echo "$cores"
-            return
-        fi
-    fi
-    
-    # Last resort: check /proc/cpuinfo on Linux
-    if [ -f /proc/cpuinfo ]; then
-        cores=$(grep -c ^processor /proc/cpuinfo 2>/dev/null)
-        if [ -n "$cores" ] && [ "$cores" -gt 0 ]; then
-            echo "$cores"
-            return
-        fi
-    fi
-    
-    # Default fallback
-    echo "4"
-}
-
 getDefaultBatchSize() {
-    local cores=$(getCoreCount)
+    local cores=$(util/get_max_cores)
     local batch_size=$((cores - 2))
     
     # Ensure minimum of 1
