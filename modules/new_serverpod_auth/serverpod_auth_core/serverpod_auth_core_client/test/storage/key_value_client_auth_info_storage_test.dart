@@ -1,5 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
+import 'package:test/test.dart';
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 
 import '../test_utils/storage_delegate.dart';
 

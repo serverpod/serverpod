@@ -1,8 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-import 'client_auth_info_storage.dart';
-import 'cached_client_auth_info_storage.dart';
-import 'key_value_client_auth_info_storage.dart';
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 
 /// Exposes the [FlutterSecureStorage] class for convenience.
 export 'package:flutter_secure_storage/flutter_secure_storage.dart';

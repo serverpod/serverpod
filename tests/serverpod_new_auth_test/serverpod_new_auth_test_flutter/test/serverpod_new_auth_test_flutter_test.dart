@@ -8,8 +8,9 @@ void main() {
   test(
     'Given a session, when setting it on the `SessionManager`, then the server recognizes the user correctly.',
     () async {
-      final client = Client('http://localhost:8080/')
-        ..authSessionManager = ClientAuthSessionManager(storage: TestStorage());
+      final client = Client(
+        'http://localhost:8080/',
+      )..authSessionManager = FlutterAuthSessionManager(storage: TestStorage());
 
       final testUser = await client.authTest.createTestUser();
       final authentication = await client.authTest.createSasToken(testUser);

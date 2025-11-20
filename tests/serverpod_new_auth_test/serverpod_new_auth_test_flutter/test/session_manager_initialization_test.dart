@@ -12,8 +12,9 @@ void main() {
   group('Given a `ClientAuthSessionManager` created with an empty storage', () {
     setUpAll(() async {
       storage = TestStorage();
-      client = Client('http://localhost:8080/')
-        ..authSessionManager = ClientAuthSessionManager(storage: storage);
+      client = Client(
+        'http://localhost:8080/',
+      )..authSessionManager = FlutterAuthSessionManager(storage: storage);
 
       final testUser = await client.authTest.createTestUser();
       authSuccess = await client.authTest.createJwtToken(testUser);
@@ -48,10 +49,10 @@ void main() {
       );
 
       test('then the auth info value matches the one used to log in.', () {
-        final authInfo = client.auth.authInfo.value;
+        final authInfo = client.auth.authInfo;
 
         expect(authInfo, isNotNull);
-        expect(client.auth.authInfo.value.toString(), authSuccess.toString());
+        expect(client.auth.authInfo.toString(), authSuccess.toString());
       });
 
       test('then the storage contains the auth info.', () async {
@@ -75,7 +76,7 @@ void main() {
       });
 
       test('then the auth info value is `null`.', () {
-        expect(client.auth.authInfo.value, isNull);
+        expect(client.auth.authInfo, isNull);
       });
 
       test('then the storage is empty.', () async {
@@ -99,7 +100,7 @@ void main() {
       });
 
       test('then the auth info value is `null`.', () {
-        expect(client.auth.authInfo.value, isNull);
+        expect(client.auth.authInfo, isNull);
       });
 
       test('then the storage is empty.', () async {
@@ -114,7 +115,7 @@ void main() {
       setUp(() async {
         storage = TestStorage();
         client = Client('http://localhost:8080/')
-          ..authSessionManager = ClientAuthSessionManager(storage: storage);
+          ..authSessionManager = FlutterAuthSessionManager(storage: storage);
 
         final testUser = await client.authTest.createTestUser();
         authSuccess = await client.authTest.createSasToken(testUser);
@@ -126,18 +127,18 @@ void main() {
         await client.auth.restore();
         final token = authSuccess.token;
 
-        expect(client.auth.authInfo.value, isNotNull);
+        expect(client.auth.authInfo, isNotNull);
         expect(client.auth.isAuthenticated, isTrue);
-        expect(client.auth.authInfo.value.toString(), authSuccess.toString());
+        expect(client.auth.authInfo.toString(), authSuccess.toString());
         expect(await client.auth.authHeaderValue, 'Bearer $token');
       });
 
       test('when initialized again, then auth info is available.', () async {
         await client.auth.initialize();
 
-        expect(client.auth.authInfo.value, isNotNull);
+        expect(client.auth.authInfo, isNotNull);
         expect(client.auth.isAuthenticated, isTrue);
-        expect(client.auth.authInfo.value.toString(), authSuccess.toString());
+        expect(client.auth.authInfo.toString(), authSuccess.toString());
       });
     },
   );
@@ -148,7 +149,7 @@ void main() {
       setUp(() async {
         storage = TestStorage();
         client = Client('http://localhost:8080/')
-          ..authSessionManager = ClientAuthSessionManager(storage: storage);
+          ..authSessionManager = FlutterAuthSessionManager(storage: storage);
 
         final testUser = await client.authTest.createTestUser();
         authSuccess = await client.authTest.createJwtToken(testUser);
@@ -160,9 +161,9 @@ void main() {
         await client.auth.restore();
         final token = authSuccess.token;
 
-        expect(client.auth.authInfo.value, isNotNull);
+        expect(client.auth.authInfo, isNotNull);
         expect(client.auth.isAuthenticated, isTrue);
-        expect(client.auth.authInfo.value.toString(), authSuccess.toString());
+        expect(client.auth.authInfo.toString(), authSuccess.toString());
         expect(await client.auth.authHeaderValue, 'Bearer $token');
       });
 
@@ -172,13 +173,13 @@ void main() {
         });
 
         test('then auth info is available.', () async {
-          expect(client.auth.authInfo.value, isNotNull);
+          expect(client.auth.authInfo, isNotNull);
           expect(client.auth.isAuthenticated, isTrue);
         });
 
         test('then auth info is refreshed.', () async {
           expect(
-            client.auth.authInfo.value.toString(),
+            client.auth.authInfo.toString(),
             isNot(authSuccess.toString()),
           );
         });
@@ -192,7 +193,7 @@ void main() {
       setUp(() async {
         storage = TestStorage();
         client = Client('http://localhost:8080/')
-          ..authSessionManager = ClientAuthSessionManager(storage: storage);
+          ..authSessionManager = FlutterAuthSessionManager(storage: storage);
 
         final testUser = await client.authTest.createTestUser();
         authSuccess = await client.authTest.createSasToken(testUser);
@@ -205,10 +206,10 @@ void main() {
         'when calling validateAuthentication, then user is signed out.',
         () async {
           await client.auth.restore();
-          expect(client.auth.authInfo.value, isNotNull);
+          expect(client.auth.authInfo, isNotNull);
           await client.auth.validateAuthentication();
 
-          expect(client.auth.authInfo.value, isNull);
+          expect(client.auth.authInfo, isNull);
           expect(client.auth.isAuthenticated, isFalse);
           expect(await client.auth.authHeaderValue, isNull);
         },
@@ -217,7 +218,7 @@ void main() {
       test('when calling initialize, then user is signed out.', () async {
         await client.auth.initialize();
 
-        expect(client.auth.authInfo.value, isNull);
+        expect(client.auth.authInfo, isNull);
         expect(client.auth.isAuthenticated, isFalse);
         expect(await client.auth.authHeaderValue, isNull);
       });
@@ -230,7 +231,7 @@ void main() {
       setUp(() async {
         storage = TestStorage();
         client = Client('http://localhost:8080/')
-          ..authSessionManager = ClientAuthSessionManager(storage: storage);
+          ..authSessionManager = FlutterAuthSessionManager(storage: storage);
 
         final testUser = await client.authTest.createTestUser();
         authSuccess = await client.authTest.createJwtToken(testUser);
@@ -243,10 +244,10 @@ void main() {
         'when calling validateAuthentication, then user is signed out.',
         () async {
           await client.auth.restore();
-          expect(client.auth.authInfo.value, isNotNull);
+          expect(client.auth.authInfo, isNotNull);
           await client.auth.validateAuthentication();
 
-          expect(client.auth.authInfo.value, isNull);
+          expect(client.auth.authInfo, isNull);
           expect(client.auth.isAuthenticated, isFalse);
           expect(await client.auth.authHeaderValue, isNull);
         },
@@ -255,7 +256,7 @@ void main() {
       test('when calling initialize, then user is signed out.', () async {
         await client.auth.initialize();
 
-        expect(client.auth.authInfo.value, isNull);
+        expect(client.auth.authInfo, isNull);
         expect(client.auth.isAuthenticated, isFalse);
         expect(await client.auth.authHeaderValue, isNull);
       });
@@ -270,14 +271,14 @@ void main() {
       setUp(() async {
         storage = TestStorage();
         client = Client('http://localhost:8080/')
-          ..authSessionManager = ClientAuthSessionManager(storage: storage);
+          ..authSessionManager = FlutterAuthSessionManager(storage: storage);
 
         final testUser = await client.authTest.createTestUser();
         authSuccess = await client.authTest.createSasToken(testUser);
 
         await storage.set(authSuccess);
         await client.auth.initialize();
-        expect(client.auth.authInfo.value, isNotNull);
+        expect(client.auth.authInfo, isNotNull);
 
         newAuthSuccess = await client.authTest.createSasToken(testUser);
         await storage.set(newAuthSuccess);
@@ -286,7 +287,7 @@ void main() {
       test(
         'when getting auth info, then the old value is still returned due to caching.',
         () async {
-          expect(client.auth.authInfo.value.toString(), authSuccess.toString());
+          expect(client.auth.authInfo.toString(), authSuccess.toString());
           expect(
             await client.auth.authHeaderValue,
             'Bearer ${authSuccess.token}',
@@ -299,7 +300,7 @@ void main() {
         () async {
           await client.auth.restore();
           expect(
-            client.auth.authInfo.value.toString(),
+            client.auth.authInfo.toString(),
             newAuthSuccess.toString(),
           );
           expect(
@@ -325,7 +326,7 @@ void main() {
         client = Client(
           'http://unreachable-server/',
           connectionTimeout: const Duration(seconds: 20),
-        )..authSessionManager = ClientAuthSessionManager(storage: storage);
+        )..authSessionManager = FlutterAuthSessionManager(storage: storage);
       });
 
       test(
@@ -387,9 +388,9 @@ void main() {
     setUpAll(() async {
       storage = TestStorage();
       client1 = Client('http://localhost:8080/')
-        ..authSessionManager = ClientAuthSessionManager(storage: storage);
+        ..authSessionManager = FlutterAuthSessionManager(storage: storage);
       client2 = Client('http://localhost:8080/')
-        ..authSessionManager = ClientAuthSessionManager(storage: storage);
+        ..authSessionManager = FlutterAuthSessionManager(storage: storage);
 
       await client1.auth.initialize();
       await client2.auth.initialize();
