@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Script to get the number of CPU cores in a cross-platform manner
+# Returns the number of available CPU cores
+
+getCoreCount() {
+    local cores
+    
+    # Try getconf first (works on Linux, macOS, Windows Git Bash)
+    if command -v getconf >/dev/null 2>&1; then
+        cores=$(getconf _NPROCESSORS_ONLN 2>/dev/null)
+        if [ -n "$cores" ] && [ "$cores" -gt 0 ]; then
+            echo "$cores"
+            return
+        fi
+    fi
+    
+    # Fallback to sysctl for macOS/BSD
+    if command -v sysctl >/dev/null 2>&1; then
+        cores=$(sysctl -n hw.ncpu 2>/dev/null)
+        if [ -n "$cores" ] && [ "$cores" -gt 0 ]; then
+            echo "$cores"
+            return
+        fi
+    fi
+    
+    # Last resort: check /proc/cpuinfo on Linux
+    if [ -f /proc/cpuinfo ]; then
+        cores=$(grep -c ^processor /proc/cpuinfo 2>/dev/null)
+        if [ -n "$cores" ] && [ "$cores" -gt 0 ]; then
+            echo "$cores"
+            return
+        fi
+    fi
+    
+    # Default fallback
+    echo "4"
+}
+
+getCoreCount
