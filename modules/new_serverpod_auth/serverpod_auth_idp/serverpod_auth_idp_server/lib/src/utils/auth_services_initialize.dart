@@ -59,7 +59,7 @@ extension AuthServicesInit on Serverpod {
       emailIDPOptions,
     );
 
-    final authServices = AuthServices.set(
+    AuthServices.set(
       primaryTokenManager: tokenManagers.first,
       identityProviders: [
         ...identityProviders,
@@ -68,7 +68,7 @@ extension AuthServicesInit on Serverpod {
       additionalTokenManagers: tokenManagers.skip(1).toList(),
     );
 
-    authenticationHandler = authServices.authenticationHandler;
+    authenticationHandler = AuthServices.instance.authenticationHandler;
 
     // NOTE: Only try to configure the routes for Apple IDP if it is configured
     // using the default configuration (not passed as an additional identity
