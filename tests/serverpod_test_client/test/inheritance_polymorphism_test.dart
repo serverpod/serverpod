@@ -467,4 +467,59 @@ void main() {
       expect(deserialized.sealedList.first, isA<SealedChild>());
     },
   );
+
+  test(
+    'Given JSON with an unknown __className__ when deserializing as PolymorphicParent then it falls back to deserialize as PolymorphicParent.',
+    () {
+      // Simulate an older client receiving data with a new subtype className
+      final json = {
+        '__className__': 'PolymorphicNewChild', // Unknown class
+        'parent': 'This is a parent',
+        // The older client doesn't know about the new subtype
+      };
+
+      final deserialized = Protocol().deserialize<PolymorphicParent>(json);
+
+      expect(deserialized, isA<PolymorphicParent>());
+      expect(deserialized.parent, 'This is a parent');
+    },
+  );
+
+  test(
+    'Given JSON with an unknown __className__ when deserializing as PolymorphicChild then it falls back to deserialize as PolymorphicChild.',
+    () {
+      // Simulate an older client receiving data with a new grandchild className
+      final json = {
+        '__className__': 'PolymorphicNewGrandChild', // Unknown class
+        'parent': 'This is a parent',
+        'child': 'This is a child',
+        // The older client doesn't know about the new grandchild subtype
+      };
+
+      final deserialized = Protocol().deserialize<PolymorphicChild>(json);
+
+      expect(deserialized, isA<PolymorphicChild>());
+      expect(deserialized.parent, 'This is a parent');
+      expect(deserialized.child, 'This is a child');
+    },
+  );
+
+  test(
+    'Given JSON with known __className__ when deserializing then it still uses the specific type.',
+    () {
+      // Verify that known classNames still work correctly
+      final json = {
+        '__className__': 'PolymorphicGrandChild',
+        'parent': 'This is a parent',
+        'child': 'This is a child',
+        'grandchild': 'This is a grandchild',
+      };
+
+      final deserialized = Protocol().deserialize<PolymorphicParent>(json);
+
+      // Should still deserialize as the specific type when className is recognized
+      expect(deserialized, isA<PolymorphicGrandChild>());
+      expect(deserialized.parent, 'This is a parent');
+    },
+  );
 }
