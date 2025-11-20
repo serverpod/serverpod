@@ -1,5 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 
 /// Endpoint for testing authentication.
 class AuthTestEndpoint extends Endpoint {

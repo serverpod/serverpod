@@ -1,7 +1,7 @@
 import 'package:clock/clock.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/jwt.dart';
+import 'package:serverpod_auth_core_server/src/jwt/jwt.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';

@@ -2,9 +2,9 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
 import 'package:serverpod_auth_bridge_server/src/business/legacy_email_password_validator.dart';
 import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 
 /// Collections of helper functions to work with legacy authentication data.
 abstract final class AuthBackwardsCompatibility {

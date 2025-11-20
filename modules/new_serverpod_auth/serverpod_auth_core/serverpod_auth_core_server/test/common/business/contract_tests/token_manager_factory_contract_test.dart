@@ -1,7 +1,7 @@
-import 'package:serverpod_auth_core_server/jwt.dart';
-import 'package:serverpod_auth_core_server/session.dart';
 import 'package:serverpod_auth_core_server/src/common/integrations/token_manager.dart';
 import 'package:serverpod_auth_core_server/src/common/integrations/token_manager_factory.dart';
+import 'package:serverpod_auth_core_server/src/jwt/jwt.dart';
+import 'package:serverpod_auth_core_server/src/session/session.dart';
 import 'package:test/test.dart';
 
 import '../fakes/fakes.dart';

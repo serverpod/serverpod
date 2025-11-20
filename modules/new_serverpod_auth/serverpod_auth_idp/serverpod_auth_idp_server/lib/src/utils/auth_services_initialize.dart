@@ -1,7 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/jwt.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
-import 'package:serverpod_auth_core_server/session.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';

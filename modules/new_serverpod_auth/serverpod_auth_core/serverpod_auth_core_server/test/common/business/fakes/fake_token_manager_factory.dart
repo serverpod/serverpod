@@ -1,4 +1,4 @@
-import 'package:serverpod_auth_core_server/auth_user.dart';
+import 'package:serverpod_auth_core_server/src/auth_user/auth_user.dart';
 import 'package:serverpod_auth_core_server/src/common/integrations/token_manager_factory.dart';
 
 import 'fake_token_manager.dart';

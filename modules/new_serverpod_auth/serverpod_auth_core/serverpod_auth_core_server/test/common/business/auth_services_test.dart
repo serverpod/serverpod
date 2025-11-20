@@ -1,6 +1,5 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
-import 'package:serverpod_auth_core_server/src/common/business/multi_token_manager.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';

@@ -1,10 +1,10 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/profile.dart';
-import 'package:serverpod_auth_core_server/src/common/business/multi_token_manager.dart';
-import 'package:serverpod_auth_core_server/src/common/integrations/token_manager.dart';
-import 'package:serverpod_auth_core_server/src/common/integrations/token_manager_factory.dart';
 
-import '../integrations/provider_factory.dart';
+import '../../common/integrations/provider_factory.dart';
+import '../../common/integrations/token_manager.dart';
+import '../../common/integrations/token_manager_factory.dart';
+import '../../profile/profile.dart';
+import 'multi_token_manager.dart';
 
 /// Global configuration for auth providers that are exposed through endpoints.
 /// This object is also used to manage the lifecycle of authentication tokens

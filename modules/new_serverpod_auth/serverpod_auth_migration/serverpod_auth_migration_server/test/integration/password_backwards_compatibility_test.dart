@@ -1,9 +1,9 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
-import 'package:serverpod_auth_idp_server/core.dart' as new_auth_core;
-import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart'
     as new_email_idp;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as new_auth_idp;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
     as legacy_auth;
@@ -12,8 +12,8 @@ import 'package:test/test.dart';
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManagerFactory = new_auth_core.AuthSessionsTokenManagerFactory(
-    new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+  final tokenManagerFactory = new_auth_idp.AuthSessionsTokenManagerFactory(
+    new_auth_idp.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
   const newEmailIDPConfig = new_email_idp.EmailIDPConfig(
@@ -22,18 +22,18 @@ void main() {
   late final new_email_idp.EmailIDP newEmailIDP;
 
   setUpAll(() async {
-    AuthServices.set(
+    new_auth_idp.AuthServices.set(
       identityProviders: [
         new_email_idp.EmailIdentityProviderFactory(newEmailIDPConfig),
       ],
       primaryTokenManager: tokenManagerFactory,
     );
-    newEmailIDP = AuthServices.instance.emailIDP;
+    newEmailIDP = new_auth_idp.AuthServices.instance.emailIDP;
     AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
   });
 
   tearDownAll(() async {
-    AuthServices.set(
+    new_auth_idp.AuthServices.set(
       identityProviders: [],
       primaryTokenManager: tokenManagerFactory,
     );

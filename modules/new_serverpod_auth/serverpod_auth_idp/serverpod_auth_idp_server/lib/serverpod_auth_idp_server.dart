@@ -3,5 +3,7 @@
 /// Serverpod IDP module.
 library;
 
-export 'src/generated/endpoints.dart';
-export 'src/generated/protocol.dart';
+export 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    hide Protocol, Endpoints;
+
+export 'src/utils/auth_services_initialize.dart';

@@ -1,8 +1,7 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/src/generated/common/models/auth_success.dart';
 
-import '../../../../auth_user.dart';
-import '../../../generated/common/models/auth_strategy.dart';
+import '../../../auth_user/auth_user.dart';
+import '../../../generated/protocol.dart';
 import '../../../jwt/business/authentication_token_config.dart';
 import '../../../jwt/business/authentication_tokens.dart';
 import '../token_manager.dart';

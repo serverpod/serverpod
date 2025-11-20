@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
-import 'package:serverpod_auth_idp_server/src/integrations/apple_identity_provider_factory.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
+import '../../../integrations/apple_identity_provider_factory.dart';
 import '../apple.dart';
 
 /// Endpoint for handling Sign in with Apple.

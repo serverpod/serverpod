@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/profile.dart';
+
+import '../profile.dart';
 
 /// Endpoint for read-only access to user profile information.
 class UserProfileInfoEndpoint extends Endpoint {

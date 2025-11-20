@@ -1,6 +1,6 @@
-import 'package:serverpod_auth_core_server/profile.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
-import 'package:serverpod_auth_idp_server/providers/apple.dart';
+
+import '../providers/apple/apple.dart';
 
 /// AuthServices factory for creating [AppleIDP] instances.
 class AppleIdentityProviderFactory extends IdentityProviderFactory<AppleIDP> {
