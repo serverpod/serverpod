@@ -73,6 +73,10 @@ class FlutterAuthSessionManager extends core.ClientAuthSessionManager {
 /// Extension for ServerpodClientShared to provide auth session management.
 extension FlutterAuthSessionManagerExtension on core.ServerpodClientShared {
   /// The authentication session manager to sign in and manage user sessions.
+  FlutterAuthSessionManager get authSessionManager => auth;
+
+  /// The authentication session manager to sign in and manage user sessions.
+  /// This is a shortcut for [authSessionManager].
   FlutterAuthSessionManager get auth {
     final currentProvider = authKeyProvider;
     if (currentProvider == null) {
