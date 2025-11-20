@@ -18,7 +18,8 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   final ClientAuthInfoStorage storage;
 
   /// Optional callback that is invoked when the auth info changes.
-  final void Function()? onAuthInfoChanged;
+  /// The new auth info is passed as a parameter to the callback.
+  final void Function(AuthSuccess? authInfo)? onAuthInfoChanged;
 
   /// Creates a new [ClientAuthSessionManager].
   ClientAuthSessionManager({
@@ -35,6 +36,7 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
     required this.storage,
 
     /// Optional callback that is invoked when the auth info changes.
+    /// The new auth info value is passed as a parameter to the callback.
     /// This can be used to notify listeners or update UI state.
     this.onAuthInfoChanged,
   }) : _caller = caller {
@@ -144,14 +146,14 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
       await storage.clearCache();
     }
     _authInfo = await storage.get();
-    onAuthInfoChanged?.call();
+    onAuthInfoChanged?.call(_authInfo);
   }
 
   /// Updates the signed in user on the storage and for open connections.
   Future<void> updateSignedInUser(AuthSuccess? authInfo) async {
     await storage.set(authInfo);
     _authInfo = authInfo;
-    onAuthInfoChanged?.call();
+    onAuthInfoChanged?.call(_authInfo);
     // ignore: deprecated_member_use
     await caller.client.updateStreamingConnectionAuthenticationKey();
   }

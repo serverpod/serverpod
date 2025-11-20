@@ -20,7 +20,7 @@ class FlutterAuthSessionManager extends core.ClientAuthSessionManager {
   FlutterAuthSessionManager._internal({
     required ValueNotifier<core.AuthSuccess?> authInfoNotifier,
     required super.storage,
-    required void Function() onAuthInfoChanged,
+    required void Function(core.AuthSuccess?) onAuthInfoChanged,
     super.caller,
     super.authKeyProviderDelegates,
   }) : _authInfoNotifier = authInfoNotifier,
@@ -41,20 +41,17 @@ class FlutterAuthSessionManager extends core.ClientAuthSessionManager {
     core.ClientAuthInfoStorage? storage,
   }) {
     final authInfoNotifier = ValueNotifier<core.AuthSuccess?>(null);
-    late final FlutterAuthSessionManager manager;
 
-    manager = FlutterAuthSessionManager._internal(
+    return FlutterAuthSessionManager._internal(
       caller: caller,
       authKeyProviderDelegates: authKeyProviderDelegates,
       storage: storage ?? SecureClientAuthInfoStorage(),
       authInfoNotifier: authInfoNotifier,
-      onAuthInfoChanged: () {
-        // This closure captures the manager and notifier, updating when called
-        authInfoNotifier.value = manager.authInfo;
+      onAuthInfoChanged: (authInfo) {
+        // Update the notifier with the new auth info value
+        authInfoNotifier.value = authInfo;
       },
     );
-
-    return manager;
   }
 
   /// A listenable that provides access to the signed in user for Flutter apps.
