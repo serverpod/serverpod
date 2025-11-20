@@ -13,7 +13,7 @@ void main() {
 
   tearDown(() {
     AuthServices.set(
-      primaryTokenManager: tokenManagerFactory,
+      tokenManagers: [tokenManagerFactory],
       identityProviders: [],
     );
   });
@@ -67,7 +67,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManagerFactory,
+          tokenManagers: [tokenManagerFactory],
         );
       });
 
@@ -183,7 +183,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManagerFactory,
+          tokenManagers: [tokenManagerFactory],
         );
       });
 

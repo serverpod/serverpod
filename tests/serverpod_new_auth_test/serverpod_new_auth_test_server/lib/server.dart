@@ -23,25 +23,25 @@ void run(final List<String> args) async {
   const universalHashPepper = 'test-pepper';
 
   AuthServices.set(
-    primaryTokenManager: ServerSideSessionsTokenManagerFactory(
-      ServerSideSessionsConfig(sessionKeyHashPepper: universalHashPepper),
-    ),
-    identityProviders: [
-      EmailIdentityProviderFactory(
-        EmailIdpConfig(
-          secretHashPepper: pod.getPassword(
-            'serverpod_auth_idp_email_secretHashPepper',
-          )!,
-        ),
+    tokenManagers: [
+      ServerSideSessionsTokenManagerFactory(
+        ServerSideSessionsConfig(sessionKeyHashPepper: universalHashPepper),
       ),
-    ],
-    additionalTokenManagers: [
       JwtTokenManagerFactory(
         JwtConfig(
           refreshTokenHashPepper: universalHashPepper,
           algorithm: JwtAlgorithm.hmacSha512(
             SecretKey('test-private-key-for-HS512'),
           ),
+        ),
+      ),
+    ],
+    identityProviders: [
+      EmailIdentityProviderFactory(
+        EmailIdpConfig(
+          secretHashPepper: pod.getPassword(
+            'serverpod_auth_idp_email_secretHashPepper',
+          )!,
         ),
       ),
     ],

@@ -90,19 +90,15 @@ void run(List<String> args) async {
   );
 
   AuthServices.set(
-    primaryTokenManager: ServerSideSessionsTokenManagerFactory(
-      serverSideSessionsConfig,
-    ),
+    tokenManagers: [
+      ServerSideSessionsTokenManagerFactory(serverSideSessionsConfig),
+      JwtTokenManagerFactory(jwtTokenConfig),
+    ],
     identityProviders: [
       GoogleIdentityProviderFactory(googleIdpConfig),
       AppleIdentityProviderFactory(appleIdpConfig),
       EmailIdentityProviderFactory(emailIdpConfig),
       PasskeyIdentityProviderFactory(passkeyIdpConfig),
-    ],
-    additionalTokenManagers: [
-      JwtTokenManagerFactory(
-        jwtTokenConfig,
-      ),
     ],
   );
 
