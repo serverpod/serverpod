@@ -34,11 +34,11 @@ void main() {
 
         setUp(() {
           AuthServices.set(
-            primaryTokenManager: FakeTokenManagerFactory(
-              tokenStorage: fakeTokenStorage,
-            ),
+            tokenManagers: [
+              FakeTokenManagerFactory(tokenStorage: fakeTokenStorage),
+              ...tokenManagers,
+            ],
             identityProviders: identityProviderFactories,
-            additionalTokenManagers: tokenManagers,
           );
 
           authServices = AuthServices.instance;
@@ -55,18 +55,19 @@ void main() {
 
         setUp(() {
           AuthServices.set(
-            primaryTokenManager: fakeTokenManagerFactory,
+            tokenManagers: [fakeTokenManagerFactory, ...tokenManagers],
             identityProviders: identityProviderFactories,
-            additionalTokenManagers: tokenManagers,
           );
           firstAuthServices = AuthServices.instance;
 
           AuthServices.set(
-            primaryTokenManager: FakeTokenManagerFactory(
-              tokenStorage: FakeTokenStorage(),
-            ),
+            tokenManagers: [
+              FakeTokenManagerFactory(
+                tokenStorage: FakeTokenStorage(),
+              ),
+              ...tokenManagers,
+            ],
             identityProviders: identityProviderFactories,
-            additionalTokenManagers: tokenManagers,
           );
           secondAuthServices = AuthServices.instance;
         });
@@ -102,9 +103,8 @@ void main() {
         ];
 
         AuthServices.set(
-          primaryTokenManager: fakeTokenManagerFactory,
+          tokenManagers: [fakeTokenManagerFactory, ...tokenManagerFactories],
           identityProviders: identityProviderFactories,
-          additionalTokenManagers: tokenManagerFactories,
         );
       });
 
@@ -197,9 +197,8 @@ void main() {
         ];
 
         AuthServices.set(
-          primaryTokenManager: fakeTokenManagerFactory,
+          tokenManagers: [fakeTokenManagerFactory, ...tokenManagers],
           identityProviders: multipleProviderFactories,
-          additionalTokenManagers: tokenManagers,
         );
       });
 
@@ -241,9 +240,8 @@ void main() {
         ];
 
         AuthServices.set(
-          primaryTokenManager: fakeTokenManagerFactory,
+          tokenManagers: [fakeTokenManagerFactory, ...tokenManagers],
           identityProviders: identityProviderFactories,
-          additionalTokenManagers: tokenManagers,
         );
 
         authServices = AuthServices.instance;

@@ -14,7 +14,7 @@ final tokenManagerFactory = AuthSessionsTokenManagerFactory(
 void main() {
   setUp(() async {
     AuthServices.set(
-      primaryTokenManager: tokenManagerFactory,
+      tokenManagers: [tokenManagerFactory],
       identityProviders: [
         EmailIdentityProviderFactory(
           const EmailIDPConfig(
@@ -27,7 +27,7 @@ void main() {
 
   tearDown(() async {
     AuthServices.set(
-      primaryTokenManager: tokenManagerFactory,
+      tokenManagers: [tokenManagerFactory],
       identityProviders: [],
     );
   });
@@ -63,7 +63,7 @@ void main() {
             identityProviders: [
               EmailIdentityProviderFactory(config),
             ],
-            primaryTokenManager: tokenManagerFactory,
+            tokenManagers: [tokenManagerFactory],
           );
 
           clientReceivedRequestId = await endpoints.emailAccount
@@ -132,7 +132,7 @@ void main() {
             identityProviders: [
               EmailIdentityProviderFactory(config),
             ],
-            primaryTokenManager: tokenManagerFactory,
+            tokenManagers: [tokenManagerFactory],
           );
 
           clientReceivedRequestId = await endpoints.emailAccount
@@ -195,7 +195,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManagerFactory,
+          tokenManagers: [tokenManagerFactory],
         );
 
         await endpoints.emailAccount.startRegistration(
@@ -395,7 +395,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManagerFactory,
+          tokenManagers: [tokenManagerFactory],
         );
       });
 
@@ -551,7 +551,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManagerFactory,
+          tokenManagers: [tokenManagerFactory],
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -725,7 +725,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManagerFactory,
+          tokenManagers: [tokenManagerFactory],
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -959,7 +959,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManagerFactory,
+          tokenManagers: [tokenManagerFactory],
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -1068,7 +1068,7 @@ extension on TestEndpoints {
       identityProviders: [
         EmailIdentityProviderFactory(config),
       ],
-      primaryTokenManager: tokenManagerFactory,
+      tokenManagers: [tokenManagerFactory],
     );
 
     await emailAccount.startRegistration(
@@ -1121,7 +1121,7 @@ extension on TestEndpoints {
       identityProviders: [
         EmailIdentityProviderFactory(config),
       ],
-      primaryTokenManager: tokenManagerFactory,
+      tokenManagers: [tokenManagerFactory],
     );
 
     await emailAccount.startPasswordReset(

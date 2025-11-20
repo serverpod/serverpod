@@ -27,14 +27,14 @@ void main() {
         identityProviders: [
           EmailIdentityProviderFactory(newEmailIDPConfig),
         ],
-        primaryTokenManager: tokenManagerFactory,
+        tokenManagers: [tokenManagerFactory],
       );
     });
 
     tearDown(() {
       AuthServices.set(
         identityProviders: [],
-        primaryTokenManager: tokenManagerFactory,
+        tokenManagers: [tokenManagerFactory],
       );
     });
 

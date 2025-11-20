@@ -26,7 +26,7 @@ void main() {
       identityProviders: [
         new_email_idp.EmailIdentityProviderFactory(newEmailIDPConfig),
       ],
-      primaryTokenManager: tokenManagerFactory,
+      tokenManagers: [tokenManagerFactory],
     );
     newEmailIDP = new_auth_idp.AuthServices.instance.emailIDP;
     AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
@@ -35,7 +35,7 @@ void main() {
   tearDownAll(() async {
     new_auth_idp.AuthServices.set(
       identityProviders: [],
-      primaryTokenManager: tokenManagerFactory,
+      tokenManagers: [tokenManagerFactory],
     );
   });
   withServerpod(

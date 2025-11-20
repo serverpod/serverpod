@@ -60,12 +60,11 @@ extension AuthServicesInit on Serverpod {
     );
 
     AuthServices.set(
-      primaryTokenManager: tokenManagers.first,
+      tokenManagers: tokenManagers,
       identityProviders: [
         ...identityProviders,
         ...(additionalIdentityProviders ?? []),
       ],
-      additionalTokenManagers: tokenManagers.skip(1).toList(),
     );
 
     authenticationHandler = AuthServices.instance.authenticationHandler;
