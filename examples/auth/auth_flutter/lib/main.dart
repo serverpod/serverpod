@@ -71,12 +71,12 @@ class _MainPageState extends State<MainPage> {
 
     // NOTE: This is the only required setState to ensure that the  UI gets
     // updated when the auth state changes.
-    client.auth.authInfo.addListener(_updateSignedInState);
+    client.auth.authInfoListenable.addListener(_updateSignedInState);
   }
 
   @override
   void dispose() {
-    client.auth.authInfo.removeListener(_updateSignedInState);
+    client.auth.authInfoListenable.removeListener(_updateSignedInState);
     super.dispose();
   }
 
