@@ -35,6 +35,15 @@ enum GenerateOption<V> implements OptionDefinition<V> {
       helpText:
           'The directory to generate code for (defaults to current directory).',
     ),
+  ),
+  interactive(
+    FlagOption(
+      argName: 'interactive',
+      defaultsTo: true,
+      negatable: true,
+      helpText:
+          'Enable interactive prompts. Automatically disabled in CI environments.',
+    ),
   );
 
   const GenerateOption(this.option);
@@ -58,10 +67,14 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
     // Always do a full generate.
     bool watch = commandConfig.value(GenerateOption.watch);
     String directory = commandConfig.value(GenerateOption.directory);
+    bool interactive = commandConfig.value(GenerateOption.interactive);
 
     GeneratorConfig config;
     try {
-      config = await GeneratorConfig.load(directory);
+      config = await GeneratorConfig.load(
+        serverRootDir: directory,
+        interactive: interactive,
+      );
     } catch (e) {
       log.error('An error occurred while parsing the server config file: $e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);

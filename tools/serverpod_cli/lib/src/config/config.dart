@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ci/ci.dart' as ci;
 import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
@@ -260,10 +261,21 @@ class GeneratorConfig implements ModelLoadConfig {
   ///
   /// If [serverRootDir] is empty, the server directory will be automatically
   /// detected by searching the current directory and nearby locations.
-  static Future<GeneratorConfig> load([String serverRootDir = '']) async {
+  ///
+  /// The [interactive] parameter controls whether interactive prompts are enabled.
+  /// Defaults to true unless running in a CI environment (detected via ci package).
+  /// Explicit flag value overrides CI detection.
+  static Future<GeneratorConfig> load(
+      {String serverRootDir = '', bool? interactive}) async {
     // Auto-detect server directory if not specified
     if (serverRootDir.isEmpty) {
-      var serverDir = await ServerDirectoryFinder.findOrPrompt();
+      // Determine if we should use interactive mode
+      // Priority: explicit flag > CI detection > default (true)
+      var isInteractive = interactive ?? !ci.isCI;
+
+      var serverDir = await ServerDirectoryFinder.findOrPrompt(
+        interactive: isInteractive,
+      );
       serverRootDir = serverDir.path;
     }
 

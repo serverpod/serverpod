@@ -14,7 +14,7 @@ class DatabaseSetup {
     GeneratorConfig? config;
 
     try {
-      config = await GeneratorConfig.load(dir.path);
+      config = await GeneratorConfig.load(serverRootDir: dir.path);
     } catch (error) {
       log.error('Could not load config file.');
       return false;

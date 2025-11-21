@@ -164,7 +164,7 @@ dependencies:
           projectName: 'myapp',
         );
 
-        var config = await GeneratorConfig.load(serverDir.path);
+        var config = await GeneratorConfig.load(serverRootDir: serverDir.path);
 
         expect(config.serverPackage, equals('myapp_server'));
         expect(config.name, equals('myapp'));
