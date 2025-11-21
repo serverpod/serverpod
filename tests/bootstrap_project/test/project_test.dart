@@ -550,6 +550,56 @@ void main() async {
           );
         });
       });
+
+      group('then the .github directory', () {
+        test('has tests workflow', () {
+          expect(
+            File(
+              path.join(
+                tempPath,
+                projectName,
+                '.github',
+                'workflows',
+                'tests.yml',
+              ),
+            ).existsSync(),
+            isTrue,
+            reason: 'tests.yml workflow does not exist.',
+          );
+        });
+
+        test('has format workflow', () {
+          expect(
+            File(
+              path.join(
+                tempPath,
+                projectName,
+                '.github',
+                'workflows',
+                'format.yml',
+              ),
+            ).existsSync(),
+            isTrue,
+            reason: 'format.yml workflow does not exist.',
+          );
+        });
+
+        test('has analyze workflow', () {
+          expect(
+            File(
+              path.join(
+                tempPath,
+                projectName,
+                '.github',
+                'workflows',
+                'analyze.yml',
+              ),
+            ).existsSync(),
+            isTrue,
+            reason: 'analyze.yml workflow does not exist.',
+          );
+        });
+      });
     });
   });
 

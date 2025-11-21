@@ -368,6 +368,9 @@ void _copyServerUpgrade(
   var awsName = name.replaceAll('_', '-');
   var randomAwsId = math.Random.secure().nextInt(10000000).toString();
 
+  var dbTestPassword = generateRandomString();
+  var redisTestPassword = generateRandomString();
+
   log.debug('Copying upgrade files.', newParagraph: true);
   var copier = Copier(
     srcDir: Directory(
@@ -412,7 +415,7 @@ void _copyServerUpgrade(
       ),
       Replacement(
         slotName: 'DB_TEST_PASSWORD',
-        replacement: generateRandomString(),
+        replacement: dbTestPassword,
       ),
       Replacement(
         slotName: 'DB_PRODUCTION_PASSWORD',
@@ -428,15 +431,10 @@ void _copyServerUpgrade(
       ),
       Replacement(
         slotName: 'REDIS_TEST_PASSWORD',
-        replacement: generateRandomString(),
+        replacement: redisTestPassword,
       ),
     ],
-    fileNameReplacements: [
-      Replacement(
-        slotName: 'gcloudignore',
-        replacement: '.gcloudignore',
-      ),
-    ],
+    fileNameReplacements: const [],
     ignoreFileNames: [if (skipMain) 'server.dart'],
   );
   copier.copyFiles();
@@ -457,6 +455,18 @@ void _copyServerUpgrade(
       Replacement(
         slotName: 'randomawsid',
         replacement: randomAwsId,
+      ),
+      Replacement(
+        slotName: 'DB_TEST_PASSWORD',
+        replacement: dbTestPassword,
+      ),
+      Replacement(
+        slotName: 'REDIS_TEST_PASSWORD',
+        replacement: redisTestPassword,
+      ),
+      Replacement(
+        slotName: 'CLI_VERSION',
+        replacement: templateVersion,
       ),
     ],
     fileNameReplacements: [],
