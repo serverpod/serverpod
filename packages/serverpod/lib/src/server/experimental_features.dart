@@ -8,5 +8,7 @@ class ExperimentalFeatures {
   final List<DiagnosticEventHandler>? diagnosticEventHandlers;
 
   /// Creates a new [ExperimentalFeatures] instance.
-  ExperimentalFeatures({this.diagnosticEventHandlers});
+  ExperimentalFeatures({
+    this.diagnosticEventHandlers,
+  });
 }
