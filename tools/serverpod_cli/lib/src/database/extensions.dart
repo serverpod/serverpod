@@ -97,6 +97,11 @@ extension ColumnComparisons on ColumnDefinition {
       return false;
     }
 
+    // Vector dimension changes require dropping and recreating the column.
+    if (vectorDimension != other.vectorDimension) {
+      return false;
+    }
+
     return other.columnType == columnType && other.name == name;
   }
 
