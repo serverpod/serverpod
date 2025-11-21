@@ -79,7 +79,7 @@ void main() async {
     test('then code generation succeeds from server directory', () async {
       var generateProcess = await Process.start(
         'serverpod',
-        ['generate', '--no-interactive', '--no-analytics'],
+        ['--no-interactive', 'generate', '--no-analytics'],
         workingDirectory: path.join(tempDir.path, serverDir),
         environment: {
           'SERVERPOD_HOME': rootPath,
@@ -158,7 +158,7 @@ void main() async {
     test('then --interactive flag overrides CI environment', () async {
       var generateProcess = await Process.start(
         'serverpod',
-        ['generate', '--interactive', '--no-analytics'],
+        ['--interactive', 'generate', '--no-analytics'],
         workingDirectory: path.join(tempDir.path, serverDir),
         environment: {
           'SERVERPOD_HOME': rootPath,
@@ -222,7 +222,7 @@ void main() async {
     test('then with --no-interactive it fails with ambiguous error', () async {
       var generateProcess = await Process.start(
         'serverpod',
-        ['generate', '--no-interactive', '--no-analytics'],
+        ['--no-interactive', 'generate', '--no-analytics'],
         workingDirectory: projectRoot,
         environment: {
           'SERVERPOD_HOME': rootPath,
@@ -266,7 +266,7 @@ void main() async {
     test('then with --interactive it shows selection prompt', () async {
       var generateProcess = await Process.start(
         'serverpod',
-        ['generate', '--interactive', '--no-analytics'],
+        ['--interactive', 'generate', '--no-analytics'],
         workingDirectory: projectRoot,
         environment: {
           'SERVERPOD_HOME': rootPath,

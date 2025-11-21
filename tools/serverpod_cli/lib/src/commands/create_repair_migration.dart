@@ -6,6 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
@@ -15,7 +16,6 @@ import 'create_migration.dart' show CreateMigrationCommand;
 enum CreateRepairMigrationOption<V> implements OptionDefinition<V> {
   force(CreateMigrationCommand.forceOption),
   tag(CreateMigrationCommand.tagOption),
-  interactive(CreateMigrationCommand.interactiveOption),
   version(
     StringOption(
       argName: 'version',
@@ -64,9 +64,12 @@ class CreateRepairMigrationCommand
   ) async {
     bool force = commandConfig.value(CreateRepairMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateRepairMigrationOption.tag);
-    bool interactive = commandConfig.value(
-      CreateRepairMigrationOption.interactive,
+
+    // Get interactive flag from global configuration
+    final interactive = serverpodRunner.globalConfiguration.value(
+      GlobalOption.interactive,
     );
+
     String mode = commandConfig.value(CreateRepairMigrationOption.mode);
     String? targetVersion = commandConfig.optionalValue(
       CreateRepairMigrationOption.version,

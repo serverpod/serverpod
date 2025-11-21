@@ -127,6 +127,15 @@ enum GlobalOption<V> implements OptionDefinition<V> {
   quiet(BetterCommandRunnerFlags.quietOption),
   verbose(BetterCommandRunnerFlags.verboseOption),
   analytics(BetterCommandRunnerFlags.analyticsOption),
+  interactive(
+    FlagOption(
+      argName: 'interactive',
+      negatable: true,
+      defaultsTo: true,
+      helpText:
+          'Enable interactive prompts. Automatically disabled in CI environments.',
+    ),
+  ),
   version(
     FlagOption(
       argName: 'version',

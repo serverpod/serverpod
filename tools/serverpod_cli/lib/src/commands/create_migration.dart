@@ -6,6 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
@@ -13,8 +14,7 @@ import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 
 enum CreateMigrationOption<V> implements OptionDefinition<V> {
   force(CreateMigrationCommand.forceOption),
-  tag(CreateMigrationCommand.tagOption),
-  interactive(CreateMigrationCommand.interactiveOption);
+  tag(CreateMigrationCommand.tagOption);
 
   const CreateMigrationOption(this.option);
 
@@ -40,14 +40,6 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     customValidator: _validateTag,
   );
 
-  static const interactiveOption = FlagOption(
-    argName: 'interactive',
-    defaultsTo: true,
-    negatable: true,
-    helpText:
-        'Enable interactive prompts. Automatically disabled in CI environments.',
-  );
-
   static void _validateTag(String tag) {
     if (!StringValidators.isValidTagName(tag)) {
       throw const FormatException(
@@ -71,7 +63,10 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
   ) async {
     bool force = commandConfig.value(CreateMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
-    bool interactive = commandConfig.value(CreateMigrationOption.interactive);
+
+    // Get interactive flag from global configuration
+    final interactive =
+        serverpodRunner.globalConfiguration.value(GlobalOption.interactive);
 
     GeneratorConfig config;
     try {

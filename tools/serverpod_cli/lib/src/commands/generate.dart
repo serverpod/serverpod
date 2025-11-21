@@ -11,6 +11,7 @@ import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/pubspec_lock_parser.dart';
@@ -35,15 +36,6 @@ enum GenerateOption<V> implements OptionDefinition<V> {
       helpText:
           'The directory to generate code for (defaults to current directory).',
     ),
-  ),
-  interactive(
-    FlagOption(
-      argName: 'interactive',
-      defaultsTo: true,
-      negatable: true,
-      helpText:
-          'Enable interactive prompts. Automatically disabled in CI environments.',
-    ),
   );
 
   const GenerateOption(this.option);
@@ -67,7 +59,11 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
     // Always do a full generate.
     bool watch = commandConfig.value(GenerateOption.watch);
     String directory = commandConfig.value(GenerateOption.directory);
-    bool interactive = commandConfig.value(GenerateOption.interactive);
+
+    // Get interactive flag from global configuration
+    final interactive = serverpodRunner.globalConfiguration.value(
+      GlobalOption.interactive,
+    );
 
     GeneratorConfig config;
     try {
