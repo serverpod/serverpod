@@ -8,7 +8,7 @@ import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart';
 
 /// Returns the `LegacySession` in case the session key can be properly validted.
 ///
-/// Closely mirrors the behavior of `modules/serverpod_auth/serverpod_auth_server/lib/src/business/authentication_handler.dart`
+/// Closely mirrors the behavior of `modules/legacy/serverpod_auth/serverpod_auth_server/lib/src/business/authentication_handler.dart`
 @internal
 Future<LegacySession?> resolveLegacySession(
   final Session session,
@@ -40,7 +40,7 @@ Future<LegacySession?> resolveLegacySession(
   }
 }
 
-// copied from `modules/serverpod_auth/serverpod_auth_server/lib/src/business/authentication_util.dart`
+// copied from `modules/legacy/serverpod_auth/serverpod_auth_server/lib/src/business/authentication_util.dart`
 
 /// Default salt used for hashing authentication keys if no salt is provided.
 const _defaultAuthKeySalt = 'salty';

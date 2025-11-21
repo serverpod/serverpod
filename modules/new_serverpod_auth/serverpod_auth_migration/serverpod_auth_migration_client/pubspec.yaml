@@ -20,7 +20,7 @@ dependency_overrides:
   serverpod_auth_bridge_client:
     path: ../../serverpod_auth_bridge/serverpod_auth_bridge_client
   serverpod_auth_client:
-    path: ../../../serverpod_auth/serverpod_auth_client
+    path: ../../../legacy/serverpod_auth/serverpod_auth_client
   serverpod_auth_core_client:
     path: ../../serverpod_auth_core/serverpod_auth_core_client
   serverpod_auth_idp_client:

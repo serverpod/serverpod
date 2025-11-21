@@ -20,14 +20,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   serverpod_auth_shared_flutter:
-    path: ../../modules/serverpod_auth/serverpod_auth_shared_flutter
+    path: ../../modules/legacy/serverpod_auth/serverpod_auth_shared_flutter
   serverpod_test_client:
     path: ../serverpod_test_client
   test: ^1.25.5
 
 dependency_overrides:
   serverpod_auth_client:
-    path: ../../modules/serverpod_auth/serverpod_auth_client
+    path: ../../modules/legacy/serverpod_auth/serverpod_auth_client
   serverpod_client:
     path: ../../packages/serverpod_client
   serverpod_serialization:
