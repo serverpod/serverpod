@@ -63,10 +63,16 @@ class Protocol extends _i1.SerializationManager {
 
     final dataClassName = getClassNameFromObjectJson(data);
     if (dataClassName != null && dataClassName != t.toString()) {
-      return deserializeByClassName({
-        'className': dataClassName,
-        'data': data,
-      });
+      try {
+        return deserializeByClassName({
+          'className': dataClassName,
+          'data': data,
+        });
+      } on FormatException catch (_) {
+        // If the className is not recognized (e.g., older client receiving
+        // data with a new subtype), fall back to deserializing without the
+        // className, using the expected type T.
+      }
     }
 
     if (t == _i2.AuthUserBlockedException) {
