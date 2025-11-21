@@ -92,7 +92,11 @@ DatabaseMigration generateDatabaseMigration({
         actions.add(
           DatabaseMigrationAction(
             type: DatabaseMigrationActionType.alterTable,
-            alterTable: diff,
+            alterTable: diff.copyWith(
+              warnings: warnings
+                  .where((warning) => warning.table == dstTable.name)
+                  .toList(),
+            ),
           ),
         );
       }
