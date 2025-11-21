@@ -7,6 +7,11 @@ on:
         description: 'Package index to start from (0 to start from the beginning)'
         required: false
         default: '0'
+      dry_run:
+        description: 'Dry run mode (validates packages without publishing)'
+        required: false
+        default: false
+        type: boolean
   push:
     tags:
       # Matches tags like `2.9.1` and `3.0.0-alpha.1` or `3.0.0-rc.1`
@@ -40,7 +45,6 @@ jobs:
         run: |
           cd tools/serverpod_cli
           dart pub get
-          cd ${{ github.workspace }}
 
       - name: Update pubspecs
         run: |
@@ -71,33 +75,39 @@ jobs:
       - name: Publish packages
         run: |
           START_PACKAGE="${{ github.event.inputs.start_package || '0' }}"
+          DRY_RUN="${{ github.event.inputs.dry_run || 'false' }}"
           BASE="${{ github.workspace }}"
           PCOUNT=0
           SLEEP_TIME=5
 
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "### DRY RUN MODE - No packages will be published"
+            echo ""
+          fi
+
           while read PACKAGE; do
             if (( PCOUNT >= START_PACKAGE )); then
-              echo "### PUBLISH PACKAGE: $PCOUNT"
-              echo "$PACKAGE"
+              echo "### RUNNING PACKAGE (index: $PCOUNT): $PACKAGE"
 
               cd "$BASE/$PACKAGE"
 
-              # Use force flag to skip confirmation prompt
-              if dart pub publish --force; then
-                echo "✓ Successfully published $PACKAGE"
+              if [ "$DRY_RUN" = "true" ]; then
+                RESULT=$(dart pub publish --dry-run)
               else
-                echo ""
-                echo "### PUBLISH FAILED: $PCOUNT"
-                echo "Package: $PACKAGE"
-                echo ""
-                echo "To resume, run the workflow again with:"
-                echo "  start_package: $PCOUNT"
-                echo ""
+                RESULT=$(dart pub publish --force)
+              fi
+
+              if [ "$RESULT" -eq 0 ]; then
+                echo "✓ Success (index: $PCOUNT): $PACKAGE"
+              else
+                echo "### FAILED (index: $PCOUNT): $PACKAGE"
                 exit 1
               fi
 
-              # Give pub.dev a chance to catch up between each package deployment
-              sleep $SLEEP_TIME
+              if [ "$DRY_RUN" = "false" ]; then
+                # Give pub.dev a chance to catch up between each package deployment
+                sleep $SLEEP_TIME
+              fi
             else
               echo "### SKIPPING PACKAGE: $PCOUNT - $PACKAGE"
             fi
@@ -105,4 +115,8 @@ jobs:
           done < "$BASE/PUBLISHABLE_PACKAGES"
 
           echo ""
-          echo "✓ All packages published successfully!"
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "✓ All packages validated successfully!"
+          else
+            echo "✓ All packages published successfully!"
+          fi
