@@ -271,7 +271,7 @@ class GeneratorConfig implements ModelLoadConfig {
     if (serverRootDir.isEmpty) {
       // Determine if we should use interactive mode
       // Priority: explicit flag > CI detection > default (true)
-      var isInteractive = interactive ?? !ci.isCI;
+      final isInteractive = interactive ?? !ci.isCI;
 
       var serverDir = await ServerDirectoryFinder.findOrPrompt(
         interactive: isInteractive,
