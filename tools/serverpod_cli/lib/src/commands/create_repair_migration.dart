@@ -15,6 +15,7 @@ import 'create_migration.dart' show CreateMigrationCommand;
 enum CreateRepairMigrationOption<V> implements OptionDefinition<V> {
   force(CreateMigrationCommand.forceOption),
   tag(CreateMigrationCommand.tagOption),
+  interactive(CreateMigrationCommand.interactiveOption),
   version(StringOption(
     argName: 'version',
     argAbbrev: 'v',
@@ -57,13 +58,15 @@ class CreateRepairMigrationCommand
   ) async {
     bool force = commandConfig.value(CreateRepairMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateRepairMigrationOption.tag);
+    bool interactive =
+        commandConfig.value(CreateRepairMigrationOption.interactive);
     String mode = commandConfig.value(CreateRepairMigrationOption.mode);
     String? targetVersion =
         commandConfig.optionalValue(CreateRepairMigrationOption.version);
 
     GeneratorConfig config;
     try {
-      config = await GeneratorConfig.load();
+      config = await GeneratorConfig.load(interactive: interactive);
     } catch (_) {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }

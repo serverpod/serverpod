@@ -13,7 +13,8 @@ import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 
 enum CreateMigrationOption<V> implements OptionDefinition<V> {
   force(CreateMigrationCommand.forceOption),
-  tag(CreateMigrationCommand.tagOption);
+  tag(CreateMigrationCommand.tagOption),
+  interactive(CreateMigrationCommand.interactiveOption);
 
   const CreateMigrationOption(this.option);
 
@@ -39,6 +40,14 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     customValidator: _validateTag,
   );
 
+  static const interactiveOption = FlagOption(
+    argName: 'interactive',
+    defaultsTo: true,
+    negatable: true,
+    helpText:
+        'Enable interactive prompts. Automatically disabled in CI environments.',
+  );
+
   static void _validateTag(String tag) {
     if (!StringValidators.isValidTagName(tag)) {
       throw const FormatException(
@@ -62,10 +71,11 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
   ) async {
     bool force = commandConfig.value(CreateMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
+    bool interactive = commandConfig.value(CreateMigrationOption.interactive);
 
     GeneratorConfig config;
     try {
-      config = await GeneratorConfig.load();
+      config = await GeneratorConfig.load(interactive: interactive);
     } catch (_) {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
