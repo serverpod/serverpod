@@ -14,14 +14,17 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 final class RefreshTokenSecretHash {
   final int _refreshTokenRotatingSecretSaltLength;
   final String _refreshTokenHashPepper;
+  final List<String> _fallbackRefreshTokenHashPeppers;
 
   /// Creates a new instance of [RefreshTokenSecretHash].
   RefreshTokenSecretHash({
     required final int refreshTokenRotatingSecretSaltLength,
     required final String refreshTokenHashPepper,
+    required final List<String> fallbackRefreshTokenHashPeppers,
   }) : _refreshTokenRotatingSecretSaltLength =
            refreshTokenRotatingSecretSaltLength,
-       _refreshTokenHashPepper = refreshTokenHashPepper;
+       _refreshTokenHashPepper = refreshTokenHashPepper,
+       _fallbackRefreshTokenHashPeppers = fallbackRefreshTokenHashPeppers;
 
   /// Create the hash for the given refresh token secret.
   Future<({Uint8List hash, Uint8List salt})> createHash({
@@ -64,9 +67,24 @@ final class RefreshTokenSecretHash {
     required final Uint8List hash,
     required final Uint8List salt,
   }) async {
-    return uint8ListAreEqual(
-      hash,
-      (await createHash(secret: secret, salt: salt)).hash,
-    );
+    // Combine primary and fallback peppers into a single list
+    final allPeppers = [
+      _refreshTokenHashPepper,
+      ..._fallbackRefreshTokenHashPeppers,
+    ];
+
+    // Try each pepper in order
+    for (final pepper in allPeppers) {
+      final computedHash = (await _createHash(
+        secret: secret,
+        salt: salt,
+        pepper: utf8.encode(pepper),
+      )).hash;
+      if (uint8ListAreEqual(hash, computedHash)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
