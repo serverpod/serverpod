@@ -14,16 +14,16 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 /// {@endtemplate}
 final class SecretHashUtil {
   final String _hashPepper;
-  final String? _fallbackHashPepper;
+  final List<String> _fallbackHashPeppers;
   final int _hashSaltLength;
 
   /// Creates a new instance of [SecretHashUtil].
   SecretHashUtil({
     required final String hashPepper,
-    final String? fallbackHashPepper,
+    final List<String> fallbackHashPeppers = const [],
     required final int hashSaltLength,
   }) : _hashPepper = hashPepper,
-       _fallbackHashPepper = fallbackHashPepper,
+       _fallbackHashPeppers = fallbackHashPeppers,
        _hashSaltLength = hashSaltLength;
 
   /// Create the hash for the given [value].
@@ -58,21 +58,17 @@ final class SecretHashUtil {
       return false;
     }
 
-    // Try primary pepper first
-    final primaryHash = (await createHash(value: value, salt: salt)).hash;
-    if (uint8ListAreEqual(hash, primaryHash)) {
-      return true;
-    }
+    // Combine primary and fallback peppers into a single list
+    final allPeppers = [_hashPepper, ..._fallbackHashPeppers];
 
-    // If primary fails and fallback exists, try fallback
-    if (_fallbackHashPepper != null) {
-      final fallbackPepper = _fallbackHashPepper;
-      final fallbackHash = (await _createHash(
+    // Try each pepper in order
+    for (final pepper in allPeppers) {
+      final computedHash = (await _createHash(
         secret: value,
         salt: salt,
-        pepper: utf8.encode(fallbackPepper),
+        pepper: utf8.encode(pepper),
       )).hash;
-      if (uint8ListAreEqual(hash, fallbackHash)) {
+      if (uint8ListAreEqual(hash, computedHash)) {
         return true;
       }
     }

@@ -321,7 +321,7 @@ void main() {
       final newFixture = EmailIDPTestFixture(
         config: const EmailIDPConfig(
           secretHashPepper: newPepper,
-          fallbackSecretHashPepper: oldPepper,
+          fallbackSecretHashPeppers: [oldPepper],
         ),
       );
       newPepperHashUtilWithFallback = newFixture.passwordHashUtil;
@@ -389,6 +389,46 @@ void main() {
         );
 
         expect(isValidWithOldPepper, isFalse);
+      },
+    );
+
+    test(
+      'when multiple fallback peppers are provided then validates against any of them',
+      () async {
+        const veryOldPepper = 'very-old-pepper-value';
+
+        // Create hash with very old pepper
+        final veryOldFixture = EmailIDPTestFixture(
+          config: const EmailIDPConfig(secretHashPepper: veryOldPepper),
+        );
+        final veryOldPepperHashUtil = veryOldFixture.passwordHashUtil;
+        final veryOldPasswordHash = await veryOldPepperHashUtil.createHash(
+          value: value,
+        );
+
+        // Create util with multiple fallback peppers
+        final multiPepperFixture = EmailIDPTestFixture(
+          config: const EmailIDPConfig(
+            secretHashPepper: newPepper,
+            fallbackSecretHashPeppers: [oldPepper, veryOldPepper],
+          ),
+        );
+        final multiPepperHashUtil = multiPepperFixture.passwordHashUtil;
+
+        // Should validate both old and very old hashes
+        final isValidOld = await multiPepperHashUtil.validateHash(
+          value: value,
+          hash: oldPasswordHash.hash,
+          salt: oldPasswordHash.salt,
+        );
+        final isValidVeryOld = await multiPepperHashUtil.validateHash(
+          value: value,
+          hash: veryOldPasswordHash.hash,
+          salt: veryOldPasswordHash.salt,
+        );
+
+        expect(isValidOld, isTrue);
+        expect(isValidVeryOld, isTrue);
       },
     );
   });

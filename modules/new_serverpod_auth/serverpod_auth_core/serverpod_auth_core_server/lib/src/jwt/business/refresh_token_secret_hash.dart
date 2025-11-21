@@ -67,20 +67,20 @@ final class RefreshTokenSecretHash {
     required final Uint8List hash,
     required final Uint8List salt,
   }) async {
-    // Try primary pepper first
-    final primaryHash = (await createHash(secret: secret, salt: salt)).hash;
-    if (uint8ListAreEqual(hash, primaryHash)) {
-      return true;
-    }
+    // Combine primary and fallback peppers into a single list
+    final allPeppers = [
+      _refreshTokenHashPepper,
+      ..._fallbackRefreshTokenHashPeppers,
+    ];
 
-    // Try fallback peppers if primary didn't match
-    for (final fallbackPepper in _fallbackRefreshTokenHashPeppers) {
-      final fallbackHash = (await _createHash(
+    // Try each pepper in order
+    for (final pepper in allPeppers) {
+      final computedHash = (await _createHash(
         secret: secret,
         salt: salt,
-        pepper: utf8.encode(fallbackPepper),
+        pepper: utf8.encode(pepper),
       )).hash;
-      if (uint8ListAreEqual(hash, fallbackHash)) {
+      if (uint8ListAreEqual(hash, computedHash)) {
         return true;
       }
     }

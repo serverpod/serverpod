@@ -48,14 +48,14 @@ class EmailIDPConfig {
   /// The pepper used for hashing passwords and verification codes.
   final String secretHashPepper;
 
-  /// Optional fallback pepper for validating passwords and verification codes created with a previous pepper.
+  /// Optional fallback peppers for validating passwords and verification codes created with previous peppers.
   ///
-  /// When rotating peppers, set the old pepper here to allow existing passwords
+  /// When rotating peppers, add old peppers to this list to allow existing passwords
   /// to continue working. The system will try [secretHashPepper] first, then
-  /// the fallback pepper if validation fails.
+  /// each fallback pepper in order until a match is found.
   ///
-  /// This is optional and defaults to `null`.
-  final String? fallbackSecretHashPepper;
+  /// This is optional and defaults to an empty list.
+  final List<String> fallbackSecretHashPeppers;
 
   /// The time for the registration email verification code to be valid.
   ///
@@ -132,7 +132,7 @@ class EmailIDPConfig {
   /// Set [current] to apply this configuration.
   const EmailIDPConfig({
     required this.secretHashPepper,
-    this.fallbackSecretHashPepper,
+    this.fallbackSecretHashPeppers = const [],
     this.registrationVerificationCodeLifetime = const Duration(minutes: 15),
     this.registrationVerificationCodeAllowedAttempts = 3,
     this.registrationVerificationCodeGenerator =
