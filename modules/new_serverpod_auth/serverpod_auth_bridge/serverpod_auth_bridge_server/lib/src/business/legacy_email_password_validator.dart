@@ -12,7 +12,7 @@ import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
 
 /// Legacy password validation closely mirroring the behavior of `serverpod_auth`
 //
-// Copied from `modules/serverpod_auth/serverpod_auth_server/lib/src/business/email_auth.dart`
+// Copied from `modules/legacy/serverpod_auth/serverpod_auth_server/lib/src/business/email_auth.dart`
 @internal
 Future<bool> legacyEmailPasswordValidator(
   final Session session, {
