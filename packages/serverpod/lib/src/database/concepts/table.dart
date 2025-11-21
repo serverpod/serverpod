@@ -16,6 +16,25 @@ abstract interface class TableRow<T_ID> implements SerializableModel {
   Table<T_ID> get table;
 }
 
+/// Extension on a [TableRow] to ensure database serialization matches the
+/// expected naming of the column in the database
+extension TableRowDatabaseJsonExtension on TableRow {
+  /// Returns the json representation to be sent to the database for storage
+  dynamic toJsonForDatabase() {
+    final json = toJson();
+    if (json is! Map<String, dynamic>) return json;
+
+    final dbJson = <String, dynamic>{};
+    for (final column in table.columns) {
+      // Eliminate non persistent fields
+      if (!json.containsKey(column.fieldName)) continue;
+
+      dbJson[column.columnName] = json[column.fieldName];
+    }
+    return dbJson;
+  }
+}
+
 /// Represents a database table.
 class Table<T_ID> {
   /// Name of the table as used in the database.
@@ -85,6 +104,20 @@ class Table<T_ID> {
       str += '  ${col.columnName} (${col.type})\n';
     }
     return str;
+  }
+
+  /// Parse the provided [rowData] and return it with keys matching the
+  /// expected field names
+  Map<String, dynamic> parseRow(
+    Map<String, dynamic> rowData,
+  ) {
+    return {
+      // Preserves non-persisted fields
+      ...rowData,
+      // map columns to field name
+      for (final column in columns)
+        column.fieldName: rowData[column.columnName],
+    };
   }
 }
 

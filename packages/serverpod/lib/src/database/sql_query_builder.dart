@@ -340,7 +340,7 @@ class InsertQueryBuilder {
     if (filteredValues.isEmpty) return null;
 
     var values = filteredValues
-        .map((row) => row.toJson() as Map<String, dynamic>)
+        .map((row) => row.toJsonForDatabase() as Map<String, dynamic>)
         .map((row) {
           var values = selectedColumns
               .map((column) {

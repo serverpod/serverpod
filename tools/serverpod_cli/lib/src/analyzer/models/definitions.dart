@@ -265,6 +265,14 @@ class SerializableModelFieldDefinition {
   /// When true, nullable fields will be marked as required named parameters.
   final bool isRequired;
 
+  /// Name of the column in the database
+  final String? _columnNameOverride;
+
+  /// Name of the column to be used when referencing the database.
+  ///
+  /// This will be the [_columnNameOverride] if set, with fallback to the [name]
+  String get columnName => _columnNameOverride ?? name;
+
   /// Indexes that this field is part of.
   List<SerializableModelIndexDefinition> indexes = [];
 
@@ -279,7 +287,8 @@ class SerializableModelFieldDefinition {
     this.relation,
     this.documentation,
     this.isRequired = false,
-  });
+    String? columnNameOverride,
+  }) : _columnNameOverride = columnNameOverride;
 
   /// Returns true, if classes should include this field.
   /// [serverCode] specifies if it's a code on the server or client side.
