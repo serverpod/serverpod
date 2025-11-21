@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 import 'package:serverpod_auth_idp_server/src/utils/byte_data_extension.dart';

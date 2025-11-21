@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
-import 'package:serverpod_auth_core_server/session.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
 import '../../../generated/protocol.dart';

@@ -1,10 +1,10 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/profile.dart';
-import 'package:serverpod_auth_core_server/src/common/business/multi_token_manager.dart';
-import 'package:serverpod_auth_core_server/src/common/integrations/token_manager.dart';
-import 'package:serverpod_auth_core_server/src/common/integrations/token_manager_factory.dart';
 
-import '../integrations/provider_factory.dart';
+import '../../common/integrations/provider_factory.dart';
+import '../../common/integrations/token_manager.dart';
+import '../../common/integrations/token_manager_factory.dart';
+import '../../profile/profile.dart';
+import 'multi_token_manager.dart';
 
 /// Global configuration for auth providers that are exposed through endpoints.
 /// This object is also used to manage the lifecycle of authentication tokens
@@ -27,29 +27,29 @@ class AuthServices {
 
   /// Creates a new [AuthServices] instance and sets it as the global instance.
   ///
+  /// [tokenManagers] is the list of factories for the token managers. The first
+  /// token manager in the list will be used as the primary token manager, and
+  /// the rest as additional token managers.
+  /// [identityProviders] is a list of factories for the identity providers.
   /// [authUsersConfig] is the configuration for the auth users manager.
   /// [userProfileConfig] is the configuration for the user profiles manager.
-  /// [primaryTokenManager] is the factory for the primary token manager.
-  /// [identityProviders] is a list of factories for the identity providers.
-  /// [additionalTokenManagers] is a list of factories for the additional token managers.
   ///
   /// These are passed to the [AuthServices] constructor to create the instance.
   /// {@macro auth_services_constructor}
-  factory AuthServices.set({
+  static void set({
+    required final List<TokenManagerFactory> tokenManagers,
+    final List<IdentityProviderFactory> identityProviders = const [],
     final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
     final UserProfileConfig userProfileConfig = const UserProfileConfig(),
-    required final TokenManagerFactory primaryTokenManager,
-    required final List<IdentityProviderFactory> identityProviders,
-    final List<TokenManagerFactory> additionalTokenManagers = const [],
   }) {
     final instance = AuthServices(
       authUsers: AuthUsers(config: authUsersConfig),
       userProfiles: UserProfiles(config: userProfileConfig),
-      primaryTokenManager: primaryTokenManager,
+      primaryTokenManager: tokenManagers.first,
       identityProviders: identityProviders,
-      additionalTokenManagers: additionalTokenManagers,
+      additionalTokenManagers: tokenManagers.skip(1).toList(),
     );
-    return _instance = instance;
+    _instance = instance;
   }
 
   /// Creates a new [AuthServices] instance.

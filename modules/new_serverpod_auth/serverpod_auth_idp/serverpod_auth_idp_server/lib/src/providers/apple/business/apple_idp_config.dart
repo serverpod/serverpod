@@ -20,6 +20,12 @@ class AppleIDPConfig {
   /// The secret contents of the private key file received once from Apple.
   final String key;
 
+  /// The route used for the revoked notification.
+  final String revokedNotificationRoute;
+
+  /// The route used for the web authentication callback.
+  final String webAuthenticationCallbackRoute;
+
   /// Creates a new Sign in with Apple configuration.
   AppleIDPConfig({
     required this.serviceIdentifier,
@@ -28,6 +34,8 @@ class AppleIDPConfig {
     required this.teamId,
     required this.keyId,
     required this.key,
+    required this.revokedNotificationRoute,
+    required this.webAuthenticationCallbackRoute,
   });
 }
 

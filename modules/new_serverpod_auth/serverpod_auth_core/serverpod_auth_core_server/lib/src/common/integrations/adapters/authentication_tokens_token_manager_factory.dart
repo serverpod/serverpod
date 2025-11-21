@@ -1,4 +1,4 @@
-import '../../../../jwt.dart';
+import '../../../jwt/jwt.dart';
 import '../token_manager_factory.dart';
 
 /// Token manager factory for [AuthenticationTokensTokenManager].

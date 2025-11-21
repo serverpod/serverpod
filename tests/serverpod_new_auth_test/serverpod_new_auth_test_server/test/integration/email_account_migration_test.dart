@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 import 'package:test/test.dart';
 import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
@@ -13,7 +13,7 @@ void main() {
 
   tearDown(() {
     AuthServices.set(
-      primaryTokenManager: tokenManagerFactory,
+      tokenManagers: [tokenManagerFactory],
       identityProviders: [],
     );
   });
@@ -67,7 +67,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManagerFactory,
+          tokenManagers: [tokenManagerFactory],
         );
       });
 
@@ -183,7 +183,7 @@ void main() {
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
-          primaryTokenManager: tokenManagerFactory,
+          tokenManagers: [tokenManagerFactory],
         );
       });
 

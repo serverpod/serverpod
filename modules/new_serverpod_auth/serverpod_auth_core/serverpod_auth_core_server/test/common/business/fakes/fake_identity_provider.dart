@@ -1,5 +1,5 @@
-import 'package:serverpod_auth_core_server/profile.dart';
 import 'package:serverpod_auth_core_server/src/common/integrations/token_manager.dart';
+import 'package:serverpod_auth_core_server/src/profile/profile.dart';
 
 /// A fake identity provider for testing purposes.
 class FakeIdentityProvider {

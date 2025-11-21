@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
-import '../../../../auth_user.dart';
+import '../../../auth_user/auth_user.dart';
 import '../../../generated/protocol.dart';
 import '../../../session/business/auth_sessions.dart';
 import '../../../session/business/auth_sessions_config.dart';

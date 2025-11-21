@@ -1,7 +1,9 @@
-import 'package:serverpod_auth_core_server/auth_user.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 import '../../../generated/protocol.dart';
 import '../../../utils/secret_hash_util.dart';
+import 'email_idp.dart';
+import 'email_idp_admin.dart';
 import 'email_idp_config.dart';
 import 'email_idp_server_exceptions.dart';
 import 'utils/email_idp_account_creation_util.dart';

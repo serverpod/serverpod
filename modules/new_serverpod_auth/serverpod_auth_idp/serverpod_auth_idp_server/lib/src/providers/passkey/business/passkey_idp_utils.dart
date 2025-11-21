@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:clock/clock.dart';
 import 'package:passkeys_server/passkeys_server.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/auth_user.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 import '../../../generated/protocol.dart';
 import '../../../utils/byte_data_extension.dart';

@@ -1,4 +1,5 @@
-export 'package:serverpod_auth_core_server/session.dart' show AuthSuccess;
+export 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    show AuthSuccess;
 
 export '../../generated/protocol.dart'
     show GoogleAccount, GoogleIdTokenVerificationException;

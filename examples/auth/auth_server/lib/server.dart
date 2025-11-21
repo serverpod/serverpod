@@ -3,7 +3,7 @@ import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 
 import 'src/generated/protocol.dart';
 import 'src/generated/endpoints.dart';
@@ -48,6 +48,10 @@ void run(List<String> args) async {
     teamId: pod.getPassword('appleTeamId')!,
     keyId: pod.getPassword('appleKeyId')!,
     key: pod.getPassword('appleKey')!,
+    revokedNotificationRoute: pod.getPassword('appleRevokedNotificationRoute')!,
+    webAuthenticationCallbackRoute: pod.getPassword(
+      'appleWebAuthenticationCallbackRoute',
+    )!,
   );
 
   final emailIDPConfig = EmailIDPConfig(
@@ -87,31 +91,31 @@ void run(List<String> args) async {
     hostname: 'localhost',
   );
 
-  final authServices = AuthServices.set(
-    primaryTokenManager: AuthSessionsTokenManagerFactory(authSessionsConfig),
+  AuthServices.set(
+    tokenManagers: [
+      AuthSessionsTokenManagerFactory(authSessionsConfig),
+      AuthenticationTokensTokenManagerFactory(authenticationTokenConfig),
+    ],
     identityProviders: [
       GoogleIdentityProviderFactory(googleIDPConfig),
       AppleIdentityProviderFactory(appleIDPConfig),
       EmailIdentityProviderFactory(emailIDPConfig),
       PasskeyIdentityProviderFactory(passkeyIDPConfig),
     ],
-    additionalTokenManagers: [
-      AuthenticationTokensTokenManagerFactory(
-        authenticationTokenConfig,
-      ),
-    ],
   );
 
-  pod.authenticationHandler = authServices.authenticationHandler;
+  pod.authenticationHandler = AuthServices.instance.authenticationHandler;
+
+  final appleIDP = AuthServices.instance.appleIDP;
 
   pod.webServer
     ..addRoute(
-      AuthServices.instance.appleIDP.revokedNotificationRoute(),
-      '/hooks/apple-notification', // must match path configured on apple
+      appleIDP.revokedNotificationRoute(),
+      appleIDP.config.revokedNotificationRoute,
     )
     ..addRoute(
-      AuthServices.instance.appleIDP.webAuthenticationCallbackRoute(),
-      '/auth/callback', // must match path configured on apple
+      appleIDP.webAuthenticationCallbackRoute(),
+      appleIDP.config.webAuthenticationCallbackRoute,
     );
 
   // Start the server.

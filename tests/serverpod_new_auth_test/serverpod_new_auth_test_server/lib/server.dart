@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 import 'package:serverpod_new_auth_test_server/src/web/routes/root.dart';
 
 import 'src/generated/endpoints.dart';
@@ -21,20 +21,12 @@ void run(final List<String> args) async {
   );
 
   const universalHashPepper = 'test-pepper';
-  final authConfig = AuthServices.set(
-    primaryTokenManager: AuthSessionsTokenManagerFactory(
-      AuthSessionsConfig(sessionKeyHashPepper: universalHashPepper),
-    ),
-    identityProviders: [
-      EmailIdentityProviderFactory(
-        EmailIDPConfig(
-          secretHashPepper: pod.getPassword(
-            'serverpod_auth_idp_email_secretHashPepper',
-          )!,
-        ),
+
+  AuthServices.set(
+    tokenManagers: [
+      AuthSessionsTokenManagerFactory(
+        AuthSessionsConfig(sessionKeyHashPepper: universalHashPepper),
       ),
-    ],
-    additionalTokenManagers: [
       AuthenticationTokensTokenManagerFactory(
         AuthenticationTokenConfig(
           refreshTokenHashPepper: universalHashPepper,
@@ -44,9 +36,18 @@ void run(final List<String> args) async {
         ),
       ),
     ],
+    identityProviders: [
+      EmailIdentityProviderFactory(
+        EmailIDPConfig(
+          secretHashPepper: pod.getPassword(
+            'serverpod_auth_idp_email_secretHashPepper',
+          )!,
+        ),
+      ),
+    ],
   );
 
-  pod.authenticationHandler = authConfig.authenticationHandler;
+  pod.authenticationHandler = AuthServices.instance.authenticationHandler;
 
   // Setup a default page at the web root.
   pod.webServer.addRoute(RootRoute(), '/');

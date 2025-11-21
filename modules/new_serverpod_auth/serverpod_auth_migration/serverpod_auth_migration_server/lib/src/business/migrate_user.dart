@@ -1,9 +1,10 @@
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
-import 'package:serverpod_auth_core_server/auth_user.dart' as new_auth_user;
-import 'package:serverpod_auth_core_server/profile.dart' as new_profile;
-import 'package:serverpod_auth_idp_server/providers/email.dart' as auth_next;
+import 'package:serverpod_auth_idp_server/providers/email.dart'
+    as new_email_idp;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as new_auth_idp;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
     as legacy_auth;
@@ -17,8 +18,8 @@ Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
   final Session session,
   final legacy_auth.UserInfo userInfo, {
   required final Transaction transaction,
-  required final auth_next.EmailIDP newEmailIDP,
-  final new_auth_user.AuthUsers authUsers = const new_auth_user.AuthUsers(),
+  required final new_email_idp.EmailIDP newEmailIDP,
+  final new_auth_idp.AuthUsers authUsers = const new_auth_idp.AuthUsers(),
 }) async {
   var migratedUser = await MigratedUser.db.findFirstRow(
     session,
@@ -89,7 +90,7 @@ Future<void> _importEmailAccounts(
   required final int oldUserId,
   required final UuidValue newAuthUserId,
   required final Transaction transaction,
-  required final auth_next.EmailIDP newEmailIDP,
+  required final new_email_idp.EmailIDP newEmailIDP,
 }) async {
   final emailAuths = await legacy_auth.EmailAuth.db.find(
     session,
@@ -161,13 +162,13 @@ Future<void> _importProfile(
   final UuidValue authUserId,
   final legacy_auth.UserInfo userInfo, {
   required final Transaction transaction,
-  final new_profile.UserProfiles userProfiles =
-      const new_profile.UserProfiles(),
+  final new_auth_idp.UserProfiles userProfiles =
+      const new_auth_idp.UserProfiles(),
 }) async {
   await userProfiles.createUserProfile(
     session,
     authUserId,
-    new_profile.UserProfileData(
+    new_auth_idp.UserProfileData(
       userName: userInfo.userName,
       fullName: userInfo.fullName,
       email: userInfo.email,

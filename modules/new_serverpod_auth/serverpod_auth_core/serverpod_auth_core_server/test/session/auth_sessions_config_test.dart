@@ -1,4 +1,4 @@
-import 'package:serverpod_auth_core_server/session.dart';
+import 'package:serverpod_auth_core_server/src/session/business/auth_sessions_config.dart';
 import 'package:test/test.dart';
 
 void main() {

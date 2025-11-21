@@ -1,3 +1,6 @@
+export 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart'
+    show SecretKey, ECPrivateKey, ECPublicKey;
+
 export '../auth_user/auth_user.dart';
 export '../common/integrations/adapters/authentication_tokens_token_manager.dart';
 export '../common/integrations/adapters/authentication_tokens_token_manager_factory.dart';
