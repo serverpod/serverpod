@@ -26,13 +26,14 @@ PCOUNT_START_DEFAULT=0
 SLEEP_TIME_DEFAULT=1
 PCOUNT_START=$PCOUNT_START_DEFAULT
 SLEEP_TIME=$SLEEP_TIME_DEFAULT
+FORCE_FLAG=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
     --start)
       if [[ -z "$2" ]]; then
         echo "Error: --start requires a value"
-        echo "Usage: $0 [--start N] [--sleep N]"
+        echo "Usage: $0 [--start N] [--sleep N] [--force]"
         exit 1
       fi
       PCOUNT_START="$2"
@@ -41,15 +42,19 @@ while [[ $# -gt 0 ]]; do
     --sleep)
       if [[ -z "$2" ]]; then
         echo "Error: --sleep requires a value"
-        echo "Usage: $0 [--start N] [--sleep N]"
+        echo "Usage: $0 [--start N] [--sleep N] [--force]"
         exit 1
       fi
       SLEEP_TIME="$2"
       shift 2
       ;;
+    --force)
+      FORCE_FLAG="--force"
+      shift
+      ;;
     *)
       echo "Unknown option: $1"
-      echo "Usage: $0 [--start N] [--sleep N]"
+      echo "Usage: $0 [--start N] [--sleep N] [--force]"
       exit 1
       ;;
   esac
@@ -60,6 +65,11 @@ echo "### START PUBLISHING"
 echo "Base directory $BASE"
 echo "Start at package $PCOUNT_START"
 echo "Sleep time between packages: $SLEEP_TIME seconds"
+if [[ -n "$FORCE_FLAG" ]]; then
+  echo "Force publish: enabled"
+else
+  echo "Force publish: disabled"
+fi
 
 VERSION=`cat SERVERPOD_VERSION`
 DART_VERSION=`cat DART_VERSION`
@@ -132,14 +142,18 @@ while read PACKAGE <&3; do
     echo "### PUBLISH PACKAGE: $PCOUNT"
     echo "$PACKAGE"
     cd $BASE/$PACKAGE
-    dart pub publish
+    dart pub publish $FORCE_FLAG
 
     if (($? != 0));
     then
       echo ""
       echo "### PUBLISH FAILED: $PCOUNT"
       echo "Fix issues, then resume by running"
-      echo "util/publish_all --start $PCOUNT --sleep $SLEEP_TIME"
+      if [[ -n "$FORCE_FLAG" ]]; then
+        echo "util/publish_all --start $PCOUNT --sleep $SLEEP_TIME --force"
+      else
+        echo "util/publish_all --start $PCOUNT --sleep $SLEEP_TIME"
+      fi
       echo ""
       echo ""
       break
