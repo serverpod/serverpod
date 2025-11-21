@@ -11,6 +11,9 @@ class S3CloudStorage extends CloudStorage {
   final String region;
   final String bucket;
   final bool public;
+  final String? endpointUrl;
+  final String? host;
+  final bool useHttps;
   late final String publicHost;
 
   late final AwsS3Client _s3Client;
@@ -22,6 +25,9 @@ class S3CloudStorage extends CloudStorage {
     required this.public,
     required this.region,
     required this.bucket,
+    this.host,
+    this.endpointUrl,
+    this.useHttps = true,
     String? publicHost,
   }) : super(storageId) {
     serverpod.loadCustomPasswords([
@@ -49,6 +55,8 @@ class S3CloudStorage extends CloudStorage {
       secretKey: _awsSecretKey,
       bucketId: bucket,
       region: region,
+      host: host,
+      useHttps: useHttps,
     );
 
     this.publicHost = publicHost ?? '$bucket.s3.$region.amazonaws.com';
@@ -70,6 +78,7 @@ class S3CloudStorage extends CloudStorage {
       data: byteData,
       uploadDst: path,
       public: public,
+      endpointUrl: endpointUrl,
     );
   }
 
@@ -91,7 +100,8 @@ class S3CloudStorage extends CloudStorage {
     required String path,
   }) async {
     if (await fileExists(session: session, path: path)) {
-      return Uri.parse('https://$publicHost/$path');
+      final protocol = useHttps ? 'https' : 'http';
+      return Uri.parse('$protocol://$publicHost/$path');
     }
     return null;
   }
@@ -102,6 +112,7 @@ class S3CloudStorage extends CloudStorage {
     required String path,
   }) async {
     var response = await _s3Client.headObject(path);
+
     return response.statusCode == 200;
   }
 
@@ -129,6 +140,7 @@ class S3CloudStorage extends CloudStorage {
       expires: expirationDuration,
       maxFileSize: maxFileSize,
       public: public,
+      endpointUrl: endpointUrl,
     );
   }
 

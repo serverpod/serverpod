@@ -17,6 +17,7 @@ class AwsS3Client {
   final String _bucketId;
   final String? _sessionToken;
   final Client _client;
+  final bool _useHttps;
 
   static const _service = "s3";
 
@@ -29,36 +30,32 @@ class AwsS3Client {
   /// @param region The region of the bucket. Required.
   /// @param sessionToken The session token. Optional.
   /// @param client The http client. Optional. Useful for debugging.
-  AwsS3Client({
-    required String secretKey,
-    required String accessKey,
-    required String bucketId,
-    String? host,
-    required String region,
-    String? sessionToken,
-    Client? client,
-  }) : _accessKey = accessKey,
-       _secretKey = secretKey,
-       _host = host ?? "s3.$region.amazonaws.com",
-       _bucketId = bucketId,
-       _region = region,
-       _sessionToken = sessionToken,
-       _client = client ?? Client();
+  AwsS3Client(
+      {required String secretKey,
+      required String accessKey,
+      required String bucketId,
+      String? host,
+      bool useHttps = true,
+      required String region,
+      String? sessionToken,
+      Client? client})
+      : _accessKey = accessKey,
+        _secretKey = secretKey,
+        _host = host ?? "s3.$region.amazonaws.com",
+        _bucketId = bucketId,
+        _region = region,
+        _sessionToken = sessionToken,
+        _useHttps = useHttps,
+        _client = client ?? Client();
 
-  Future<ListBucketResult?> listObjects({
-    String? prefix,
-    String? delimiter,
-    int? maxKeys,
-  }) async {
-    final response = await _doSignedGetRequest(
-      key: '',
-      queryParams: {
-        "list-type": "2",
-        if (prefix != null) "prefix": prefix,
-        if (delimiter != null) "delimiter": delimiter,
-        if (maxKeys != null) "maxKeys": maxKeys.toString(),
-      },
-    );
+  Future<ListBucketResult?> listObjects(
+      {String? prefix, String? delimiter, int? maxKeys}) async {
+    final response = await _doSignedGetRequest(key: '', queryParams: {
+      "list-type": "2",
+      if (prefix != null) "prefix": prefix,
+      if (delimiter != null) "delimiter": delimiter,
+      if (maxKeys != null) "maxKeys": maxKeys.toString(),
+    });
     _checkResponseError(response);
     return _parseListObjectResponse(response.body);
   }
@@ -87,7 +84,10 @@ class AwsS3Client {
     String method = 'GET',
   }) {
     final unencodedPath = "$_bucketId/$key";
-    final uri = Uri.https(_host, unencodedPath, queryParams);
+    final uri = _useHttps
+        ? Uri.https(_host, unencodedPath, queryParams)
+        : Uri.http(_host, unencodedPath, queryParams);
+
     final payload = SigV4.hashCanonicalRequest('');
     final datetime = SigV4.generateDatetime();
     final credentialScope = SigV4.buildCredentialScope(
@@ -97,42 +97,47 @@ class AwsS3Client {
     );
 
     final canonicalQuery = SigV4.buildCanonicalQueryString(queryParams);
-    final canonicalRequest =
-        '''$method
-${'/$unencodedPath'.split('/').map(Uri.encodeComponent).join('/')}
-$canonicalQuery
-host:$_host
-x-amz-content-sha256:$payload
-x-amz-date:$datetime
-x-amz-security-token:${_sessionToken ?? ""}
 
-host;x-amz-content-sha256;x-amz-date;x-amz-security-token
+    final canonicalHeaders = StringBuffer()
+      ..writeln('host:$_host')
+      ..writeln('x-amz-content-sha256:$payload')
+      ..writeln('x-amz-date:$datetime');
+
+    final signedHeaders = StringBuffer('host;x-amz-content-sha256;x-amz-date');
+
+    if (_sessionToken != null && _sessionToken.isNotEmpty) {
+      canonicalHeaders.writeln('x-amz-security-token:$_sessionToken');
+      signedHeaders.write(';x-amz-security-token');
+    }
+
+    final canonicalRequest = '''$method
+/${unencodedPath.split('/').map(Uri.encodeComponent).join('/')}
+$canonicalQuery
+${canonicalHeaders.toString()}
+${signedHeaders.toString()}
 $payload''';
 
-    final stringToSign = SigV4.buildStringToSign(
-      datetime,
-      credentialScope,
-      SigV4.hashCanonicalRequest(canonicalRequest),
-    );
-    final signingKey = SigV4.calculateSigningKey(
-      _secretKey,
-      datetime,
-      _region,
-      _service,
-    );
+    final stringToSign = SigV4.buildStringToSign(datetime, credentialScope,
+        SigV4.hashCanonicalRequest(canonicalRequest));
+
+    final signingKey =
+        SigV4.calculateSigningKey(_secretKey, datetime, _region, _service);
     final signature = SigV4.calculateSignature(signingKey, stringToSign);
 
-    final authorization = [
-      'AWS4-HMAC-SHA256 Credential=$_accessKey/$credentialScope',
-      'SignedHeaders=host;x-amz-content-sha256;x-amz-date;x-amz-security-token',
-      'Signature=$signature',
-    ].join(',');
+    final authorization =
+        'AWS4-HMAC-SHA256 Credential=$_accessKey/$credentialScope, '
+        'SignedHeaders=${signedHeaders.toString()}, '
+        'Signature=$signature';
 
-    return SignedRequestParams(uri, {
+    final headers = {
       'Authorization': authorization,
       'x-amz-content-sha256': payload,
       'x-amz-date': datetime,
-    });
+      if (_sessionToken != null && _sessionToken.isNotEmpty)
+        'x-amz-security-token': _sessionToken,
+    };
+
+    return SignedRequestParams(uri, headers);
   }
 
   Future<Response> _doSignedGetRequest({

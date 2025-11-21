@@ -10,6 +10,16 @@ import 'policy.dart';
 
 /// Convenience class for uploading files to AWS S3
 class AwsS3Uploader {
+  /// Internal helper to build the endpoint URL for S3 or compatible storage.
+  static String _buildEndpointUrl(
+      String? endpointUrl, String bucket, String region) {
+    if (endpointUrl != null && endpointUrl.isNotEmpty) {
+      return '${endpointUrl.endsWith('/') ? endpointUrl : '$endpointUrl/'}$bucket';
+    } else {
+      return 'https://$bucket.s3-$region.amazonaws.com';
+    }
+  }
+
   /// Upload a file, returning the file's public URL on success.
   static Future<String?> uploadFile({
     /// AWS access key
@@ -29,8 +39,12 @@ class AwsS3Uploader {
 
     /// The AWS region. Must be formatted correctly, e.g. us-west-1
     required String region,
+
+    /// Optional custom endpoint for S3-compatible storage (e.g. http://localhost:9000/my-bucket)
+    String? endpointUrl,
   }) async {
-    final endpoint = 'https://$bucket.s3-$region.amazonaws.com';
+    final endpoint =
+        AwsS3Uploader._buildEndpointUrl(endpointUrl, bucket, region);
 
     final stream = http.ByteStream(Stream.castFrom(file.openRead()));
     final length = await file.length();
@@ -107,11 +121,15 @@ class AwsS3Uploader {
     /// The AWS region. Must be formatted correctly, e.g. us-west-1
     required String region,
 
+    /// Optional custom endpoint for S3-compatible storage (e.g. http://localhost:9000/my-bucket)
+    String? endpointUrl,
+
     /// The filename to upload as. If null, defaults to the given file's current filename.
     required String uploadDst,
     bool public = true,
   }) async {
-    final endpoint = 'https://$bucket.s3-$region.amazonaws.com';
+    final endpoint =
+        AwsS3Uploader._buildEndpointUrl(endpointUrl, bucket, region);
     // final uploadDest = '$destDir/${filename ?? path.basename(file.path)}';
 
     final stream = http.ByteStream.fromBytes(data.buffer.asUint8List());
@@ -191,13 +209,17 @@ class AwsS3Uploader {
     /// The AWS region. Must be formatted correctly, e.g. us-west-1
     required String region,
 
+    /// Optional custom endpoint for S3-compatible storage (e.g. http://localhost:9000/my-bucket)
+    String? endpointUrl,
+
     /// The filename to upload as. If null, defaults to the given file's current filename.
     required String uploadDst,
     Duration expires = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
     bool public = true,
   }) async {
-    final endpoint = 'https://$bucket.s3-$region.amazonaws.com';
+    final endpoint =
+        AwsS3Uploader._buildEndpointUrl(endpointUrl, bucket, region);
 
     final policy = Policy.fromS3PresignedPost(
       uploadDst,
