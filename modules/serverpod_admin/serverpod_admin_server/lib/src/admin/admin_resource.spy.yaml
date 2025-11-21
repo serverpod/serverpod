@@ -1,0 +1,9 @@
+class: AdminResource
+fields:
+  key: String
+  tableName: String
+  columns: List<AdminColumn>
+
+
+
+

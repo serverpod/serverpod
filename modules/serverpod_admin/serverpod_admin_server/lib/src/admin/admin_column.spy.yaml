@@ -1,0 +1,10 @@
+class: AdminColumn
+fields:
+  name: String
+  dataType: String
+  hasDefault: bool
+  isPrimary: bool
+
+
+
+

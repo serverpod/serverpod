@@ -1,0 +1,14 @@
+name: serverpod_admin_server
+description: Starting point for a Serverpod module.
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  serverpod: 2.9.1
+
+dev_dependencies:
+  lints: '>=3.0.0 <7.0.0'
+  test: '^1.24.2'
+  serverpod_test: 2.9.1
+

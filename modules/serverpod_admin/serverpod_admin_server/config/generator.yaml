@@ -1,0 +1,5 @@
+type: module
+nickname: serverpod_admin
+
+client_package_path: ../serverpod_admin_client
+server_test_tools_path: test/integration/test_tools
