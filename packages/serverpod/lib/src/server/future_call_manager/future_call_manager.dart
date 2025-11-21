@@ -103,7 +103,7 @@ class FutureCallManager {
 
     _futureCalls[name] = futureCall;
 
-    if(_startRequested && !_scanner.isRunning) {
+    if (_startRequested && !_scanner.isRunning) {
       _scanner.start();
     }
   }
@@ -111,7 +111,7 @@ class FutureCallManager {
   /// Executes all scheduled future calls that are past their due date. This
   /// method scans the database for overdue tasks and processes them.
   Future<void> runScheduledFutureCalls() async {
-    if(_futureCalls.isEmpty) {
+    if (_futureCalls.isEmpty) {
       return;
     }
     stdout.writeln('Processing future calls.');
@@ -158,7 +158,7 @@ class FutureCallManager {
   /// for overdue future calls and execute them automatically.
   void start() {
     _startRequested = true;
-    if(_futureCalls.isNotEmpty && !_scanner.isRunning) {
+    if (_futureCalls.isNotEmpty && !_scanner.isRunning) {
       _scanner.start();
     }
   }
@@ -168,8 +168,8 @@ class FutureCallManager {
   Future<void> stop() async {
     await _scanner.stop();
     _startRequested = false;
-    if(_scanner.isRunning) {
-      _scanner.stop();
+    if (_scanner.isRunning) {
+      await _scanner.stop();
     }
     await _scheduler.drain();
   }
