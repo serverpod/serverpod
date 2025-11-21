@@ -32,7 +32,7 @@ dependency_overrides:
   serverpod_auth_idp_server:
     path: ../../serverpod_auth_idp/serverpod_auth_idp_server
   serverpod_auth_server:
-    path: ../../../serverpod_auth/serverpod_auth_server
+    path: ../../../legacy/serverpod_auth/serverpod_auth_server
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:
