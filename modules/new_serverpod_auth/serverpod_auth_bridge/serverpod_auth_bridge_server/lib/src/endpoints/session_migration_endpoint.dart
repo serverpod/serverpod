@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/src/business/legacy_authentication_handler.dart';
 import 'package:serverpod_auth_bridge_server/src/generated/legacy_session.dart';
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 
 /// Endpoint to convert legacy sessions.
 class SessionMigrationEndpoint extends Endpoint {

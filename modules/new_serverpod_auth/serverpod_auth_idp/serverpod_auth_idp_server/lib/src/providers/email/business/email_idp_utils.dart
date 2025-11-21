@@ -41,7 +41,7 @@ class EmailIDPUtils {
   /// Creates a new instance of [EmailIDPUtils].
   EmailIDPUtils({
     required final EmailIDPConfig config,
-    required final AuthUsers authUsers,
+    final AuthUsers authUsers = const AuthUsers(),
   }) : hashUtil = SecretHashUtil(
          hashPepper: config.secretHashPepper,
          hashSaltLength: config.secretHashSaltLength,

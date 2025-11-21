@@ -305,7 +305,7 @@ class EmailIDPAccountCreationUtil {
       value: password,
     );
 
-    await EmailAccount.db.insertRow(
+    final emailAccount = await EmailAccount.db.insertRow(
       session,
       EmailAccount(
         authUserId: newUser.id,
@@ -313,6 +313,14 @@ class EmailIDPAccountCreationUtil {
         passwordHash: passwordHash.hash.asByteData,
         passwordSalt: passwordHash.salt.asByteData,
       ),
+      transaction: transaction,
+    );
+
+    await _config.onAfterAccountCreated?.call(
+      session,
+      email: emailAccount.email,
+      authUserId: emailAccount.authUserId,
+      emailAccountId: emailAccount.id!,
       transaction: transaction,
     );
 
@@ -576,6 +584,9 @@ class EmailIDPAccountCreationUtil {
 
 /// Configuration for the [EmailIDPAccountCreationUtil] class.
 class EmailIDPAccountCreationUtilsConfig {
+  /// Callback to be invoked after a new email account has been created.
+  final AfterAccountCreatedFunction? onAfterAccountCreated;
+
   /// Function for validating the password.
   final PasswordValidationFunction passwordValidationFunction;
 
@@ -599,6 +610,7 @@ class EmailIDPAccountCreationUtilsConfig {
     required this.registrationVerificationCodeLifetime,
     required this.registrationVerificationCodeAllowedAttempts,
     required this.sendRegistrationVerificationCode,
+    required this.onAfterAccountCreated,
   });
 
   /// Creates a new [EmailIDPAccountCreationUtilsConfig] instance from an
@@ -615,6 +627,7 @@ class EmailIDPAccountCreationUtilsConfig {
       registrationVerificationCodeAllowedAttempts:
           config.registrationVerificationCodeAllowedAttempts,
       sendRegistrationVerificationCode: config.sendRegistrationVerificationCode,
+      onAfterAccountCreated: config.onAfterAccountCreated,
     );
   }
 }

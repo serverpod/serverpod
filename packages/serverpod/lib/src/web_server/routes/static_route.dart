@@ -10,23 +10,24 @@ class StaticRoute extends Route {
   ) => null;
 
   /// Returns a [CacheControlHeader] with private and no-cache.
-  CacheControlFactory privateNoCache() =>
+  static CacheControlFactory privateNoCache() =>
       (_, _) => CacheControlHeader(privateCache: true, noCache: true);
 
   /// Returns a [CacheControlHeader] with no-store.
-  CacheControlFactory noStore() =>
+  static CacheControlFactory noStore() =>
       (_, _) => CacheControlHeader(noStore: true);
 
   /// Returns a [CacheControlHeader] with public, and possibly max-age set to [maxAge].
-  CacheControlFactory public({int? maxAge}) =>
-      (_, _) => CacheControlHeader(publicCache: true, maxAge: maxAge);
+  static CacheControlFactory public({Duration? maxAge}) =>
+      (_, _) =>
+          CacheControlHeader(publicCache: true, maxAge: maxAge?.inSeconds);
 
   /// Returns a [CacheControlHeader] with public, immutable, and possibly max-age set to [maxAge].
-  CacheControlFactory publicImmutable({int? maxAge}) =>
+  static CacheControlFactory publicImmutable({Duration? maxAge}) =>
       (_, _) => CacheControlHeader(
         publicCache: true,
         immutable: true,
-        maxAge: maxAge,
+        maxAge: maxAge?.inSeconds,
       );
 
   final Handler _handler;

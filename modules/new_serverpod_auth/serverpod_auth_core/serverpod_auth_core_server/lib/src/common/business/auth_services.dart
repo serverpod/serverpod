@@ -39,7 +39,7 @@ class AuthServices {
     final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
     final UserProfileConfig userProfileConfig = const UserProfileConfig(),
     required final TokenManagerFactory primaryTokenManager,
-    required final List<IdentityProviderFactory> identityProviders,
+    final List<IdentityProviderFactory> identityProviders = const [],
     final List<TokenManagerFactory> additionalTokenManagers = const [],
   }) {
     final instance = AuthServices(
@@ -74,10 +74,10 @@ class AuthServices {
   /// are used to validate tokens in the same order they are represented in the list.
   /// {@endtemplate}
   AuthServices({
-    required this.authUsers,
-    required this.userProfiles,
+    this.authUsers = const AuthUsers(),
+    this.userProfiles = const UserProfiles(),
     required final TokenManagerFactory primaryTokenManager,
-    required final List<IdentityProviderFactory> identityProviders,
+    final List<IdentityProviderFactory> identityProviders = const [],
     final List<TokenManagerFactory> additionalTokenManagers = const [],
   }) {
     tokenManager = MultiTokenManager(
