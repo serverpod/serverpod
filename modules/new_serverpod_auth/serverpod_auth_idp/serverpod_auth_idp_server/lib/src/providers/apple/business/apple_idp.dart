@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/profile.dart';
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/src/providers/apple/business/routes/apple_server_notification_route.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 

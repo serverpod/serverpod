@@ -5,11 +5,17 @@ import 'test_serverpod.dart';
 /// An override for the authentication state in a test session.
 abstract class AuthenticationOverride {
   /// Sets the session to be authenticated with the provided [userIdentifier] and [scopes].
+  ///
+  /// If [authId] is not provided, a new UUID will be generated.
   static AuthenticationOverride authenticationInfo(
     String userIdentifier,
     Set<Scope> scopes, {
     String? authId,
-  }) => _AuthenticationInfoOverride(userIdentifier, scopes, authId: authId);
+  }) => _AuthenticationInfoOverride(
+    userIdentifier,
+    scopes,
+    authId: authId ?? const Uuid().v4().toString(),
+  );
 
   /// Sets the session to be unauthenticated. This is the default.
   static AuthenticationOverride unauthenticated() => _Unauthenticated();
@@ -110,7 +116,7 @@ class _AuthenticationInfoOverride extends AuthenticationOverride {
   _AuthenticationInfoOverride(
     String userIdentifier,
     Set<Scope> scopes, {
-    String? authId,
+    required String authId,
   }) : _authenticationInfo = AuthenticationInfo(
          userIdentifier,
          scopes,

@@ -68,7 +68,7 @@ void main() {
       });
 
       test(
-        'when finishPasswordReset is called with valid password reset token and password then it succeeds',
+        'when finishPasswordReset is called with valid password reset token and password then it succeeds and returns auth user id',
         () async {
           final result = fixture.emailIDP.finishPasswordReset(
             session,
@@ -76,7 +76,7 @@ void main() {
             newPassword: allowedNewPassword,
           );
 
-          await expectLater(result, completes);
+          await expectLater(result, completion(authUserId));
         },
       );
 

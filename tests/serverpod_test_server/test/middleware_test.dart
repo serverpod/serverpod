@@ -29,7 +29,9 @@ void main() {
         webServer: portZeroConfig,
       ),
       authenticationHandler: (session, token) => Future.value(
-        token == 'good' ? AuthenticationInfo('mario', {}) : null,
+        token == 'good'
+            ? AuthenticationInfo('mario', {}, authId: 'good')
+            : null,
       ),
     );
 
