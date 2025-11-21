@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/database/extensions.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
@@ -164,6 +165,43 @@ void main() {
             ),
             isTrue,
           );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given table with vector column dimension change',
+    () {
+      var sourceDefinition = _singleVectorColumnDatabaseDefinition(1536);
+      var targetDefinition = _singleVectorColumnDatabaseDefinition(768);
+
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
+
+      test(
+        'when SQL is generated then it contains DROP COLUMN statement.',
+        () {
+          var sql = migration.toPgSql(
+            installedModules: [],
+            removedModules: [],
+          );
+
+          expect(sql, contains('DROP COLUMN "embedding"'));
+        },
+      );
+
+      test(
+        'when SQL is generated then it contains ADD COLUMN statement with new dimension.',
+        () {
+          var sql = migration.toPgSql(
+            installedModules: [],
+            removedModules: [],
+          );
+
+          expect(sql, contains('ADD COLUMN "embedding" vector(768)'));
         },
       );
     },
