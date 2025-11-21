@@ -79,107 +79,107 @@ else
   echo "Force publish: disabled"
 fi
 
-# VERSION=`cat SERVERPOD_VERSION`
-# DART_VERSION=`cat DART_VERSION`
-# FLUTTER_VERSION=`cat FLUTTER_VERSION`
-# INSIGHTS_DEVTOOLS_VERSION=`cat INSIGHTS_DEVTOOLS_VERSION`
+VERSION=`cat SERVERPOD_VERSION`
+DART_VERSION=`cat DART_VERSION`
+FLUTTER_VERSION=`cat FLUTTER_VERSION`
+INSIGHTS_DEVTOOLS_VERSION=`cat INSIGHTS_DEVTOOLS_VERSION`
 
-# if test -z "$VERSION"
-# then
-#   echo "Version number is not defined"
-#   exit
-# fi
+if test -z "$VERSION"
+then
+  echo "Version number is not defined"
+  exit
+fi
 
-# if [[ $(git diff --stat) != '' ]]; then
-#   echo 'Git is dirty. Please commit all changes before publishing.'
-#   exit
-# else
-#   echo 'Git is clean'
-# fi
+if [[ $(git diff --stat) != '' ]]; then
+  echo 'Git is dirty. Please commit all changes before publishing.'
+  exit
+else
+  echo 'Git is clean'
+fi
 
-# echo "Publish Serverpod version $VERSION (Dart version: $DART_VERSION, Flutter version: $FLUTTER_VERSION, Insights devtools version: $INSIGHTS_DEVTOOLS_VERSION)"
+echo "Publish Serverpod version $VERSION (Dart version: $DART_VERSION, Flutter version: $FLUTTER_VERSION, Insights devtools version: $INSIGHTS_DEVTOOLS_VERSION)"
 
-# echo "Updating pubspecs"
-# cd $BASE
-# dart $CLI generate-pubspecs --version "$VERSION" --dart-version "$DART_VERSION" --flutter-version "$FLUTTER_VERSION" --mode production
+echo "Updating pubspecs"
+cd $BASE
+dart $CLI generate-pubspecs --version "$VERSION" --dart-version "$DART_VERSION" --flutter-version "$FLUTTER_VERSION" --mode production
 
-# DEST_DIR=$BASE/packages/serverpod/extension/devtools/build
+DEST_DIR=$BASE/packages/serverpod/extension/devtools/build
 
-# echo "Download and unzip insights devtools extension and place it in serverpod"
-# DO_DOWNLOAD=1
-# if [ -d "$DEST_DIR" ]; then
-#   echo "Existing devtools build directory found: $DEST_DIR"
-#   read -p "Remove and download a new devtools build? [y/N]: " REPLY
-#   if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-#     rm -rf "$DEST_DIR"
-#   else
-#     echo "Skipping download; keeping existing build."
-#     DO_DOWNLOAD=0
-#   fi
-# fi
+echo "Download and unzip insights devtools extension and place it in serverpod"
+DO_DOWNLOAD=1
+if [ -d "$DEST_DIR" ]; then
+  echo "Existing devtools build directory found: $DEST_DIR"
+  read -p "Remove and download a new devtools build? [y/N]: " REPLY
+  if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+    rm -rf "$DEST_DIR"
+  else
+    echo "Skipping download; keeping existing build."
+    DO_DOWNLOAD=0
+  fi
+fi
 
-# if [ "$DO_DOWNLOAD" -eq 1 ]; then
-#   if ! curl -fSL https://downloads.serverpod.dev/devtools-extension/serverpod-$INSIGHTS_DEVTOOLS_VERSION.zip -o serverpod-insights-devtools.zip; then
-#     echo ""
-#     echo "ERROR: Failed to download devtools extension zip file"
-#     echo "URL: https://downloads.serverpod.dev/devtools-extension/serverpod-$INSIGHTS_DEVTOOLS_VERSION.zip"
-#     echo "Version: $INSIGHTS_DEVTOOLS_VERSION"
-#     echo ""
-#     restore_pubspecs
-#     exit 1
-#   fi
+if [ "$DO_DOWNLOAD" -eq 1 ]; then
+  if ! curl -fSL https://downloads.serverpod.dev/devtools-extension/serverpod-$INSIGHTS_DEVTOOLS_VERSION.zip -o serverpod-insights-devtools.zip; then
+    echo ""
+    echo "ERROR: Failed to download devtools extension zip file"
+    echo "URL: https://downloads.serverpod.dev/devtools-extension/serverpod-$INSIGHTS_DEVTOOLS_VERSION.zip"
+    echo "Version: $INSIGHTS_DEVTOOLS_VERSION"
+    echo ""
+    restore_pubspecs
+    exit 1
+  fi
 
-#   if ! unzip serverpod-insights-devtools.zip -d "$(dirname "$DEST_DIR")"; then
-#     echo ""
-#     echo "ERROR: Failed to unzip devtools extension file"
-#     echo ""
-#     restore_pubspecs
-#     rm -f serverpod-insights-devtools.zip
-#     exit 1
-#   fi
+  if ! unzip serverpod-insights-devtools.zip -d "$(dirname "$DEST_DIR")"; then
+    echo ""
+    echo "ERROR: Failed to unzip devtools extension file"
+    echo ""
+    restore_pubspecs
+    rm -f serverpod-insights-devtools.zip
+    exit 1
+  fi
 
-#   rm serverpod-insights-devtools.zip
-# fi
+  rm serverpod-insights-devtools.zip
+fi
 
-# echo "Publish packages"
+echo "Publish packages"
 
-# PCOUNT=0
-# while read PACKAGE <&3; do
-#   if (($PCOUNT >= $PCOUNT_START));
-#   then
-#     echo "### PUBLISH PACKAGE: $PCOUNT"
-#     echo "$PACKAGE"
-#     cd $BASE/$PACKAGE
-#     dart pub publish $FORCE_FLAG
+PCOUNT=0
+while read PACKAGE <&3; do
+  if (($PCOUNT >= $PCOUNT_START));
+  then
+    echo "### PUBLISH PACKAGE: $PCOUNT"
+    echo "$PACKAGE"
+    cd $BASE/$PACKAGE
+    dart pub publish $FORCE_FLAG
 
-#     if (($? != 0));
-#     then
-#       echo ""
-#       echo "### PUBLISH FAILED: $PCOUNT"
-#       echo "Fix issues, then resume by running"
-#       if [[ -n "$FORCE_FLAG" ]]; then
-#         echo "util/publish_all --start $PCOUNT --sleep $SLEEP_TIME --force"
-#       else
-#         echo "util/publish_all --start $PCOUNT --sleep $SLEEP_TIME"
-#       fi
-#       echo ""
-#       echo ""
-#       break
-#     fi
+    if (($? != 0));
+    then
+      echo ""
+      echo "### PUBLISH FAILED: $PCOUNT"
+      echo "Fix issues, then resume by running"
+      if [[ -n "$FORCE_FLAG" ]]; then
+        echo "util/publish_all --start $PCOUNT --sleep $SLEEP_TIME --force"
+      else
+        echo "util/publish_all --start $PCOUNT --sleep $SLEEP_TIME"
+      fi
+      echo ""
+      echo ""
+      break
+    fi
 
-#     # Give pub.dev a chance to catch up between each package deployment
-#     echo ""
-#     sleep $SLEEP_TIME
-#   else
-#     echo "### SKIPPING PACKAGE: $PCOUNT"
-#     echo "$PACKAGE"
-#     echo ""
-#   fi
-#   PCOUNT=$((PCOUNT+1))
-# done 3<PUBLISHABLE_PACKAGES
+    # Give pub.dev a chance to catch up between each package deployment
+    echo ""
+    sleep $SLEEP_TIME
+  else
+    echo "### SKIPPING PACKAGE: $PCOUNT"
+    echo "$PACKAGE"
+    echo ""
+  fi
+  PCOUNT=$((PCOUNT+1))
+done 3<PUBLISHABLE_PACKAGES
 
-# echo "Restore pubspecs"
-# restore_pubspecs
+echo "Restore pubspecs"
+restore_pubspecs
 
-# echo "dart pub get"
-# melos bootstrap
+echo "dart pub get"
+melos bootstrap
