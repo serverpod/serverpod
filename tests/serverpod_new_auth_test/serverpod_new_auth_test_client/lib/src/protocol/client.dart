@@ -268,9 +268,8 @@ class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
   ///   already expired.
   /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
   ///   does not comply with the password policy.
-  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
-  ///   for the given [accountRequestId], [verificationCode] is invalid, or
-  ///   the request has not been verified yet.
+  /// - [EmailAccountRequestExceptionReason.invalid] if the [registrationToken]
+  ///   is invalid.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
@@ -525,9 +524,8 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
   ///   already expired.
   /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
   ///   does not comply with the password policy.
-  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
-  ///   for the given [accountRequestId], [verificationCode] is invalid, or
-  ///   the request has not been verified yet.
+  /// - [EmailAccountRequestExceptionReason.invalid] if the [registrationToken]
+  ///   is invalid.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
