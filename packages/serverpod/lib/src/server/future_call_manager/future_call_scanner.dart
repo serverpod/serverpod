@@ -27,6 +27,9 @@ class FutureCallScanner {
 
   bool _isStopping = false;
   bool _isRunning = false;
+
+  /// Whether the scanner is currently running and scheduled to perform
+  /// periodic scans.
   bool get isRunning => _isRunning;
   var _scanCompleter = Completer<void>()..complete();
 
