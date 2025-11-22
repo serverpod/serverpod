@@ -583,40 +583,63 @@ class MigrationVersion {
     );
     await migrationSqlFile.writeAsString(migrationSql);
 
-    // Write the pre-database setup SQL file (empty by default, only if doesn't exist)
-    var preDatabaseSetupSqlFile = MigrationConstants.preDatabaseSetupSQLPath(
-      projectDirectory,
-      versionName,
+    // Get the previous migration version to copy custom SQL files
+    var migrationRegistry = MigrationRegistry.load(
+      MigrationConstants.migrationsBaseDirectory(projectDirectory),
     );
-    if (!preDatabaseSetupSqlFile.existsSync()) {
-      await preDatabaseSetupSqlFile.writeAsString('');
-    }
+    var previousVersion = migrationRegistry.getLatest();
 
-    // Write the post-database setup SQL file (empty by default, only if doesn't exist)
-    var postDatabaseSetupSqlFile = MigrationConstants.postDatabaseSetupSQLPath(
+    // Write the pre-database setup SQL file (copied from previous migration)
+    await _copyOrCreateCustomSqlFile(
       projectDirectory,
+      previousVersion,
       versionName,
+      MigrationConstants.preDatabaseSetupSQLPath,
     );
-    if (!postDatabaseSetupSqlFile.existsSync()) {
-      await postDatabaseSetupSqlFile.writeAsString('');
-    }
 
-    // Write the pre-migration SQL file (empty by default, only if doesn't exist)
+    // Write the post-database setup SQL file (copied from previous migration)
+    await _copyOrCreateCustomSqlFile(
+      projectDirectory,
+      previousVersion,
+      versionName,
+      MigrationConstants.postDatabaseSetupSQLPath,
+    );
+
+    // Write the pre-migration SQL file (always empty - specific to each migration)
     var preMigrationSqlFile = MigrationConstants.preMigrationSQLPath(
       projectDirectory,
       versionName,
     );
-    if (!preMigrationSqlFile.existsSync()) {
-      await preMigrationSqlFile.writeAsString('');
-    }
+    await preMigrationSqlFile.writeAsString('');
 
-    // Write the post-migration SQL file (empty by default, only if doesn't exist)
+    // Write the post-migration SQL file (always empty - specific to each migration)
     var postMigrationSqlFile = MigrationConstants.postMigrationSQLPath(
       projectDirectory,
       versionName,
     );
-    if (!postMigrationSqlFile.existsSync()) {
-      await postMigrationSqlFile.writeAsString('');
+    await postMigrationSqlFile.writeAsString('');
+  }
+
+  /// Copies custom SQL file from previous version or creates an empty one.
+  /// Used for pre/post database setup SQL files that should be carried forward.
+  static Future<void> _copyOrCreateCustomSqlFile(
+    Directory projectDirectory,
+    String? previousVersion,
+    String currentVersion,
+    File Function(Directory, String) pathGetter,
+  ) async {
+    var currentFile = pathGetter(projectDirectory, currentVersion);
+
+    if (previousVersion != null) {
+      var previousFile = pathGetter(projectDirectory, previousVersion);
+      if (previousFile.existsSync()) {
+        var content = await previousFile.readAsString();
+        await currentFile.writeAsString(content);
+        return;
+      }
     }
+
+    // No previous version or previous file doesn't exist - create empty
+    await currentFile.writeAsString('');
   }
 }
