@@ -583,32 +583,40 @@ class MigrationVersion {
     );
     await migrationSqlFile.writeAsString(migrationSql);
 
-    // Write the pre-database setup SQL file (empty by default)
+    // Write the pre-database setup SQL file (empty by default, only if doesn't exist)
     var preDatabaseSetupSqlFile = MigrationConstants.preDatabaseSetupSQLPath(
       projectDirectory,
       versionName,
     );
-    await preDatabaseSetupSqlFile.writeAsString('');
+    if (!preDatabaseSetupSqlFile.existsSync()) {
+      await preDatabaseSetupSqlFile.writeAsString('');
+    }
 
-    // Write the post-database setup SQL file (empty by default)
+    // Write the post-database setup SQL file (empty by default, only if doesn't exist)
     var postDatabaseSetupSqlFile = MigrationConstants.postDatabaseSetupSQLPath(
       projectDirectory,
       versionName,
     );
-    await postDatabaseSetupSqlFile.writeAsString('');
+    if (!postDatabaseSetupSqlFile.existsSync()) {
+      await postDatabaseSetupSqlFile.writeAsString('');
+    }
 
-    // Write the pre-migration SQL file (empty by default)
+    // Write the pre-migration SQL file (empty by default, only if doesn't exist)
     var preMigrationSqlFile = MigrationConstants.preMigrationSQLPath(
       projectDirectory,
       versionName,
     );
-    await preMigrationSqlFile.writeAsString('');
+    if (!preMigrationSqlFile.existsSync()) {
+      await preMigrationSqlFile.writeAsString('');
+    }
 
-    // Write the post-migration SQL file (empty by default)
+    // Write the post-migration SQL file (empty by default, only if doesn't exist)
     var postMigrationSqlFile = MigrationConstants.postMigrationSQLPath(
       projectDirectory,
       versionName,
     );
-    await postMigrationSqlFile.writeAsString('');
+    if (!postMigrationSqlFile.existsSync()) {
+      await postMigrationSqlFile.writeAsString('');
+    }
   }
 }
