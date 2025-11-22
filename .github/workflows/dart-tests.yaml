@@ -64,7 +64,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ["3.35.7"]
+        flutter-version: ['3.38.3']
         os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
@@ -85,7 +85,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
+        flutter-version: ['3.32.0', '3.38.3']
         os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
@@ -107,7 +107,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
+        flutter-version: ['3.32.0', '3.38.3']
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -126,7 +126,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
+        flutter-version: ['3.32.0', '3.38.3']
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -141,7 +141,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
+        flutter-version: ['3.32.0', '3.38.3']
         os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
@@ -158,7 +158,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
+        flutter-version: ['3.32.0', '3.38.3']
         os: [ubuntu-latest, windows-latest]
         include:
           - compiler: dart2js
@@ -166,7 +166,7 @@ jobs:
             platform: chrome
           - os: windows-latest
             platform: edge
-          - flutter-version: "3.35.7"
+          - flutter-version: '3.38.3'
             platform: chrome
             compiler: dart2wasm
 
@@ -190,7 +190,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
+        flutter-version: ['3.32.0', '3.38.3']
         os: [windows-latest, ubuntu-latest]
         path: ["packages/serverpod_flutter"]
     steps:
@@ -208,7 +208,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
+        flutter-version: ['3.32.0', '3.38.3']
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -223,7 +223,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
+        flutter-version: ['3.32.0', '3.38.3']
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -238,8 +238,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
-        path: ["packages/serverpod_shared"]
+        flutter-version: ['3.32.0', '3.38.3']
+        path: ['packages/serverpod_shared']
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -256,7 +256,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
+        flutter-version: ['3.32.0', '3.38.3']
         module:
           [
             "tests/serverpod_test_module/serverpod_test_module_server",
@@ -300,7 +300,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
+        flutter-version: ['3.32.0', '3.38.3']
         module:
           - server: tests/serverpod_new_auth_test/serverpod_new_auth_test_server
             client: tests/serverpod_new_auth_test/serverpod_new_auth_test_flutter
@@ -341,7 +341,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
+        flutter-version: ['3.32.0', '3.38.3']
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -356,7 +356,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
+        flutter-version: ['3.32.0', '3.38.3']
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -372,7 +372,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
+        flutter-version: ['3.32.0', '3.38.3']
         os: [windows-latest, ubuntu-latest]
         path: ["tests/bootstrap_project"]
     steps:
@@ -400,7 +400,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
+        flutter-version: ['3.32.0', '3.38.3']
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -416,7 +416,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.32.0", "3.35.7"]
+        flutter-version: ['3.32.0', '3.38.3']
         os: [ubuntu-latest]
         path: ["tests/serverpod_cli_e2e_test"]
     steps:
