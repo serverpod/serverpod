@@ -310,40 +310,219 @@ class MigrationManager {
     });
   }
 
+  /// Checks if custom SQL files exist with meaningful content and extracts
+  /// table names mentioned in the SQL for scoped leniency.
+  ({bool hasCustomSQL, Set<String> affectedTables}) _analyzeCustomSQL() {
+    try {
+      var versions = MigrationVersions.listVersions(
+        projectDirectory: _projectDirectory,
+      );
+      if (versions.isEmpty) {
+        return (hasCustomSQL: false, affectedTables: <String>{});
+      }
+
+      var affectedTables = <String>{};
+      var hasAnyCustomSQL = false;
+
+      // Check all migrations for custom SQL
+      for (var version in versions) {
+        final customSqlFiles = [
+          MigrationConstants.preDatabaseSetupSQLPath(
+              _projectDirectory, version),
+          MigrationConstants.postDatabaseSetupSQLPath(
+              _projectDirectory, version),
+          MigrationConstants.preMigrationSQLPath(_projectDirectory, version),
+          MigrationConstants.postMigrationSQLPath(_projectDirectory, version),
+        ];
+
+        for (var file in customSqlFiles) {
+          if (file.existsSync()) {
+            var content = file.readAsStringSync().trim();
+
+            // Check if file has meaningful content
+            if (content.isEmpty) continue;
+
+            // Remove SQL comments for analysis
+            var contentWithoutComments = content
+                .split('\n')
+                .where((line) => !line.trim().startsWith('--'))
+                .join('\n')
+                .trim();
+
+            if (contentWithoutComments.isEmpty) continue;
+
+            hasAnyCustomSQL = true;
+
+            // Extract table names using simple regex patterns
+            // Matches: CREATE INDEX ... ON table_name
+            final indexPattern = RegExp(
+              r'CREATE\s+(?:UNIQUE\s+)?INDEX\s+\S+\s+ON\s+(\w+)',
+              caseSensitive: false,
+            );
+
+            // Matches: ALTER TABLE table_name
+            final alterPattern = RegExp(
+              r'ALTER\s+TABLE\s+(\w+)',
+              caseSensitive: false,
+            );
+
+            // Matches: CREATE TABLE table_name
+            final createTablePattern = RegExp(
+              r'CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)',
+              caseSensitive: false,
+            );
+
+            for (var match in indexPattern.allMatches(contentWithoutComments)) {
+              affectedTables.add(match.group(1)!);
+            }
+            for (var match in alterPattern.allMatches(contentWithoutComments)) {
+              affectedTables.add(match.group(1)!);
+            }
+            for (var match
+                in createTablePattern.allMatches(contentWithoutComments)) {
+              affectedTables.add(match.group(1)!);
+            }
+          }
+        }
+      }
+
+      return (hasCustomSQL: hasAnyCustomSQL, affectedTables: affectedTables);
+    } catch (e) {
+      // If we can't analyze, assume no custom SQL
+      return (hasCustomSQL: false, affectedTables: <String>{});
+    }
+  }
+
+  /// Categorizes comparison warnings into critical vs informational based on
+  /// custom SQL presence and affected tables.
+  static ({List<String> critical, List<String> informational})
+      _categorizeWarnings(
+    List<ComparisonWarning> warnings,
+    String tableName,
+    bool hasCustomSQL,
+    Set<String> affectedTables,
+  ) {
+    var critical = <String>[];
+    var informational = <String>[];
+
+    // If no custom SQL, all warnings are critical
+    if (!hasCustomSQL) {
+      return (
+        critical: warnings.map((w) => w.toString()).toList(),
+        informational: <String>[]
+      );
+    }
+
+    // Check if this table is affected by custom SQL
+    var tableIsAffected =
+        affectedTables.isEmpty || affectedTables.contains(tableName);
+
+    for (var warning in warnings) {
+      var warningText = warning.toString();
+
+      // Always critical: Missing expected objects
+      if (warning.isMissing && warning.type != 'Index') {
+        critical.add(warningText);
+        continue;
+      }
+
+      // Always critical: Column mismatches in managed tables
+      if (warning.type == 'Column' && !warning.isMissing) {
+        critical.add(warningText);
+        continue;
+      }
+
+      // Always critical: Foreign key problems
+      if (warning.type == 'Foreign key') {
+        critical.add(warningText);
+        continue;
+      }
+
+      // Informational: Missing indexes on affected tables (likely custom SQL)
+      if (warning.type == 'Index' && warning.isMissing && tableIsAffected) {
+        informational.add(warningText);
+        continue;
+      }
+
+      // Default: treat as critical
+      critical.add(warningText);
+    }
+
+    return (critical: critical, informational: informational);
+  }
+
   /// Returns true if the database structure is up to date. If not, it will
-  /// print a warning to stderr.
-  static Future<bool> verifyDatabaseIntegrity(Session session) async {
-    var warnings = <String>[];
+  /// print warnings to stderr.
+  ///
+  /// When custom SQL is detected, warnings are categorized as critical
+  /// (must fix) vs informational (expected from custom SQL).
+  Future<bool> verifyDatabaseIntegrity(Session session) async {
+    var allCriticalWarnings = <String>[];
+    var allInfoWarnings = <String>[];
 
     var liveDatabase = await DatabaseAnalyzer.analyze(session.db);
     var targetTables =
         session.serverpod.serializationManager.getTargetTableDefinitions();
 
+    // Analyze custom SQL using the instance's project directory
+    var customSqlAnalysis = _analyzeCustomSQL();
+
     for (var table in targetTables) {
       var liveTable = liveDatabase.findTableNamed(table.name);
       if (liveTable == null) {
-        warnings.add('Table "${table.name}" is missing.');
+        allCriticalWarnings.add('Table "${table.name}" is missing.');
         continue;
       }
-      var mismatches = liveTable.like(table).asStringList();
+
+      var mismatches = liveTable.like(table);
 
       if (mismatches.isNotEmpty) {
-        warnings.add(
-            'Table "${table.name}" is not like the target database:\n - ${mismatches.join('\n - ')}');
-        continue;
+        var categorized = _categorizeWarnings(
+          mismatches,
+          table.name,
+          customSqlAnalysis.hasCustomSQL,
+          customSqlAnalysis.affectedTables,
+        );
+
+        if (categorized.critical.isNotEmpty) {
+          allCriticalWarnings.add(
+            'Table "${table.name}" is not like the target database:\n - ${categorized.critical.join('\n - ')}',
+          );
+        }
+
+        if (categorized.informational.isNotEmpty) {
+          allInfoWarnings.add(
+            'Table "${table.name}" has additional objects (likely from custom SQL):\n - ${categorized.informational.join('\n - ')}',
+          );
+        }
       }
     }
-    if (warnings.isNotEmpty) {
+
+    // Print critical warnings
+    if (allCriticalWarnings.isNotEmpty) {
       stderr.writeln(
         'WARNING: The database does not match the target database:',
       );
-      for (var warning in warnings) {
+      for (var warning in allCriticalWarnings) {
         stderr.writeln(' - $warning');
       }
       stderr.writeln(
           'Hint: Did you forget to apply the migrations (--apply-migrations) or run a repair migration (--apply-repair-migration)?');
     }
 
-    return warnings.isEmpty;
+    // Print informational warnings
+    if (allInfoWarnings.isNotEmpty) {
+      stderr.writeln(
+        '\nINFO: Database has additional objects from custom SQL:',
+      );
+      for (var warning in allInfoWarnings) {
+        stderr.writeln(' - $warning');
+      }
+      stderr.writeln(
+          'Note: These are expected when using custom SQL hooks and do not indicate a problem.');
+    }
+
+    // Only fail if there are critical warnings
+    return allCriticalWarnings.isEmpty;
   }
 }
