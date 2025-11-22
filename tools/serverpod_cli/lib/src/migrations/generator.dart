@@ -582,5 +582,33 @@ class MigrationVersion {
       versionName,
     );
     await migrationSqlFile.writeAsString(migrationSql);
+
+    // Write the pre-database setup SQL file (empty by default)
+    var preDatabaseSetupSqlFile = MigrationConstants.preDatabaseSetupSQLPath(
+      projectDirectory,
+      versionName,
+    );
+    await preDatabaseSetupSqlFile.writeAsString('');
+
+    // Write the post-database setup SQL file (empty by default)
+    var postDatabaseSetupSqlFile = MigrationConstants.postDatabaseSetupSQLPath(
+      projectDirectory,
+      versionName,
+    );
+    await postDatabaseSetupSqlFile.writeAsString('');
+
+    // Write the pre-migration SQL file (empty by default)
+    var preMigrationSqlFile = MigrationConstants.preMigrationSQLPath(
+      projectDirectory,
+      versionName,
+    );
+    await preMigrationSqlFile.writeAsString('');
+
+    // Write the post-migration SQL file (empty by default)
+    var postMigrationSqlFile = MigrationConstants.postMigrationSQLPath(
+      projectDirectory,
+      versionName,
+    );
+    await postMigrationSqlFile.writeAsString('');
   }
 }

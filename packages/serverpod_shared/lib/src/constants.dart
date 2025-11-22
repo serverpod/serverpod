@@ -81,6 +81,50 @@ abstract class MigrationConstants {
         migrationVersionDirectory(serverRootDirectory, version).path,
         'migration.json',
       ));
+
+  /// File path where pre-database setup SQL is stored.
+  /// This SQL is executed before definition.sql when creating a database from scratch.
+  static File preDatabaseSetupSQLPath(
+    Directory serverRootDirectory,
+    String version,
+  ) =>
+      File(path.join(
+        migrationVersionDirectory(serverRootDirectory, version).path,
+        'pre_database_setup.sql',
+      ));
+
+  /// File path where post-database setup SQL is stored.
+  /// This SQL is executed after definition.sql when creating a database from scratch.
+  static File postDatabaseSetupSQLPath(
+    Directory serverRootDirectory,
+    String version,
+  ) =>
+      File(path.join(
+        migrationVersionDirectory(serverRootDirectory, version).path,
+        'post_database_setup.sql',
+      ));
+
+  /// File path where pre-migration SQL is stored.
+  /// This SQL is executed before migration.sql when rolling forward.
+  static File preMigrationSQLPath(
+    Directory serverRootDirectory,
+    String version,
+  ) =>
+      File(path.join(
+        migrationVersionDirectory(serverRootDirectory, version).path,
+        'pre_migration.sql',
+      ));
+
+  /// File path where post-migration SQL is stored.
+  /// This SQL is executed after migration.sql when rolling forward.
+  static File postMigrationSQLPath(
+    Directory serverRootDirectory,
+    String version,
+  ) =>
+      File(path.join(
+        migrationVersionDirectory(serverRootDirectory, version).path,
+        'post_migration.sql',
+      ));
 }
 
 /// Serverpod URL constants used by the serverpod framework.
