@@ -138,28 +138,87 @@ class MigrationManager {
     var sqlToExecute = <({String version, String sql})>[];
 
     if (fromVersion == null) {
+      // Creating database from scratch - inline pre/post database setup SQL
+      var preDatabaseSetupFile = MigrationConstants.preDatabaseSetupSQLPath(
+        _projectDirectory,
+        latestVersion,
+      );
+      var postDatabaseSetupFile = MigrationConstants.postDatabaseSetupSQLPath(
+        _projectDirectory,
+        latestVersion,
+      );
       var definitionSqlFile = MigrationConstants.databaseDefinitionSQLPath(
         _projectDirectory,
         latestVersion,
       );
-      var sqlDefinition = await definitionSqlFile.readAsString();
 
-      sqlToExecute.add((version: latestVersion, sql: sqlDefinition));
+      var preDatabaseSetupSql = preDatabaseSetupFile.existsSync()
+          ? await preDatabaseSetupFile.readAsString()
+          : '';
+      var sqlDefinition = await definitionSqlFile.readAsString();
+      var postDatabaseSetupSql = postDatabaseSetupFile.existsSync()
+          ? await postDatabaseSetupFile.readAsString()
+          : '';
+
+      // Combine pre + definition + post into a single SQL string
+      var combinedSql = _combineSQL([
+        preDatabaseSetupSql,
+        sqlDefinition,
+        postDatabaseSetupSql,
+      ]);
+
+      sqlToExecute.add((version: latestVersion, sql: combinedSql));
     } else {
+      // Rolling forward with migrations - inline pre/post migration SQL
       var newerVersions = _getVersionsToApply(fromVersion);
 
       for (var version in newerVersions) {
+        var preMigrationFile = MigrationConstants.preMigrationSQLPath(
+          _projectDirectory,
+          version,
+        );
         var migrationSqlFile = MigrationConstants.databaseMigrationSQLPath(
           _projectDirectory,
           version,
         );
-        var sqlMigration = await migrationSqlFile.readAsString();
+        var postMigrationFile = MigrationConstants.postMigrationSQLPath(
+          _projectDirectory,
+          version,
+        );
 
-        sqlToExecute.add((version: version, sql: sqlMigration));
+        var preMigrationSql = preMigrationFile.existsSync()
+            ? await preMigrationFile.readAsString()
+            : '';
+        var sqlMigration = await migrationSqlFile.readAsString();
+        var postMigrationSql = postMigrationFile.existsSync()
+            ? await postMigrationFile.readAsString()
+            : '';
+
+        // Combine pre + migration + post into a single SQL string
+        var combinedSql = _combineSQL([
+          preMigrationSql,
+          sqlMigration,
+          postMigrationSql,
+        ]);
+
+        sqlToExecute.add((version: version, sql: combinedSql));
       }
     }
 
     return sqlToExecute;
+  }
+
+  /// Combines multiple SQL strings into one, removing empty strings
+  /// and ensuring proper spacing between SQL blocks.
+  String _combineSQL(List<String> sqlParts) {
+    var nonEmptySql = sqlParts
+        .map((sql) => sql.trim())
+        .where((sql) => sql.isNotEmpty)
+        .toList();
+
+    if (nonEmptySql.isEmpty) return '';
+
+    return nonEmptySql.join('\n\n');
   }
 
   /// Migration a single module to the latest version.
