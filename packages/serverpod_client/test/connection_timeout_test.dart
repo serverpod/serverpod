@@ -23,28 +23,26 @@ class TestServerpodClient extends ServerpodClientShared {
 }
 
 void main() {
-  group('Given a ServerpodClient when connectionTimeout is set', () {
-    test(
-      'when connectionTimeout is provided in constructor then it is set correctly.',
-      () {
-        final client = TestServerpodClient(
-          host: Uri.parse('http://localhost:8080'),
-          connectionTimeout: const Duration(minutes: 10),
-        );
+  test(
+    'Given a ServerpodClient when connectionTimeout is provided in constructor then it is set correctly.',
+    () {
+      final client = TestServerpodClient(
+        host: Uri.parse('http://localhost:8080'),
+        connectionTimeout: const Duration(minutes: 10),
+      );
 
-        expect(client.connectionTimeout, const Duration(minutes: 10));
-      },
-    );
+      expect(client.connectionTimeout, const Duration(minutes: 10));
+    },
+  );
 
-    test(
-      'when connectionTimeout is not provided then it defaults to 20 seconds.',
-      () {
-        final client = TestServerpodClient(
-          host: Uri.parse('http://localhost:8080'),
-        );
+  test(
+    'Given a ServerpodClient when connectionTimeout is not provided then it defaults to 20 seconds.',
+    () {
+      final client = TestServerpodClient(
+        host: Uri.parse('http://localhost:8080'),
+      );
 
-        expect(client.connectionTimeout, const Duration(seconds: 20));
-      },
-    );
-  });
+      expect(client.connectionTimeout, const Duration(seconds: 20));
+    },
+  );
 }
