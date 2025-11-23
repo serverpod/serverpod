@@ -26,7 +26,11 @@ class FutureCallScanner {
   final DispatchEntries _dispatchEntries;
 
   bool _isStopping = false;
+  bool _isRunning = false;
 
+  /// Whether the scanner is currently running and scheduled to perform
+  /// periodic scans.
+  bool get isRunning => _isRunning;
   var _scanCompleter = Completer<void>()..complete();
 
   /// Creates a new [FutureCallScanner].
@@ -108,6 +112,7 @@ class FutureCallScanner {
       _scanInterval,
       (_) => scanFutureCallEntries(),
     );
+    _isRunning = true;
   }
 
   /// Stops the task scanner.
@@ -117,5 +122,8 @@ class FutureCallScanner {
     _timer?.cancel();
 
     await _scanCompleter.future;
+    _timer = null;
+    _isStopping = false;
+    _isRunning = false;
   }
 }
