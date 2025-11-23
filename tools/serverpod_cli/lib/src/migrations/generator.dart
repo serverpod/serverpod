@@ -630,32 +630,32 @@ class MigrationVersion {
   ) async {
     var currentFile = pathGetter(projectDirectory, currentVersion);
 
-    stderr.writeln('DEBUG: previousVersion = $previousVersion');
-    stderr.writeln('DEBUG: currentVersion = $currentVersion');
-    stderr.writeln('DEBUG: currentFile = ${currentFile.path}');
+    log.info('DEBUG: previousVersion = $previousVersion');
+    log.info('DEBUG: currentVersion = $currentVersion');
+    log.info('DEBUG: currentFile = ${currentFile.path}');
 
     if (previousVersion != null) {
       var previousFile = pathGetter(projectDirectory, previousVersion);
-      stderr.writeln('DEBUG: previousFile = ${previousFile.path}');
-      stderr.writeln(
+      log.info('DEBUG: previousFile = ${previousFile.path}');
+      log.info(
           'DEBUG: previousFile.existsSync() = ${previousFile.existsSync()}');
 
       if (previousFile.existsSync()) {
         var content = await previousFile.readAsString();
-        stderr.writeln('DEBUG: content length = ${content.length}');
+        log.info('DEBUG: content length = ${content.length}');
         await currentFile.writeAsString(content);
-        stderr.writeln(
+        log.info(
             'DEBUG: Copied content from $previousVersion to $currentVersion');
         return;
       } else {
-        stderr.writeln('DEBUG: Previous file does not exist');
+        log.info('DEBUG: Previous file does not exist');
       }
     } else {
-      stderr.writeln('DEBUG: No previous version found');
+      log.info('DEBUG: No previous version found');
     }
 
     // No previous version or previous file doesn't exist - create empty
-    stderr.writeln('DEBUG: Creating empty file');
+    log.info('DEBUG: Creating empty file');
     await currentFile.writeAsString('');
   }
 }
