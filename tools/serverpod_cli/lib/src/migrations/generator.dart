@@ -631,13 +631,13 @@ class MigrationVersion {
         'CALLED: previousVersion=$previousVersion, currentVersion=$currentVersion\n',
         mode: FileMode.append,
       );
-      
+
       var currentFile = pathGetter(projectDirectory, currentVersion);
       await debugFile.writeAsString(
         'currentFile: ${currentFile.path}\n',
         mode: FileMode.append,
       );
-      
+
       if (previousVersion != null) {
         var previousFile = pathGetter(projectDirectory, previousVersion);
         await debugFile.writeAsString(
