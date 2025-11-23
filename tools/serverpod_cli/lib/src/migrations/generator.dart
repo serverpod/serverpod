@@ -135,6 +135,7 @@ class MigrationGenerator {
       await migrationVersion.write(
         installedModules: databaseDefinitionNext.installedModules,
         removedModules: removedModules,
+        previousVersion: migrationRegistry.getLatest(),
       );
       migrationRegistry.add(versionName);
       await migrationRegistry.write();
@@ -513,6 +514,7 @@ class MigrationVersion {
   Future<void> write({
     required List<DatabaseMigrationVersion> installedModules,
     required List<DatabaseMigrationVersion> removedModules,
+    required String? previousVersion,
   }) async {
     var migrationDirectory = MigrationConstants.migrationVersionDirectory(
       projectDirectory,
@@ -630,32 +632,17 @@ class MigrationVersion {
   ) async {
     var currentFile = pathGetter(projectDirectory, currentVersion);
 
-    log.info('DEBUG: previousVersion = $previousVersion');
-    log.info('DEBUG: currentVersion = $currentVersion');
-    log.info('DEBUG: currentFile = ${currentFile.path}');
-
     if (previousVersion != null) {
       var previousFile = pathGetter(projectDirectory, previousVersion);
-      log.info('DEBUG: previousFile = ${previousFile.path}');
-      log.info(
-          'DEBUG: previousFile.existsSync() = ${previousFile.existsSync()}');
 
       if (previousFile.existsSync()) {
         var content = await previousFile.readAsString();
-        log.info('DEBUG: content length = ${content.length}');
         await currentFile.writeAsString(content);
-        log.info(
-            'DEBUG: Copied content from $previousVersion to $currentVersion');
         return;
-      } else {
-        log.info('DEBUG: Previous file does not exist');
       }
-    } else {
-      log.info('DEBUG: No previous version found');
     }
 
     // No previous version or previous file doesn't exist - create empty
-    log.info('DEBUG: Creating empty file');
     await currentFile.writeAsString('');
   }
 }
