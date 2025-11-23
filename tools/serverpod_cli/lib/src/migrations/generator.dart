@@ -626,54 +626,14 @@ class MigrationVersion {
   ) async {
     var currentFile = pathGetter(projectDirectory, currentVersion);
 
-    File? sourceFile;
-
-    // Optional override: force copying from a specific version via env var.
-    var forcedVersion =
-        Platform.environment['SERVERPOD_FORCE_CUSTOM_SQL_VERSION'];
-    if (forcedVersion != null && forcedVersion.isNotEmpty) {
-      var forcedFile = pathGetter(projectDirectory, forcedVersion);
-      if (forcedFile.existsSync()) {
-        sourceFile = forcedFile;
-      }
-    }
-
-    // Prefer the supplied previous version if it exists.
     if (previousVersion != null) {
       var previousFile = pathGetter(projectDirectory, previousVersion);
+
       if (previousFile.existsSync()) {
-        sourceFile = previousFile;
+        var content = await previousFile.readAsString();
+        await currentFile.writeAsString(content);
+        return;
       }
-    }
-
-    // Fallback: find the latest migration that has the file.
-    if (sourceFile == null) {
-      var migrationsDir = MigrationConstants.migrationsBaseDirectory(
-        projectDirectory,
-      );
-      if (migrationsDir.existsSync()) {
-        var versions = migrationsDir
-            .listSync()
-            .whereType<Directory>()
-            .map((dir) => path.basename(dir.path))
-            .where((version) => version != currentVersion)
-            .toList()
-          ..sort();
-
-        for (var version in versions.reversed) {
-          var candidate = pathGetter(projectDirectory, version);
-          if (candidate.existsSync()) {
-            sourceFile = candidate;
-            break;
-          }
-        }
-      }
-    }
-
-    if (sourceFile != null) {
-      var content = await sourceFile.readAsString();
-      await currentFile.writeAsString(content);
-      return;
     }
 
     // No previous version or previous file doesn't exist - create empty
