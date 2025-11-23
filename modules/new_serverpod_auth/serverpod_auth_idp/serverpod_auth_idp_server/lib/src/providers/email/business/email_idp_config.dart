@@ -46,6 +46,8 @@ typedef SendRegistrationVerificationCodeFunction =
 /// {@endtemplate}
 class EmailIDPConfig {
   /// The pepper used for hashing passwords and verification codes.
+  ///
+  /// To rotate peppers without invalidating existing passwords, use [fallbackSecretHashPeppers].
   final String secretHashPepper;
 
   /// Optional fallback peppers for validating passwords and verification codes created with previous peppers.
