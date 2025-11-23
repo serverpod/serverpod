@@ -14,7 +14,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const allowedPassword = 'AllowedPassword123!';
       const verificationCode = '12345678';
@@ -22,8 +22,8 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             passwordValidationFunction: (final password) =>
                 password == allowedPassword,
@@ -65,7 +65,7 @@ void main() {
           );
 
           final verificationResult = session.db.transaction(
-            (final transaction) => fixture.emailIDP.verifyRegistrationCode(
+            (final transaction) => fixture.emailIdp.verifyRegistrationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: verificationCode,
@@ -90,7 +90,7 @@ void main() {
           );
 
           final verificationResult = session.db.transaction(
-            (final transaction) => fixture.emailIDP.verifyRegistrationCode(
+            (final transaction) => fixture.emailIdp.verifyRegistrationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: verificationCode,
@@ -129,7 +129,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       late String verificationCode;
       const email = 'test@serverpod.dev';
@@ -141,8 +141,8 @@ void main() {
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             sendRegistrationVerificationCode:
@@ -202,13 +202,13 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
 
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
 
         final authUser = await fixture.authUsers.create(session);
 
@@ -250,13 +250,13 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
 
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
 
         // Create initial account request
         await session.db.transaction(
@@ -299,15 +299,15 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const registrationVerificationCodeLifetime = Duration(hours: 1);
 
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeLifetime:
                 registrationVerificationCodeLifetime,

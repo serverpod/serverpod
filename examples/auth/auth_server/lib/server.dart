@@ -37,13 +37,13 @@ void run(List<String> args) async {
   );
 
   // Configure our identity providers.
-  final googleIDPConfig = GoogleIDPConfig(
+  final googleIdpConfig = GoogleIdpConfig(
     clientSecret: GoogleClientSecret.fromJsonString(
       pod.getPassword('googleClientSecret')!,
     ),
   );
 
-  final appleIDPConfig = AppleIDPConfig(
+  final appleIdpConfig = AppleIdpConfig(
     serviceIdentifier: pod.getPassword('appleServiceIdentifier')!,
     bundleIdentifier: pod.getPassword('appleBundleIdentifier')!,
     redirectUri: pod.getPassword('appleRedirectUri')!,
@@ -52,7 +52,7 @@ void run(List<String> args) async {
     key: pod.getPassword('appleKey')!,
   );
 
-  final emailIDPConfig = EmailIDPConfig(
+  final emailIdpConfig = EmailIdpConfig(
     secretHashPepper: pod.getPassword('emailSecretHashPepper')!,
     sendRegistrationVerificationCode:
         (
@@ -65,7 +65,7 @@ void run(List<String> args) async {
           // NOTE: Here you call your mail service to send the verification code to
           // the user. For testing, we will just log the verification code.
           session.log(
-            '[EmailIDP] Registration code ($email): $verificationCode',
+            '[EmailIdp] Registration code ($email): $verificationCode',
           );
         },
     sendPasswordResetVerificationCode:
@@ -79,12 +79,12 @@ void run(List<String> args) async {
           // NOTE: Here you call your mail service to send the verification code to
           // the user. For testing, we will just log the verification code.
           session.log(
-            '[EmailIDP] Password reset code ($email): $verificationCode',
+            '[EmailIdp] Password reset code ($email): $verificationCode',
           );
         },
   );
 
-  final passkeyIDPConfig = PasskeyIDPConfig(
+  final passkeyIdpConfig = PasskeyIdpConfig(
     challengeLifetime: Duration(seconds: 30),
     hostname: 'localhost',
   );
@@ -94,10 +94,10 @@ void run(List<String> args) async {
       serverSideSessionsConfig,
     ),
     identityProviders: [
-      GoogleIdentityProviderFactory(googleIDPConfig),
-      AppleIdentityProviderFactory(appleIDPConfig),
-      EmailIdentityProviderFactory(emailIDPConfig),
-      PasskeyIdentityProviderFactory(passkeyIDPConfig),
+      GoogleIdentityProviderFactory(googleIdpConfig),
+      AppleIdentityProviderFactory(appleIdpConfig),
+      EmailIdentityProviderFactory(emailIdpConfig),
+      PasskeyIdentityProviderFactory(passkeyIdpConfig),
     ],
     additionalTokenManagers: [
       JwtTokenManagerFactory(
@@ -110,11 +110,11 @@ void run(List<String> args) async {
 
   pod.webServer
     ..addRoute(
-      AuthServices.instance.appleIDP.revokedNotificationRoute(),
+      AuthServices.instance.appleIdp.revokedNotificationRoute(),
       '/hooks/apple-notification', // must match path configured on apple
     )
     ..addRoute(
-      AuthServices.instance.appleIDP.webAuthenticationCallbackRoute(),
+      AuthServices.instance.appleIdp.webAuthenticationCallbackRoute(),
       '/auth/callback', // must match path configured on apple
     );
 

@@ -92,7 +92,7 @@ abstract class JwtTokenInfo
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'serverpod_auth_core.AuthenticationTokenInfo',
+      '__className__': 'serverpod_auth_core.JwtTokenInfo',
       'id': id.toJson(),
       'authUserId': authUserId.toJson(),
       'scopeNames': scopeNames.toJson(),
@@ -106,7 +106,7 @@ abstract class JwtTokenInfo
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      '__className__': 'serverpod_auth_core.AuthenticationTokenInfo',
+      '__className__': 'serverpod_auth_core.JwtTokenInfo',
       'id': id.toJson(),
       'authUserId': authUserId.toJson(),
       'scopeNames': scopeNames.toJson(),

@@ -91,7 +91,7 @@ abstract class JwtTokenInfo implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'serverpod_auth_core.AuthenticationTokenInfo',
+      '__className__': 'serverpod_auth_core.JwtTokenInfo',
       'id': id.toJson(),
       'authUserId': authUserId.toJson(),
       'scopeNames': scopeNames.toJson(),

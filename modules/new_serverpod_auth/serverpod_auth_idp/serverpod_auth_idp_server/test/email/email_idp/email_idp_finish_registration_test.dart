@@ -14,7 +14,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'newuser@serverpod.dev';
       const allowedPassword = 'AllowedPassword123!';
@@ -25,8 +25,8 @@ void main() {
         session = sessionBuilder.build();
 
         final verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             registrationVerificationCodeLifetime:
@@ -36,12 +36,12 @@ void main() {
           ),
         );
 
-        accountRequestId = await fixture.emailIDP.startRegistration(
+        accountRequestId = await fixture.emailIdp.startRegistration(
           session,
           email: email,
         );
 
-        registrationToken = await fixture.emailIDP.verifyRegistrationCode(
+        registrationToken = await fixture.emailIdp.verifyRegistrationCode(
           session,
           accountRequestId: accountRequestId,
           verificationCode: verificationCode,
@@ -56,7 +56,7 @@ void main() {
         late Future<AuthSuccess> authSuccessFuture;
 
         setUp(() async {
-          authSuccessFuture = fixture.emailIDP.finishRegistration(
+          authSuccessFuture = fixture.emailIdp.finishRegistration(
             session,
             registrationToken: registrationToken,
             password: allowedPassword,
@@ -71,7 +71,7 @@ void main() {
           await authSuccessFuture;
 
           final result = session.db.transaction(
-            (final transaction) => fixture.emailIDP.login(
+            (final transaction) => fixture.emailIdp.login(
               session,
               email: email,
               password: allowedPassword,
@@ -104,7 +104,7 @@ void main() {
       test(
         'when finishRegistration is called with invalid registration token then it throws EmailAccountRequestException with reason "invalid"',
         () async {
-          final result = fixture.emailIDP.finishRegistration(
+          final result = fixture.emailIdp.finishRegistration(
             session,
             registrationToken: '$registrationToken-invalid',
             password: allowedPassword,
@@ -126,7 +126,7 @@ void main() {
       test(
         'when finishRegistration is called with invalid password then it throws EmailAccountRequestException with reason "policyViolation"',
         () async {
-          final result = fixture.emailIDP.finishRegistration(
+          final result = fixture.emailIdp.finishRegistration(
             session,
             registrationToken: registrationToken,
             password: '$allowedPassword-invalid',
@@ -153,7 +153,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'expired@serverpod.dev';
       const password = 'Password123!';
@@ -164,8 +164,8 @@ void main() {
         session = sessionBuilder.build();
 
         final verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             registrationVerificationCodeLifetime:
@@ -180,12 +180,12 @@ void main() {
             ),
           ),
           () async {
-            accountRequestId = await fixture.emailIDP.startRegistration(
+            accountRequestId = await fixture.emailIdp.startRegistration(
               session,
               email: email,
             );
 
-            registrationToken = await fixture.emailIDP.verifyRegistrationCode(
+            registrationToken = await fixture.emailIdp.verifyRegistrationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: verificationCode,
@@ -201,7 +201,7 @@ void main() {
       test(
         'when finishRegistration is called with valid parameters then it throws EmailAccountRequestException with reason "expired"',
         () async {
-          final result = fixture.emailIDP.finishRegistration(
+          final result = fixture.emailIdp.finishRegistration(
             session,
             registrationToken: registrationToken,
             password: password,
@@ -223,7 +223,7 @@ void main() {
       test(
         'when finishRegistration is called with invalid verification code then it throws EmailAccountRequestException with reason "invalid"',
         () async {
-          final result = fixture.emailIDP.finishRegistration(
+          final result = fixture.emailIdp.finishRegistration(
             session,
             registrationToken: '$registrationToken-invalid',
             password: password,
@@ -250,11 +250,11 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
       });
 
       tearDown(() async {
@@ -264,7 +264,7 @@ void main() {
       test(
         'when finishRegistration is called then it throws EmailAccountRequestException with reason "invalid"',
         () async {
-          final result = fixture.emailIDP.finishRegistration(
+          final result = fixture.emailIdp.finishRegistration(
             session,
             registrationToken: const Uuid().v4(),
             password: 'some-password',

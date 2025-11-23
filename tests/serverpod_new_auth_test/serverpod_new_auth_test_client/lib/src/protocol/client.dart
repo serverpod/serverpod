@@ -191,7 +191,7 @@ class EndpointEmailAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
 
 /// Endpoint for email-based authentication.
 /// {@category Endpoint}
-class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
+class EndpointEmailAccount extends _i5.EndpointEmailIdpBase {
   EndpointEmailAccount(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -367,7 +367,7 @@ class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
 /// accounts.
 /// {@category Endpoint}
 class EndpointGoogleAccountBackwardsCompatibilityTest
-    extends _i5.EndpointGoogleIDPBase {
+    extends _i5.EndpointGoogleIdpBase {
   EndpointGoogleAccountBackwardsCompatibilityTest(_i1.EndpointCaller caller)
     : super(caller);
 
@@ -390,7 +390,7 @@ class EndpointGoogleAccountBackwardsCompatibilityTest
 
 /// Endpoint for Google-based authentication.
 /// {@category Endpoint}
-class EndpointGoogleAccount extends _i5.EndpointGoogleIDPBase {
+class EndpointGoogleAccount extends _i5.EndpointGoogleIdpBase {
   EndpointGoogleAccount(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -452,7 +452,7 @@ class EndpointJwtRefresh extends _i3.EndpointRefreshJwtTokens {
 
 /// Endpoint for email-based authentication which imports the legacy passwords.
 /// {@category Endpoint}
-class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
+class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIdpBase {
   EndpointPasswordImportingEmailAccount(_i1.EndpointCaller caller)
     : super(caller);
 

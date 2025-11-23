@@ -160,7 +160,7 @@ abstract class ServerSideSession
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'serverpod_auth_core.AuthSession',
+      '__className__': 'serverpod_auth_core.ServerSideSession',
       if (id != null) 'id': id?.toJson(),
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),

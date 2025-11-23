@@ -13,7 +13,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
       late String verificationCode;
@@ -22,8 +22,8 @@ void main() {
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
           ),
@@ -46,7 +46,7 @@ void main() {
       group('when startPasswordReset is called', () {
         late Future<UuidValue> passwordResetRequestIdFuture;
         setUp(() async {
-          passwordResetRequestIdFuture = fixture.emailIDP.startPasswordReset(
+          passwordResetRequestIdFuture = fixture.emailIdp.startPasswordReset(
             session,
             email: email,
           );
@@ -64,7 +64,7 @@ void main() {
           () async {
             final passwordResetRequestId = await passwordResetRequestIdFuture;
 
-            final passwordResetResult = fixture.emailIDP
+            final passwordResetResult = fixture.emailIdp
                 .verifyPasswordResetCode(
                   session,
                   passwordResetRequestId: passwordResetRequestId,
@@ -84,7 +84,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
       const maxPasswordResetAttempts = RateLimit(
@@ -94,8 +94,8 @@ void main() {
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'pepper',
             maxPasswordResetAttempts: maxPasswordResetAttempts,
           ),
@@ -110,7 +110,7 @@ void main() {
         );
 
         // Make initial request to hit the rate limit
-        await fixture.emailIDP.startPasswordReset(
+        await fixture.emailIdp.startPasswordReset(
           session,
           email: email,
         );
@@ -123,7 +123,7 @@ void main() {
       test(
         'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
         () async {
-          final result = fixture.emailIDP.startPasswordReset(
+          final result = fixture.emailIdp.startPasswordReset(
             session,
             email: email,
           );
@@ -149,11 +149,11 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
       });
 
       tearDown(() async {
@@ -165,7 +165,7 @@ void main() {
 
         setUp(() async {
           // Use setup to ensure the request is made when no email account exists.
-          passwordResetRequestIdFuture = fixture.emailIDP.startPasswordReset(
+          passwordResetRequestIdFuture = fixture.emailIdp.startPasswordReset(
             session,
             email: 'nonexistent@serverpod.dev',
           );
@@ -182,7 +182,7 @@ void main() {
               email: existingUserEmail,
             );
 
-            final capturedPasswordResetRequestId = await fixture.emailIDP
+            final capturedPasswordResetRequestId = await fixture.emailIdp
                 .startPasswordReset(
                   session,
                   email: existingUserEmail,
@@ -210,7 +210,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const maxPasswordResetAttempts = RateLimit(
         maxAttempts: 1,
@@ -219,15 +219,15 @@ void main() {
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'pepper',
             maxPasswordResetAttempts: maxPasswordResetAttempts,
           ),
         );
 
         // Make initial request to hit the rate limit
-        await fixture.emailIDP.startPasswordReset(
+        await fixture.emailIdp.startPasswordReset(
           session,
           email: email,
         );
@@ -240,7 +240,7 @@ void main() {
       test(
         'when requesting password reset with same email then it throws EmailAccountPasswordResetException with reason "tooManyAttempts"',
         () async {
-          final result = fixture.emailIDP.startPasswordReset(
+          final result = fixture.emailIdp.startPasswordReset(
             session,
             email: email,
           );

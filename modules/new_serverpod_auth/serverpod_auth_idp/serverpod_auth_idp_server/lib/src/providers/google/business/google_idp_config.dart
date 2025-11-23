@@ -24,7 +24,7 @@ typedef GetExtraGoogleInfoCallback =
     });
 
 /// Configuration for the Google identity provider.
-class GoogleIDPConfig {
+class GoogleIdpConfig {
   /// The client secret used for the Google sign-in.
   final GoogleClientSecret clientSecret;
 
@@ -51,8 +51,8 @@ class GoogleIDPConfig {
   /// information from Google APIs.
   final GetExtraGoogleInfoCallback? getExtraGoogleInfoCallback;
 
-  /// Creates a new instance of [GoogleIDPConfig].
-  GoogleIDPConfig({
+  /// Creates a new instance of [GoogleIdpConfig].
+  GoogleIdpConfig({
     required this.clientSecret,
     this.googleAccountDetailsValidation = validateGoogleAccountDetails,
     this.getExtraGoogleInfoCallback,

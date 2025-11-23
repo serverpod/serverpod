@@ -27,7 +27,7 @@ void run(final List<String> args) async {
     ),
     identityProviders: [
       EmailIdentityProviderFactory(
-        EmailIDPConfig(
+        EmailIdpConfig(
           secretHashPepper: pod.getPassword(
             'serverpod_auth_idp_email_secretHashPepper',
           )!,

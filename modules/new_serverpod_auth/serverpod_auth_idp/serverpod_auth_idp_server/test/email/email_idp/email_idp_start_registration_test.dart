@@ -13,13 +13,13 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
 
         final authUser = await fixture.authUsers.create(session);
 
@@ -39,7 +39,7 @@ void main() {
         late Future<UuidValue> accountRequestIdFuture;
 
         setUp(() async {
-          accountRequestIdFuture = fixture.emailIDP.startRegistration(
+          accountRequestIdFuture = fixture.emailIdp.startRegistration(
             session,
             email: email,
           );
@@ -49,7 +49,7 @@ void main() {
           'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
           () async {
             const nonRegisteredEmail = 'non-registered-$email';
-            final capturedAccountRequestId = await fixture.emailIDP
+            final capturedAccountRequestId = await fixture.emailIdp
                 .startRegistration(
                   session,
                   email: nonRegisteredEmail,
@@ -75,7 +75,7 @@ void main() {
           late Future<UuidValue> accountRequestIdFuture;
 
           setUp(() async {
-            accountRequestIdFuture = fixture.emailIDP.startRegistration(
+            accountRequestIdFuture = fixture.emailIdp.startRegistration(
               session,
               email: email.toUpperCase(),
             );
@@ -85,7 +85,7 @@ void main() {
             'then it returns dummy uuid with the same version as the real request to prevent leaking the fact that the email is not registered',
             () async {
               const nonRegisteredEmail = 'non-registered-$email';
-              final capturedAccountRequestId = await fixture.emailIDP
+              final capturedAccountRequestId = await fixture.emailIdp
                   .startRegistration(
                     session,
                     email: nonRegisteredEmail,
@@ -114,7 +114,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'newuser@serverpod.dev';
       late String verificationCode;
 
@@ -122,8 +122,8 @@ void main() {
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
           ),
@@ -137,7 +137,7 @@ void main() {
       group('when startRegistration is called', () {
         late Future<UuidValue> accountRequestIdFuture;
         setUp(() async {
-          accountRequestIdFuture = fixture.emailIDP.startRegistration(
+          accountRequestIdFuture = fixture.emailIdp.startRegistration(
             session,
             email: email,
           );

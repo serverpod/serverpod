@@ -112,7 +112,7 @@ abstract class ServerSideSessionInfo implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'serverpod_auth_core.AuthSessionInfo',
+      '__className__': 'serverpod_auth_core.ServerSideSessionInfo',
       'id': id.toJson(),
       'authUserId': authUserId.toJson(),
       'scopeNames': scopeNames.toJson(),

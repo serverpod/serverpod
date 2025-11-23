@@ -16,12 +16,12 @@ import '../email_idp_server_exceptions.dart';
 ///
 /// This class also contains utility functions for administration tasks, such as deleting failed login attempts.
 /// {@endtemplate}
-class EmailIDPAuthenticationUtil {
+class EmailIdpAuthenticationUtil {
   final SecretHashUtil _hashUtil;
   final RateLimit _failedLoginRateLimit;
 
-  /// Creates a new instance of [EmailIDPAuthenticationUtil].
-  EmailIDPAuthenticationUtil({
+  /// Creates a new instance of [EmailIdpAuthenticationUtil].
+  EmailIdpAuthenticationUtil({
     required final SecretHashUtil hashUtil,
     required final RateLimit failedLoginRateLimit,
   }) : _hashUtil = hashUtil,
@@ -83,7 +83,7 @@ class EmailIDPAuthenticationUtil {
   ///
   /// If [olderThan] is `null`, this will remove all attempts outside the time
   /// window that is checked upon login, as configured in
-  /// [EmailIDPConfig.emailSignInFailureResetTime].
+  /// [EmailIdpConfig.emailSignInFailureResetTime].
   ///
   /// If [email] is provided, only attempts for the given email will be deleted.
   /// {@endtemplate}

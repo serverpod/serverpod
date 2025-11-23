@@ -2,10 +2,10 @@ import 'package:serverpod_auth_idp_server/core.dart';
 
 import '../providers/google/google.dart';
 
-/// AuthServices factory for creating [GoogleIDP] instances.
-class GoogleIdentityProviderFactory extends IdentityProviderFactory<GoogleIDP> {
-  /// The configuration that will be used to create the [GoogleIDP].
-  final GoogleIDPConfig config;
+/// AuthServices factory for creating [GoogleIdp] instances.
+class GoogleIdentityProviderFactory extends IdentityProviderFactory<GoogleIdp> {
+  /// The configuration that will be used to create the [GoogleIdp].
+  final GoogleIdpConfig config;
 
   /// Creates a new [GoogleIdentityProviderFactory].
   GoogleIdentityProviderFactory(
@@ -13,12 +13,12 @@ class GoogleIdentityProviderFactory extends IdentityProviderFactory<GoogleIDP> {
   );
 
   @override
-  GoogleIDP construct({
+  GoogleIdp construct({
     required final TokenManager tokenManager,
     required final AuthUsers authUsers,
     required final UserProfiles userProfiles,
   }) {
-    return GoogleIDP(
+    return GoogleIdp(
       config,
       tokenIssuer: tokenManager,
       authUsers: authUsers,
@@ -27,8 +27,8 @@ class GoogleIdentityProviderFactory extends IdentityProviderFactory<GoogleIDP> {
   }
 }
 
-/// Extension to get the GoogleIDP instance from the AuthServices.
-extension GoogleIDPGetter on AuthServices {
-  /// Returns the GoogleIDP instance from the AuthServices.
-  GoogleIDP get googleIDP => AuthServices.getIdentityProvider<GoogleIDP>();
+/// Extension to get the GoogleIdp instance from the AuthServices.
+extension GoogleIdpGetter on AuthServices {
+  /// Returns the GoogleIdp instance from the AuthServices.
+  GoogleIdp get googleIdp => AuthServices.getIdentityProvider<GoogleIdp>();
 }

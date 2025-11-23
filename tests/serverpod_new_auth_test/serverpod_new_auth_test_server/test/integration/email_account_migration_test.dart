@@ -50,7 +50,7 @@ void main() {
         );
 
         // Configure EmailAccounts for password reset verification
-        final config = EmailIDPConfig(
+        final config = EmailIdpConfig(
           secretHashPepper: 'test',
           sendPasswordResetVerificationCode:
               (
@@ -163,7 +163,7 @@ void main() {
         newAuthUserId = newAuthUserIdResult!;
 
         // Configure EmailAccounts for password reset verification
-        final config = EmailIDPConfig(
+        final config = EmailIdpConfig(
           secretHashPepper: 'test',
           sendPasswordResetVerificationCode:
               (

@@ -18,8 +18,8 @@ void main() {
     'Given a pending challenge,',
     (final sessionBuilder, final _) {
       late Session session;
-      final passKeyIDP = PasskeyIDP(
-        PasskeyIDPConfig(
+      final passKeyIdp = PasskeyIdp(
+        PasskeyIdpConfig(
           hostname: 'localhost',
         ),
         tokenIssuer: tokenManager,
@@ -28,13 +28,13 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        await passKeyIDP.createChallenge(session);
+        await passKeyIdp.createChallenge(session);
       });
 
       test(
         'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` immediately, then the challenge is kept.',
         () async {
-          await passKeyIDP.admin.deleteExpiredChallenges(session);
+          await passKeyIdp.admin.deleteExpiredChallenges(session);
 
           expect(
             await PasskeyChallenge.db.find(session),
@@ -48,9 +48,9 @@ void main() {
         () async {
           await withClock(
             Clock.fixed(
-              DateTime.now().add(passKeyIDP.config.challengeLifetime),
+              DateTime.now().add(passKeyIdp.config.challengeLifetime),
             ),
-            () => passKeyIDP.admin.deleteExpiredChallenges(session),
+            () => passKeyIdp.admin.deleteExpiredChallenges(session),
           );
 
           expect(

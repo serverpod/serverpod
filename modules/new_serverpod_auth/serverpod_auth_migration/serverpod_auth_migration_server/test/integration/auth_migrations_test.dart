@@ -17,11 +17,11 @@ void main() {
     ),
   );
 
-  const config = new_auth_idp.EmailIDPConfig(secretHashPepper: 'test');
-  final newEmailIDP = new_auth_idp.EmailIDP(config, tokenManager: tokenManager);
+  const config = new_auth_idp.EmailIdpConfig(secretHashPepper: 'test');
+  final newEmailIdp = new_auth_idp.EmailIdp(config, tokenManager: tokenManager);
 
   setUp(() async {
-    AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
+    AuthMigrations.config = AuthMigrationConfig(emailIdp: newEmailIdp);
   });
 
   withServerpod('Given a legacy `serverpod_auth` email-based user account,', (

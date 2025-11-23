@@ -19,20 +19,20 @@ void main() {
         ),
       );
 
-  const newEmailIDPConfig = new_email_idp.EmailIDPConfig(
+  const newEmailIdpConfig = new_email_idp.EmailIdpConfig(
     secretHashPepper: 'test',
   );
-  late final new_email_idp.EmailIDP newEmailIDP;
+  late final new_email_idp.EmailIdp newEmailIdp;
 
   setUpAll(() async {
     AuthServices.set(
       identityProviders: [
-        new_email_idp.EmailIdentityProviderFactory(newEmailIDPConfig),
+        new_email_idp.EmailIdentityProviderFactory(newEmailIdpConfig),
       ],
       primaryTokenManager: tokenManagerFactory,
     );
-    newEmailIDP = AuthServices.instance.emailIDP;
-    AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
+    newEmailIdp = AuthServices.instance.emailIdp;
+    AuthMigrations.config = AuthMigrationConfig(emailIdp: newEmailIdp);
   });
 
   tearDownAll(() async {
@@ -86,7 +86,7 @@ void main() {
         'when calling `EmailAccounts.authenticate`, then it fails due to no password being set.',
         () async {
           await expectLater(
-            newEmailIDP.utils.authentication.authenticate(
+            newEmailIdp.utils.authentication.authenticate(
               session,
               email: email,
               password: password,
@@ -111,7 +111,7 @@ void main() {
           );
 
           expect(
-            await newEmailIDP.utils.authentication.authenticate(
+            await newEmailIdp.utils.authentication.authenticate(
               session,
               email: email,
               password: password,

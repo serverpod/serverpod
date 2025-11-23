@@ -7,13 +7,13 @@ import 'package:test/test.dart';
 import 'email/test_utils/email_idp_test_fixture.dart';
 
 void main() {
-  group('Given EmailIDPPasswordHashUtil instance', () {
+  group('Given EmailIdpPasswordHashUtil instance', () {
     late SecretHashUtil passwordHashUtil;
     const testSaltLength = 16;
 
     setUp(() {
-      final fixture = EmailIDPTestFixture(
-        config: const EmailIDPConfig(
+      final fixture = EmailIdpTestFixture(
+        config: const EmailIdpConfig(
           secretHashPepper: 'test-pepper',
           secretHashSaltLength: testSaltLength,
         ),
@@ -189,8 +189,8 @@ void main() {
     const pepper = 'my-test-pepper';
 
     setUp(() async {
-      final fixture = EmailIDPTestFixture(
-        config: const EmailIDPConfig(secretHashPepper: pepper),
+      final fixture = EmailIdpTestFixture(
+        config: const EmailIdpConfig(secretHashPepper: pepper),
       );
       passwordHashUtil = fixture.passwordHashUtil;
       passwordHash = await passwordHashUtil.createHash(value: value);
@@ -260,8 +260,8 @@ void main() {
     test(
       'when validatedHash is called with valid credentials on a different password hash util using a different pepper then returns false',
       () async {
-        final fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(secretHashPepper: '$pepper-modified'),
+        final fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(secretHashPepper: '$pepper-modified'),
         );
         final differentPepperPasswordHashUtil = fixture.passwordHashUtil;
 
@@ -280,8 +280,8 @@ void main() {
     late SecretHashUtil passwordHashUtil;
     late HashResult emptyPasswordHash;
     setUp(() async {
-      final fixture = EmailIDPTestFixture(
-        config: const EmailIDPConfig(secretHashPepper: 'test-pepper'),
+      final fixture = EmailIdpTestFixture(
+        config: const EmailIdpConfig(secretHashPepper: 'test-pepper'),
       );
       passwordHashUtil = fixture.passwordHashUtil;
       emptyPasswordHash = await passwordHashUtil.createHash(value: '');
@@ -311,15 +311,15 @@ void main() {
 
     setUp(() async {
       // Create hash with old pepper
-      final oldFixture = EmailIDPTestFixture(
-        config: const EmailIDPConfig(secretHashPepper: oldPepper),
+      final oldFixture = EmailIdpTestFixture(
+        config: const EmailIdpConfig(secretHashPepper: oldPepper),
       );
       oldPepperHashUtil = oldFixture.passwordHashUtil;
       oldPasswordHash = await oldPepperHashUtil.createHash(value: value);
 
       // Create new util with new pepper and old pepper as fallback
-      final newFixture = EmailIDPTestFixture(
-        config: const EmailIDPConfig(
+      final newFixture = EmailIdpTestFixture(
+        config: const EmailIdpConfig(
           secretHashPepper: newPepper,
           fallbackSecretHashPeppers: [oldPepper],
         ),
@@ -398,8 +398,8 @@ void main() {
         const veryOldPepper = 'very-old-pepper-value';
 
         // Create hash with very old pepper
-        final veryOldFixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(secretHashPepper: veryOldPepper),
+        final veryOldFixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(secretHashPepper: veryOldPepper),
         );
         final veryOldPepperHashUtil = veryOldFixture.passwordHashUtil;
         final veryOldPasswordHash = await veryOldPepperHashUtil.createHash(
@@ -407,8 +407,8 @@ void main() {
         );
 
         // Create util with multiple fallback peppers
-        final multiPepperFixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        final multiPepperFixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: newPepper,
             fallbackSecretHashPeppers: [oldPepper, veryOldPepper],
           ),

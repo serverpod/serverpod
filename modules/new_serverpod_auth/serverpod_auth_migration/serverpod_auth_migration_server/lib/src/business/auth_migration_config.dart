@@ -15,12 +15,12 @@ class AuthMigrationConfig {
   final bool importSessions;
 
   /// The email identity provider to be used for migrating email accounts.
-  final EmailIDP emailIDP;
+  final EmailIdp emailIdp;
 
   /// Create a new email account migration configuration.
   AuthMigrationConfig({
     this.importProfile = true,
     this.importSessions = true,
-    required this.emailIDP,
+    required this.emailIdp,
   });
 }
