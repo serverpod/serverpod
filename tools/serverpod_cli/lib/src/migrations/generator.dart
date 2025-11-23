@@ -585,12 +585,6 @@ class MigrationVersion {
     );
     await migrationSqlFile.writeAsString(migrationSql);
 
-    // Get the previous migration version to copy custom SQL files
-    var migrationRegistry = MigrationRegistry.load(
-      MigrationConstants.migrationsBaseDirectory(projectDirectory),
-    );
-    var previousVersion = migrationRegistry.getLatest();
-
     // Write the pre-database setup SQL file (copied from previous migration)
     await _copyOrCreateCustomSqlFile(
       projectDirectory,
