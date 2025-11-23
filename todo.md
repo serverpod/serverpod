@@ -4,39 +4,13 @@
 
 ### 1. **Basic Custom SQL Functionality** ⭐ Priority 1
 
-#### 1.1 Fresh Database Setup with Custom SQL -- Mathis done ✅
-```bash
-# Create a new test project
-cd /tmp
-serverpod create custom_sql_test
-cd custom_sql_test/custom_sql_test_server
+#### 1.1 Fresh Database Setup with Custom SQL ✅ DONE (Mathis)
 
-# Add a simple model to trigger migration
-mkdir -p lib/src/protocol
-cat > lib/src/protocol/test_model.yaml << 'EOF'
-class: TestModel
-table: test_model
-fields:
-  name: String
-EOF
-
-# Generate and create migration
-serverpod generate
-serverpod create-migration
-
-# Edit the post_database_setup.sql file
-cat > migrations/<VERSION>/post_database_setup.sql << 'EOF'
--- Custom index for performance
-CREATE INDEX idx_test_model_name ON test_model(name);
-EOF
-
-# Start docker and apply migrations
-docker compose up -d
-dart bin/main.dart --apply-migrations
-
-# Verify: Should NOT fail with integrity errors about the custom index
-# Expected: INFO message about custom SQL objects, not WARNING
-```
+**Verification Results:**
+- ✅ Custom index created successfully in post_database_setup.sql
+- ✅ No critical warnings about the custom index (INFO level only)
+- ✅ Server started successfully without integrity errors
+- ✅ Fresh database setup executes: pre_database_setup.sql → definition.sql → post_database_setup.sql
 #### 1.2 Rolling Forward Migration with Custom SQL ✅ DONE (Mathis)
 
 **Verification Results:**
