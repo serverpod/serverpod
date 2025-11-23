@@ -25,7 +25,6 @@
 #### 1.3 Verify if the code is inline with the orginal Idea of Sandpod 
 
 **Verify the transaction and all of thoses points**
-A possible solution is that the Serverpod Migration system generates four additional SQL files pre_database_setup.sql, post_database_setup.sql, pre_migration.sql and post_migration.sql.
 
 The pre/post_database_setup.sql files are utilized if a database is created from scratch. Any SQL code contained in these files would be applied as a single transaction with the definition.sql contents. The pre_database_setup.sql contents would be inlined before the definition.sql contents and the postDatabaseSetup contents would be inlined after.
 
@@ -33,6 +32,33 @@ The pre/post_migration.sql files are utilized when the database is rolled forwar
 
 Modules
 Special consideration would need to be taken for modules. Any custom commands added to modules would need to be inlined in the correct places as well. And if custom code is supported in modules, module changes would need to always be applied migration by migration in order to catch any custom code.
+
+---
+
+## ⚠️ Known Design Issue: Fresh Database Consistency
+
+**Problem:**
+When custom SQL is added to `post_migration.sql` (or `pre_migration.sql`), it only exists when rolling forward migrations. If someone drops the database and recreates from scratch using `docker compose down -v`, that custom SQL is **not** included until the next migration is created.
+
+**Example Scenario:**
+1. Developer adds BM25 index to `post_migration.sql` in Migration N
+2. `dart bin/main.dart --apply-migrations` → Index created ✅
+3. `docker compose down -v && docker compose up -d` → Fresh database
+4. `dart bin/main.dart --apply-migrations` → Index **missing** ❌
+5. Only after creating Migration N+1 does the index appear in `post_database_setup.sql`
+
+**Current Implementation:**
+- ✅ **CLI accumulation**: When creating Migration N+1, copies `post_migration.sql` from Migration N into `post_database_setup.sql` of Migration N+1
+- ❌ **No runtime accumulation**: Editing migration SQL doesn't update setup files until next migration created
+
+**Potential Solutions to Discuss:**
+1. **Dynamic accumulation at fresh DB creation**: Read all `pre/post_migration.sql` files and combine them dynamically when creating fresh database (no file modification)
+2. **Runtime accumulation**: Update setup files when applying migrations (adds complexity with duplicate detection)
+3. **Manual workaround**: Developers create empty migration to trigger setup file regeneration
+4. **Documentation**: Document this behavior as expected - developers must manually copy important SQL to setup files
+5. **Cli command**
+
+**Decision needed**: Get feedback from maintainers on preferred approach before implementing solution.
 
 ### 2. **SQL Execution Order Verification** ⭐ Priority 2
 

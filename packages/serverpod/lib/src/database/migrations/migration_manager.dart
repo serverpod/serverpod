@@ -156,11 +156,19 @@ class MigrationManager {
           ? await preDatabaseSetupFile.readAsString()
           : '';
       var sqlDefinition = await definitionSqlFile.readAsString();
+
+      // Strip BEGIN/COMMIT from definition.sql to ensure single transaction
+      // with custom SQL files (per specification)
+      sqlDefinition = sqlDefinition
+          .replaceFirst(RegExp(r'^\s*BEGIN;\s*', multiLine: true), '')
+          .replaceFirst(RegExp(r'\s*COMMIT;\s*$', multiLine: true), '');
+
       var postDatabaseSetupSql = postDatabaseSetupFile.existsSync()
           ? await postDatabaseSetupFile.readAsString()
           : '';
 
       // Combine pre + definition + post into a single SQL string
+      // PostgreSQL Simple Query Protocol executes this as a single transaction
       var combinedSql = _combineSQL([
         preDatabaseSetupSql,
         sqlDefinition,
@@ -190,11 +198,19 @@ class MigrationManager {
             ? await preMigrationFile.readAsString()
             : '';
         var sqlMigration = await migrationSqlFile.readAsString();
+
+        // Strip BEGIN/COMMIT from migration.sql to ensure single transaction
+        // with custom SQL files (per specification)
+        sqlMigration = sqlMigration
+            .replaceFirst(RegExp(r'^\s*BEGIN;\s*', multiLine: true), '')
+            .replaceFirst(RegExp(r'\s*COMMIT;\s*$', multiLine: true), '');
+
         var postMigrationSql = postMigrationFile.existsSync()
             ? await postMigrationFile.readAsString()
             : '';
 
         // Combine pre + migration + post into a single SQL string
+        // PostgreSQL Simple Query Protocol executes this as a single transaction
         var combinedSql = _combineSQL([
           preMigrationSql,
           sqlMigration,
