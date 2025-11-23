@@ -301,6 +301,138 @@ void main() {
     );
   });
 
+  group('Given a password hash created with fallback pepper', () {
+    late SecretHashUtil oldPepperHashUtil;
+    late SecretHashUtil newPepperHashUtilWithFallback;
+    late HashResult oldPasswordHash;
+    const value = 'test-password-123';
+    const oldPepper = 'old-pepper-value';
+    const newPepper = 'new-pepper-value';
+
+    setUp(() async {
+      // Create hash with old pepper
+      final oldFixture = EmailIDPTestFixture(
+        config: const EmailIDPConfig(secretHashPepper: oldPepper),
+      );
+      oldPepperHashUtil = oldFixture.passwordHashUtil;
+      oldPasswordHash = await oldPepperHashUtil.createHash(value: value);
+
+      // Create new util with new pepper and old pepper as fallback
+      final newFixture = EmailIDPTestFixture(
+        config: const EmailIDPConfig(
+          secretHashPepper: newPepper,
+          fallbackSecretHashPeppers: [oldPepper],
+        ),
+      );
+      newPepperHashUtilWithFallback = newFixture.passwordHashUtil;
+    });
+
+    test(
+      'when validateHash is called with hash created by old pepper then returns true',
+      () async {
+        final isValid = await newPepperHashUtilWithFallback.validateHash(
+          value: value,
+          hash: oldPasswordHash.hash,
+          salt: oldPasswordHash.salt,
+        );
+
+        expect(isValid, isTrue);
+      },
+    );
+
+    test(
+      'when validateHash is called with incorrect value then returns false',
+      () async {
+        const incorrectValue = '$value-incorrect';
+
+        final isValid = await newPepperHashUtilWithFallback.validateHash(
+          value: incorrectValue,
+          hash: oldPasswordHash.hash,
+          salt: oldPasswordHash.salt,
+        );
+
+        expect(isValid, isFalse);
+      },
+    );
+
+    test(
+      'when createHash is called then new hash uses primary pepper',
+      () async {
+        final newHash = await newPepperHashUtilWithFallback.createHash(
+          value: value,
+        );
+
+        // New hash should validate with new pepper only
+        final newPepperOnlyUtil = SecretHashUtil(
+          hashPepper: newPepper,
+          hashSaltLength: 16,
+        );
+
+        final isValidWithNewPepper = await newPepperOnlyUtil.validateHash(
+          value: value,
+          hash: newHash.hash,
+          salt: newHash.salt,
+        );
+
+        expect(isValidWithNewPepper, isTrue);
+
+        // And should NOT validate with old pepper only
+        final oldPepperOnlyUtil = SecretHashUtil(
+          hashPepper: oldPepper,
+          hashSaltLength: 16,
+        );
+
+        final isValidWithOldPepper = await oldPepperOnlyUtil.validateHash(
+          value: value,
+          hash: newHash.hash,
+          salt: newHash.salt,
+        );
+
+        expect(isValidWithOldPepper, isFalse);
+      },
+    );
+
+    test(
+      'when multiple fallback peppers are provided then validates against any of them',
+      () async {
+        const veryOldPepper = 'very-old-pepper-value';
+
+        // Create hash with very old pepper
+        final veryOldFixture = EmailIDPTestFixture(
+          config: const EmailIDPConfig(secretHashPepper: veryOldPepper),
+        );
+        final veryOldPepperHashUtil = veryOldFixture.passwordHashUtil;
+        final veryOldPasswordHash = await veryOldPepperHashUtil.createHash(
+          value: value,
+        );
+
+        // Create util with multiple fallback peppers
+        final multiPepperFixture = EmailIDPTestFixture(
+          config: const EmailIDPConfig(
+            secretHashPepper: newPepper,
+            fallbackSecretHashPeppers: [oldPepper, veryOldPepper],
+          ),
+        );
+        final multiPepperHashUtil = multiPepperFixture.passwordHashUtil;
+
+        // Should validate both old and very old hashes
+        final isValidOld = await multiPepperHashUtil.validateHash(
+          value: value,
+          hash: oldPasswordHash.hash,
+          salt: oldPasswordHash.salt,
+        );
+        final isValidVeryOld = await multiPepperHashUtil.validateHash(
+          value: value,
+          hash: veryOldPasswordHash.hash,
+          salt: veryOldPasswordHash.salt,
+        );
+
+        expect(isValidOld, isTrue);
+        expect(isValidVeryOld, isTrue);
+      },
+    );
+  });
+
   group('Given PasswordHash factory', () {
     test(
       'when PasswordHash.empty() is called then creates empty hash and salt',

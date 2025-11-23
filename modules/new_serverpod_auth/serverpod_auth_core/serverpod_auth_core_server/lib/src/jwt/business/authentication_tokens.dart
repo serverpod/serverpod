@@ -56,6 +56,7 @@ final class AuthenticationTokens {
       refreshTokenRotatingSecretSaltLength:
           config.refreshTokenRotatingSecretSaltLength,
       refreshTokenHashPepper: config.refreshTokenHashPepper,
+      fallbackRefreshTokenHashPeppers: config.fallbackRefreshTokenHashPeppers,
     );
     final admin = AuthenticationTokensAdmin(
       refreshTokenLifetime: config.refreshTokenLifetime,

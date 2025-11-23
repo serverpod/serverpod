@@ -14,13 +14,16 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 /// {@endtemplate}
 final class SecretHashUtil {
   final String _hashPepper;
+  final List<String> _fallbackHashPeppers;
   final int _hashSaltLength;
 
   /// Creates a new instance of [SecretHashUtil].
   SecretHashUtil({
     required final String hashPepper,
+    final List<String> fallbackHashPeppers = const [],
     required final int hashSaltLength,
   }) : _hashPepper = hashPepper,
+       _fallbackHashPeppers = fallbackHashPeppers,
        _hashSaltLength = hashSaltLength;
 
   /// Create the hash for the given [value].
@@ -55,10 +58,22 @@ final class SecretHashUtil {
       return false;
     }
 
-    return uint8ListAreEqual(
-      hash,
-      (await createHash(value: value, salt: salt)).hash,
-    );
+    // Combine primary and fallback peppers into a single list
+    final allPeppers = [_hashPepper, ..._fallbackHashPeppers];
+
+    // Try each pepper in order
+    for (final pepper in allPeppers) {
+      final computedHash = (await _createHash(
+        secret: value,
+        salt: salt,
+        pepper: utf8.encode(pepper),
+      )).hash;
+      if (uint8ListAreEqual(hash, computedHash)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   Future<HashResult> _createHash({
