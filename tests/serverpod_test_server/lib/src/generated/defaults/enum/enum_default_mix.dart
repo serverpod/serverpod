@@ -78,6 +78,7 @@ abstract class EnumDefaultMix
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'EnumDefaultMix',
       if (id != null) 'id': id,
       'byNameEnumDefaultAndDefaultModel': byNameEnumDefaultAndDefaultModel
           .toJson(),
@@ -91,6 +92,7 @@ abstract class EnumDefaultMix
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'EnumDefaultMix',
       if (id != null) 'id': id,
       'byNameEnumDefaultAndDefaultModel': byNameEnumDefaultAndDefaultModel
           .toJson(),

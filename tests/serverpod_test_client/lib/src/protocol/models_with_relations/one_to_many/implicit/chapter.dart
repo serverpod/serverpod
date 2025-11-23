@@ -47,6 +47,7 @@ abstract class Chapter implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Chapter',
       if (id != null) 'id': id,
       'title': title,
     };

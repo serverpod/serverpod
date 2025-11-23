@@ -53,6 +53,7 @@ abstract class ChildClass extends _i1.ParentClass
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ChildClass',
       if (id != null) 'id': id,
       'grandParentField': grandParentField,
       'parentField': parentField,
@@ -63,6 +64,7 @@ abstract class ChildClass extends _i1.ParentClass
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ChildClass',
       if (id != null) 'id': id,
       'grandParentField': grandParentField,
       'parentField': parentField,

@@ -85,6 +85,7 @@ abstract class ImmutableObjectWithTable
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ImmutableObjectWithTable',
       if (id != null) 'id': id,
       'variable': variable,
     };
@@ -93,6 +94,7 @@ abstract class ImmutableObjectWithTable
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ImmutableObjectWithTable',
       if (id != null) 'id': id,
       'variable': variable,
     };

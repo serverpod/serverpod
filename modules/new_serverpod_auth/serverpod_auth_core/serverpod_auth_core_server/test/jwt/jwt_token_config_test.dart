@@ -46,4 +46,68 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given valid fallback refresh token hash peppers when creating a JwtConfig then the JwtConfig is created successfully.',
+    () {
+      expect(
+        () => JwtConfig(
+          algorithm: JwtAlgorithm.hmacSha512(
+            SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: '1234567890',
+          fallbackRefreshTokenHashPeppers: ['old-pepper-1', 'old-pepper-2'],
+        ),
+        returnsNormally,
+      );
+    },
+  );
+
+  test(
+    'Given empty fallback refresh token hash peppers list when creating a JwtConfig then the JwtConfig is created successfully.',
+    () {
+      expect(
+        () => JwtConfig(
+          algorithm: JwtAlgorithm.hmacSha512(
+            SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: '1234567890',
+          fallbackRefreshTokenHashPeppers: [],
+        ),
+        returnsNormally,
+      );
+    },
+  );
+
+  test(
+    'Given invalid fallback refresh token hash pepper when creating a JwtConfig then an error is thrown.',
+    () {
+      expect(
+        () => JwtConfig(
+          algorithm: JwtAlgorithm.hmacSha512(
+            SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: '1234567890',
+          fallbackRefreshTokenHashPeppers: ['valid-pepper', 'short'],
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    },
+  );
+
+  test(
+    'Given empty fallback refresh token hash pepper when creating a JwtConfig then an error is thrown.',
+    () {
+      expect(
+        () => JwtConfig(
+          algorithm: JwtAlgorithm.hmacSha512(
+            SecretKey('test-private-key-for-HS512'),
+          ),
+          refreshTokenHashPepper: '1234567890',
+          fallbackRefreshTokenHashPeppers: [''],
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+    },
+  );
 }

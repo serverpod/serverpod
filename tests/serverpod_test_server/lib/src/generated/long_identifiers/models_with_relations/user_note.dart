@@ -58,6 +58,7 @@ abstract class UserNote
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UserNote',
       if (id != null) 'id': id,
       'name': name,
       if (_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId !=
@@ -70,6 +71,7 @@ abstract class UserNote
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'UserNote',
       if (id != null) 'id': id,
       'name': name,
     };

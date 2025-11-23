@@ -17,6 +17,7 @@ import '../../long_identifiers/deep_includes/person_with_long_table_name.dart'
     as _i2;
 import '../../long_identifiers/deep_includes/organization_with_long_table_name.dart'
     as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
 
 abstract class CityWithLongTableName
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -40,20 +41,16 @@ abstract class CityWithLongTableName
     return CityWithLongTableName(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      citizens: (jsonSerialization['citizens'] as List?)
-          ?.map(
-            (e) => _i2.PersonWithLongTableName.fromJson(
-              (e as Map<String, dynamic>),
+      citizens: jsonSerialization['citizens'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i2.PersonWithLongTableName>>(
+              jsonSerialization['citizens'],
             ),
-          )
-          .toList(),
-      organizations: (jsonSerialization['organizations'] as List?)
-          ?.map(
-            (e) => _i3.OrganizationWithLongTableName.fromJson(
-              (e as Map<String, dynamic>),
+      organizations: jsonSerialization['organizations'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i3.OrganizationWithLongTableName>>(
+              jsonSerialization['organizations'],
             ),
-          )
-          .toList(),
     );
   }
 
@@ -85,6 +82,7 @@ abstract class CityWithLongTableName
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'CityWithLongTableName',
       if (id != null) 'id': id,
       'name': name,
       if (citizens != null)
@@ -97,6 +95,7 @@ abstract class CityWithLongTableName
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'CityWithLongTableName',
       if (id != null) 'id': id,
       'name': name,
       if (citizens != null)

@@ -295,17 +295,6 @@ void main() async {
           );
         });
 
-        test('then the project contains a deploy directory', () {
-          var deployDir = Directory(
-            path.join(tempPath, serverDir, 'deploy'),
-          ).existsSync();
-          expect(
-            deployDir,
-            isTrue,
-            reason: 'Deploy directory should exist but it was not found.',
-          );
-        });
-
         test('then the project contains a web directory', () {
           var webDir = Directory(
             path.join(tempPath, serverDir, 'web'),
@@ -339,14 +328,54 @@ void main() async {
           );
         });
 
-        test('then the project contains a .gcloudignore file', () {
-          var gcloudIgnoreFile = File(
-            path.join(tempPath, serverDir, '.gcloudignore'),
+        test('then the project contains GitHub workflow for tests', () {
+          var testsWorkflow = File(
+            path.join(
+              tempPath,
+              projectName,
+              '.github',
+              'workflows',
+              'tests.yml',
+            ),
           ).existsSync();
           expect(
-            gcloudIgnoreFile,
+            testsWorkflow,
             isTrue,
-            reason: '.gcloudignore should exist but it was not found.',
+            reason: 'tests.yml workflow should exist but it was not found.',
+          );
+        });
+
+        test('then the project contains GitHub workflow for format', () {
+          var formatWorkflow = File(
+            path.join(
+              tempPath,
+              projectName,
+              '.github',
+              'workflows',
+              'format.yml',
+            ),
+          ).existsSync();
+          expect(
+            formatWorkflow,
+            isTrue,
+            reason: 'format.yml workflow should exist but it was not found.',
+          );
+        });
+
+        test('then the project contains GitHub workflow for analyze', () {
+          var analyzeWorkflow = File(
+            path.join(
+              tempPath,
+              projectName,
+              '.github',
+              'workflows',
+              'analyze.yml',
+            ),
+          ).existsSync();
+          expect(
+            analyzeWorkflow,
+            isTrue,
+            reason: 'analyze.yml workflow should exist but it was not found.',
           );
         });
       },

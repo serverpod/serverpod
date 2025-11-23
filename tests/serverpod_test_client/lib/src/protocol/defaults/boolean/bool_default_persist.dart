@@ -55,6 +55,7 @@ abstract class BoolDefaultPersist implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'BoolDefaultPersist',
       if (id != null) 'id': id,
       if (boolDefaultPersistTrue != null)
         'boolDefaultPersistTrue': boolDefaultPersistTrue,

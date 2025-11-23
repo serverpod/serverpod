@@ -53,6 +53,7 @@ abstract class IndexElementDefinition
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.IndexElementDefinition',
       'type': type.toJson(),
       'definition': definition,
     };
@@ -61,6 +62,7 @@ abstract class IndexElementDefinition
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.IndexElementDefinition',
       'type': type.toJson(),
       'definition': definition,
     };

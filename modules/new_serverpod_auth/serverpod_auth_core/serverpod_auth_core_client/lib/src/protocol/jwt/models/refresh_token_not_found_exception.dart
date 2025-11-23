@@ -30,7 +30,9 @@ abstract class RefreshTokenNotFoundException
   RefreshTokenNotFoundException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_core.RefreshTokenNotFoundException',
+    };
   }
 
   @override

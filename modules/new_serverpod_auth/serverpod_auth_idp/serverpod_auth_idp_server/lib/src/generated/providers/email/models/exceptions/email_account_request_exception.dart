@@ -49,12 +49,18 @@ abstract class EmailAccountRequestException
   });
   @override
   Map<String, dynamic> toJson() {
-    return {'reason': reason.toJson()};
+    return {
+      '__className__': 'serverpod_auth_idp.EmailAccountRequestException',
+      'reason': reason.toJson(),
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'reason': reason.toJson()};
+    return {
+      '__className__': 'serverpod_auth_idp.EmailAccountRequestException',
+      'reason': reason.toJson(),
+    };
   }
 
   @override

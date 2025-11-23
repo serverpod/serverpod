@@ -52,6 +52,7 @@ abstract class IndexElementDefinition implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.IndexElementDefinition',
       'type': type.toJson(),
       'definition': definition,
     };

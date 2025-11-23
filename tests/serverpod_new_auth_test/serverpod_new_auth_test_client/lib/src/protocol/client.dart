@@ -71,12 +71,36 @@ class EndpointAuthTest extends _i1.EndpointRef {
         {'authUserId': authUserId},
       );
 
+  /// Destroys a specific refresh token by ID.
+  _i2.Future<bool> destroySpecificRefreshToken(String token) =>
+      caller.callServerEndpoint<bool>(
+        'authTest',
+        'destroySpecificRefreshToken',
+        {'token': token},
+      );
+
   /// Checks if the session is authenticated for the test user.
   _i2.Future<bool> checkSession(_i1.UuidValue authUserId) =>
       caller.callServerEndpoint<bool>(
         'authTest',
         'checkSession',
         {'authUserId': authUserId},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointAuthenticatedStreamingTest extends _i1.EndpointRef {
+  EndpointAuthenticatedStreamingTest(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'authenticatedStreamingTest';
+
+  _i2.Stream<int> openAuthenticatedStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'authenticatedStreamingTest',
+        'openAuthenticatedStream',
+        {},
+        {},
       );
 }
 
@@ -244,9 +268,8 @@ class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
   ///   already expired.
   /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
   ///   does not comply with the password policy.
-  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
-  ///   for the given [accountRequestId], [verificationCode] is invalid, or
-  ///   the request has not been verified yet.
+  /// - [EmailAccountRequestExceptionReason.invalid] if the [registrationToken]
+  ///   is invalid.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
@@ -501,9 +524,8 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
   ///   already expired.
   /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
   ///   does not comply with the password policy.
-  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
-  ///   for the given [accountRequestId], [verificationCode] is invalid, or
-  ///   the request has not been verified yet.
+  /// - [EmailAccountRequestExceptionReason.invalid] if the [registrationToken]
+  ///   is invalid.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
@@ -701,6 +723,7 @@ class Client extends _i1.ServerpodClientShared {
              disconnectStreamsOnLostInternetConnection,
        ) {
     authTest = EndpointAuthTest(this);
+    authenticatedStreamingTest = EndpointAuthenticatedStreamingTest(this);
     emailAccountBackwardsCompatibilityTest =
         EndpointEmailAccountBackwardsCompatibilityTest(this);
     emailAccount = EndpointEmailAccount(this);
@@ -714,6 +737,8 @@ class Client extends _i1.ServerpodClientShared {
   }
 
   late final EndpointAuthTest authTest;
+
+  late final EndpointAuthenticatedStreamingTest authenticatedStreamingTest;
 
   late final EndpointEmailAccountBackwardsCompatibilityTest
   emailAccountBackwardsCompatibilityTest;
@@ -737,6 +762,7 @@ class Client extends _i1.ServerpodClientShared {
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
     'authTest': authTest,
+    'authenticatedStreamingTest': authenticatedStreamingTest,
     'emailAccountBackwardsCompatibilityTest':
         emailAccountBackwardsCompatibilityTest,
     'emailAccount': emailAccount,

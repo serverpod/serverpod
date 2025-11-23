@@ -74,6 +74,7 @@ abstract class CloudStorageDirectUploadEntry implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.CloudStorageDirectUploadEntry',
       if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,

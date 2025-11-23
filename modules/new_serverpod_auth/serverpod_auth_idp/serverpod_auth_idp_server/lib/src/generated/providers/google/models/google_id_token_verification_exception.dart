@@ -38,12 +38,16 @@ abstract class GoogleIdTokenVerificationException
   GoogleIdTokenVerificationException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_idp.GoogleIdTokenVerificationException',
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_idp.GoogleIdTokenVerificationException',
+    };
   }
 
   @override

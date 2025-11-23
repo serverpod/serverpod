@@ -77,6 +77,7 @@ abstract class ObjectWithSparseVector implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithSparseVector',
       if (id != null) 'id': id,
       'sparseVector': sparseVector.toJson(),
       if (sparseVectorNullable != null)

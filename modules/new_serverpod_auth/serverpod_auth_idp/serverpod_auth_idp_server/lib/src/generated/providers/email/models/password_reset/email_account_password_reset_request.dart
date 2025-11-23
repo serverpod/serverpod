@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../../providers/email/models/email_account.dart' as _i2;
 import '../../../../common/models/secret_challenge.dart' as _i3;
+import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i4;
 
 abstract class EmailAccountPasswordResetRequest
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -52,8 +53,8 @@ abstract class EmailAccountPasswordResetRequest
       ),
       emailAccount: jsonSerialization['emailAccount'] == null
           ? null
-          : _i2.EmailAccount.fromJson(
-              (jsonSerialization['emailAccount'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i2.EmailAccount>(
+              jsonSerialization['emailAccount'],
             ),
       createdAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
@@ -63,8 +64,8 @@ abstract class EmailAccountPasswordResetRequest
       ),
       challenge: jsonSerialization['challenge'] == null
           ? null
-          : _i3.SecretChallenge.fromJson(
-              (jsonSerialization['challenge'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i3.SecretChallenge>(
+              jsonSerialization['challenge'],
             ),
       setPasswordChallengeId:
           jsonSerialization['setPasswordChallengeId'] == null
@@ -74,9 +75,8 @@ abstract class EmailAccountPasswordResetRequest
             ),
       setPasswordChallenge: jsonSerialization['setPasswordChallenge'] == null
           ? null
-          : _i3.SecretChallenge.fromJson(
-              (jsonSerialization['setPasswordChallenge']
-                  as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i3.SecretChallenge>(
+              jsonSerialization['setPasswordChallenge'],
             ),
     );
   }
@@ -126,6 +126,7 @@ abstract class EmailAccountPasswordResetRequest
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_idp.EmailAccountPasswordResetRequest',
       if (id != null) 'id': id?.toJson(),
       'emailAccountId': emailAccountId.toJson(),
       if (emailAccount != null) 'emailAccount': emailAccount?.toJson(),

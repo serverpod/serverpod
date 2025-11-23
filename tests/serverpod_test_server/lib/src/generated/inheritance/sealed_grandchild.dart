@@ -52,6 +52,7 @@ abstract class SealedGrandChild extends _i1.SealedChild
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'SealedGrandChild',
       'sealedInt': sealedInt,
       'sealedString': sealedString,
       if (nullableInt != null) 'nullableInt': nullableInt,
@@ -62,6 +63,7 @@ abstract class SealedGrandChild extends _i1.SealedChild
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'SealedGrandChild',
       'sealedInt': sealedInt,
       'sealedString': sealedString,
       if (nullableInt != null) 'nullableInt': nullableInt,

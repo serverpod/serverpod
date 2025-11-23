@@ -262,7 +262,7 @@ class SessionLogManager {
 
       var sessionLogEntry = SessionLogEntry(
         serverId: _serverId,
-        time: now,
+        time: session.startTime,
         touched: now,
         endpoint: session.endpoint,
         method: session.method,
@@ -304,7 +304,7 @@ class SessionLogManager {
 
       var sessionLogEntry = SessionLogEntry(
         serverId: _serverId,
-        time: now,
+        time: session.startTime,
         touched: now,
         endpoint: session.endpoint,
         method: session.method,

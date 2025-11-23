@@ -77,6 +77,8 @@ abstract class EmailAccountPasswordResetRequestAttempt
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__':
+          'serverpod_auth_idp.EmailAccountPasswordResetRequestAttempt',
       if (id != null) 'id': id?.toJson(),
       'email': email,
       'attemptedAt': attemptedAt.toJson(),

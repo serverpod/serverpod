@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 
 import '../util/default_code_generators.dart';
@@ -41,12 +43,33 @@ typedef SendRegistrationVerificationCodeFunction =
       required Transaction? transaction,
     });
 
+/// Function to be called after a new email account has been created.
+typedef AfterAccountCreatedFunction =
+    FutureOr<void> Function(
+      Session session, {
+      required String email,
+      required UuidValue authUserId,
+      required UuidValue emailAccountId,
+      required Transaction? transaction,
+    });
+
 /// {@template email_idp_config}
 /// Configuration options for the email account module.
 /// {@endtemplate}
 class EmailIDPConfig {
   /// The pepper used for hashing passwords and verification codes.
+  ///
+  /// To rotate peppers without invalidating existing passwords, use [fallbackSecretHashPeppers].
   final String secretHashPepper;
+
+  /// Optional fallback peppers for validating passwords and verification codes created with previous peppers.
+  ///
+  /// When rotating peppers, add old peppers to this list to allow existing passwords
+  /// to continue working. The system will try [secretHashPepper] first, then
+  /// each fallback pepper in order until a match is found.
+  ///
+  /// This is optional and defaults to an empty list.
+  final List<String> fallbackSecretHashPeppers;
 
   /// The time for the registration email verification code to be valid.
   ///
@@ -100,6 +123,12 @@ class EmailIDPConfig {
   /// during migration scenarios.
   final OnPasswordResetCompletedFunction? onPasswordResetCompleted;
 
+  /// Callback to be invoked after a new email account has been created.
+  ///
+  /// This can be used to perform additional setup tasks, such as creating a
+  /// user profile or sending a welcome email.
+  final AfterAccountCreatedFunction? onAfterAccountCreated;
+
   /// Function to check passwords against a policy during registration and password change.
   ///
   /// If the rules are changed after a password has been set, subsequent logins with
@@ -123,6 +152,7 @@ class EmailIDPConfig {
   /// Set [current] to apply this configuration.
   const EmailIDPConfig({
     required this.secretHashPepper,
+    this.fallbackSecretHashPeppers = const [],
     this.registrationVerificationCodeLifetime = const Duration(minutes: 15),
     this.registrationVerificationCodeAllowedAttempts = 3,
     this.registrationVerificationCodeGenerator =
@@ -145,6 +175,7 @@ class EmailIDPConfig {
       maxAttempts: 3,
     ),
     this.secretHashSaltLength = 16,
+    this.onAfterAccountCreated,
   });
 }
 

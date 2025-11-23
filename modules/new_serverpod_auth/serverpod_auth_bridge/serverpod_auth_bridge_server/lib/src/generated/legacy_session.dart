@@ -15,6 +15,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i2;
+import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart'
+    as _i3;
 
 abstract class LegacySession
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -44,13 +46,12 @@ abstract class LegacySession
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>),
+          : _i3.Protocol().deserialize<_i2.AuthUser>(
+              jsonSerialization['authUser'],
             ),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-        (jsonSerialization['scopeNames'] as List),
-        itemFromJson: (e) => e as String,
-      )!,
+      scopeNames: _i3.Protocol().deserialize<Set<String>>(
+        jsonSerialization['scopeNames'],
+      ),
       hash: jsonSerialization['hash'] as String,
       method: jsonSerialization['method'] as String,
     );
@@ -96,6 +97,7 @@ abstract class LegacySession
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_bridge.LegacySession',
       if (id != null) 'id': id,
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),

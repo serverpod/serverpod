@@ -6,7 +6,11 @@ void main() {
   group('Given an `AuthenticationInfo` with a UUID `userIdentifier`', () {
     final authUserId = const Uuid().v4obj();
 
-    final authenticationInfo = AuthenticationInfo(authUserId.uuid, {});
+    final authenticationInfo = AuthenticationInfo(
+      authUserId.uuid,
+      {},
+      authId: const Uuid().v4obj().uuid,
+    );
 
     test('when reading the `userUuid` field, then the UUID is returned.', () {
       expect(authenticationInfo.authUserId, authUserId);
@@ -14,7 +18,11 @@ void main() {
   });
 
   group('Given an `AuthenticationInfo` with a non-UUID `userIdentifier`', () {
-    final authenticationInfo = AuthenticationInfo('123', {});
+    final authenticationInfo = AuthenticationInfo(
+      '123',
+      {},
+      authId: const Uuid().v4obj().uuid,
+    );
 
     test('when reading the `userUuid` field, then it throws.', () {
       expect(

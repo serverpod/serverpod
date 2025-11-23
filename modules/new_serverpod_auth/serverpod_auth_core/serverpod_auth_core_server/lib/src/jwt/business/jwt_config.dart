@@ -71,7 +71,18 @@ class JwtConfig {
   /// This influences the stored refresh token hashes, so it must not be
   /// changed for a given deployment, as otherwise all refresh tokens become
   /// invalid.
+  ///
+  /// To rotate peppers without invalidating existing refresh tokens, use [fallbackRefreshTokenHashPeppers].
   final String refreshTokenHashPepper;
+
+  /// Optional fallback peppers for validating refresh tokens created with previous peppers.
+  ///
+  /// When rotating peppers, add the old pepper to this list to allow existing refresh tokens
+  /// to continue working. The system will try [refreshTokenHashPepper] first, then
+  /// each fallback pepper in order until a match is found.
+  ///
+  /// This is optional and defaults to an empty list.
+  final List<String> fallbackRefreshTokenHashPeppers;
 
   /// The lifetime of access tokens.
   ///
@@ -143,6 +154,7 @@ class JwtConfig {
   JwtConfig({
     required this.algorithm,
     required this.refreshTokenHashPepper,
+    this.fallbackRefreshTokenHashPeppers = const [],
     this.fallbackVerificationAlgorithms = const [],
     this.accessTokenLifetime = const Duration(minutes: 10),
     this.refreshTokenLifetime = const Duration(days: 14),
@@ -153,6 +165,9 @@ class JwtConfig {
     this.extraClaimsProvider,
   }) {
     _validateRefreshTokenHashPepper(refreshTokenHashPepper);
+    for (final fallbackPepper in fallbackRefreshTokenHashPeppers) {
+      _validateRefreshTokenHashPepper(fallbackPepper);
+    }
   }
 }
 

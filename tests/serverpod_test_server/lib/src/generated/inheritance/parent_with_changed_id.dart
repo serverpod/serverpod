@@ -33,7 +33,10 @@ class ParentWithChangedId
 
   @override
   Map<String, dynamic> toJson() {
-    return {'id': id.toJson()};
+    return {
+      '__className__': 'ParentWithChangedId',
+      'id': id.toJson(),
+    };
   }
 
   @override

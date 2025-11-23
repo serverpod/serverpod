@@ -57,6 +57,7 @@ abstract class ServerOnlyChildClassWithoutId extends _i1.ParentClassWithoutId
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ServerOnlyChildClassWithoutId',
       if (id != null) 'id': id?.toJson(),
       'grandParentField': grandParentField,
       'parentField': parentField,

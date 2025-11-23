@@ -46,7 +46,10 @@ abstract class EmailAccountPasswordResetException
   });
   @override
   Map<String, dynamic> toJson() {
-    return {'reason': reason.toJson()};
+    return {
+      '__className__': 'serverpod_auth_idp.EmailAccountPasswordResetException',
+      'reason': reason.toJson(),
+    };
   }
 
   @override

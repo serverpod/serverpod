@@ -63,6 +63,7 @@ abstract class ColumnMigration
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ColumnMigration',
       'columnName': columnName,
       'addNullable': addNullable,
       'removeNullable': removeNullable,
@@ -74,6 +75,7 @@ abstract class ColumnMigration
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.ColumnMigration',
       'columnName': columnName,
       'addNullable': addNullable,
       'removeNullable': removeNullable,

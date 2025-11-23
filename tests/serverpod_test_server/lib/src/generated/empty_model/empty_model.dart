@@ -28,12 +28,12 @@ abstract class EmptyModel
   EmptyModel copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {'__className__': 'EmptyModel'};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {'__className__': 'EmptyModel'};
   }
 
   @override

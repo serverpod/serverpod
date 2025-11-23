@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
 
 @_i1.immutable
 abstract class ImmutableObjectWithList implements _i1.SerializableModel {
@@ -23,9 +24,9 @@ abstract class ImmutableObjectWithList implements _i1.SerializableModel {
     Map<String, dynamic> jsonSerialization,
   ) {
     return ImmutableObjectWithList(
-      listVariable: (jsonSerialization['listVariable'] as List)
-          .map((e) => e as String)
-          .toList(),
+      listVariable: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['listVariable'],
+      ),
     );
   }
 
@@ -59,7 +60,10 @@ abstract class ImmutableObjectWithList implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return {'listVariable': listVariable.toJson()};
+    return {
+      '__className__': 'ImmutableObjectWithList',
+      'listVariable': listVariable.toJson(),
+    };
   }
 
   @override

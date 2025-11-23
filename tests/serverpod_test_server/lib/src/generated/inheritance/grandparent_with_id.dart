@@ -50,6 +50,7 @@ class GrandparentClassWithId
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'GrandparentClassWithId',
       if (id != null) 'id': id?.toJson(),
       'grandParentField': grandParentField,
     };
@@ -58,6 +59,7 @@ class GrandparentClassWithId
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'GrandparentClassWithId',
       if (id != null) 'id': id?.toJson(),
       'grandParentField': grandParentField,
     };

@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../changed_id_type/one_to_one/address.dart' as _i2;
 import '../../changed_id_type/one_to_one/company.dart' as _i3;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
 abstract class CitizenInt implements _i1.SerializableModel {
   CitizenInt._({
@@ -41,16 +42,16 @@ abstract class CitizenInt implements _i1.SerializableModel {
       name: jsonSerialization['name'] as String,
       address: jsonSerialization['address'] == null
           ? null
-          : _i2.AddressUuid.fromJson(
-              (jsonSerialization['address'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i2.AddressUuid>(
+              jsonSerialization['address'],
             ),
       companyId: _i1.UuidValueJsonExtension.fromJson(
         jsonSerialization['companyId'],
       ),
       company: jsonSerialization['company'] == null
           ? null
-          : _i3.CompanyUuid.fromJson(
-              (jsonSerialization['company'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i3.CompanyUuid>(
+              jsonSerialization['company'],
             ),
       oldCompanyId: jsonSerialization['oldCompanyId'] == null
           ? null
@@ -59,8 +60,8 @@ abstract class CitizenInt implements _i1.SerializableModel {
             ),
       oldCompany: jsonSerialization['oldCompany'] == null
           ? null
-          : _i3.CompanyUuid.fromJson(
-              (jsonSerialization['oldCompany'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i3.CompanyUuid>(
+              jsonSerialization['oldCompany'],
             ),
     );
   }
@@ -97,6 +98,7 @@ abstract class CitizenInt implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'CitizenInt',
       if (id != null) 'id': id,
       'name': name,
       if (address != null) 'address': address?.toJson(),

@@ -60,6 +60,7 @@ abstract class FilterConstraint
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.FilterConstraint',
       'type': type.toJson(),
       'column': column,
       'value': value,
@@ -70,6 +71,7 @@ abstract class FilterConstraint
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.FilterConstraint',
       'type': type.toJson(),
       'column': column,
       'value': value,

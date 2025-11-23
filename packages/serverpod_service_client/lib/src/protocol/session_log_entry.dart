@@ -137,6 +137,7 @@ abstract class SessionLogEntry implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.SessionLogEntry',
       if (id != null) 'id': id,
       'serverId': serverId,
       'time': time.toJson(),

@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i2;
 
 abstract class AuthSuccess
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -45,10 +46,9 @@ abstract class AuthSuccess
       authUserId: _i1.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-        (jsonSerialization['scopeNames'] as List),
-        itemFromJson: (e) => e as String,
-      )!,
+      scopeNames: _i2.Protocol().deserialize<Set<String>>(
+        jsonSerialization['scopeNames'],
+      ),
     );
   }
 
@@ -89,6 +89,7 @@ abstract class AuthSuccess
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.AuthSuccess',
       'authStrategy': authStrategy,
       'token': token,
       if (tokenExpiresAt != null) 'tokenExpiresAt': tokenExpiresAt?.toJson(),
@@ -101,6 +102,7 @@ abstract class AuthSuccess
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth_core.AuthSuccess',
       'authStrategy': authStrategy,
       'token': token,
       if (tokenExpiresAt != null) 'tokenExpiresAt': tokenExpiresAt?.toJson(),

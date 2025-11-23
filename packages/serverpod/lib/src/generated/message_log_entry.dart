@@ -120,6 +120,7 @@ abstract class MessageLogEntry
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.MessageLogEntry',
       if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
       'serverId': serverId,
@@ -137,6 +138,7 @@ abstract class MessageLogEntry
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.MessageLogEntry',
       if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
       'serverId': serverId,

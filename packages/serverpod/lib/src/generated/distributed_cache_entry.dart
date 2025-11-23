@@ -35,12 +35,18 @@ abstract class DistributedCacheEntry
   DistributedCacheEntry copyWith({String? data});
   @override
   Map<String, dynamic> toJson() {
-    return {'data': data};
+    return {
+      '__className__': 'serverpod.DistributedCacheEntry',
+      'data': data,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'data': data};
+    return {
+      '__className__': 'serverpod.DistributedCacheEntry',
+      'data': data,
+    };
   }
 
   @override

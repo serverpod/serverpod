@@ -17,7 +17,9 @@ Future<AuthenticationInfo?> serviceAuthenticationHandler(
     }
 
     if (secret == session.server.serverpod.config.serviceSecret) {
-      return AuthenticationInfo('0', <Scope>{Scope.none});
+      return AuthenticationInfo('0', <Scope>{
+        Scope.none,
+      }, authId: 'service-auth');
     }
   } catch (e) {
     return null;

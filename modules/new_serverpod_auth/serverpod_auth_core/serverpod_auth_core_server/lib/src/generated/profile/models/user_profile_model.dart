@@ -74,6 +74,7 @@ abstract class UserProfileModel
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.UserProfileModel',
       'authUserId': authUserId.toJson(),
       if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,
@@ -85,6 +86,7 @@ abstract class UserProfileModel
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth_core.UserProfileModel',
       'authUserId': authUserId.toJson(),
       if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,

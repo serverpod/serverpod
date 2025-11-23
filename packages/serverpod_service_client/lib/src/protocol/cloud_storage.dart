@@ -91,6 +91,7 @@ abstract class CloudStorageEntry implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.CloudStorageEntry',
       if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,

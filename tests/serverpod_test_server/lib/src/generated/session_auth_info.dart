@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i2;
 
 abstract class SessionAuthInfo
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -32,9 +33,9 @@ abstract class SessionAuthInfo
     return SessionAuthInfo(
       isAuthenticated: jsonSerialization['isAuthenticated'] as bool,
       userId: jsonSerialization['userId'] as String?,
-      scopes: (jsonSerialization['scopes'] as List)
-          .map((e) => e as String)
-          .toList(),
+      scopes: _i2.Protocol().deserialize<List<String>>(
+        jsonSerialization['scopes'],
+      ),
       authId: jsonSerialization['authId'] as String?,
     );
   }
@@ -59,6 +60,7 @@ abstract class SessionAuthInfo
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'SessionAuthInfo',
       'isAuthenticated': isAuthenticated,
       if (userId != null) 'userId': userId,
       'scopes': scopes.toJson(),
@@ -69,6 +71,7 @@ abstract class SessionAuthInfo
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'SessionAuthInfo',
       'isAuthenticated': isAuthenticated,
       if (userId != null) 'userId': userId,
       'scopes': scopes.toJson(),

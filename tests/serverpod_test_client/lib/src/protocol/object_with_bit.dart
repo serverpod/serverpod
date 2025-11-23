@@ -87,6 +87,7 @@ abstract class ObjectWithBit implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithBit',
       if (id != null) 'id': id,
       'bit': bit.toJson(),
       if (bitNullable != null) 'bitNullable': bitNullable?.toJson(),

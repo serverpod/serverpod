@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class ObjectUser implements _i1.SerializableModel {
   ObjectUser._({
@@ -35,8 +36,8 @@ abstract class ObjectUser implements _i1.SerializableModel {
       userInfoId: jsonSerialization['userInfoId'] as int,
       userInfo: jsonSerialization['userInfo'] == null
           ? null
-          : _i2.UserInfo.fromJson(
-              (jsonSerialization['userInfo'] as Map<String, dynamic>),
+          : _i3.Protocol().deserialize<_i2.UserInfo>(
+              jsonSerialization['userInfo'],
             ),
     );
   }
@@ -64,6 +65,7 @@ abstract class ObjectUser implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectUser',
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       'userInfoId': userInfoId,

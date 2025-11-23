@@ -119,6 +119,7 @@ abstract class DefaultException
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DefaultException',
       'defaultBoolean': defaultBoolean,
       'defaultDateTime': defaultDateTime.toJson(),
       'defaultDouble': defaultDouble,

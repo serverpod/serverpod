@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:clock/clock.dart';
@@ -22,8 +23,12 @@ void main() {
       const email = 'test@serverpod.dev';
       const allowedPassword = 'Foobar123!';
       late String verificationCode;
+      late Completer<CapturedAccountCreatedData>
+      capturedAccountCreatedDataCompleter;
 
       setUp(() async {
+        capturedAccountCreatedDataCompleter =
+            Completer<CapturedAccountCreatedData>();
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
@@ -33,6 +38,22 @@ void main() {
             registrationVerificationCodeGenerator: () => verificationCode,
             passwordValidationFunction: (final password) =>
                 password == allowedPassword,
+            onAfterAccountCreated:
+                (
+                  final session, {
+                  required final String email,
+                  required final UuidValue authUserId,
+                  required final UuidValue emailAccountId,
+                  required final Transaction? transaction,
+                }) async {
+                  capturedAccountCreatedDataCompleter.complete(
+                    CapturedAccountCreatedData(
+                      email: email,
+                      authUserId: authUserId,
+                      emailAccountId: emailAccountId,
+                    ),
+                  );
+                },
           ),
         );
 
@@ -75,6 +96,7 @@ void main() {
                   ),
             );
           });
+
           test(
             'then it succeeds and returns result with auth user id, account request id and email',
             () async {
@@ -98,6 +120,21 @@ void main() {
                         equals(email),
                       ),
                 ),
+              );
+            },
+          );
+
+          test(
+            'then the onAfterAccountCreated callback is called with the created account data',
+            () async {
+              final result = await completeAccountCreationFuture;
+              final capturedData =
+                  await capturedAccountCreatedDataCompleter.future;
+              expect(capturedData.email, equals(email));
+              expect(capturedData.authUserId, equals(result.authUserId));
+              expect(
+                capturedData.emailAccountId,
+                equals(isA<UuidValue>()),
               );
             },
           );
@@ -330,4 +367,16 @@ void main() {
       );
     },
   );
+}
+
+class CapturedAccountCreatedData {
+  CapturedAccountCreatedData({
+    required this.email,
+    required this.authUserId,
+    required this.emailAccountId,
+  });
+
+  final String email;
+  final UuidValue authUserId;
+  final UuidValue emailAccountId;
 }

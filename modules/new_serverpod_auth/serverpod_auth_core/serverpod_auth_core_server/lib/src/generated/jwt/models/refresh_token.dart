@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../auth_user/models/auth_user.dart' as _i2;
 import 'dart:typed_data' as _i3;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i4;
 
 abstract class RefreshToken
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -57,13 +58,12 @@ abstract class RefreshToken
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i2.AuthUser>(
+              jsonSerialization['authUser'],
             ),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-        (jsonSerialization['scopeNames'] as List),
-        itemFromJson: (e) => e as String,
-      )!,
+      scopeNames: _i4.Protocol().deserialize<Set<String>>(
+        jsonSerialization['scopeNames'],
+      ),
       extraClaims: jsonSerialization['extraClaims'] as String?,
       method: jsonSerialization['method'] as String,
       fixedSecret: _i1.ByteDataJsonExtension.fromJson(
@@ -169,6 +169,7 @@ abstract class RefreshToken
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.RefreshToken',
       if (id != null) 'id': id?.toJson(),
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),

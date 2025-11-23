@@ -119,6 +119,7 @@ abstract class LogEntry
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.LogEntry',
       if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
       if (messageId != null) 'messageId': messageId,
@@ -136,6 +137,7 @@ abstract class LogEntry
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.LogEntry',
       if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
       if (messageId != null) 'messageId': messageId,

@@ -293,6 +293,7 @@ abstract class ImmutableObjectWithTwentyFields
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ImmutableObjectWithTwentyFields',
       if (variable1 != null) 'variable1': variable1,
       if (variable2 != null) 'variable2': variable2,
       if (variable3 != null) 'variable3': variable3,

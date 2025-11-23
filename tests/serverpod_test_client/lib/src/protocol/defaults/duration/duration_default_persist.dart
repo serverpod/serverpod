@@ -54,6 +54,7 @@ abstract class DurationDefaultPersist implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DurationDefaultPersist',
       if (id != null) 'id': id,
       if (durationDefaultPersist != null)
         'durationDefaultPersist': durationDefaultPersist?.toJson(),

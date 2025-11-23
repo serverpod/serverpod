@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../changed_id_type/one_to_many/customer.dart' as _i2;
 import '../../changed_id_type/one_to_many/comment.dart' as _i3;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
 abstract class OrderUuid implements _i1.SerializableModel {
   OrderUuid._({
@@ -38,12 +39,14 @@ abstract class OrderUuid implements _i1.SerializableModel {
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization['customer'] == null
           ? null
-          : _i2.CustomerInt.fromJson(
-              (jsonSerialization['customer'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i2.CustomerInt>(
+              jsonSerialization['customer'],
             ),
-      comments: (jsonSerialization['comments'] as List?)
-          ?.map((e) => _i3.CommentInt.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      comments: jsonSerialization['comments'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i3.CommentInt>>(
+              jsonSerialization['comments'],
+            ),
     );
   }
 
@@ -71,6 +74,7 @@ abstract class OrderUuid implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'OrderUuid',
       'id': id.toJson(),
       'description': description,
       'customerId': customerId,

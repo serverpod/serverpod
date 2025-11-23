@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Town implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Town._({
@@ -37,9 +38,7 @@ abstract class Town implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       mayorId: jsonSerialization['mayorId'] as int?,
       mayor: jsonSerialization['mayor'] == null
           ? null
-          : _i2.Citizen.fromJson(
-              (jsonSerialization['mayor'] as Map<String, dynamic>),
-            ),
+          : _i3.Protocol().deserialize<_i2.Citizen>(jsonSerialization['mayor']),
     );
   }
 
@@ -71,6 +70,7 @@ abstract class Town implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Town',
       if (id != null) 'id': id,
       'name': name,
       if (mayorId != null) 'mayorId': mayorId,
@@ -81,6 +81,7 @@ abstract class Town implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Town',
       if (id != null) 'id': id,
       'name': name,
       if (mayorId != null) 'mayorId': mayorId,

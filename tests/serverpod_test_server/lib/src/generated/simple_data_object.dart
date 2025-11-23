@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'simple_data.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class SimpleDataObject
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -22,8 +23,8 @@ abstract class SimpleDataObject
 
   factory SimpleDataObject.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDataObject(
-      object: _i2.SimpleData.fromJson(
-        (jsonSerialization['object'] as Map<String, dynamic>),
+      object: _i3.Protocol().deserialize<_i2.SimpleData>(
+        jsonSerialization['object'],
       ),
     );
   }
@@ -36,12 +37,18 @@ abstract class SimpleDataObject
   SimpleDataObject copyWith({_i2.SimpleData? object});
   @override
   Map<String, dynamic> toJson() {
-    return {'object': object.toJson()};
+    return {
+      '__className__': 'SimpleDataObject',
+      'object': object.toJson(),
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'object': object.toJsonForProtocol()};
+    return {
+      '__className__': 'SimpleDataObject',
+      'object': object.toJsonForProtocol(),
+    };
   }
 
   @override

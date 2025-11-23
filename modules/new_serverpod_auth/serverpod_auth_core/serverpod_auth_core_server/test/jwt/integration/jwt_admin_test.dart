@@ -1,12 +1,15 @@
 import 'dart:convert';
 
 import 'package:clock/clock.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/jwt.dart';
 import 'package:serverpod_auth_core_server/src/generated/jwt/models/refresh_token.dart';
+import 'package:serverpod_auth_core_server/src/jwt/business/refresh_token_exceptions.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
+import '../../test_tags.dart';
 
 void main() {
   final jwt = Jwt(
@@ -26,13 +29,14 @@ void main() {
     late Session session;
     late UuidValue authUserId;
     late UuidValue tokenId;
+    late AuthSuccess authSuccess;
     setUp(() async {
       session = sessionBuilder.build();
 
       final authUser = await jwt.authUsers.create(session);
       authUserId = authUser.id;
 
-      final authSuccess = await jwt.createTokens(
+      authSuccess = await jwt.createTokens(
         session,
         authUserId: authUserId,
         scopes: {},
@@ -221,6 +225,24 @@ void main() {
         expect(remainingTokens.single.id, tokenId);
       },
     );
+
+    test(
+      'when deleting all refresh tokens for the user, then it can not be rotated anymore.',
+      () async {
+        await jwtAdmin.deleteRefreshTokens(
+          session,
+          authUserId: authUserId,
+        );
+
+        await expectLater(
+          () => jwtAdmin.rotateRefreshToken(
+            session,
+            refreshToken: authSuccess.refreshToken!,
+          ),
+          throwsA(isA<RefreshTokenNotFoundServerException>()),
+        );
+      },
+    );
   });
 
   withServerpod(
@@ -360,6 +382,8 @@ void main() {
   ) {
     late Session session;
     late UuidValue authUserId;
+    late AuthSuccess authSuccess;
+    late UuidValue tokenId;
 
     setUp(() async {
       session = sessionBuilder.build();
@@ -376,12 +400,14 @@ void main() {
           ),
         ),
         () async {
-          await jwt.createTokens(
+          authSuccess = await jwt.createTokens(
             session,
             authUserId: authUserId,
             scopes: {},
             method: 'test',
           );
+
+          tokenId = jwt.jwtUtil.verifyJwt(authSuccess.token).refreshTokenId;
         },
       );
     });
@@ -394,6 +420,25 @@ void main() {
         final tokens = await RefreshToken.db.find(session);
 
         expect(tokens, isEmpty);
+      },
+    );
+
+    test(
+      'when calling `rotateRefreshToken` with the expired token, then it throws RefreshTokenExpiredServerException with correct refreshTokenId.',
+      () async {
+        await expectLater(
+          () => jwtAdmin.rotateRefreshToken(
+            session,
+            refreshToken: authSuccess.refreshToken!,
+          ),
+          throwsA(
+            isA<RefreshTokenExpiredServerException>().having(
+              (final e) => e.refreshTokenId,
+              'refreshTokenId',
+              tokenId,
+            ),
+          ),
+        );
       },
     );
   });
@@ -590,4 +635,281 @@ void main() {
       );
     },
   );
+
+  withServerpod(
+    'Given an auth user with a refresh token with scopes and extra claims,',
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      const String scopeName = 'test scope';
+      late Session session;
+      late UuidValue authUserId;
+      late AuthSuccess authSuccess;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        final authUser = await jwt.authUsers.create(
+          session,
+        );
+        authUserId = authUser.id;
+
+        authSuccess = await jwt.createTokens(
+          session,
+          authUserId: authUserId,
+          scopes: {const Scope(scopeName)},
+          extraClaims: {'string': 'foo', 'int': 1},
+          method: 'test',
+        );
+      });
+
+      test(
+        'when rotating the tokens, then a new refresh and access token is returned.',
+        () async {
+          final newTokenPair = await jwtAdmin.rotateRefreshToken(
+            session,
+            refreshToken: authSuccess.refreshToken!,
+          );
+
+          expect(newTokenPair.accessToken, isNot(authSuccess.token));
+          expect(newTokenPair.refreshToken, isNot(authSuccess.refreshToken));
+        },
+      );
+
+      test(
+        'when rotating tokens multiple times within the same second, then new tokens are returned.',
+        () async {
+          final newTokenPairs = await withClock(
+            Clock.fixed(DateTime.now()),
+            () => Future.wait(
+              List.generate(
+                3,
+                (final _) => jwtAdmin.rotateRefreshToken(
+                  session,
+                  refreshToken: authSuccess.refreshToken!,
+                ),
+              ),
+            ),
+          );
+
+          final tokens = newTokenPairs.map((final t) => t.accessToken).toSet();
+          expect(tokens, hasLength(3));
+          expect(tokens.add(authSuccess.token), isTrue);
+
+          final refreshTokens = newTokenPairs
+              .map((final t) => t.refreshToken)
+              .toSet();
+          expect(refreshTokens, hasLength(3));
+          expect(refreshTokens.add(authSuccess.refreshToken!), isTrue);
+        },
+      );
+
+      test(
+        'when rotating the tokens, then the new access token refers to the same refresh token ID.',
+        () async {
+          final newTokenPair = await jwtAdmin.rotateRefreshToken(
+            session,
+            refreshToken: authSuccess.refreshToken!,
+          );
+
+          expect(
+            _extractRefreshTokenId(authSuccess.token),
+            _extractRefreshTokenId(newTokenPair.accessToken),
+          );
+        },
+      );
+
+      test(
+        'when rotating the tokens, then the new access token has a different `jwtId`.',
+        () async {
+          final newTokenPair = await jwtAdmin.rotateRefreshToken(
+            session,
+            refreshToken: authSuccess.refreshToken!,
+          );
+
+          final decodedToken = JWT.decode(authSuccess.token);
+          final newDecodedToken = JWT.decode(newTokenPair.accessToken);
+
+          expect(newDecodedToken.jwtId, isNotNull);
+          expect(decodedToken.jwtId, isNot(newDecodedToken.jwtId));
+        },
+      );
+
+      test(
+        'when rotating the tokens, then the new access token contains the extra claims in the `payload` on the top-level.',
+        () async {
+          final newTokenPair = await jwtAdmin.rotateRefreshToken(
+            session,
+            refreshToken: authSuccess.refreshToken!,
+          );
+
+          final newDecodedToken = JWT.decode(newTokenPair.accessToken);
+
+          expect((newDecodedToken.payload as Map)['string'], 'foo');
+          expect((newDecodedToken.payload as Map)['int'], 1);
+        },
+      );
+
+      test(
+        'when changing the configured pepper, then attempting to rotate the token throws an error.',
+        () async {
+          final differentPepperJwt = Jwt(
+            config: JwtConfig(
+              algorithm: jwt.config.algorithm,
+              refreshTokenHashPepper:
+                  '${jwt.config.refreshTokenHashPepper}-addition',
+            ),
+          );
+
+          await expectLater(
+            () => differentPepperJwt.admin.rotateRefreshToken(
+              session,
+              refreshToken: authSuccess.refreshToken!,
+            ),
+            throwsA(isA<RefreshTokenInvalidSecretServerException>()),
+          );
+        },
+      );
+
+      test(
+        'when trying to rotate the token with a wrong fixed secret, then it throws a "not found" error.',
+        () async {
+          final tokenParts = authSuccess.refreshToken!.split(':');
+          tokenParts[2] = 'dGVzdA==';
+
+          final tokenWithUpdatedFixedSecret = tokenParts.join(':');
+
+          await expectLater(
+            () => jwtAdmin.rotateRefreshToken(
+              session,
+              refreshToken: tokenWithUpdatedFixedSecret,
+            ),
+            throwsA(isA<RefreshTokenNotFoundServerException>()),
+          );
+        },
+      );
+
+      test(
+        'when trying to rotate the token with a wrong variable secret, then it throws an error.',
+        () async {
+          final tokenParts = authSuccess.refreshToken!.split(':');
+          tokenParts[3] = 'dGVzdA==';
+
+          final tokenWithUpdatedFixedSecret = tokenParts.join(':');
+
+          await expectLater(
+            () => jwtAdmin.rotateRefreshToken(
+              session,
+              refreshToken: tokenWithUpdatedFixedSecret,
+            ),
+            throwsA(isA<RefreshTokenInvalidSecretServerException>()),
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given an auth user with tokens created using extraClaimsProvider,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late UuidValue authUserId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        const authUsers = AuthUsers();
+        final authUser = await authUsers.create(session);
+        authUserId = authUser.id;
+      });
+
+      test(
+        'when rotating tokens created with a provider, then provider claims are preserved.',
+        () async {
+          final jwtWithHook = Jwt(
+            config: JwtConfig(
+              algorithm: JwtAlgorithm.hmacSha512(
+                SecretKey('test-private-key-for-HS512'),
+              ),
+              refreshTokenHashPepper: 'test-pepper',
+              extraClaimsProvider: (final session, final context) async {
+                return {'hookClaim': 'persistsAcrossRotation'};
+              },
+            ),
+          );
+
+          final authSuccess = await jwt.createTokens(
+            session,
+            authUserId: authUserId,
+            scopes: {},
+            method: 'test',
+          );
+
+          final rotatedTokenPair = await jwtWithHook.admin.rotateRefreshToken(
+            session,
+            refreshToken: authSuccess.refreshToken!,
+          );
+
+          final decodedToken = JWT.decode(rotatedTokenPair.accessToken);
+          final payload = decodedToken.payload as Map;
+
+          expect(payload['hookClaim'], 'persistsAcrossRotation');
+        },
+      );
+    },
+  );
+
+  withServerpod('Given an initial TokenPair and its refreshed successor,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
+    late Session session;
+    late AuthSuccess initialAuthSuccess;
+    late TokenPair refreshedTokenPair;
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      final authUser = await jwt.authUsers.create(session);
+
+      initialAuthSuccess = await jwt.createTokens(
+        session,
+        authUserId: authUser.id,
+        scopes: {},
+        method: 'test',
+      );
+
+      refreshedTokenPair = await jwtAdmin.rotateRefreshToken(
+        session,
+        refreshToken: initialAuthSuccess.refreshToken!,
+      );
+    });
+
+    test(
+      'when requesting a rotation with the previous (initial) pair, then the current (refreshed) one becomes unusable as well.',
+      () async {
+        await expectLater(
+          () => jwtAdmin.rotateRefreshToken(
+            session,
+            refreshToken: initialAuthSuccess.refreshToken!,
+          ),
+          throwsA(isA<RefreshTokenInvalidSecretServerException>()),
+        );
+
+        await expectLater(
+          () => jwtAdmin.rotateRefreshToken(
+            session,
+            refreshToken: refreshedTokenPair.refreshToken,
+          ),
+          throwsA(isA<RefreshTokenNotFoundServerException>()),
+        );
+      },
+    );
+  });
+}
+
+UuidValue _extractRefreshTokenId(final String accessToken) {
+  final jwt = JWT.decode(accessToken);
+  const claimName = 'dev.serverpod.refreshTokenId';
+  final refreshTokenIdClaim = (jwt.payload as Map)[claimName] as String;
+  return UuidValue.withValidation(refreshTokenIdClaim);
 }

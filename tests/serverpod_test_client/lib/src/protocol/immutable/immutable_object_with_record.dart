@@ -62,7 +62,10 @@ abstract class ImmutableObjectWithRecord implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return {'recordVariable': _i2.mapRecordToJson(recordVariable)};
+    return {
+      '__className__': 'ImmutableObjectWithRecord',
+      'recordVariable': _i2.mapRecordToJson(recordVariable),
+    };
   }
 
   @override

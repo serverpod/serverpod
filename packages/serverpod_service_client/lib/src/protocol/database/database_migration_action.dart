@@ -14,6 +14,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../database/database_migration_action_type.dart' as _i2;
 import '../database/table_migration.dart' as _i3;
 import '../database/table_definition.dart' as _i4;
+import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i5;
 
 abstract class DatabaseMigrationAction implements _i1.SerializableModel {
   DatabaseMigrationAction._({
@@ -40,13 +41,13 @@ abstract class DatabaseMigrationAction implements _i1.SerializableModel {
       deleteTable: jsonSerialization['deleteTable'] as String?,
       alterTable: jsonSerialization['alterTable'] == null
           ? null
-          : _i3.TableMigration.fromJson(
-              (jsonSerialization['alterTable'] as Map<String, dynamic>),
+          : _i5.Protocol().deserialize<_i3.TableMigration>(
+              jsonSerialization['alterTable'],
             ),
       createTable: jsonSerialization['createTable'] == null
           ? null
-          : _i4.TableDefinition.fromJson(
-              (jsonSerialization['createTable'] as Map<String, dynamic>),
+          : _i5.Protocol().deserialize<_i4.TableDefinition>(
+              jsonSerialization['createTable'],
             ),
     );
   }
@@ -71,6 +72,7 @@ abstract class DatabaseMigrationAction implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.DatabaseMigrationAction',
       'type': type.toJson(),
       if (deleteTable != null) 'deleteTable': deleteTable,
       if (alterTable != null) 'alterTable': alterTable?.toJson(),

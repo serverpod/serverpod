@@ -167,7 +167,7 @@ void main() {
       test(
         'when rotating the tokens, then both the old (non-expired) and new access token are valid.',
         () async {
-          final newTokenPair = await jwt.rotateRefreshToken(
+          final newTokenPair = await jwt.admin.rotateRefreshToken(
             session,
             refreshToken: authSuccess.refreshToken!,
           );

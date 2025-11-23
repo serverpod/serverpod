@@ -50,6 +50,7 @@ abstract class ReadWriteTestEntry implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ReadWriteTestEntry',
       if (id != null) 'id': id,
       'number': number,
     };

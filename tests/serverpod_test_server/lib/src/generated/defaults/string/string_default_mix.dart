@@ -73,6 +73,7 @@ abstract class StringDefaultMix
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'StringDefaultMix',
       if (id != null) 'id': id,
       'stringDefaultAndDefaultModel': stringDefaultAndDefaultModel,
       'stringDefaultAndDefaultPersist': stringDefaultAndDefaultPersist,
@@ -84,6 +85,7 @@ abstract class StringDefaultMix
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'StringDefaultMix',
       if (id != null) 'id': id,
       'stringDefaultAndDefaultModel': stringDefaultAndDefaultModel,
       'stringDefaultAndDefaultPersist': stringDefaultAndDefaultPersist,

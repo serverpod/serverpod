@@ -68,6 +68,7 @@ abstract class BoolDefaultModel
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'BoolDefaultModel',
       if (id != null) 'id': id,
       'boolDefaultModelTrue': boolDefaultModelTrue,
       'boolDefaultModelFalse': boolDefaultModelFalse,
@@ -78,6 +79,7 @@ abstract class BoolDefaultModel
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'BoolDefaultModel',
       if (id != null) 'id': id,
       'boolDefaultModelTrue': boolDefaultModelTrue,
       'boolDefaultModelFalse': boolDefaultModelFalse,

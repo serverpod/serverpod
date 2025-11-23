@@ -169,18 +169,8 @@ Expression _buildFromJson(
       );
     case ValueType.list:
     case ValueType.set:
-      return _buildListOrSetTypeFromJson(
-        jsonReference,
-        type,
-        valueExpression,
-        serverCode,
-        config,
-        valueType == ValueType.list,
-        subDirParts,
-      );
     case ValueType.map:
-      return _buildMapTypeFromJson(
-        jsonReference,
+      return _buildProtocolDeserialize(
         type,
         valueExpression,
         serverCode,
@@ -278,150 +268,30 @@ Expression _buildEnumTypeFromJson(
   );
 }
 
-Expression _buildListOrSetTypeFromJson(
-  Reference jsonReference,
+Expression _buildProtocolDeserialize(
   TypeDefinition type,
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
-  bool isList,
   List<String> subDirParts,
 ) {
-  if (type.isSetType) {
-    return CodeExpression(
-      Block.of([
-        if (type.nullable) ...[
-          valueExpression.code,
-          const Code(' == null ? null :'),
-        ],
-        refer('${type.className}JsonExtension', serverpodUrl(serverCode)).code,
-        const Code('.fromJson('),
-        valueExpression
-            .asA(
-              const CodeExpression(
-                // in both the `Set` and `List` cases, the data is persisted as a `List<T>`
-                Code('List'),
-              ),
-            )
-            .code,
-        const Code(', itemFromJson: (e) =>'),
-        _buildFromJson(
-          jsonReference,
-          type.generics.first,
-          serverCode,
-          config,
-          mapExpression: refer('e'),
-          subDirParts: subDirParts,
-        ).code,
-        const Code(')'),
-        if (type.isSetType && !type.nullable) const Code('!'),
-      ]),
-    );
-  }
-
   return CodeExpression(
-    Block.of([
-      valueExpression
-          .asA(
-            CodeExpression(
-              Code('List${type.nullable ? '?' : ''}'),
+    _getProtocolReference(serverCode, config)
+        .call([])
+        .property('deserialize')
+        .call(
+          [valueExpression],
+          {},
+          [
+            type.asNonNullable.reference(
+              serverCode,
+              subDirParts: subDirParts,
+              config: config,
             ),
-          )
-          .code,
-      Code('${type.nullable ? '?' : ''}.map((e) => '),
-      _buildFromJson(
-        jsonReference,
-        type.generics.first,
-        serverCode,
-        config,
-        mapExpression: refer('e'),
-        subDirParts: subDirParts,
-      ).code,
-      const Code(').toList()'),
-    ]),
-  );
-}
-
-Expression _buildMapTypeFromJson(
-  Reference jsonReference,
-  TypeDefinition type,
-  Expression valueExpression,
-  bool serverCode,
-  GeneratorConfig config,
-  List<String> subDirParts,
-) {
-  if (type.generics.first.valueType == ValueType.string) {
-    return CodeExpression(
-      Block.of([
-        const Code('('),
-        valueExpression.code,
-        Code(
-          'as Map${type.nullable ? '?)?' : ')'}.map((k, v) =>',
-        ),
-        refer('MapEntry').call([
-          _buildFromJson(
-            jsonReference,
-            type.generics.first,
-            serverCode,
-            config,
-            mapExpression: refer('k'),
-            subDirParts: subDirParts,
-          ),
-          _buildFromJson(
-            jsonReference,
-            type.generics.last,
-            serverCode,
-            config,
-            mapExpression: refer('v'),
-            subDirParts: subDirParts,
-          ),
-        ]).code,
-        const Code(')'),
-      ]),
-    );
-  }
-
-  return CodeExpression(
-    Block.of([
-      valueExpression
-          .asA(CodeExpression(Code('List${type.nullable ? '?' : ''}')))
-          .code,
-      Code('${type.nullable ? '?' : ''}.fold<Map<'),
-      type.generics.first
-          .reference(
-            serverCode,
-            subDirParts: subDirParts,
-            config: config,
-          )
-          .code,
-      const Code(','),
-      type.generics.last
-          .reference(
-            serverCode,
-            subDirParts: subDirParts,
-            config: config,
-          )
-          .code,
-      const Code('>>({}, (t, e) => {...t, '),
-      _buildFromJson(
-        jsonReference,
-        type.generics.first,
-        serverCode,
-        config,
-        mapExpression: refer('e').index(literalString('k')),
-        subDirParts: subDirParts,
-      ).code,
-      const Code(':'),
-      _buildFromJson(
-        jsonReference,
-        type.generics.last,
-        serverCode,
-        config,
-        mapExpression: refer('e').index(literalString('v')),
-        subDirParts: subDirParts,
-      ).code,
-      const Code('})'),
-    ]),
+          ],
+        )
+        .checkIfNull(type, valueExpression: valueExpression)
+        .code,
   );
 }
 
@@ -432,6 +302,17 @@ Expression _buildClassTypeFromJson(
   GeneratorConfig config,
   List<String> subDirParts,
 ) {
+  if (!type.customClass) {
+    return _buildProtocolDeserialize(
+      type,
+      valueExpression,
+      serverCode,
+      config,
+      subDirParts,
+    );
+  }
+
+  // For custom classes, use the original fromJson approach
   return CodeExpression(
     type.asNonNullable
         .reference(
@@ -458,20 +339,13 @@ Expression _buildRecordTypeFromJson(
   GeneratorConfig config,
   List<String> subDirParts,
 ) {
-  var protocolRef = refer(
-    'Protocol',
-    serverCode
-        ? 'package:${config.serverPackage}/src/generated/protocol.dart'
-        : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
-  );
-
   return CodeExpression(
     Block.of([
       if (type.nullable) ...[
         valueExpression.code,
         const Code('== null ? null : '),
       ],
-      protocolRef
+      _getProtocolReference(serverCode, config)
           .newInstance([])
           .property('deserialize')
           .call(
@@ -506,4 +380,13 @@ extension ExpressionExtension on Expression {
       ),
     );
   }
+}
+
+Reference _getProtocolReference(bool serverCode, GeneratorConfig config) {
+  return refer(
+    'Protocol',
+    serverCode
+        ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+        : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+  );
 }

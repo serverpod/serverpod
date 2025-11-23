@@ -50,6 +50,7 @@ abstract class MaxFieldName implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'MaxFieldName',
       if (id != null) 'id': id,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,

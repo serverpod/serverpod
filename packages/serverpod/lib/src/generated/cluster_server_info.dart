@@ -33,12 +33,18 @@ abstract class ClusterServerInfo
   ClusterServerInfo copyWith({String? serverId});
   @override
   Map<String, dynamic> toJson() {
-    return {'serverId': serverId};
+    return {
+      '__className__': 'serverpod.ClusterServerInfo',
+      'serverId': serverId,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'serverId': serverId};
+    return {
+      '__className__': 'serverpod.ClusterServerInfo',
+      'serverId': serverId,
+    };
   }
 
   @override

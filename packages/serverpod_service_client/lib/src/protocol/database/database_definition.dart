@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../database/table_definition.dart' as _i2;
 import '../database/database_migration_version.dart' as _i3;
+import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i4;
 
 /// Defines the structure of the database used by Serverpod.
 abstract class DatabaseDefinition implements _i1.SerializableModel {
@@ -36,16 +37,13 @@ abstract class DatabaseDefinition implements _i1.SerializableModel {
     return DatabaseDefinition(
       name: jsonSerialization['name'] as String?,
       moduleName: jsonSerialization['moduleName'] as String,
-      tables: (jsonSerialization['tables'] as List)
-          .map((e) => _i2.TableDefinition.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      installedModules: (jsonSerialization['installedModules'] as List)
-          .map(
-            (e) => _i3.DatabaseMigrationVersion.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
-          .toList(),
+      tables: _i4.Protocol().deserialize<List<_i2.TableDefinition>>(
+        jsonSerialization['tables'],
+      ),
+      installedModules: _i4.Protocol()
+          .deserialize<List<_i3.DatabaseMigrationVersion>>(
+            jsonSerialization['installedModules'],
+          ),
       migrationApiVersion: jsonSerialization['migrationApiVersion'] as int,
     );
   }
@@ -80,6 +78,7 @@ abstract class DatabaseDefinition implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.DatabaseDefinition',
       if (name != null) 'name': name,
       'moduleName': moduleName,
       'tables': tables.toJson(valueToJson: (v) => v.toJson()),

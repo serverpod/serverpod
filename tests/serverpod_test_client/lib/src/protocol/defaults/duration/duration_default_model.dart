@@ -79,6 +79,7 @@ abstract class DurationDefaultModel implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DurationDefaultModel',
       if (id != null) 'id': id,
       'durationDefaultModel': durationDefaultModel.toJson(),
       if (durationDefaultModelNull != null)

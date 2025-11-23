@@ -61,6 +61,7 @@ abstract class BoolDefaultPersist
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'BoolDefaultPersist',
       if (id != null) 'id': id,
       if (boolDefaultPersistTrue != null)
         'boolDefaultPersistTrue': boolDefaultPersistTrue,
@@ -72,6 +73,7 @@ abstract class BoolDefaultPersist
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'BoolDefaultPersist',
       if (id != null) 'id': id,
       if (boolDefaultPersistTrue != null)
         'boolDefaultPersistTrue': boolDefaultPersistTrue,

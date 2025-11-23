@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'cluster_server_info.dart' as _i2;
+import 'package:serverpod/src/generated/protocol.dart' as _i3;
 
 /// Information about a cluster of servers.
 abstract class ClusterInfo
@@ -23,11 +24,9 @@ abstract class ClusterInfo
 
   factory ClusterInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return ClusterInfo(
-      servers: (jsonSerialization['servers'] as List)
-          .map(
-            (e) => _i2.ClusterServerInfo.fromJson((e as Map<String, dynamic>)),
-          )
-          .toList(),
+      servers: _i3.Protocol().deserialize<List<_i2.ClusterServerInfo>>(
+        jsonSerialization['servers'],
+      ),
     );
   }
 
@@ -40,12 +39,16 @@ abstract class ClusterInfo
   ClusterInfo copyWith({List<_i2.ClusterServerInfo>? servers});
   @override
   Map<String, dynamic> toJson() {
-    return {'servers': servers.toJson(valueToJson: (v) => v.toJson())};
+    return {
+      '__className__': 'serverpod.ClusterInfo',
+      'servers': servers.toJson(valueToJson: (v) => v.toJson()),
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.ClusterInfo',
       'servers': servers.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }

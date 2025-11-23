@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i2;
 
 abstract class JwtTokenInfo
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -40,10 +41,9 @@ abstract class JwtTokenInfo
       authUserId: _i1.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-        (jsonSerialization['scopeNames'] as List),
-        itemFromJson: (e) => e as String,
-      )!,
+      scopeNames: _i2.Protocol().deserialize<Set<String>>(
+        jsonSerialization['scopeNames'],
+      ),
       extraClaimsJSON: jsonSerialization['extraClaimsJSON'] as String?,
       lastUpdatedAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['lastUpdatedAt'],
@@ -92,6 +92,7 @@ abstract class JwtTokenInfo
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.AuthenticationTokenInfo',
       'id': id.toJson(),
       'authUserId': authUserId.toJson(),
       'scopeNames': scopeNames.toJson(),
@@ -105,6 +106,7 @@ abstract class JwtTokenInfo
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth_core.AuthenticationTokenInfo',
       'id': id.toJson(),
       'authUserId': authUserId.toJson(),
       'scopeNames': scopeNames.toJson(),

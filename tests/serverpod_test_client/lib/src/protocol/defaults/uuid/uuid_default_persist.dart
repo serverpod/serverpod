@@ -73,6 +73,7 @@ abstract class UuidDefaultPersist implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UuidDefaultPersist',
       if (id != null) 'id': id,
       if (uuidDefaultPersistRandom != null)
         'uuidDefaultPersistRandom': uuidDefaultPersistRandom?.toJson(),

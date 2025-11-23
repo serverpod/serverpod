@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_one/town.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Company
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -38,9 +39,7 @@ abstract class Company
       townId: jsonSerialization['townId'] as int,
       town: jsonSerialization['town'] == null
           ? null
-          : _i2.Town.fromJson(
-              (jsonSerialization['town'] as Map<String, dynamic>),
-            ),
+          : _i3.Protocol().deserialize<_i2.Town>(jsonSerialization['town']),
     );
   }
 
@@ -72,6 +71,7 @@ abstract class Company
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Company',
       if (id != null) 'id': id,
       'name': name,
       'townId': townId,
@@ -82,6 +82,7 @@ abstract class Company
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Company',
       if (id != null) 'id': id,
       'name': name,
       'townId': townId,

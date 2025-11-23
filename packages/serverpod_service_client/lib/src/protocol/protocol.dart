@@ -134,12 +134,35 @@ class Protocol extends _i1.SerializationManager {
 
   static final Protocol _instance = Protocol._();
 
+  static String? getClassNameFromObjectJson(dynamic data) {
+    if (data is! Map) return null;
+    final className = data['__className__'] as String?;
+    if (className == null) return null;
+    if (!className.startsWith('serverpod.')) return className;
+    return className.substring(10);
+  }
+
   @override
   T deserialize<T>(
     dynamic data, [
     Type? t,
   ]) {
     t ??= T;
+
+    final dataClassName = getClassNameFromObjectJson(data);
+    if (dataClassName != null && dataClassName != t.toString()) {
+      try {
+        return deserializeByClassName({
+          'className': dataClassName,
+          'data': data,
+        });
+      } on FormatException catch (_) {
+        // If the className is not recognized (e.g., older client receiving
+        // data with a new subtype), fall back to deserializing without the
+        // className, using the expected type T.
+      }
+    }
+
     if (t == _i2.CacheInfo) {
       return _i2.CacheInfo.fromJson(data) as T;
     }
@@ -516,6 +539,9 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i57.SessionLogResult?>()) {
       return (data != null ? _i57.SessionLogResult.fromJson(data) : null) as T;
     }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
     if (t == _i1.getType<List<String>?>()) {
       return (data != null
               ? (data as List).map((e) => deserialize<String>(e)).toList()
@@ -558,9 +584,6 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
-    }
     if (t == List<_i25.FilterConstraint>) {
       return (data as List)
               .map((e) => deserialize<_i25.FilterConstraint>(e))
@@ -571,6 +594,12 @@ class Protocol extends _i1.SerializationManager {
       return (data as List)
               .map((e) => deserialize<_i31.IndexElementDefinition>(e))
               .toList()
+          as T;
+    }
+    if (t == Map<String, String>) {
+      return (data as Map).map(
+            (k, v) => MapEntry(deserialize<String>(k), deserialize<String>(v)),
+          )
           as T;
     }
     if (t == _i1.getType<Map<String, String>?>()) {
@@ -662,6 +691,11 @@ class Protocol extends _i1.SerializationManager {
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
+
+    if (data is Map<String, dynamic> && data['__className__'] is String) {
+      return (data['__className__'] as String).replaceFirst('serverpod.', '');
+    }
+
     switch (data) {
       case _i2.CacheInfo():
         return 'CacheInfo';

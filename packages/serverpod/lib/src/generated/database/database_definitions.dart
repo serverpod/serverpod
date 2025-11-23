@@ -13,6 +13,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/table_definition.dart' as _i2;
 import '../database/database_migration_version.dart' as _i3;
+import 'package:serverpod/src/generated/protocol.dart' as _i4;
 
 /// Defines the current state of the database, including information about
 /// installed modules and migrations.
@@ -34,27 +35,20 @@ abstract class DatabaseDefinitions
 
   factory DatabaseDefinitions.fromJson(Map<String, dynamic> jsonSerialization) {
     return DatabaseDefinitions(
-      target: (jsonSerialization['target'] as List)
-          .map((e) => _i2.TableDefinition.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      live: (jsonSerialization['live'] as List)
-          .map((e) => _i2.TableDefinition.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      installedMigrations: (jsonSerialization['installedMigrations'] as List)
-          .map(
-            (e) => _i3.DatabaseMigrationVersion.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
-          .toList(),
-      latestAvailableMigrations:
-          (jsonSerialization['latestAvailableMigrations'] as List)
-              .map(
-                (e) => _i3.DatabaseMigrationVersion.fromJson(
-                  (e as Map<String, dynamic>),
-                ),
-              )
-              .toList(),
+      target: _i4.Protocol().deserialize<List<_i2.TableDefinition>>(
+        jsonSerialization['target'],
+      ),
+      live: _i4.Protocol().deserialize<List<_i2.TableDefinition>>(
+        jsonSerialization['live'],
+      ),
+      installedMigrations: _i4.Protocol()
+          .deserialize<List<_i3.DatabaseMigrationVersion>>(
+            jsonSerialization['installedMigrations'],
+          ),
+      latestAvailableMigrations: _i4.Protocol()
+          .deserialize<List<_i3.DatabaseMigrationVersion>>(
+            jsonSerialization['latestAvailableMigrations'],
+          ),
     );
   }
 
@@ -82,6 +76,7 @@ abstract class DatabaseDefinitions
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.DatabaseDefinitions',
       'target': target.toJson(valueToJson: (v) => v.toJson()),
       'live': live.toJson(valueToJson: (v) => v.toJson()),
       'installedMigrations': installedMigrations.toJson(
@@ -96,6 +91,7 @@ abstract class DatabaseDefinitions
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.DatabaseDefinitions',
       'target': target.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'live': live.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'installedMigrations': installedMigrations.toJson(

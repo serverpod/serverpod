@@ -57,6 +57,7 @@ abstract class ModuleClass
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_test_module.ModuleClass',
       'name': name,
       'data': data,
       if (record != null) 'record': _i2.mapRecordToJson(record),
@@ -66,6 +67,7 @@ abstract class ModuleClass
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_test_module.ModuleClass',
       'name': name,
       'data': data,
       if (record != null) 'record': _i2.mapRecordToJson(record),

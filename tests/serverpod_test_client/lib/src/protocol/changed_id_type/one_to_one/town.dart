@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../changed_id_type/one_to_one/citizen.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class TownInt implements _i1.SerializableModel {
   TownInt._({
@@ -35,8 +36,8 @@ abstract class TownInt implements _i1.SerializableModel {
       mayorId: jsonSerialization['mayorId'] as int?,
       mayor: jsonSerialization['mayor'] == null
           ? null
-          : _i2.CitizenInt.fromJson(
-              (jsonSerialization['mayor'] as Map<String, dynamic>),
+          : _i3.Protocol().deserialize<_i2.CitizenInt>(
+              jsonSerialization['mayor'],
             ),
     );
   }
@@ -64,6 +65,7 @@ abstract class TownInt implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'TownInt',
       if (id != null) 'id': id,
       'name': name,
       if (mayorId != null) 'mayorId': mayorId,

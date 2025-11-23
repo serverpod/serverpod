@@ -57,6 +57,7 @@ abstract class StringDefaultModel implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'StringDefaultModel',
       if (id != null) 'id': id,
       'stringDefaultModel': stringDefaultModel,
       'stringDefaultModelNull': stringDefaultModelNull,
