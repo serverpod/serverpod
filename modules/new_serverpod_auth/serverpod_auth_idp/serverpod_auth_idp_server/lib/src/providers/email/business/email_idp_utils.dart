@@ -1,7 +1,7 @@
 import 'package:serverpod_auth_core_server/auth_user.dart';
+import 'package:serverpod_auth_core_server/common.dart';
 
 import '../../../generated/protocol.dart';
-import '../../../utils/secret_hash_util.dart';
 import 'email_idp_config.dart';
 import 'email_idp_server_exceptions.dart';
 import 'utils/email_idp_account_creation_util.dart';
@@ -24,7 +24,7 @@ import 'utils/email_idp_password_reset_util.dart';
 /// [EmailIDPAdmin] should be sufficient.
 class EmailIDPUtils {
   /// {@macro email_idp_hash_util}
-  final SecretHashUtil hashUtil;
+  final Argon2HashUtil hashUtil;
 
   /// {@macro email_idp_account_creation_util}
   late final EmailIDPAccountCreationUtil accountCreation;
@@ -42,7 +42,7 @@ class EmailIDPUtils {
   EmailIDPUtils({
     required final EmailIDPConfig config,
     final AuthUsers authUsers = const AuthUsers(),
-  }) : hashUtil = SecretHashUtil(
+  }) : hashUtil = Argon2HashUtil(
          hashPepper: config.secretHashPepper,
          fallbackHashPeppers: config.fallbackSecretHashPeppers,
          hashSaltLength: config.secretHashSaltLength,

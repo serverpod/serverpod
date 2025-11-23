@@ -15,7 +15,6 @@ export '../../generated/protocol.dart'
         EmailAccountPasswordResetExceptionReason,
         EmailAccountRequestException,
         EmailAccountRequestExceptionReason;
-export '../../utils/secret_hash_util.dart';
 export 'business/email_idp.dart' show EmailIDP;
 export 'business/email_idp_admin.dart';
 export 'business/email_idp_config.dart';

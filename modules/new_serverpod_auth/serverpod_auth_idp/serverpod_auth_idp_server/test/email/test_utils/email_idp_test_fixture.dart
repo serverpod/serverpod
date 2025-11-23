@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/common.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/src/utils/uint8list_extension.dart';
@@ -64,7 +65,7 @@ final class EmailIDPTestFixture {
     final passwordHash = switch (password) {
       final EmailAccountPasswordHash password => password.passwordHash,
       final EmailAccountPasswordString password =>
-        await passwordHashUtil.createHash(value: password.password),
+        await passwordHashUtil.createHashFromString(secret: password.password),
       null => HashResult.empty(),
     };
 
@@ -115,7 +116,7 @@ final class EmailIDPTestFixture {
     );
   }
 
-  SecretHashUtil get passwordHashUtil => emailIDP.utils.hashUtil;
+  Argon2HashUtil get passwordHashUtil => emailIDP.utils.hashUtil;
   EmailIDPAuthenticationUtil get authenticationUtil =>
       emailIDP.utils.authentication;
   EmailIDPPasswordResetUtil get passwordResetUtil =>

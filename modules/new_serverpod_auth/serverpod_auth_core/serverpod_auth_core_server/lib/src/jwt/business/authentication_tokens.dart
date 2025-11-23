@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:clock/clock.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/common.dart';
 import 'package:serverpod_auth_core_server/src/jwt/business/refresh_token_exceptions.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -13,7 +14,6 @@ import 'authentication_info_from_jwt.dart';
 import 'authentication_token_config.dart';
 import 'authentication_tokens_admin.dart';
 import 'jwt_util.dart';
-import 'refresh_token_secret_hash.dart';
 import 'refresh_token_string.dart';
 
 /// Business logic for handling JWT-based access and refresh tokens.
@@ -27,8 +27,8 @@ final class AuthenticationTokens {
   /// The JWT utility.
   final JwtUtil jwtUtil;
 
-  /// The refresh token secret hash.
-  final RefreshTokenSecretHash refreshTokenSecretHash;
+  /// The refresh token secret hash utility.
+  final Argon2HashUtil refreshTokenSecretHash;
 
   /// Management functions for auth users.
   final AuthUsers authUsers;
@@ -52,11 +52,10 @@ final class AuthenticationTokens {
       algorithm: config.algorithm,
       fallbackVerificationAlgorithms: config.fallbackVerificationAlgorithms,
     );
-    final refreshTokenSecretHash = RefreshTokenSecretHash(
-      refreshTokenRotatingSecretSaltLength:
-          config.refreshTokenRotatingSecretSaltLength,
-      refreshTokenHashPepper: config.refreshTokenHashPepper,
-      fallbackRefreshTokenHashPeppers: config.fallbackRefreshTokenHashPeppers,
+    final refreshTokenSecretHash = Argon2HashUtil(
+      hashPepper: config.refreshTokenHashPepper,
+      fallbackHashPeppers: config.fallbackRefreshTokenHashPeppers,
+      hashSaltLength: config.refreshTokenRotatingSecretSaltLength,
     );
     final admin = AuthenticationTokensAdmin(
       refreshTokenLifetime: config.refreshTokenLifetime,
@@ -166,7 +165,9 @@ final class AuthenticationTokens {
         : null;
 
     final secret = _generateRefreshTokenRotatingSecret();
-    final newHash = await refreshTokenSecretHash.createHash(secret: secret);
+    final newHash = await refreshTokenSecretHash.createHashFromBytes(
+      secret: secret,
+    );
 
     final currentTime = clock.now();
 
