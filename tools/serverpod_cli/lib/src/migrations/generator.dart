@@ -624,48 +624,19 @@ class MigrationVersion {
     String currentVersion,
     File Function(Directory, String) pathGetter,
   ) async {
-    try {
-      // Debug file
-      var debugFile = File(path.join(projectDirectory.path, 'debug_copy.txt'));
-      await debugFile.writeAsString(
-        'CALLED: previousVersion=$previousVersion, currentVersion=$currentVersion\n',
-        mode: FileMode.append,
-      );
+    var currentFile = pathGetter(projectDirectory, currentVersion);
 
-      var currentFile = pathGetter(projectDirectory, currentVersion);
-      await debugFile.writeAsString(
-        'currentFile: ${currentFile.path}\n',
-        mode: FileMode.append,
-      );
+    if (previousVersion != null) {
+      var previousFile = pathGetter(projectDirectory, previousVersion);
 
-      if (previousVersion != null) {
-        var previousFile = pathGetter(projectDirectory, previousVersion);
-        await debugFile.writeAsString(
-          'previousFile: ${previousFile.path}\n'
-          'previousFile.existsSync(): ${previousFile.existsSync()}\n',
-          mode: FileMode.append,
-        );
-
-        if (previousFile.existsSync()) {
-          var content = await previousFile.readAsString();
-          await debugFile.writeAsString(
-            'content.length: ${content.length}\n'
-            'Copying content...\n',
-            mode: FileMode.append,
-          );
-          await currentFile.writeAsString(content);
-          return;
-        }
+      if (previousFile.existsSync()) {
+        var content = await previousFile.readAsString();
+        await currentFile.writeAsString(content);
+        return;
       }
-
-      // No previous version or previous file doesn't exist - create empty
-      await debugFile.writeAsString('Creating empty file\n',
-          mode: FileMode.append);
-      await currentFile.writeAsString('');
-    } catch (e) {
-      var debugFile = File(path.join(projectDirectory.path, 'debug_copy.txt'));
-      await debugFile.writeAsString('ERROR: $e\n', mode: FileMode.append);
-      rethrow;
     }
+
+    // No previous version or previous file doesn't exist - create empty
+    await currentFile.writeAsString('');
   }
 }
