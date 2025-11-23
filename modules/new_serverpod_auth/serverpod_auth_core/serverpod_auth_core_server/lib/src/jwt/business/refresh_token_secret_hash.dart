@@ -67,7 +67,6 @@ final class RefreshTokenSecretHash {
     required final Uint8List hash,
     required final Uint8List salt,
   }) async {
-    // Combine primary and fallback peppers into a single list
     final allPeppers = [
       _refreshTokenHashPepper,
       ..._fallbackRefreshTokenHashPeppers,
