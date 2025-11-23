@@ -46,61 +46,6 @@ final class JwtAdmin {
     );
   }
 
-  /// List all JWT tokens matching the given filters.
-  Future<List<JwtTokenInfo>> listJwtTokens(
-    final Session session, {
-    final UuidValue? authUserId,
-    final Transaction? transaction,
-    final String? method,
-
-    /// How many items to return at maximum. Must be <= 1000.
-    final int limit = 100,
-    final int offset = 0,
-  }) async {
-    if (limit <= 0 || limit > 1000) {
-      throw ArgumentError.value(limit, 'limit', 'Must be between 1 and 1000');
-    }
-    if (offset < 0) {
-      throw ArgumentError.value(offset, 'offset', 'Must be >= 0');
-    }
-
-    final refreshTokens = await RefreshToken.db.find(
-      session,
-      where: (final t) {
-        Expression<dynamic> expression = Constant.bool(true);
-
-        if (authUserId != null) {
-          expression &= t.authUserId.equals(authUserId);
-        }
-
-        if (method != null) {
-          expression &= t.method.equals(method);
-        }
-
-        return expression;
-      },
-      limit: limit,
-      offset: offset,
-      orderBy: (final t) => t.id,
-      transaction: transaction,
-    );
-
-    final jwtTokenInfos = [
-      for (final refreshToken in refreshTokens)
-        JwtTokenInfo(
-          id: refreshToken.id!,
-          authUserId: refreshToken.authUserId,
-          scopeNames: refreshToken.scopeNames,
-          createdAt: refreshToken.createdAt,
-          lastUpdatedAt: refreshToken.lastUpdatedAt,
-          extraClaimsJSON: refreshToken.extraClaims,
-          method: refreshToken.method,
-        ),
-    ];
-
-    return jwtTokenInfos;
-  }
-
   /// Deletes the refresh tokens matching the given filters.
   ///
   /// If [refreshTokenId] is provided, only the refresh token with that ID will be deleted.

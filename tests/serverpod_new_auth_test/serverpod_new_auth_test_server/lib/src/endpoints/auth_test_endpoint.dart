@@ -57,7 +57,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    await jwt.destroyAllRefreshTokens(
+    await jwt.revokeAllRefreshTokens(
       session,
       authUserId: authUserId,
     );
@@ -78,7 +78,7 @@ class AuthTestEndpoint extends Endpoint {
       );
     }
 
-    return jwt.destroyRefreshToken(
+    return jwt.revokeRefreshToken(
       session,
       refreshTokenId: authInfo.serverSideSessionId,
     );

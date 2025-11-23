@@ -193,7 +193,7 @@ void main() {
       test(
         'when deleting all refresh tokens for the user, then the access token is still valid until it expires.',
         () async {
-          await jwt.destroyAllRefreshTokens(
+          await jwt.revokeAllRefreshTokens(
             session,
             authUserId: authUserId,
           );

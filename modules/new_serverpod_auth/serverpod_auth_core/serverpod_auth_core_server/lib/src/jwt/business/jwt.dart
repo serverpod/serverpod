@@ -244,7 +244,7 @@ final class Jwt {
     });
   }
 
-  /// Removes all refresh tokens for the given [authUserId].
+  /// Revokes all refresh tokens for the given [authUserId].
   ///
   /// Returns the list of IDs of the deleted tokens.
   ///
@@ -253,7 +253,7 @@ final class Jwt {
   /// Automatically registers authentication revocation via
   /// `session.messages.authenticationRevoked` when tokens are deleted. If this
   /// behavior is not desired, use [JwtAdmin.deleteRefreshTokens] instead.
-  Future<List<UuidValue>> destroyAllRefreshTokens(
+  Future<List<UuidValue>> revokeAllRefreshTokens(
     final Session session, {
     required final UuidValue authUserId,
     final Transaction? transaction,
@@ -274,7 +274,7 @@ final class Jwt {
     return auths.map((final auth) => auth.refreshTokenId).toList();
   }
 
-  /// Removes a specific refresh token.
+  /// Revokes a specific refresh token.
   ///
   /// This does not affect the user's other authentications. Returns `true` if
   /// the token was found and deleted, `false` otherwise.
@@ -286,7 +286,7 @@ final class Jwt {
   /// `session.messages.authenticationRevoked` when the token is deleted. If this
   /// behavior is not desired, use [JwtAdmin.deleteRefreshTokens]
   /// instead.
-  Future<bool> destroyRefreshToken(
+  Future<bool> revokeRefreshToken(
     final Session session, {
     required final UuidValue refreshTokenId,
     final Transaction? transaction,
@@ -311,17 +311,59 @@ final class Jwt {
     return true;
   }
 
-  /// List all JWT tokens belonging to the given [authUserId].
+  /// List all JWT tokens matching the given filters.
   Future<List<JwtTokenInfo>> listJwtTokens(
     final Session session, {
-    required final UuidValue authUserId,
+    final UuidValue? authUserId,
     final Transaction? transaction,
+    final String? method,
+
+    /// How many items to return at maximum. Must be <= 1000.
+    final int limit = 100,
+    final int offset = 0,
   }) async {
-    return admin.listJwtTokens(
+    if (limit <= 0 || limit > 1000) {
+      throw ArgumentError.value(limit, 'limit', 'Must be between 1 and 1000');
+    }
+    if (offset < 0) {
+      throw ArgumentError.value(offset, 'offset', 'Must be >= 0');
+    }
+
+    final refreshTokens = await RefreshToken.db.find(
       session,
-      authUserId: authUserId,
+      where: (final t) {
+        Expression<dynamic> expression = Constant.bool(true);
+
+        if (authUserId != null) {
+          expression &= t.authUserId.equals(authUserId);
+        }
+
+        if (method != null) {
+          expression &= t.method.equals(method);
+        }
+
+        return expression;
+      },
+      limit: limit,
+      offset: offset,
+      orderBy: (final t) => t.id,
       transaction: transaction,
     );
+
+    final jwtTokenInfos = [
+      for (final refreshToken in refreshTokens)
+        JwtTokenInfo(
+          id: refreshToken.id!,
+          authUserId: refreshToken.authUserId,
+          scopeNames: refreshToken.scopeNames,
+          createdAt: refreshToken.createdAt,
+          lastUpdatedAt: refreshToken.lastUpdatedAt,
+          extraClaimsJSON: refreshToken.extraClaims,
+          method: refreshToken.method,
+        ),
+    ];
+
+    return jwtTokenInfos;
   }
 
   Uint8List _generateRefreshTokenFixedSecret() {

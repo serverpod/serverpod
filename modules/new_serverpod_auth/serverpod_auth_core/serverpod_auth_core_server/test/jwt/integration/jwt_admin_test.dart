@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:clock/clock.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/serverpod.dart';
@@ -59,72 +57,6 @@ void main() {
       },
     );
 
-    test(
-      'when calling `listJwtTokens` for all users, then it is returned.',
-      () async {
-        final tokens = await jwtAdmin.listJwtTokens(
-          session,
-        );
-
-        expect(
-          tokens.single.authUserId,
-          authUserId,
-        );
-      },
-    );
-
-    test(
-      'when calling `listJwtTokens` for that specific user, then it is returned.',
-      () async {
-        final tokens = await jwtAdmin.listJwtTokens(
-          session,
-          authUserId: authUserId,
-        );
-
-        expect(
-          tokens.single.authUserId,
-          authUserId,
-        );
-      },
-    );
-
-    test(
-      'when calling `listJwtTokens` for another user, then nothing is returned.',
-      () async {
-        final tokens = await jwtAdmin.listJwtTokens(
-          session,
-          authUserId: const Uuid().v4obj(),
-        );
-
-        expect(tokens, isEmpty);
-      },
-    );
-
-    test(
-      'when calling `listJwtTokens` with matching method, then it is returned.',
-      () async {
-        final tokens = await jwtAdmin.listJwtTokens(
-          session,
-          method: 'test',
-        );
-
-        expect(tokens, hasLength(1));
-        expect(tokens.single.authUserId, authUserId);
-      },
-    );
-
-    test(
-      'when calling `listJwtTokens` with non-matching method, then nothing is returned.',
-      () async {
-        final tokens = await jwtAdmin.listJwtTokens(
-          session,
-          method: 'something else',
-        );
-
-        expect(tokens, isEmpty);
-      },
-    );
-
     group('when calling `deleteRefreshTokens` with that refreshTokenId', () {
       late List<DeletedRefreshToken> deletedTokens;
       setUp(() async {
@@ -135,7 +67,7 @@ void main() {
       });
 
       test('then that token is deleted.', () async {
-        final remainingTokens = await jwtAdmin.listJwtTokens(
+        final remainingTokens = await jwt.listJwtTokens(
           session,
           authUserId: authUserId,
         );
@@ -160,7 +92,7 @@ void main() {
           method: 'test',
         );
 
-        final remainingTokens = await jwtAdmin.listJwtTokens(
+        final remainingTokens = await jwt.listJwtTokens(
           session,
           authUserId: authUserId,
         );
@@ -178,7 +110,7 @@ void main() {
           refreshTokenId: nonExistentId,
         );
 
-        final remainingTokens = await jwtAdmin.listJwtTokens(
+        final remainingTokens = await jwt.listJwtTokens(
           session,
           authUserId: authUserId,
         );
@@ -198,7 +130,7 @@ void main() {
           authUserId: nonExistentUserId,
         );
 
-        final remainingTokens = await jwtAdmin.listJwtTokens(
+        final remainingTokens = await jwt.listJwtTokens(
           session,
           authUserId: authUserId,
         );
@@ -216,7 +148,7 @@ void main() {
           method: 'non-existent-method',
         );
 
-        final remainingTokens = await jwtAdmin.listJwtTokens(
+        final remainingTokens = await jwt.listJwtTokens(
           session,
           authUserId: authUserId,
         );
@@ -244,137 +176,6 @@ void main() {
       },
     );
   });
-
-  withServerpod(
-    'Given two auth user with 100 JWT tokens each,',
-    // Creating authentication tokens takes time, so we do it once in
-    // setUpAll and then rollback the database after all tests in the group are complete.
-    rollbackDatabase: RollbackDatabase.afterAll,
-    (final sessionBuilder, final endpoints) {
-      late Session session;
-      late UuidValue authUserId1;
-      late UuidValue authUserId2;
-      late List<UuidValue> refreshTokenIdsInOrderOfCreation;
-
-      setUpAll(() async {
-        session = sessionBuilder.build();
-
-        authUserId1 = (await jwt.authUsers.create(session)).id;
-        authUserId2 = (await jwt.authUsers.create(session)).id;
-        refreshTokenIdsInOrderOfCreation = [];
-
-        for (var i = 0; i < 100; i++) {
-          for (final authUserId in [authUserId1, authUserId2]) {
-            final authSuccess = await jwt.createTokens(
-              session,
-              authUserId: authUserId,
-              scopes: {},
-              method: 'test',
-            );
-
-            refreshTokenIdsInOrderOfCreation.add(
-              UuidValue.fromByteList(
-                base64Decode(authSuccess.refreshToken!.split(':')[1]),
-              ),
-            );
-          }
-        }
-      });
-
-      test(
-        'when calling `listJwtTokens`, then it returns the first 100 tokens in order of creation date ASC.',
-        () async {
-          final tokens = await jwtAdmin.listJwtTokens(
-            session,
-          );
-
-          expect(tokens, hasLength(100));
-          expect(
-            tokens.map((final t) => t.id),
-            refreshTokenIdsInOrderOfCreation.take(100),
-          );
-        },
-      );
-
-      test(
-        'when calling `listJwtTokens(offset: 50)`, then it returns the next 100 tokens in order of creation date ASC.',
-        () async {
-          final tokens = await jwtAdmin.listJwtTokens(
-            session,
-            offset: 50,
-          );
-
-          expect(tokens, hasLength(100));
-          expect(
-            tokens.map((final t) => t.id),
-            refreshTokenIdsInOrderOfCreation.skip(50).take(100),
-          );
-        },
-      );
-
-      test(
-        "when calling `listJwtTokens(limit: 2)` for a specific auth user, then it returns that user's first 2 tokens in order of creation date ASC.",
-        () async {
-          final tokens = await jwtAdmin.listJwtTokens(
-            session,
-            authUserId: authUserId1,
-            limit: 2,
-          );
-
-          expect(tokens, hasLength(2));
-          expect(
-            tokens.map((final t) => t.id),
-            [
-              refreshTokenIdsInOrderOfCreation[0],
-              refreshTokenIdsInOrderOfCreation[2],
-            ],
-          );
-        },
-      );
-
-      test(
-        'when calling `listJwtTokens` with `limit: 0`, then it throws.',
-        () async {
-          await expectLater(
-            () => jwtAdmin.listJwtTokens(
-              session,
-              authUserId: authUserId1,
-              limit: 0,
-            ),
-            throwsArgumentError,
-          );
-        },
-      );
-
-      test(
-        'when calling `listJwtTokens` with `limit: 1001`, then it throws.',
-        () async {
-          await expectLater(
-            () => jwtAdmin.listJwtTokens(
-              session,
-              authUserId: authUserId1,
-              limit: 1001,
-            ),
-            throwsArgumentError,
-          );
-        },
-      );
-
-      test(
-        'when calling `listJwtTokens` with `offset: -1`, then it throws.',
-        () async {
-          await expectLater(
-            () => jwtAdmin.listJwtTokens(
-              session,
-              authUserId: authUserId1,
-              offset: -1,
-            ),
-            throwsArgumentError,
-          );
-        },
-      );
-    },
-  );
 
   withServerpod('Given an auth user with an expired JWT token,', (
     final sessionBuilder,
@@ -489,7 +290,7 @@ void main() {
             refreshTokenId: tokenId1,
           );
 
-          final remainingTokens = await jwtAdmin.listJwtTokens(
+          final remainingTokens = await jwt.listJwtTokens(
             session,
           );
           expect(remainingTokens, hasLength(2));
@@ -518,7 +319,7 @@ void main() {
         });
 
         test('then only tokens not matching the method remains.', () async {
-          final remainingTokens = await jwtAdmin.listJwtTokens(
+          final remainingTokens = await jwt.listJwtTokens(
             session,
           );
           expect(remainingTokens, hasLength(1));
@@ -589,7 +390,7 @@ void main() {
           );
 
           expect(deletedTokens, hasLength(2));
-          final remainingTokens = await jwtAdmin.listJwtTokens(
+          final remainingTokens = await jwt.listJwtTokens(
             session,
           );
           expect(remainingTokens, hasLength(2));
@@ -613,7 +414,7 @@ void main() {
           expect(deletedTokens.first.refreshTokenId, firstUserTestTokenID);
           expect(deletedTokens.first.authUserId, firstUserAuthUserId);
 
-          final remainingTokens = await jwtAdmin.listJwtTokens(
+          final remainingTokens = await jwt.listJwtTokens(
             session,
           );
           expect(remainingTokens, hasLength(3));
@@ -627,7 +428,7 @@ void main() {
             session,
           );
 
-          final remainingTokens = await jwtAdmin.listJwtTokens(
+          final remainingTokens = await jwt.listJwtTokens(
             session,
           );
           expect(remainingTokens, isEmpty);

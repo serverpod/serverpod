@@ -57,7 +57,7 @@ class JwtTokenManager implements TokenManager {
       return [];
     }
 
-    return (await jwt.admin.listJwtTokens(
+    return (await jwt.listJwtTokens(
           session,
           authUserId: authUserId,
           method: method,

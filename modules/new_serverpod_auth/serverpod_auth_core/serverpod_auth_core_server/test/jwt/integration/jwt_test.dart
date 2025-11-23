@@ -169,7 +169,7 @@ void main() {
       test(
         'when calling `destroyRefreshToken` with a valid refresh token ID, then it returns true.',
         () async {
-          final deleted = await jwt.destroyRefreshToken(
+          final deleted = await jwt.revokeRefreshToken(
             session,
             refreshTokenId: _extractRefreshTokenId(authSuccess.token),
           );
@@ -181,7 +181,7 @@ void main() {
       test(
         'when calling `destroyRefreshToken` with an invalid refresh token ID, then it returns false.',
         () async {
-          final deleted = await jwt.destroyRefreshToken(
+          final deleted = await jwt.revokeRefreshToken(
             session,
             refreshTokenId: const Uuid().v4obj(),
           );
@@ -202,7 +202,7 @@ void main() {
             ),
           ).wait;
 
-          final deletedIds = await jwt.destroyAllRefreshTokens(
+          final deletedIds = await jwt.revokeAllRefreshTokens(
             session,
             authUserId: authUserId,
           );
@@ -232,7 +232,7 @@ void main() {
             revocationMessages.add,
           );
 
-          final deleted = await jwt.destroyRefreshToken(
+          final deleted = await jwt.revokeRefreshToken(
             session,
             refreshTokenId: refreshTokenId,
           );
@@ -266,7 +266,7 @@ void main() {
             revocationMessages.add,
           );
 
-          final deletedIds = await jwt.destroyAllRefreshTokens(
+          final deletedIds = await jwt.revokeAllRefreshTokens(
             session,
             authUserId: authUserId,
           );
@@ -307,7 +307,18 @@ void main() {
     });
 
     test(
-      'when listing the tokens for that user, then it is returned.',
+      'when listing all tokens, then it is returned.',
+      () async {
+        final tokens = await jwt.listJwtTokens(
+          session,
+        );
+
+        expect(tokens.single.authUserId, authUserId);
+      },
+    );
+
+    test(
+      'when listing tokens for that user, then it is returned.',
       () async {
         final tokenInfos = await jwt.listJwtTokens(
           session,
@@ -315,6 +326,43 @@ void main() {
         );
 
         expect(tokenInfos.single.authUserId, authUserId);
+      },
+    );
+
+    test(
+      'when listing tokens for another user, then nothing is returned.',
+      () async {
+        final tokens = await jwt.listJwtTokens(
+          session,
+          authUserId: const Uuid().v4obj(),
+        );
+
+        expect(tokens, isEmpty);
+      },
+    );
+
+    test(
+      'when listing tokens with matching method, then it is returned.',
+      () async {
+        final tokens = await jwt.listJwtTokens(
+          session,
+          method: 'test',
+        );
+
+        expect(tokens, hasLength(1));
+        expect(tokens.single.authUserId, authUserId);
+      },
+    );
+
+    test(
+      'when listing tokens with non-matching method, then nothing is returned.',
+      () async {
+        final tokens = await jwt.listJwtTokens(
+          session,
+          method: 'something else',
+        );
+
+        expect(tokens, isEmpty);
       },
     );
   });
@@ -363,6 +411,133 @@ void main() {
       },
     );
   });
+
+  withServerpod(
+    'Given two auth users with 100 JWT tokens each,',
+    rollbackDatabase: RollbackDatabase.afterAll,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late UuidValue authUserId1;
+      late UuidValue authUserId2;
+      late List<UuidValue> refreshTokenIdsInOrderOfCreation;
+
+      setUpAll(() async {
+        session = sessionBuilder.build();
+
+        authUserId1 = (await jwt.authUsers.create(session)).id;
+        authUserId2 = (await jwt.authUsers.create(session)).id;
+        refreshTokenIdsInOrderOfCreation = [];
+
+        for (var i = 0; i < 100; i++) {
+          for (final authUserId in [authUserId1, authUserId2]) {
+            final authSuccess = await jwt.createTokens(
+              session,
+              authUserId: authUserId,
+              scopes: {},
+              method: 'test',
+            );
+
+            refreshTokenIdsInOrderOfCreation.add(
+              jwt.jwtUtil.verifyJwt(authSuccess.token).refreshTokenId,
+            );
+          }
+        }
+      });
+
+      test(
+        'when listing tokens, then it returns the first 100 tokens in order of creation date ASC.',
+        () async {
+          final tokens = await jwt.listJwtTokens(
+            session,
+          );
+
+          expect(tokens, hasLength(100));
+          expect(
+            tokens.map((final t) => t.id),
+            refreshTokenIdsInOrderOfCreation.take(100),
+          );
+        },
+      );
+
+      test(
+        'when listing tokens with offset 50, then it returns the next 100 tokens in order of creation date ASC.',
+        () async {
+          final tokens = await jwt.listJwtTokens(
+            session,
+            offset: 50,
+          );
+
+          expect(tokens, hasLength(100));
+          expect(
+            tokens.map((final t) => t.id),
+            refreshTokenIdsInOrderOfCreation.skip(50).take(100),
+          );
+        },
+      );
+
+      test(
+        "when listing tokens with limit 2 for a specific auth user, then it returns that user's first 2 tokens in order of creation date ASC.",
+        () async {
+          final tokens = await jwt.listJwtTokens(
+            session,
+            authUserId: authUserId1,
+            limit: 2,
+          );
+
+          expect(tokens, hasLength(2));
+          expect(
+            tokens.map((final t) => t.id),
+            [
+              refreshTokenIdsInOrderOfCreation[0],
+              refreshTokenIdsInOrderOfCreation[2],
+            ],
+          );
+        },
+      );
+
+      test(
+        'when listing tokens with limit 0, then it throws.',
+        () async {
+          await expectLater(
+            () => jwt.listJwtTokens(
+              session,
+              authUserId: authUserId1,
+              limit: 0,
+            ),
+            throwsArgumentError,
+          );
+        },
+      );
+
+      test(
+        'when listing tokens with limit 1001, then it throws.',
+        () async {
+          await expectLater(
+            () => jwt.listJwtTokens(
+              session,
+              authUserId: authUserId1,
+              limit: 1001,
+            ),
+            throwsArgumentError,
+          );
+        },
+      );
+
+      test(
+        'when listing tokens with offset -1, then it throws.',
+        () async {
+          await expectLater(
+            () => jwt.listJwtTokens(
+              session,
+              authUserId: authUserId1,
+              offset: -1,
+            ),
+            throwsArgumentError,
+          );
+        },
+      );
+    },
+  );
 
   withServerpod('Given a user with scopes,', (
     final sessionBuilder,
