@@ -22,6 +22,18 @@
   - MIGRATION_COMPLETE logged at 2025-11-22 23:20:01.283056
 - ✅ SQL execution order verified: pre_migration.sql → migration.sql → post_migration.sql
 
+#### 1.3 Verify if the code is inline with the orginal Idea of Sandpod 
+
+**Verify the transaction and all of thoses points**
+A possible solution is that the Serverpod Migration system generates four additional SQL files pre_database_setup.sql, post_database_setup.sql, pre_migration.sql and post_migration.sql.
+
+The pre/post_database_setup.sql files are utilized if a database is created from scratch. Any SQL code contained in these files would be applied as a single transaction with the definition.sql contents. The pre_database_setup.sql contents would be inlined before the definition.sql contents and the postDatabaseSetup contents would be inlined after.
+
+The pre/post_migration.sql files are utilized when the database is rolled forward. These files live inside of each migration. Any SQL code in these fields would be applied as a single transaction with the migration.sql contents. The pre_migration.sql contents would be inlined before the migration.sql contents and the post_migration.sql contents would be inlined after.
+
+Modules
+Special consideration would need to be taken for modules. Any custom commands added to modules would need to be inlined in the correct places as well. And if custom code is supported in modules, module changes would need to always be applied migration by migration in order to catch any custom code.
+
 ### 2. **SQL Execution Order Verification** ⭐ Priority 2
 
 #### 2.1 Verify Pre-Database Setup Runs Before Definition
