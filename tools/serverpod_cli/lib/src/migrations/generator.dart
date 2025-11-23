@@ -630,16 +630,30 @@ class MigrationVersion {
   ) async {
     var currentFile = pathGetter(projectDirectory, currentVersion);
 
+    print('DEBUG: previousVersion = $previousVersion');
+    print('DEBUG: currentVersion = $currentVersion');
+    print('DEBUG: currentFile = ${currentFile.path}');
+
     if (previousVersion != null) {
       var previousFile = pathGetter(projectDirectory, previousVersion);
+      print('DEBUG: previousFile = ${previousFile.path}');
+      print('DEBUG: previousFile.existsSync() = ${previousFile.existsSync()}');
+
       if (previousFile.existsSync()) {
         var content = await previousFile.readAsString();
+        print('DEBUG: content length = ${content.length}');
         await currentFile.writeAsString(content);
+        print('DEBUG: Copied content from $previousVersion to $currentVersion');
         return;
+      } else {
+        print('DEBUG: Previous file does not exist');
       }
+    } else {
+      print('DEBUG: No previous version found');
     }
 
     // No previous version or previous file doesn't exist - create empty
+    print('DEBUG: Creating empty file');
     await currentFile.writeAsString('');
   }
 }
