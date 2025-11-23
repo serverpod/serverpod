@@ -36,34 +36,25 @@ Special consideration would need to be taken for modules. Any custom commands ad
 
 ### 2. **SQL Execution Order Verification** ⭐ Priority 2
 
-#### 2.1 Verify Pre-Database Setup Runs Before Definition
-```bash
-# Edit pre_database_setup.sql
-cat > migrations/<VERSION>/pre_database_setup.sql << 'EOF'
--- This should run BEFORE definition.sql
-CREATE TABLE setup_tracker (id SERIAL PRIMARY KEY, stage TEXT);
-INSERT INTO setup_tracker (stage) VALUES ('pre_database_setup');
-EOF
+#### 2.1 Verify Pre-Database Setup Runs Before Definition ✅ DONE (Mathis)
 
-# Edit post_database_setup.sql
-cat > migrations/<VERSION>/post_database_setup.sql << 'EOF'
--- This should run AFTER definition.sql
-INSERT INTO setup_tracker (stage) VALUES ('post_database_setup');
-EOF
+**Verification Results:**
+- ✅ `setup_tracker` table created successfully in pre_database_setup.sql
+- ✅ First row inserted: 'pre_database_setup' (ID: 1)
+- ✅ Second row inserted: 'post_database_setup' (ID: 2)
+- ✅ Execution order confirmed: pre_database_setup.sql → definition.sql → post_database_setup.sql
+- ✅ Fresh database setup executes custom SQL in correct order within single transaction
 
-# Drop database and recreate
-docker compose down -v
-docker compose up -d
-dart bin/main.dart --apply-migrations
+#### 2.2 Verify Pre-Migration Runs Before Migration SQL ✅ DONE (Mathis)
 
-# Verify order in database
-# Should see: pre_database_setup, then post_database_setup
-```
-
-#### 2.2 Verify Pre-Migration Runs Before Migration SQL
-```bash
-# Similar test but for migrations instead of fresh setup
-```
+**Verification Results:**
+- ✅ `migration_tracker` table created successfully in pre_migration.sql
+- ✅ First row inserted: 'pre_migration' (ID: 1)
+- ✅ Second row inserted: 'migration' (ID: 2) 
+- ✅ Third row inserted: 'post_migration' (ID: 3)
+- ✅ All rows have identical timestamps (2025-11-23 16:16:18.292994) confirming single transaction
+- ✅ Execution order confirmed: pre_migration.sql → migration.sql → post_migration.sql
+- ✅ Rolling forward migration executes custom SQL in correct order within single transaction
 
 ### 3. **Module Support** ⭐ Priority 3
 
@@ -154,6 +145,8 @@ EOF
 ```
 
 ---
+
+## maybe test the regex validation
 
 ## ✅ Existing Tests That Should Pass
 

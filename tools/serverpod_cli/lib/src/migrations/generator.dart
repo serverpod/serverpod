@@ -617,6 +617,7 @@ class MigrationVersion {
   }
 
   /// Copies custom SQL file from previous version or creates an empty one.
+  /// For database_setup files, also accumulates migration SQL from previous version.
   /// Used for pre/post database setup SQL files that should be carried forward.
   static Future<void> _copyOrCreateCustomSqlFile(
     Directory projectDirectory,
@@ -627,13 +628,44 @@ class MigrationVersion {
     var currentFile = pathGetter(projectDirectory, currentVersion);
 
     if (previousVersion != null) {
-      var previousFile = pathGetter(projectDirectory, previousVersion);
+      var setupContent = StringBuffer();
 
+      // Copy previous database_setup file content
+      var previousFile = pathGetter(projectDirectory, previousVersion);
       if (previousFile.existsSync()) {
         var content = await previousFile.readAsString();
-        await currentFile.writeAsString(content);
-        return;
+        if (content.trim().isNotEmpty) {
+          setupContent.writeln(content);
+        }
       }
+
+      // For database_setup files, accumulate migration SQL from previous version
+      File? migrationFileToAccumulate;
+      if (pathGetter == MigrationConstants.preDatabaseSetupSQLPath) {
+        migrationFileToAccumulate = MigrationConstants.preMigrationSQLPath(
+          projectDirectory,
+          previousVersion,
+        );
+      } else if (pathGetter == MigrationConstants.postDatabaseSetupSQLPath) {
+        migrationFileToAccumulate = MigrationConstants.postMigrationSQLPath(
+          projectDirectory,
+          previousVersion,
+        );
+      }
+
+      if (migrationFileToAccumulate != null &&
+          migrationFileToAccumulate.existsSync()) {
+        var migrationContent = await migrationFileToAccumulate.readAsString();
+        if (migrationContent.trim().isNotEmpty) {
+          if (setupContent.isNotEmpty) {
+            setupContent.writeln(); // Add separator
+          }
+          setupContent.writeln(migrationContent);
+        }
+      }
+
+      await currentFile.writeAsString(setupContent.toString());
+      return;
     }
 
     // No previous version or previous file doesn't exist - create empty
