@@ -72,7 +72,6 @@ final class RefreshTokenSecretHash {
       ..._fallbackRefreshTokenHashPeppers,
     ];
 
-    // Try each pepper in order
     for (final pepper in allPeppers) {
       final computedHash = (await _createHash(
         secret: secret,
