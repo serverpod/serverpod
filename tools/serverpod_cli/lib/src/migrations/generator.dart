@@ -628,6 +628,16 @@ class MigrationVersion {
 
     File? sourceFile;
 
+    // Optional override: force copying from a specific version via env var.
+    var forcedVersion =
+        Platform.environment['SERVERPOD_FORCE_CUSTOM_SQL_VERSION'];
+    if (forcedVersion != null && forcedVersion.isNotEmpty) {
+      var forcedFile = pathGetter(projectDirectory, forcedVersion);
+      if (forcedFile.existsSync()) {
+        sourceFile = forcedFile;
+      }
+    }
+
     // Prefer the supplied previous version if it exists.
     if (previousVersion != null) {
       var previousFile = pathGetter(projectDirectory, previousVersion);
