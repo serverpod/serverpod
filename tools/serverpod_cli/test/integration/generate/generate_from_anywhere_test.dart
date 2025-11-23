@@ -93,7 +93,7 @@ dependencies:
         Directory.current = tempDir;
 
         try {
-          var config = await GeneratorConfig.load();
+          var config = await GeneratorConfig.load(interactive: false);
           expect(config.serverPackage, equals('myapp_server'));
           expect(config.name, equals('myapp'));
         } finally {
@@ -118,7 +118,7 @@ dependencies:
         Directory.current = clientDir;
 
         try {
-          var config = await GeneratorConfig.load();
+          var config = await GeneratorConfig.load(interactive: false);
           expect(config.serverPackage, equals('myapp_server'));
           expect(config.name, equals('myapp'));
         } finally {
@@ -145,7 +145,7 @@ dependencies:
         Directory.current = protocolDir;
 
         try {
-          var config = await GeneratorConfig.load();
+          var config = await GeneratorConfig.load(interactive: false);
           expect(config.serverPackage, equals('myapp_server'));
           expect(config.name, equals('myapp'));
         } finally {
@@ -164,7 +164,10 @@ dependencies:
           projectName: 'myapp',
         );
 
-        var config = await GeneratorConfig.load(serverRootDir: serverDir.path);
+        var config = await GeneratorConfig.load(
+          serverRootDir: serverDir.path,
+          interactive: false,
+        );
 
         expect(config.serverPackage, equals('myapp_server'));
         expect(config.name, equals('myapp'));
@@ -184,7 +187,7 @@ dependencies:
 
         try {
           await expectLater(
-            GeneratorConfig.load(),
+            GeneratorConfig.load(interactive: false),
             throwsA(isA<ServerpodProjectNotFoundException>()),
           );
         } finally {
