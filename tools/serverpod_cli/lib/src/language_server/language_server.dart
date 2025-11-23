@@ -139,7 +139,10 @@ Future<ServerProject?> _loadServerProject(
   var serverRootDir = findServerDirectory(rootDir);
   if (serverRootDir == null) return null;
 
-  var config = await GeneratorConfig.load(serverRootDir: serverRootDir.path);
+  var config = await GeneratorConfig.load(
+    serverRootDir: serverRootDir.path,
+    interactive: false, // Language server should never be interactive
+  );
 
   var yamlSources = await ModelHelper.loadProjectYamlModelsFromDisk(
     config,

@@ -7,14 +7,18 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 class DatabaseSetup {
   static Future<bool> createDefaultMigration(
     Directory dir,
-    String name,
-  ) async {
+    String name, {
+    required bool? interactive,
+  }) async {
     log.debug('Creating initial migration.');
 
     GeneratorConfig? config;
 
     try {
-      config = await GeneratorConfig.load(serverRootDir: dir.path);
+      config = await GeneratorConfig.load(
+        serverRootDir: dir.path,
+        interactive: interactive,
+      );
     } catch (error) {
       log.error('Could not load config file.');
       return false;

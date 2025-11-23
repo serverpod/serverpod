@@ -265,8 +265,10 @@ class GeneratorConfig implements ModelLoadConfig {
   /// The [interactive] parameter controls whether interactive prompts are enabled.
   /// Defaults to true unless running in a CI environment (detected via ci package).
   /// Explicit flag value overrides CI detection.
-  static Future<GeneratorConfig> load(
-      {String serverRootDir = '', bool? interactive}) async {
+  static Future<GeneratorConfig> load({
+    String serverRootDir = '',
+    required bool? interactive,
+  }) async {
     // Auto-detect server directory if not specified
     if (serverRootDir.isEmpty) {
       // Determine if we should use interactive mode
