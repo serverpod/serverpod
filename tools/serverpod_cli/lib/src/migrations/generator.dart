@@ -632,17 +632,38 @@ class MigrationVersion {
   ) async {
     var currentFile = pathGetter(projectDirectory, currentVersion);
 
+    // Debug file
+    var debugFile = File(path.join(projectDirectory.path, 'debug_copy.txt'));
+    await debugFile.writeAsString(
+      'previousVersion: $previousVersion\n'
+      'currentVersion: $currentVersion\n'
+      'currentFile: ${currentFile.path}\n',
+      mode: FileMode.append,
+    );
+
     if (previousVersion != null) {
       var previousFile = pathGetter(projectDirectory, previousVersion);
+      await debugFile.writeAsString(
+        'previousFile: ${previousFile.path}\n'
+        'previousFile.existsSync(): ${previousFile.existsSync()}\n',
+        mode: FileMode.append,
+      );
 
       if (previousFile.existsSync()) {
         var content = await previousFile.readAsString();
+        await debugFile.writeAsString(
+          'content.length: ${content.length}\n'
+          'Copying content...\n',
+          mode: FileMode.append,
+        );
         await currentFile.writeAsString(content);
         return;
       }
     }
 
     // No previous version or previous file doesn't exist - create empty
+    await debugFile.writeAsString('Creating empty file\n',
+        mode: FileMode.append);
     await currentFile.writeAsString('');
   }
 }
