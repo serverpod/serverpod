@@ -638,7 +638,7 @@ void main() {
             ),
           );
 
-          final authSuccess = await jwt.createTokens(
+          final authSuccess = await jwtWithHook.createTokens(
             session,
             authUserId: authUserId,
             scopes: {},

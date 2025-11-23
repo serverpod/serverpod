@@ -220,19 +220,49 @@ final class ServerSideSessions {
     );
   }
 
-  /// List all sessions.
+  /// List all sessions matching the given filters.
   ///
   /// If [authUserId] is provided, only sessions for that user will be listed.
+  /// If [method] is provided, only sessions created with that method will be listed.
   Future<List<ServerSideSessionInfo>> listSessions(
     final Session session, {
-    required final UuidValue? authUserId,
+    final UuidValue? authUserId,
+    final String? method,
     final Transaction? transaction,
   }) async {
-    return admin.findSessions(
+    final serverSideSessions = await ServerSideSession.db.find(
       session,
-      authUserId: authUserId,
+      where: (final t) {
+        Expression<dynamic> expression = Constant.bool(true);
+
+        if (authUserId != null) {
+          expression &= t.authUserId.equals(authUserId);
+        }
+
+        if (method != null) {
+          expression &= t.method.equals(method);
+        }
+
+        return expression;
+      },
       transaction: transaction,
     );
+
+    final sessionInfos = <ServerSideSessionInfo>[
+      for (final serverSideSession in serverSideSessions)
+        ServerSideSessionInfo(
+          id: serverSideSession.id!,
+          authUserId: serverSideSession.authUserId,
+          scopeNames: serverSideSession.scopeNames,
+          created: serverSideSession.createdAt,
+          lastUsed: serverSideSession.lastUsedAt,
+          expiresAt: serverSideSession.expiresAt,
+          expireAfterUnusedFor: serverSideSession.expireAfterUnusedFor,
+          method: serverSideSession.method,
+        ),
+    ];
+
+    return sessionInfos;
   }
 
   /// Signs out a user from the server and ends all user sessions managed by this module.
@@ -246,7 +276,7 @@ final class ServerSideSessions {
   /// Automatically registers authentication revocation via
   /// `session.messages.authenticationRevoked` when sessions are deleted. If this
   /// behavior is not desired, use [AuthSessionsAdmin.deleteSessions] instead.
-  Future<List<UuidValue>> destroyAllSessions(
+  Future<List<UuidValue>> revokeAllSessions(
     final Session session, {
     required final UuidValue authUserId,
     final String? method,
@@ -282,7 +312,7 @@ final class ServerSideSessions {
   /// Automatically registers authentication revocation via
   /// `session.messages.authenticationRevoked` when the session is deleted. If this
   /// behavior is not desired, use [AuthSessionsAdmin.deleteSessions] instead.
-  Future<bool> destroySession(
+  Future<bool> revokeSession(
     final Session session, {
     required final UuidValue serverSideSessionId,
     final Transaction? transaction,

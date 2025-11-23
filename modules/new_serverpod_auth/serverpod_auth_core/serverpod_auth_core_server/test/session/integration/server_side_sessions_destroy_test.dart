@@ -44,7 +44,7 @@ void main() {
       test(
         'when calling `destroySession` with a valid `serverSideSessionId`, then it returns true.',
         () async {
-          final deleted = await serverSideSessions.destroySession(
+          final deleted = await serverSideSessions.revokeSession(
             session,
             serverSideSessionId: _extractServerSideSessionId(
               session,
@@ -59,7 +59,7 @@ void main() {
       test(
         'when calling `destroySession` with an invalid `serverSideSessionId`, then it returns false.',
         () async {
-          final deleted = await serverSideSessions.destroySession(
+          final deleted = await serverSideSessions.revokeSession(
             session,
             serverSideSessionId: const Uuid().v4obj(),
           );
@@ -80,7 +80,7 @@ void main() {
             ),
           ).wait;
 
-          final deletedIds = await serverSideSessions.destroyAllSessions(
+          final deletedIds = await serverSideSessions.revokeAllSessions(
             session,
             authUserId: authUserId,
           );
@@ -113,7 +113,7 @@ void main() {
             revocationMessages.add,
           );
 
-          await serverSideSessions.destroySession(
+          await serverSideSessions.revokeSession(
             session,
             serverSideSessionId: authInfoABeforeRevocation.serverSideSessionId,
           );
@@ -147,7 +147,7 @@ void main() {
             revocationMessages.add,
           );
 
-          await serverSideSessions.destroyAllSessions(
+          await serverSideSessions.revokeAllSessions(
             session,
             authUserId: authUserId,
           );
@@ -193,7 +193,7 @@ void main() {
           session,
           destroyedSessionKey,
         );
-        await serverSideSessions.destroySession(
+        await serverSideSessions.revokeSession(
           session,
           serverSideSessionId: sessionToDestroy,
         );
@@ -257,7 +257,7 @@ void main() {
           method: 'test',
         )).token;
 
-        await serverSideSessions.destroyAllSessions(
+        await serverSideSessions.revokeAllSessions(
           session,
           authUserId: authUserId,
         );

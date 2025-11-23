@@ -40,48 +40,6 @@ final class ServerSideSessionsAdmin {
     }
   }
 
-  /// List all sessions matching the given filters.
-  Future<List<ServerSideSessionInfo>> findSessions(
-    final Session session, {
-    final UuidValue? authUserId,
-    final String? method,
-    final Transaction? transaction,
-  }) async {
-    final serverSideSessions = await ServerSideSession.db.find(
-      session,
-      where: (final t) {
-        Expression<dynamic> expression = Constant.bool(true);
-
-        if (authUserId != null) {
-          expression &= t.authUserId.equals(authUserId);
-        }
-
-        if (method != null) {
-          expression &= t.method.equals(method);
-        }
-
-        return expression;
-      },
-      transaction: transaction,
-    );
-
-    final sessionInfos = <ServerSideSessionInfo>[
-      for (final serverSideSession in serverSideSessions)
-        ServerSideSessionInfo(
-          id: serverSideSession.id!,
-          authUserId: serverSideSession.authUserId,
-          scopeNames: serverSideSession.scopeNames,
-          created: serverSideSession.createdAt,
-          lastUsed: serverSideSession.lastUsedAt,
-          expiresAt: serverSideSession.expiresAt,
-          expireAfterUnusedFor: serverSideSession.expireAfterUnusedFor,
-          method: serverSideSession.method,
-        ),
-    ];
-
-    return sessionInfos;
-  }
-
   /// Deletes the sessions matching the given filters.
   ///
   /// If [authUserId] is provided, only sessions for that user will be deleted.

@@ -33,7 +33,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    await _serverSideSessions.destroyAllSessions(
+    await _serverSideSessions.revokeAllSessions(
       session,
       authUserId: authUserId,
     );

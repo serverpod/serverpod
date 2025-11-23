@@ -2,6 +2,8 @@ import 'package:clock/clock.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/jwt.dart';
+import 'package:serverpod_auth_core_server/src/generated/auth_user/models/auth_user.dart';
+import 'package:serverpod_auth_core_server/src/generated/jwt/models/refresh_token.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
@@ -148,6 +150,21 @@ void main() {
           extraClaims: {'string': 'foo', 'int': 1},
           method: 'test',
         );
+      });
+
+      tearDown(() async {
+        try {
+          await RefreshToken.db.deleteWhere(
+            session,
+            where: (final t) => t.authUserId.equals(authUserId),
+          );
+          await AuthUser.db.deleteWhere(
+            session,
+            where: (final t) => t.id.equals(authUserId),
+          );
+        } catch (_) {
+          // Ignore errors during cleanup
+        }
       });
 
       test(
@@ -929,6 +946,21 @@ void main() {
         refreshTokenId = jwt.jwtUtil
             .verifyJwt(authSuccess.token)
             .refreshTokenId;
+      });
+
+      tearDown(() async {
+        try {
+          await RefreshToken.db.deleteWhere(
+            session,
+            where: (final t) => t.authUserId.equals(authUserId),
+          );
+          await AuthUser.db.deleteWhere(
+            session,
+            where: (final t) => t.id.equals(authUserId),
+          );
+        } catch (_) {
+          // Ignore errors during cleanup
+        }
       });
 
       test(

@@ -56,7 +56,7 @@ class ServerSideSessionsTokenManager implements TokenManager {
       return [];
     }
 
-    return (await serverSideSessions.admin.findSessions(
+    return (await serverSideSessions.listSessions(
           session,
           authUserId: authUserId,
           method: method,

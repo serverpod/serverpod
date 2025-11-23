@@ -30,19 +30,21 @@ void main() {
         scopes: {},
         method: 'test',
       );
+
       serverSideSessionId = (await ServerSideSession.db.find(
         session,
       )).single.id!;
     });
 
     test(
-      'when calling `listSessions` for the user, then it is returned.',
+      'when listing all sessions, then it is returned.',
       () async {
-        final sessions = await serverSideSessions.listSessions(
-          session,
-          authUserId: authUserId,
-        );
+        final sessions = await serverSideSessions.listSessions(session);
 
+        expect(
+          sessions,
+          hasLength(1),
+        );
         expect(
           sessions.single.id,
           serverSideSessionId,
@@ -51,11 +53,94 @@ void main() {
     );
 
     test(
-      'when calling `listSessions` for another user, then nothing is returned.',
+      'when listing sessions for the user, then it is returned.',
+      () async {
+        final sessions = await serverSideSessions.listSessions(
+          session,
+          authUserId: authUserId,
+        );
+
+        expect(
+          sessions,
+          hasLength(1),
+        );
+        expect(
+          sessions.single.id,
+          serverSideSessionId,
+        );
+      },
+    );
+
+    test(
+      'when listing sessions for another user, then nothing is returned.',
       () async {
         final sessions = await serverSideSessions.listSessions(
           session,
           authUserId: const Uuid().v4obj(),
+        );
+
+        expect(sessions, isEmpty);
+      },
+    );
+
+    test(
+      'when listing sessions for its method, then it is returned.',
+      () async {
+        final sessions = await serverSideSessions.listSessions(
+          session,
+          method: 'test',
+        );
+
+        expect(
+          sessions,
+          hasLength(1),
+        );
+        expect(
+          sessions.single.id,
+          serverSideSessionId,
+        );
+      },
+    );
+
+    test(
+      'when listing sessions for another method, then nothing is returned.',
+      () async {
+        final sessions = await serverSideSessions.listSessions(
+          session,
+          method: 'something else',
+        );
+
+        expect(sessions, isEmpty);
+      },
+    );
+
+    test(
+      'when listing sessions for the user with its method, then it is returned.',
+      () async {
+        final sessions = await serverSideSessions.listSessions(
+          session,
+          authUserId: authUserId,
+          method: 'test',
+        );
+
+        expect(
+          sessions,
+          hasLength(1),
+        );
+        expect(
+          sessions.single.id,
+          serverSideSessionId,
+        );
+      },
+    );
+
+    test(
+      'when listing sessions for the user with another method, then nothing is returned.',
+      () async {
+        final sessions = await serverSideSessions.listSessions(
+          session,
+          authUserId: authUserId,
+          method: 'some other method',
         );
 
         expect(sessions, isEmpty);
