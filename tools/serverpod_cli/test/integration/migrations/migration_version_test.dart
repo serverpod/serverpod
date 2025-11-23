@@ -155,4 +155,50 @@ void main() {
     expect(preFile.readAsStringSync(), isEmpty);
     expect(postFile.readAsStringSync(), isEmpty);
   });
+
+  test(
+      'Given no previousVersion parameter but existing migrations when writing migration version then it reuses latest available setup SQL files.',
+      () async {
+    const previousVersion = '20240104000000';
+    const currentVersion = '20240105000000';
+
+    var previousDirectory = MigrationConstants.migrationVersionDirectory(
+      tempDirectory,
+      previousVersion,
+    );
+    previousDirectory.createSync(recursive: true);
+
+    var previousPreFile = MigrationConstants.preDatabaseSetupSQLPath(
+      tempDirectory,
+      previousVersion,
+    );
+    var previousPostFile = MigrationConstants.postDatabaseSetupSQLPath(
+      tempDirectory,
+      previousVersion,
+    );
+    previousPreFile.writeAsStringSync('LEGACY-PRE;');
+    previousPostFile.writeAsStringSync('LEGACY-POST;');
+
+    var migrationVersion =
+        _createMigrationVersion(tempDirectory, currentVersion);
+
+    await migrationVersion.write(
+      installedModules:
+          migrationVersion.databaseDefinitionFull.installedModules,
+      removedModules: const [],
+      previousVersion: null,
+    );
+
+    var newPreFile = MigrationConstants.preDatabaseSetupSQLPath(
+      tempDirectory,
+      currentVersion,
+    );
+    var newPostFile = MigrationConstants.postDatabaseSetupSQLPath(
+      tempDirectory,
+      currentVersion,
+    );
+
+    expect(newPreFile.readAsStringSync(), 'LEGACY-PRE;');
+    expect(newPostFile.readAsStringSync(), 'LEGACY-POST;');
+  });
 }
