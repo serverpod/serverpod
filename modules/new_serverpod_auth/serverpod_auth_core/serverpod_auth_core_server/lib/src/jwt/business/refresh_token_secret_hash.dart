@@ -16,15 +16,15 @@ final class RefreshTokenSecretHash {
     required final String refreshTokenHashPepper,
     required final List<String> fallbackRefreshTokenHashPeppers,
   }) : _hashUtil = Argon2HashUtil(
-          hashPepper: refreshTokenHashPepper,
-          fallbackHashPeppers: fallbackRefreshTokenHashPeppers,
-          hashSaltLength: refreshTokenRotatingSecretSaltLength,
-        );
+         hashPepper: refreshTokenHashPepper,
+         fallbackHashPeppers: fallbackRefreshTokenHashPeppers,
+         hashSaltLength: refreshTokenRotatingSecretSaltLength,
+       );
 
   /// Create the hash for the given refresh token secret.
   Future<({Uint8List hash, Uint8List salt})> createHash({
     required final Uint8List secret,
-    @protected Uint8List? salt,
+    @protected final Uint8List? salt,
   }) {
     return _hashUtil.createHashFromBytes(secret: secret, salt: salt);
   }

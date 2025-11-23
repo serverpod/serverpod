@@ -18,18 +18,25 @@ void main() {
     });
 
     group('when createHashFromString is called', () {
-      test('then generates hash with random salt when salt not provided.', () async {
-        const testSecret = 'test-secret-123';
+      test(
+        'then generates hash with random salt when salt not provided.',
+        () async {
+          const testSecret = 'test-secret-123';
 
-        final result = await hashUtil.createHashFromString(secret: testSecret);
+          final result = await hashUtil.createHashFromString(
+            secret: testSecret,
+          );
 
-        expect(result.hash, isNotEmpty);
-        expect(result.salt, hasLength(testSaltLength));
-      });
+          expect(result.hash, isNotEmpty);
+          expect(result.salt, hasLength(testSaltLength));
+        },
+      );
 
       test('then uses provided salt when salt is provided.', () async {
         const testSecret = 'test-secret-123';
-        final providedSalt = Uint8List.fromList(List.generate(16, (i) => i + 1));
+        final providedSalt = Uint8List.fromList(
+          List.generate(16, (final i) => i + 1),
+        );
 
         final result = await hashUtil.createHashFromString(
           secret: testSecret,
@@ -42,8 +49,10 @@ void main() {
 
       test('then produces different hashes with different salts.', () async {
         const testSecret = 'test-secret-123';
-        final salt1 = Uint8List.fromList(List.generate(16, (i) => i + 1));
-        final salt2 = Uint8List.fromList(List.generate(16, (i) => 16 - i));
+        final salt1 = Uint8List.fromList(List.generate(16, (final i) => i + 1));
+        final salt2 = Uint8List.fromList(
+          List.generate(16, (final i) => 16 - i),
+        );
 
         final result1 = await hashUtil.createHashFromString(
           secret: testSecret,
@@ -57,21 +66,26 @@ void main() {
         expect(result1.hash, isNot(equals(result2.hash)));
       });
 
-      test('then produces identical hashes with same secret and salt.', () async {
-        const testSecret = 'test-secret-123';
-        final salt = Uint8List.fromList(List.generate(16, (i) => i + 1));
+      test(
+        'then produces identical hashes with same secret and salt.',
+        () async {
+          const testSecret = 'test-secret-123';
+          final salt = Uint8List.fromList(
+            List.generate(16, (final i) => i + 1),
+          );
 
-        final result1 = await hashUtil.createHashFromString(
-          secret: testSecret,
-          salt: salt,
-        );
-        final result2 = await hashUtil.createHashFromString(
-          secret: testSecret,
-          salt: salt,
-        );
+          final result1 = await hashUtil.createHashFromString(
+            secret: testSecret,
+            salt: salt,
+          );
+          final result2 = await hashUtil.createHashFromString(
+            secret: testSecret,
+            salt: salt,
+          );
 
-        expect(result1.hash, equals(result2.hash));
-      });
+          expect(result1.hash, equals(result2.hash));
+        },
+      );
 
       test('then produces different hashes without provided salt.', () async {
         const testSecret = 'test-secret-123';
@@ -90,18 +104,23 @@ void main() {
     });
 
     group('when createHashFromBytes is called', () {
-      test('then generates hash with random salt when salt not provided.', () async {
-        final testSecret = Uint8List.fromList(utf8.encode('test-secret-123'));
+      test(
+        'then generates hash with random salt when salt not provided.',
+        () async {
+          final testSecret = Uint8List.fromList(utf8.encode('test-secret-123'));
 
-        final result = await hashUtil.createHashFromBytes(secret: testSecret);
+          final result = await hashUtil.createHashFromBytes(secret: testSecret);
 
-        expect(result.hash, isNotEmpty);
-        expect(result.salt, hasLength(testSaltLength));
-      });
+          expect(result.hash, isNotEmpty);
+          expect(result.salt, hasLength(testSaltLength));
+        },
+      );
 
       test('then uses provided salt when salt is provided.', () async {
         final testSecret = Uint8List.fromList(utf8.encode('test-secret-123'));
-        final providedSalt = Uint8List.fromList(List.generate(16, (i) => i + 1));
+        final providedSalt = Uint8List.fromList(
+          List.generate(16, (final i) => i + 1),
+        );
 
         final result = await hashUtil.createHashFromBytes(
           secret: testSecret,
@@ -112,21 +131,26 @@ void main() {
         expect(result.hash, isNotEmpty);
       });
 
-      test('then produces identical hashes with same secret and salt.', () async {
-        final testSecret = Uint8List.fromList(utf8.encode('test-secret-123'));
-        final salt = Uint8List.fromList(List.generate(16, (i) => i + 1));
+      test(
+        'then produces identical hashes with same secret and salt.',
+        () async {
+          final testSecret = Uint8List.fromList(utf8.encode('test-secret-123'));
+          final salt = Uint8List.fromList(
+            List.generate(16, (final i) => i + 1),
+          );
 
-        final result1 = await hashUtil.createHashFromBytes(
-          secret: testSecret,
-          salt: salt,
-        );
-        final result2 = await hashUtil.createHashFromBytes(
-          secret: testSecret,
-          salt: salt,
-        );
+          final result1 = await hashUtil.createHashFromBytes(
+            secret: testSecret,
+            salt: salt,
+          );
+          final result2 = await hashUtil.createHashFromBytes(
+            secret: testSecret,
+            salt: salt,
+          );
 
-        expect(result1.hash, equals(result2.hash));
-      });
+          expect(result1.hash, equals(result2.hash));
+        },
+      );
     });
 
     group('when validateHashFromString is called', () {
@@ -162,7 +186,7 @@ void main() {
       test('then returns false with empty hash.', () async {
         const testSecret = 'test-secret-123';
         final emptyHash = Uint8List.fromList([]);
-        final salt = Uint8List.fromList(List.generate(16, (i) => i + 1));
+        final salt = Uint8List.fromList(List.generate(16, (final i) => i + 1));
 
         final isValid = await hashUtil.validateHashFromString(
           secret: testSecret,
@@ -228,7 +252,9 @@ void main() {
 
       test('then returns false with incorrect secret.', () async {
         final testSecret = Uint8List.fromList(utf8.encode('test-secret-123'));
-        final incorrectSecret = Uint8List.fromList(utf8.encode('wrong-secret-456'));
+        final incorrectSecret = Uint8List.fromList(
+          utf8.encode('wrong-secret-456'),
+        );
 
         final result = await hashUtil.createHashFromBytes(secret: testSecret);
 
@@ -244,7 +270,7 @@ void main() {
       test('then returns false with empty hash.', () async {
         final testSecret = Uint8List.fromList(utf8.encode('test-secret-123'));
         final emptyHash = Uint8List.fromList([]);
-        final salt = Uint8List.fromList(List.generate(16, (i) => i + 1));
+        final salt = Uint8List.fromList(List.generate(16, (final i) => i + 1));
 
         final isValid = await hashUtil.validateHashFromBytes(
           secret: testSecret,
@@ -297,101 +323,122 @@ void main() {
       );
     });
 
-    test('when validateHashFromString is called with old hash then returns true.', () async {
-      final isValid = await newPepperHashUtilWithFallback.validateHashFromString(
-        secret: testSecret,
-        hash: oldPasswordHash.hash,
-        salt: oldPasswordHash.salt,
-      );
+    test(
+      'when validateHashFromString is called with old hash then returns true.',
+      () async {
+        final isValid = await newPepperHashUtilWithFallback
+            .validateHashFromString(
+              secret: testSecret,
+              hash: oldPasswordHash.hash,
+              salt: oldPasswordHash.salt,
+            );
 
-      expect(isValid, isTrue);
-    });
+        expect(isValid, isTrue);
+      },
+    );
 
-    test('when validateHashFromString is called with incorrect secret then returns false.', () async {
-      const incorrectSecret = '$testSecret-incorrect';
+    test(
+      'when validateHashFromString is called with incorrect secret then returns false.',
+      () async {
+        const incorrectSecret = '$testSecret-incorrect';
 
-      final isValid = await newPepperHashUtilWithFallback.validateHashFromString(
-        secret: incorrectSecret,
-        hash: oldPasswordHash.hash,
-        salt: oldPasswordHash.salt,
-      );
+        final isValid = await newPepperHashUtilWithFallback
+            .validateHashFromString(
+              secret: incorrectSecret,
+              hash: oldPasswordHash.hash,
+              salt: oldPasswordHash.salt,
+            );
 
-      expect(isValid, isFalse);
-    });
+        expect(isValid, isFalse);
+      },
+    );
 
-    test('when createHashFromString is called then new hash uses primary pepper.', () async {
-      final newHash = await newPepperHashUtilWithFallback.createHashFromString(
-        secret: testSecret,
-      );
+    test(
+      'when createHashFromString is called then new hash uses primary pepper.',
+      () async {
+        final newHash = await newPepperHashUtilWithFallback
+            .createHashFromString(
+              secret: testSecret,
+            );
 
-      final newPepperOnlyUtil = Argon2HashUtil(
-        hashPepper: newPepper,
-        hashSaltLength: testSaltLength,
-      );
+        final newPepperOnlyUtil = Argon2HashUtil(
+          hashPepper: newPepper,
+          hashSaltLength: testSaltLength,
+        );
 
-      final isValidWithNewPepper = await newPepperOnlyUtil.validateHashFromString(
-        secret: testSecret,
-        hash: newHash.hash,
-        salt: newHash.salt,
-      );
+        final isValidWithNewPepper = await newPepperOnlyUtil
+            .validateHashFromString(
+              secret: testSecret,
+              hash: newHash.hash,
+              salt: newHash.salt,
+            );
 
-      expect(isValidWithNewPepper, isTrue);
+        expect(isValidWithNewPepper, isTrue);
 
-      final oldPepperOnlyUtil = Argon2HashUtil(
-        hashPepper: oldPepper,
-        hashSaltLength: testSaltLength,
-      );
+        final oldPepperOnlyUtil = Argon2HashUtil(
+          hashPepper: oldPepper,
+          hashSaltLength: testSaltLength,
+        );
 
-      final isValidWithOldPepper = await oldPepperOnlyUtil.validateHashFromString(
-        secret: testSecret,
-        hash: newHash.hash,
-        salt: newHash.salt,
-      );
+        final isValidWithOldPepper = await oldPepperOnlyUtil
+            .validateHashFromString(
+              secret: testSecret,
+              hash: newHash.hash,
+              salt: newHash.salt,
+            );
 
-      expect(isValidWithOldPepper, isFalse);
-    });
+        expect(isValidWithOldPepper, isFalse);
+      },
+    );
 
-    test('when multiple fallback peppers are provided then validates against any of them.', () async {
-      const veryOldPepper = 'very-old-pepper-value';
+    test(
+      'when multiple fallback peppers are provided then validates against any of them.',
+      () async {
+        const veryOldPepper = 'very-old-pepper-value';
 
-      final veryOldPepperHashUtil = Argon2HashUtil(
-        hashPepper: veryOldPepper,
-        hashSaltLength: testSaltLength,
-      );
-      final veryOldPasswordHash = await veryOldPepperHashUtil.createHashFromString(
-        secret: testSecret,
-      );
+        final veryOldPepperHashUtil = Argon2HashUtil(
+          hashPepper: veryOldPepper,
+          hashSaltLength: testSaltLength,
+        );
+        final veryOldPasswordHash = await veryOldPepperHashUtil
+            .createHashFromString(
+              secret: testSecret,
+            );
 
-      final multiPepperHashUtil = Argon2HashUtil(
-        hashPepper: newPepper,
-        fallbackHashPeppers: [oldPepper, veryOldPepper],
-        hashSaltLength: testSaltLength,
-      );
+        final multiPepperHashUtil = Argon2HashUtil(
+          hashPepper: newPepper,
+          fallbackHashPeppers: [oldPepper, veryOldPepper],
+          hashSaltLength: testSaltLength,
+        );
 
-      final isValidOld = await multiPepperHashUtil.validateHashFromString(
-        secret: testSecret,
-        hash: oldPasswordHash.hash,
-        salt: oldPasswordHash.salt,
-      );
-      final isValidVeryOld = await multiPepperHashUtil.validateHashFromString(
-        secret: testSecret,
-        hash: veryOldPasswordHash.hash,
-        salt: veryOldPasswordHash.salt,
-      );
+        final isValidOld = await multiPepperHashUtil.validateHashFromString(
+          secret: testSecret,
+          hash: oldPasswordHash.hash,
+          salt: oldPasswordHash.salt,
+        );
+        final isValidVeryOld = await multiPepperHashUtil.validateHashFromString(
+          secret: testSecret,
+          hash: veryOldPasswordHash.hash,
+          salt: veryOldPasswordHash.salt,
+        );
 
-      expect(isValidOld, isTrue);
-      expect(isValidVeryOld, isTrue);
-    });
+        expect(isValidOld, isTrue);
+        expect(isValidVeryOld, isTrue);
+      },
+    );
   });
 
   group('Given HashResult factory', () {
-    test('when HashResult.empty() is called then creates empty hash and salt.', () {
-      final emptyHashResult = HashResult.empty();
+    test(
+      'when HashResult.empty() is called then creates empty hash and salt.',
+      () {
+        final emptyHashResult = HashResult.empty();
 
-      expect(emptyHashResult.hash, isEmpty);
-      expect(emptyHashResult.salt, isEmpty);
-      expect(emptyHashResult.hash, isA<Uint8List>());
-      expect(emptyHashResult.salt, isA<Uint8List>());
-    });
+        expect(emptyHashResult.hash, isEmpty);
+        expect(emptyHashResult.salt, isEmpty);
+        expect(emptyHashResult.hash, isA<Uint8List>());
+        expect(emptyHashResult.salt, isA<Uint8List>());
+      },
+    );
   });
 }

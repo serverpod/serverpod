@@ -19,10 +19,10 @@ final class SecretHashUtil {
     final List<String> fallbackHashPeppers = const [],
     required final int hashSaltLength,
   }) : _hashUtil = Argon2HashUtil(
-          hashPepper: hashPepper,
-          fallbackHashPeppers: fallbackHashPeppers,
-          hashSaltLength: hashSaltLength,
-        );
+         hashPepper: hashPepper,
+         fallbackHashPeppers: fallbackHashPeppers,
+         hashSaltLength: hashSaltLength,
+       );
 
   /// Create the hash for the given [value].
   ///
@@ -30,7 +30,7 @@ final class SecretHashUtil {
   /// later.
   Future<HashResult> createHash({
     required final String value,
-    Uint8List? salt,
+    final Uint8List? salt,
   }) {
     return _hashUtil.createHashFromString(secret: value, salt: salt);
   }

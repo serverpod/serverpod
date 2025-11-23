@@ -30,9 +30,9 @@ final class Argon2HashUtil {
     required final String hashPepper,
     final List<String> fallbackHashPeppers = const [],
     required final int hashSaltLength,
-  })  : _hashPepper = hashPepper,
-        _fallbackHashPeppers = fallbackHashPeppers,
-        _hashSaltLength = hashSaltLength;
+  }) : _hashPepper = hashPepper,
+       _fallbackHashPeppers = fallbackHashPeppers,
+       _hashSaltLength = hashSaltLength;
 
   /// Create the hash for the given [secret] (String).
   ///
