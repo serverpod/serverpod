@@ -66,7 +66,7 @@ class CreateRepairMigrationCommand
     String? tag = commandConfig.optionalValue(CreateRepairMigrationOption.tag);
 
     // Get interactive flag from global configuration
-    final interactive = serverpodRunner.globalConfiguration.value(
+    final interactive = serverpodRunner.globalConfiguration.optionalValue(
       GlobalOption.interactive,
     );
 

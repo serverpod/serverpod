@@ -131,7 +131,6 @@ enum GlobalOption<V> implements OptionDefinition<V> {
     FlagOption(
       argName: 'interactive',
       negatable: true,
-      defaultsTo: true,
       helpText:
           'Enable interactive prompts. Automatically disabled in CI environments.',
     ),

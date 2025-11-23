@@ -61,7 +61,7 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
     String directory = commandConfig.value(GenerateOption.directory);
 
     // Get interactive flag from global configuration
-    final interactive = serverpodRunner.globalConfiguration.value(
+    final interactive = serverpodRunner.globalConfiguration.optionalValue(
       GlobalOption.interactive,
     );
 

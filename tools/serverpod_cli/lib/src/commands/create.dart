@@ -94,8 +94,8 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
     var name = commandConfig.value(CreateOption.name);
 
     // Get interactive flag from global configuration
-    final interactive =
-        serverpodRunner.globalConfiguration.value(GlobalOption.interactive);
+    final interactive = serverpodRunner.globalConfiguration
+        .optionalValue(GlobalOption.interactive);
 
     if (restrictedNames.contains(name) && !force) {
       log.error(
