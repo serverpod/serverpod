@@ -1,3 +1,4 @@
+export 'package:serverpod_auth_core_server/common.dart';
 export 'package:serverpod_auth_core_server/session.dart' show AuthSuccess;
 
 export '../../generated/protocol.dart'

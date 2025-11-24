@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:clock/clock.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/common.dart';
 import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_extension.dart';
 
 import '../../../../../core.dart';
