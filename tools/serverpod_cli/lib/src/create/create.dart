@@ -39,12 +39,13 @@ enum ServerpodTemplateType {
 Future<bool> performCreate(
   String name,
   ServerpodTemplateType template,
-  bool force,
-) async {
+  bool force, {
+  required bool? interactive,
+}) async {
   // If the name is a dot, we are upgrading an existing project
   // Instead of creating a new one, we try to upgrade the current directory.
   if (name == '.') {
-    return await _performUpgrade(template);
+    return await _performUpgrade(template, interactive: interactive);
   }
 
   // check if project name is valid
@@ -150,7 +151,10 @@ Future<bool> performCreate(
   }
 
   success &= await log.progress('Running serverpod generator', () async {
-    return await GenerateFiles.generateFiles(serverpodDirs.serverDir);
+    return await GenerateFiles.generateFiles(
+      serverpodDirs.serverDir,
+      interactive: interactive,
+    );
   });
 
   if (template == ServerpodTemplateType.server ||
@@ -159,6 +163,7 @@ Future<bool> performCreate(
       return DatabaseSetup.createDefaultMigration(
         serverpodDirs.serverDir,
         name,
+        interactive: interactive,
       );
     });
   }
@@ -180,7 +185,10 @@ Future<bool> performCreate(
   return success;
 }
 
-Future<bool> _performUpgrade(ServerpodTemplateType template) async {
+Future<bool> _performUpgrade(
+  ServerpodTemplateType template, {
+  required bool? interactive,
+}) async {
   if (template != ServerpodTemplateType.server) {
     log.error(
       'The upgrade command can only be used with server templates.',
@@ -223,13 +231,17 @@ Future<bool> _performUpgrade(ServerpodTemplateType template) async {
   );
 
   success &= await log.progress('Running serverpod generator', () async {
-    return await GenerateFiles.generateFiles(serverpodDir.serverDir);
+    return await GenerateFiles.generateFiles(
+      serverpodDir.serverDir,
+      interactive: interactive,
+    );
   });
 
   success &= await log.progress('Creating default database migration.', () {
     return DatabaseSetup.createDefaultMigration(
       serverpodDir.serverDir,
       name,
+      interactive: interactive,
     );
   });
 

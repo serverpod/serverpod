@@ -11,6 +11,7 @@ import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/pubspec_lock_parser.dart';
@@ -59,11 +60,19 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
     bool watch = commandConfig.value(GenerateOption.watch);
     String directory = commandConfig.value(GenerateOption.directory);
 
+    // Get interactive flag from global configuration
+    final interactive = serverpodRunner.globalConfiguration.optionalValue(
+      GlobalOption.interactive,
+    );
+
     GeneratorConfig config;
     try {
-      config = await GeneratorConfig.load(directory);
+      config = await GeneratorConfig.load(
+        serverRootDir: directory,
+        interactive: interactive,
+      );
     } catch (e) {
-      log.error('An error occurred while parsing the server config file: $e');
+      log.error('$e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 

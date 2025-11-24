@@ -8,10 +8,16 @@ import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class GenerateFiles {
-  static Future<bool> generateFiles(Directory serverDir) async {
+  static Future<bool> generateFiles(
+    Directory serverDir, {
+    required bool? interactive,
+  }) async {
     GeneratorConfig config;
     try {
-      config = await GeneratorConfig.load(serverDir.path);
+      config = await GeneratorConfig.load(
+        serverRootDir: serverDir.path,
+        interactive: interactive,
+      );
     } catch (e) {
       log.error('An error occurred while parsing the server config file: $e');
       return false;

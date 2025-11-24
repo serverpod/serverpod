@@ -19,7 +19,10 @@ void main() {
       'when calling GeneratorConfig.load '
       'then a ServerpodProjectNotFoundException is thrown', () async {
     await expectLater(
-      GeneratorConfig.load((await getServerPubspecFile()).parent.path),
+      GeneratorConfig.load(
+        serverRootDir: (await getServerPubspecFile()).parent.path,
+        interactive: false,
+      ),
       throwsA(
         isA<ServerpodProjectNotFoundException>().having(
           (e) => e.message,
@@ -39,7 +42,10 @@ void main() {
     // TODO: https://github.com/serverpod/serverpod/issues/3298
     // particular bad error message in this case
     await expectLater(
-      GeneratorConfig.load(serverPubspecFile.parent.path),
+      GeneratorConfig.load(
+        serverRootDir: serverPubspecFile.parent.path,
+        interactive: false,
+      ),
       throwsA(
         isA<ServerpodProjectNotFoundException>().having(
           (e) => e.message,
@@ -63,7 +69,10 @@ dependencies:
   serverpod: ^1.0.0
 ''');
     await expectLater(
-      GeneratorConfig.load(serverPubspecFile.parent.path),
+      GeneratorConfig.load(
+        serverRootDir: serverPubspecFile.parent.path,
+        interactive: false,
+      ),
       throwsA(
         isA<ServerpodProjectNotFoundException>().having(
           (e) => e.message,

@@ -248,4 +248,54 @@ void main() {
       expect(logOutput.messages.first, equals('Serverpod version: 1.1.0'));
     },
   );
+
+  group('Interactive flag - ', () {
+    test(
+      'when no interactive flag is provided then value should be null',
+      () async {
+        List<String> args = [MockCommand.commandName];
+
+        await fixture.runner.run(args);
+
+        var interactiveValue = fixture.runner.globalConfiguration.optionalValue(
+          GlobalOption.interactive,
+        );
+        expect(interactiveValue, isNull);
+      },
+    );
+
+    test(
+      'when --interactive flag is provided then value should be true',
+      () async {
+        List<String> args = [
+          '--interactive',
+          MockCommand.commandName,
+        ];
+
+        await fixture.runner.run(args);
+
+        var interactiveValue = fixture.runner.globalConfiguration.optionalValue(
+          GlobalOption.interactive,
+        );
+        expect(interactiveValue, isTrue);
+      },
+    );
+
+    test(
+      'when --no-interactive flag is provided then value should be false',
+      () async {
+        List<String> args = [
+          '--no-interactive',
+          MockCommand.commandName,
+        ];
+
+        await fixture.runner.run(args);
+
+        var interactiveValue = fixture.runner.globalConfiguration.optionalValue(
+          GlobalOption.interactive,
+        );
+        expect(interactiveValue, isFalse);
+      },
+    );
+  });
 }

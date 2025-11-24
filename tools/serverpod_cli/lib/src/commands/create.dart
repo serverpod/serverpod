@@ -3,6 +3,7 @@ import 'package:config/config.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 enum CreateOption<V> implements OptionDefinition<V> {
@@ -92,6 +93,11 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
     var force = commandConfig.value(CreateOption.force);
     var name = commandConfig.value(CreateOption.name);
 
+    // Get interactive flag from global configuration
+    final interactive = serverpodRunner.globalConfiguration.optionalValue(
+      GlobalOption.interactive,
+    );
+
     if (restrictedNames.contains(name) && !force) {
       log.error(
         'Are you sure you want to create a project named "$name"?\n'
@@ -117,7 +123,12 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       }
     }
 
-    if (!await performCreate(name, template, force)) {
+    if (!await performCreate(
+      name,
+      template,
+      force,
+      interactive: interactive,
+    )) {
       throw ExitException.error();
     }
   }
