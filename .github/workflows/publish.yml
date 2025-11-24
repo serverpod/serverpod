@@ -12,6 +12,10 @@ on:
         required: false
         default: false
         type: boolean
+      sleep_time:
+        description: 'Sleep time in seconds between package publications'
+        required: false
+        default: '5'
   push:
     tags:
       # Matches tags like `2.9.1` and `3.0.0-alpha.1` or `3.0.0-rc.1`
@@ -76,9 +80,9 @@ jobs:
         run: |
           START_PACKAGE="${{ github.event.inputs.start_package || '0' }}"
           DRY_RUN="${{ github.event.inputs.dry_run || 'false' }}"
+          SLEEP_TIME="${{ github.event.inputs.sleep_time || '5' }}"
           BASE="${{ github.workspace }}"
           PCOUNT=0
-          SLEEP_TIME=5
 
           if [ "$DRY_RUN" = "true" ]; then
             echo "### DRY RUN MODE - No packages will be published"
