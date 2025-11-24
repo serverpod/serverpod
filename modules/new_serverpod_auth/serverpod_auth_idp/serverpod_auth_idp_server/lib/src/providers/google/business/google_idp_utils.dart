@@ -57,16 +57,16 @@ typedef GoogleAuthSuccess = ({
 /// These functions can be used to compose custom authentication and
 /// administration flows if needed.
 ///
-/// But for most cases, the methods exposed by [GoogleIDP] and
-/// [GoogleIDPAdmin] should be sufficient.
-class GoogleIDPUtils {
+/// But for most cases, the methods exposed by [GoogleIdp] and
+/// [GoogleIdpAdmin] should be sufficient.
+class GoogleIdpUtils {
   /// Configuration for the Google identity provider.
-  final GoogleIDPConfig config;
+  final GoogleIdpConfig config;
 
   final AuthUsers _authUsers;
 
-  /// Creates a new instance of [GoogleIDPUtils].
-  GoogleIDPUtils({
+  /// Creates a new instance of [GoogleIdpUtils].
+  GoogleIdpUtils({
     required this.config,
     required final AuthUsers authUsers,
   }) : _authUsers = authUsers;

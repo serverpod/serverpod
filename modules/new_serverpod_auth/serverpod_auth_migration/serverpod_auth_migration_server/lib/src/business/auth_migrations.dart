@@ -11,7 +11,7 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart'
 abstract final class AuthMigrations {
   /// The configuration to be used for all migrations.
   static var config = AuthMigrationConfig(
-    emailIDP: AuthServices.instance.emailIDP,
+    emailIdp: AuthServices.instance.emailIdp,
   );
 
   /// Returns whether a legacy `serverpod_auth` user has been migrated already.
@@ -84,7 +84,7 @@ abstract final class AuthMigrations {
             session,
             userInfo,
             transaction: transaction,
-            newEmailIDP: config.emailIDP,
+            newEmailIdp: config.emailIdp,
           );
 
           if (didCreate && userMigration != null) {

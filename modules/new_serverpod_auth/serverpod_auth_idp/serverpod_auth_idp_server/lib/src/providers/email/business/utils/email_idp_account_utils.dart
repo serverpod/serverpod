@@ -6,7 +6,7 @@ import '../../util/email_string_extension.dart';
 /// {@template email_idp_account_utils}
 /// Utility functions for working with email accounts.
 /// {@endtemplate}
-class EmailIDPAccountUtils {
+class EmailIdpAccountUtils {
   /// Deletes email accounts matching the provided filters.
   ///
   /// Both [email] and [authUserId] are optional nullable parameters that act

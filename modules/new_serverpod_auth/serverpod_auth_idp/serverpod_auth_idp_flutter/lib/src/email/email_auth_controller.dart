@@ -292,13 +292,13 @@ class EmailAuthController extends ChangeNotifier {
   }
 
   /// Gets the email authentication endpoint from the client.
-  EndpointEmailIDPBase get _emailEndpoint {
+  EndpointEmailIdpBase get _emailEndpoint {
     try {
-      return client.getEndpointOfType<EndpointEmailIDPBase>();
+      return client.getEndpointOfType<EndpointEmailIdpBase>();
     } on ServerpodClientEndpointNotFound catch (_) {
       throw StateError(
         'No email authentication endpoint found. Make sure you have extended '
-        '"EndpointEmailIDPBase" in your server and exposed it.',
+        '"EndpointEmailIdpBase" in your server and exposed it.',
       );
     }
   }

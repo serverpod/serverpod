@@ -15,9 +15,9 @@ void main() {
     );
 
     test(
-      'when reading the `authSessionId` field, then the UUID is returned.',
+      'when reading the `serverSideSessionId` field, then the UUID is returned.',
       () {
-        expect(authenticationInfo.authSessionId, authId);
+        expect(authenticationInfo.serverSideSessionId, authId);
       },
     );
   });
@@ -29,9 +29,9 @@ void main() {
       authId: 'foo-bar',
     );
 
-    test('when reading the `authSessionId` field, then it throws.', () {
+    test('when reading the `serverSideSessionId` field, then it throws.', () {
       expect(
-        () => authenticationInfo.authSessionId,
+        () => authenticationInfo.serverSideSessionId,
         throwsFormatException,
       );
     });

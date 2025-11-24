@@ -12,24 +12,27 @@ import 'package:test/test.dart';
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManagerFactory = new_auth_core.AuthSessionsTokenManagerFactory(
-    new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
-  );
+  final tokenManagerFactory =
+      new_auth_core.ServerSideSessionsTokenManagerFactory(
+        new_auth_core.ServerSideSessionsConfig(
+          sessionKeyHashPepper: 'test-pepper',
+        ),
+      );
 
-  const newEmailIDPConfig = new_auth_idp.EmailIDPConfig(
+  const newEmailIdpConfig = new_auth_idp.EmailIdpConfig(
     secretHashPepper: 'test',
   );
-  late final new_auth_idp.EmailIDP newEmailIDP;
+  late final new_auth_idp.EmailIdp newEmailIdp;
 
   setUpAll(() async {
     new_auth_core.AuthServices.set(
       identityProviders: [
-        new_auth_idp.EmailIdentityProviderFactory(newEmailIDPConfig),
+        new_auth_idp.EmailIdentityProviderFactory(newEmailIdpConfig),
       ],
       primaryTokenManager: tokenManagerFactory,
     );
-    newEmailIDP = new_auth_core.AuthServices.instance.emailIDP;
-    AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
+    newEmailIdp = new_auth_core.AuthServices.instance.emailIdp;
+    AuthMigrations.config = AuthMigrationConfig(emailIdp: newEmailIdp);
   });
 
   tearDownAll(() async {
@@ -244,7 +247,7 @@ void main() {
           password: password,
         );
 
-        authUserId = (await newEmailIDP.admin.findAccount(
+        authUserId = (await newEmailIdp.admin.findAccount(
           session,
           email: email,
         ))!.authUserId;
@@ -280,7 +283,7 @@ void main() {
         'when attempting to authenticate against the new system with the credentials, then that succeeds.',
         () async {
           expect(
-            await newEmailIDP.utils.authentication.authenticate(
+            await newEmailIdp.utils.authentication.authenticate(
               session,
               email: email,
               password: password,
@@ -325,16 +328,16 @@ void main() {
 
         AuthMigrations.config = AuthMigrationConfig(
           importProfile: false,
-          emailIDP: newEmailIDP,
+          emailIdp: newEmailIdp,
         );
 
         await AuthMigrations.migrateUsers(session, userMigration: null);
 
         AuthMigrations.config = AuthMigrationConfig(
-          emailIDP: newEmailIDP,
+          emailIdp: newEmailIdp,
         );
 
-        authUserId = (await newEmailIDP.admin.findAccount(
+        authUserId = (await newEmailIdp.admin.findAccount(
           session,
           email: email,
         ))!.authUserId;
@@ -393,7 +396,7 @@ void main() {
               },
         );
 
-        authUserId = (await newEmailIDP.admin.findAccount(
+        authUserId = (await newEmailIdp.admin.findAccount(
           session,
           email: email,
         ))!.authUserId;
@@ -462,7 +465,7 @@ void main() {
           );
 
           expect(
-            await newEmailIDP.utils.authentication.authenticate(
+            await newEmailIdp.utils.authentication.authenticate(
               session,
               email: email,
               password: password,
@@ -485,7 +488,7 @@ void main() {
           );
 
           await expectLater(
-            () => newEmailIDP.utils.authentication.authenticate(
+            () => newEmailIdp.utils.authentication.authenticate(
               session,
               email: email,
               password: wrongPassword,
@@ -504,7 +507,7 @@ void main() {
         'when attempting to authenticate against the new system with the credentials, then that fails (because the password has not been set).',
         () async {
           await expectLater(
-            () => newEmailIDP.utils.authentication.authenticate(
+            () => newEmailIdp.utils.authentication.authenticate(
               session,
               email: email,
               // This is the user's password in the legacy system, but since it has not been set during the import,

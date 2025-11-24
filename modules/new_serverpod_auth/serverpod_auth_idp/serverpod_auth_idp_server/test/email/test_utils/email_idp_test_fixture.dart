@@ -27,14 +27,14 @@ final class EmailAccountPasswordString extends EmailAccountPassword {
   EmailAccountPasswordString(this.password);
 }
 
-final class EmailIDPTestFixture {
-  late final EmailIDP emailIDP;
+final class EmailIdpTestFixture {
+  late final EmailIdp emailIdp;
   late final TokenManager tokenManager;
   final UserProfiles userProfiles = const UserProfiles();
   final AuthUsers authUsers = const AuthUsers();
 
-  EmailIDPTestFixture({
-    final EmailIDPConfig config = const EmailIDPConfig(
+  EmailIdpTestFixture({
+    final EmailIdpConfig config = const EmailIdpConfig(
       secretHashPepper: 'pepper',
     ),
     TokenManager? tokenManager,
@@ -42,8 +42,8 @@ final class EmailIDPTestFixture {
     tokenManager ??= AuthServices(
       authUsers: authUsers,
       userProfiles: userProfiles,
-      primaryTokenManager: AuthSessionsTokenManagerFactory(
-        AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+      primaryTokenManager: ServerSideSessionsTokenManagerFactory(
+        ServerSideSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
       ),
       identityProviders: [],
     ).tokenManager;
@@ -52,7 +52,7 @@ final class EmailIDPTestFixture {
     // constructor.
     // ignore: prefer_initializing_formals
     this.tokenManager = tokenManager;
-    emailIDP = EmailIDP(config, tokenManager: tokenManager);
+    emailIdp = EmailIdp(config, tokenManager: tokenManager);
   }
 
   Future<EmailAccount> createEmailAccount(
@@ -115,12 +115,12 @@ final class EmailIDPTestFixture {
     );
   }
 
-  SecretHashUtil get passwordHashUtil => emailIDP.utils.hashUtil;
-  EmailIDPAuthenticationUtil get authenticationUtil =>
-      emailIDP.utils.authentication;
-  EmailIDPPasswordResetUtil get passwordResetUtil =>
-      emailIDP.utils.passwordReset;
-  EmailIDPAccountCreationUtil get accountCreationUtil =>
-      emailIDP.utils.accountCreation;
-  EmailIDPConfig get config => emailIDP.config;
+  SecretHashUtil get passwordHashUtil => emailIdp.utils.hashUtil;
+  EmailIdpAuthenticationUtil get authenticationUtil =>
+      emailIdp.utils.authentication;
+  EmailIdpPasswordResetUtil get passwordResetUtil =>
+      emailIdp.utils.passwordReset;
+  EmailIdpAccountCreationUtil get accountCreationUtil =>
+      emailIdp.utils.accountCreation;
+  EmailIdpConfig get config => emailIdp.config;
 }

@@ -4,7 +4,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/src/providers/apple/business/apple_idp_utils.dart';
 
 sealed class _SignInWithAppleRoute extends Route {
-  final AppleIDPUtils _utils;
+  final AppleIdpUtils _utils;
 
   _SignInWithAppleRoute(this._utils, {super.methods});
 }
@@ -18,7 +18,7 @@ sealed class _SignInWithAppleRoute extends Route {
 ///
 /// ```dart
 ///  pod.webServer.addRoute(
-///    appleIDP.revokedNotificationRoute(),
+///    appleIdp.revokedNotificationRoute(),
 ///    '/hooks/apple-notification',
 /// );
 /// ```
@@ -28,8 +28,8 @@ sealed class _SignInWithAppleRoute extends Route {
 /// authentication for that account will be revoked.
 /// {@endtemplate}
 final class AppleRevokedNotificationRoute extends _SignInWithAppleRoute {
-  /// Creates a new route to handle Apple IDP revoked notifications.
-  AppleRevokedNotificationRoute({required final AppleIDPUtils utils})
+  /// Creates a new route to handle Apple Idp revoked notifications.
+  AppleRevokedNotificationRoute({required final AppleIdpUtils utils})
     : super(utils, methods: {Method.post});
 
   @override
@@ -40,7 +40,7 @@ final class AppleRevokedNotificationRoute extends _SignInWithAppleRoute {
 }
 
 /// {@template apple_idp.webAuthenticationCallbackRoute}
-/// Route for handling callbacks during authentication with [AppleIDP] on
+/// Route for handling callbacks during authentication with [AppleIdp] on
 /// foreign platforms such as Web, Android, etc, as opposed to iOS and macOS.
 ///
 /// To be mounted as a `GET` handler under the URL configured in Apple's
@@ -48,15 +48,15 @@ final class AppleRevokedNotificationRoute extends _SignInWithAppleRoute {
 ///
 /// ```dart
 ///  pod.webServer.addRoute(
-///    appleIDP.webAuthenticationCallbackRoute(),
+///    appleIdp.webAuthenticationCallbackRoute(),
 ///    '/auth/apple/callback',
 /// );
 /// ```
 /// {@endtemplate}
 final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
-  /// Create a new route to handle Apple IDP authentication callbacks for web and
+  /// Create a new route to handle Apple Idp authentication callbacks for web and
   /// other foreign platforms (Android, etc.).
-  AppleWebAuthenticationCallbackRoute({required final AppleIDPUtils utils})
+  AppleWebAuthenticationCallbackRoute({required final AppleIdpUtils utils})
     : super(utils, methods: {Method.get});
 
   @override

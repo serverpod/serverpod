@@ -13,25 +13,25 @@ final _sessionKeyPrefix = utf8.encode('sas');
 /// characters and thus does not change with the later data.
 final _sessionKeyPrefixBase64 = base64Url.encode(_sessionKeyPrefix);
 
-/// Creates the String representation to map to an `AuthSession`.
+/// Creates the String representation to map to a `ServerSideSession`.
 @internal
-String buildSessionKey({
-  required final UuidValue authSessionId,
+String buildServerSideSessionToken({
+  required final UuidValue serverSideSessionId,
   required final Uint8List secret,
 }) {
   return base64Url.encode([
     ..._sessionKeyPrefix,
-    ...authSessionId.toBytes(),
+    ...serverSideSessionId.toBytes(),
     ...secret,
   ]);
 }
 
-/// Tries parsing a session key String created by [buildSessionKey] into its
+/// Tries parsing a server side session token String created by [buildServerSideSessionToken] into its
 /// parts.
 ///
 /// Returns `null` if it does not match the spec or parsing fails for any reason.
 @internal
-SessionKeyData? tryParseSessionKey(
+SessionKeyData? tryParseServerSideSessionToken(
   final Session session,
   final String key,
 ) {
@@ -42,7 +42,7 @@ SessionKeyData? tryParseSessionKey(
 
     final decoded = base64Url.decode(key);
 
-    final authSessionId = UuidValue.fromByteList(
+    final serverSideSessionId = UuidValue.fromByteList(
       Uint8List.sublistView(
         decoded,
         _sessionKeyPrefix.lengthInBytes,
@@ -55,7 +55,7 @@ SessionKeyData? tryParseSessionKey(
       _sessionKeyPrefix.lengthInBytes + 16,
     );
 
-    return (authSessionId: authSessionId, secret: secret);
+    return (serverSideSessionId: serverSideSessionId, secret: secret);
   } catch (e, stackTrace) {
     session.log(
       'Failed to parse session key: "$key"',
@@ -70,4 +70,4 @@ SessionKeyData? tryParseSessionKey(
 
 /// The data retrieved from a session key string.
 @internal
-typedef SessionKeyData = ({UuidValue authSessionId, Uint8List secret});
+typedef SessionKeyData = ({UuidValue serverSideSessionId, Uint8List secret});

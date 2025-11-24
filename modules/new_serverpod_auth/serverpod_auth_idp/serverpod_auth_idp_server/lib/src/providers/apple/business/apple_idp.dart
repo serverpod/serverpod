@@ -12,33 +12,33 @@ import 'apple_idp_utils.dart';
 /// Main class for the Apple identity provider.
 /// The methods defined here are intended to be called from an endpoint.
 ///
-/// The `admin` property provides access to [AppleIDPAdmin], which contains
+/// The `admin` property provides access to [AppleIdpAdmin], which contains
 /// admin-related methods for managing Apple-backed accounts.
 ///
-/// The `utils` property provides access to [AppleIDPUtils], which contains
+/// The `utils` property provides access to [AppleIdpUtils], which contains
 /// utility methods for working with Apple-backed accounts. These can be used
 /// to implement custom authentication flows if needed.
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-final class AppleIDP {
+final class AppleIdp {
   /// The method used when authenticating with the Apple identity provider.
   static const String method = 'apple';
 
   /// Admin operations to work with Apple-backed accounts.
-  late final AppleIDPAdmin admin;
+  late final AppleIdpAdmin admin;
 
   /// Utility functions for the Apple identity provider.
-  final AppleIDPUtils utils;
+  final AppleIdpUtils utils;
 
   /// The configuration for the Apple identity provider.
-  final AppleIDPConfig config;
+  final AppleIdpConfig config;
 
   final TokenIssuer _tokenIssuer;
 
   final UserProfiles _userProfiles;
 
-  AppleIDP._(
+  AppleIdp._(
     this.config,
     this._tokenIssuer,
     this.utils,
@@ -46,23 +46,23 @@ final class AppleIDP {
     this._userProfiles,
   );
 
-  /// Creates a new instance of [AppleIDP].
-  factory AppleIDP(
-    final AppleIDPConfig config, {
+  /// Creates a new instance of [AppleIdp].
+  factory AppleIdp(
+    final AppleIdpConfig config, {
     required final TokenManager tokenManager,
     final AuthUsers authUsers = const AuthUsers(),
     final UserProfiles userProfiles = const UserProfiles(),
   }) {
     final signInWithAppleConfig = config.toSignInWithAppleConfiguration();
 
-    final utils = AppleIDPUtils(
+    final utils = AppleIdpUtils(
       tokenManager: tokenManager,
       signInWithApple: SignInWithApple(config: signInWithAppleConfig),
       authUsers: authUsers,
     );
-    final admin = AppleIDPAdmin(utils: utils);
+    final admin = AppleIdpAdmin(utils: utils);
 
-    return AppleIDP._(
+    return AppleIdp._(
       config,
       tokenManager,
       utils,

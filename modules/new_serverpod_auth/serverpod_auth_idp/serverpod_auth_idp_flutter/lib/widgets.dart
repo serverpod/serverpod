@@ -11,7 +11,7 @@ export 'src/common/widgets/password_requirements.dart';
 export 'src/common/widgets/text_field.dart';
 export 'src/common/widgets/verification_code.dart';
 
-// Email IDP specific widgets
+// Email Idp specific widgets
 export 'src/email/forms/widgets/back_to_sign_in_button.dart';
 export 'src/email/forms/widgets/email_text_field.dart';
 export 'src/email/forms/widgets/form_standard_layout.dart';

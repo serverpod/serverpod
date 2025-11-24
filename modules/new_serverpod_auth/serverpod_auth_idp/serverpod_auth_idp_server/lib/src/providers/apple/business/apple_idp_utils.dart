@@ -34,15 +34,15 @@ typedef AppleAuthSuccess = ({
 /// These functions can be used to compose custom authentication and
 /// administration flows if needed.
 ///
-/// But for most cases, the methods exposed by [AppleIDP] and [AppleIDPAdmin] should
+/// But for most cases, the methods exposed by [AppleIdp] and [AppleIdpAdmin] should
 /// be sufficient.
-class AppleIDPUtils {
+class AppleIdpUtils {
   final TokenManager _tokenManager;
   final SignInWithApple _signInWithApple;
   final AuthUsers _authUsers;
 
-  /// Creates a new instance of [AppleIDPUtils].
-  AppleIDPUtils({
+  /// Creates a new instance of [AppleIdpUtils].
+  AppleIdpUtils({
     required final TokenManager tokenManager,
     required final SignInWithApple signInWithApple,
     required final AuthUsers authUsers,
@@ -217,7 +217,7 @@ class AppleIDPUtils {
         await _tokenManager.revokeAllTokens(
           session,
           authUserId: appleAccount.authUserId,
-          method: AppleIDP.method,
+          method: AppleIdp.method,
         );
 
         if (notification is AppleServerNotificationAccountDelete) {

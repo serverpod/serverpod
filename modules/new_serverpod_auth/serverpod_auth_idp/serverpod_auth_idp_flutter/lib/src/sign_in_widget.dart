@@ -20,8 +20,8 @@ import 'providers.dart';
 /// and displays the appropriate sign-in options.
 ///
 /// Currently supports:
-/// - Email authentication (via [EndpointEmailIDPBase])
-/// - Google Sign-In (via [EndpointGoogleIDPBase])
+/// - Email authentication (via [EndpointEmailIdpBase])
+/// - Google Sign-In (via [EndpointGoogleIdpBase])
 ///
 /// The widget separates email authentication from other providers with a
 /// visual divider showing "Or continue with" text.

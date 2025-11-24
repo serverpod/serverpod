@@ -1,4 +1,4 @@
-class: AuthSessionInfo
+class: ServerSideSessionInfo
 fields:
   id: UuidValue
 

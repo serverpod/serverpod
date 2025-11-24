@@ -183,7 +183,7 @@ class GoogleAuthController extends ChangeNotifier {
         throw GoogleIdTokenVerificationException();
       }
 
-      final endpoint = client.getEndpointOfType<EndpointGoogleIDPBase>();
+      final endpoint = client.getEndpointOfType<EndpointGoogleIdpBase>();
       final authSuccess = await endpoint.login(
         idToken: idToken,
         accessToken: accessToken,

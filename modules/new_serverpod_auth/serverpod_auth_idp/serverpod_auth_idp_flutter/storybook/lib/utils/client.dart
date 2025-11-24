@@ -6,7 +6,7 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     hide Caller, Protocol;
 
-class EndpointAuthEmail extends EndpointEmailIDPBase {
+class EndpointAuthEmail extends EndpointEmailIdpBase {
   EndpointAuthEmail(super.caller);
 
   final _mockData = MockAuthData();
@@ -115,13 +115,13 @@ class EndpointAuthEmail extends EndpointEmailIDPBase {
   }
 }
 
-class GoogleIDPEndpoint extends EndpointGoogleIDPBase {
-  GoogleIDPEndpoint(super.caller);
+class GoogleIdpEndpoint extends EndpointGoogleIdpBase {
+  GoogleIdpEndpoint(super.caller);
 
   final _mockData = MockAuthData();
 
   @override
-  String get name => 'googleIDP';
+  String get name => 'googleIdp';
 
   @override
   Future<AuthSuccess> login({
@@ -130,13 +130,13 @@ class GoogleIDPEndpoint extends EndpointGoogleIDPBase {
   }) => Future.value(_mockData.authSuccess);
 }
 
-class AppleIDPEndpoint extends EndpointAppleIDPBase {
-  AppleIDPEndpoint(super.caller);
+class AppleIdpEndpoint extends EndpointAppleIdpBase {
+  AppleIdpEndpoint(super.caller);
 
   final _mockData = MockAuthData();
 
   @override
-  String get name => 'appleIDP';
+  String get name => 'appleIdp';
 
   @override
   Future<AuthSuccess> login({
@@ -165,24 +165,24 @@ class Client extends ServerpodClientShared {
         streamingConnectionTimeout: const Duration(seconds: 1),
       ) {
     authEmail = EndpointAuthEmail(this);
-    googleIDP = GoogleIDPEndpoint(this);
-    appleIDP = AppleIDPEndpoint(this);
+    googleIdp = GoogleIdpEndpoint(this);
+    appleIdp = AppleIdpEndpoint(this);
     modules = Modules(this);
   }
 
   late final EndpointAuthEmail authEmail;
 
-  late final GoogleIDPEndpoint googleIDP;
+  late final GoogleIdpEndpoint googleIdp;
 
-  late final AppleIDPEndpoint appleIDP;
+  late final AppleIdpEndpoint appleIdp;
 
   late final Modules modules;
 
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
     'emailAuth': authEmail,
-    'googleIDP': googleIDP,
-    'appleIDP': appleIDP,
+    'googleIdp': googleIdp,
+    'appleIdp': appleIdp,
   };
 
   @override

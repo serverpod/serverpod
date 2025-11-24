@@ -16,7 +16,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
       late String verificationCode;
@@ -27,8 +27,8 @@ void main() {
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             registrationVerificationCodeLifetime:
@@ -39,7 +39,7 @@ void main() {
           ),
         );
 
-        accountRequestId = await fixture.emailIDP.startRegistration(
+        accountRequestId = await fixture.emailIdp.startRegistration(
           session,
           email: email,
         );
@@ -55,7 +55,7 @@ void main() {
           late Future<String> registrationToken;
 
           setUp(() async {
-            registrationToken = fixture.emailIDP.verifyRegistrationCode(
+            registrationToken = fixture.emailIdp.verifyRegistrationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: verificationCode,
@@ -72,7 +72,7 @@ void main() {
       test(
         'when verifyRegistrationCode is called with invalid verification code then it throws EmailAccountRequestException with reason "invalid"',
         () async {
-          final result = fixture.emailIDP.verifyRegistrationCode(
+          final result = fixture.emailIdp.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: '$verificationCode-invalid',
@@ -100,7 +100,7 @@ void main() {
           setUp(() async {
             attempts = List.generate(
               numberOfAttempts,
-              (final _) => fixture.emailIDP.verifyRegistrationCode(
+              (final _) => fixture.emailIdp.verifyRegistrationCode(
                 session,
                 accountRequestId: accountRequestId,
                 verificationCode: verificationCode,
@@ -164,7 +164,7 @@ void main() {
               ),
             ),
             () async {
-              final result = fixture.emailIDP.verifyRegistrationCode(
+              final result = fixture.emailIdp.verifyRegistrationCode(
                 session,
                 accountRequestId: accountRequestId,
                 verificationCode: verificationCode,
@@ -195,7 +195,7 @@ void main() {
               ),
             ),
             () async {
-              final result = fixture.emailIDP.verifyRegistrationCode(
+              final result = fixture.emailIdp.verifyRegistrationCode(
                 session,
                 accountRequestId: accountRequestId,
                 verificationCode: '$verificationCode-invalid',
@@ -224,7 +224,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       late String verificationCode;
       const Duration registrationVerificationCodeLifetime = Duration(days: 1);
@@ -233,8 +233,8 @@ void main() {
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             registrationVerificationCodeLifetime:
@@ -243,13 +243,13 @@ void main() {
         );
 
         const email = 'test@serverpod.dev';
-        accountRequestId = await fixture.emailIDP.startRegistration(
+        accountRequestId = await fixture.emailIdp.startRegistration(
           session,
           email: email,
         );
 
         // Verify the registration code (this marks it as used)
-        await fixture.emailIDP.verifyRegistrationCode(
+        await fixture.emailIdp.verifyRegistrationCode(
           session,
           accountRequestId: accountRequestId,
           verificationCode: verificationCode,
@@ -263,7 +263,7 @@ void main() {
       test(
         'when verifyRegistrationCode is called again with valid verification code then it throws EmailAccountRequestException with reason "invalid"',
         () async {
-          final result = fixture.emailIDP.verifyRegistrationCode(
+          final result = fixture.emailIdp.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -292,7 +292,7 @@ void main() {
               ),
             ),
             () async {
-              final result = fixture.emailIDP.verifyRegistrationCode(
+              final result = fixture.emailIdp.verifyRegistrationCode(
                 session,
                 accountRequestId: accountRequestId,
                 verificationCode: verificationCode,
@@ -321,15 +321,15 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const verificationCode = '12345678';
 
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             registrationVerificationCodeAllowedAttempts: 2,
@@ -337,14 +337,14 @@ void main() {
         );
 
         const email = 'test@serverpod.dev';
-        accountRequestId = await fixture.emailIDP.startRegistration(
+        accountRequestId = await fixture.emailIdp.startRegistration(
           session,
           email: email,
         );
 
         // Attempt with invalid credentials
         try {
-          await fixture.emailIDP.verifyRegistrationCode(
+          await fixture.emailIdp.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: 'wrong-code',
@@ -361,7 +361,7 @@ void main() {
       test(
         'when verifyRegistrationCode is called with valid verification code then it succeeds and returns registration token',
         () async {
-          final result = await fixture.emailIDP.verifyRegistrationCode(
+          final result = await fixture.emailIdp.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -379,7 +379,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const verificationCode = '12345678';
       const registrationVerificationCodeLifetime = Duration(hours: 1);
@@ -387,8 +387,8 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             registrationVerificationCodeLifetime:
@@ -397,7 +397,7 @@ void main() {
         );
 
         const email = 'test@serverpod.dev';
-        accountRequestId = await fixture.emailIDP.startRegistration(
+        accountRequestId = await fixture.emailIdp.startRegistration(
           session,
           email: email,
         );
@@ -411,7 +411,7 @@ void main() {
           ),
           () async {
             try {
-              await fixture.emailIDP.verifyRegistrationCode(
+              await fixture.emailIdp.verifyRegistrationCode(
                 session,
                 accountRequestId: accountRequestId,
                 verificationCode: verificationCode,
@@ -430,7 +430,7 @@ void main() {
       test(
         'when verifyRegistrationCode is called with valid credentials then it throws EmailAccountRequestException with reason "invalid"',
         () async {
-          final result = fixture.emailIDP.verifyRegistrationCode(
+          final result = fixture.emailIdp.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -457,15 +457,15 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const verificationCode = '12345678';
 
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeAllowedAttempts: 1,
             registrationVerificationCodeGenerator: () => verificationCode,
@@ -474,14 +474,14 @@ void main() {
         );
 
         const email = 'test@serverpod.dev';
-        accountRequestId = await fixture.emailIDP.startRegistration(
+        accountRequestId = await fixture.emailIdp.startRegistration(
           session,
           email: email,
         );
 
         // Make attempts up to the limit
         try {
-          await fixture.emailIDP.verifyRegistrationCode(
+          await fixture.emailIdp.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: 'wrong-code',
@@ -498,7 +498,7 @@ void main() {
       test(
         'when verifyRegistrationCode is called with valid credentials then it throws EmailAccountRequestException with reason "tooManyAttempts"',
         () async {
-          final result = fixture.emailIDP.verifyRegistrationCode(
+          final result = fixture.emailIdp.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -525,15 +525,15 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const verificationCode = '12345678';
 
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeAllowedAttempts: 1,
             registrationVerificationCodeLifetime: Duration(days: 1),
@@ -541,14 +541,14 @@ void main() {
         );
 
         const email = 'test@serverpod.dev';
-        accountRequestId = await fixture.emailIDP.startRegistration(
+        accountRequestId = await fixture.emailIdp.startRegistration(
           session,
           email: email,
         );
 
         // Exhaust allowed attempts
         try {
-          await fixture.emailIDP.verifyRegistrationCode(
+          await fixture.emailIdp.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: 'wrong-code',
@@ -559,7 +559,7 @@ void main() {
 
         // Go past the allowed attempts
         try {
-          await fixture.emailIDP.verifyRegistrationCode(
+          await fixture.emailIdp.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: 'wrong-code',
@@ -576,7 +576,7 @@ void main() {
       test(
         'when verifyRegistrationCode is called with valid verification code then throws EmailAccountRequestException with reason "tooManyAttempts"',
         () async {
-          final result = fixture.emailIDP.verifyRegistrationCode(
+          final result = fixture.emailIdp.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -603,7 +603,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
@@ -613,8 +613,8 @@ void main() {
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             passwordValidationFunction: (final password) =>
@@ -622,19 +622,19 @@ void main() {
           ),
         );
 
-        accountRequestId = await fixture.emailIDP.startRegistration(
+        accountRequestId = await fixture.emailIdp.startRegistration(
           session,
           email: email,
         );
 
         // Verify and complete the request
-        final registrationToken = await fixture.emailIDP.verifyRegistrationCode(
+        final registrationToken = await fixture.emailIdp.verifyRegistrationCode(
           session,
           accountRequestId: accountRequestId,
           verificationCode: verificationCode,
         );
 
-        await fixture.emailIDP.finishRegistration(
+        await fixture.emailIdp.finishRegistration(
           session,
           registrationToken: registrationToken,
           password: password,
@@ -648,7 +648,7 @@ void main() {
       test(
         'when verifyRegistrationCode is called with valid verification code then it throws EmailAccountRequestException with reason "invalid"',
         () async {
-          final result = fixture.emailIDP.verifyRegistrationCode(
+          final result = fixture.emailIdp.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: verificationCode,
@@ -675,12 +675,12 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeAllowedAttempts: 1,
             registrationVerificationCodeLifetime: Duration(days: 1),
@@ -695,7 +695,7 @@ void main() {
       test(
         'when verifyRegistrationCode is called then it throws EmailAccountRequestException with reason "invalid"',
         () async {
-          final result = fixture.emailIDP.verifyRegistrationCode(
+          final result = fixture.emailIdp.verifyRegistrationCode(
             session,
             accountRequestId: const Uuid().v4obj(),
             verificationCode: 'some-code',
@@ -720,7 +720,7 @@ void main() {
           final accountRequestId = const Uuid().v4obj();
           // Make attempts up to the limit
           try {
-            await fixture.emailIDP.verifyRegistrationCode(
+            await fixture.emailIdp.verifyRegistrationCode(
               session,
               accountRequestId: accountRequestId,
               verificationCode: 'some-code',
@@ -729,7 +729,7 @@ void main() {
             // Expected
           }
 
-          final result = fixture.emailIDP.verifyRegistrationCode(
+          final result = fixture.emailIdp.verifyRegistrationCode(
             session,
             accountRequestId: accountRequestId,
             verificationCode: 'some-code',

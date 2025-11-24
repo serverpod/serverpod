@@ -127,7 +127,7 @@ class AppleAuthController extends ChangeNotifier {
         throw AppleIdTokenVerificationException();
       }
 
-      final endpoint = client.getEndpointOfType<EndpointAppleIDPBase>();
+      final endpoint = client.getEndpointOfType<EndpointAppleIdpBase>();
       final authSuccess = await endpoint.login(
         identityToken: identityToken,
         authorizationCode: authorizationCode,
