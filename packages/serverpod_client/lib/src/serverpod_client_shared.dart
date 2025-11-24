@@ -163,7 +163,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
   final Duration streamingConnectionTimeout;
 
   /// Timeout when calling a server endpoint. If no response has been received, defaults to 20 seconds.
-  Duration connectionTimeout;
+  final Duration connectionTimeout;
 
   /// Callback when any call to the server fails or an exception is
   /// thrown.
