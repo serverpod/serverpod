@@ -23,7 +23,7 @@ void run(List<String> args) async {
   // Configure our token managers.
   final serverSideSessionsConfig = ServerSideSessionsConfig(
     sessionKeyHashPepper: pod.getPassword(
-      'serverSideSessionsSessionKeyHashPepper',
+      'serverSideSessionKeyHashPepper',
     )!,
   );
 
