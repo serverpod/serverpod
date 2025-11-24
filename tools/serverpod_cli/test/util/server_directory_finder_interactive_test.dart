@@ -27,11 +27,13 @@ void main() {
             startDir: projectDir,
             interactive: false,
           ),
-          throwsA(isA<ServerpodProjectNotFoundException>().having(
-            (e) => e.message,
-            'message',
-            contains('Multiple Serverpod projects detected'),
-          )),
+          throwsA(
+            isA<ServerpodProjectNotFoundException>().having(
+              (e) => e.message,
+              'message',
+              contains('Multiple Serverpod projects detected'),
+            ),
+          ),
         );
       },
     );
@@ -75,11 +77,13 @@ void main() {
             startDir: projectDir,
             interactive: false,
           ),
-          throwsA(isA<ServerpodProjectNotFoundException>().having(
-            (e) => e.message,
-            'message',
-            contains('No Serverpod server project detected'),
-          )),
+          throwsA(
+            isA<ServerpodProjectNotFoundException>().having(
+              (e) => e.message,
+              'message',
+              contains('No Serverpod server project detected'),
+            ),
+          ),
         );
       },
     );

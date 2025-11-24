@@ -65,8 +65,9 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
 
     // Get interactive flag from global configuration
-    final interactive = serverpodRunner.globalConfiguration
-        .optionalValue(GlobalOption.interactive);
+    final interactive = serverpodRunner.globalConfiguration.optionalValue(
+      GlobalOption.interactive,
+    );
 
     GeneratorConfig config;
     try {

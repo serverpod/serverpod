@@ -159,9 +159,9 @@ class ServerDirectoryFinder {
   /// The directory finder function configured for Serverpod server directories.
   static final DirectoryFinder<Directory?> _finder =
       serverpodDirectoryFinder<Directory?>(
-    startingDirectory: (arg) => arg,
-    directoryContentCondition: isServerDirectory,
-  );
+        startingDirectory: (arg) => arg,
+        directoryContentCondition: isServerDirectory,
+      );
 
   /// Finds a server directory, prompting the user if multiple are found.
   ///

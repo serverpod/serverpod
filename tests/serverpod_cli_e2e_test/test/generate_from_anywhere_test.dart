@@ -74,185 +74,199 @@ void main() async {
       createProcess.kill();
     });
 
-    test('then code generation succeeds when running from client directory.',
-        () async {
-      var generateProcess = await Process.start(
-        'serverpod',
-        ['generate', '--no-analytics'],
-        workingDirectory: path.join(tempDir.path, clientDir),
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
-      );
+    test(
+      'then code generation succeeds when running from client directory.',
+      () async {
+        var generateProcess = await Process.start(
+          'serverpod',
+          ['generate', '--no-analytics'],
+          workingDirectory: path.join(tempDir.path, clientDir),
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
 
-      var stdout = <String>[];
-      var stderr = <String>[];
+        var stdout = <String>[];
+        var stderr = <String>[];
 
-      generateProcess.stdout
-          .transform(const Utf8Decoder())
-          .transform(const LineSplitter())
-          .listen((line) {
-        stdout.add(line);
-      });
+        generateProcess.stdout
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen((line) {
+              stdout.add(line);
+            });
 
-      generateProcess.stderr
-          .transform(const Utf8Decoder())
-          .transform(const LineSplitter())
-          .listen((line) {
-        stderr.add(line);
-      });
+        generateProcess.stderr
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen((line) {
+              stderr.add(line);
+            });
 
-      var exitCode = await generateProcess.exitCode;
+        var exitCode = await generateProcess.exitCode;
 
-      expect(exitCode, equals(0), reason: 'Generate should succeed');
+        expect(exitCode, equals(0), reason: 'Generate should succeed');
 
-      var allOutput = [...stdout, ...stderr].join('\n');
-      expect(
-        allOutput.contains('Done') || allOutput.contains('success'),
-        isTrue,
-        reason: 'Should contain success message',
-      );
+        var allOutput = [...stdout, ...stderr].join('\n');
+        expect(
+          allOutput.contains('Done') || allOutput.contains('success'),
+          isTrue,
+          reason: 'Should contain success message',
+        );
 
-      // Verify that generated files exist
-      var generatedEndpointsFile = File(path.join(
-        tempDir.path,
-        serverDir,
-        'lib',
-        'src',
-        'generated',
-        'endpoints.dart',
-      ));
-      expect(
-        generatedEndpointsFile.existsSync(),
-        isTrue,
-        reason: 'Generated endpoints file should exist',
-      );
+        // Verify that generated files exist
+        var generatedEndpointsFile = File(
+          path.join(
+            tempDir.path,
+            serverDir,
+            'lib',
+            'src',
+            'generated',
+            'endpoints.dart',
+          ),
+        );
+        expect(
+          generatedEndpointsFile.existsSync(),
+          isTrue,
+          reason: 'Generated endpoints file should exist',
+        );
 
-      var generatedProtocolFile = File(path.join(
-        tempDir.path,
-        serverDir,
-        'lib',
-        'src',
-        'generated',
-        'protocol.dart',
-      ));
-      expect(
-        generatedProtocolFile.existsSync(),
-        isTrue,
-        reason: 'Generated protocol file should exist',
-      );
-    });
+        var generatedProtocolFile = File(
+          path.join(
+            tempDir.path,
+            serverDir,
+            'lib',
+            'src',
+            'generated',
+            'protocol.dart',
+          ),
+        );
+        expect(
+          generatedProtocolFile.existsSync(),
+          isTrue,
+          reason: 'Generated protocol file should exist',
+        );
+      },
+    );
 
-    test('then code generation succeeds when running from server subdirectory.',
-        () async {
-      var libSrcPath = path.join(tempDir.path, serverDir, 'lib', 'src');
+    test(
+      'then code generation succeeds when running from server subdirectory.',
+      () async {
+        var libSrcPath = path.join(tempDir.path, serverDir, 'lib', 'src');
 
-      var generateProcess = await Process.start(
-        'serverpod',
-        ['generate', '--no-analytics'],
-        workingDirectory: libSrcPath,
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
-      );
+        var generateProcess = await Process.start(
+          'serverpod',
+          ['generate', '--no-analytics'],
+          workingDirectory: libSrcPath,
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
 
-      var stdout = <String>[];
-      var stderr = <String>[];
+        var stdout = <String>[];
+        var stderr = <String>[];
 
-      generateProcess.stdout
-          .transform(const Utf8Decoder())
-          .transform(const LineSplitter())
-          .listen((line) {
-        stdout.add(line);
-      });
+        generateProcess.stdout
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen((line) {
+              stdout.add(line);
+            });
 
-      generateProcess.stderr
-          .transform(const Utf8Decoder())
-          .transform(const LineSplitter())
-          .listen((line) {
-        stderr.add(line);
-      });
+        generateProcess.stderr
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen((line) {
+              stderr.add(line);
+            });
 
-      var exitCode = await generateProcess.exitCode;
+        var exitCode = await generateProcess.exitCode;
 
-      expect(exitCode, equals(0), reason: 'Generate should succeed');
+        expect(exitCode, equals(0), reason: 'Generate should succeed');
 
-      var allOutput = [...stdout, ...stderr].join('\n');
-      expect(
-        allOutput.contains('Done') || allOutput.contains('success'),
-        isTrue,
-        reason: 'Should contain success message',
-      );
+        var allOutput = [...stdout, ...stderr].join('\n');
+        expect(
+          allOutput.contains('Done') || allOutput.contains('success'),
+          isTrue,
+          reason: 'Should contain success message',
+        );
 
-      // Verify that generated files exist
-      var generatedEndpointsFile = File(path.join(
-        tempDir.path,
-        serverDir,
-        'lib',
-        'src',
-        'generated',
-        'endpoints.dart',
-      ));
-      expect(
-        generatedEndpointsFile.existsSync(),
-        isTrue,
-        reason: 'Generated endpoints file should exist',
-      );
-    });
+        // Verify that generated files exist
+        var generatedEndpointsFile = File(
+          path.join(
+            tempDir.path,
+            serverDir,
+            'lib',
+            'src',
+            'generated',
+            'endpoints.dart',
+          ),
+        );
+        expect(
+          generatedEndpointsFile.existsSync(),
+          isTrue,
+          reason: 'Generated endpoints file should exist',
+        );
+      },
+    );
 
-    test('then code generation succeeds when running from project root.',
-        () async {
-      var generateProcess = await Process.start(
-        'serverpod',
-        ['generate', '--no-analytics'],
-        workingDirectory: path.join(tempDir.path, projectName),
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
-      );
+    test(
+      'then code generation succeeds when running from project root.',
+      () async {
+        var generateProcess = await Process.start(
+          'serverpod',
+          ['generate', '--no-analytics'],
+          workingDirectory: path.join(tempDir.path, projectName),
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
 
-      var stdout = <String>[];
-      var stderr = <String>[];
+        var stdout = <String>[];
+        var stderr = <String>[];
 
-      generateProcess.stdout
-          .transform(const Utf8Decoder())
-          .transform(const LineSplitter())
-          .listen((line) {
-        stdout.add(line);
-      });
+        generateProcess.stdout
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen((line) {
+              stdout.add(line);
+            });
 
-      generateProcess.stderr
-          .transform(const Utf8Decoder())
-          .transform(const LineSplitter())
-          .listen((line) {
-        stderr.add(line);
-      });
+        generateProcess.stderr
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen((line) {
+              stderr.add(line);
+            });
 
-      var exitCode = await generateProcess.exitCode;
+        var exitCode = await generateProcess.exitCode;
 
-      expect(exitCode, equals(0), reason: 'Generate should succeed');
+        expect(exitCode, equals(0), reason: 'Generate should succeed');
 
-      var allOutput = [...stdout, ...stderr].join('\n');
-      expect(
-        allOutput.contains('Done') || allOutput.contains('success'),
-        isTrue,
-        reason: 'Should contain success message',
-      );
+        var allOutput = [...stdout, ...stderr].join('\n');
+        expect(
+          allOutput.contains('Done') || allOutput.contains('success'),
+          isTrue,
+          reason: 'Should contain success message',
+        );
 
-      // Verify that generated files exist
-      var generatedEndpointsFile = File(path.join(
-        tempDir.path,
-        serverDir,
-        'lib',
-        'src',
-        'generated',
-        'endpoints.dart',
-      ));
-      expect(
-        generatedEndpointsFile.existsSync(),
-        isTrue,
-        reason: 'Generated endpoints file should exist',
-      );
-    });
+        // Verify that generated files exist
+        var generatedEndpointsFile = File(
+          path.join(
+            tempDir.path,
+            serverDir,
+            'lib',
+            'src',
+            'generated',
+            'endpoints.dart',
+          ),
+        );
+        expect(
+          generatedEndpointsFile.existsSync(),
+          isTrue,
+          reason: 'Generated endpoints file should exist',
+        );
+      },
+    );
   });
 }

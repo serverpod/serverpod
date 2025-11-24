@@ -37,8 +37,9 @@ void main() {
           nonServerDir('myapp_flutter'),
         ]).create();
 
-        var flutterDir =
-            Directory(path.join(d.sandbox, 'project', 'myapp_flutter'));
+        var flutterDir = Directory(
+          path.join(d.sandbox, 'project', 'myapp_flutter'),
+        );
         var result = ServerDirectoryFinder.search(flutterDir);
 
         expect(result, isNotNull);
@@ -59,8 +60,9 @@ void main() {
           nonServerDir('myapp_client'),
         ]).create();
 
-        var clientDir =
-            Directory(path.join(d.sandbox, 'project', 'myapp_client'));
+        var clientDir = Directory(
+          path.join(d.sandbox, 'project', 'myapp_client'),
+        );
         var result = ServerDirectoryFinder.search(clientDir);
 
         expect(result, isNotNull);
@@ -131,8 +133,9 @@ dependencies:
           ]),
         ]).create();
 
-        var childDir =
-            Directory(path.join(d.sandbox, 'test_server', 'lib', 'src'));
+        var childDir = Directory(
+          path.join(d.sandbox, 'test_server', 'lib', 'src'),
+        );
         var result = ServerDirectoryFinder.search(childDir);
 
         expect(result, isNotNull);
@@ -173,11 +176,13 @@ dependencies:
 
         expect(
           () => ServerDirectoryFinder.search(projectDir),
-          throwsA(isA<AmbiguousSearchException>().having(
-            (e) => e.matches.length,
-            'matches.length',
-            equals(2),
-          )),
+          throwsA(
+            isA<AmbiguousSearchException>().having(
+              (e) => e.matches.length,
+              'matches.length',
+              equals(2),
+            ),
+          ),
         );
       },
     );
@@ -242,8 +247,9 @@ dependencies:
           ]),
         ]).create();
 
-        var deepDir =
-            Directory(path.join(d.sandbox, 'root', 'app', 'lib', 'src'));
+        var deepDir = Directory(
+          path.join(d.sandbox, 'root', 'app', 'lib', 'src'),
+        );
         var result = ServerDirectoryFinder.search(deepDir);
 
         expect(result, isNotNull);
@@ -272,8 +278,9 @@ dependencies:
         ]).create();
 
         // Search from below the .git boundary
-        var searchDir =
-            Directory(path.join(d.sandbox, 'server', 'subdir', 'secondSubdir'));
+        var searchDir = Directory(
+          path.join(d.sandbox, 'server', 'subdir', 'secondSubdir'),
+        );
         var result = ServerDirectoryFinder.search(searchDir);
 
         // Should NOT find the server directory above .git
@@ -299,8 +306,9 @@ dependencies:
         ]).create();
 
         // Search from below the melos.yaml boundary
-        var searchDir =
-            Directory(path.join(d.sandbox, 'server', 'subdir', 'secondSubdir'));
+        var searchDir = Directory(
+          path.join(d.sandbox, 'server', 'subdir', 'secondSubdir'),
+        );
         var result = ServerDirectoryFinder.search(searchDir);
 
         // Should NOT find the server directory above melos.yaml

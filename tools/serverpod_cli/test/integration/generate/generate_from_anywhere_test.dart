@@ -27,8 +27,9 @@ void main() {
     var serverDir = Directory(path.join(parent.path, '${projectName}_server'));
     await serverDir.create(recursive: true);
 
-    var protocolDir =
-        Directory(path.join(serverDir.path, 'lib', 'src', 'protocol'));
+    var protocolDir = Directory(
+      path.join(serverDir.path, 'lib', 'src', 'protocol'),
+    );
     await protocolDir.create(recursive: true);
 
     var configDir = Directory(path.join(serverDir.path, 'config'));
@@ -36,8 +37,9 @@ void main() {
 
     var dartToolDir = Directory(path.join(serverDir.path, '.dart_tool'));
     await dartToolDir.create(recursive: true);
-    var packageConfigFile =
-        File(path.join(dartToolDir.path, 'package_config.json'));
+    var packageConfigFile = File(
+      path.join(dartToolDir.path, 'package_config.json'),
+    );
     await packageConfigFile.writeAsString('''
 {
   "configVersion": 2,
@@ -65,8 +67,9 @@ dependencies:
 
     var clientDir = Directory(path.join(parent.path, '${projectName}_client'));
     await clientDir.create(recursive: true);
-    var clientLibDir =
-        Directory(path.join(clientDir.path, 'lib', 'src', 'protocol'));
+    var clientLibDir = Directory(
+      path.join(clientDir.path, 'lib', 'src', 'protocol'),
+    );
     await clientLibDir.create(recursive: true);
     var clientPubspecFile = File(path.join(clientDir.path, 'pubspec.yaml'));
     await clientPubspecFile.writeAsString('''
