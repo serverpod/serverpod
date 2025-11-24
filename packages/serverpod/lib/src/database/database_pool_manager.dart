@@ -45,7 +45,7 @@ class DatabasePoolManager {
     RuntimeParametersListBuilder? runtimeParametersBuilder,
     this.config,
   ) : _poolSettings = pg.PoolSettings(
-        maxConnectionCount: 10,
+        maxConnectionCount: config.maxConnectionCount,
         queryTimeout: const Duration(minutes: 1),
         sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
         typeRegistry: pg.TypeRegistry(encoders: [pgvectorEncoder]),

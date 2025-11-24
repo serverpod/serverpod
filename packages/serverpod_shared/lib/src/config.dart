@@ -399,6 +399,9 @@ class ServerConfig {
 
 /// Configuration for a Postgres database,
 class DatabaseConfig {
+  /// The default maximum number of connections in the database pool.
+  static const int defaultMaxConnectionCount = 10;
+
   /// Database host.
   final String host;
 
@@ -423,6 +426,9 @@ class DatabaseConfig {
   /// Override the search path all connections to the database.
   final List<String>? searchPaths;
 
+  /// The maximum number of connections in the database pool.
+  final int maxConnectionCount;
+
   /// Creates a new [DatabaseConfig].
   DatabaseConfig({
     required this.host,
@@ -433,6 +439,7 @@ class DatabaseConfig {
     this.requireSsl = false,
     this.isUnixSocket = false,
     this.searchPaths,
+    this.maxConnectionCount = defaultMaxConnectionCount,
   });
 
   factory DatabaseConfig._fromJson(Map dbSetup, Map passwords, String name) {
@@ -466,6 +473,9 @@ class DatabaseConfig {
       searchPaths: _parseList(
         dbSetup[ServerpodEnv.databaseSearchPaths.configKey],
       ),
+      maxConnectionCount:
+          dbSetup[ServerpodEnv.databaseMaxConnectionCount.configKey] ??
+          defaultMaxConnectionCount,
     );
   }
 
@@ -482,6 +492,7 @@ class DatabaseConfig {
     if (searchPaths != null) {
       str += 'database search path overrides: $searchPaths\n';
     }
+    str += 'database max connection count: $maxConnectionCount\n';
     return str;
   }
 }
@@ -783,6 +794,7 @@ Map? _databaseConfigMap(Map configMap, Map<String, String> environment) {
     (ServerpodEnv.databaseRequireSsl, bool.parse),
     (ServerpodEnv.databaseIsUnixSocket, bool.parse),
     (ServerpodEnv.databaseSearchPaths, null),
+    (ServerpodEnv.databaseMaxConnectionCount, int.parse),
   ]);
 }
 

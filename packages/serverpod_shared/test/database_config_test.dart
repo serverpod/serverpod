@@ -458,4 +458,121 @@ database:
       );
     },
   );
+
+  test(
+    'Given a Serverpod config with database configuration when loading from Map then maxConnectionCount uses default value.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        {...passwords, 'database': 'password'},
+        loadYaml(serverpodConfig),
+      );
+
+      expect(
+        config.database?.maxConnectionCount,
+        DatabaseConfig.defaultMaxConnectionCount,
+      );
+    },
+  );
+
+  test(
+    'Given a Serverpod config with database configuration including maxConnectionCount when loading from Map then maxConnectionCount is set correctly.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  maxConnectionCount: 20
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        {...passwords, 'database': 'password'},
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.database?.maxConnectionCount, 20);
+    },
+  );
+
+  test(
+    'Given a Serverpod config with only the api server configuration but the environment variables containing the optional database variable maxConnectionCount then the database config takes the value from the env.',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        {...passwords, 'database': 'password'},
+        {
+          'apiServer': {
+            'port': 8080,
+            'publicHost': 'localhost',
+            'publicPort': 8080,
+            'publicScheme': 'http',
+          },
+        },
+        environment: {
+          'SERVERPOD_DATABASE_HOST': 'localhost',
+          'SERVERPOD_DATABASE_PORT': '5432',
+          'SERVERPOD_DATABASE_NAME': 'serverpod',
+          'SERVERPOD_DATABASE_USER': 'admin',
+          'SERVERPOD_DATABASE_MAX_CONNECTION_COUNT': '30',
+        },
+      );
+
+      expect(config.database?.maxConnectionCount, 30);
+    },
+  );
+
+  test(
+    'Given a Serverpod config with both config file and environment variables for maxConnectionCount when loading from Map then the environment variable overrides the config file.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  maxConnectionCount: 20
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        {...passwords, 'database': 'password'},
+        loadYaml(serverpodConfig),
+        environment: {
+          'SERVERPOD_DATABASE_MAX_CONNECTION_COUNT': '50',
+        },
+      );
+
+      expect(config.database?.maxConnectionCount, 50);
+    },
+  );
 }
