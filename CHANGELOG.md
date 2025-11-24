@@ -1,3 +1,36 @@
+## 3.0.0-rc.2
+
+Release candidate for Serverpod 3.
+
+Serverpod 3 is a major overhaul of the authentication system and the web server.
+This release candidate is **not yet production-ready**. It is still under active development and may contain bugs or breaking changes.
+
+### Polymorphism support
+Polymorphic models are now supported on endpoints, making inheritance no longer an experimental feature on the framework. It works both for sealed and unsealed models.
+
+This has been a long-awaited feature that solves one of the very few areas where invoking client endpoints behave differently than regular method calls. See the [next documentation](https://docs.serverpod.dev/next/concepts/models) for more details.
+
+### New auth improvements from last rc
+All services that use secrets now support multiple fallback mechanisms to allow secret rotation without invalidating existing tokens. This includes JWT and server-side session secrets, as well as Email hash peppers.
+
+The `ClientAuthSessionManager` has been moved to the `serverpod_auth_core_client` package, decoupling from Flutter  dependencies to allow the usage of Serverpod auth in pure Dart projects. For Flutter apps, there is a new `FlutterAuthSessionManager` that extends the base class and adds Flutter-specific functionality.
+
+A major rename has also taken place in the new authentication module to clarify purpose of each class and method. t should now be easier to understand and extend core functionality and identity providers.
+
+### Additional changes
+
+#### Fixes
+- fix: Clarifies DB migration version not found error message.
+- fix: SessionLogEntry time field now uses session start time.
+- fix: Publishes authentication revoked on refresh token rotate expiry and invalid secret failures.
+- fix: Prevents null check error when relation defined without table.
+- fix: Uses daemon exit code conventions for SIGTERM graceful shutdown.
+- fix: Make connectionTimeout final to prevent post-initialization mutation
+
+#### Misc
+- chore(deps): Bumps analyzer from 8.4.1 to 9.0.0 in serverpod_cli.
+- chore: Updates various dependencies.
+
 ## 3.0.0-rc.1
 
 Release candidate for Serverpod 3.
