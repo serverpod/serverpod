@@ -162,3 +162,71 @@ class AnnotationDefinition {
 extension HasAnnotation on List<AnnotationDefinition> {
   bool has(String name) => any((e) => e.name == name);
 }
+
+/// Describes a single FutureCall.
+class FutureCallDefinition {
+  /// The name of the future call (camelCase).
+  final String name;
+
+  /// The documentation of the future call.
+  final String? documentationComment;
+
+  /// The actual class name of the future call.
+  final String className;
+
+  /// The file path where the future call is stored.
+  final String filePath;
+
+  /// The methods this future call defines.
+  final List<FutureCallMethodDefinition> methods;
+
+  /// Create a new [FutureCallDefinition].
+  const FutureCallDefinition({
+    required this.name,
+    required this.documentationComment,
+    required this.className,
+    required this.filePath,
+    required this.methods,
+  });
+
+  /// The name of the external package where this future call is defined.
+  String? get packageName => filePath.startsWith('package:')
+      ? filePath.split('/').first.split(':').last
+      : null;
+}
+
+/// Describes a single method in a [FutureCallDefinition].
+class FutureCallMethodDefinition {
+  /// The name of the method.
+  final String name;
+
+  /// The documentation of this method.
+  final String? documentationComment;
+
+  /// The returned type of this method.
+  final TypeDefinition returnType;
+
+  /// The required positional parameters of this method.
+  final List<ParameterDefinition> parameters;
+
+  /// The optional positional parameters of this method.
+  final List<ParameterDefinition> parametersPositional;
+
+  /// The named parameters of this method.
+  final List<ParameterDefinition> parametersNamed;
+
+  List<ParameterDefinition> get allParameters => [
+        ...parameters,
+        ...parametersPositional,
+        ...parametersNamed,
+      ];
+
+  const FutureCallMethodDefinition({
+    required this.name,
+    required this.documentationComment,
+    required this.returnType,
+    required this.parameters,
+    required this.parametersPositional,
+    required this.parametersNamed,
+  });
+}

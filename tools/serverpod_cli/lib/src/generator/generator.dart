@@ -1,4 +1,6 @@
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_calls_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
@@ -10,6 +12,7 @@ Future<bool> performGenerate({
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
   required StatefulAnalyzer modelAnalyzer,
+  FutureCallsAnalyzer? futureCallsAnalyzer,
 }) async {
   bool success = true;
 
@@ -37,11 +40,25 @@ Future<bool> performGenerate({
   success &= !endpointAnalyzerCollector.hasSevereErrors;
   endpointAnalyzerCollector.printErrors();
 
+  // Analyze future calls if analyzer is provided
+  var futureCalls = <FutureCallDefinition>[];
+  if (futureCallsAnalyzer != null) {
+    log.debug('Analyzing future calls.');
+    var futureCallAnalyzerCollector = CodeGenerationCollector();
+    futureCalls = await futureCallsAnalyzer.analyze(
+      collector: futureCallAnalyzerCollector,
+      changedFiles: generatedModelFiles.toSet(),
+    );
+    success &= !futureCallAnalyzerCollector.hasSevereErrors;
+    futureCallAnalyzerCollector.printErrors();
+  }
+
   log.debug('Generating the protocol.');
 
   var protocolDefinition = ProtocolDefinition(
     endpoints: endpoints,
     models: models,
+    futureCalls: futureCalls,
   );
 
   var generatedProtocolFiles =

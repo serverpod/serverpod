@@ -5,6 +5,7 @@ import 'package:async/async.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_calls_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -17,6 +18,7 @@ Future<bool> performGenerateContinuously({
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
   required StatefulAnalyzer modelAnalyzer,
+  FutureCallsAnalyzer? futureCallsAnalyzer,
 }) async {
   log.debug('Starting up continuous generator');
 
@@ -26,6 +28,7 @@ Future<bool> performGenerateContinuously({
     config: config,
     endpointsAnalyzer: endpointsAnalyzer,
     modelAnalyzer: modelAnalyzer,
+    futureCallsAnalyzer: futureCallsAnalyzer,
     completionMessage:
         'Initial code generation complete. Listening for changes.',
   );
@@ -37,6 +40,12 @@ Future<bool> performGenerateContinuously({
     var shouldGenerate = await endpointsAnalyzer.updateFileContexts({
       event.path,
     });
+
+    if (futureCallsAnalyzer != null) {
+      shouldGenerate |= await futureCallsAnalyzer.updateFileContexts({
+        event.path,
+      });
+    }
 
     if (ModelHelper.isModelFile(
       event.path,
@@ -75,6 +84,7 @@ Future<bool> performGenerateContinuously({
         config: config,
         endpointsAnalyzer: endpointsAnalyzer,
         modelAnalyzer: modelAnalyzer,
+        futureCallsAnalyzer: futureCallsAnalyzer,
         completionMessage: 'Incremental code generation complete.',
       );
     });
@@ -114,6 +124,7 @@ Future<bool> _performSafeGenerate({
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
   required StatefulAnalyzer modelAnalyzer,
+  FutureCallsAnalyzer? futureCallsAnalyzer,
   required String completionMessage,
 }) async {
   var success = false;
@@ -124,6 +135,7 @@ Future<bool> _performSafeGenerate({
         config: config,
         endpointsAnalyzer: endpointsAnalyzer,
         modelAnalyzer: modelAnalyzer,
+        futureCallsAnalyzer: futureCallsAnalyzer,
       ),
     );
     log.info(completionMessage);

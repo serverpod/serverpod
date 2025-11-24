@@ -518,7 +518,260 @@ class LibraryGenerator {
       );
     }
 
+    // Generate future calls interface if server code
+    if (serverCode && protocolDefinition.futureCalls.isNotEmpty) {
+      library.body.addAll(_generateFutureCallsInterface());
+    }
+
     return library.build();
+  }
+
+  /// Generates the future calls interface classes.
+  List<Spec> _generateFutureCallsInterface() {
+    var specs = <Spec>[];
+
+    // Generate helper class for arguments serialization
+    specs.add(Class((c) => c
+      ..name = '_FutureCallArgs'
+      ..extend = refer('SerializableModel', serverpodUrl(true))
+      ..fields.add(Field((f) => f
+        ..name = 'serializedArgs'
+        ..type = refer('String')
+        ..modifier = FieldModifier.final$))
+      ..constructors.add(Constructor((con) => con
+        ..requiredParameters.add(Parameter((p) => p
+          ..name = 'serializedArgs'
+          ..toThis = true))))
+      ..methods.addAll([
+        Method((m) => m
+          ..name = 'toJson'
+          ..annotations.add(refer('override'))
+          ..returns = refer('Map<String, dynamic>')
+          ..body = const Code("return {'args': serializedArgs};")),
+        Method((m) => m
+          ..name = 'fromJson'
+          ..static = true
+          ..returns = refer('_FutureCallArgs')
+          ..requiredParameters.add(Parameter((p) => p
+            ..name = 'json'
+            ..type = refer('Map<String, dynamic>')))
+          ..body = const Code(
+              "return _FutureCallArgs(json['args'] as String);")),
+      ])));
+
+    // Generate individual future call method classes
+    for (var futureCall in protocolDefinition.futureCalls) {
+      specs.add(_generateFutureCallMethodClass(futureCall));
+    }
+
+    // Generate the intermediate class
+    specs.add(_generateFutureCallsAtTimeClass());
+
+    // Generate the main FutureCalls class
+    specs.add(_generateFutureCallsClass());
+
+    return specs;
+  }
+
+  /// Generates a class for a specific future call with its methods.
+  Class _generateFutureCallMethodClass(FutureCallDefinition futureCall) {
+    return Class((c) {
+      c
+        ..name = '_FutureCall${ReCase(futureCall.name).pascalCase}'
+        ..fields.addAll([
+          Field((f) => f
+            ..name = '_serverpod'
+            ..type = refer('Serverpod', serverpodUrl(true))
+            ..modifier = FieldModifier.final$),
+          Field((f) => f
+            ..name = '_time'
+            ..type = refer('DateTime', 'dart:core')
+            ..modifier = FieldModifier.final$),
+        ])
+        ..constructors.add(
+          Constructor((con) => con
+            ..requiredParameters.addAll([
+              Parameter((p) => p
+                ..name = '_serverpod'
+                ..toThis = true),
+              Parameter((p) => p
+                ..name = '_time'
+                ..toThis = true),
+            ])),
+        );
+
+      // Generate methods
+      for (var method in futureCall.methods) {
+        c.methods.add(_generateFutureCallMethod(futureCall, method));
+      }
+    });
+  }
+
+  /// Generates a single future call method.
+  Method _generateFutureCallMethod(
+    FutureCallDefinition futureCall,
+    FutureCallMethodDefinition method,
+  ) {
+    return Method((m) {
+      m
+        ..name = method.name
+        ..returns = refer('Future<void>')
+        ..modifier = MethodModifier.async
+        ..requiredParameters.addAll([
+          for (var param in method.parameters)
+            Parameter((p) => p
+              ..name = param.name
+              ..type = param.type.reference(true, config: config)),
+        ])
+        ..optionalParameters.addAll([
+          for (var param in method.parametersPositional)
+            Parameter((p) => p
+              ..named = false
+              ..name = param.name
+              ..type = param.type.reference(true, config: config)),
+          for (var param in method.parametersNamed)
+            Parameter((p) => p
+              ..named = true
+              ..required = param.required
+              ..name = param.name
+              ..type = param.type.reference(true, config: config)),
+        ])
+        ..body = _buildFutureCallMethodBody(futureCall, method);
+    });
+  }
+
+  /// Builds the body of a future call method.
+  Code _buildFutureCallMethodBody(
+    FutureCallDefinition futureCall,
+    FutureCallMethodDefinition method,
+  ) {
+    var callName = '${futureCall.name}.${method.name}';
+    
+    // Build the serialized arguments map
+    var argsMapCode = StringBuffer('{');
+    var allParams = [
+      ...method.parameters,
+      ...method.parametersPositional,
+      ...method.parametersNamed,
+    ];
+    
+    for (var i = 0; i < allParams.length; i++) {
+      if (i > 0) argsMapCode.write(', ');
+      argsMapCode.write("'${allParams[i].name}': ${allParams[i].name}");
+    }
+    argsMapCode.write('}');
+
+    return Code('''
+      var argsData = $argsMapCode;
+      var serializedArgs = SerializationManager.encode(argsData);
+      
+      await _serverpod.futureCallManager!.scheduleFutureCall(
+        '$callName',
+        _FutureCallArgs(serializedArgs),
+        _time,
+        _serverpod.serverId,
+        null,
+      );
+    ''');
+  }
+
+  /// Generates the intermediate class that provides access to individual future calls.
+  Class _generateFutureCallsAtTimeClass() {
+    return Class((c) {
+      c
+        ..name = '_FutureCallsAtTime'
+        ..fields.addAll([
+          Field((f) => f
+            ..name = '_serverpod'
+            ..type = refer('Serverpod', serverpodUrl(true))
+            ..modifier = FieldModifier.final$),
+          Field((f) => f
+            ..name = '_time'
+            ..type = refer('DateTime', 'dart:core')
+            ..modifier = FieldModifier.final$),
+        ])
+        ..constructors.add(
+          Constructor((con) => con
+            ..requiredParameters.addAll([
+              Parameter((p) => p
+                ..name = '_serverpod'
+                ..toThis = true),
+              Parameter((p) => p
+                ..name = '_time'
+                ..toThis = true),
+            ])),
+        );
+
+      // Add getter for each future call
+      for (var futureCall in protocolDefinition.futureCalls) {
+        c.methods.add(
+          Method((m) => m
+            ..name = futureCall.name
+            ..type = MethodType.getter
+            ..returns = refer('_FutureCall${ReCase(futureCall.name).pascalCase}')
+            ..body = refer('_FutureCall${ReCase(futureCall.name).pascalCase}')
+                .call([refer('_serverpod'), refer('_time')])
+                .code),
+        );
+      }
+    });
+  }
+
+  /// Generates the main FutureCalls class.
+  Class _generateFutureCallsClass() {
+    return Class((c) {
+      c
+        ..name = 'FutureCalls'
+        ..fields.add(
+          Field((f) => f
+            ..name = '_serverpod'
+            ..type = refer('Serverpod', serverpodUrl(true))
+            ..modifier = FieldModifier.final$),
+        )
+        ..constructors.add(
+          Constructor((con) => con
+            ..requiredParameters.add(
+              Parameter((p) => p
+                ..name = '_serverpod'
+                ..toThis = true),
+            )),
+        )
+        ..methods.addAll([
+          // callAtTime method
+          Method((m) => m
+            ..name = 'callAtTime'
+            ..returns = refer('_FutureCallsAtTime')
+            ..requiredParameters.add(
+              Parameter((p) => p
+                ..name = 'time'
+                ..type = refer('DateTime', 'dart:core')),
+            )
+            ..body = refer('_FutureCallsAtTime')
+                .call([refer('_serverpod'), refer('time')])
+                .code),
+          // callWithDelay method
+          Method((m) => m
+            ..name = 'callWithDelay'
+            ..returns = refer('_FutureCallsAtTime')
+            ..requiredParameters.add(
+              Parameter((p) => p
+                ..name = 'delay'
+                ..type = refer('Duration', 'dart:core')),
+            )
+            ..body = refer('_FutureCallsAtTime')
+                .call([
+                  refer('_serverpod'),
+                  refer('DateTime')
+                      .property('now')
+                      .call([])
+                      .property('toUtc')
+                      .call([])
+                      .property('add')
+                      .call([refer('delay')])
+                ])
+                .code),
+        ]);
+    });
   }
 
   Block _buildGetClassNameForObjectDelegation(
