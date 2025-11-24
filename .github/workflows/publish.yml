@@ -1,4 +1,4 @@
-name: Publish Packages to pub.dev
+name: Publish Serverpod packages to pub.dev
 
 on:
   workflow_dispatch:
@@ -88,6 +88,11 @@ jobs:
             echo "### DRY RUN MODE - No packages will be published"
             echo ""
           fi
+
+          echo " - Serverpod version: $SERVERPOD_VERSION"
+          echo " - Dart version: $DART_VERSION"
+          echo " - Flutter version: $FLUTTER_VERSION"
+          echo " - Insights devtools version: $INSIGHTS_DEVTOOLS_VERSION"
 
           while read PACKAGE; do
             if (( PCOUNT >= START_PACKAGE )); then
