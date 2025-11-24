@@ -72,7 +72,7 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
         interactive: interactive,
       );
     } catch (e) {
-      log.error('An error occurred while parsing the server config file: $e');
+      log.error('$e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
