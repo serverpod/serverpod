@@ -13,9 +13,9 @@ final _sessionKeyPrefix = utf8.encode('sas');
 /// characters and thus does not change with the later data.
 final _sessionKeyPrefixBase64 = base64Url.encode(_sessionKeyPrefix);
 
-/// Creates the String representation to map to an `ServerSideSession`.
+/// Creates the String representation to map to a `ServerSideSession`.
 @internal
-String buildSessionKey({
+String buildServerSideSessionToken({
   required final UuidValue serverSideSessionId,
   required final Uint8List secret,
 }) {
@@ -26,12 +26,12 @@ String buildSessionKey({
   ]);
 }
 
-/// Tries parsing a session key String created by [buildSessionKey] into its
+/// Tries parsing a server side session token String created by [buildServerSideSessionToken] into its
 /// parts.
 ///
 /// Returns `null` if it does not match the spec or parsing fails for any reason.
 @internal
-SessionKeyData? tryParseSessionKey(
+SessionKeyData? tryParseServerSideSessionToken(
   final Session session,
   final String key,
 ) {

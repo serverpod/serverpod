@@ -9,7 +9,7 @@ import '../../generated/protocol.dart';
 import '../util/session_key_hash.dart';
 import 'server_side_sessions_admin.dart';
 import 'server_side_sessions_config.dart';
-import 'session_key.dart';
+import 'server_side_sessions_token.dart';
 
 /// Management functions for [ServerSideSession]s.
 ///
@@ -45,7 +45,7 @@ final class ServerSideSessions {
     final Session session,
     final String key,
   ) async {
-    final sessionKeyParts = tryParseSessionKey(session, key);
+    final sessionKeyParts = tryParseServerSideSessionToken(session, key);
     if (sessionKeyParts == null) {
       return null;
     }
@@ -211,7 +211,7 @@ final class ServerSideSessions {
 
     return AuthSuccess(
       authStrategy: AuthStrategy.session.name,
-      token: buildSessionKey(
+      token: buildServerSideSessionToken(
         secret: secret,
         serverSideSessionId: serverSideSession.id!,
       ),

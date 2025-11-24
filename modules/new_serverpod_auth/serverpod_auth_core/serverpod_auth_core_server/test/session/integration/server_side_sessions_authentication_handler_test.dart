@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/session.dart';
-import 'package:serverpod_auth_core_server/src/session/business/session_key.dart';
+import 'package:serverpod_auth_core_server/src/session/business/server_side_sessions_token.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
@@ -62,14 +62,14 @@ void main() {
   ) {
     late Session session;
     late UuidValue authUserId;
-    late String sessionKey;
+    late String serverSideSessionToken;
 
     setUp(() async {
       session = sessionBuilder.build();
 
       authUserId = (await serverSideSessions.authUsers.create(session)).id;
 
-      sessionKey = (await serverSideSessions.createSession(
+      serverSideSessionToken = (await serverSideSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {},
@@ -82,7 +82,7 @@ void main() {
       () async {
         final authInfo = await serverSideSessions.authenticationHandler(
           session,
-          sessionKey,
+          serverSideSessionToken,
         );
 
         expect(
@@ -95,15 +95,19 @@ void main() {
     test(
       'when calling `authenticationHandler` with the wrong secret in the session key, then it returns `null`.',
       () async {
-        final sessionData = tryParseSessionKey(session, sessionKey)!;
-        final sessionKeyWithInvalidSecret = buildSessionKey(
-          serverSideSessionId: sessionData.serverSideSessionId,
-          secret: utf8.encode('some other secret'),
-        );
+        final sessionData = tryParseServerSideSessionToken(
+          session,
+          serverSideSessionToken,
+        )!;
+        final serverSideSessionTokenWithInvalidSecret =
+            buildServerSideSessionToken(
+              serverSideSessionId: sessionData.serverSideSessionId,
+              secret: utf8.encode('some other secret'),
+            );
 
         final authInfo = await serverSideSessions.authenticationHandler(
           session,
-          sessionKeyWithInvalidSecret,
+          serverSideSessionTokenWithInvalidSecret,
         );
 
         expect(
@@ -125,7 +129,7 @@ void main() {
         final authInfo = await differentPepperServerSideSessions
             .authenticationHandler(
               session,
-              sessionKey,
+              serverSideSessionToken,
             );
 
         expect(
@@ -141,7 +145,7 @@ void main() {
     final endpoints,
   ) {
     late Session session;
-    late String sessionKey;
+    late String serverSideSessionToken;
 
     setUp(() async {
       session = sessionBuilder.build();
@@ -150,7 +154,7 @@ void main() {
         session,
       )).id;
 
-      sessionKey = (await serverSideSessions.createSession(
+      serverSideSessionToken = (await serverSideSessions.createSession(
         session,
         authUserId: authUserId,
         scopes: {const Scope('test')},
@@ -163,7 +167,7 @@ void main() {
       () async {
         final authInfo = await serverSideSessions.authenticationHandler(
           session,
-          sessionKey,
+          serverSideSessionToken,
         );
 
         expect(
@@ -180,14 +184,14 @@ void main() {
       final expiresAt = DateTime.now().add(const Duration(days: 1));
       late Session session;
       late UuidValue authUserId;
-      late String sessionKey;
+      late String serverSideSessionToken;
 
       setUp(() async {
         session = sessionBuilder.build();
 
         authUserId = (await serverSideSessions.authUsers.create(session)).id;
 
-        sessionKey = (await serverSideSessions.createSession(
+        serverSideSessionToken = (await serverSideSessions.createSession(
           session,
           authUserId: authUserId,
           scopes: {},
@@ -201,7 +205,7 @@ void main() {
         () async {
           final authInfo = await serverSideSessions.authenticationHandler(
             session,
-            sessionKey,
+            serverSideSessionToken,
           );
 
           expect(
@@ -218,7 +222,7 @@ void main() {
             Clock.fixed(expiresAt.add(const Duration(seconds: 1))),
             () => serverSideSessions.authenticationHandler(
               session,
-              sessionKey,
+              serverSideSessionToken,
             ),
           );
 
