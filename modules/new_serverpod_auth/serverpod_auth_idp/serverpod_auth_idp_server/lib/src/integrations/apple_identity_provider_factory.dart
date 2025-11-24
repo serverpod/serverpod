@@ -1,10 +1,10 @@
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 
-/// AuthServices factory for creating [AppleIDP] instances.
-class AppleIdentityProviderFactory extends IdentityProviderFactory<AppleIDP> {
-  /// The configuration that will be used to create the AppleIDP.
-  final AppleIDPConfig config;
+/// AuthServices factory for creating [AppleIdp] instances.
+class AppleIdentityProviderFactory extends IdentityProviderFactory<AppleIdp> {
+  /// The configuration that will be used to create the AppleIdp.
+  final AppleIdpConfig config;
 
   /// Creates a new [AppleIdentityProviderFactory].
   AppleIdentityProviderFactory(
@@ -12,12 +12,12 @@ class AppleIdentityProviderFactory extends IdentityProviderFactory<AppleIDP> {
   );
 
   @override
-  AppleIDP construct({
+  AppleIdp construct({
     required final TokenManager tokenManager,
     required final AuthUsers authUsers,
     required final UserProfiles userProfiles,
   }) {
-    return AppleIDP(
+    return AppleIdp(
       config,
       tokenManager: tokenManager,
       authUsers: authUsers,
@@ -26,8 +26,8 @@ class AppleIdentityProviderFactory extends IdentityProviderFactory<AppleIDP> {
   }
 }
 
-/// Extension to get the AppleIDP instance from the AuthServices.
-extension AppleIDPGetter on AuthServices {
-  /// Returns the AppleIDP instance from the AuthServices.
-  AppleIDP get appleIDP => AuthServices.getIdentityProvider<AppleIDP>();
+/// Extension to get the AppleIdp instance from the AuthServices.
+extension AppleIdpGetter on AuthServices {
+  /// Returns the AppleIdp instance from the AuthServices.
+  AppleIdp get appleIdp => AuthServices.getIdentityProvider<AppleIdp>();
 }

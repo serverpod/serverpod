@@ -6,12 +6,12 @@ import 'email_idp_server_exceptions.dart';
 import 'email_idp_utils.dart';
 
 /// Collection of email-account admin methods.
-final class EmailIDPAdmin {
-  final EmailIDPUtils _utils;
+final class EmailIdpAdmin {
+  final EmailIdpUtils _utils;
 
-  /// Creates a new instance of [EmailIDPAdmin].
-  EmailIDPAdmin({
-    required final EmailIDPUtils utils,
+  /// Creates a new instance of [EmailIdpAdmin].
+  EmailIdpAdmin({
+    required final EmailIdpUtils utils,
   }) : _utils = utils;
 
   /// {@macro email_idp_account_creation_util.create_email_authentication}

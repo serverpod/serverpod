@@ -5,14 +5,14 @@ import 'package:serverpod_auth_idp_server/src/generated/protocol.dart';
 import 'passkey_idp_utils.dart';
 
 /// Collection of Passkey account admin methods.
-final class PasskeyIDPAdmin {
+final class PasskeyIdpAdmin {
   final Duration _challengeLifetime;
-  final PasskeyIDPUtils _utils;
+  final PasskeyIdpUtils _utils;
 
-  /// Creates a new instance of [PasskeyIDPAdmin].
-  PasskeyIDPAdmin({
+  /// Creates a new instance of [PasskeyIdpAdmin].
+  PasskeyIdpAdmin({
     required final Duration challengeLifetime,
-    required final PasskeyIDPUtils utils,
+    required final PasskeyIdpUtils utils,
   }) : _challengeLifetime = challengeLifetime,
        _utils = utils;
 

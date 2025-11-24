@@ -1021,27 +1021,27 @@ void main() {
   );
 
   testSuite(
-    'AuthSessionsTokenManager',
+    'ServerSideSessionsTokenManager',
     (final authUsers) {
-      return AuthSessionsTokenManager(
-        config: AuthSessionsConfig(
+      return ServerSideSessionsTokenManager(
+        config: ServerSideSessionsConfig(
           sessionKeyHashPepper: 'test-pepper',
         ),
         authUsers: authUsers,
       );
     },
-    tokenIssuer: AuthSessionsTokenManager.tokenIssuerName,
+    tokenIssuer: ServerSideSessionsTokenManager.tokenIssuerName,
     authUsers: authUsers,
     isDatabaseBackedManager: true,
     usesRefreshTokens: false,
   );
 
   testSuite(
-    'AuthenticationTokensTokenManager',
+    'JwtTokenManager',
     (final authUsers) {
-      return AuthenticationTokensTokenManager(
-        config: AuthenticationTokenConfig(
-          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+      return JwtTokenManager(
+        config: JwtConfig(
+          algorithm: HmacSha512JwtAlgorithmConfiguration(
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
@@ -1049,7 +1049,7 @@ void main() {
         authUsers: authUsers,
       );
     },
-    tokenIssuer: AuthenticationTokensTokenManager.tokenIssuerName,
+    tokenIssuer: JwtTokenManager.tokenIssuerName,
     authUsers: authUsers,
     isDatabaseBackedManager: true,
     usesRefreshTokens: true,

@@ -6,12 +6,12 @@ class AuthBackwardsCompatibilityConfig {
   /// salt when storing password hashes (strongly recommended). Default is true.
   final bool extraSaltyHash;
 
-  /// The email IDP configuration to use for the backwards compatibility.
-  final EmailIDP emailIDP;
+  /// The email Idp configuration to use for the backwards compatibility.
+  final EmailIdp emailIdp;
 
   /// Creates a new instance.
   AuthBackwardsCompatibilityConfig({
     this.extraSaltyHash = true,
-    required this.emailIDP,
+    required this.emailIdp,
   });
 }

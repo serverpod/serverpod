@@ -16,11 +16,11 @@ void main() {
       late Session session;
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
-      late EmailIDPAuthenticationUtil authenticationUtil;
+      late EmailIdpAuthenticationUtil authenticationUtil;
 
       setUp(() async {
         session = sessionBuilder.build();
-        final fixture = EmailIDPTestFixture();
+        final fixture = EmailIdpTestFixture();
         final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
         await fixture.createEmailAccount(
@@ -91,20 +91,20 @@ void main() {
     final endpoints,
   ) {
     late Session session;
-    late EmailIDPAuthenticationUtil emailIDPAuthenticationUtil;
+    late EmailIdpAuthenticationUtil emailIdpAuthenticationUtil;
 
     setUp(() async {
       session = sessionBuilder.build();
-      final fixture = EmailIDPTestFixture();
+      final fixture = EmailIdpTestFixture();
 
-      emailIDPAuthenticationUtil = fixture.authenticationUtil;
+      emailIdpAuthenticationUtil = fixture.authenticationUtil;
     });
 
     test(
       'when authenticating then it throws an error with email account not found exception',
       () async {
         final result = session.db.transaction(
-          (final transaction) => emailIDPAuthenticationUtil.authenticate(
+          (final transaction) => emailIdpAuthenticationUtil.authenticate(
             session,
             email: 'invalid@serverpod.dev',
             password: 'invalid-password',
@@ -136,13 +136,13 @@ void main() {
       );
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
-      late EmailIDPAuthenticationUtil authenticationUtil;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpAuthenticationUtil authenticationUtil;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'test-pepper',
             failedLoginRateLimit: failedLoginRateLimit,
           ),
@@ -270,8 +270,8 @@ void main() {
       late Session session;
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
-      late EmailIDPAuthenticationUtil authenticationUtil;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpAuthenticationUtil authenticationUtil;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -279,8 +279,8 @@ void main() {
           maxAttempts: 1,
           timeframe: Duration(hours: 1),
         );
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'test-pepper',
             failedLoginRateLimit: failedLoginRateLimit,
           ),
@@ -348,8 +348,8 @@ void main() {
       late Session session;
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
-      late EmailIDPAuthenticationUtil authenticationUtil;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpAuthenticationUtil authenticationUtil;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -357,8 +357,8 @@ void main() {
           maxAttempts: 5,
           timeframe: Duration(hours: 1),
         );
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'test-pepper',
             failedLoginRateLimit: failedLoginRateLimit,
           ),
@@ -425,8 +425,8 @@ void main() {
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;
-      late EmailIDPAuthenticationUtil authenticationUtil;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpAuthenticationUtil authenticationUtil;
+      late EmailIdpTestFixture fixture;
       const RateLimit failedLoginRateLimit = RateLimit(
         maxAttempts: 1,
         timeframe: Duration(hours: 1),
@@ -436,8 +436,8 @@ void main() {
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'test-pepper',
             failedLoginRateLimit: failedLoginRateLimit,
           ),

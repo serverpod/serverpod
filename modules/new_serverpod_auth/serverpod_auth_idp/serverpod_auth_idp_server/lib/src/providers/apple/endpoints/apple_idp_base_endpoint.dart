@@ -9,13 +9,13 @@ import '../apple.dart';
 /// To expose these endpoint methods on your server, extend this class in a
 /// concrete class.
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
-abstract class AppleIDPBaseEndpoint extends Endpoint {
-  /// Accessor for the configured Apple IDP instance.
+abstract class AppleIdpBaseEndpoint extends Endpoint {
+  /// Accessor for the configured Apple Idp instance.
   /// By default this uses the global instance configured in
   /// [AuthServices].
   ///
   /// If you want to use a different instance, override this getter.
-  AppleIDP get appleIDP => AuthServices.instance.appleIDP;
+  AppleIdp get appleIdp => AuthServices.instance.appleIdp;
 
   /// {@template apple_idp_base_endpoint.login}
   /// Signs in a user with their Apple account.
@@ -39,7 +39,7 @@ abstract class AppleIDPBaseEndpoint extends Endpoint {
     final String? firstName,
     final String? lastName,
   }) async {
-    return appleIDP.login(
+    return appleIdp.login(
       session,
       identityToken: identityToken,
       authorizationCode: authorizationCode,

@@ -9,33 +9,33 @@ import 'google_idp_utils.dart';
 /// Main class for the Google identity provider.
 /// The methods defined here are intended to be called from an endpoint.
 ///
-/// The `admin` property provides access to [GoogleIDPAdmin], which contains
+/// The `admin` property provides access to [GoogleIdpAdmin], which contains
 /// admin-related methods for managing Google-backed accounts.
 ///
-/// The `utils` property provides access to [GoogleIDPUtils], which contains
+/// The `utils` property provides access to [GoogleIdpUtils], which contains
 /// utility methods for working with Google-backed accounts. These can be used
 /// to implement custom authentication flows if needed.
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-final class GoogleIDP {
+final class GoogleIdp {
   /// The method used when authenticating with the Google identity provider.
   static const String method = 'google';
 
   /// Admin operations to work with Google-backed accounts.
-  final GoogleIDPAdmin admin;
+  final GoogleIdpAdmin admin;
 
   /// Utility functions for the Google identity provider.
-  final GoogleIDPUtils utils;
+  final GoogleIdpUtils utils;
 
   /// The configuration for the Google identity provider.
-  final GoogleIDPConfig config;
+  final GoogleIdpConfig config;
 
   final TokenIssuer _tokenIssuer;
 
   final UserProfiles _userProfiles;
 
-  GoogleIDP._(
+  GoogleIdp._(
     this.config,
     this._tokenIssuer,
     this.utils,
@@ -43,21 +43,21 @@ final class GoogleIDP {
     this._userProfiles,
   );
 
-  /// Creates a new instance of [GoogleIDP].
-  factory GoogleIDP(
-    final GoogleIDPConfig config, {
+  /// Creates a new instance of [GoogleIdp].
+  factory GoogleIdp(
+    final GoogleIdpConfig config, {
     required final TokenIssuer tokenIssuer,
     final AuthUsers authUsers = const AuthUsers(),
     final UserProfiles userProfiles = const UserProfiles(),
   }) {
-    final utils = GoogleIDPUtils(
+    final utils = GoogleIdpUtils(
       config: config,
       authUsers: authUsers,
     );
-    final admin = GoogleIDPAdmin(
+    final admin = GoogleIdpAdmin(
       utils: utils,
     );
-    return GoogleIDP._(
+    return GoogleIdp._(
       config,
       tokenIssuer,
       utils,

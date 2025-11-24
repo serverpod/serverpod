@@ -7,8 +7,8 @@ import 'package:test/test.dart';
 import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
-final tokenManagerFactory = AuthSessionsTokenManagerFactory(
-  AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+final tokenManagerFactory = ServerSideSessionsTokenManagerFactory(
+  ServerSideSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
 );
 
 void main() {
@@ -17,7 +17,7 @@ void main() {
       primaryTokenManager: tokenManagerFactory,
       identityProviders: [
         EmailIdentityProviderFactory(
-          const EmailIDPConfig(
+          const EmailIdpConfig(
             secretHashPepper: 'test',
           ),
         ),
@@ -45,7 +45,7 @@ void main() {
         String? receivedVerificationCode;
 
         setUp(() async {
-          final config = EmailIDPConfig(
+          final config = EmailIdpConfig(
             secretHashPepper: 'test',
             sendRegistrationVerificationCode:
                 (
@@ -110,7 +110,7 @@ void main() {
         String? receivedVerificationCode;
 
         setUp(() async {
-          final config = EmailIDPConfig(
+          final config = EmailIdpConfig(
             secretHashPepper: 'test',
             maxPasswordResetAttempts: const RateLimit(
               timeframe: Duration(seconds: 1),
@@ -176,7 +176,7 @@ void main() {
       const verificationCodeLifetime = Duration(minutes: 15);
 
       setUp(() async {
-        final config = EmailIDPConfig(
+        final config = EmailIdpConfig(
           secretHashPepper: 'test',
           sendRegistrationVerificationCode:
               (
@@ -368,7 +368,7 @@ void main() {
           email: email,
           password: password,
         );
-        final config = EmailIDPConfig(
+        final config = EmailIdpConfig(
           secretHashPepper: 'test',
           sendRegistrationVerificationCode:
               (
@@ -544,7 +544,7 @@ void main() {
       const verificationCodeLifetime = Duration(minutes: 15);
 
       setUp(() async {
-        const config = EmailIDPConfig(
+        const config = EmailIdpConfig(
           secretHashPepper: 'test',
         );
         AuthServices.set(
@@ -718,7 +718,7 @@ void main() {
       const verificationCodeLifetime = Duration(minutes: 15);
 
       setUp(() async {
-        const config = EmailIDPConfig(
+        const config = EmailIdpConfig(
           secretHashPepper: 'test',
         );
         AuthServices.set(
@@ -951,7 +951,7 @@ void main() {
       late String loginSessionKey;
 
       setUp(() async {
-        const config = EmailIDPConfig(
+        const config = EmailIdpConfig(
           secretHashPepper: 'test',
         );
 
@@ -1045,7 +1045,7 @@ extension on TestEndpoints {
   }) async {
     late UuidValue receivedAccountRequestId;
     late String receivedVerificationCode;
-    final config = EmailIDPConfig(
+    final config = EmailIdpConfig(
       secretHashPepper: 'test',
       maxPasswordResetAttempts: const RateLimit(
         timeframe: Duration(seconds: 1),
@@ -1103,7 +1103,7 @@ extension on TestEndpoints {
   }) async {
     late UuidValue receivedPasswordResetRequestId;
     late String receivedVerificationCode;
-    final config = EmailIDPConfig(
+    final config = EmailIdpConfig(
       secretHashPepper: 'test',
       sendPasswordResetVerificationCode:
           (

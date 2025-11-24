@@ -9,33 +9,33 @@ import 'email_idp_utils.dart';
 /// Main class for the email identity provider.
 /// The methods defined here are intended to be called from an endpoint.
 ///
-/// The `admin` property provides access to [EmailIDPAdmin], which contains
+/// The `admin` property provides access to [EmailIdpAdmin], which contains
 /// admin-related methods for managing email-backed accounts.
 ///
-/// The `utils` property provides access to [EmailIDPUtils], which contains
+/// The `utils` property provides access to [EmailIdpUtils], which contains
 /// utility methods for working with email-backed accounts. These can be used
 /// to implement custom authentication flows if needed.
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-final class EmailIDP {
+final class EmailIdp {
   /// The method used when authenticating with the Email identity provider.
   static const String method = 'email';
 
   /// Admin operations to work with email-backed accounts.
-  final EmailIDPAdmin admin;
+  final EmailIdpAdmin admin;
 
   /// Utility functions for the email identity provider.
-  final EmailIDPUtils utils;
+  final EmailIdpUtils utils;
 
   /// The configuration for the email identity provider.
-  final EmailIDPConfig config;
+  final EmailIdpConfig config;
 
   final TokenManager _tokenManager;
   final AuthUsers _authUsers;
   final UserProfiles _userProfiles;
 
-  EmailIDP._(
+  EmailIdp._(
     this.config,
     this._authUsers,
     this._userProfiles,
@@ -44,16 +44,16 @@ final class EmailIDP {
     this.admin,
   );
 
-  /// Creates a new instance of [EmailIDP].
-  factory EmailIDP(
-    final EmailIDPConfig config, {
+  /// Creates a new instance of [EmailIdp].
+  factory EmailIdp(
+    final EmailIdpConfig config, {
     required final TokenManager tokenManager,
     final AuthUsers authUsers = const AuthUsers(),
     final UserProfiles userProfiles = const UserProfiles(),
   }) {
-    final utils = EmailIDPUtils(config: config, authUsers: authUsers);
-    final admin = EmailIDPAdmin(utils: utils);
-    return EmailIDP._(
+    final utils = EmailIdpUtils(config: config, authUsers: authUsers);
+    final admin = EmailIdpAdmin(utils: utils);
+    return EmailIdp._(
       config,
       authUsers,
       userProfiles,
@@ -74,7 +74,7 @@ final class EmailIDP {
       session.db,
       transaction,
       (final transaction) =>
-          EmailIDPUtils.withReplacedServerEmailException(() async {
+          EmailIdpUtils.withReplacedServerEmailException(() async {
             final authUserId = await utils.passwordReset.completePasswordReset(
               session,
               completePasswordResetToken: finishPasswordResetToken,
@@ -105,7 +105,7 @@ final class EmailIDP {
       session.db,
       transaction,
       (final transaction) =>
-          EmailIDPUtils.withReplacedServerEmailException(() async {
+          EmailIdpUtils.withReplacedServerEmailException(() async {
             final result = await utils.accountCreation.completeAccountCreation(
               session,
               completeAccountCreationToken: registrationToken,
@@ -144,7 +144,7 @@ final class EmailIDP {
       session.db,
       transaction,
       (final transaction) =>
-          EmailIDPUtils.withReplacedServerEmailException(() async {
+          EmailIdpUtils.withReplacedServerEmailException(() async {
             final authUserId = await utils.authentication.authenticate(
               session,
               email: email,
@@ -178,7 +178,7 @@ final class EmailIDP {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => EmailIDPUtils.withReplacedServerEmailException(
+      (final transaction) => EmailIdpUtils.withReplacedServerEmailException(
         () async {
           try {
             return await utils.passwordReset.startPasswordReset(
@@ -214,7 +214,7 @@ final class EmailIDP {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => EmailIDPUtils.withReplacedServerEmailException(
+      (final transaction) => EmailIdpUtils.withReplacedServerEmailException(
         () async {
           try {
             return await utils.accountCreation.startRegistration(
@@ -264,7 +264,7 @@ final class EmailIDP {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => EmailIDPUtils.withReplacedServerEmailException(
+      (final transaction) => EmailIdpUtils.withReplacedServerEmailException(
         () async {
           return await utils.accountCreation.verifyRegistrationCode(
             session,
@@ -287,7 +287,7 @@ final class EmailIDP {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) => EmailIDPUtils.withReplacedServerEmailException(
+      (final transaction) => EmailIdpUtils.withReplacedServerEmailException(
         () async {
           return await utils.passwordReset.verifyPasswordResetCode(
             session,

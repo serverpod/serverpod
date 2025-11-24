@@ -16,27 +16,27 @@ import 'auth_user/models/auth_user_model.dart' as _i3;
 import 'auth_user/models/auth_user_not_found_exception.dart' as _i4;
 import 'common/models/auth_strategy.dart' as _i5;
 import 'common/models/auth_success.dart' as _i6;
-import 'jwt/models/authentication_token_info.dart' as _i7;
+import 'jwt/models/jwt_token_info.dart' as _i7;
 import 'jwt/models/refresh_token_expired_exception.dart' as _i8;
 import 'jwt/models/refresh_token_invalid_secret_exception.dart' as _i9;
 import 'jwt/models/refresh_token_malformed_exception.dart' as _i10;
 import 'jwt/models/refresh_token_not_found_exception.dart' as _i11;
 import 'jwt/models/token_pair.dart' as _i12;
 import 'profile/models/user_profile_model.dart' as _i13;
-import 'session/models/auth_session_info.dart' as _i14;
+import 'session/models/server_side_session_info.dart' as _i14;
 export 'auth_user/models/auth_user_blocked_exception.dart';
 export 'auth_user/models/auth_user_model.dart';
 export 'auth_user/models/auth_user_not_found_exception.dart';
 export 'common/models/auth_strategy.dart';
 export 'common/models/auth_success.dart';
-export 'jwt/models/authentication_token_info.dart';
+export 'jwt/models/jwt_token_info.dart';
 export 'jwt/models/refresh_token_expired_exception.dart';
 export 'jwt/models/refresh_token_invalid_secret_exception.dart';
 export 'jwt/models/refresh_token_malformed_exception.dart';
 export 'jwt/models/refresh_token_not_found_exception.dart';
 export 'jwt/models/token_pair.dart';
 export 'profile/models/user_profile_model.dart';
-export 'session/models/auth_session_info.dart';
+export 'session/models/server_side_session_info.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -90,8 +90,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i6.AuthSuccess) {
       return _i6.AuthSuccess.fromJson(data) as T;
     }
-    if (t == _i7.AuthenticationTokenInfo) {
-      return _i7.AuthenticationTokenInfo.fromJson(data) as T;
+    if (t == _i7.JwtTokenInfo) {
+      return _i7.JwtTokenInfo.fromJson(data) as T;
     }
     if (t == _i8.RefreshTokenExpiredException) {
       return _i8.RefreshTokenExpiredException.fromJson(data) as T;
@@ -111,8 +111,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i13.UserProfileModel) {
       return _i13.UserProfileModel.fromJson(data) as T;
     }
-    if (t == _i14.AuthSessionInfo) {
-      return _i14.AuthSessionInfo.fromJson(data) as T;
+    if (t == _i14.ServerSideSessionInfo) {
+      return _i14.ServerSideSessionInfo.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.AuthUserBlockedException?>()) {
       return (data != null ? _i2.AuthUserBlockedException.fromJson(data) : null)
@@ -133,9 +133,8 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i6.AuthSuccess?>()) {
       return (data != null ? _i6.AuthSuccess.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i7.AuthenticationTokenInfo?>()) {
-      return (data != null ? _i7.AuthenticationTokenInfo.fromJson(data) : null)
-          as T;
+    if (t == _i1.getType<_i7.JwtTokenInfo?>()) {
+      return (data != null ? _i7.JwtTokenInfo.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i8.RefreshTokenExpiredException?>()) {
       return (data != null
@@ -167,8 +166,9 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i13.UserProfileModel?>()) {
       return (data != null ? _i13.UserProfileModel.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.AuthSessionInfo?>()) {
-      return (data != null ? _i14.AuthSessionInfo.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i14.ServerSideSessionInfo?>()) {
+      return (data != null ? _i14.ServerSideSessionInfo.fromJson(data) : null)
+          as T;
     }
     if (t == Set<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
@@ -199,8 +199,8 @@ class Protocol extends _i1.SerializationManager {
         return 'AuthStrategy';
       case _i6.AuthSuccess():
         return 'AuthSuccess';
-      case _i7.AuthenticationTokenInfo():
-        return 'AuthenticationTokenInfo';
+      case _i7.JwtTokenInfo():
+        return 'JwtTokenInfo';
       case _i8.RefreshTokenExpiredException():
         return 'RefreshTokenExpiredException';
       case _i9.RefreshTokenInvalidSecretException():
@@ -213,8 +213,8 @@ class Protocol extends _i1.SerializationManager {
         return 'TokenPair';
       case _i13.UserProfileModel():
         return 'UserProfileModel';
-      case _i14.AuthSessionInfo():
-        return 'AuthSessionInfo';
+      case _i14.ServerSideSessionInfo():
+        return 'ServerSideSessionInfo';
     }
     return null;
   }
@@ -240,8 +240,8 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'AuthSuccess') {
       return deserialize<_i6.AuthSuccess>(data['data']);
     }
-    if (dataClassName == 'AuthenticationTokenInfo') {
-      return deserialize<_i7.AuthenticationTokenInfo>(data['data']);
+    if (dataClassName == 'JwtTokenInfo') {
+      return deserialize<_i7.JwtTokenInfo>(data['data']);
     }
     if (dataClassName == 'RefreshTokenExpiredException') {
       return deserialize<_i8.RefreshTokenExpiredException>(data['data']);
@@ -261,8 +261,8 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'UserProfileModel') {
       return deserialize<_i13.UserProfileModel>(data['data']);
     }
-    if (dataClassName == 'AuthSessionInfo') {
-      return deserialize<_i14.AuthSessionInfo>(data['data']);
+    if (dataClassName == 'ServerSideSessionInfo') {
+      return deserialize<_i14.ServerSideSessionInfo>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

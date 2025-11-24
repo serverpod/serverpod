@@ -21,13 +21,13 @@ import '../email_idp_server_exceptions.dart';
 /// This class also contains utility functions for administration tasks, such as
 /// deleting expired password reset requests and password reset attempts.
 /// {@endtemplate}
-class EmailIDPPasswordResetUtil {
+class EmailIdpPasswordResetUtil {
   final Argon2HashUtil _passwordHashUtil;
-  final EmailIDPPasswordResetUtilsConfig _config;
+  final EmailIdpPasswordResetUtilsConfig _config;
 
-  /// Creates a new [EmailIDPPasswordResetUtil] instance.
-  EmailIDPPasswordResetUtil({
-    required final EmailIDPPasswordResetUtilsConfig config,
+  /// Creates a new [EmailIdpPasswordResetUtil] instance.
+  EmailIdpPasswordResetUtil({
+    required final EmailIdpPasswordResetUtilsConfig config,
     required final Argon2HashUtil passwordHashUtils,
   }) : _config = config,
        _passwordHashUtil = passwordHashUtils;
@@ -363,7 +363,7 @@ class EmailIDPPasswordResetUtil {
   ///
   /// If [olderThan] is `null`, this will remove all expired password reset
   /// requests, as configured by the
-  /// [EmailIDPConfig.passwordResetVerificationCodeLifetime].
+  /// [EmailIdpConfig.passwordResetVerificationCodeLifetime].
   ///
   /// If [emailAccountId] is provided, only requests for the given email account
   /// will be deleted.
@@ -394,7 +394,7 @@ class EmailIDPPasswordResetUtil {
   ///
   /// If [olderThan] is `null`, this will remove all attempts outside the time
   /// window that is checked upon password reset requests, as configured in
-  /// [EmailIDPConfig.maxPasswordResetAttempts].timeframe.
+  /// [EmailIdpConfig.maxPasswordResetAttempts].timeframe.
   ///
   /// If [email] is provided, only attempts for the given email will be deleted.
   Future<void> deletePasswordResetRequestAttempts(
@@ -569,8 +569,8 @@ class EmailIDPPasswordResetUtil {
   }
 }
 
-/// Configuration options for the [EmailIDPPasswordResetUtil] class.
-class EmailIDPPasswordResetUtilsConfig {
+/// Configuration options for the [EmailIdpPasswordResetUtil] class.
+class EmailIdpPasswordResetUtilsConfig {
   /// Function for validating the password.
   final PasswordValidationFunction passwordValidationFunction;
 
@@ -593,8 +593,8 @@ class EmailIDPPasswordResetUtilsConfig {
   final SendPasswordResetVerificationCodeFunction?
   sendPasswordResetVerificationCode;
 
-  /// Creates a new [EmailIDPPasswordResetUtilsConfig] instance.
-  EmailIDPPasswordResetUtilsConfig({
+  /// Creates a new [EmailIdpPasswordResetUtilsConfig] instance.
+  EmailIdpPasswordResetUtilsConfig({
     required this.passwordValidationFunction,
     required this.passwordResetVerificationCodeAllowedAttempts,
     required this.passwordResetVerificationCodeLifetime,
@@ -604,12 +604,12 @@ class EmailIDPPasswordResetUtilsConfig {
     required this.sendPasswordResetVerificationCode,
   });
 
-  /// Creates a new [EmailIDPPasswordResetUtilsConfig] instance from an
-  /// [EmailIDPConfig] instance.
-  factory EmailIDPPasswordResetUtilsConfig.fromEmailIDPConfig(
-    final EmailIDPConfig config,
+  /// Creates a new [EmailIdpPasswordResetUtilsConfig] instance from an
+  /// [EmailIdpConfig] instance.
+  factory EmailIdpPasswordResetUtilsConfig.fromEmailIdpConfig(
+    final EmailIdpConfig config,
   ) {
-    return EmailIDPPasswordResetUtilsConfig(
+    return EmailIdpPasswordResetUtilsConfig(
       passwordValidationFunction: config.passwordValidationFunction,
       passwordResetVerificationCodeAllowedAttempts:
           config.passwordResetVerificationCodeAllowedAttempts,

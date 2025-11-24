@@ -3,27 +3,27 @@ import 'package:serverpod_auth_core_server/src/generated/common/models/auth_succ
 
 import '../../../../auth_user.dart';
 import '../../../generated/common/models/auth_strategy.dart';
-import '../../../jwt/business/authentication_token_config.dart';
-import '../../../jwt/business/authentication_tokens.dart';
+import '../../../jwt/business/jwt.dart';
+import '../../../jwt/business/jwt_config.dart';
 import '../token_manager.dart';
 
-/// Token manager adapter for [AuthenticationTokens].
+/// Token manager adapter for [Jwt].
 ///
-/// This class is used to bridge the gap between the [AuthenticationTokens]
+/// This class is used to bridge the gap between the [Jwt]
 /// and the [TokenManager] interface. It delegates all operations to the
-/// [AuthenticationTokens] instance.
-class AuthenticationTokensTokenManager implements TokenManager {
+/// [Jwt] instance.
+class JwtTokenManager implements TokenManager {
   /// The name of the token issuer.
   static String get tokenIssuerName => AuthStrategy.jwt.name;
 
-  /// The [AuthenticationTokens] instance.
-  final AuthenticationTokens authenticationTokens;
+  /// The [Jwt] instance.
+  final Jwt jwt;
 
-  /// Creates a new [AuthenticationTokensTokenManager] instance.
-  AuthenticationTokensTokenManager({
-    required final AuthenticationTokenConfig config,
+  /// Creates a new [JwtTokenManager] instance.
+  JwtTokenManager({
+    required final JwtConfig config,
     final AuthUsers authUsers = const AuthUsers(),
-  }) : authenticationTokens = AuthenticationTokens(
+  }) : jwt = Jwt(
          config: config,
          authUsers: authUsers,
        );
@@ -36,7 +36,7 @@ class AuthenticationTokensTokenManager implements TokenManager {
     final Set<Scope>? scopes,
     final Transaction? transaction,
   }) async {
-    return authenticationTokens.createTokens(
+    return jwt.createTokens(
       session,
       authUserId: authUserId,
       method: method,
@@ -57,7 +57,7 @@ class AuthenticationTokensTokenManager implements TokenManager {
       return [];
     }
 
-    return (await authenticationTokens.admin.listAuthenticationTokens(
+    return (await jwt.listJwtTokens(
           session,
           authUserId: authUserId,
           method: method,
@@ -87,13 +87,12 @@ class AuthenticationTokensTokenManager implements TokenManager {
       return;
     }
 
-    final deletedRefreshTokens = await authenticationTokens.admin
-        .deleteRefreshTokens(
-          session,
-          authUserId: authUserId,
-          method: method,
-          transaction: transaction,
-        );
+    final deletedRefreshTokens = await jwt.admin.deleteRefreshTokens(
+      session,
+      authUserId: authUserId,
+      method: method,
+      transaction: transaction,
+    );
 
     for (final (:authUserId, :refreshTokenId) in deletedRefreshTokens) {
       await session.messages.authenticationRevoked(
@@ -123,12 +122,11 @@ class AuthenticationTokensTokenManager implements TokenManager {
       return;
     }
 
-    final deletedRefreshToken = await authenticationTokens.admin
-        .deleteRefreshTokens(
-          session,
-          refreshTokenId: refreshTokenId,
-          transaction: transaction,
-        );
+    final deletedRefreshToken = await jwt.admin.deleteRefreshTokens(
+      session,
+      refreshTokenId: refreshTokenId,
+      transaction: transaction,
+    );
 
     if (deletedRefreshToken.isEmpty) return;
 
@@ -151,7 +149,7 @@ class AuthenticationTokensTokenManager implements TokenManager {
     final Session session,
     final String token,
   ) async {
-    return authenticationTokens.authenticationHandler(session, token);
+    return jwt.authenticationHandler(session, token);
   }
 
   bool _isNotTargetedTokenIssuer(final String? tokenIssuer) {

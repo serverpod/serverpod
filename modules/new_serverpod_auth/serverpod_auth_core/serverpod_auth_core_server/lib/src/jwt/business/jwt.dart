@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:clock/clock.dart';
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/common.dart';
 import 'package:serverpod_auth_core_server/src/jwt/business/refresh_token_exceptions.dart';
@@ -11,18 +11,18 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import '../../auth_user/auth_user.dart';
 import '../../generated/protocol.dart';
 import 'authentication_info_from_jwt.dart';
-import 'authentication_token_config.dart';
-import 'authentication_tokens_admin.dart';
+import 'jwt_admin.dart';
+import 'jwt_config.dart';
 import 'jwt_util.dart';
 import 'refresh_token_string.dart';
 
 /// Business logic for handling JWT-based access and refresh tokens.
-final class AuthenticationTokens {
+final class Jwt {
   /// The current JWT authentication module configuration.
-  final AuthenticationTokenConfig config;
+  final JwtConfig config;
 
   /// Admin-related functions for managing authentication tokens.
-  final AuthenticationTokensAdmin admin;
+  final JwtAdmin admin;
 
   /// The JWT utility.
   final JwtUtil jwtUtil;
@@ -33,45 +33,38 @@ final class AuthenticationTokens {
   /// Management functions for auth users.
   final AuthUsers authUsers;
 
-  AuthenticationTokens._(
-    this.config,
-    this.admin,
-    this.jwtUtil,
-    this.refreshTokenSecretHash,
-    this.authUsers,
-  );
-
-  /// Creates a new instance of [AuthenticationTokens].
-  factory AuthenticationTokens({
-    required final AuthenticationTokenConfig config,
-    final AuthUsers authUsers = const AuthUsers(),
-  }) {
-    final jwtUtil = JwtUtil(
-      accessTokenLifetime: config.accessTokenLifetime,
-      issuer: config.issuer,
-      algorithm: config.algorithm,
-      fallbackVerificationAlgorithms: config.fallbackVerificationAlgorithms,
-    );
-    final refreshTokenSecretHash = Argon2HashUtil(
-      hashPepper: config.refreshTokenHashPepper,
-      fallbackHashPeppers: config.fallbackRefreshTokenHashPeppers,
-      hashSaltLength: config.refreshTokenRotatingSecretSaltLength,
-    );
-    final admin = AuthenticationTokensAdmin(
-      refreshTokenLifetime: config.refreshTokenLifetime,
-      jwtUtil: jwtUtil,
-      refreshTokenSecretHash: refreshTokenSecretHash,
-      refreshTokenRotatingSecretLength: config.refreshTokenRotatingSecretLength,
-    );
-
-    return AuthenticationTokens._(
-      config,
-      admin,
-      jwtUtil,
-      refreshTokenSecretHash,
-      authUsers,
-    );
-  }
+  /// Creates a new instance of [Jwt].
+  Jwt({
+    required this.config,
+    this.authUsers = const AuthUsers(),
+  }) : jwtUtil = JwtUtil(
+         accessTokenLifetime: config.accessTokenLifetime,
+         issuer: config.issuer,
+         algorithm: config.algorithm,
+         fallbackVerificationAlgorithms: config.fallbackVerificationAlgorithms,
+       ),
+       refreshTokenSecretHash = Argon2HashUtil(
+         hashPepper: config.refreshTokenHashPepper,
+         fallbackHashPeppers: config.fallbackRefreshTokenHashPeppers,
+         hashSaltLength: config.refreshTokenRotatingSecretSaltLength,
+       ),
+       admin = JwtAdmin(
+         refreshTokenLifetime: config.refreshTokenLifetime,
+         jwtUtil: JwtUtil(
+           accessTokenLifetime: config.accessTokenLifetime,
+           issuer: config.issuer,
+           algorithm: config.algorithm,
+           fallbackVerificationAlgorithms:
+               config.fallbackVerificationAlgorithms,
+         ),
+         refreshTokenSecretHash: Argon2HashUtil(
+           hashPepper: config.refreshTokenHashPepper,
+           fallbackHashPeppers: config.fallbackRefreshTokenHashPeppers,
+           hashSaltLength: config.refreshTokenRotatingSecretSaltLength,
+         ),
+         refreshTokenRotatingSecretLength:
+             config.refreshTokenRotatingSecretLength,
+       );
 
   /// Looks up the `AuthenticationInfo` belonging to the [jwtAccessToken].
   ///
@@ -87,9 +80,9 @@ final class AuthenticationTokens {
       final tokenData = jwtUtil.verifyJwt(jwtAccessToken);
 
       return AuthenticationInfoFromJwt.fromJwtVerificationResult(tokenData);
-    } on JWTUndefinedException catch (_) {
+    } on dart_jsonwebtoken.JWTUndefinedException catch (_) {
       return null;
-    } on JWTException catch (e, stackTrace) {
+    } on dart_jsonwebtoken.JWTException catch (e, stackTrace) {
       // All "known" JWT exceptions, e.g. expired, invalid signature, etc.
       session.log(
         'Invalid JWT access token',
@@ -151,7 +144,7 @@ final class AuthenticationTokens {
     final mergedExtraClaims = config.extraClaimsProvider != null
         ? await config.extraClaimsProvider!(
             session,
-            AuthenticationContext(
+            JwtContext(
               authUserId: authUserId,
               method: method,
               scopes: scopes,
@@ -209,7 +202,7 @@ final class AuthenticationTokens {
   /// Automatically registers authentication revocation via
   /// `session.messages.authenticationRevoked` when refresh tokens are expired or
   /// have invalid secrets. If this behavior is not desired, use
-  /// [AuthenticationTokensAdmin.rotateRefreshToken] instead.
+  /// [JwtAdmin.rotateRefreshToken] instead.
   Future<AuthSuccess> refreshAccessToken(
     final Session session, {
     required final String refreshToken,
@@ -249,7 +242,7 @@ final class AuthenticationTokens {
     });
   }
 
-  /// Removes all refresh tokens for the given [authUserId].
+  /// Revokes all refresh tokens for the given [authUserId].
   ///
   /// Returns the list of IDs of the deleted tokens.
   ///
@@ -257,8 +250,8 @@ final class AuthenticationTokens {
   ///
   /// Automatically registers authentication revocation via
   /// `session.messages.authenticationRevoked` when tokens are deleted. If this
-  /// behavior is not desired, use [AuthenticationTokensAdmin.deleteRefreshTokens] instead.
-  Future<List<UuidValue>> destroyAllRefreshTokens(
+  /// behavior is not desired, use [JwtAdmin.deleteRefreshTokens] instead.
+  Future<List<UuidValue>> revokeAllRefreshTokens(
     final Session session, {
     required final UuidValue authUserId,
     final Transaction? transaction,
@@ -279,7 +272,7 @@ final class AuthenticationTokens {
     return auths.map((final auth) => auth.refreshTokenId).toList();
   }
 
-  /// Removes a specific refresh token.
+  /// Revokes a specific refresh token.
   ///
   /// This does not affect the user's other authentications. Returns `true` if
   /// the token was found and deleted, `false` otherwise.
@@ -289,9 +282,9 @@ final class AuthenticationTokens {
   ///
   /// Automatically registers authentication revocation via
   /// `session.messages.authenticationRevoked` when the token is deleted. If this
-  /// behavior is not desired, use [AuthenticationTokensAdmin.deleteRefreshTokens]
+  /// behavior is not desired, use [JwtAdmin.deleteRefreshTokens]
   /// instead.
-  Future<bool> destroyRefreshToken(
+  Future<bool> revokeRefreshToken(
     final Session session, {
     required final UuidValue refreshTokenId,
     final Transaction? transaction,
@@ -316,17 +309,59 @@ final class AuthenticationTokens {
     return true;
   }
 
-  /// List all authentication tokens belonging to the given [authUserId].
-  Future<List<AuthenticationTokenInfo>> listAuthenticationTokens(
+  /// List all JWT tokens matching the given filters.
+  Future<List<JwtTokenInfo>> listJwtTokens(
     final Session session, {
-    required final UuidValue authUserId,
+    final UuidValue? authUserId,
     final Transaction? transaction,
+    final String? method,
+
+    /// How many items to return at maximum. Must be <= 1000.
+    final int limit = 100,
+    final int offset = 0,
   }) async {
-    return admin.listAuthenticationTokens(
+    if (limit <= 0 || limit > 1000) {
+      throw ArgumentError.value(limit, 'limit', 'Must be between 1 and 1000');
+    }
+    if (offset < 0) {
+      throw ArgumentError.value(offset, 'offset', 'Must be >= 0');
+    }
+
+    final refreshTokens = await RefreshToken.db.find(
       session,
-      authUserId: authUserId,
+      where: (final t) {
+        Expression<dynamic> expression = Constant.bool(true);
+
+        if (authUserId != null) {
+          expression &= t.authUserId.equals(authUserId);
+        }
+
+        if (method != null) {
+          expression &= t.method.equals(method);
+        }
+
+        return expression;
+      },
+      limit: limit,
+      offset: offset,
+      orderBy: (final t) => t.id,
       transaction: transaction,
     );
+
+    final jwtTokenInfos = [
+      for (final refreshToken in refreshTokens)
+        JwtTokenInfo(
+          id: refreshToken.id!,
+          authUserId: refreshToken.authUserId,
+          scopeNames: refreshToken.scopeNames,
+          createdAt: refreshToken.createdAt,
+          lastUpdatedAt: refreshToken.lastUpdatedAt,
+          extraClaimsJSON: refreshToken.extraClaims,
+          method: refreshToken.method,
+        ),
+    ];
+
+    return jwtTokenInfos;
   }
 
   Uint8List _generateRefreshTokenFixedSecret() {

@@ -2,7 +2,7 @@
 # Mode: development
 
 name: storybook
-description: "A storybook for Serverpod Auth IDP"
+description: 'A storybook for Serverpod Auth Idp'
 publish_to: 'none'
 version: 1.0.0+1
 

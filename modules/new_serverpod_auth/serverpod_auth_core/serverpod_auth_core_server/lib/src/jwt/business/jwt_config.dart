@@ -1,12 +1,13 @@
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/jwt.dart';
 
-/// Context provided to the [AuthenticationTokenConfig.extraClaimsProvider].
+/// Context provided to the [JwtConfig.extraClaimsProvider].
 ///
 /// This class contains the contextual information available when a refresh
 /// token is being created, allowing the provider to make informed decisions
 /// about which claims to include.
-class AuthenticationContext {
+class JwtContext {
   /// The authenticated user ID.
   final UuidValue authUserId;
 
@@ -22,7 +23,7 @@ class AuthenticationContext {
   final Map<String, dynamic>? extraClaims;
 
   /// Creates a new authentication context.
-  const AuthenticationContext({
+  const JwtContext({
     required this.authUserId,
     required this.method,
     required this.scopes,
@@ -31,39 +32,39 @@ class AuthenticationContext {
 }
 
 /// Configuration for an authentication token algorithm.
-sealed class AuthenticationTokenAlgorithm {
+sealed class JwtAlgorithm {
   /// The key used to verify the JWT tokens.
-  JWTKey get verificationKey;
+  dart_jsonwebtoken.JWTKey get verificationKey;
 
   /// Create a new ECDSA SHA-512 authentication token algorithm configuration.
-  static EcdsaSha512AuthenticationTokenAlgorithmConfiguration ecdsaSha512({
-    required final ECPrivateKey privateKey,
-    required final ECPublicKey publicKey,
+  static EcdsaSha512JwtAlgorithmConfiguration ecdsaSha512({
+    required final dart_jsonwebtoken.ECPrivateKey privateKey,
+    required final dart_jsonwebtoken.ECPublicKey publicKey,
   }) {
-    return EcdsaSha512AuthenticationTokenAlgorithmConfiguration(
+    return EcdsaSha512JwtAlgorithmConfiguration(
       privateKey: privateKey,
       publicKey: publicKey,
     );
   }
 
   /// Create a new HMAC SHA-512 authentication token algorithm configuration.
-  static HmacSha512AuthenticationTokenAlgorithmConfiguration hmacSha512(
+  static HmacSha512JwtAlgorithmConfiguration hmacSha512(
     final SecretKey key,
   ) {
-    return HmacSha512AuthenticationTokenAlgorithmConfiguration(key: key);
+    return HmacSha512JwtAlgorithmConfiguration(key: key);
   }
 }
 
 /// Configuration options for the JWT authentication module.
-class AuthenticationTokenConfig {
+class JwtConfig {
   /// The algorithm used to sign and verify the JWT tokens.
   ///
   /// Supported options are `HmacSha512` and `EcdsaSha512`.
-  final AuthenticationTokenAlgorithm algorithm;
+  final JwtAlgorithm algorithm;
 
   /// The algorithms used to verify the JWT tokens in case the primary
   /// algorithm fails. These are tried in order until one succeeds or all fail.
-  final List<AuthenticationTokenAlgorithm> fallbackVerificationAlgorithms;
+  final List<JwtAlgorithm> fallbackVerificationAlgorithms;
 
   /// Pepper used for hashing refresh tokens.
   ///
@@ -133,7 +134,7 @@ class AuthenticationTokenConfig {
   ///
   /// This function is called during refresh token creation and allows developers
   /// to dynamically add custom claims to the token. The function receives the
-  /// session and an [AuthenticationContext] containing contextual information
+  /// session and an [JwtContext] containing contextual information
   /// about the authentication, enabling it to fetch any additional information
   /// needed and decide how to merge with existing claims.
   ///
@@ -145,12 +146,12 @@ class AuthenticationTokenConfig {
   /// or Serverpod's internal claims (those starting with "dev.serverpod.").
   final Future<Map<String, dynamic>?> Function(
     Session session,
-    AuthenticationContext context,
+    JwtContext context,
   )?
   extraClaimsProvider;
 
   /// Create a new user profile configuration.
-  AuthenticationTokenConfig({
+  JwtConfig({
     required this.algorithm,
     required this.refreshTokenHashPepper,
     this.fallbackRefreshTokenHashPeppers = const [],
@@ -188,37 +189,35 @@ void _validateRefreshTokenHashPepper(final String refreshTokenHashPepper) {
   }
 }
 
-/// ECDSA SHA-512 authentication token algorithm configuration.
-final class EcdsaSha512AuthenticationTokenAlgorithmConfiguration
-    implements AuthenticationTokenAlgorithm {
+/// ECDSA SHA-512 JWT algorithm configuration.
+final class EcdsaSha512JwtAlgorithmConfiguration implements JwtAlgorithm {
   /// The private key to use for the ECDSA SHA-512 algorithm.
-  final ECPrivateKey privateKey;
+  final dart_jsonwebtoken.ECPrivateKey privateKey;
 
   /// The public key used for the ECDSA SHA512 algorithm.
-  final ECPublicKey publicKey;
+  final dart_jsonwebtoken.ECPublicKey publicKey;
 
-  /// Create a new ECDSA SHA-512 authentication token algorithm configuration.
-  EcdsaSha512AuthenticationTokenAlgorithmConfiguration({
+  /// Create a new ECDSA SHA-512 JWT algorithm configuration.
+  EcdsaSha512JwtAlgorithmConfiguration({
     required this.privateKey,
     required this.publicKey,
   });
 
   @override
-  JWTKey get verificationKey => publicKey;
+  dart_jsonwebtoken.JWTKey get verificationKey => publicKey;
 }
 
-/// HMAC SHA-512 authentication token algorithm configuration.
+/// HMAC SHA-512 JWT algorithm configuration.
 ///
-final class HmacSha512AuthenticationTokenAlgorithmConfiguration
-    implements AuthenticationTokenAlgorithm {
+final class HmacSha512JwtAlgorithmConfiguration implements JwtAlgorithm {
   /// The secret key to use for the HMAC SHA-512 algorithm.
   final SecretKey key;
 
-  /// Create a new HMAC SHA-512 authentication token algorithm configuration.
-  const HmacSha512AuthenticationTokenAlgorithmConfiguration({
+  /// Create a new HMAC SHA-512 JWT algorithm configuration.
+  const HmacSha512JwtAlgorithmConfiguration({
     required this.key,
   });
 
   @override
-  JWTKey get verificationKey => key;
+  dart_jsonwebtoken.JWTKey get verificationKey => key;
 }

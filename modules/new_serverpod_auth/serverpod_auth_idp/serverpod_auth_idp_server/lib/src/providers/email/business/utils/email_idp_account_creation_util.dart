@@ -18,20 +18,20 @@ import '../email_idp_server_exceptions.dart';
 /// account creation.
 ///
 /// The main entry point is the [startRegistration] method, which returns a
-/// [EmailIDPAccountCreationResult] with the result of the operation.
+/// [EmailIdpAccountCreationResult] with the result of the operation.
 ///
 /// This class also contains utility functions for administration tasks, such as
 /// deleting expired account creations and verifying account creations.
 ///
 /// {@endtemplate}
-class EmailIDPAccountCreationUtil {
+class EmailIdpAccountCreationUtil {
   final Argon2HashUtil _hashUtils;
-  final EmailIDPAccountCreationUtilsConfig _config;
+  final EmailIdpAccountCreationUtilsConfig _config;
   final AuthUsers _authUsers;
 
-  /// Creates a new [EmailIDPAccountCreationUtil] instance.
-  EmailIDPAccountCreationUtil({
-    required final EmailIDPAccountCreationUtilsConfig config,
+  /// Creates a new [EmailIdpAccountCreationUtil] instance.
+  EmailIdpAccountCreationUtil({
+    required final EmailIdpAccountCreationUtilsConfig config,
     required final Argon2HashUtil passwordHashUtils,
     required final AuthUsers authUsers,
   }) : _config = config,
@@ -246,7 +246,7 @@ class EmailIDPAccountCreationUtil {
   /// In case of an invalid [completeAccountCreationToken], the failed attempt will be
   /// logged to the database outside of the [transaction] and can not be rolled
   /// back.
-  Future<EmailIDPCompleteAccountCreationResult> completeAccountCreation(
+  Future<EmailIdpCompleteAccountCreationResult> completeAccountCreation(
     final Session session, {
     required final String completeAccountCreationToken,
     required final String password,
@@ -323,7 +323,7 @@ class EmailIDPAccountCreationUtil {
       transaction: transaction,
     );
 
-    return EmailIDPCompleteAccountCreationResult._(
+    return EmailIdpCompleteAccountCreationResult._(
       authUserId: newUser.id,
       accountRequestId: request.id!,
       email: request.email,
@@ -581,8 +581,8 @@ class EmailIDPAccountCreationUtil {
   }
 }
 
-/// Configuration for the [EmailIDPAccountCreationUtil] class.
-class EmailIDPAccountCreationUtilsConfig {
+/// Configuration for the [EmailIdpAccountCreationUtil] class.
+class EmailIdpAccountCreationUtilsConfig {
   /// Callback to be invoked after a new email account has been created.
   final AfterAccountCreatedFunction? onAfterAccountCreated;
 
@@ -602,8 +602,8 @@ class EmailIDPAccountCreationUtilsConfig {
   final SendRegistrationVerificationCodeFunction?
   sendRegistrationVerificationCode;
 
-  /// Creates a new [EmailIDPAccountCreationUtilsConfig] instance.
-  EmailIDPAccountCreationUtilsConfig({
+  /// Creates a new [EmailIdpAccountCreationUtilsConfig] instance.
+  EmailIdpAccountCreationUtilsConfig({
     required this.passwordValidationFunction,
     required this.registrationVerificationCodeGenerator,
     required this.registrationVerificationCodeLifetime,
@@ -612,12 +612,12 @@ class EmailIDPAccountCreationUtilsConfig {
     required this.onAfterAccountCreated,
   });
 
-  /// Creates a new [EmailIDPAccountCreationUtilsConfig] instance from an
-  /// [EmailIDPConfig] instance.
-  factory EmailIDPAccountCreationUtilsConfig.fromEmailIDPConfig(
-    final EmailIDPConfig config,
+  /// Creates a new [EmailIdpAccountCreationUtilsConfig] instance from an
+  /// [EmailIdpConfig] instance.
+  factory EmailIdpAccountCreationUtilsConfig.fromEmailIdpConfig(
+    final EmailIdpConfig config,
   ) {
-    return EmailIDPAccountCreationUtilsConfig(
+    return EmailIdpAccountCreationUtilsConfig(
       passwordValidationFunction: config.passwordValidationFunction,
       registrationVerificationCodeGenerator:
           config.registrationVerificationCodeGenerator,
@@ -631,8 +631,8 @@ class EmailIDPAccountCreationUtilsConfig {
   }
 }
 
-/// The result of the [EmailIDPAccountCreationUtil.completeAccountCreation] operation.
-class EmailIDPCompleteAccountCreationResult {
+/// The result of the [EmailIdpAccountCreationUtil.completeAccountCreation] operation.
+class EmailIdpCompleteAccountCreationResult {
   /// The ID of the new authentication user.
   final UuidValue authUserId;
 
@@ -645,7 +645,7 @@ class EmailIDPCompleteAccountCreationResult {
   /// The email address used during registration.
   final String email;
 
-  EmailIDPCompleteAccountCreationResult._({
+  EmailIdpCompleteAccountCreationResult._({
     required this.authUserId,
     required this.accountRequestId,
     required this.email,
@@ -653,21 +653,21 @@ class EmailIDPCompleteAccountCreationResult {
   });
 }
 
-/// The result of the [EmailIDPAccountCreationUtil.finalizeAccountRequest] operation.
+/// The result of the [EmailIdpAccountCreationUtil.finalizeAccountRequest] operation.
 ///
 /// This describes the detailed status of the operation to the caller.
 ///
 /// In the general case the caller should take care not to leak this to clients,
 /// such that outside clients can not use this result to determine whether a
 /// specific account is registered on the server.
-class EmailIDPFinalizeAccountRequestResult {
+class EmailIdpFinalizeAccountRequestResult {
   /// The ID of the new email authentication.
   final UuidValue accountId;
 
   /// The email address used during registration.
   final String email;
 
-  EmailIDPFinalizeAccountRequestResult._({
+  EmailIdpFinalizeAccountRequestResult._({
     required this.accountId,
     required this.email,
   });

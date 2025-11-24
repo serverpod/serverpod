@@ -7,31 +7,31 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import '../../auth_user/auth_user.dart';
 import '../../generated/protocol.dart';
 import '../util/session_key_hash.dart';
-import 'auth_sessions_admin.dart';
-import 'auth_sessions_config.dart';
-import 'session_key.dart';
+import 'server_side_sessions_admin.dart';
+import 'server_side_sessions_config.dart';
+import 'server_side_sessions_token.dart';
 
-/// Management functions for [AuthSession]s.
+/// Management functions for [ServerSideSession]s.
 ///
-/// This should be used instead of [AuthSession.db].
-final class AuthSessions {
-  final AuthSessionsConfig _config;
+/// This should be used instead of [ServerSideSession.db].
+final class ServerSideSessions {
+  final ServerSideSessionsConfig _config;
 
   /// The secrets configuration.
-  final AuthSessionKeyHash _sessionKeyHash;
+  final ServerSideSessionKeyHash _sessionKeyHash;
 
   /// Management functions for auth users.
   final AuthUsers authUsers;
 
-  /// Creates a new [AuthSessions] instance.
-  AuthSessions({
-    required final AuthSessionsConfig config,
+  /// Creates a new [ServerSideSessions] instance.
+  ServerSideSessions({
+    required final ServerSideSessionsConfig config,
     this.authUsers = const AuthUsers(),
   }) : _config = config,
-       _sessionKeyHash = AuthSessionKeyHash.fromConfig(config);
+       _sessionKeyHash = ServerSideSessionKeyHash.fromConfig(config);
 
   /// Admin-related functions for managing session.
-  final admin = AuthSessionsAdmin();
+  final admin = ServerSideSessionsAdmin();
 
   /// Looks up the `AuthenticationInfo` belonging to the [key].
   ///
@@ -45,28 +45,28 @@ final class AuthSessions {
     final Session session,
     final String key,
   ) async {
-    final sessionKeyParts = tryParseSessionKey(session, key);
+    final sessionKeyParts = tryParseServerSideSessionToken(session, key);
     if (sessionKeyParts == null) {
       return null;
     }
 
-    final (:authSessionId, :secret) = sessionKeyParts;
+    final (:serverSideSessionId, :secret) = sessionKeyParts;
 
-    var authSession = await AuthSession.db.findById(
+    var serverSideSession = await ServerSideSession.db.findById(
       session,
-      authSessionId,
+      serverSideSessionId,
     );
 
-    if (authSession == null) {
+    if (serverSideSession == null) {
       session.log(
-        'Did not find auth session with ID "$authSessionId"',
+        'Did not find server side session with ID "$serverSideSessionId"',
         level: LogLevel.debug,
       );
 
       return null;
     }
 
-    final expiresAt = authSession.expiresAt;
+    final expiresAt = serverSideSession.expiresAt;
     if (expiresAt != null && clock.now().isAfter(expiresAt)) {
       session.log(
         'Got session after its set expiration date.',
@@ -76,9 +76,9 @@ final class AuthSessions {
       return null;
     }
 
-    final expireAfterUnusedFor = authSession.expireAfterUnusedFor;
+    final expireAfterUnusedFor = serverSideSession.expireAfterUnusedFor;
     if (expireAfterUnusedFor != null &&
-        authSession.lastUsedAt
+        serverSideSession.lastUsedAt
             .add(expireAfterUnusedFor)
             .isBefore(clock.now())) {
       session.log(
@@ -91,8 +91,8 @@ final class AuthSessions {
 
     if (!_sessionKeyHash.validateSessionKeyHash(
       secret: secret,
-      hash: Uint8List.sublistView(authSession.sessionKeyHash),
-      salt: Uint8List.sublistView(authSession.sessionKeySalt),
+      hash: Uint8List.sublistView(serverSideSession.sessionKeyHash),
+      salt: Uint8List.sublistView(serverSideSession.sessionKeySalt),
     )) {
       session.log(
         'Provided `secret` did not result in correct session key hash.',
@@ -102,19 +102,19 @@ final class AuthSessions {
       return null;
     }
 
-    if (authSession.lastUsedAt.isBefore(
+    if (serverSideSession.lastUsedAt.isBefore(
       clock.now().subtract(const Duration(minutes: 1)),
     )) {
-      authSession = await AuthSession.db.updateRow(
+      serverSideSession = await ServerSideSession.db.updateRow(
         session,
-        authSession.copyWith(lastUsedAt: clock.now()),
+        serverSideSession.copyWith(lastUsedAt: clock.now()),
       );
     }
 
     return AuthenticationInfo(
-      authSession.authUserId.uuid,
-      authSession.scopeNames.map(Scope.new).toSet(),
-      authId: authSessionId.toString(),
+      serverSideSession.authUserId.uuid,
+      serverSideSession.scopeNames.map(Scope.new).toSet(),
+      authId: serverSideSessionId.toString(),
     );
   }
 
@@ -123,11 +123,11 @@ final class AuthSessions {
   /// The user should have been authenticated before calling this method.
   ///
   /// A fixed [expiresAt] can be set to ensure that the session is not usable after that date.
-  /// If not provided, defaults to [AuthSessionsConfig.defaultSessionLifetime] into the future (if configured).
+  /// If not provided, defaults to [ServerSideSessionsConfig.defaultSessionLifetime] into the future (if configured).
   ///
   /// Additional [expireAfterUnusedFor] can be set to make sure that the session has not been unused for longer than the provided value.
   /// In case the session was unused for at least [expireAfterUnusedFor] it'll automatically be decommissioned.
-  /// If not provided, defaults to [AuthSessionsConfig.defaultSessionInactivityTimeout] (if configured).
+  /// If not provided, defaults to [ServerSideSessionsConfig.defaultSessionInactivityTimeout] (if configured).
   ///
   /// Send the return value to the client to  use that to authenticate in future calls.
   ///
@@ -144,13 +144,13 @@ final class AuthSessions {
     Set<Scope>? scopes,
 
     /// Fixed date at which the session expires.
-    /// If `null`, uses [AuthSessionsConfig.defaultSessionLifetime] to compute expiration time.
+    /// If `null`, uses [ServerSideSessionsConfig.defaultSessionLifetime] to compute expiration time.
     /// If both are `null`, the session will work until it's deleted or when it's been
     /// inactive for [expireAfterUnusedFor].
     final DateTime? expiresAt,
 
     /// Length of inactivity after which the session is no longer usable.
-    /// If `null`, uses [AuthSessionsConfig.defaultSessionInactivityTimeout].
+    /// If `null`, uses [ServerSideSessionsConfig.defaultSessionInactivityTimeout].
     /// If both are `null`, the session is valid until [expiresAt].
     final Duration? expireAfterUnusedFor,
 
@@ -193,9 +193,9 @@ final class AuthSessions {
         if (scope.name != null) scope.name!,
     };
 
-    final authSession = await AuthSession.db.insertRow(
+    final serverSideSession = await ServerSideSession.db.insertRow(
       session,
-      AuthSession(
+      ServerSideSession(
         authUserId: authUserId,
         createdAt: clock.now(),
         lastUsedAt: clock.now(),
@@ -211,28 +211,58 @@ final class AuthSessions {
 
     return AuthSuccess(
       authStrategy: AuthStrategy.session.name,
-      token: buildSessionKey(
+      token: buildServerSideSessionToken(
         secret: secret,
-        authSessionId: authSession.id!,
+        serverSideSessionId: serverSideSession.id!,
       ),
       authUserId: authUserId,
       scopeNames: scopeNames,
     );
   }
 
-  /// List all sessions.
+  /// List all sessions matching the given filters.
   ///
   /// If [authUserId] is provided, only sessions for that user will be listed.
-  Future<List<AuthSessionInfo>> listSessions(
+  /// If [method] is provided, only sessions created with that method will be listed.
+  Future<List<ServerSideSessionInfo>> listSessions(
     final Session session, {
-    required final UuidValue? authUserId,
+    final UuidValue? authUserId,
+    final String? method,
     final Transaction? transaction,
   }) async {
-    return admin.findSessions(
+    final serverSideSessions = await ServerSideSession.db.find(
       session,
-      authUserId: authUserId,
+      where: (final t) {
+        Expression<dynamic> expression = Constant.bool(true);
+
+        if (authUserId != null) {
+          expression &= t.authUserId.equals(authUserId);
+        }
+
+        if (method != null) {
+          expression &= t.method.equals(method);
+        }
+
+        return expression;
+      },
       transaction: transaction,
     );
+
+    final sessionInfos = <ServerSideSessionInfo>[
+      for (final serverSideSession in serverSideSessions)
+        ServerSideSessionInfo(
+          id: serverSideSession.id!,
+          authUserId: serverSideSession.authUserId,
+          scopeNames: serverSideSession.scopeNames,
+          created: serverSideSession.createdAt,
+          lastUsed: serverSideSession.lastUsedAt,
+          expiresAt: serverSideSession.expiresAt,
+          expireAfterUnusedFor: serverSideSession.expireAfterUnusedFor,
+          method: serverSideSession.method,
+        ),
+    ];
+
+    return sessionInfos;
   }
 
   /// Signs out a user from the server and ends all user sessions managed by this module.
@@ -246,14 +276,14 @@ final class AuthSessions {
   /// Automatically registers authentication revocation via
   /// `session.messages.authenticationRevoked` when sessions are deleted. If this
   /// behavior is not desired, use [AuthSessionsAdmin.deleteSessions] instead.
-  Future<List<UuidValue>> destroyAllSessions(
+  Future<List<UuidValue>> revokeAllSessions(
     final Session session, {
     required final UuidValue authUserId,
     final String? method,
     final Transaction? transaction,
   }) async {
     // Delete all sessions for the user
-    final auths = await AuthSession.db.deleteWhere(
+    final auths = await ServerSideSession.db.deleteWhere(
       session,
       where: (final row) => row.authUserId.equals(authUserId),
       transaction: transaction,
@@ -282,27 +312,27 @@ final class AuthSessions {
   /// Automatically registers authentication revocation via
   /// `session.messages.authenticationRevoked` when the session is deleted. If this
   /// behavior is not desired, use [AuthSessionsAdmin.deleteSessions] instead.
-  Future<bool> destroySession(
+  Future<bool> revokeSession(
     final Session session, {
-    required final UuidValue authSessionId,
+    required final UuidValue serverSideSessionId,
     final Transaction? transaction,
   }) async {
     // Delete the user session for the current device
-    final authSession = (await AuthSession.db.deleteWhere(
+    final serverSideSession = (await ServerSideSession.db.deleteWhere(
       session,
-      where: (final row) => row.id.equals(authSessionId),
+      where: (final row) => row.id.equals(serverSideSessionId),
       transaction: transaction,
     )).firstOrNull;
 
-    if (authSession == null) {
+    if (serverSideSession == null) {
       return false;
     }
 
     // Notify the client about the revoked authentication for the specific
     // user session
     await session.messages.authenticationRevoked(
-      authSession.authUserId.uuid,
-      RevokedAuthenticationAuthId(authId: authSessionId.toString()),
+      serverSideSession.authUserId.uuid,
+      RevokedAuthenticationAuthId(authId: serverSideSessionId.toString()),
     );
 
     return true;

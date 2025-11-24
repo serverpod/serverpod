@@ -3,12 +3,11 @@ import 'package:serverpod_auth_idp_server/core.dart';
 
 /// Endpoint for testing authentication.
 class AuthTestEndpoint extends Endpoint {
-  late final AuthSessions _authSessions =
-      AuthServices.getTokenManager<AuthSessionsTokenManager>().authSessions;
+  late final ServerSideSessions _serverSideSessions =
+      AuthServices.getTokenManager<ServerSideSessionsTokenManager>()
+          .serverSideSessions;
 
-  late final AuthenticationTokens _authenticationTokens =
-      AuthServices.getTokenManager<AuthenticationTokensTokenManager>()
-          .authenticationTokens;
+  late final Jwt jwt = AuthServices.getTokenManager<JwtTokenManager>().jwt;
 
   /// Creates a new test user.
   Future<UuidValue> createTestUser(final Session session) async {
@@ -22,7 +21,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    return _authSessions.createSession(
+    return _serverSideSessions.createSession(
       session,
       authUserId: authUserId,
       method: 'test',
@@ -34,7 +33,10 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    await _authSessions.destroyAllSessions(session, authUserId: authUserId);
+    await _serverSideSessions.revokeAllSessions(
+      session,
+      authUserId: authUserId,
+    );
   }
 
   /// Creates a new JWT token for the test user.
@@ -42,7 +44,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    return _authenticationTokens.createTokens(
+    return jwt.createTokens(
       session,
       authUserId: authUserId,
       method: 'test',
@@ -55,7 +57,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    await _authenticationTokens.destroyAllRefreshTokens(
+    await jwt.revokeAllRefreshTokens(
       session,
       authUserId: authUserId,
     );
@@ -76,9 +78,9 @@ class AuthTestEndpoint extends Endpoint {
       );
     }
 
-    return _authenticationTokens.destroyRefreshToken(
+    return jwt.revokeRefreshToken(
       session,
-      refreshTokenId: authInfo.authSessionId,
+      refreshTokenId: authInfo.serverSideSessionId,
     );
   }
 

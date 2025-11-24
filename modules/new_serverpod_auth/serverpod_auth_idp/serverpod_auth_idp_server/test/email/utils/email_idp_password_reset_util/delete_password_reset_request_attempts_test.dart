@@ -14,7 +14,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const maxPasswordResetAttempts = RateLimit(
         maxAttempts: 1,
@@ -24,8 +24,8 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'pepper',
             maxPasswordResetAttempts: maxPasswordResetAttempts,
           ),
@@ -114,7 +114,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       late Clock clockBeforeTimeframe;
 
@@ -125,8 +125,8 @@ void main() {
           maxAttempts: 1,
           timeframe: Duration(hours: 1),
         );
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'pepper',
             maxPasswordResetAttempts: maxPasswordResetAttempts,
           ),
@@ -200,7 +200,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const firstEmail = 'test1@serverpod.dev';
       const secondEmail = 'test2@serverpod.dev';
 
@@ -211,8 +211,8 @@ void main() {
           maxAttempts: 1,
           timeframe: Duration(hours: 1),
         );
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'pepper',
             maxPasswordResetAttempts: maxPasswordResetAttempts,
           ),

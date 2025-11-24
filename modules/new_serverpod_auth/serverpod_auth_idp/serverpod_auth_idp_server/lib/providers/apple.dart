@@ -1,5 +1,5 @@
 /// This library contains the Apple authentication provider for the
-/// Serverpod IDP module.
+/// Serverpod Idp module.
 library;
 
 export '../src/integrations/apple_identity_provider_factory.dart';

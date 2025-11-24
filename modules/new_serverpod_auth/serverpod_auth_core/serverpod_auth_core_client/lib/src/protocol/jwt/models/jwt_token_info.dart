@@ -10,12 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_auth_core_client/src/protocol/protocol.dart' as _i2;
 
-abstract class AuthenticationTokenInfo
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  AuthenticationTokenInfo._({
+abstract class JwtTokenInfo implements _i1.SerializableModel {
+  JwtTokenInfo._({
     required this.id,
     required this.authUserId,
     required this.scopeNames,
@@ -25,7 +24,7 @@ abstract class AuthenticationTokenInfo
     required this.method,
   });
 
-  factory AuthenticationTokenInfo({
+  factory JwtTokenInfo({
     required _i1.UuidValue id,
     required _i1.UuidValue authUserId,
     required Set<String> scopeNames,
@@ -33,12 +32,10 @@ abstract class AuthenticationTokenInfo
     required DateTime lastUpdatedAt,
     required DateTime createdAt,
     required String method,
-  }) = _AuthenticationTokenInfoImpl;
+  }) = _JwtTokenInfoImpl;
 
-  factory AuthenticationTokenInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-  ) {
-    return AuthenticationTokenInfo(
+  factory JwtTokenInfo.fromJson(Map<String, dynamic> jsonSerialization) {
+    return JwtTokenInfo(
       id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       authUserId: _i1.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
@@ -79,10 +76,10 @@ abstract class AuthenticationTokenInfo
   /// The method through which this token was created.
   String method;
 
-  /// Returns a shallow copy of this [AuthenticationTokenInfo]
+  /// Returns a shallow copy of this [JwtTokenInfo]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  AuthenticationTokenInfo copyWith({
+  JwtTokenInfo copyWith({
     _i1.UuidValue? id,
     _i1.UuidValue? authUserId,
     Set<String>? scopeNames,
@@ -94,21 +91,7 @@ abstract class AuthenticationTokenInfo
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'serverpod_auth_core.AuthenticationTokenInfo',
-      'id': id.toJson(),
-      'authUserId': authUserId.toJson(),
-      'scopeNames': scopeNames.toJson(),
-      if (extraClaimsJSON != null) 'extraClaimsJSON': extraClaimsJSON,
-      'lastUpdatedAt': lastUpdatedAt.toJson(),
-      'createdAt': createdAt.toJson(),
-      'method': method,
-    };
-  }
-
-  @override
-  Map<String, dynamic> toJsonForProtocol() {
-    return {
-      '__className__': 'serverpod_auth_core.AuthenticationTokenInfo',
+      '__className__': 'serverpod_auth_core.JwtTokenInfo',
       'id': id.toJson(),
       'authUserId': authUserId.toJson(),
       'scopeNames': scopeNames.toJson(),
@@ -127,8 +110,8 @@ abstract class AuthenticationTokenInfo
 
 class _Undefined {}
 
-class _AuthenticationTokenInfoImpl extends AuthenticationTokenInfo {
-  _AuthenticationTokenInfoImpl({
+class _JwtTokenInfoImpl extends JwtTokenInfo {
+  _JwtTokenInfoImpl({
     required _i1.UuidValue id,
     required _i1.UuidValue authUserId,
     required Set<String> scopeNames,
@@ -146,11 +129,11 @@ class _AuthenticationTokenInfoImpl extends AuthenticationTokenInfo {
          method: method,
        );
 
-  /// Returns a shallow copy of this [AuthenticationTokenInfo]
+  /// Returns a shallow copy of this [JwtTokenInfo]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  AuthenticationTokenInfo copyWith({
+  JwtTokenInfo copyWith({
     _i1.UuidValue? id,
     _i1.UuidValue? authUserId,
     Set<String>? scopeNames,
@@ -159,7 +142,7 @@ class _AuthenticationTokenInfoImpl extends AuthenticationTokenInfo {
     DateTime? createdAt,
     String? method,
   }) {
-    return AuthenticationTokenInfo(
+    return JwtTokenInfo(
       id: id ?? this.id,
       authUserId: authUserId ?? this.authUserId,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),

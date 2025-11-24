@@ -56,7 +56,7 @@ typedef AfterAccountCreatedFunction =
 /// {@template email_idp_config}
 /// Configuration options for the email account module.
 /// {@endtemplate}
-class EmailIDPConfig {
+class EmailIdpConfig {
   /// The pepper used for hashing passwords and verification codes.
   ///
   /// To rotate peppers without invalidating existing passwords, use [fallbackSecretHashPeppers].
@@ -150,7 +150,7 @@ class EmailIDPConfig {
   /// Create a new email account configuration.
   ///
   /// Set [current] to apply this configuration.
-  const EmailIDPConfig({
+  const EmailIdpConfig({
     required this.secretHashPepper,
     this.fallbackSecretHashPeppers = const [],
     this.registrationVerificationCodeLifetime = const Duration(minutes: 15),

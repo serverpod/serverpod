@@ -11,14 +11,14 @@ void main() {
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late EmailAccount emailAccount;
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
         final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
         emailAccount = await fixture.createEmailAccount(
