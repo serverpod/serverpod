@@ -43,7 +43,14 @@ jobs:
           echo "serverpod_version=$(cat SERVERPOD_VERSION)" >> $GITHUB_OUTPUT
           echo "dart_version=$(cat DART_VERSION)" >> $GITHUB_OUTPUT
           echo "flutter_version=$(cat FLUTTER_VERSION)" >> $GITHUB_OUTPUT
+          echo "flutter_version_clean=$(cat FLUTTER_VERSION | tr -d "'" | sed 's/^[^0-9]*//')" >> $GITHUB_OUTPUT
           echo "insights_devtools_version=$(cat INSIGHTS_DEVTOOLS_VERSION)" >> $GITHUB_OUTPUT
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.versions.outputs.flutter_version_clean }}
+          channel: 'stable'
 
       - name: Get dependencies for CLI
         run: |
