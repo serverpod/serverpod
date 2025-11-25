@@ -575,4 +575,76 @@ database:
       expect(config.database?.maxConnectionCount, 50);
     },
   );
+
+  test(
+    'Given a Serverpod config with database configuration including negative maxConnectionCount when loading from Map then maxConnectionCount is set to null.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  maxConnectionCount: -1
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        {...passwords, 'database': 'password'},
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.database?.maxConnectionCount, isNull);
+    },
+  );
+
+  test(
+    'Given a Serverpod config with database configuration including zero maxConnectionCount when loading from Map then maxConnectionCount is set to null.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+database:
+  host: localhost
+  port: 5432
+  name: testDb
+  user: test
+  maxConnectionCount: 0
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        {...passwords, 'database': 'password'},
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.database?.maxConnectionCount, isNull);
+    },
+  );
+
+  test(
+    'Given a DatabaseConfig created with null maxConnectionCount then maxConnectionCount is null.',
+    () {
+      var config = DatabaseConfig(
+        host: 'localhost',
+        port: 5432,
+        name: 'testDb',
+        user: 'test',
+        password: 'password',
+        maxConnectionCount: null,
+      );
+
+      expect(config.maxConnectionCount, isNull);
+    },
+  );
 }

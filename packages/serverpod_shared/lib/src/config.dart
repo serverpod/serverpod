@@ -427,7 +427,9 @@ class DatabaseConfig {
   final List<String>? searchPaths;
 
   /// The maximum number of connections in the database pool.
-  final int maxConnectionCount;
+  ///
+  /// If the limit is `null`, the number of connections will be unlimited.
+  final int? maxConnectionCount;
 
   /// Creates a new [DatabaseConfig].
   DatabaseConfig({
@@ -461,6 +463,20 @@ class DatabaseConfig {
       );
     }
 
+    final hasMaxConnectionCountKey = dbSetup.containsKey(
+      ServerpodEnv.databaseMaxConnectionCount.configKey,
+    );
+
+    int? maxConnectionCount = hasMaxConnectionCountKey
+        ? dbSetup[ServerpodEnv.databaseMaxConnectionCount.configKey]
+        : null;
+
+    // If the user sets the max connection count to 0 or a negative number,
+    // this means they want to enable unlimited connections
+    if (maxConnectionCount != null && maxConnectionCount < 1) {
+      maxConnectionCount = null;
+    }
+
     return DatabaseConfig(
       host: dbSetup[ServerpodEnv.databaseHost.configKey],
       port: dbSetup[ServerpodEnv.databasePort.configKey],
@@ -473,9 +489,10 @@ class DatabaseConfig {
       searchPaths: _parseList(
         dbSetup[ServerpodEnv.databaseSearchPaths.configKey],
       ),
-      maxConnectionCount:
-          dbSetup[ServerpodEnv.databaseMaxConnectionCount.configKey] ??
-          defaultMaxConnectionCount,
+      // If the user did not configure the max connection count, use the default
+      maxConnectionCount: hasMaxConnectionCountKey
+          ? maxConnectionCount
+          : defaultMaxConnectionCount,
     );
   }
 

@@ -9,7 +9,7 @@ class DatabaseConfigBuilder {
   bool _requireSsl = false;
   bool _isUnixSocket = false;
   List<String>? _searchPaths;
-  int _maxConnectionCount = DatabaseConfig.defaultMaxConnectionCount;
+  int? _maxConnectionCount = DatabaseConfig.defaultMaxConnectionCount;
 
   DatabaseConfigBuilder();
 
@@ -67,7 +67,7 @@ class DatabaseConfigBuilder {
     return this;
   }
 
-  DatabaseConfigBuilder withMaxConnectionCount(int maxConnectionCount) {
+  DatabaseConfigBuilder withMaxConnectionCount(int? maxConnectionCount) {
     _maxConnectionCount = maxConnectionCount;
     return this;
   }
