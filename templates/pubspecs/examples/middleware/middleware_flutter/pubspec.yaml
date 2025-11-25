@@ -1,5 +1,4 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
+# TEMPLATE
 
 name: middleware_flutter
 description: A new Flutter project with Serverpod.
@@ -21,8 +20,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '^3.8.0'
-  flutter: '^3.32.0'
+  sdk: DART_VERSION
+  flutter: FLUTTER_VERSION
 
 dependencies:
   # The following adds the Cupertino Icons font to your application.
@@ -32,7 +31,7 @@ dependencies:
     sdk: flutter
   middleware_client:
     path: ../middleware_client
-  serverpod_flutter: 3.0.0-rc.2
+  serverpod_flutter: SERVERPOD_VERSION
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
