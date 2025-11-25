@@ -1,4 +1,4 @@
-import 'package:serverpod_auth_core_server/jwt.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:test/test.dart';
 
 void main() {

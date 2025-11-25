@@ -1,6 +1,4 @@
-import 'package:serverpod_auth_core_server/profile.dart';
-import 'package:serverpod_auth_core_server/src/common/integrations/provider_factory.dart';
-import 'package:serverpod_auth_core_server/src/common/integrations/token_manager.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:test/test.dart';
 
 import '../fakes/fakes.dart';

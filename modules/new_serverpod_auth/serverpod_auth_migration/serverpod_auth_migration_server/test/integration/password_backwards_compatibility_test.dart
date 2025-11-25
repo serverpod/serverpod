@@ -1,7 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
 import 'package:serverpod_auth_idp_server/core.dart' as new_auth_core;
-import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart'
     as new_email_idp;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
@@ -25,18 +24,18 @@ void main() {
   late final new_email_idp.EmailIdp newEmailIdp;
 
   setUpAll(() async {
-    AuthServices.set(
+    new_auth_core.AuthServices.set(
       identityProviders: [
         new_email_idp.EmailIdentityProviderFactory(newEmailIdpConfig),
       ],
       primaryTokenManager: tokenManagerFactory,
     );
-    newEmailIdp = AuthServices.instance.emailIdp;
+    newEmailIdp = new_auth_core.AuthServices.instance.emailIdp;
     AuthMigrations.config = AuthMigrationConfig(emailIdp: newEmailIdp);
   });
 
   tearDownAll(() async {
-    AuthServices.set(
+    new_auth_core.AuthServices.set(
       identityProviders: [],
       primaryTokenManager: tokenManagerFactory,
     );

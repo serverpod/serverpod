@@ -1,5 +1,4 @@
-import 'package:serverpod_auth_idp_server/core.dart';
-
+import '../../core.dart';
 import '../providers/passkey/passkey.dart';
 
 /// AuthServices factory for creating [PasskeyIdp] instances.

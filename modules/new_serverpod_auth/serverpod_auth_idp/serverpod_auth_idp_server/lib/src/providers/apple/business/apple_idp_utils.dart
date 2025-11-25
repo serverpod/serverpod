@@ -3,10 +3,9 @@ import 'dart:convert';
 
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
-import '../../../generated/protocol.dart';
+import '../../../../core.dart';
 import 'apple_idp.dart';
 
 /// Details of the Apple account.

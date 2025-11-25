@@ -1,7 +1,6 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
 
+import '../../../../../core.dart';
 import 'google_idp_admin.dart';
 import 'google_idp_config.dart';
 import 'google_idp_utils.dart';

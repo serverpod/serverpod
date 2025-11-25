@@ -2,9 +2,8 @@ import 'dart:typed_data';
 
 import 'package:passkeys_server/passkeys_server.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
-import 'package:serverpod_auth_idp_server/src/generated/protocol.dart';
 
+import '../../../../../core.dart';
 import 'passkey_idp_admin.dart';
 import 'passkey_idp_config.dart';
 import 'passkey_idp_utils.dart';

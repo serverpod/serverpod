@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
-import 'package:serverpod_auth_idp_server/src/providers/apple/business/routes/apple_server_notification_route.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
+import '../../../../core.dart';
 import 'apple_idp_admin.dart';
 import 'apple_idp_config.dart';
 import 'apple_idp_utils.dart';
+import 'routes/apple_server_notification_route.dart';
 
 /// Main class for the Apple identity provider.
 /// The methods defined here are intended to be called from an endpoint.

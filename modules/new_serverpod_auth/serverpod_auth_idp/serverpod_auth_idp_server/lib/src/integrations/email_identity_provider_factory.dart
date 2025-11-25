@@ -1,5 +1,4 @@
-import 'package:serverpod_auth_idp_server/core.dart';
-
+import '../../core.dart';
 import '../../providers/email.dart';
 
 /// AuthServices factory for creating [EmailIdp] instances.

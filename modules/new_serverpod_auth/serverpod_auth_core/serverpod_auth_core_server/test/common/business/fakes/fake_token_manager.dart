@@ -1,9 +1,7 @@
 import 'dart:convert';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/auth_user.dart';
-import 'package:serverpod_auth_core_server/src/common/integrations/token_manager.dart';
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 import 'fake_token_storage.dart';
 

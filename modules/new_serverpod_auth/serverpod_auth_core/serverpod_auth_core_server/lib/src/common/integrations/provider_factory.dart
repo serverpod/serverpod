@@ -1,4 +1,4 @@
-import '../../../profile.dart';
+import '../../profile/profile.dart';
 import 'token_manager.dart';
 
 /// Interface for factories that can create auth providers.
