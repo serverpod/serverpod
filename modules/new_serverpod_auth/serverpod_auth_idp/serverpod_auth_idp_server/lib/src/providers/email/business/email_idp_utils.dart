@@ -49,7 +49,7 @@ class EmailIdpUtils {
          fallbackHashPeppers: config.fallbackSecretHashPeppers,
          hashSaltLength: config.secretHashSaltLength,
          // 19MiB memory cost as recommended by OWASP: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
-         memory: 76 << 8,
+         memory: 19456,
        ),
        account = EmailIdpAccountUtils() {
     accountCreation = EmailIdpAccountCreationUtil(
