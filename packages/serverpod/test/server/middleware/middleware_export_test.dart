@@ -21,15 +21,7 @@ void main() {
     onRequest: (Request request) => null,
   );
 
-  // Serverpod middleware implementations
-  final logging = loggingMiddleware();
-  final verboseLogging = loggingMiddleware(verbose: true);
-  final customLogging = loggingMiddleware(
-    logger: (message) {},
-  );
-
   // Complete workflow verification
   final composedPipeline = const Pipeline()
-      .addMiddleware(loggingMiddleware())
       .addMiddleware(createMiddleware(onRequest: (req) => null));
 }

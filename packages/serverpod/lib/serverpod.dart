@@ -37,8 +37,5 @@ export 'package:serverpod/src/cache/cache_miss_handler.dart';
 export 'src/server/experimental_features.dart';
 export 'diagnostic_events.dart';
 
-// Middleware implementations
-export 'src/server/middleware/logging_middleware.dart';
-
 export 'package:meta/meta.dart' show useResult, immutable;
 export 'package:collection/collection.dart' show DeepCollectionEquality;
