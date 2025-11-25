@@ -16,7 +16,13 @@ As a prerequisite for publishing, you need to:
 
 The CI pipeline is defined in [publish-serverpod.yaml](.github/workflows/publish-serverpod.yaml). It triggers automatically when a tag matching the version pattern is pushed (e.g. `2.9.1`, `3.0.0-alpha.1`, `3.0.0-rc.1`).
 
-So, the only manual step is to **tag the merge commit from the previous step** with a tag matching **the same version defined** in the [SERVERPOD_VERSION](SERVERPOD_VERSION) file and push to the remote repository. Then, wait for the pipeline to complete.
+So, the only manual step is to **tag the merge commit from the previous step** with an annotated tag matching **the same version defined** in the [SERVERPOD_VERSION](SERVERPOD_VERSION) file and push to the upstream repository. Then, wait for the pipeline to complete.
+
+```bash
+# Replace VERSION and COMMIT_HASH with actual values
+git tag -a VERSION COMMIT_HASH -m ""
+git push upstream VERSION
+```
 
 ### Recovering from errors
 
