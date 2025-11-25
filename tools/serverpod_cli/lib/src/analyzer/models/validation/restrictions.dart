@@ -1865,7 +1865,7 @@ class Restrictions {
       } else if (node is YamlMap && node.nodes.isNotEmpty) {
         // Enhanced enum value - first key is the enum name
         var firstKey = node.nodes.keys.first;
-        if (firstKey.value is String) {
+        if (firstKey is YamlScalar && firstKey.value is String) {
           enumNames.add(firstKey.value as String);
         }
       }
@@ -1904,33 +1904,40 @@ class Restrictions {
       // Handle enhanced enum value (map with properties)
       if (node is YamlMap && node.nodes.isNotEmpty) {
         var firstEntry = node.nodes.entries.first;
-        var enumValueName = firstEntry.key.value;
+        var keyNode = firstEntry.key;
+        if (keyNode is! YamlScalar) {
+          return SourceSpanSeverityException(
+            'Enum value name must be a string.',
+            node.span,
+          );
+        }
 
+        var enumValueName = keyNode.value;
         if (enumValueName is! String) {
           return SourceSpanSeverityException(
             'Enum value name must be a string.',
-            firstEntry.key.span,
+            keyNode.span,
           );
         }
 
         if (!StringValidators.isValidEnumName(enumValueName)) {
           return SourceSpanSeverityException(
             'Enum values must be valid dart enums.',
-            firstEntry.key.span,
+            keyNode.span,
           );
         }
 
         if (enumCount[enumValueName] != 1) {
           return SourceSpanSeverityException(
             'Enum values must be unique.',
-            firstEntry.key.span,
+            keyNode.span,
           );
         }
 
         if (_globallyRestrictedKeywords.contains(enumValueName)) {
           return SourceSpanSeverityException(
             'The enum value "$enumValueName" is reserved and cannot be used.',
-            firstEntry.key.span,
+            keyNode.span,
           );
         }
 
@@ -1967,6 +1974,16 @@ class Restrictions {
     for (var entry in content.nodes.entries) {
       var keyNode = entry.key;
       var valueNode = entry.value;
+      if (keyNode is! YamlScalar || valueNode is! YamlScalar) {
+        errors.add(
+          SourceSpanSeverityException(
+            'Property entries must be scalar values.',
+            span,
+          ),
+        );
+        continue;
+      }
+
       var propertyName = keyNode.value;
       var propertyValue = valueNode.value;
 
