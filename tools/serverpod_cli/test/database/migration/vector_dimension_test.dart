@@ -53,6 +53,32 @@ void main() {
           expect(migration.warnings.first.destrucive, isTrue);
         },
       );
+
+      group('when SQL is generated', () {
+        test(
+          'then it contains DROP COLUMN statement.',
+          () {
+            var sql = migration.toPgSql(
+              installedModules: [],
+              removedModules: [],
+            );
+
+            expect(sql, contains('DROP COLUMN "embedding"'));
+          },
+        );
+
+        test(
+          'then it contains ADD COLUMN statement with new dimension.',
+          () {
+            var sql = migration.toPgSql(
+              installedModules: [],
+              removedModules: [],
+            );
+
+            expect(sql, contains('ADD COLUMN "embedding" vector(768)'));
+          },
+        );
+      });
     },
   );
 
@@ -164,43 +190,6 @@ void main() {
             ),
             isTrue,
           );
-        },
-      );
-    },
-  );
-
-  group(
-    'Given table with vector column dimension change',
-    () {
-      var sourceDefinition = _singleVectorColumnDatabaseDefinition(1536);
-      var targetDefinition = _singleVectorColumnDatabaseDefinition(768);
-
-      var migration = generateDatabaseMigration(
-        databaseSource: sourceDefinition,
-        databaseTarget: targetDefinition,
-      );
-
-      test(
-        'when SQL is generated then it contains DROP COLUMN statement.',
-        () {
-          var sql = migration.toPgSql(
-            installedModules: [],
-            removedModules: [],
-          );
-
-          expect(sql, contains('DROP COLUMN "embedding"'));
-        },
-      );
-
-      test(
-        'when SQL is generated then it contains ADD COLUMN statement with new dimension.',
-        () {
-          var sql = migration.toPgSql(
-            installedModules: [],
-            removedModules: [],
-          );
-
-          expect(sql, contains('ADD COLUMN "embedding" vector(768)'));
         },
       );
     },
