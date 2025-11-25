@@ -6,30 +6,40 @@ Serverpod 3 is a major overhaul of the authentication system and the web server.
 This release candidate is **not yet production-ready**. It is still under active development and may contain bugs or breaking changes.
 
 ### Polymorphism support
-Polymorphic models are now supported on endpoints, making inheritance no longer an experimental feature on the framework. It works both for sealed and unsealed models.
-
-This has been a long-awaited feature that solves one of the very few areas where invoking client endpoints behave differently than regular method calls. See the [next documentation](https://docs.serverpod.dev/next/concepts/models) for more details.
+- feat: Adds support for receiving and returning polymorphic models on endpoints.
+- feat: Removes the experimental flag on inheritance. Huge shoutout to [@BenAuerDev](https://github.com/BenAuerDev) for all the work on this feature!
+- feat: Generates abstract copyWith method to allow polymorphism on sealed models.
+- feat: Handles unknown class names in polymorphic deserialization.
 
 ### New auth improvements from last rc
-All services that use secrets now support multiple fallback mechanisms to allow secret rotation without invalidating existing tokens. This includes JWT and server-side session secrets, as well as Email hash peppers.
+- refactor: BREAKING. Moves the `ClientAuthSessionManager` to the `serverpod_auth_core_client` package to allow using the authentication module in pure Dart projects. For Flutter apps, there is a new `FlutterAuthSessionManager` that extends the base class and adds Flutter-specific functionality.
+- refactor: BREAKING. Removes redundant parameters for `AuthServices` and `EmailIDPUtils`.
+- refactor: BREAKING. Reorganizes exports from `serverpod_auth_core` module.
+- refactor: BREAKING. Makes `authId` non-nullable in `AuthenticationInfo` object.
+- refactor: BREAKING. Returns `authUserId` from password reset endpoint of Email identity provider.
+- refactor: BREAKING. Renames classes and models in the authentication module to better represent their purpose and functionality.
+- refactor: Adds symmetric getter extension for `ClientAuthSessionManager`.
+- feat: Supports rotation of session key hash peppers.
+- feat: Supports multiple fallback verification algorithms for JWT tokens.
+- feat: Supports multiple fallback peppers for Email hash peppers.
+- feat: Adds callback for when an account is created.
+- fix: Publishes authentication revoked event on refresh token rotate expiry and invalid secret failures.
 
-The `ClientAuthSessionManager` has been moved to the `serverpod_auth_core_client` package, decoupling from Flutter  dependencies to allow the usage of Serverpod auth in pure Dart projects. For Flutter apps, there is a new `FlutterAuthSessionManager` that extends the base class and adds Flutter-specific functionality.
-
-A major rename has also taken place in the new authentication module to clarify purpose of each class and method. t should now be easier to understand and extend core functionality and identity providers.
+### Web server improvements from last rc
+- refactor: Makes cache control factories static.
+- refactor: Changes cache control API to use `Duration` instead of max age in seconds.
 
 ### Additional changes
 
-#### Fixes
-- fix: Clarifies DB migration version not found error message.
-- fix: SessionLogEntry time field now uses session start time.
-- fix: Publishes authentication revoked on refresh token rotate expiry and invalid secret failures.
-- fix: Prevents null check error when relation defined without table.
-- fix: Uses daemon exit code conventions for SIGTERM graceful shutdown.
-- fix: Make connectionTimeout final to prevent post-initialization mutation
+#### New features
+- feat: Enable CLI commands to run from anywhere in a project directory. ([@FXschwartz](https://github.com/FXschwartz))
 
-#### Misc
-- chore(deps): Bumps analyzer from 8.4.1 to 9.0.0 in serverpod_cli.
-- chore: Updates various dependencies.
+#### Fixes
+- fix: Improves database migration "version not found" error message.
+- fix: `SessionLogEntry.time` field now uses session start time.
+- fix: Prevents null check error when relation defined without table.
+- fix: Uses daemon exit code conventions for `SIGTERM` graceful shutdown.
+- fix: Makes `connectionTimeout` final to prevent post-initialization mutation.
 
 ## 3.0.0-rc.1
 
