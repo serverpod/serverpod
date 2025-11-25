@@ -721,8 +721,13 @@ class ModelParser {
     for (var entry in propertiesMap.nodes.entries) {
       var keyNode = entry.key;
       var valueNode = entry.value;
-      var propertyName = keyNode.value.toString();
-      var propertyValue = valueNode.value.toString();
+      if (keyNode is! YamlScalar) continue;
+      if (valueNode is! YamlScalar) continue;
+
+      var propertyName = keyNode.value;
+      var propertyValue = valueNode.value;
+      if (propertyName is! String) continue;
+      if (propertyValue is! String) continue;
 
       // Parse "Type, default=value" syntax
       var parts = propertyValue.split(',').map((s) => s.trim()).toList();
