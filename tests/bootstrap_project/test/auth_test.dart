@@ -88,6 +88,47 @@ void main() async {
         );
         expect(endpointFile.existsSync(), isTrue);
       });
+
+      test('then the server server.dart contains auth imports', () {
+        final serverFile = File(
+          path.join(tempPath, serverDir, 'lib', 'server.dart'),
+        );
+        final content = serverFile.readAsStringSync();
+        expect(content, contains('serverpod_auth_idp_server'));
+      });
+
+      test('then the server server.dart contains auth configuration', () {
+        final serverFile = File(
+          path.join(tempPath, serverDir, 'lib', 'server.dart'),
+        );
+        final content = serverFile.readAsStringSync();
+        expect(content, contains('AuthServices'));
+        expect(content, contains('EmailIdentityProviderFactory'));
+      });
+
+      test('then the flutter main.dart contains auth imports', () {
+        final mainFile = File(
+          path.join(tempPath, flutterDir, 'lib', 'main.dart'),
+        );
+        final content = mainFile.readAsStringSync();
+        expect(content, contains('serverpod_auth_idp_flutter'));
+      });
+
+      test('then the flutter main.dart contains SignInWidget', () {
+        final mainFile = File(
+          path.join(tempPath, flutterDir, 'lib', 'main.dart'),
+        );
+        final content = mainFile.readAsStringSync();
+        expect(content, contains('SignInWidget'));
+      });
+
+      test('then the flutter main.dart contains FlutterAuthSessionManager', () {
+        final mainFile = File(
+          path.join(tempPath, flutterDir, 'lib', 'main.dart'),
+        );
+        final content = mainFile.readAsStringSync();
+        expect(content, contains('FlutterAuthSessionManager'));
+      });
     });
   });
 }

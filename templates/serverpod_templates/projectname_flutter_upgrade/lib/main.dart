@@ -1,6 +1,7 @@
 import 'package:projectname_client/projectname_client.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
+import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
 /// Sets up a global client object that can be used to talk to the server from
 /// anywhere in our app. The client is generated from your server code
@@ -25,7 +26,10 @@ void main() {
       : serverUrlFromEnv;
 
   client = Client(serverUrl)
-    ..connectivityMonitor = FlutterConnectivityMonitor();
+    ..connectivityMonitor = FlutterConnectivityMonitor()
+    ..authSessionManager = FlutterAuthSessionManager();
+
+  client.auth.initialize();
 
   runApp(const MyApp());
 }
@@ -53,6 +57,58 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> {
+  bool _isSignedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    client.auth.authInfoListenable.addListener(_updateSignedInState);
+    _isSignedIn = client.auth.isAuthenticated;
+  }
+
+  @override
+  void dispose() {
+    client.auth.authInfoListenable.removeListener(_updateSignedInState);
+    super.dispose();
+  }
+
+  void _updateSignedInState() {
+    setState(() {
+      _isSignedIn = client.auth.isAuthenticated;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.title)),
+      body: _isSignedIn ? const ConnectedScreen() : const SignInScreen(),
+    );
+  }
+}
+
+class SignInScreen extends StatelessWidget {
+  const SignInScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SignInWidget(
+        client: client,
+        onAuthenticated: () {},
+      ),
+    );
+  }
+}
+
+class ConnectedScreen extends StatefulWidget {
+  const ConnectedScreen({super.key});
+
+  @override
+  State<ConnectedScreen> createState() => _ConnectedScreenState();
+}
+
+class _ConnectedScreenState extends State<ConnectedScreen> {
   /// Holds the last result or null if no result exists yet.
   String? _resultMessage;
 
@@ -81,32 +137,33 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: TextField(
-                controller: _textEditingController,
-                decoration: const InputDecoration(hintText: 'Enter your name'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: ElevatedButton(
-                onPressed: _callHello,
-                child: const Text('Send to Server'),
-              ),
-            ),
-            ResultDisplay(
-              resultMessage: _resultMessage,
-              errorMessage: _errorMessage,
-            ),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          const Text('You are connected'),
+          ElevatedButton(
+            onPressed: () async {
+              await client.auth.signOutDevice();
+            },
+            child: const Text('Sign out'),
+          ),
+          const SizedBox(height: 32),
+          TextField(
+            controller: _textEditingController,
+            decoration: const InputDecoration(hintText: 'Enter your name'),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _callHello,
+            child: const Text('Send to Server'),
+          ),
+          const SizedBox(height: 16),
+          ResultDisplay(
+            resultMessage: _resultMessage,
+            errorMessage: _errorMessage,
+          ),
+        ],
       ),
     );
   }

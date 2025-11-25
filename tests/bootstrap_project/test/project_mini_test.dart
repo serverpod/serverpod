@@ -157,6 +157,88 @@ void main() async {
     );
   });
 
+  group('Given a clean state', () {
+    final (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
+    final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
+      projectName,
+    );
+
+    group('when creating a new project with the mini template', () {
+      setUpAll(() async {
+        var createProcess = await startProcess(
+          'dart',
+          [
+            'run',
+            cliDartEntrypoint,
+            'create',
+            '--template',
+            'mini',
+            projectName,
+            '-v',
+            '--no-analytics',
+          ],
+          workingDirectory: tempPath,
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
+
+        var exitCode = await createProcess.exitCode;
+        assert(exitCode == 0);
+      });
+
+      test('then the server pubspec does not contain auth dependencies', () {
+        final pubspec = File(path.join(tempPath, serverDir, 'pubspec.yaml'));
+        final content = pubspec.readAsStringSync();
+        expect(content, isNot(contains('serverpod_auth_idp_server')));
+      });
+
+      test('then the server server.dart does not contain auth imports', () {
+        final serverFile = File(
+          path.join(tempPath, serverDir, 'lib', 'server.dart'),
+        );
+        final content = serverFile.readAsStringSync();
+        expect(content, isNot(contains('serverpod_auth_idp_server')));
+      });
+
+      test('then the email_idp_endpoint.dart does not exist', () {
+        final endpointFile = File(
+          path.join(
+            tempPath,
+            serverDir,
+            'lib',
+            'src',
+            'endpoints',
+            'email_idp_endpoint.dart',
+          ),
+        );
+        expect(endpointFile.existsSync(), isFalse);
+      });
+
+      test('then the flutter pubspec does not contain auth dependencies', () {
+        final pubspec = File(path.join(tempPath, flutterDir, 'pubspec.yaml'));
+        final content = pubspec.readAsStringSync();
+        expect(content, isNot(contains('serverpod_auth_idp_flutter')));
+      });
+
+      test('then the flutter main.dart does not contain auth imports', () {
+        final mainFile = File(
+          path.join(tempPath, flutterDir, 'lib', 'main.dart'),
+        );
+        final content = mainFile.readAsStringSync();
+        expect(content, isNot(contains('serverpod_auth_idp_flutter')));
+      });
+
+      test('then the flutter main.dart does not contain SignInWidget', () {
+        final mainFile = File(
+          path.join(tempPath, flutterDir, 'lib', 'main.dart'),
+        );
+        final content = mainFile.readAsStringSync();
+        expect(content, isNot(contains('SignInWidget')));
+      });
+    });
+  });
+
   group('Given a mini project', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
     final serverDir = createServerFolderPath(projectName);
@@ -418,6 +500,42 @@ void main() async {
             isTrue,
             reason: 'analyze.yml workflow should exist but it was not found.',
           );
+        });
+
+        test('then the server pubspec does not contain auth dependencies', () {
+          final pubspec = File(
+            path.join(tempPath, serverDir, 'pubspec.yaml'),
+          );
+          final content = pubspec.readAsStringSync();
+          expect(content, isNot(contains('serverpod_auth_idp_server')));
+        });
+
+        test('then the server server.dart does not contain auth imports', () {
+          final serverFile = File(
+            path.join(tempPath, serverDir, 'lib', 'server.dart'),
+          );
+          final content = serverFile.readAsStringSync();
+          expect(content, isNot(contains('serverpod_auth_idp_server')));
+        });
+
+        test('then the flutter pubspec does not contain auth dependencies', () {
+          final (:serverDir, :flutterDir, :clientDir) =
+              createProjectFolderPaths(projectName);
+          final pubspec = File(
+            path.join(tempPath, flutterDir, 'pubspec.yaml'),
+          );
+          final content = pubspec.readAsStringSync();
+          expect(content, isNot(contains('serverpod_auth_idp_flutter')));
+        });
+
+        test('then the flutter main.dart does not contain auth imports', () {
+          final (:serverDir, :flutterDir, :clientDir) =
+              createProjectFolderPaths(projectName);
+          final mainFile = File(
+            path.join(tempPath, flutterDir, 'lib', 'main.dart'),
+          );
+          final content = mainFile.readAsStringSync();
+          expect(content, isNot(contains('serverpod_auth_idp_flutter')));
         });
       },
     );

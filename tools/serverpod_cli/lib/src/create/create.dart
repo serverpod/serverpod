@@ -124,6 +124,11 @@ Future<bool> performCreate(
           name: name,
           customServerpodPath: productionMode ? null : serverpodHome,
         );
+        _copyFlutterUpgrade(
+          serverpodDirs,
+          name: name,
+          customServerpodPath: productionMode ? null : serverpodHome,
+        );
         return true;
       },
     );
@@ -227,6 +232,7 @@ Future<bool> _performUpgrade(
         serverpodDir,
         name: name,
         skipMain: true,
+        skipAuthDependencies: true,
         customServerpodPath: productionMode ? null : serverpodHome,
       );
       return true;
@@ -375,10 +381,68 @@ void _createDirectory(Directory dir) {
   dir.createSync();
 }
 
+void _copyFlutterUpgrade(
+  ServerpodDirectories serverpodDirs, {
+  required String name,
+  String? customServerpodPath,
+}) {
+  log.debug('Copying Flutter upgrade files.', newParagraph: true);
+  var copier = Copier(
+    srcDir: Directory(
+      p.join(
+        resourceManager.templateDirectory.path,
+        'projectname_flutter_upgrade',
+      ),
+    ),
+    dstDir: serverpodDirs.flutterDir,
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+    ],
+    fileNameReplacements: const [],
+    ignoreFileNames: const [],
+  );
+  copier.copyFiles();
+
+  log.debug('Adding auth dependencies to Flutter pubspec', newParagraph: true);
+  _addAuthDependenciesToPubspec(
+    pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
+    dependency: 'serverpod_auth_idp_flutter',
+    version: templateVersion,
+    customServerpodPath: customServerpodPath,
+    overridePath:
+        'modules/new_serverpod_auth/serverpod_auth_idp/'
+        'serverpod_auth_idp_flutter',
+    transitiveDeps: [
+      (
+        name: 'serverpod_auth_core_client',
+        path:
+            'modules/new_serverpod_auth/serverpod_auth_core/'
+            'serverpod_auth_core_client',
+      ),
+      (
+        name: 'serverpod_auth_core_flutter',
+        path:
+            'modules/new_serverpod_auth/serverpod_auth_core/'
+            'serverpod_auth_core_flutter',
+      ),
+      (
+        name: 'serverpod_auth_idp_client',
+        path:
+            'modules/new_serverpod_auth/serverpod_auth_idp/'
+            'serverpod_auth_idp_client',
+      ),
+    ],
+  );
+}
+
 void _copyServerUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
   bool skipMain = false,
+  bool skipAuthDependencies = false,
   String? customServerpodPath,
 }) {
   var awsName = name.replaceAll('_', '-');
@@ -387,7 +451,7 @@ void _copyServerUpgrade(
   var dbTestPassword = generateRandomString();
   var redisTestPassword = generateRandomString();
 
-  log.debug('Copying upgrade files.', newParagraph: true);
+  log.debug('Copying server upgrade files.', newParagraph: true);
   var copier = Copier(
     srcDir: Directory(
       p.join(
@@ -497,70 +561,46 @@ void _copyServerUpgrade(
   );
   copier.copyFiles();
 
-  log.debug('Adding auth dependencies to pubspecs', newParagraph: true);
-  _addAuthDependenciesToPubspec(
-    pubspecFile: File(p.join(serverpodDirs.serverDir.path, 'pubspec.yaml')),
-    dependency: 'serverpod_auth_idp_server',
-    version: templateVersion,
-    customServerpodPath: customServerpodPath,
-    overridePath:
-        'modules/new_serverpod_auth/serverpod_auth_idp/'
-        'serverpod_auth_idp_server',
-    transitiveDeps: [
-      (
-        name: 'serverpod_auth_core_server',
-        path:
-            'modules/new_serverpod_auth/serverpod_auth_core/'
-            'serverpod_auth_core_server',
-      ),
-    ],
-  );
-  _addAuthDependenciesToPubspec(
-    pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
-    dependency: 'serverpod_auth_idp_client',
-    version: templateVersion,
-    customServerpodPath: customServerpodPath,
-    overridePath:
-        'modules/new_serverpod_auth/serverpod_auth_idp/'
-        'serverpod_auth_idp_client',
-    transitiveDeps: [
-      (
-        name: 'serverpod_auth_core_client',
-        path:
-            'modules/new_serverpod_auth/serverpod_auth_core/'
-            'serverpod_auth_core_client',
-      ),
-    ],
-  );
-  _addAuthDependenciesToPubspec(
-    pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
-    dependency: 'serverpod_auth_idp_flutter',
-    version: templateVersion,
-    customServerpodPath: customServerpodPath,
-    overridePath:
-        'modules/new_serverpod_auth/serverpod_auth_idp/'
-        'serverpod_auth_idp_flutter',
-    transitiveDeps: [
-      (
-        name: 'serverpod_auth_core_client',
-        path:
-            'modules/new_serverpod_auth/serverpod_auth_core/'
-            'serverpod_auth_core_client',
-      ),
-      (
-        name: 'serverpod_auth_core_flutter',
-        path:
-            'modules/new_serverpod_auth/serverpod_auth_core/'
-            'serverpod_auth_core_flutter',
-      ),
-      (
-        name: 'serverpod_auth_idp_client',
-        path:
-            'modules/new_serverpod_auth/serverpod_auth_idp/'
-            'serverpod_auth_idp_client',
-      ),
-    ],
-  );
+  if (!skipAuthDependencies) {
+    log.debug(
+      'Adding auth dependencies to server and client pubspecs',
+      newParagraph: true,
+    );
+    _addAuthDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.serverDir.path, 'pubspec.yaml')),
+      dependency: 'serverpod_auth_idp_server',
+      version: templateVersion,
+      customServerpodPath: customServerpodPath,
+      overridePath:
+          'modules/new_serverpod_auth/serverpod_auth_idp/'
+          'serverpod_auth_idp_server',
+      transitiveDeps: [
+        (
+          name: 'serverpod_auth_core_server',
+          path:
+              'modules/new_serverpod_auth/serverpod_auth_core/'
+              'serverpod_auth_core_server',
+        ),
+      ],
+    );
+    _addAuthDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
+      dependency: 'serverpod_auth_idp_client',
+      version: templateVersion,
+      customServerpodPath: customServerpodPath,
+      overridePath:
+          'modules/new_serverpod_auth/serverpod_auth_idp/'
+          'serverpod_auth_idp_client',
+      transitiveDeps: [
+        (
+          name: 'serverpod_auth_core_client',
+          path:
+              'modules/new_serverpod_auth/serverpod_auth_core/'
+              'serverpod_auth_core_client',
+        ),
+      ],
+    );
+  }
 }
 
 void _addAuthDependenciesToPubspec({
