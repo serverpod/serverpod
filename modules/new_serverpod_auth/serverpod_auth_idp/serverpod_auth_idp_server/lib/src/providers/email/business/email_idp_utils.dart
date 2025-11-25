@@ -23,7 +23,9 @@ import 'utils/email_idp_password_reset_util.dart';
 /// For most standard use cases, the methods exposed by [EmailIdp] and
 /// [EmailIdpAdmin] should be sufficient.
 class EmailIdpUtils {
-  /// {@macro email_idp_hash_util}
+  /// General hash util for the email identity provider.
+  ///
+  /// Follows OWASP recommended parameters for storing passwords.
   final Argon2HashUtil hashUtil;
 
   /// {@macro email_idp_account_creation_util}
@@ -46,6 +48,8 @@ class EmailIdpUtils {
          hashPepper: config.secretHashPepper,
          fallbackHashPeppers: config.fallbackSecretHashPeppers,
          hashSaltLength: config.secretHashSaltLength,
+         // 19MiB memory cost as recommended by OWASP: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
+         memory: 76 << 8,
        ),
        account = EmailIdpAccountUtils() {
     accountCreation = EmailIdpAccountCreationUtil(
