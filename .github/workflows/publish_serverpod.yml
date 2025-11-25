@@ -59,6 +59,7 @@ jobs:
 
       - name: Update pubspecs
         run: |
+          export SERVERPOD_HOME="${{ github.workspace }}"
           dart tools/serverpod_cli/bin/serverpod_cli.dart generate-pubspecs \
             --version "${{ steps.versions.outputs.serverpod_version }}" \
             --dart-version "${{ steps.versions.outputs.dart_version }}" \
