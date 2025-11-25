@@ -109,9 +109,11 @@ jobs:
               cd "$BASE/$PACKAGE"
 
               if [ "$DRY_RUN" = "true" ]; then
-                RESULT=$(dart pub publish --dry-run)
+                dart pub publish --dry-run
+                RESULT=$?
               else
-                RESULT=$(dart pub publish --force)
+                dart pub publish --force
+                RESULT=$?
               fi
 
               if [ "$RESULT" -eq 0 ]; then
