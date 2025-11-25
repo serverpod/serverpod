@@ -1,3 +1,46 @@
+## 3.0.0-rc.2
+
+Release candidate for Serverpod 3.
+
+Serverpod 3 is a major overhaul of the authentication system and the web server.
+This release candidate is **not yet production-ready**. It is still under active development and may contain bugs or breaking changes.
+
+### Polymorphism support
+- feat: Adds support for receiving and returning polymorphic models on endpoints.
+- feat: Removes the experimental flag on inheritance. Huge shoutout to [@BenAuerDev](https://github.com/BenAuerDev) for all the work on this feature!
+- feat: Generates abstract copyWith method to allow polymorphism on sealed models.
+- feat: Handles unknown class names in polymorphic deserialization.
+
+### New auth improvements from last rc
+- refactor: BREAKING. Moves the `ClientAuthSessionManager` to the `serverpod_auth_core_client` package to allow using the authentication module in pure Dart projects. For Flutter apps, there is a new `FlutterAuthSessionManager` that extends the base class and adds Flutter-specific functionality.
+- refactor: BREAKING. Removes redundant parameters for `AuthServices` and `EmailIDPUtils`.
+- refactor: BREAKING. Reorganizes exports from `serverpod_auth_core` module.
+- refactor: BREAKING. Makes `authId` non-nullable in `AuthenticationInfo` object.
+- refactor: BREAKING. Returns `authUserId` from password reset endpoint of Email identity provider.
+- refactor: BREAKING. Renames classes and models in the authentication module to better represent their purpose and functionality.
+- refactor: Adds symmetric getter extension for `ClientAuthSessionManager`.
+- feat: Supports rotation of session key hash peppers.
+- feat: Supports multiple fallback verification algorithms for JWT tokens.
+- feat: Supports multiple fallback peppers for Email hash peppers.
+- feat: Adds callback for when an account is created.
+- fix: Publishes authentication revoked event on refresh token rotate expiry and invalid secret failures.
+
+### Web server improvements from last rc
+- refactor: Makes cache control factories static.
+- refactor: Changes cache control API to use `Duration` instead of max age in seconds.
+
+### Additional changes
+
+#### New features
+- feat: Enable CLI commands to run from anywhere in a project directory. ([@FXschwartz](https://github.com/FXschwartz))
+
+#### Fixes
+- fix: Improves database migration "version not found" error message.
+- fix: `SessionLogEntry.time` field now uses session start time.
+- fix: Prevents null check error when relation defined without table.
+- fix: Uses daemon exit code conventions for `SIGTERM` graceful shutdown.
+- fix: Makes `connectionTimeout` final to prevent post-initialization mutation.
+
 ## 3.0.0-rc.1
 
 Release candidate for Serverpod 3.
