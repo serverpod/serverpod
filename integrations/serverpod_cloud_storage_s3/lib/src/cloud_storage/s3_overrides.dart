@@ -47,8 +47,9 @@ class S3Overrides {
     required String bucket,
     required String region,
   }) {
-    if (endpointUrl != null && endpointUrl!.isNotEmpty) {
-      return '${endpointUrl!.endsWith('/') ? endpointUrl : '$endpointUrl/'}$bucket';
+    final endpoint = endpointUrl;
+    if (endpoint != null && endpoint.isNotEmpty) {
+      return '${endpoint.endsWith('/') ? endpoint : '$endpoint/'}$bucket';
     }
     return 'https://$bucket.s3-$region.amazonaws.com';
   }
