@@ -281,6 +281,7 @@ void main() async {
                 serverDir,
                 'lib',
                 'src',
+                'endpoints',
                 'greeting_endpoint.dart',
               ),
             ).existsSync(),

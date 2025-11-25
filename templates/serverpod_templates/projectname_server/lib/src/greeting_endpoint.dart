@@ -32,3 +32,4 @@ class GreetingEndpoint extends Endpoint {
     );
   }
 }
+

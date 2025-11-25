@@ -445,6 +445,14 @@ void _copyServerUpgrade(
         slotName: 'REDIS_TEST_PASSWORD',
         replacement: redisTestPassword,
       ),
+      Replacement(
+        slotName: 'SERVER_SIDE_SESSION_KEY_HASH_PEPPER',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'EMAIL_SECRET_HASH_PEPPER',
+        replacement: generateRandomString(),
+      ),
     ],
     fileNameReplacements: const [],
     ignoreFileNames: [if (skipMain) 'server.dart'],
