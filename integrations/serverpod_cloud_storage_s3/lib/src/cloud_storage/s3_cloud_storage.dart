@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 import '../aws_s3_client/client/client.dart';
 import '../aws_s3_upload/aws_s3_upload.dart';
+import 's3_overrides.dart';
 
 /// Concrete implementation of S3 cloud storage for use with Serverpod.
 class S3CloudStorage extends CloudStorage {
@@ -11,25 +12,42 @@ class S3CloudStorage extends CloudStorage {
   final String region;
   final String bucket;
   final bool public;
-  final String? endpointUrl;
-  final String? host;
-  final bool useHttps;
+  final S3Overrides overrides;
   late final String publicHost;
 
   late final AwsS3Client _s3Client;
 
   /// Creates a new [S3CloudStorage] reference.
+  ///
+  /// For standard AWS S3, only [serverpod], [storageId], [public], [region],
+  /// and [bucket] are required.
+  ///
+  /// For S3-compatible storage (MinIO, LocalStack), provide [overrides]:
+  /// ```dart
+  /// S3CloudStorage(
+  ///   serverpod: serverpod,
+  ///   storageId: 'default',
+  ///   public: true,
+  ///   region: 'us-east-1',
+  ///   bucket: 'my-bucket',
+  ///   overrides: S3Overrides(
+  ///     endpointUrl: 'http://localhost:9000',
+  ///     host: 'localhost:9000',
+  ///     useHttps: false,
+  ///   ),
+  ///   publicHost: 'localhost:9000/my-bucket',
+  /// )
+  /// ```
   S3CloudStorage({
     required Serverpod serverpod,
     required String storageId,
     required this.public,
     required this.region,
     required this.bucket,
-    this.host,
-    this.endpointUrl,
-    this.useHttps = true,
+    S3Overrides? overrides,
     String? publicHost,
-  }) : super(storageId) {
+  })  : overrides = overrides ?? S3Overrides(),
+        super(storageId) {
     serverpod.loadCustomPasswords([
       (envName: 'SERVERPOD_AWS_ACCESS_KEY_ID', alias: 'AWSAccessKeyId'),
       (envName: 'SERVERPOD_AWS_SECRET_KEY', alias: 'AWSSecretKey'),
@@ -49,16 +67,17 @@ class S3CloudStorage extends CloudStorage {
     _awsAccessKeyId = awsAccessKeyId;
     _awsSecretKey = awsSecretKey;
 
-    // Create client
+    // Create client with overrides
     _s3Client = AwsS3Client(
       accessKey: _awsAccessKeyId,
       secretKey: _awsSecretKey,
       bucketId: bucket,
       region: region,
-      host: host,
-      useHttps: useHttps,
+      host: this.overrides.buildClientHost(region: region),
+      useHttps: this.overrides.useHttps,
     );
 
+    // Set public host
     this.publicHost = publicHost ?? '$bucket.s3.$region.amazonaws.com';
   }
 
@@ -78,7 +97,10 @@ class S3CloudStorage extends CloudStorage {
       data: byteData,
       uploadDst: path,
       public: public,
-      endpointUrl: endpointUrl,
+      endpoint: overrides.buildUploadEndpoint(
+        bucket: bucket,
+        region: region,
+      ),
     );
   }
 
@@ -100,7 +122,7 @@ class S3CloudStorage extends CloudStorage {
     required String path,
   }) async {
     if (await fileExists(session: session, path: path)) {
-      final protocol = useHttps ? 'https' : 'http';
+      final protocol = overrides.useHttps ? 'https' : 'http';
       return Uri.parse('$protocol://$publicHost/$path');
     }
     return null;
@@ -140,7 +162,10 @@ class S3CloudStorage extends CloudStorage {
       expires: expirationDuration,
       maxFileSize: maxFileSize,
       public: public,
-      endpointUrl: endpointUrl,
+      endpoint: overrides.buildUploadEndpoint(
+        bucket: bucket,
+        region: region,
+      ),
     );
   }
 
