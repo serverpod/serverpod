@@ -182,11 +182,12 @@ class Restrictions {
       ];
     }
 
-    var duplicateExtraClass =
-        config.extraClasses.cast<TypeDefinition?>().firstWhere(
-              (extraClass) => extraClass?.className == className,
-              orElse: () => null,
-            );
+    var duplicateExtraClass = config.extraClasses
+        .cast<TypeDefinition?>()
+        .firstWhere(
+          (extraClass) => extraClass?.className == className,
+          orElse: () => null,
+        );
 
     if (duplicateExtraClass != null) {
       return [
@@ -1376,13 +1377,14 @@ class Restrictions {
 
     var duplicatesCount = _duplicatesCount(indexFields);
 
-    var duplicateFieldErrors =
-        duplicatesCount.entries.where((entry) => entry.value > 1).map(
-              (entry) => SourceSpanSeverityException(
-                'Duplicated field name "name", can only reference a field once per index.',
-                span,
-              ),
-            );
+    var duplicateFieldErrors = duplicatesCount.entries
+        .where((entry) => entry.value > 1)
+        .map(
+          (entry) => SourceSpanSeverityException(
+            'Duplicated field name "name", can only reference a field once per index.',
+            span,
+          ),
+        );
 
     var hasVectorField = fields
         .where((f) => indexFields.contains(f.name))
@@ -1537,13 +1539,16 @@ class Restrictions {
       if (efConstruction < 2 * m) {
         String suggestion;
         if (!content.containsKey('m')) {
-          suggestion = 'Set "ef_construction" >= ${2 * m} or declare "m" with '
+          suggestion =
+              'Set "ef_construction" >= ${2 * m} or declare "m" with '
               'a value <= ${efConstruction ~/ 2}';
         } else if (!content.containsKey('ef_construction')) {
-          suggestion = 'Set "m" <= ${efConstruction ~/ 2} or declare '
+          suggestion =
+              'Set "m" <= ${efConstruction ~/ 2} or declare '
               '"ef_construction" with a value >= ${2 * m}';
         } else {
-          suggestion = 'Set "m" <= ${efConstruction ~/ 2} or increase '
+          suggestion =
+              'Set "m" <= ${efConstruction ~/ 2} or increase '
               '"ef_construction" to a value >= ${2 * m}';
         }
         errors.add(

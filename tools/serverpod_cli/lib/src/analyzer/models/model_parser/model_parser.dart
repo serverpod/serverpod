@@ -39,32 +39,33 @@ class ModelParser {
       docsExtractor: docsExtractor,
       extraClasses: extraClasses,
       hasTable: tableName != null,
-      initialize: ({
-        required String className,
-        required TypeDefinition classType,
-        required bool serverOnly,
-        required List<SerializableModelFieldDefinition> fields,
-        required List<String>? classDocumentation,
-      }) {
-        var indexes = _parseIndexes(documentContents, fields);
+      initialize:
+          ({
+            required String className,
+            required TypeDefinition classType,
+            required bool serverOnly,
+            required List<SerializableModelFieldDefinition> fields,
+            required List<String>? classDocumentation,
+          }) {
+            var indexes = _parseIndexes(documentContents, fields);
 
-        return ModelClassDefinition(
-          className: className,
-          isSealed: isSealed,
-          isImmutable: isImmutable,
-          extendsClass: extendsClass,
-          sourceFileName: protocolSource.yamlSourceUri.path,
-          tableName: tableName,
-          manageMigration: manageMigration,
-          fileName: outFileName,
-          fields: fields,
-          indexes: indexes,
-          subDirParts: protocolSource.subDirPathParts,
-          documentation: classDocumentation,
-          serverOnly: serverOnly,
-          type: classType,
-        );
-      },
+            return ModelClassDefinition(
+              className: className,
+              isSealed: isSealed,
+              isImmutable: isImmutable,
+              extendsClass: extendsClass,
+              sourceFileName: protocolSource.yamlSourceUri.path,
+              tableName: tableName,
+              manageMigration: manageMigration,
+              fileName: outFileName,
+              fields: fields,
+              indexes: indexes,
+              subDirParts: protocolSource.subDirPathParts,
+              documentation: classDocumentation,
+              serverOnly: serverOnly,
+              type: classType,
+            );
+          },
     );
   }
 
@@ -84,23 +85,23 @@ class ModelParser {
       docsExtractor: docsExtractor,
       extraClasses: extraClasses,
       hasTable: false,
-      initialize: ({
-        required String className,
-        required TypeDefinition classType,
-        required bool serverOnly,
-        required List<SerializableModelFieldDefinition> fields,
-        required List<String>? classDocumentation,
-      }) =>
-          ExceptionClassDefinition(
-        className: className,
-        fields: fields,
-        fileName: outFileName,
-        serverOnly: serverOnly,
-        sourceFileName: protocolSource.yamlSourceUri.path,
-        type: classType,
-        subDirParts: protocolSource.subDirPathParts,
-        documentation: classDocumentation,
-      ),
+      initialize:
+          ({
+            required String className,
+            required TypeDefinition classType,
+            required bool serverOnly,
+            required List<SerializableModelFieldDefinition> fields,
+            required List<String>? classDocumentation,
+          }) => ExceptionClassDefinition(
+            className: className,
+            fields: fields,
+            fileName: outFileName,
+            serverOnly: serverOnly,
+            sourceFileName: protocolSource.yamlSourceUri.path,
+            type: classType,
+            subDirParts: protocolSource.subDirPathParts,
+            documentation: classDocumentation,
+          ),
     );
   }
 
@@ -123,7 +124,8 @@ class ModelParser {
       required bool serverOnly,
       required List<SerializableModelFieldDefinition> fields,
       required List<String>? classDocumentation,
-    }) initialize,
+    })
+    initialize,
   }) {
     YamlNode? classNode = documentContents.nodes[documentTypeName];
 
@@ -576,7 +578,8 @@ class ModelParser {
       );
       var type = _parseIndexType(
         nodeDocument,
-        onlyVectorFields: indexFieldsTypes.isNotEmpty &&
+        onlyVectorFields:
+            indexFieldsTypes.isNotEmpty &&
             indexFieldsTypes.every((f) => f.type.isVectorType),
       );
       var unique = _parseUniqueKey(nodeDocument);
@@ -659,8 +662,8 @@ class ModelParser {
     if (nodeValue is! String) {
       return VectorIndexType.values.any((e) => e.name == indexType)
           ? (indexFieldsTypes.any((field) => field.type.className == 'Bit')
-              ? VectorDistanceFunction.hamming
-              : VectorDistanceFunction.l2)
+                ? VectorDistanceFunction.hamming
+                : VectorDistanceFunction.l2)
           : null;
     }
 
@@ -742,13 +745,15 @@ class ModelParser {
         keyNode.span.start,
       );
 
-      properties.add(EnumPropertyDefinition(
-        name: propertyName,
-        type: type,
-        required: required,
-        defaultValue: defaultValue,
-        documentation: propDocumentation,
-      ));
+      properties.add(
+        EnumPropertyDefinition(
+          name: propertyName,
+          type: type,
+          required: required,
+          defaultValue: defaultValue,
+          documentation: propDocumentation,
+        ),
+      );
     }
 
     return properties;
