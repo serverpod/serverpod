@@ -22,7 +22,6 @@ final class Argon2HashUtil {
   final List<String> _fallbackHashPeppers;
   final int _hashSaltLength;
   final int _memory;
-  final int _iterations;
   final int _lanes;
   final int _desiredKeyLength;
 
@@ -32,7 +31,6 @@ final class Argon2HashUtil {
   /// [fallbackHashPeppers] is an optional list of peppers to try when validating.
   /// [hashSaltLength] is the length of the salt to generate (in bytes).
   /// [memory] is the memory cost parameter in KiB (default: 4096 = 4MiB).
-  /// [iterations] is the number of iterations (default: 3).
   /// [lanes] is the degree of parallelism (default: number of processors).
   /// [desiredKeyLength] is the output hash length in bytes (default: 32 = 256 bits).
   Argon2HashUtil({
@@ -40,14 +38,12 @@ final class Argon2HashUtil {
     final List<String> fallbackHashPeppers = const [],
     required final int hashSaltLength,
     final int memory = 1 << 12,
-    final int iterations = 3,
     final int? lanes,
     final int desiredKeyLength = 32,
   }) : _hashPepper = hashPepper,
        _fallbackHashPeppers = fallbackHashPeppers,
        _hashSaltLength = hashSaltLength,
        _memory = memory,
-       _iterations = iterations,
        _lanes = lanes ?? Platform.numberOfProcessors,
        _desiredKeyLength = desiredKeyLength;
 
@@ -170,7 +166,6 @@ final class Argon2HashUtil {
   }) {
     // Capture instance variables for use in isolate
     final memory = _memory;
-    final iterations = _iterations;
     final lanes = _lanes;
     final desiredKeyLength = _desiredKeyLength;
 
@@ -179,7 +174,6 @@ final class Argon2HashUtil {
         Argon2Parameters.ARGON2_id,
         salt,
         desiredKeyLength: desiredKeyLength,
-        iterations: iterations,
         lanes: lanes,
         memory: memory,
         secret: pepper,
