@@ -26,39 +26,10 @@
 
 **Verify the transaction and all of thoses points**
 
-The pre/post_database_setup.sql files are utilized if a database is created from scratch. Any SQL code contained in these files would be applied as a single transaction with the definition.sql contents. The pre_database_setup.sql contents would be inlined before the definition.sql contents and the postDatabaseSetup contents would be inlined after.
-
-The pre/post_migration.sql files are utilized when the database is rolled forward. These files live inside of each migration. Any SQL code in these fields would be applied as a single transaction with the migration.sql contents. The pre_migration.sql contents would be inlined before the migration.sql contents and the post_migration.sql contents would be inlined after.
-
 Modules
 Special consideration would need to be taken for modules. Any custom commands added to modules would need to be inlined in the correct places as well. And if custom code is supported in modules, module changes would need to always be applied migration by migration in order to catch any custom code.
 
 ---
-
-## ⚠️ Known Design Issue: Fresh Database Consistency
-
-**Problem:**
-When custom SQL is added to `post_migration.sql` (or `pre_migration.sql`), it only exists when rolling forward migrations. If someone drops the database and recreates from scratch using `docker compose down -v`, that custom SQL is **not** included until the next migration is created.
-
-**Example Scenario:**
-1. Developer adds BM25 index to `post_migration.sql` in Migration N
-2. `dart bin/main.dart --apply-migrations` → Index created ✅
-3. `docker compose down -v && docker compose up -d` → Fresh database
-4. `dart bin/main.dart --apply-migrations` → Index **missing** ❌
-5. Only after creating Migration N+1 does the index appear in `post_database_setup.sql`
-
-**Current Implementation:**
-- ✅ **CLI accumulation**: When creating Migration N+1, copies `post_migration.sql` from Migration N into `post_database_setup.sql` of Migration N+1
-- ❌ **No runtime accumulation**: Editing migration SQL doesn't update setup files until next migration created
-
-**Potential Solutions to Discuss:**
-1. **Dynamic accumulation at fresh DB creation**: Read all `pre/post_migration.sql` files and combine them dynamically when creating fresh database (no file modification)
-2. **Runtime accumulation**: Update setup files when applying migrations (adds complexity with duplicate detection)
-3. **Manual workaround**: Developers create empty migration to trigger setup file regeneration
-4. **Documentation**: Document this behavior as expected - developers must manually copy important SQL to setup files
-5. **Cli command**
-
-**Decision needed**: Get feedback from maintainers on preferred approach before implementing solution.
 
 ### 2. **SQL Execution Order Verification** ⭐ Priority 2
 
@@ -82,35 +53,6 @@ When custom SQL is added to `post_migration.sql` (or `pre_migration.sql`), it on
 - ✅ Execution order confirmed: pre_migration.sql → migration.sql → post_migration.sql
 - ✅ Rolling forward migration executes custom SQL in correct order within single transaction
 
-### 3. **Module Support** ⭐ Priority 3
-
-#### 3.1 Test with serverpod_auth Module
-```bash
-# Use auth example project
-cd examples/auth_example/auth_example_server
-
-# Check if auth module has migrations
-ls -la ../../../modules/serverpod_auth/serverpod_auth_server/migrations/
-
-# Manually add custom SQL to auth module migration
-cat > ../../../modules/serverpod_auth/serverpod_auth_server/migrations/<LATEST_VERSION>/post_migration.sql << 'EOF'
--- Custom index on auth user table
-CREATE INDEX idx_serverpod_user_info_email ON serverpod_user_info(email);
-EOF
-
-docker compose down -v
-docker compose up -d
-dart bin/main.dart --apply-migrations
-
-# Verify: Module custom SQL should be applied
-# Verify: No critical warnings about the custom auth index
-```
-
-#### 3.2 Test Multiple Modules with Custom SQL
-```bash
-# Test with both serverpod_auth and serverpod_chat
-# Each with their own custom SQL
-```
 
 ### 4. **Warning Categorization** ⭐ Priority 2
 
@@ -358,3 +300,53 @@ This should be your **highest risk area** for bugs, so test thoroughly!
 ### Execution Order:
 - **Fresh DB**: pre_database_setup.sql → definition.sql → post_database_setup.sql
 - **Migration**: pre_migration.sql → migration.sql → post_migration.sql
+
+
+
+## ⚠️ Known Design Issue: Fresh Database Consistency
+
+**Problem:**
+When custom SQL is added to `post_migration.sql` (or `pre_migration.sql`), it only exists when rolling forward migrations. If someone drops the database and recreates from scratch using `docker compose down -v`, that custom SQL is **not** included until the next migration is created.
+
+**Example Scenario:**
+1. Developer adds BM25 index to `post_migration.sql` in Migration N
+2. `dart bin/main.dart --apply-migrations` → Index created ✅
+3. `docker compose down -v && docker compose up -d` → Fresh database
+4. `dart bin/main.dart --apply-migrations` → Index **missing** ❌
+5. Only after creating Migration N+1 does the index appear in `post_database_setup.sql`
+
+**Current Implementation:**
+- ✅ **CLI accumulation**: When creating Migration N+1, copies `post_migration.sql` from Migration N into `post_database_setup.sql` of Migration N+1
+- ❌ **No runtime accumulation**: Editing migration SQL doesn't update setup files until next migration created
+
+**Potential Solutions to Discuss:**
+1. **Dynamic accumulation at fresh DB creation**: Read all `pre/post_migration.sql` files and combine them dynamically when creating fresh database (no file modification)
+2. **Runtime accumulation**: Update setup files when applying migrations (adds complexity with duplicate detection)
+3. **Manual workaround**: Developers create empty migration to trigger setup file regeneration
+4. **Documentation**: Document this behavior as expected - developers must manually copy important SQL to setup files
+5. **Cli command**
+
+**Decision needed**: Get feedback from maintainers on preferred approach before implementing solution.
+
+
+## Known Limitations peut etre faux voir plus bas 
+
+### Module Custom SQL Support
+- Custom SQL files are generated for modules but **not yet executed**
+- Module migrations currently only use `definition.sql` and `migration.sql`
+- To implement module support in the future:
+  - Modify `_migrateToLatestModule()` to load custom SQL from module directories
+  - Consider sequential migration processing for modules with custom SQL
+  - See discussion in issue #XXXX (if applicable)
+
+This is **not a breaking change** - existing module migrations work exactly as before.
+
+
+### Module Support
+
+Modules automatically support custom SQL during migrations.
+
+`pre_migration.sql` and `post_migration.sql` are executed correctly
+for both project and module migrations. Modules do not participate
+in fresh-database setup (they never create the schema), which is the
+expected Serverpod behavior.
