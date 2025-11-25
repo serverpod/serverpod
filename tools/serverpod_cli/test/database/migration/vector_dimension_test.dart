@@ -55,29 +55,18 @@ void main() {
       );
 
       group('when SQL is generated', () {
-        test(
-          'then it contains DROP COLUMN statement.',
-          () {
-            var sql = migration.toPgSql(
-              installedModules: [],
-              removedModules: [],
-            );
-
-            expect(sql, contains('DROP COLUMN "embedding"'));
-          },
+        late var sql = migration.toPgSql(
+          installedModules: [],
+          removedModules: [],
         );
 
-        test(
-          'then it contains ADD COLUMN statement with new dimension.',
-          () {
-            var sql = migration.toPgSql(
-              installedModules: [],
-              removedModules: [],
-            );
+        test('then it contains DROP COLUMN statement.', () {
+          expect(sql, contains('DROP COLUMN "embedding"'));
+        });
 
-            expect(sql, contains('ADD COLUMN "embedding" vector(768)'));
-          },
-        );
+        test('then it contains ADD COLUMN statement with new dimension.', () {
+          expect(sql, contains('ADD COLUMN "embedding" vector(768)'));
+        });
       });
     },
   );
