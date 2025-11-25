@@ -8,7 +8,8 @@ import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
   group(
-    'Given multiple tables where one table has a warning that requires recreation',
+    'Given multiple tables where one table has a warning that requires recreation '
+    'when generating migration',
     () {
       // Create a source database with three tables
       var sourceDefinition = DatabaseDefinitionBuilder()
@@ -108,7 +109,7 @@ void main() {
       );
 
       test(
-        'when generating migration then migration contains correct number of actions.',
+        'then migration contains correct number of actions.',
         () {
           // Should have 3 actions:
           // 1. alterTable for table_one
@@ -119,8 +120,12 @@ void main() {
         },
       );
 
+      test('then top-level warnings contain correct number of warnings.', () {
+        expect(migration.warnings, hasLength(2));
+      });
+
       test(
-        'when generating migration then table_one alterTable has no warnings.',
+        'then table_one alterTable has no warnings.',
         () {
           var tableOneAction = migration.actions.firstWhere(
             (action) =>
@@ -133,7 +138,7 @@ void main() {
       );
 
       test(
-        'when generating migration then table_three alterTable has only table_three warnings.',
+        'then table_three alterTable has only table_three warnings.',
         () {
           var tableThreeAction = migration.actions.firstWhere(
             (action) =>
@@ -150,7 +155,7 @@ void main() {
       );
 
       test(
-        'when generating migration then top-level warnings contain table_two warning.',
+        'then top-level warnings contain table_two warning.',
         () {
           expect(
             migration.warnings
@@ -162,7 +167,7 @@ void main() {
       );
 
       test(
-        'when generating migration then top-level warnings contain table_three warning.',
+        'then top-level warnings contain table_three warning.',
         () {
           expect(
             migration.warnings
@@ -174,46 +179,10 @@ void main() {
       );
 
       test(
-        'when generating migration then top-level warnings do not contain warnings for table_one.',
+        'then top-level warnings do not contain warnings for table_one.',
         () {
           expect(
             migration.warnings.any((warning) => warning.table == 'table_one'),
-            isFalse,
-          );
-        },
-      );
-
-      test(
-        'when generating migration then table_one alterTable does not contain warnings for table_two.',
-        () {
-          var tableOneAction = migration.actions.firstWhere(
-            (action) =>
-                action.type == DatabaseMigrationActionType.alterTable &&
-                action.alterTable?.name == 'table_one',
-          );
-
-          expect(
-            tableOneAction.alterTable?.warnings.any(
-              (warning) => warning.table == 'table_two',
-            ),
-            isFalse,
-          );
-        },
-      );
-
-      test(
-        'when generating migration then table_three alterTable does not contain warnings for table_two.',
-        () {
-          var tableThreeAction = migration.actions.firstWhere(
-            (action) =>
-                action.type == DatabaseMigrationActionType.alterTable &&
-                action.alterTable?.name == 'table_three',
-          );
-
-          expect(
-            tableThreeAction.alterTable?.warnings.any(
-              (warning) => warning.table == 'table_two',
-            ),
             isFalse,
           );
         },
@@ -222,7 +191,8 @@ void main() {
   );
 
   group(
-    'Given two tables where both have warnings but only one requires recreation',
+    'Given two tables where both have warnings but only one requires recreation '
+    'when generating migration',
     () {
       var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
@@ -290,40 +260,21 @@ void main() {
         databaseTarget: targetDefinition,
       );
 
-      test(
-        'when generating migration then table_beta alterTable has only table_beta warnings.',
-        () {
-          var tableBetaAction = migration.actions.firstWhere(
-            (action) =>
-                action.type == DatabaseMigrationActionType.alterTable &&
-                action.alterTable?.name == 'table_beta',
-          );
+      test('then top-level warnings contain both table warnings.', () {
+        expect(migration.warnings, hasLength(2));
+      });
 
-          expect(tableBetaAction.alterTable?.warnings, hasLength(1));
-          expect(
-            tableBetaAction.alterTable?.warnings.first.table,
-            equals('table_beta'),
-          );
-        },
-      );
+      test('then table_beta alterTable has only table_beta warnings.', () {
+        var tableBetaAction = migration.actions.firstWhere(
+          (action) =>
+              action.type == DatabaseMigrationActionType.alterTable &&
+              action.alterTable?.name == 'table_beta',
+        );
 
-      test(
-        'when generating migration then top-level warnings contain both table warnings.',
-        () {
-          expect(
-            migration.warnings
-                .where((warning) => warning.table == 'table_alpha')
-                .length,
-            equals(1),
-          );
-          expect(
-            migration.warnings
-                .where((warning) => warning.table == 'table_beta')
-                .length,
-            equals(1),
-          );
-        },
-      );
+        final tableBetaWarnings = tableBetaAction.alterTable?.warnings;
+        expect(tableBetaWarnings, hasLength(1));
+        expect(tableBetaWarnings?.first.table, equals('table_beta'));
+      });
     },
   );
 }
