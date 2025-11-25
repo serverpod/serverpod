@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:clock/clock.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/common.dart';
 import 'package:serverpod_auth_core_server/src/jwt/business/refresh_token_exceptions.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -13,7 +14,6 @@ import 'authentication_info_from_jwt.dart';
 import 'jwt_admin.dart';
 import 'jwt_config.dart';
 import 'jwt_util.dart';
-import 'refresh_token_secret_hash.dart';
 import 'refresh_token_string.dart';
 
 /// Business logic for handling JWT-based access and refresh tokens.
@@ -27,8 +27,8 @@ final class Jwt {
   /// The JWT utility.
   final JwtUtil jwtUtil;
 
-  /// The refresh token secret hash.
-  final RefreshTokenSecretHash refreshTokenSecretHash;
+  /// The refresh token secret hash utility.
+  final Argon2HashUtil refreshTokenSecretHash;
 
   /// Management functions for auth users.
   final AuthUsers authUsers;
@@ -43,12 +43,10 @@ final class Jwt {
          algorithm: config.algorithm,
          fallbackVerificationAlgorithms: config.fallbackVerificationAlgorithms,
        ),
-       refreshTokenSecretHash = RefreshTokenSecretHash(
-         refreshTokenRotatingSecretSaltLength:
-             config.refreshTokenRotatingSecretSaltLength,
-         refreshTokenHashPepper: config.refreshTokenHashPepper,
-         fallbackRefreshTokenHashPeppers:
-             config.fallbackRefreshTokenHashPeppers,
+       refreshTokenSecretHash = Argon2HashUtil(
+         hashPepper: config.refreshTokenHashPepper,
+         fallbackHashPeppers: config.fallbackRefreshTokenHashPeppers,
+         hashSaltLength: config.refreshTokenRotatingSecretSaltLength,
        ),
        admin = JwtAdmin(
          refreshTokenLifetime: config.refreshTokenLifetime,
@@ -59,12 +57,10 @@ final class Jwt {
            fallbackVerificationAlgorithms:
                config.fallbackVerificationAlgorithms,
          ),
-         refreshTokenSecretHash: RefreshTokenSecretHash(
-           refreshTokenRotatingSecretSaltLength:
-               config.refreshTokenRotatingSecretSaltLength,
-           refreshTokenHashPepper: config.refreshTokenHashPepper,
-           fallbackRefreshTokenHashPeppers:
-               config.fallbackRefreshTokenHashPeppers,
+         refreshTokenSecretHash: Argon2HashUtil(
+           hashPepper: config.refreshTokenHashPepper,
+           fallbackHashPeppers: config.fallbackRefreshTokenHashPeppers,
+           hashSaltLength: config.refreshTokenRotatingSecretSaltLength,
          ),
          refreshTokenRotatingSecretLength:
              config.refreshTokenRotatingSecretLength,
@@ -162,7 +158,9 @@ final class Jwt {
         : null;
 
     final secret = _generateRefreshTokenRotatingSecret();
-    final newHash = await refreshTokenSecretHash.createHash(secret: secret);
+    final newHash = await refreshTokenSecretHash.createHashFromBytes(
+      secret: secret,
+    );
 
     final currentTime = clock.now();
 

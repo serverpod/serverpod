@@ -8,7 +8,6 @@ import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_
 import '../../../../../core.dart';
 import '../../../../generated/protocol.dart';
 import '../../../../utils/byte_data_extension.dart';
-import '../../../../utils/secret_hash_util.dart';
 import '../../../../utils/uint8list_extension.dart';
 import '../../util/session_extension.dart';
 import '../email_idp_config.dart';
@@ -26,14 +25,14 @@ import '../email_idp_server_exceptions.dart';
 ///
 /// {@endtemplate}
 class EmailIdpAccountCreationUtil {
-  final SecretHashUtil _hashUtils;
+  final Argon2HashUtil _hashUtils;
   final EmailIdpAccountCreationUtilsConfig _config;
   final AuthUsers _authUsers;
 
   /// Creates a new [EmailIdpAccountCreationUtil] instance.
   EmailIdpAccountCreationUtil({
     required final EmailIdpAccountCreationUtilsConfig config,
-    required final SecretHashUtil passwordHashUtils,
+    required final Argon2HashUtil passwordHashUtils,
     required final AuthUsers authUsers,
   }) : _config = config,
        _authUsers = authUsers,
@@ -104,8 +103,8 @@ class EmailIdpAccountCreationUtil {
       }
     }
 
-    final verificationCodeHash = await _hashUtils.createHash(
-      value: verificationCode,
+    final verificationCodeHash = await _hashUtils.createHashFromString(
+      secret: verificationCode,
     );
 
     final challenge = await SecretChallenge.db.insertRow(
@@ -195,7 +194,7 @@ class EmailIdpAccountCreationUtil {
     }
 
     final challenge = request.getChallenge;
-    await _validateHash(verificationCode, challenge);
+    await _validateHashFromString(verificationCode, challenge);
 
     if (request.isExpired(_config.registrationVerificationCodeLifetime)) {
       await EmailAccountRequest.db.deleteRow(
@@ -207,8 +206,8 @@ class EmailIdpAccountCreationUtil {
     }
 
     final createAccountToken = const Uuid().v4();
-    final createAccountTokenHash = await _hashUtils.createHash(
-      value: createAccountToken,
+    final createAccountTokenHash = await _hashUtils.createHashFromString(
+      secret: createAccountToken,
     );
 
     await _insertCreateAccountChallenge(
@@ -275,7 +274,7 @@ class EmailIdpAccountCreationUtil {
       throw EmailAccountRequestNotVerifiedException();
     }
 
-    await _validateHash(
+    await _validateHashFromString(
       credentials.verificationCode,
       createAccountChallenge,
     );
@@ -301,8 +300,8 @@ class EmailIdpAccountCreationUtil {
       transaction: transaction,
     );
 
-    final passwordHash = await _hashUtils.createHash(
-      value: password,
+    final passwordHash = await _hashUtils.createHashFromString(
+      secret: password,
     );
 
     final emailAccount = await EmailAccount.db.insertRow(
@@ -354,12 +353,12 @@ class EmailIdpAccountCreationUtil {
     return request;
   }
 
-  Future<void> _validateHash(
+  Future<void> _validateHashFromString(
     final String verificationCode,
     final SecretChallenge challenge,
   ) async {
-    if (!await _hashUtils.validateHash(
-      value: verificationCode,
+    if (!await _hashUtils.validateHashFromString(
+      secret: verificationCode,
       hash: challenge.challengeCodeHash.asUint8List,
       salt: challenge.challengeCodeSalt.asUint8List,
     )) {
@@ -389,8 +388,8 @@ class EmailIdpAccountCreationUtil {
     required final Transaction transaction,
   }) async {
     final passwordHash = password != null
-        ? await _hashUtils.createHash(
-            value: password,
+        ? await _hashUtils.createHashFromString(
+            secret: password,
           )
         : HashResult.empty();
 

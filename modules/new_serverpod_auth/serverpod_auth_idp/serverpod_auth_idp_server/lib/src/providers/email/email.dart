@@ -1,3 +1,4 @@
+export 'package:serverpod_auth_core_server/common.dart';
 export 'package:serverpod_auth_core_server/session.dart' show AuthSuccess;
 
 export '../../generated/protocol.dart'
@@ -15,7 +16,6 @@ export '../../generated/protocol.dart'
         EmailAccountPasswordResetExceptionReason,
         EmailAccountRequestException,
         EmailAccountRequestExceptionReason;
-export '../../utils/secret_hash_util.dart';
 export 'business/email_idp.dart' show EmailIdp;
 export 'business/email_idp_admin.dart';
 export 'business/email_idp_config.dart';

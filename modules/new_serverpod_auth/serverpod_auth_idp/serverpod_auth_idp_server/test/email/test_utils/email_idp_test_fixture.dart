@@ -64,7 +64,7 @@ final class EmailIdpTestFixture {
     final passwordHash = switch (password) {
       final EmailAccountPasswordHash password => password.passwordHash,
       final EmailAccountPasswordString password =>
-        await passwordHashUtil.createHash(value: password.password),
+        await passwordHashUtil.createHashFromString(secret: password.password),
       null => HashResult.empty(),
     };
 
@@ -115,7 +115,7 @@ final class EmailIdpTestFixture {
     );
   }
 
-  SecretHashUtil get passwordHashUtil => emailIdp.utils.hashUtil;
+  Argon2HashUtil get passwordHashUtil => emailIdp.utils.hashUtil;
   EmailIdpAuthenticationUtil get authenticationUtil =>
       emailIdp.utils.authentication;
   EmailIdpPasswordResetUtil get passwordResetUtil =>
