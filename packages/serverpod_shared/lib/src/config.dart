@@ -463,13 +463,9 @@ class DatabaseConfig {
       );
     }
 
-    final hasMaxConnectionCountKey = dbSetup.containsKey(
-      ServerpodEnv.databaseMaxConnectionCount.configKey,
-    );
-
-    int? maxConnectionCount = hasMaxConnectionCountKey
-        ? dbSetup[ServerpodEnv.databaseMaxConnectionCount.configKey]
-        : null;
+    int? maxConnectionCount =
+        dbSetup[ServerpodEnv.databaseMaxConnectionCount.configKey] ??
+        defaultMaxConnectionCount;
 
     // If the user sets the max connection count to 0 or a negative number,
     // this means they want to enable unlimited connections
@@ -489,10 +485,7 @@ class DatabaseConfig {
       searchPaths: _parseList(
         dbSetup[ServerpodEnv.databaseSearchPaths.configKey],
       ),
-      // If the user did not configure the max connection count, use the default
-      maxConnectionCount: hasMaxConnectionCountKey
-          ? maxConnectionCount
-          : defaultMaxConnectionCount,
+      maxConnectionCount: maxConnectionCount,
     );
   }
 
