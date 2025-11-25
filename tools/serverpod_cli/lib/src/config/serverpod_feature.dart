@@ -1,1 +1,4 @@
-enum ServerpodFeature { database }
+enum ServerpodFeature {
+  database,
+  requireTransactionParameter,
+}
