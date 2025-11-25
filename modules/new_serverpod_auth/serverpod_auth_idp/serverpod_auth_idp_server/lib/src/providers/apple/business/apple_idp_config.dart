@@ -37,6 +37,53 @@ class AppleIDPConfig {
     required this.revokedNotificationRoute,
     required this.webAuthenticationCallbackRoute,
   });
+
+  /// Creates a new Sign in with Apple configuration from default expected keys.
+  factory AppleIDPConfig.fromKeys(
+    final String? Function(String key) getConfig,
+  ) {
+    const serviceIdentifierKey = 'appleServiceIdentifier';
+    const bundleIdentifierKey = 'appleBundleIdentifier';
+    const redirectUriKey = 'appleRedirectUri';
+    const teamIdKey = 'appleTeamId';
+    const keyIdKey = 'appleKeyId';
+    const keyKey = 'appleKey';
+    const revokedNotificationRouteKey = 'appleRevokedNotificationRoute';
+    const webAuthenticationRouteKey = 'appleWebAuthenticationCallbackRoute';
+
+    final keys = {
+      serviceIdentifierKey: getConfig(serviceIdentifierKey),
+      bundleIdentifierKey: getConfig(bundleIdentifierKey),
+      redirectUriKey: getConfig(redirectUriKey),
+      teamIdKey: getConfig(teamIdKey),
+      keyIdKey: getConfig(keyIdKey),
+      keyKey: getConfig(keyKey),
+      revokedNotificationRouteKey: getConfig(revokedNotificationRouteKey),
+      webAuthenticationRouteKey: getConfig(webAuthenticationRouteKey),
+    };
+
+    final missingKeys = keys.entries
+        .where((final e) => e.value == null)
+        .map((final e) => e.key)
+        .join('", "');
+
+    if (missingKeys.isNotEmpty) {
+      throw StateError(
+        'Missing required keys for Apple IDP configuration: "$missingKeys".',
+      );
+    }
+
+    return AppleIDPConfig(
+      serviceIdentifier: keys[serviceIdentifierKey]!,
+      bundleIdentifier: keys[bundleIdentifierKey]!,
+      redirectUri: keys[redirectUriKey]!,
+      teamId: keys[teamIdKey]!,
+      keyId: keys[keyIdKey]!,
+      key: keys[keyKey]!,
+      revokedNotificationRoute: keys[revokedNotificationRouteKey]!,
+      webAuthenticationCallbackRoute: keys[webAuthenticationRouteKey]!,
+    );
+  }
 }
 
 /// Extension methods for [AppleIDPConfig].

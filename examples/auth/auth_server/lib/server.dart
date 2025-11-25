@@ -92,6 +92,7 @@ void run(List<String> args) async {
   );
 
   AuthServices.set(
+    pod: pod,
     tokenManagers: [
       AuthSessionsTokenManagerFactory(authSessionsConfig),
       AuthenticationTokensTokenManagerFactory(authenticationTokenConfig),

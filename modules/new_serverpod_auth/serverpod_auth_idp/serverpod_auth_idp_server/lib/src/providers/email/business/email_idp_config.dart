@@ -3,6 +3,9 @@ import 'package:serverpod/serverpod.dart';
 import '../util/default_code_generators.dart';
 import '../util/registration_password_policy.dart';
 
+export '../util/default_code_generators.dart';
+export '../util/registration_password_policy.dart';
+
 /// Function to be called after a password reset is successfully completed.
 typedef OnPasswordResetCompletedFunction =
     void Function(
@@ -44,67 +47,10 @@ typedef SendRegistrationVerificationCodeFunction =
 /// {@template email_idp_config}
 /// Configuration options for the email account module.
 /// {@endtemplate}
-class EmailIDPConfig extends EmailIDPOptions {
+class EmailIDPConfig {
   /// The pepper used for hashing passwords and verification codes.
   final String secretHashPepper;
 
-  /// Create a new email account configuration.
-  const EmailIDPConfig({
-    required this.secretHashPepper,
-    super.registrationVerificationCodeLifetime,
-    super.registrationVerificationCodeAllowedAttempts,
-    super.registrationVerificationCodeGenerator,
-    super.passwordResetVerificationCodeLifetime,
-    super.passwordResetVerificationCodeAllowedAttempts,
-    super.passwordResetVerificationCodeGenerator,
-    super.sendRegistrationVerificationCode,
-    super.sendPasswordResetVerificationCode,
-    super.onPasswordResetCompleted,
-    super.failedLoginRateLimit,
-    super.passwordValidationFunction,
-    super.maxPasswordResetAttempts,
-    super.secretHashSaltLength,
-  });
-
-  /// Creates a new [EmailIDPConfig] instance from an [EmailIDPOptions] instance.
-  factory EmailIDPConfig.fromOptions(
-    final String secretHashPepper,
-    final EmailIDPOptions options,
-  ) => EmailIDPConfig(
-    secretHashPepper: secretHashPepper,
-    registrationVerificationCodeLifetime:
-        options.registrationVerificationCodeLifetime,
-    registrationVerificationCodeAllowedAttempts:
-        options.registrationVerificationCodeAllowedAttempts,
-    registrationVerificationCodeGenerator:
-        options.registrationVerificationCodeGenerator,
-    passwordResetVerificationCodeLifetime:
-        options.passwordResetVerificationCodeLifetime,
-    passwordResetVerificationCodeAllowedAttempts:
-        options.passwordResetVerificationCodeAllowedAttempts,
-    passwordResetVerificationCodeGenerator:
-        options.passwordResetVerificationCodeGenerator,
-    sendRegistrationVerificationCode: options.sendRegistrationVerificationCode,
-    sendPasswordResetVerificationCode:
-        options.sendPasswordResetVerificationCode,
-    onPasswordResetCompleted: options.onPasswordResetCompleted,
-    failedLoginRateLimit: options.failedLoginRateLimit,
-    passwordValidationFunction: options.passwordValidationFunction,
-    maxPasswordResetAttempts: options.maxPasswordResetAttempts,
-    secretHashSaltLength: options.secretHashSaltLength,
-  );
-}
-
-/// Functional configuration options for the email account module.
-///
-/// This class contains all options that configure the behavior of the email
-/// identity provider. It excludes required and sensitive options, such as the
-/// secret hash pepper, which are configured in the [EmailIDPConfig] class.
-///
-/// This class should only be used with the simplified authentication services
-/// initialization workflow. For all other use cases, use the [EmailIDPConfig]
-/// class.
-class EmailIDPOptions {
   /// The time for the registration email verification code to be valid.
   ///
   ///  Default is 15 minutes.
@@ -175,8 +121,11 @@ class EmailIDPOptions {
   /// Defaults to 16.
   final int secretHashSaltLength;
 
-  /// Create a new email account options.
-  const EmailIDPOptions({
+  /// Create a new email account configuration.
+  ///
+  /// Set [current] to apply this configuration.
+  const EmailIDPConfig({
+    required this.secretHashPepper,
     this.registrationVerificationCodeLifetime = const Duration(minutes: 15),
     this.registrationVerificationCodeAllowedAttempts = 3,
     this.registrationVerificationCodeGenerator =

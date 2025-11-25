@@ -13,6 +13,8 @@ void main() {
     ),
   );
 
+  final pod = Serverpod([], Protocol(), Endpoints());
+
   const newEmailIDPConfig = EmailIDPConfig(secretHashPepper: 'test');
 
   withServerpod('Given no legacy passwords,', (
@@ -24,6 +26,7 @@ void main() {
     setUp(() {
       session = sessionBuilder.build();
       AuthServices.set(
+        pod: pod,
         identityProviders: [
           EmailIdentityProviderFactory(newEmailIDPConfig),
         ],
@@ -33,6 +36,7 @@ void main() {
 
     tearDown(() {
       AuthServices.set(
+        pod: pod,
         identityProviders: [],
         tokenManagers: [tokenManagerFactory],
       );

@@ -6,6 +6,8 @@ import '../../serverpod_test_tools.dart';
 import 'fakes/fakes.dart';
 
 void main() {
+  final pod = Serverpod([], Protocol(), Endpoints());
+
   withServerpod(
     'Given AuthServices is being configured',
     (final sessionBuilder, final endpoints) {
@@ -34,6 +36,7 @@ void main() {
 
         setUp(() {
           AuthServices.set(
+            pod: pod,
             tokenManagers: [
               FakeTokenManagerFactory(tokenStorage: fakeTokenStorage),
               ...tokenManagers,
@@ -55,12 +58,14 @@ void main() {
 
         setUp(() {
           AuthServices.set(
+            pod: pod,
             tokenManagers: [fakeTokenManagerFactory, ...tokenManagers],
             identityProviders: identityProviderFactories,
           );
           firstAuthServices = AuthServices.instance;
 
           AuthServices.set(
+            pod: pod,
             tokenManagers: [
               FakeTokenManagerFactory(
                 tokenStorage: FakeTokenStorage(),
@@ -103,6 +108,7 @@ void main() {
         ];
 
         AuthServices.set(
+          pod: pod,
           tokenManagers: [fakeTokenManagerFactory, ...tokenManagerFactories],
           identityProviders: identityProviderFactories,
         );
@@ -197,6 +203,7 @@ void main() {
         ];
 
         AuthServices.set(
+          pod: pod,
           tokenManagers: [fakeTokenManagerFactory, ...tokenManagers],
           identityProviders: multipleProviderFactories,
         );
@@ -240,6 +247,7 @@ void main() {
         ];
 
         AuthServices.set(
+          pod: pod,
           tokenManagers: [fakeTokenManagerFactory, ...tokenManagers],
           identityProviders: identityProviderFactories,
         );

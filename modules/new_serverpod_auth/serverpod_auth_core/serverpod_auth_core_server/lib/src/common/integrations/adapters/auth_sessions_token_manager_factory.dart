@@ -15,4 +15,23 @@ class AuthSessionsTokenManagerFactory
   @override
   AuthSessionsTokenManager construct({required final AuthUsers authUsers}) =>
       AuthSessionsTokenManager(config: config, authUsers: authUsers);
+
+  /// Creates a new [AuthSessionsTokenManagerFactory] from keys.
+  factory AuthSessionsTokenManagerFactory.fromKeys(
+    final String? Function(String key) getConfig,
+  ) {
+    final sessionKeyHashPepper = getConfig('authSessionsSessionKeyHashPepper');
+
+    if (sessionKeyHashPepper == null) {
+      throw StateError(
+        'Missing required auth sessions config key: "authSessionsSessionKeyHashPepper".',
+      );
+    }
+
+    return AuthSessionsTokenManagerFactory(
+      AuthSessionsConfig(
+        sessionKeyHashPepper: sessionKeyHashPepper,
+      ),
+    );
+  }
 }

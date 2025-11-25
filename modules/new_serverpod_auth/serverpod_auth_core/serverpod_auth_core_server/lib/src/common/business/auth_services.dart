@@ -27,6 +27,8 @@ class AuthServices {
 
   /// Creates a new [AuthServices] instance and sets it as the global instance.
   ///
+  /// [pod] is the serverpod instance to pass to providers, in case they need to
+  /// do something with the serverpod instance (e.g. add routes).
   /// [tokenManagers] is the list of factories for the token managers. The first
   /// token manager in the list will be used as the primary token manager, and
   /// the rest as additional token managers.
@@ -37,6 +39,7 @@ class AuthServices {
   /// These are passed to the [AuthServices] constructor to create the instance.
   /// {@macro auth_services_constructor}
   static void set({
+    required final Serverpod pod,
     required final List<TokenManagerFactory> tokenManagers,
     final List<IdentityProviderFactory> identityProviders = const [],
     final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
@@ -45,6 +48,7 @@ class AuthServices {
     final instance = AuthServices(
       authUsers: AuthUsers(config: authUsersConfig),
       userProfiles: UserProfiles(config: userProfileConfig),
+      pod: pod,
       primaryTokenManager: tokenManagers.first,
       identityProviders: identityProviders,
       additionalTokenManagers: tokenManagers.skip(1).toList(),
@@ -59,6 +63,9 @@ class AuthServices {
   /// [authUsers] is the default manager for managing auth users.
   ///
   /// [userProfiles] is the default manager for managing user profiles.
+  ///
+  /// [pod] is the serverpod instance to pass to providers, in case they need to
+  /// do something with the serverpod instance (e.g. add routes).
   ///
   /// [primaryTokenManager] is the primary token manager used by identity providers
   /// for issuing new tokens. The factory is used to construct the token manager
@@ -76,6 +83,7 @@ class AuthServices {
   AuthServices({
     required this.authUsers,
     required this.userProfiles,
+    required final Serverpod pod,
     required final TokenManagerFactory primaryTokenManager,
     required final List<IdentityProviderFactory> identityProviders,
     final List<TokenManagerFactory> additionalTokenManagers = const [],
@@ -94,6 +102,7 @@ class AuthServices {
         tokenManager: tokenManager,
         authUsers: authUsers,
         userProfiles: userProfiles,
+        pod: pod,
       );
     }
   }

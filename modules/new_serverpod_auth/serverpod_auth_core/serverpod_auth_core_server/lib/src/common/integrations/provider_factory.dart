@@ -1,3 +1,5 @@
+import 'package:serverpod/serverpod.dart';
+
 import '../../profile/profile.dart';
 import 'token_manager.dart';
 
@@ -14,9 +16,14 @@ abstract class IdentityProviderFactory<T extends Object> {
   /// [tokenManager] is the token manager to use for the provider.
   /// [authUsers] is the manager for managing auth users.
   /// [userProfiles] is the manager for managing user profiles.
+  /// [pod] is the serverpod instance to use for the provider, if it needs to
+  /// do something with the serverpod instance (e.g. add routes). It's covariant
+  /// and can be declared as nullable for concrete implementations that do not
+  /// need it in order to simplify provider testing.
   T construct({
     required final TokenManager tokenManager,
     required final AuthUsers authUsers,
     required final UserProfiles userProfiles,
+    required covariant final Serverpod pod,
   });
 }

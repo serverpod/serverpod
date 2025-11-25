@@ -2,8 +2,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
-import 'package:serverpod_auth_idp_server/providers/google.dart';
-import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 
 /// Type alias for the function to get configuration values from Serverpod.
 typedef GetConfigurationFunction = String? Function(String key);
@@ -41,30 +39,18 @@ extension AuthServicesInit on Serverpod {
   /// Use the [additionalIdentityProviders] parameter to also include extra or
   /// custom identity providers.
   void initializeAuthServices({
-    final EmailIDPOptions? emailIDPOptions,
-    final bool preferJwtAsPrimaryTokenManager = true,
-    List<TokenManagerFactory>? tokenManagers,
-    final List<IdentityProviderFactory<Object>>? additionalIdentityProviders,
+    required final List<TokenManagerFactory> tokenManagers,
+    final List<IdentityProviderFactory> identityProviders = const [],
+    final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
+    final UserProfileConfig userProfileConfig = const UserProfileConfig(),
     final GetConfigurationFunction? getConfigFunction,
   }) {
-    final getConfig = getConfigFunction ?? getPassword;
-
-    tokenManagers ??= _getTokenManager(
-      getConfig,
-      preferJwtAsPrimaryTokenManager,
-    );
-
-    final identityProviders = _getIdentityProviders(
-      getConfig,
-      emailIDPOptions,
-    );
-
     AuthServices.set(
+      pod: this,
       tokenManagers: tokenManagers,
-      identityProviders: [
-        ...identityProviders,
-        ...(additionalIdentityProviders ?? []),
-      ],
+      identityProviders: identityProviders,
+      authUsersConfig: authUsersConfig,
+      userProfileConfig: userProfileConfig,
     );
 
     authenticationHandler = AuthServices.instance.authenticationHandler;
@@ -87,140 +73,4 @@ extension AuthServicesInit on Serverpod {
       );
     }
   }
-}
-
-List<TokenManagerFactory> _getTokenManager(
-  final GetConfigurationFunction getConfig,
-  final bool useJwtAsPrimaryTokenManager,
-) {
-  final sessionKeyHashPepper = getConfig(
-    'authSessionsSessionKeyHashPepper',
-  );
-  final refreshTokenHashPepper = getConfig(
-    'authenticationTokenRefreshTokenHashPepper',
-  );
-  final privateKey = getConfig(
-    'authenticationTokenPrivateKey',
-  );
-
-  final tokenManagers = <TokenManagerFactory>[
-    if (refreshTokenHashPepper != null && privateKey != null)
-      AuthenticationTokensTokenManagerFactory(
-        AuthenticationTokenConfig(
-          refreshTokenHashPepper: refreshTokenHashPepper,
-          algorithm: AuthenticationTokenAlgorithm.hmacSha512(
-            SecretKey(privateKey),
-          ),
-        ),
-      ),
-    if (sessionKeyHashPepper != null)
-      AuthSessionsTokenManagerFactory(
-        AuthSessionsConfig(sessionKeyHashPepper: sessionKeyHashPepper),
-      ),
-  ];
-
-  if (tokenManagers.isEmpty) {
-    throw StateError(
-      'No token managers configured. Review the configuration to ensure that '
-      'all required keys for at least one token manager are set.',
-    );
-  }
-
-  if (tokenManagers.length > 1 && !useJwtAsPrimaryTokenManager) {
-    tokenManagers.insert(0, tokenManagers.removeLast());
-  }
-  return tokenManagers;
-}
-
-List<IdentityProviderFactory<Object>> _getIdentityProviders(
-  final GetConfigurationFunction getConfig,
-  final EmailIDPOptions? emailIDPOptions,
-) {
-  return [
-    _getEmailIdentityProvider(getConfig, emailIDPOptions),
-    _getGoogleIdentityProvider(getConfig),
-    _getAppleIdentityProvider(getConfig),
-    _getPasskeyIdentityProvider(getConfig),
-  ].cast<IdentityProviderFactory<Object>>();
-}
-
-EmailIdentityProviderFactory? _getEmailIdentityProvider(
-  final GetConfigurationFunction getConfig,
-  final EmailIDPOptions? emailIDPOptions,
-) {
-  final emailSecretHashPepper = getConfig('emailSecretHashPepper');
-  if (emailSecretHashPepper == null) return null;
-  return EmailIdentityProviderFactory(
-    EmailIDPConfig.fromOptions(
-      emailSecretHashPepper,
-      emailIDPOptions ?? const EmailIDPOptions(),
-    ),
-  );
-}
-
-GoogleIdentityProviderFactory? _getGoogleIdentityProvider(
-  final GetConfigurationFunction getConfig,
-) {
-  final googleClientSecret = getConfig('googleClientSecret');
-  if (googleClientSecret == null) return null;
-  return GoogleIdentityProviderFactory(
-    GoogleIDPConfig(
-      clientSecret: GoogleClientSecret.fromJsonString(
-        googleClientSecret,
-      ),
-    ),
-  );
-}
-
-AppleIdentityProviderFactory? _getAppleIdentityProvider(
-  final GetConfigurationFunction getConfig,
-) {
-  final appleServiceIdentifier = getConfig('appleServiceIdentifier');
-  final appleBundleIdentifier = getConfig('appleBundleIdentifier');
-  final appleRedirectUri = getConfig('appleRedirectUri');
-  final appleTeamId = getConfig('appleTeamId');
-  final appleKeyId = getConfig('appleKeyId');
-  final appleKey = getConfig('appleKey');
-  final appleRevokedNotificationRoute = getConfig(
-    'appleRevokedNotificationRoute',
-  );
-  final appleWebAuthenticationCallbackRoute = getConfig(
-    'appleWebAuthenticationCallbackRoute',
-  );
-
-  if (appleServiceIdentifier == null ||
-      appleBundleIdentifier == null ||
-      appleRedirectUri == null ||
-      appleTeamId == null ||
-      appleKeyId == null ||
-      appleKey == null ||
-      appleRevokedNotificationRoute == null ||
-      appleWebAuthenticationCallbackRoute == null) {
-    return null;
-  }
-
-  return AppleIdentityProviderFactory(
-    AppleIDPConfig(
-      serviceIdentifier: appleServiceIdentifier,
-      bundleIdentifier: appleBundleIdentifier,
-      redirectUri: appleRedirectUri,
-      teamId: appleTeamId,
-      keyId: appleKeyId,
-      key: appleKey,
-      revokedNotificationRoute: appleRevokedNotificationRoute,
-      webAuthenticationCallbackRoute: appleWebAuthenticationCallbackRoute,
-    ),
-  );
-}
-
-PasskeyIdentityProviderFactory? _getPasskeyIdentityProvider(
-  final GetConfigurationFunction getConfig,
-) {
-  final hostname = getConfig('passkeyHostname');
-  if (hostname == null) return null;
-  return PasskeyIdentityProviderFactory(
-    PasskeyIDPConfig(
-      hostname: hostname,
-    ),
-  );
 }

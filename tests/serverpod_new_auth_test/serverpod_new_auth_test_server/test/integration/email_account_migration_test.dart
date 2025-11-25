@@ -11,10 +11,17 @@ void main() {
     AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
+  final pod = Serverpod(
+    [],
+    Protocol(),
+    Endpoints(),
+  );
+
   tearDown(() {
     AuthServices.set(
       tokenManagers: [tokenManagerFactory],
       identityProviders: [],
+      pod: pod,
     );
   });
 
@@ -68,6 +75,7 @@ void main() {
             EmailIdentityProviderFactory(config),
           ],
           tokenManagers: [tokenManagerFactory],
+          pod: pod,
         );
       });
 
@@ -184,6 +192,7 @@ void main() {
             EmailIdentityProviderFactory(config),
           ],
           tokenManagers: [tokenManagerFactory],
+          pod: pod,
         );
       });
 

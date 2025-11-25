@@ -15,10 +15,35 @@ void run(List<String> args) async {
 
   // Initialize
   pod.initializeAuthServices(
-    emailIDPOptions: EmailIDPOptions(
-      sendRegistrationVerificationCode: _sendRegistrationVerificationCode,
-      sendPasswordResetVerificationCode: _sendPasswordResetVerificationCode,
-    ),
+    tokenManagers: [
+      // AuthSessionsTokenManagerFactory(
+      //   AuthSessionsConfig(
+      //     sessionKeyHashPepper: pod.getPassword(
+      //       'authSessionsSessionKeyHashPepper',
+      //     )!,
+      //   ),
+      // ),
+      AuthenticationTokensTokenManagerFactory(
+        AuthenticationTokenConfig(
+          refreshTokenHashPepper: pod.getPassword(
+            'authenticationTokenRefreshTokenHashPepper',
+          )!,
+          algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+            SecretKey(pod.getPassword('authenticationTokenPrivateKey')!),
+          ),
+        ),
+      ),
+    ],
+    identityProviders: [
+      // GoogleIdentityProviderFactory.fromKeys(pod.getPassword),
+      // AppleIdentityProviderFactory.fromKeys(pod.getPassword),
+      EmailIdentityProviderFactory.fromKeys(
+        pod.getPassword,
+        sendRegistrationVerificationCode: _sendRegistrationVerificationCode,
+        sendPasswordResetVerificationCode: _sendPasswordResetVerificationCode,
+      ),
+      // PasskeyIdentityProviderFactory.fromKeys(pod.getPassword),
+    ],
   );
 
   // Start the server.

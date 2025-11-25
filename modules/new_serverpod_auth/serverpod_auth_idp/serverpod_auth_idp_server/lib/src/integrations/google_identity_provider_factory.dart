@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 import '../providers/google/google.dart';
@@ -17,12 +18,22 @@ class GoogleIdentityProviderFactory extends IdentityProviderFactory<GoogleIDP> {
     required final TokenManager tokenManager,
     required final AuthUsers authUsers,
     required final UserProfiles userProfiles,
+    final Serverpod? pod,
   }) {
     return GoogleIDP(
       config,
       tokenIssuer: tokenManager,
       authUsers: authUsers,
       userProfiles: userProfiles,
+    );
+  }
+
+  /// Creates a new [GoogleIdentityProviderFactory] from keys.
+  factory GoogleIdentityProviderFactory.fromKeys(
+    final String? Function(String key) getConfig,
+  ) {
+    return GoogleIdentityProviderFactory(
+      GoogleIDPConfig.fromKeys(getConfig),
     );
   }
 }

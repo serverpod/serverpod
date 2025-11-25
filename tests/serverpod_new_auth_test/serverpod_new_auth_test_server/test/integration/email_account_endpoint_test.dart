@@ -2,6 +2,8 @@ import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
+import 'package:serverpod_new_auth_test_server/src/generated/endpoints.dart';
+import 'package:serverpod_new_auth_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 import '../util/test_tags.dart';
@@ -11,9 +13,12 @@ final tokenManagerFactory = AuthSessionsTokenManagerFactory(
   AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
 );
 
+final pod = Serverpod([], Protocol(), Endpoints());
+
 void main() {
   setUp(() async {
     AuthServices.set(
+      pod: pod,
       tokenManagers: [tokenManagerFactory],
       identityProviders: [
         EmailIdentityProviderFactory(
@@ -27,6 +32,7 @@ void main() {
 
   tearDown(() async {
     AuthServices.set(
+      pod: pod,
       tokenManagers: [tokenManagerFactory],
       identityProviders: [],
     );
@@ -60,6 +66,7 @@ void main() {
                 },
           );
           AuthServices.set(
+            pod: pod,
             identityProviders: [
               EmailIdentityProviderFactory(config),
             ],
@@ -129,6 +136,7 @@ void main() {
                 },
           );
           AuthServices.set(
+            pod: pod,
             identityProviders: [
               EmailIdentityProviderFactory(config),
             ],
@@ -192,6 +200,7 @@ void main() {
           registrationVerificationCodeLifetime: verificationCodeLifetime,
         );
         AuthServices.set(
+          pod: pod,
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
@@ -392,6 +401,7 @@ void main() {
               },
         );
         AuthServices.set(
+          pod: pod,
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
@@ -548,6 +558,7 @@ void main() {
           secretHashPepper: 'test',
         );
         AuthServices.set(
+          pod: pod,
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
@@ -722,6 +733,7 @@ void main() {
           secretHashPepper: 'test',
         );
         AuthServices.set(
+          pod: pod,
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
@@ -956,6 +968,7 @@ void main() {
         );
 
         AuthServices.set(
+          pod: pod,
           identityProviders: [
             EmailIdentityProviderFactory(config),
           ],
@@ -1065,6 +1078,7 @@ extension on TestEndpoints {
     );
 
     AuthServices.set(
+      pod: pod,
       identityProviders: [
         EmailIdentityProviderFactory(config),
       ],
@@ -1118,6 +1132,7 @@ extension on TestEndpoints {
           },
     );
     AuthServices.set(
+      pod: pod,
       identityProviders: [
         EmailIdentityProviderFactory(config),
       ],

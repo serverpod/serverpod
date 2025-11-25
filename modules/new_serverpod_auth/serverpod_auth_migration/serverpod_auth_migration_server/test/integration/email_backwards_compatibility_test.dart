@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
+import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart'
+    hide Protocol, Endpoints;
 import 'package:serverpod_auth_idp_server/providers/email.dart'
     as new_email_idp;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
@@ -16,6 +17,8 @@ void main() {
     new_auth_idp.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
   );
 
+  final pod = Serverpod([], Protocol(), Endpoints());
+
   const newEmailIDPConfig = new_email_idp.EmailIDPConfig(
     secretHashPepper: 'test',
   );
@@ -23,6 +26,7 @@ void main() {
 
   setUpAll(() async {
     new_auth_idp.AuthServices.set(
+      pod: pod,
       tokenManagers: [tokenManagerFactory],
       identityProviders: [
         new_email_idp.EmailIdentityProviderFactory(newEmailIDPConfig),
@@ -34,6 +38,7 @@ void main() {
 
   tearDownAll(() async {
     new_auth_idp.AuthServices.set(
+      pod: pod,
       tokenManagers: [tokenManagerFactory],
       identityProviders: [],
     );

@@ -23,6 +23,7 @@ void run(final List<String> args) async {
   const universalHashPepper = 'test-pepper';
 
   AuthServices.set(
+    pod: pod,
     tokenManagers: [
       AuthSessionsTokenManagerFactory(
         AuthSessionsConfig(sessionKeyHashPepper: universalHashPepper),

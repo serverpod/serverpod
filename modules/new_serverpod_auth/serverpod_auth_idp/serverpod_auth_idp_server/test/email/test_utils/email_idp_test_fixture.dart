@@ -42,6 +42,7 @@ final class EmailIDPTestFixture {
     tokenManager ??= AuthServices(
       authUsers: authUsers,
       userProfiles: userProfiles,
+      pod: Serverpod([], Protocol(), Endpoints()),
       primaryTokenManager: AuthSessionsTokenManagerFactory(
         AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
       ),

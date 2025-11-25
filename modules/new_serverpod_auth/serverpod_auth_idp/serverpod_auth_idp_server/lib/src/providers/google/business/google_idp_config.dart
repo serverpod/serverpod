@@ -68,6 +68,26 @@ class GoogleIDPConfig {
       throw GoogleUserInfoMissingDataException();
     }
   }
+
+  /// Creates a new instance of [GoogleIDPConfig] from default expected keys.
+  factory GoogleIDPConfig.fromKeys(
+    final String? Function(String key) getConfig,
+  ) {
+    const clientSecretKey = 'googleClientSecret';
+
+    final clientSecret = getConfig(clientSecretKey);
+    if (clientSecret == null) {
+      throw StateError(
+        'Missing required keys for Google IDP configuration: "$clientSecretKey".',
+      );
+    }
+
+    return GoogleIDPConfig(
+      clientSecret: GoogleClientSecret.fromJsonString(
+        clientSecret,
+      ),
+    );
+  }
 }
 
 /// Contains information about the credentials for the server to access Google's

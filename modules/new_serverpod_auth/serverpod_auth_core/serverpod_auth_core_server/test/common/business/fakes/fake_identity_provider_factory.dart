@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/common/integrations/provider_factory.dart';
 import 'package:serverpod_auth_core_server/src/common/integrations/token_manager.dart';
 import 'package:serverpod_auth_core_server/src/profile/profile.dart';
@@ -12,6 +13,7 @@ class FakeIdentityProviderFactory
     required final TokenManager tokenManager,
     required final AuthUsers authUsers,
     required final UserProfiles userProfiles,
+    required final Serverpod pod,
   }) {
     return FakeIdentityProvider(
       tokenIssuer: tokenManager,

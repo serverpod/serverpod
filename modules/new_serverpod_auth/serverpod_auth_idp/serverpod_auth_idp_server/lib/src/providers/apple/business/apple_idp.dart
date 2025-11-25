@@ -71,6 +71,21 @@ final class AppleIDP {
     );
   }
 
+  /// Initializes the Apple IDP by adding the routes to the serverpod instance.
+  ///
+  /// This is required to comply with the Sign in with Apple requirements.
+  void initialize(final Serverpod pod) {
+    pod.webServer
+      ..addRoute(
+        revokedNotificationRoute(),
+        config.revokedNotificationRoute,
+      )
+      ..addRoute(
+        webAuthenticationCallbackRoute(),
+        config.webAuthenticationCallbackRoute,
+      );
+  }
+
   /// {@macro apple_idp_base_endpoint.login}
   Future<AuthSuccess> login(
     final Session session, {
