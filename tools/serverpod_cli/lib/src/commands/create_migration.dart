@@ -14,7 +14,8 @@ import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 
 enum CreateMigrationOption<V> implements OptionDefinition<V> {
   force(CreateMigrationCommand.forceOption),
-  tag(CreateMigrationCommand.tagOption);
+  tag(CreateMigrationCommand.tagOption),
+  outputDir(CreateMigrationCommand.outputDirOption);
 
   const CreateMigrationOption(this.option);
 
@@ -40,6 +41,14 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     customValidator: _validateTag,
   );
 
+  static const outputDirOption = StringOption(
+    argName: 'output-dir',
+    argAbbrev: 'd',
+    helpText:
+        'Output directory for the generated migration files, relative to the '
+        'project root. Takes precedence over migration_path in generator.yaml.',
+  );
+
   static void _validateTag(String tag) {
     if (!StringValidators.isValidTagName(tag)) {
       throw const FormatException(
@@ -63,6 +72,9 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
   ) async {
     bool force = commandConfig.value(CreateMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
+    String? outputDir = commandConfig.optionalValue(
+      CreateMigrationOption.outputDir,
+    );
 
     // Get interactive flag from global configuration
     final interactive = serverpodRunner.globalConfiguration.optionalValue(
@@ -89,9 +101,16 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
+    // CLI flag takes precedence over generator.yaml configuration
+    var customMigrationsPath = outputDir ??
+        (config.hasCustomMigrationPath
+            ? path.joinAll(config.relativeMigrationPathParts)
+            : null);
+
     var generator = MigrationGenerator(
       directory: Directory.current,
       projectName: projectName,
+      customMigrationsPath: customMigrationsPath,
     );
 
     MigrationVersion? migration;
@@ -134,6 +153,7 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
         MigrationConstants.migrationVersionDirectory(
           projectDirectory,
           migrationName,
+          customMigrationsPath: customMigrationsPath,
         ).path,
         from: Directory.current.path,
       )}',

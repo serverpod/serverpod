@@ -16,20 +16,40 @@ abstract class MigrationConstants {
   /// Module name in database under which repair migrations are stored.
   static const repairMigrationModuleName = '_repair';
 
+  /// The default migrations directory name.
+  static const defaultMigrationsDirectoryName = 'migrations';
+
   /// Directory where migration versions are stored.
+  ///
+  /// If [customMigrationsPath] is provided, it will be used instead of the
+  /// default 'migrations' directory.
   static Directory migrationVersionDirectory(
     Directory serverRootDirectory,
-    String version,
-  ) => Directory(
+    String version, {
+    String? customMigrationsPath,
+  }) => Directory(
     path.join(
-      migrationsBaseDirectory(serverRootDirectory).path,
+      migrationsBaseDirectory(
+        serverRootDirectory,
+        customMigrationsPath: customMigrationsPath,
+      ).path,
       version,
     ),
   );
 
   /// Directory where migrations are stored.
-  static Directory migrationsBaseDirectory(Directory serverRootDirectory) =>
-      Directory(path.join(serverRootDirectory.path, 'migrations'));
+  ///
+  /// If [customMigrationsPath] is provided, it will be used instead of the
+  /// default 'migrations' directory. The path is resolved relative to the
+  /// server root directory.
+  static Directory migrationsBaseDirectory(
+    Directory serverRootDirectory, {
+    String? customMigrationsPath,
+  }) {
+    var migrationsPath =
+        customMigrationsPath ?? defaultMigrationsDirectoryName;
+    return Directory(path.join(serverRootDirectory.path, migrationsPath));
+  }
 
   /// Directory where repair migrations are stored.
   static Directory repairMigrationDirectory(Directory serverRootDirectory) =>
@@ -38,10 +58,15 @@ abstract class MigrationConstants {
   /// File path where the database definition is stored.
   static File databaseDefinitionSQLPath(
     Directory serverRootDirectory,
-    String version,
-  ) => File(
+    String version, {
+    String? customMigrationsPath,
+  }) => File(
     path.join(
-      migrationVersionDirectory(serverRootDirectory, version).path,
+      migrationVersionDirectory(
+        serverRootDirectory,
+        version,
+        customMigrationsPath: customMigrationsPath,
+      ).path,
       'definition.sql',
     ),
   );
@@ -49,10 +74,15 @@ abstract class MigrationConstants {
   /// File path where the database definition is stored.
   static File databaseDefinitionJSONPath(
     Directory serverRootDirectory,
-    String version,
-  ) => File(
+    String version, {
+    String? customMigrationsPath,
+  }) => File(
     path.join(
-      migrationVersionDirectory(serverRootDirectory, version).path,
+      migrationVersionDirectory(
+        serverRootDirectory,
+        version,
+        customMigrationsPath: customMigrationsPath,
+      ).path,
       'definition.json',
     ),
   );
@@ -60,10 +90,15 @@ abstract class MigrationConstants {
   /// File path where the database definition is stored.
   static File databaseDefinitionProjectJSONPath(
     Directory serverRootDirectory,
-    String version,
-  ) => File(
+    String version, {
+    String? customMigrationsPath,
+  }) => File(
     path.join(
-      migrationVersionDirectory(serverRootDirectory, version).path,
+      migrationVersionDirectory(
+        serverRootDirectory,
+        version,
+        customMigrationsPath: customMigrationsPath,
+      ).path,
       'definition_project.json',
     ),
   );
@@ -71,10 +106,15 @@ abstract class MigrationConstants {
   /// File path where the database migration is stored.
   static File databaseMigrationSQLPath(
     Directory serverRootDirectory,
-    String version,
-  ) => File(
+    String version, {
+    String? customMigrationsPath,
+  }) => File(
     path.join(
-      migrationVersionDirectory(serverRootDirectory, version).path,
+      migrationVersionDirectory(
+        serverRootDirectory,
+        version,
+        customMigrationsPath: customMigrationsPath,
+      ).path,
       'migration.sql',
     ),
   );
@@ -82,10 +122,15 @@ abstract class MigrationConstants {
   /// File path where the database migration is stored.
   static File databaseMigrationJSONPath(
     Directory serverRootDirectory,
-    String version,
-  ) => File(
+    String version, {
+    String? customMigrationsPath,
+  }) => File(
     path.join(
-      migrationVersionDirectory(serverRootDirectory, version).path,
+      migrationVersionDirectory(
+        serverRootDirectory,
+        version,
+        customMigrationsPath: customMigrationsPath,
+      ).path,
       'migration.json',
     ),
   );

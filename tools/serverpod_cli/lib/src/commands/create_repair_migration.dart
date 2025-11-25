@@ -16,6 +16,7 @@ import 'create_migration.dart' show CreateMigrationCommand;
 enum CreateRepairMigrationOption<V> implements OptionDefinition<V> {
   force(CreateMigrationCommand.forceOption),
   tag(CreateMigrationCommand.tagOption),
+  outputDir(CreateMigrationCommand.outputDirOption),
   version(
     StringOption(
       argName: 'version',
@@ -64,6 +65,9 @@ class CreateRepairMigrationCommand
   ) async {
     bool force = commandConfig.value(CreateRepairMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateRepairMigrationOption.tag);
+    String? outputDir = commandConfig.optionalValue(
+      CreateRepairMigrationOption.outputDir,
+    );
 
     // Get interactive flag from global configuration
     final interactive = serverpodRunner.globalConfiguration.optionalValue(
@@ -95,9 +99,16 @@ class CreateRepairMigrationCommand
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
+    // CLI flag takes precedence over generator.yaml configuration
+    var customMigrationsPath = outputDir ??
+        (config.hasCustomMigrationPath
+            ? path.joinAll(config.relativeMigrationPathParts)
+            : null);
+
     var generator = MigrationGenerator(
       directory: Directory.current,
       projectName: projectName,
+      customMigrationsPath: customMigrationsPath,
     );
 
     File? repairMigration;
