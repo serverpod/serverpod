@@ -715,9 +715,11 @@ class ModelParser {
 
     var properties = <EnumPropertyDefinition>[];
 
-    for (var entry in propertiesMap.entries) {
-      var propertyName = entry.key.toString();
-      var propertyValue = entry.value.toString();
+    for (var entry in propertiesMap.nodes.entries) {
+      var keyNode = entry.key;
+      var valueNode = entry.value;
+      var propertyName = keyNode.value.toString();
+      var propertyValue = valueNode.value.toString();
 
       // Parse "Type, default=value" syntax
       var parts = propertyValue.split(',').map((s) => s.trim()).toList();
@@ -737,7 +739,7 @@ class ModelParser {
       }
 
       var propDocumentation = docsExtractor.getDocumentation(
-        entry.key.span.start,
+        keyNode.span.start,
       );
 
       properties.add(EnumPropertyDefinition(
