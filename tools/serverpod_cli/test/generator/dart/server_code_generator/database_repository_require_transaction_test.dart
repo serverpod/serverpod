@@ -11,6 +11,10 @@ import '../../../test_util/compilation_unit_helpers.dart';
 const projectName = 'example_project';
 const generator = DartServerCodeGenerator();
 
+/// Pattern to match a required Transaction? parameter in method signatures.
+final _requiredTransactionPattern =
+    RegExp(r'required\s+\S*Transaction\?\s+transaction');
+
 void main() {
   var testClassName = 'Example';
   var repositoryClassName = '${testClassName}Repository';
@@ -61,7 +65,7 @@ void main() {
           // Verify it does NOT have "required" before Transaction
           expect(
             params,
-            isNot(matches(RegExp(r'required\s+\S*Transaction\?\s+transaction'))),
+            isNot(matches(_requiredTransactionPattern)),
           );
         },
       );
@@ -79,7 +83,7 @@ void main() {
           expect(params, contains('Transaction?'));
           expect(
             params,
-            isNot(matches(RegExp(r'required\s+\S*Transaction\?\s+transaction'))),
+            isNot(matches(_requiredTransactionPattern)),
           );
         },
       );
@@ -97,7 +101,7 @@ void main() {
           expect(params, contains('Transaction?'));
           expect(
             params,
-            isNot(matches(RegExp(r'required\s+\S*Transaction\?\s+transaction'))),
+            isNot(matches(_requiredTransactionPattern)),
           );
         },
       );
@@ -145,9 +149,7 @@ void main() {
 
           var params = findMethod?.parameters?.toSource() ?? '';
           // Check for required Transaction? parameter
-          expect(
-            params,
-            matches(RegExp(r'required\s+\S*Transaction\?\s+transaction')),
+          expect(params, matches(_requiredTransactionPattern),
           );
         },
       );
@@ -162,9 +164,7 @@ void main() {
           );
 
           var params = findFirstRowMethod?.parameters?.toSource() ?? '';
-          expect(
-            params,
-            matches(RegExp(r'required\s+\S*Transaction\?\s+transaction')),
+          expect(params, matches(_requiredTransactionPattern),
           );
         },
       );
@@ -178,9 +178,7 @@ void main() {
           );
 
           var params = findByIdMethod?.parameters?.toSource() ?? '';
-          expect(
-            params,
-            matches(RegExp(r'required\s+\S*Transaction\?\s+transaction')),
+          expect(params, matches(_requiredTransactionPattern),
           );
         },
       );
@@ -194,9 +192,7 @@ void main() {
           );
 
           var params = insertMethod?.parameters?.toSource() ?? '';
-          expect(
-            params,
-            matches(RegExp(r'required\s+\S*Transaction\?\s+transaction')),
+          expect(params, matches(_requiredTransactionPattern),
           );
         },
       );
@@ -210,9 +206,7 @@ void main() {
           );
 
           var params = insertRowMethod?.parameters?.toSource() ?? '';
-          expect(
-            params,
-            matches(RegExp(r'required\s+\S*Transaction\?\s+transaction')),
+          expect(params, matches(_requiredTransactionPattern),
           );
         },
       );
@@ -226,9 +220,7 @@ void main() {
           );
 
           var params = updateMethod?.parameters?.toSource() ?? '';
-          expect(
-            params,
-            matches(RegExp(r'required\s+\S*Transaction\?\s+transaction')),
+          expect(params, matches(_requiredTransactionPattern),
           );
         },
       );
@@ -242,9 +234,7 @@ void main() {
           );
 
           var params = updateRowMethod?.parameters?.toSource() ?? '';
-          expect(
-            params,
-            matches(RegExp(r'required\s+\S*Transaction\?\s+transaction')),
+          expect(params, matches(_requiredTransactionPattern),
           );
         },
       );
@@ -259,9 +249,7 @@ void main() {
           );
 
           var params = updateByIdMethod?.parameters?.toSource() ?? '';
-          expect(
-            params,
-            matches(RegExp(r'required\s+\S*Transaction\?\s+transaction')),
+          expect(params, matches(_requiredTransactionPattern),
           );
         },
       );
@@ -276,9 +264,7 @@ void main() {
           );
 
           var params = updateWhereMethod?.parameters?.toSource() ?? '';
-          expect(
-            params,
-            matches(RegExp(r'required\s+\S*Transaction\?\s+transaction')),
+          expect(params, matches(_requiredTransactionPattern),
           );
         },
       );
@@ -292,9 +278,7 @@ void main() {
           );
 
           var params = deleteMethod?.parameters?.toSource() ?? '';
-          expect(
-            params,
-            matches(RegExp(r'required\s+\S*Transaction\?\s+transaction')),
+          expect(params, matches(_requiredTransactionPattern),
           );
         },
       );
@@ -308,9 +292,7 @@ void main() {
           );
 
           var params = deleteRowMethod?.parameters?.toSource() ?? '';
-          expect(
-            params,
-            matches(RegExp(r'required\s+\S*Transaction\?\s+transaction')),
+          expect(params, matches(_requiredTransactionPattern),
           );
         },
       );
@@ -325,9 +307,7 @@ void main() {
           );
 
           var params = deleteWhereMethod?.parameters?.toSource() ?? '';
-          expect(
-            params,
-            matches(RegExp(r'required\s+\S*Transaction\?\s+transaction')),
+          expect(params, matches(_requiredTransactionPattern),
           );
         },
       );
@@ -341,9 +321,7 @@ void main() {
           );
 
           var params = countMethod?.parameters?.toSource() ?? '';
-          expect(
-            params,
-            matches(RegExp(r'required\s+\S*Transaction\?\s+transaction')),
+          expect(params, matches(_requiredTransactionPattern),
           );
         },
       );
