@@ -15,6 +15,7 @@ import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:yaml_edit/yaml_edit.dart';
 
 import 'copier.dart';
 
@@ -121,6 +122,7 @@ Future<bool> performCreate(
         _copyServerUpgrade(
           serverpodDirs,
           name: name,
+          customServerpodPath: productionMode ? null : serverpodHome,
         );
         return true;
       },
@@ -225,6 +227,7 @@ Future<bool> _performUpgrade(
         serverpodDir,
         name: name,
         skipMain: true,
+        customServerpodPath: productionMode ? null : serverpodHome,
       );
       return true;
     },
@@ -376,6 +379,7 @@ void _copyServerUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
   bool skipMain = false,
+  String? customServerpodPath,
 }) {
   var awsName = name.replaceAll('_', '-');
   var randomAwsId = math.Random.secure().nextInt(10000000).toString();
@@ -492,6 +496,105 @@ void _copyServerUpgrade(
     fileNameReplacements: [],
   );
   copier.copyFiles();
+
+  log.debug('Adding auth dependencies to pubspecs', newParagraph: true);
+  _addAuthDependenciesToPubspec(
+    pubspecFile: File(p.join(serverpodDirs.serverDir.path, 'pubspec.yaml')),
+    dependency: 'serverpod_auth_idp_server',
+    version: templateVersion,
+    customServerpodPath: customServerpodPath,
+    overridePath:
+        'modules/new_serverpod_auth/serverpod_auth_idp/'
+        'serverpod_auth_idp_server',
+    transitiveDeps: [
+      (
+        name: 'serverpod_auth_core_server',
+        path:
+            'modules/new_serverpod_auth/serverpod_auth_core/'
+            'serverpod_auth_core_server',
+      ),
+    ],
+  );
+  _addAuthDependenciesToPubspec(
+    pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
+    dependency: 'serverpod_auth_idp_client',
+    version: templateVersion,
+    customServerpodPath: customServerpodPath,
+    overridePath:
+        'modules/new_serverpod_auth/serverpod_auth_idp/'
+        'serverpod_auth_idp_client',
+    transitiveDeps: [
+      (
+        name: 'serverpod_auth_core_client',
+        path:
+            'modules/new_serverpod_auth/serverpod_auth_core/'
+            'serverpod_auth_core_client',
+      ),
+    ],
+  );
+  _addAuthDependenciesToPubspec(
+    pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
+    dependency: 'serverpod_auth_idp_flutter',
+    version: templateVersion,
+    customServerpodPath: customServerpodPath,
+    overridePath:
+        'modules/new_serverpod_auth/serverpod_auth_idp/'
+        'serverpod_auth_idp_flutter',
+    transitiveDeps: [
+      (
+        name: 'serverpod_auth_core_client',
+        path:
+            'modules/new_serverpod_auth/serverpod_auth_core/'
+            'serverpod_auth_core_client',
+      ),
+      (
+        name: 'serverpod_auth_core_flutter',
+        path:
+            'modules/new_serverpod_auth/serverpod_auth_core/'
+            'serverpod_auth_core_flutter',
+      ),
+      (
+        name: 'serverpod_auth_idp_client',
+        path:
+            'modules/new_serverpod_auth/serverpod_auth_idp/'
+            'serverpod_auth_idp_client',
+      ),
+    ],
+  );
+}
+
+void _addAuthDependenciesToPubspec({
+  required File pubspecFile,
+  required String dependency,
+  required String version,
+  required String? customServerpodPath,
+  required String overridePath,
+  List<({String name, String path})> transitiveDeps = const [],
+}) {
+  if (!pubspecFile.existsSync()) {
+    log.debug('Pubspec file not found: ${pubspecFile.path}');
+    return;
+  }
+
+  var contents = pubspecFile.readAsStringSync();
+  final editor = YamlEditor(contents);
+
+  editor.update(['dependencies', dependency], version);
+
+  if (customServerpodPath != null) {
+    editor.update(
+      ['dependency_overrides', dependency],
+      {'path': '$customServerpodPath/$overridePath'},
+    );
+    for (final dep in transitiveDeps) {
+      editor.update(
+        ['dependency_overrides', dep.name],
+        {'path': '$customServerpodPath/${dep.path}'},
+      );
+    }
+  }
+
+  pubspecFile.writeAsStringSync(editor.toString());
 }
 
 void _copyServerTemplates(
