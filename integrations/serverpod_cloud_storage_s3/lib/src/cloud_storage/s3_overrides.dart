@@ -43,20 +43,12 @@ class S3Overrides {
   /// Returns the complete endpoint URL including the bucket.
   /// For custom endpoints, appends the bucket to the endpointUrl.
   /// For AWS S3, returns the standard AWS S3 endpoint format.
-  ///
-  /// The [endpointUrl] can be provided with or without a trailing slash.
-  /// Both 'http://localhost:9000' and 'http://localhost:9000/' are valid.
   String buildUploadEndpoint({
     required String bucket,
     required String region,
   }) {
     if (endpointUrl != null && endpointUrl!.isNotEmpty) {
-      final endpoint = endpointUrl!;
-      // Remove trailing slash if present, then add bucket
-      final baseUrl = endpoint.endsWith('/')
-          ? endpoint.substring(0, endpoint.length - 1)
-          : endpoint;
-      return '$baseUrl/$bucket';
+      return '${endpointUrl!.endsWith('/') ? endpointUrl : '$endpointUrl/'}$bucket';
     }
     return 'https://$bucket.s3-$region.amazonaws.com';
   }
