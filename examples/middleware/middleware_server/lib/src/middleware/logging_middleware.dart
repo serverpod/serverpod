@@ -1,6 +1,6 @@
 import 'dart:io' as io;
 
-import 'package:relic/relic.dart';
+import 'package:serverpod/serverpod.dart';
 
 /// Creates a logging middleware that logs HTTP requests and responses.
 ///
