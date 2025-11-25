@@ -10,30 +10,17 @@ const tempDirName = 'temp-mini';
 
 void main() async {
   final rootPath = path.join(Directory.current.path, '..', '..');
-  final cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
+  final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
+  final cliDartEntrypoint = getServerpodCliEntrypointPath(rootPath: rootPath);
   final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
-    await runProcess(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
-    // Run command and activate again to force cache pub dependencies.
-    await runProcess(
-      'serverpod',
-      ['version'],
-      workingDirectory: cliPath,
-    );
-
-    await runProcess(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
     await Directory(tempPath).create();
+    final pubGetProcess = await startProcess('dart', [
+      'pub',
+      'get',
+    ], workingDirectory: cliProjectPath);
+    assert(await pubGetProcess.exitCode == 0);
   });
 
   tearDownAll(() async {
@@ -51,8 +38,17 @@ void main() async {
       'when creating a new project with the mini template then the project is created successfully and can be booted in maintenance mode.',
       () async {
         createProcess = await startProcess(
-          'serverpod',
-          ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+          'dart',
+          [
+            'run',
+            cliDartEntrypoint,
+            'create',
+            '--template',
+            'mini',
+            projectName,
+            '-v',
+            '--no-analytics',
+          ],
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -87,8 +83,17 @@ void main() async {
       'when creating a new project with the mini template then the project is created successfully without the full configuration of a full project.',
       () async {
         createProcess = await startProcess(
-          'serverpod',
-          ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+          'dart',
+          [
+            'run',
+            cliDartEntrypoint,
+            'create',
+            '--template',
+            'mini',
+            projectName,
+            '-v',
+            '--no-analytics',
+          ],
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -159,8 +164,17 @@ void main() async {
 
     setUpAll(() async {
       createProcess = await startProcess(
-        'serverpod',
-        ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+        'dart',
+        [
+          'run',
+          cliDartEntrypoint,
+          'create',
+          '--template',
+          'mini',
+          projectName,
+          '-v',
+          '--no-analytics',
+        ],
         workingDirectory: tempPath,
         environment: {
           'SERVERPOD_HOME': rootPath,
@@ -188,8 +202,17 @@ void main() async {
       'then the project is created successfully and can be booted in maintenance mode with the apply-migrations flag.',
       () async {
         var upgradeProcess = await startProcess(
-          'serverpod',
-          ['create', '--template', 'server', '.', '-v', '--no-analytics'],
+          'dart',
+          [
+            'run',
+            cliDartEntrypoint,
+            'create',
+            '--template',
+            'server',
+            '.',
+            '-v',
+            '--no-analytics',
+          ],
           workingDirectory: path.join(tempPath, serverDir),
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -239,8 +262,17 @@ void main() async {
     late Process createProcess;
     setUpAll(() async {
       createProcess = await startProcess(
-        'serverpod',
-        ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+        'dart',
+        [
+          'run',
+          cliDartEntrypoint,
+          'create',
+          '--template',
+          'mini',
+          projectName,
+          '-v',
+          '--no-analytics',
+        ],
         workingDirectory: tempPath,
         environment: {
           'SERVERPOD_HOME': rootPath,
@@ -264,8 +296,17 @@ void main() async {
         late Process upgradeProcess;
         setUpAll(() async {
           upgradeProcess = await startProcess(
-            'serverpod',
-            ['create', '--template', 'server', '.', '-v', '--no-analytics'],
+            'dart',
+            [
+              'run',
+              cliDartEntrypoint,
+              'create',
+              '--template',
+              'server',
+              '.',
+              '-v',
+              '--no-analytics',
+            ],
             workingDirectory: path.join(tempPath, serverDir),
             environment: {
               'SERVERPOD_HOME': rootPath,
@@ -403,8 +444,17 @@ void main() async {
       'when creating a new project with the mini template and upgrading it to a full project then the tests are passing.',
       () async {
         createProcess = await startProcess(
-          'serverpod',
-          ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+          'dart',
+          [
+            'run',
+            cliDartEntrypoint,
+            'create',
+            '--template',
+            'mini',
+            projectName,
+            '-v',
+            '--no-analytics',
+          ],
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -419,8 +469,17 @@ void main() async {
         );
 
         var upgradeProcess = await startProcess(
-          'serverpod',
-          ['create', '--template', 'server', '.', '-v', '--no-analytics'],
+          'dart',
+          [
+            'run',
+            cliDartEntrypoint,
+            'create',
+            '--template',
+            'server',
+            '.',
+            '-v',
+            '--no-analytics',
+          ],
           workingDirectory: path.join(tempPath, serverDir),
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -486,8 +545,17 @@ void main() async {
 
     setUp(() async {
       var createProcess = await runProcess(
-        'serverpod',
-        ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+        'dart',
+        [
+          'run',
+          cliDartEntrypoint,
+          'create',
+          '--template',
+          'mini',
+          projectName,
+          '-v',
+          '--no-analytics',
+        ],
         workingDirectory: tempPath,
         environment: {
           'SERVERPOD_HOME': rootPath,
