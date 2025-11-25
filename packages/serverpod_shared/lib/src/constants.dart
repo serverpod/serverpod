@@ -46,8 +46,7 @@ abstract class MigrationConstants {
     Directory serverRootDirectory, {
     String? customMigrationsPath,
   }) {
-    var migrationsPath =
-        customMigrationsPath ?? defaultMigrationsDirectoryName;
+    var migrationsPath = customMigrationsPath ?? defaultMigrationsDirectoryName;
     return Directory(path.join(serverRootDirectory.path, migrationsPath));
   }
 

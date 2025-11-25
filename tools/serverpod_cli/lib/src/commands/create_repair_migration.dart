@@ -100,7 +100,8 @@ class CreateRepairMigrationCommand
     }
 
     // CLI flag takes precedence over generator.yaml configuration
-    var customMigrationsPath = outputDir ??
+    var customMigrationsPath =
+        outputDir ??
         (config.hasCustomMigrationPath
             ? path.joinAll(config.relativeMigrationPathParts)
             : null);

@@ -33,7 +33,7 @@ class MigrationManager {
   /// The [customMigrationsPath] is an optional custom path for migrations
   /// relative to the project directory.
   MigrationManager(this._projectDirectory, {String? customMigrationsPath})
-      : _customMigrationsPath = customMigrationsPath;
+    : _customMigrationsPath = customMigrationsPath;
 
   /// Applies the repair migration to the database.
   Future<String?> applyRepairMigration(Session session) async {
