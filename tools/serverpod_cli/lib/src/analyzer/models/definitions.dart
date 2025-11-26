@@ -273,6 +273,9 @@ class SerializableModelFieldDefinition {
   /// This will be the [_columnNameOverride] if set, with fallback to the [name]
   String get columnName => _columnNameOverride ?? name;
 
+  /// Whether this field has a column name override.
+  bool get hasColumnNameOverride => _columnNameOverride != null;
+
   /// Indexes that this field is part of.
   List<SerializableModelIndexDefinition> indexes = [];
 
