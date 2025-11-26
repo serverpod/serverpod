@@ -12,8 +12,9 @@ const projectName = 'example_project';
 const generator = DartServerCodeGenerator();
 
 /// Pattern to match a required Transaction? parameter in method signatures.
-final _requiredTransactionPattern =
-    RegExp(r'required\s+\S*Transaction\?\s+transaction');
+final _requiredTransactionPattern = RegExp(
+  r'required\s+\S*Transaction\?\s+transaction',
+);
 
 void main() {
   var testClassName = 'Example';
@@ -43,8 +44,9 @@ void main() {
         config: config,
       );
 
-      var compilationUnit =
-          parseString(content: codeMap[expectedFilePath]!).unit;
+      var compilationUnit = parseString(
+        content: codeMap[expectedFilePath]!,
+      ).unit;
 
       var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
@@ -131,8 +133,9 @@ void main() {
         config: config,
       );
 
-      var compilationUnit =
-          parseString(content: codeMap[expectedFilePath]!).unit;
+      var compilationUnit = parseString(
+        content: codeMap[expectedFilePath]!,
+      ).unit;
 
       var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
@@ -149,7 +152,9 @@ void main() {
 
           var params = findMethod?.parameters?.toSource() ?? '';
           // Check for required Transaction? parameter
-          expect(params, matches(_requiredTransactionPattern),
+          expect(
+            params,
+            matches(_requiredTransactionPattern),
           );
         },
       );
@@ -159,12 +164,14 @@ void main() {
         () {
           var findFirstRowMethod =
               CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryClass!,
-            name: 'findFirstRow',
-          );
+                repositoryClass!,
+                name: 'findFirstRow',
+              );
 
           var params = findFirstRowMethod?.parameters?.toSource() ?? '';
-          expect(params, matches(_requiredTransactionPattern),
+          expect(
+            params,
+            matches(_requiredTransactionPattern),
           );
         },
       );
@@ -178,7 +185,9 @@ void main() {
           );
 
           var params = findByIdMethod?.parameters?.toSource() ?? '';
-          expect(params, matches(_requiredTransactionPattern),
+          expect(
+            params,
+            matches(_requiredTransactionPattern),
           );
         },
       );
@@ -192,7 +201,9 @@ void main() {
           );
 
           var params = insertMethod?.parameters?.toSource() ?? '';
-          expect(params, matches(_requiredTransactionPattern),
+          expect(
+            params,
+            matches(_requiredTransactionPattern),
           );
         },
       );
@@ -206,7 +217,9 @@ void main() {
           );
 
           var params = insertRowMethod?.parameters?.toSource() ?? '';
-          expect(params, matches(_requiredTransactionPattern),
+          expect(
+            params,
+            matches(_requiredTransactionPattern),
           );
         },
       );
@@ -220,7 +233,9 @@ void main() {
           );
 
           var params = updateMethod?.parameters?.toSource() ?? '';
-          expect(params, matches(_requiredTransactionPattern),
+          expect(
+            params,
+            matches(_requiredTransactionPattern),
           );
         },
       );
@@ -234,7 +249,9 @@ void main() {
           );
 
           var params = updateRowMethod?.parameters?.toSource() ?? '';
-          expect(params, matches(_requiredTransactionPattern),
+          expect(
+            params,
+            matches(_requiredTransactionPattern),
           );
         },
       );
@@ -244,12 +261,14 @@ void main() {
         () {
           var updateByIdMethod =
               CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryClass!,
-            name: 'updateById',
-          );
+                repositoryClass!,
+                name: 'updateById',
+              );
 
           var params = updateByIdMethod?.parameters?.toSource() ?? '';
-          expect(params, matches(_requiredTransactionPattern),
+          expect(
+            params,
+            matches(_requiredTransactionPattern),
           );
         },
       );
@@ -259,12 +278,14 @@ void main() {
         () {
           var updateWhereMethod =
               CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryClass!,
-            name: 'updateWhere',
-          );
+                repositoryClass!,
+                name: 'updateWhere',
+              );
 
           var params = updateWhereMethod?.parameters?.toSource() ?? '';
-          expect(params, matches(_requiredTransactionPattern),
+          expect(
+            params,
+            matches(_requiredTransactionPattern),
           );
         },
       );
@@ -278,7 +299,9 @@ void main() {
           );
 
           var params = deleteMethod?.parameters?.toSource() ?? '';
-          expect(params, matches(_requiredTransactionPattern),
+          expect(
+            params,
+            matches(_requiredTransactionPattern),
           );
         },
       );
@@ -292,7 +315,9 @@ void main() {
           );
 
           var params = deleteRowMethod?.parameters?.toSource() ?? '';
-          expect(params, matches(_requiredTransactionPattern),
+          expect(
+            params,
+            matches(_requiredTransactionPattern),
           );
         },
       );
@@ -302,12 +327,14 @@ void main() {
         () {
           var deleteWhereMethod =
               CompilationUnitHelpers.tryFindMethodDeclaration(
-            repositoryClass!,
-            name: 'deleteWhere',
-          );
+                repositoryClass!,
+                name: 'deleteWhere',
+              );
 
           var params = deleteWhereMethod?.parameters?.toSource() ?? '';
-          expect(params, matches(_requiredTransactionPattern),
+          expect(
+            params,
+            matches(_requiredTransactionPattern),
           );
         },
       );
@@ -321,7 +348,9 @@ void main() {
           );
 
           var params = countMethod?.parameters?.toSource() ?? '';
-          expect(params, matches(_requiredTransactionPattern),
+          expect(
+            params,
+            matches(_requiredTransactionPattern),
           );
         },
       );
