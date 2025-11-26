@@ -20,6 +20,15 @@ void main() async {
    *   name: String,
    *   departmentId: int,
    * }
+   * 
+   * Contractor: {
+   *   name: String,
+   *   serviceIdField: int,
+   * }
+   * 
+   * Service: {
+   *   name: String,
+   * }
    */
 
   tearDown(() async {
@@ -28,6 +37,14 @@ void main() async {
       where: (t) => pod.Constant.bool(true),
     );
     await Department.db.deleteWhere(
+      session,
+      where: (t) => pod.Constant.bool(true),
+    );
+    await Contractor.db.deleteWhere(
+      session,
+      where: (t) => pod.Constant.bool(true),
+    );
+    await Service.db.deleteWhere(
       session,
       where: (t) => pod.Constant.bool(true),
     );
@@ -74,6 +91,35 @@ void main() async {
             (e) => e.id,
           );
           expect(employeeIds, containsAll([employee1.id, employee2.id]));
+        },
+      );
+
+      test(
+        'when fetching model including object relation then returned model '
+        'has the attached data in the object relation.',
+        () async {
+          final service = await Service.db.insertRow(
+            session,
+            Service(name: 'serviceName'),
+          );
+          expect(service.id, isNotNull);
+
+          final contractor = await Contractor.db.insertRow(
+            session,
+            Contractor(
+              name: 'contractorName',
+              serviceIdField: service.id,
+            ),
+          );
+
+          final contractorWithService = await Contractor.db.findById(
+            session,
+            contractor.id!,
+            include: Contractor.include(service: Service.include()),
+          );
+
+          expect(contractorWithService?.service?.name, 'serviceName');
+          expect(contractorWithService?.service?.id, service.id);
         },
       );
     },
