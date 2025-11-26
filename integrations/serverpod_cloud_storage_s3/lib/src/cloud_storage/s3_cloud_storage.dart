@@ -46,8 +46,8 @@ class S3CloudStorage extends CloudStorage {
     required this.bucket,
     S3Overrides? overrides,
     String? publicHost,
-  })  : overrides = overrides ?? S3Overrides(),
-        super(storageId) {
+  }) : overrides = overrides ?? S3Overrides(),
+       super(storageId) {
     serverpod.loadCustomPasswords([
       (envName: 'SERVERPOD_AWS_ACCESS_KEY_ID', alias: 'AWSAccessKeyId'),
       (envName: 'SERVERPOD_AWS_SECRET_KEY', alias: 'AWSSecretKey'),
