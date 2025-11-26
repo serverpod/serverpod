@@ -350,3 +350,6 @@ Modules automatically support custom SQL during migrations.
 for both project and module migrations. Modules do not participate
 in fresh-database setup (they never create the schema), which is the
 expected Serverpod behavior.
+
+
+![alt text](image.png)
