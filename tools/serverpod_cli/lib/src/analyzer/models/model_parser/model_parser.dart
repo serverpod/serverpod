@@ -616,7 +616,7 @@ class ModelParser {
 
     for (var field in fields) {
       // Use expected column name for all fields
-      if (field.columnName != field.name) {
+      if (field.hasColumnNameOverride) {
         stringifiedFields = (stringifiedFields as String).replaceAll(
           field.name,
           field.columnName,
