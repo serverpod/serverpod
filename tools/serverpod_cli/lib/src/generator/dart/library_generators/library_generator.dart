@@ -1521,7 +1521,7 @@ class LibraryGenerator {
       (m) => m
         ..docs.add('''
             /// Stub method for mapping records. This protocol does not use records,
-            /// but this method is required for mapContainerToJson.''')
+            /// but this method is required because mapContainerToJson references it.''')
         ..name = mapRecordToJsonFuncName
         ..returns = refer('Map<String, dynamic>?')
         ..requiredParameters.add(
@@ -1535,7 +1535,10 @@ class LibraryGenerator {
             if (record == null) {
               return null;
             }
-            throw Exception('Unsupported record type \${record.runtimeType}');'''),
+            throw UnsupportedError(
+              'This protocol does not support records. '
+              'Received unexpected record type: \${record.runtimeType}',
+            );'''),
     );
   }
 
@@ -1618,6 +1621,16 @@ class LibraryGenerator {
 
   /// Generates helper methods for container serialization when there are
   /// non-String-keyed Maps but no records.
+  ///
+  /// This is used when endpoint methods have parameters or return types with
+  /// non-String-keyed Maps (e.g., `Map<DateTime, bool>`) but the protocol
+  /// doesn't use any record types.
+  ///
+  /// Both [mapRecordToJson] and [mapContainerToJson] are generated because
+  /// [mapContainerToJson] internally references [mapRecordToJson] in its
+  /// switch statement to handle potential record values in containers.
+  /// The stub [mapRecordToJson] method throws an error if a record is
+  /// unexpectedly encountered at runtime.
   Iterable<Method> _containerSerializationMethods() {
     return [
       _generateStubMapRecordToJsonMethod(),
