@@ -923,4 +923,150 @@ void main() {
       );
     },
   );
+
+  group(
+    'Given an endpoint returning a Map with non-String key (e.g., DateTime) when generating protocol files',
+    () {
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('dateTimeMapMethod')
+              .withReturnType(
+                TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                  TypeDefinitionBuilder()
+                      .withMapOf('DateTime', 'bool')
+                      .build(),
+                ]).build(),
+              )
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart contains the mapContainerToJson function.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('mapContainerToJson'),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint with a Map<int, bool> parameter (non-String key) when generating protocol files',
+    () {
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('intMapMethod')
+              .withParameters([
+                ParameterDefinitionBuilder()
+                    .withName('intBoolMap')
+                    .withType(
+                      TypeDefinitionBuilder()
+                          .withMapOf('int', 'bool')
+                          .build(),
+                    )
+                    .build(),
+              ])
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart contains the mapContainerToJson function.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('mapContainerToJson'),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint returning a nested List containing a Map with non-String key when generating protocol files',
+    () {
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('nestedNonStringKeyMapMethod')
+              .withReturnType(
+                TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                  TypeDefinitionBuilder().withClassName('List').withGenerics([
+                    TypeDefinitionBuilder()
+                        .withMapOf('int', 'String')
+                        .build(),
+                  ]).build(),
+                ]).build(),
+              )
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart contains the mapContainerToJson function.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('mapContainerToJson'),
+          );
+        },
+      );
+    },
+  );
 }

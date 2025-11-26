@@ -516,6 +516,13 @@ class LibraryGenerator {
       library.body.addAll(
         _deserializationMethodsForRecordTypes(recordTypesToDeserialize),
       );
+    } else if (protocolDefinition.usesNonStringKeyedMapInEndpoints) {
+      // Generate container serialization methods when non-String-keyed Maps
+      // are used but there are no records. This is needed because endpoints
+      // returning types like Map<DateTime, bool> require mapContainerToJson.
+      library.body.addAll(
+        _containerSerializationMethods(),
+      );
     }
 
     return library.build();
@@ -1477,37 +1484,66 @@ class LibraryGenerator {
     }
   }
 
-  Iterable<Method> _deserializationMethodsForRecordTypes(
+  /// Generates the mapRecordToJson method for serializing records.
+  Method _generateMapRecordToJsonMethod(
     List<TypeDefinition> recordTypesToDeserialize,
   ) {
-    return [
-      Method(
-        (m) => m
-          ..docs.add('''
+    return Method(
+      (m) => m
+        ..docs.add('''
             /// Maps any `Record`s known to this [Protocol] to their JSON representation
             ///
             /// Throws in case the record type is not known.
             ///
             /// This method will return `null` (only) for `null` inputs.''')
-          ..name = mapRecordToJsonFuncName
-          ..returns = refer('Map<String, dynamic>?')
-          ..requiredParameters.add(
-            Parameter(
-              (p) => p
-                ..name = 'record'
-                ..type = refer('Record?'),
-            ),
-          )
-          ..body = _buildRecordEncode(
-            recordTypesToDeserialize,
-            'record',
-            serverCode: serverCode,
-            config: config,
+        ..name = mapRecordToJsonFuncName
+        ..returns = refer('Map<String, dynamic>?')
+        ..requiredParameters.add(
+          Parameter(
+            (p) => p
+              ..name = 'record'
+              ..type = refer('Record?'),
           ),
-      ),
-      Method(
-        (m) => m
-          ..docs.add('''
+        )
+        ..body = _buildRecordEncode(
+          recordTypesToDeserialize,
+          'record',
+          serverCode: serverCode,
+          config: config,
+        ),
+    );
+  }
+
+  /// Generates a stub mapRecordToJson method that throws when no records exist.
+  /// This is needed because mapContainerToJson references mapRecordToJson.
+  Method _generateStubMapRecordToJsonMethod() {
+    return Method(
+      (m) => m
+        ..docs.add('''
+            /// Stub method for mapping records. This protocol does not use records,
+            /// but this method is required for mapContainerToJson.''')
+        ..name = mapRecordToJsonFuncName
+        ..returns = refer('Map<String, dynamic>?')
+        ..requiredParameters.add(
+          Parameter(
+            (p) => p
+              ..name = 'record'
+              ..type = refer('Record?'),
+          ),
+        )
+        ..body = const Code('''
+            if (record == null) {
+              return null;
+            }
+            throw Exception('Unsupported record type \${record.runtimeType}');'''),
+    );
+  }
+
+  /// Generates the mapContainerToJson method for serializing containers.
+  Method _generateMapContainerToJsonMethod() {
+    return Method(
+      (m) => m
+        ..docs.add('''
           /// Maps container types (like [List], [Map], [Set]) containing
           /// [Record]s or non-String-keyed [Map]s to their JSON representation.
           ///
@@ -1519,16 +1555,16 @@ class LibraryGenerator {
           /// Returns either a `List<dynamic>` (for List, Sets, and Maps with
           /// non-String keys) or a `Map<String, dynamic>` in case the input was
           /// a `Map<String, …>`.''')
-          ..name = mapContainerToJsonFunctionName
-          ..returns = refer('Object?')
-          ..requiredParameters.add(
-            Parameter(
-              (p) => p
-                ..name = 'obj'
-                ..type = refer('Object'),
-            ),
-          )
-          ..body = const Code('''
+        ..name = mapContainerToJsonFunctionName
+        ..returns = refer('Object?')
+        ..requiredParameters.add(
+          Parameter(
+            (p) => p
+              ..name = 'obj'
+              ..type = refer('Object'),
+          ),
+        )
+        ..body = const Code('''
           if (obj is! Iterable && obj is! Map) {
             throw ArgumentError.value(
               obj, 'obj',
@@ -1568,7 +1604,24 @@ class LibraryGenerator {
           }
 
           return obj;'''),
-      ),
+    );
+  }
+
+  Iterable<Method> _deserializationMethodsForRecordTypes(
+    List<TypeDefinition> recordTypesToDeserialize,
+  ) {
+    return [
+      _generateMapRecordToJsonMethod(recordTypesToDeserialize),
+      _generateMapContainerToJsonMethod(),
+    ];
+  }
+
+  /// Generates helper methods for container serialization when there are
+  /// non-String-keyed Maps but no records.
+  Iterable<Method> _containerSerializationMethods() {
+    return [
+      _generateStubMapRecordToJsonMethod(),
+      _generateMapContainerToJsonMethod(),
     ];
   }
 }
@@ -1734,6 +1787,36 @@ extension on ProtocolDefinition {
     }
 
     return nonModelOrPrimitiveStreamTypes;
+  }
+
+  /// Returns whether any endpoint method return type or parameter contains
+  /// a non-String-keyed Map or contains a record in a container.
+  ///
+  /// This is used to determine if the [mapContainerToJson] function needs
+  /// to be generated in the protocol.
+  bool get usesNonStringKeyedMapInEndpoints {
+    for (var method in endpoints.expand((e) => e.methods)) {
+      // Check return type (unwrap Future/Stream wrapper)
+      var returnType = method.returnType;
+      if (returnType.generics.isNotEmpty) {
+        var innerType = returnType.generics.first;
+        if (innerType.containsNonStringKeyedMap ||
+            innerType.returnsRecordInContainer) {
+          return true;
+        }
+      }
+
+      // Check parameters directly (they're not wrapped in Future)
+      for (var param in method.allParameters) {
+        var paramType = param.type;
+        if (paramType.containsNonStringKeyedMap ||
+            paramType.returnsRecordInContainer) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }
 
