@@ -21,7 +21,7 @@ import 'routes/apple_server_notification_route.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-final class AppleIdp {
+class AppleIdp {
   /// The method used when authenticating with the Apple identity provider.
   static const String method = 'apple';
 

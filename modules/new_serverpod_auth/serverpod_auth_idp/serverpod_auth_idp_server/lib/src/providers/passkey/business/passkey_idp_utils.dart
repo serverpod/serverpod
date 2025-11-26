@@ -9,7 +9,7 @@ import '../../../../../core.dart';
 import '../../../utils/byte_data_extension.dart';
 
 /// Utility functions for the Passkey identity provider.
-final class PasskeyIdpUtils {
+class PasskeyIdpUtils {
   final Duration _challengeLifetime;
   final Passkeys _passkeys;
 

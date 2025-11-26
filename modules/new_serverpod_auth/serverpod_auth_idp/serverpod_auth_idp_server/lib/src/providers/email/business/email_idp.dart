@@ -18,7 +18,7 @@ import 'email_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-final class EmailIdp {
+class EmailIdp {
   /// The method used when authenticating with the Email identity provider.
   static const String method = 'email';
 

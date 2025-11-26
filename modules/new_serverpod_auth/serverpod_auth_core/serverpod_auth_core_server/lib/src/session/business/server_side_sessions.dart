@@ -14,7 +14,7 @@ import 'server_side_sessions_token.dart';
 /// Management functions for [ServerSideSession]s.
 ///
 /// This should be used instead of [ServerSideSession.db].
-final class ServerSideSessions {
+class ServerSideSessions {
   final ServerSideSessionsConfig _config;
 
   /// The secrets configuration.
