@@ -10,10 +10,9 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class UserProfileData
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+abstract class UserProfileData implements _i1.SerializableModel {
   UserProfileData._({
     this.userName,
     this.fullName,
@@ -55,16 +54,6 @@ abstract class UserProfileData
   });
   @override
   Map<String, dynamic> toJson() {
-    return {
-      '__className__': 'serverpod_auth_core.UserProfileData',
-      if (userName != null) 'userName': userName,
-      if (fullName != null) 'fullName': fullName,
-      if (email != null) 'email': email,
-    };
-  }
-
-  @override
-  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_core.UserProfileData',
       if (userName != null) 'userName': userName,
