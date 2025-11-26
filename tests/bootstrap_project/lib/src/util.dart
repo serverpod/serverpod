@@ -80,6 +80,22 @@ Future<Process> startProcess(
   return process;
 }
 
+String getServerpodCliProjectPath({required final String rootPath}) {
+  return path.join(
+    rootPath,
+    'tools',
+    'serverpod_cli',
+  );
+}
+
+String getServerpodCliEntrypointPath({required final String rootPath}) {
+  return path.join(
+    getServerpodCliProjectPath(rootPath: rootPath),
+    'bin',
+    'serverpod_cli.dart',
+  );
+}
+
 String _getCommandToRun(String command, bool ignorePlatform) {
   if (ignorePlatform) {
     return command;
