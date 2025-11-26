@@ -91,8 +91,8 @@ void run(List<String> args) async {
 
   AuthServices.set(
     tokenManagers: [
-      ServerSideSessionsTokenManagerFactory(serverSideSessionsConfig),
-      JwtTokenManagerFactory(jwtTokenConfig),
+      serverSideSessionsConfig,
+      jwtTokenConfig,
     ],
     identityProviders: [
       googleIdpConfig,

@@ -7,14 +7,14 @@ import 'package:test/test.dart';
 import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
-final tokenManagerFactory = ServerSideSessionsTokenManagerFactory(
-  ServerSideSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+final tokenManagerConfig = ServerSideSessionsConfig(
+  sessionKeyHashPepper: 'test-pepper',
 );
 
 void main() {
   setUp(() async {
     AuthServices.set(
-      tokenManagers: [tokenManagerFactory],
+      tokenManagers: [tokenManagerConfig],
       identityProviders: [
         const EmailIdpConfig(
           secretHashPepper: 'test',
@@ -25,7 +25,7 @@ void main() {
 
   tearDown(() async {
     AuthServices.set(
-      tokenManagers: [tokenManagerFactory],
+      tokenManagers: [tokenManagerConfig],
       identityProviders: [],
     );
   });
@@ -59,7 +59,7 @@ void main() {
           );
           AuthServices.set(
             identityProviders: [config],
-            tokenManagers: [tokenManagerFactory],
+            tokenManagers: [tokenManagerConfig],
           );
 
           clientReceivedRequestId = await endpoints.emailAccount
@@ -126,7 +126,7 @@ void main() {
           );
           AuthServices.set(
             identityProviders: [config],
-            tokenManagers: [tokenManagerFactory],
+            tokenManagers: [tokenManagerConfig],
           );
 
           clientReceivedRequestId = await endpoints.emailAccount
@@ -187,7 +187,7 @@ void main() {
         );
         AuthServices.set(
           identityProviders: [config],
-          tokenManagers: [tokenManagerFactory],
+          tokenManagers: [tokenManagerConfig],
         );
 
         await endpoints.emailAccount.startRegistration(
@@ -385,7 +385,7 @@ void main() {
         );
         AuthServices.set(
           identityProviders: [config],
-          tokenManagers: [tokenManagerFactory],
+          tokenManagers: [tokenManagerConfig],
         );
       });
 
@@ -539,7 +539,7 @@ void main() {
         );
         AuthServices.set(
           identityProviders: [config],
-          tokenManagers: [tokenManagerFactory],
+          tokenManagers: [tokenManagerConfig],
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -711,7 +711,7 @@ void main() {
         );
         AuthServices.set(
           identityProviders: [config],
-          tokenManagers: [tokenManagerFactory],
+          tokenManagers: [tokenManagerConfig],
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -943,7 +943,7 @@ void main() {
 
         AuthServices.set(
           identityProviders: [config],
-          tokenManagers: [tokenManagerFactory],
+          tokenManagers: [tokenManagerConfig],
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -1050,7 +1050,7 @@ extension on TestEndpoints {
 
     AuthServices.set(
       identityProviders: [config],
-      tokenManagers: [tokenManagerFactory],
+      tokenManagers: [tokenManagerConfig],
     );
 
     await emailAccount.startRegistration(
@@ -1101,7 +1101,7 @@ extension on TestEndpoints {
     );
     AuthServices.set(
       identityProviders: [config],
-      tokenManagers: [tokenManagerFactory],
+      tokenManagers: [tokenManagerConfig],
     );
 
     await emailAccount.startPasswordReset(

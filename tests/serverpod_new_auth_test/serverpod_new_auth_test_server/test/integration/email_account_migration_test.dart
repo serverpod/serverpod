@@ -7,13 +7,13 @@ import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManagerFactory = ServerSideSessionsTokenManagerFactory(
-    ServerSideSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+  final tokenManagerConfig = ServerSideSessionsConfig(
+    sessionKeyHashPepper: 'test-pepper',
   );
 
   tearDown(() {
     AuthServices.set(
-      tokenManagers: [tokenManagerFactory],
+      tokenManagers: [tokenManagerConfig],
       identityProviders: [],
     );
   });
@@ -65,7 +65,7 @@ void main() {
         );
         AuthServices.set(
           identityProviders: [config],
-          tokenManagers: [tokenManagerFactory],
+          tokenManagers: [tokenManagerConfig],
         );
       });
 
@@ -179,7 +179,7 @@ void main() {
         );
         AuthServices.set(
           identityProviders: [config],
-          tokenManagers: [tokenManagerFactory],
+          tokenManagers: [tokenManagerConfig],
         );
       });
 

@@ -1,22 +1,16 @@
+import '../../common/integrations/token_manager_builder.dart';
+import '../session.dart';
+
 /// Configuration options for the session module.
-class ServerSideSessionsConfig {
-  /// Length of the session key secret (which is only stored on the client).
-  ///
-  /// Defaults to 32 bytes.
-  final int sessionKeySecretLength;
-
-  /// Length of the salt used for the session key hash.
-  ///
-  /// Defaults to 16 bytes.
-  final int sessionKeyHashSaltLength;
-
+class ServerSideSessionsConfig
+    implements TokenManagerBuilder<ServerSideSessionsTokenManager> {
   /// The pepper used for hashing authentication session keys.
   ///
   /// This influences the stored session hashes, so it must not be changed for a given deployment,
   /// as otherwise all sessions become invalid.
   ///
   /// To rotate peppers without invalidating existing sessions, use [fallbackSessionKeyHashPeppers].
-  late final String sessionKeyHashPepper;
+  final String sessionKeyHashPepper;
 
   /// Fallback peppers for validating session keys created with previous peppers.
   ///
@@ -26,6 +20,16 @@ class ServerSideSessionsConfig {
   ///
   /// This is optional and defaults to an empty list.
   final List<String> fallbackSessionKeyHashPeppers;
+
+  /// Length of the session key secret (which is only stored on the client).
+  ///
+  /// Defaults to 32 bytes.
+  final int sessionKeySecretLength;
+
+  /// Length of the salt used for the session key hash.
+  ///
+  /// Defaults to 16 bytes.
+  final int sessionKeyHashSaltLength;
 
   /// Default absolute expiration time for sessions.
   ///
@@ -49,10 +53,10 @@ class ServerSideSessionsConfig {
 
   /// Create a new user session configuration.
   ServerSideSessionsConfig({
-    this.sessionKeySecretLength = 32,
-    this.sessionKeyHashSaltLength = 16,
     required this.sessionKeyHashPepper,
     this.fallbackSessionKeyHashPeppers = const [],
+    this.sessionKeySecretLength = 32,
+    this.sessionKeyHashSaltLength = 16,
     this.defaultSessionLifetime,
     this.defaultSessionInactivityTimeout,
   }) {
@@ -63,6 +67,14 @@ class ServerSideSessionsConfig {
     _validateSessionLifetime(defaultSessionLifetime);
     _validateSessionInactivityTimeout(defaultSessionInactivityTimeout);
   }
+
+  @override
+  ServerSideSessionsTokenManager build({
+    required final AuthUsers authUsers,
+  }) => ServerSideSessionsTokenManager(
+    config: this,
+    authUsers: authUsers,
+  );
 }
 
 void _validateSessionKeyHashPepper(final String sessionKeyHashPepper) {

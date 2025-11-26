@@ -24,15 +24,13 @@ void run(final List<String> args) async {
 
   AuthServices.set(
     tokenManagers: [
-      ServerSideSessionsTokenManagerFactory(
-        ServerSideSessionsConfig(sessionKeyHashPepper: universalHashPepper),
+      ServerSideSessionsConfig(
+        sessionKeyHashPepper: universalHashPepper,
       ),
-      JwtTokenManagerFactory(
-        JwtConfig(
-          refreshTokenHashPepper: universalHashPepper,
-          algorithm: JwtAlgorithm.hmacSha512(
-            SecretKey('test-private-key-for-HS512'),
-          ),
+      JwtConfig(
+        refreshTokenHashPepper: universalHashPepper,
+        algorithm: JwtAlgorithm.hmacSha512(
+          SecretKey('test-private-key-for-HS512'),
         ),
       ),
     ],

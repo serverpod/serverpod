@@ -3,12 +3,11 @@ export 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart'
 
 export '../auth_user/auth_user.dart';
 export '../common/integrations/adapters/jwt_token_manager.dart';
-export '../common/integrations/adapters/jwt_token_manager_factory.dart';
 export '../common/utils/argon2_hash_util.dart';
 export '../generated/protocol.dart'
     show
-        JwtTokenInfo,
         AuthSuccess,
+        JwtTokenInfo,
         RefreshTokenExpiredException,
         RefreshTokenInvalidSecretException,
         RefreshTokenMalformedException,

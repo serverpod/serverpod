@@ -2,8 +2,8 @@ import 'package:serverpod/serverpod.dart';
 
 import '../../common/integrations/provider_builder.dart';
 import '../../common/integrations/token_manager.dart';
-import '../../common/integrations/token_manager_factory.dart';
 import '../../profile/profile.dart';
+import '../integrations/token_manager_builder.dart';
 import 'multi_token_manager.dart';
 
 /// Global configuration for auth providers that are exposed through endpoints.
@@ -37,7 +37,7 @@ class AuthServices {
   /// These are passed to the [AuthServices] constructor to create the instance.
   /// {@macro auth_services_constructor}
   static void set({
-    required final List<TokenManagerFactory> tokenManagers,
+    required final List<TokenManagerBuilder> tokenManagers,
     final List<IdentityProviderBuilder> identityProviders = const [],
     final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
     final UserProfileConfig userProfileConfig = const UserProfileConfig(),
@@ -76,15 +76,15 @@ class AuthServices {
   AuthServices({
     this.authUsers = const AuthUsers(),
     this.userProfiles = const UserProfiles(),
-    required final TokenManagerFactory primaryTokenManager,
+    required final TokenManagerBuilder primaryTokenManager,
     final List<IdentityProviderBuilder> identityProviders = const [],
-    final List<TokenManagerFactory> additionalTokenManagers = const [],
+    final List<TokenManagerBuilder> additionalTokenManagers = const [],
   }) {
     tokenManager = MultiTokenManager(
-      primaryTokenManager: primaryTokenManager.construct(authUsers: authUsers),
+      primaryTokenManager: primaryTokenManager.build(authUsers: authUsers),
       additionalTokenManagers: additionalTokenManagers
           .map(
-            (final factory) => factory.construct(authUsers: authUsers),
+            (final factory) => factory.build(authUsers: authUsers),
           )
           .toList(),
     );

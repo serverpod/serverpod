@@ -1,5 +1,7 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
+
+import '../../common/integrations/token_manager_builder.dart';
 import '../jwt.dart';
 
 /// Context provided to the [JwtConfig.extraClaimsProvider].
@@ -56,7 +58,7 @@ sealed class JwtAlgorithm {
 }
 
 /// Configuration options for the JWT authentication module.
-class JwtConfig {
+class JwtConfig implements TokenManagerBuilder<JwtTokenManager> {
   /// The algorithm used to sign and verify the JWT tokens.
   ///
   /// Supported options are `HmacSha512` and `EcdsaSha512`.
@@ -169,6 +171,14 @@ class JwtConfig {
       _validateRefreshTokenHashPepper(fallbackPepper);
     }
   }
+
+  @override
+  JwtTokenManager build({
+    required final AuthUsers authUsers,
+  }) => JwtTokenManager(
+    config: this,
+    authUsers: authUsers,
+  );
 }
 
 void _validateRefreshTokenHashPepper(final String refreshTokenHashPepper) {

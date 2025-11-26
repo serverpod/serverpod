@@ -7,10 +7,8 @@ import 'package:test/test.dart';
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManagerFactory = ServerSideSessionsTokenManagerFactory(
-    ServerSideSessionsConfig(
-      sessionKeyHashPepper: 'test-pepper',
-    ),
+  final tokenManagerConfig = ServerSideSessionsConfig(
+    sessionKeyHashPepper: 'test-pepper',
   );
 
   const newEmailIdpConfig = EmailIdpConfig(secretHashPepper: 'test');
@@ -27,14 +25,14 @@ void main() {
         identityProviders: [
           newEmailIdpConfig,
         ],
-        tokenManagers: [tokenManagerFactory],
+        tokenManagers: [tokenManagerConfig],
       );
     });
 
     tearDown(() {
       AuthServices.set(
         identityProviders: [],
-        tokenManagers: [tokenManagerFactory],
+        tokenManagers: [tokenManagerConfig],
       );
     });
 
