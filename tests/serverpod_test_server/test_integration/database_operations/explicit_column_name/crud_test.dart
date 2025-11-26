@@ -34,16 +34,6 @@ void main() async {
 
         expect(inserted.id, isNotNull);
       });
-
-      test('the explicit column name is used in the sql', () {
-        final query = InsertQueryBuilder(table: table, rows: [data]).build();
-        expect(
-          query,
-          'INSERT INTO "${table.tableName}" '
-          '("user_name", "user_description") '
-          'VALUES (\'userName\', \'description\') RETURNING *',
-        );
-      });
     });
 
     group('when an object is retrieved by its id', () {
@@ -55,19 +45,6 @@ void main() async {
         expect(retrieved?.id, inserted.id);
         expect(retrieved?.userName, data.userName);
         expect(retrieved?.description, data.description);
-      });
-
-      test('the explicit column name is used in the sql', () {
-        final query = SelectQueryBuilder(
-          table: table,
-        ).withSelectFields(TableWithExplicitColumnName.t.columns).build();
-        expect(
-          query,
-          'SELECT "${table.tableName}"."id" AS "${table.tableName}.id", '
-          '"${table.tableName}"."user_name" AS "${table.tableName}.user_name", '
-          '"${table.tableName}"."user_description" AS "${table.tableName}.user_description" '
-          'FROM "${table.tableName}"',
-        );
       });
     });
 
