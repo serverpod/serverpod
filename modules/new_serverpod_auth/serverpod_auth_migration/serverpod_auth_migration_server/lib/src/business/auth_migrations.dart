@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_migration_server/src/business/migrate_user.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'

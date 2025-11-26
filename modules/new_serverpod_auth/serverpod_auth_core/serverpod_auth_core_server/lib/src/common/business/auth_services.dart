@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
-import '../../common/integrations/provider_factory.dart';
+import '../../common/integrations/provider_builder.dart';
 import '../../common/integrations/token_manager.dart';
 import '../../common/integrations/token_manager_factory.dart';
 import '../../profile/profile.dart';
@@ -38,7 +38,7 @@ class AuthServices {
   /// {@macro auth_services_constructor}
   static void set({
     required final List<TokenManagerFactory> tokenManagers,
-    final List<IdentityProviderFactory> identityProviders = const [],
+    final List<IdentityProviderBuilder> identityProviders = const [],
     final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
     final UserProfileConfig userProfileConfig = const UserProfileConfig(),
   }) {
@@ -64,8 +64,8 @@ class AuthServices {
   /// for issuing new tokens. The factory is used to construct the token manager
   /// instance with the necessary dependencies.
   ///
-  /// [identityProviders] is a list of [IdentityProviderFactory] instances that
-  /// construct the identity providers used by authentication endpoints. Each factory
+  /// [identityProviders] is a list of [IdentityProviderBuilder] instances that
+  /// build the identity providers used by authentication endpoints. Each builder
   /// creates a provider instance with the appropriate token manager dependency.
   ///
   /// [additionalTokenManagers] is a list of additional token managers factories
@@ -77,7 +77,7 @@ class AuthServices {
     this.authUsers = const AuthUsers(),
     this.userProfiles = const UserProfiles(),
     required final TokenManagerFactory primaryTokenManager,
-    final List<IdentityProviderFactory> identityProviders = const [],
+    final List<IdentityProviderBuilder> identityProviders = const [],
     final List<TokenManagerFactory> additionalTokenManagers = const [],
   }) {
     tokenManager = MultiTokenManager(
@@ -90,7 +90,7 @@ class AuthServices {
     );
 
     for (final provider in identityProviders) {
-      _providers[provider.type] = provider.construct(
+      _providers[provider.type] = provider.build(
         tokenManager: tokenManager,
         authUsers: authUsers,
         userProfiles: userProfiles,
@@ -106,8 +106,8 @@ class AuthServices {
     if (provider == null) {
       throw StateError(
         'Provider for $T is not registered. '
-        'To register this provider, add its IdentityProviderFactory to the identityProviders list when calling AuthServices.set(). '
-        'Example: AuthServices.set(defaultTokenManager: ..., identityProviders: [YourProviderFactory()])',
+        'To register this provider, add its IdentityProviderBuilder to the identityProviders list when calling AuthServices.set(). '
+        'Example: AuthServices.set(defaultTokenManager: ..., identityProviders: [YourProviderBuilder()])',
       );
     }
     return provider as T;

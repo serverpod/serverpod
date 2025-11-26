@@ -136,3 +136,9 @@ final class AppleIdp {
   Route webAuthenticationCallbackRoute() =>
       AppleWebAuthenticationCallbackRoute(utils: utils);
 }
+
+/// Extension to get the AppleIdp instance from the AuthServices.
+extension AppleIdpGetter on AuthServices {
+  /// Returns the AppleIdp instance from the AuthServices.
+  AppleIdp get appleIdp => AuthServices.getIdentityProvider<AppleIdp>();
+}

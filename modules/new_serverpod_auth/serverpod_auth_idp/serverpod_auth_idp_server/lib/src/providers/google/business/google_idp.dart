@@ -140,3 +140,9 @@ final class GoogleIdp {
     );
   }
 }
+
+/// Extension to get the GoogleIdp instance from the AuthServices.
+extension GoogleIdpGetter on AuthServices {
+  /// Returns the GoogleIdp instance from the AuthServices.
+  GoogleIdp get googleIdp => AuthServices.getIdentityProvider<GoogleIdp>();
+}

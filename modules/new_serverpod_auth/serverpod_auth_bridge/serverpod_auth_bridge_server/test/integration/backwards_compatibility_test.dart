@@ -25,7 +25,7 @@ void main() {
       session = sessionBuilder.build();
       AuthServices.set(
         identityProviders: [
-          EmailIdentityProviderFactory(newEmailIdpConfig),
+          newEmailIdpConfig,
         ],
         tokenManagers: [tokenManagerFactory],
       );

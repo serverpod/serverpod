@@ -1,7 +1,10 @@
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
+import '../../../../../core.dart';
+import 'apple_idp.dart';
+
 /// Configuration for the Apple identity provider.
-class AppleIdpConfig {
+class AppleIdpConfig implements IdentityProviderBuilder<AppleIdp> {
   /// The service identifier for the Sign in with Apple project.
   final String serviceIdentifier;
 
@@ -21,7 +24,7 @@ class AppleIdpConfig {
   final String key;
 
   /// Creates a new Sign in with Apple configuration.
-  AppleIdpConfig({
+  const AppleIdpConfig({
     required this.serviceIdentifier,
     required this.bundleIdentifier,
     required this.redirectUri,
@@ -29,6 +32,20 @@ class AppleIdpConfig {
     required this.keyId,
     required this.key,
   });
+
+  @override
+  AppleIdp build({
+    required final TokenManager tokenManager,
+    required final AuthUsers authUsers,
+    required final UserProfiles userProfiles,
+  }) {
+    return AppleIdp(
+      this,
+      tokenManager: tokenManager,
+      authUsers: authUsers,
+      userProfiles: userProfiles,
+    );
+  }
 }
 
 /// Extension methods for [AppleIdpConfig].

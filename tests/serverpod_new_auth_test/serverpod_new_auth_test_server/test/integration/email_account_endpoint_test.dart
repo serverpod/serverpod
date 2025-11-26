@@ -16,10 +16,8 @@ void main() {
     AuthServices.set(
       tokenManagers: [tokenManagerFactory],
       identityProviders: [
-        EmailIdentityProviderFactory(
-          const EmailIdpConfig(
-            secretHashPepper: 'test',
-          ),
+        const EmailIdpConfig(
+          secretHashPepper: 'test',
         ),
       ],
     );
@@ -60,9 +58,7 @@ void main() {
                 },
           );
           AuthServices.set(
-            identityProviders: [
-              EmailIdentityProviderFactory(config),
-            ],
+            identityProviders: [config],
             tokenManagers: [tokenManagerFactory],
           );
 
@@ -129,9 +125,7 @@ void main() {
                 },
           );
           AuthServices.set(
-            identityProviders: [
-              EmailIdentityProviderFactory(config),
-            ],
+            identityProviders: [config],
             tokenManagers: [tokenManagerFactory],
           );
 
@@ -192,9 +186,7 @@ void main() {
           registrationVerificationCodeLifetime: verificationCodeLifetime,
         );
         AuthServices.set(
-          identityProviders: [
-            EmailIdentityProviderFactory(config),
-          ],
+          identityProviders: [config],
           tokenManagers: [tokenManagerFactory],
         );
 
@@ -392,9 +384,7 @@ void main() {
               },
         );
         AuthServices.set(
-          identityProviders: [
-            EmailIdentityProviderFactory(config),
-          ],
+          identityProviders: [config],
           tokenManagers: [tokenManagerFactory],
         );
       });
@@ -548,9 +538,7 @@ void main() {
           secretHashPepper: 'test',
         );
         AuthServices.set(
-          identityProviders: [
-            EmailIdentityProviderFactory(config),
-          ],
+          identityProviders: [config],
           tokenManagers: [tokenManagerFactory],
         );
 
@@ -722,9 +710,7 @@ void main() {
           secretHashPepper: 'test',
         );
         AuthServices.set(
-          identityProviders: [
-            EmailIdentityProviderFactory(config),
-          ],
+          identityProviders: [config],
           tokenManagers: [tokenManagerFactory],
         );
 
@@ -956,9 +942,7 @@ void main() {
         );
 
         AuthServices.set(
-          identityProviders: [
-            EmailIdentityProviderFactory(config),
-          ],
+          identityProviders: [config],
           tokenManagers: [tokenManagerFactory],
         );
 
@@ -1065,9 +1049,7 @@ extension on TestEndpoints {
     );
 
     AuthServices.set(
-      identityProviders: [
-        EmailIdentityProviderFactory(config),
-      ],
+      identityProviders: [config],
       tokenManagers: [tokenManagerFactory],
     );
 
@@ -1118,9 +1100,7 @@ extension on TestEndpoints {
           },
     );
     AuthServices.set(
-      identityProviders: [
-        EmailIdentityProviderFactory(config),
-      ],
+      identityProviders: [config],
       tokenManagers: [tokenManagerFactory],
     );
 

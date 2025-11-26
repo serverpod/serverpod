@@ -9,7 +9,7 @@ export 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart'
 export 'src/auth_user/auth_user.dart';
 export 'src/common/business/auth_services.dart';
 export 'src/common/business/multi_token_manager.dart';
-export 'src/common/integrations/provider_factory.dart';
+export 'src/common/integrations/provider_builder.dart';
 export 'src/common/integrations/token_manager.dart';
 export 'src/common/integrations/token_manager_factory.dart';
 export 'src/generated/endpoints.dart';

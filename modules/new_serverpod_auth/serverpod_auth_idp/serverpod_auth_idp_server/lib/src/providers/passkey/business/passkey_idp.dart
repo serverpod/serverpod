@@ -36,7 +36,7 @@ final class PasskeyIdp {
   /// Creates a new instance of [PasskeyIdp].
   factory PasskeyIdp(
     final PasskeyIdpConfig config, {
-    required final TokenIssuer tokenIssuer,
+    required final TokenIssuer tokenManager,
     final AuthUsers authUsers = const AuthUsers(),
   }) {
     final utils = PasskeyIdpUtils(
@@ -48,7 +48,7 @@ final class PasskeyIdp {
 
     return PasskeyIdp._(
       config,
-      tokenIssuer,
+      tokenManager,
       utils,
       PasskeyIdpAdmin(
         challengeLifetime: config.challengeLifetime,
@@ -136,3 +136,9 @@ final class PasskeyIdp {
 
 /// A challenge to be used for a passkey registration or login.
 typedef PasskeyChallengeResponse = ({UuidValue id, ByteData challenge});
+
+/// Extension to get the PasskeyIdp instance from the AuthServices.
+extension PasskeyIdpGetter on AuthServices {
+  /// Returns the PasskeyIdp instance from the AuthServices.
+  PasskeyIdp get passkeyIdp => AuthServices.getIdentityProvider<PasskeyIdp>();
+}

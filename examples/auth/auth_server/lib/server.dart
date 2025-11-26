@@ -95,10 +95,10 @@ void run(List<String> args) async {
       JwtTokenManagerFactory(jwtTokenConfig),
     ],
     identityProviders: [
-      GoogleIdentityProviderFactory(googleIdpConfig),
-      AppleIdentityProviderFactory(appleIdpConfig),
-      EmailIdentityProviderFactory(emailIdpConfig),
-      PasskeyIdentityProviderFactory(passkeyIdpConfig),
+      googleIdpConfig,
+      appleIdpConfig,
+      emailIdpConfig,
+      passkeyIdpConfig,
     ],
   );
 

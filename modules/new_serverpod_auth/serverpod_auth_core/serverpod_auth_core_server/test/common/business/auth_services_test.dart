@@ -9,15 +9,15 @@ void main() {
   withServerpod(
     'Given AuthServices is being configured',
     (final sessionBuilder, final endpoints) {
-      late List<IdentityProviderFactory<Object>> identityProviderFactories;
+      late List<IdentityProviderBuilder<Object>> identityProviderBuilders;
       late List<TokenManagerFactory> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
 
       setUp(() {
         fakeTokenStorage = FakeTokenStorage();
 
-        identityProviderFactories = [
-          FakeIdentityProviderFactory(),
+        identityProviderBuilders = [
+          const FakeConfig(),
         ];
 
         tokenManagers = [
@@ -34,7 +34,7 @@ void main() {
               FakeTokenManagerFactory(tokenStorage: fakeTokenStorage),
               ...tokenManagers,
             ],
-            identityProviders: identityProviderFactories,
+            identityProviders: identityProviderBuilders,
           );
 
           authServices = AuthServices.instance;
@@ -55,7 +55,7 @@ void main() {
               FakeTokenManagerFactory(tokenStorage: FakeTokenStorage()),
               ...tokenManagers,
             ],
-            identityProviders: identityProviderFactories,
+            identityProviders: identityProviderBuilders,
           );
           firstAuthServices = AuthServices.instance;
 
@@ -66,7 +66,7 @@ void main() {
               ),
               ...tokenManagers,
             ],
-            identityProviders: identityProviderFactories,
+            identityProviders: identityProviderBuilders,
           );
           secondAuthServices = AuthServices.instance;
         });
@@ -83,7 +83,7 @@ void main() {
     'Given an AuthServices with identity providers',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManagerFactory fakeTokenManagerFactory;
-      late List<IdentityProviderFactory<Object>> identityProviderFactories;
+      late List<IdentityProviderBuilder<Object>> identityProviderBuilders;
       late List<TokenManagerFactory> tokenManagerFactories;
       late FakeTokenStorage fakeTokenStorage;
 
@@ -93,8 +93,8 @@ void main() {
           tokenStorage: fakeTokenStorage,
         );
 
-        identityProviderFactories = [
-          FakeIdentityProviderFactory(),
+        identityProviderBuilders = [
+          const FakeConfig(),
         ];
 
         tokenManagerFactories = [
@@ -103,7 +103,7 @@ void main() {
 
         AuthServices.set(
           tokenManagers: [fakeTokenManagerFactory, ...tokenManagerFactories],
-          identityProviders: identityProviderFactories,
+          identityProviders: identityProviderBuilders,
         );
       });
 
@@ -175,11 +175,11 @@ void main() {
     'Given an AuthServices with multiple identity providers',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManagerFactory fakeTokenManagerFactory;
-      late List<IdentityProviderFactory<Object>> multipleProviderFactories;
+      late List<IdentityProviderBuilder<Object>> multipleProviderBuilders;
       late List<TokenManagerFactory> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
-      late FakeIdentityProviderFactory firstFactory;
-      late FakeIdentityProviderFactory secondFactory;
+      late FakeConfig firstFactory;
+      late FakeConfig secondFactory;
 
       setUp(() {
         fakeTokenStorage = FakeTokenStorage();
@@ -187,9 +187,9 @@ void main() {
           tokenStorage: fakeTokenStorage,
         );
 
-        firstFactory = FakeIdentityProviderFactory();
-        secondFactory = FakeIdentityProviderFactory();
-        multipleProviderFactories = [firstFactory, secondFactory];
+        firstFactory = const FakeConfig();
+        secondFactory = const FakeConfig();
+        multipleProviderBuilders = [firstFactory, secondFactory];
 
         tokenManagers = [
           FakeTokenManagerFactory(tokenStorage: fakeTokenStorage),
@@ -197,7 +197,7 @@ void main() {
 
         AuthServices.set(
           tokenManagers: [fakeTokenManagerFactory, ...tokenManagers],
-          identityProviders: multipleProviderFactories,
+          identityProviders: multipleProviderBuilders,
         );
       });
 
@@ -216,7 +216,7 @@ void main() {
     'Given an AuthServices with authentication handler',
     (final sessionBuilder, final endpoints) {
       late FakeTokenManagerFactory fakeTokenManagerFactory;
-      late List<IdentityProviderFactory<Object>> identityProviderFactories;
+      late List<IdentityProviderBuilder<Object>> identityProviderBuilders;
       late List<TokenManagerFactory> tokenManagers;
       late FakeTokenStorage fakeTokenStorage;
       late Session session;
@@ -230,8 +230,8 @@ void main() {
           tokenStorage: fakeTokenStorage,
         );
 
-        identityProviderFactories = [
-          FakeIdentityProviderFactory(),
+        identityProviderBuilders = [
+          const FakeConfig(),
         ];
 
         tokenManagers = [
@@ -240,7 +240,7 @@ void main() {
 
         AuthServices.set(
           tokenManagers: [fakeTokenManagerFactory, ...tokenManagers],
-          identityProviders: identityProviderFactories,
+          identityProviders: identityProviderBuilders,
         );
 
         authServices = AuthServices.instance;

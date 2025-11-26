@@ -64,9 +64,7 @@ void main() {
               },
         );
         AuthServices.set(
-          identityProviders: [
-            EmailIdentityProviderFactory(config),
-          ],
+          identityProviders: [config],
           tokenManagers: [tokenManagerFactory],
         );
       });
@@ -180,9 +178,7 @@ void main() {
               AuthBackwardsCompatibility.clearLegacyPassword,
         );
         AuthServices.set(
-          identityProviders: [
-            EmailIdentityProviderFactory(config),
-          ],
+          identityProviders: [config],
           tokenManagers: [tokenManagerFactory],
         );
       });

@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
 
+import '../../../../../core.dart';
+import 'google_idp.dart';
 import 'google_idp_utils.dart';
 
 /// Function to be called to check whether a Google account details match the
@@ -24,7 +26,7 @@ typedef GetExtraGoogleInfoCallback =
     });
 
 /// Configuration for the Google identity provider.
-class GoogleIdpConfig {
+class GoogleIdpConfig implements IdentityProviderBuilder<GoogleIdp> {
   /// The client secret used for the Google sign-in.
   final GoogleClientSecret clientSecret;
 
@@ -52,7 +54,7 @@ class GoogleIdpConfig {
   final GetExtraGoogleInfoCallback? getExtraGoogleInfoCallback;
 
   /// Creates a new instance of [GoogleIdpConfig].
-  GoogleIdpConfig({
+  const GoogleIdpConfig({
     required this.clientSecret,
     this.googleAccountDetailsValidation = validateGoogleAccountDetails,
     this.getExtraGoogleInfoCallback,
@@ -67,6 +69,20 @@ class GoogleIdpConfig {
         accountDetails.verifiedEmail != true) {
       throw GoogleUserInfoMissingDataException();
     }
+  }
+
+  @override
+  GoogleIdp build({
+    required final TokenManager tokenManager,
+    required final AuthUsers authUsers,
+    required final UserProfiles userProfiles,
+  }) {
+    return GoogleIdp(
+      this,
+      tokenIssuer: tokenManager,
+      authUsers: authUsers,
+      userProfiles: userProfiles,
+    );
   }
 }
 

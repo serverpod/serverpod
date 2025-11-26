@@ -27,7 +27,7 @@ void main() {
     new_auth_core.AuthServices.set(
       tokenManagers: [tokenManagerFactory],
       identityProviders: [
-        new_auth_email.EmailIdentityProviderFactory(newEmailIdpConfig),
+        newEmailIdpConfig,
       ],
     );
     newEmailIdp = new_auth_core.AuthServices.instance.emailIdp;

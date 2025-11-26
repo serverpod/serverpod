@@ -300,3 +300,9 @@ final class EmailIdp {
     );
   }
 }
+
+/// Extension to get the EmailIdp instance from the AuthServices.
+extension EmailIdpGetter on AuthServices {
+  /// Returns the EmailIdp instance from the AuthServices.
+  EmailIdp get emailIdp => AuthServices.getIdentityProvider<EmailIdp>();
+}

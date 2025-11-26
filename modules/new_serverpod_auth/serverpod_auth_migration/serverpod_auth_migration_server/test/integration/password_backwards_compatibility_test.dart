@@ -26,7 +26,7 @@ void main() {
   setUpAll(() async {
     new_auth_core.AuthServices.set(
       identityProviders: [
-        new_email_idp.EmailIdentityProviderFactory(newEmailIdpConfig),
+        newEmailIdpConfig,
       ],
       tokenManagers: [tokenManagerFactory],
     );

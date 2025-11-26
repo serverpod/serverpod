@@ -21,10 +21,10 @@ void main() {
   );
 
   final passKeyIdp = PasskeyIdp(
-    PasskeyIdpConfig(
+    const PasskeyIdpConfig(
       hostname: 'localhost',
     ),
-    tokenIssuer: tokenManager,
+    tokenManager: tokenManager,
   );
 
   withServerpod(

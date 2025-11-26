@@ -18,10 +18,10 @@ void main() {
     (final sessionBuilder, final _) {
       late Session session;
       final passKeyIdp = PasskeyIdp(
-        PasskeyIdpConfig(
+        const PasskeyIdpConfig(
           hostname: 'localhost',
         ),
-        tokenIssuer: tokenManager,
+        tokenManager: tokenManager,
       );
 
       setUp(() async {
