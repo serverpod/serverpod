@@ -58,6 +58,10 @@ class Table<T_ID> {
   /// Table relation for [Column]s of the table.
   final TableRelation? tableRelation;
 
+  /// Cached flag indicating whether any columns have explicit column names
+  /// that differ from their field names. Computed lazily on first access.
+  late final bool _hasColumnMapping = _computeHasColumnMapping();
+
   /// Creates a new [Table]. Typically, this is done only by generated code.
   Table({
     required this.tableName,
@@ -90,6 +94,16 @@ class Table<T_ID> {
     }
   }
 
+  /// Checks if any columns have explicit column names that differ from field names.
+  bool _computeHasColumnMapping() {
+    for (final column in columns) {
+      if (column.columnName != column.fieldName) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /// Returns [TableColumnRelation] for the given [relationField]. If no relation
   /// exists, returns null. The return must be dynamic to allow for relations
   /// with different id types.
@@ -111,6 +125,10 @@ class Table<T_ID> {
   Map<String, dynamic> parseRow(
     Map<String, dynamic> rowData,
   ) {
+    // If no column mapping is needed, return the original data
+    if (!_hasColumnMapping) return rowData;
+
+    // Create new map with field names
     return {
       // Preserves non-persisted fields
       ...rowData,
