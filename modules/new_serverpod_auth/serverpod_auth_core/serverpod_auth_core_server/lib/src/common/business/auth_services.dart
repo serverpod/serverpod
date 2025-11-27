@@ -25,6 +25,7 @@ class AuthServices {
 
   static AuthServices? _instance;
 
+  /// {@template auth_services_set}
   /// Creates a new [AuthServices] instance and sets it as the global instance.
   ///
   /// [tokenManagerBuilders] is the list of token manager builders. The first in
@@ -42,6 +43,7 @@ class AuthServices {
   /// that will be used to create the user profiles manager.
   ///
   /// These are passed to the [AuthServices] constructor to create the instance.
+  /// {@endtemplate}
   static void set({
     required final List<TokenManagerBuilder> tokenManagerBuilders,
     final List<IdentityProviderBuilder> identityProviderBuilders = const [],
@@ -146,5 +148,25 @@ class AuthServices {
   /// Retrieves the token manager of type [T].
   static T getTokenManager<T extends TokenManager>() {
     return instance.tokenManager.getTokenManager<T>();
+  }
+}
+
+/// Extension to initialize the AuthServices with the default configuration.
+extension AuthServicesInit on Serverpod {
+  /// {@macro auth_services_set}
+  void initializeAuthServices({
+    required final List<TokenManagerBuilder> tokenManagerBuilders,
+    final List<IdentityProviderBuilder> identityProviderBuilders = const [],
+    final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
+    final UserProfileConfig userProfileConfig = const UserProfileConfig(),
+  }) {
+    AuthServices.set(
+      tokenManagerBuilders: tokenManagerBuilders,
+      identityProviderBuilders: identityProviderBuilders,
+      authUsersConfig: authUsersConfig,
+      userProfileConfig: userProfileConfig,
+    );
+
+    authenticationHandler = AuthServices.instance.authenticationHandler;
   }
 }

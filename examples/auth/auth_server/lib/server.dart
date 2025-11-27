@@ -89,7 +89,7 @@ void run(List<String> args) async {
     hostname: 'localhost',
   );
 
-  AuthServices.set(
+  pod.initializeAuthServices(
     tokenManagerBuilders: [
       serverSideSessionsConfig,
       jwtTokenConfig,
@@ -101,8 +101,6 @@ void run(List<String> args) async {
       passkeyIdpConfig,
     ],
   );
-
-  pod.authenticationHandler = AuthServices.instance.authenticationHandler;
 
   // Paths must match paths configured on Apple's developer portal. The values
   // below are the defaults if not provided.
