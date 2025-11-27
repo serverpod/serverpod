@@ -18,11 +18,14 @@ abstract class MigrationConstants {
 
   /// Directory where migration versions are stored.
   static Directory migrationVersionDirectory(
-          Directory serverRootDirectory, String version) =>
-      Directory(path.join(
-        migrationsBaseDirectory(serverRootDirectory).path,
-        version,
-      ));
+    Directory serverRootDirectory,
+    String version,
+  ) => Directory(
+    path.join(
+      migrationsBaseDirectory(serverRootDirectory).path,
+      version,
+    ),
+  );
 
   /// Directory where migrations are stored.
   static Directory migrationsBaseDirectory(Directory serverRootDirectory) =>
@@ -36,41 +39,45 @@ abstract class MigrationConstants {
   static File databaseDefinitionSQLPath(
     Directory serverRootDirectory,
     String version,
-  ) =>
-      File(path.join(
-        migrationVersionDirectory(serverRootDirectory, version).path,
-        'definition.sql',
-      ));
+  ) => File(
+    path.join(
+      migrationVersionDirectory(serverRootDirectory, version).path,
+      'definition.sql',
+    ),
+  );
 
   /// File path where the database definition is stored.
   static File databaseDefinitionJSONPath(
     Directory serverRootDirectory,
     String version,
-  ) =>
-      File(path.join(
-        migrationVersionDirectory(serverRootDirectory, version).path,
-        'definition.json',
-      ));
+  ) => File(
+    path.join(
+      migrationVersionDirectory(serverRootDirectory, version).path,
+      'definition.json',
+    ),
+  );
 
   /// File path where the database definition is stored.
   static File databaseDefinitionProjectJSONPath(
     Directory serverRootDirectory,
     String version,
-  ) =>
-      File(path.join(
-        migrationVersionDirectory(serverRootDirectory, version).path,
-        'definition_project.json',
-      ));
+  ) => File(
+    path.join(
+      migrationVersionDirectory(serverRootDirectory, version).path,
+      'definition_project.json',
+    ),
+  );
 
   /// File path where the database migration is stored.
   static File databaseMigrationSQLPath(
     Directory serverRootDirectory,
     String version,
-  ) =>
-      File(path.join(
-        migrationVersionDirectory(serverRootDirectory, version).path,
-        'migration.sql',
-      ));
+  ) => File(
+    path.join(
+      migrationVersionDirectory(serverRootDirectory, version).path,
+      'migration.sql',
+    ),
+  );
 
   /// File path where the database migration is stored.
   static File databaseMigrationJSONPath(

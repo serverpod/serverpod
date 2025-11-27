@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/self_relation/many_to_many/member.dart'
     as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Blocking
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -40,13 +41,15 @@ abstract class Blocking
       blockedId: jsonSerialization['blockedId'] as int,
       blocked: jsonSerialization['blocked'] == null
           ? null
-          : _i2.Member.fromJson(
-              (jsonSerialization['blocked'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.Member>(
+              jsonSerialization['blocked'],
+            ),
       blockedById: jsonSerialization['blockedById'] as int,
       blockedBy: jsonSerialization['blockedBy'] == null
           ? null
-          : _i2.Member.fromJson(
-              (jsonSerialization['blockedBy'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.Member>(
+              jsonSerialization['blockedBy'],
+            ),
     );
   }
 
@@ -81,6 +84,7 @@ abstract class Blocking
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Blocking',
       if (id != null) 'id': id,
       'blockedId': blockedId,
       if (blocked != null) 'blocked': blocked?.toJson(),
@@ -92,6 +96,7 @@ abstract class Blocking
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Blocking',
       if (id != null) 'id': id,
       'blockedId': blockedId,
       if (blocked != null) 'blocked': blocked?.toJsonForProtocol(),
@@ -146,12 +151,12 @@ class _BlockingImpl extends Blocking {
     required int blockedById,
     _i2.Member? blockedBy,
   }) : super._(
-          id: id,
-          blockedId: blockedId,
-          blocked: blocked,
-          blockedById: blockedById,
-          blockedBy: blockedBy,
-        );
+         id: id,
+         blockedId: blockedId,
+         blocked: blocked,
+         blockedById: blockedById,
+         blockedBy: blockedBy,
+       );
 
   /// Returns a shallow copy of this [Blocking]
   /// with some or all fields replaced by the given arguments.
@@ -169,8 +174,9 @@ class _BlockingImpl extends Blocking {
       blockedId: blockedId ?? this.blockedId,
       blocked: blocked is _i2.Member? ? blocked : this.blocked?.copyWith(),
       blockedById: blockedById ?? this.blockedById,
-      blockedBy:
-          blockedBy is _i2.Member? ? blockedBy : this.blockedBy?.copyWith(),
+      blockedBy: blockedBy is _i2.Member?
+          ? blockedBy
+          : this.blockedBy?.copyWith(),
     );
   }
 }
@@ -179,14 +185,14 @@ class BlockingUpdateTable extends _i1.UpdateTable<BlockingTable> {
   BlockingUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> blockedId(int value) => _i1.ColumnValue(
-        table.blockedId,
-        value,
-      );
+    table.blockedId,
+    value,
+  );
 
   _i1.ColumnValue<int, int> blockedById(int value) => _i1.ColumnValue(
-        table.blockedById,
-        value,
-      );
+    table.blockedById,
+    value,
+  );
 }
 
 class BlockingTable extends _i1.Table<int?> {
@@ -240,10 +246,10 @@ class BlockingTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        blockedId,
-        blockedById,
-      ];
+    id,
+    blockedId,
+    blockedById,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -272,9 +278,9 @@ class BlockingInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'blocked': _blocked,
-        'blockedBy': _blockedBy,
-      };
+    'blocked': _blocked,
+    'blockedBy': _blockedBy,
+  };
 
   @override
   _i1.Table<int?> get table => Blocking.t;

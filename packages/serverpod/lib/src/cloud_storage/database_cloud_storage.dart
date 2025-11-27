@@ -15,11 +15,14 @@ class DatabaseCloudStorage extends CloudStorage {
   DatabaseCloudStorage(super.storageId);
 
   @override
-  Future<void> deleteFile(
-      {required Session session, required String path}) async {
+  Future<void> deleteFile({
+    required Session session,
+    required String path,
+  }) async {
     try {
       await session.db.deleteWhere<CloudStorageEntry>(
-        where: CloudStorageEntry.t.storageId.equals(storageId) &
+        where:
+            CloudStorageEntry.t.storageId.equals(storageId) &
             CloudStorageEntry.t.path.equals(path),
       );
     } catch (e) {
@@ -28,11 +31,14 @@ class DatabaseCloudStorage extends CloudStorage {
   }
 
   @override
-  Future<bool> fileExists(
-      {required Session session, required String path}) async {
+  Future<bool> fileExists({
+    required Session session,
+    required String path,
+  }) async {
     try {
       var numRows = await session.db.count<CloudStorageEntry>(
-        where: CloudStorageEntry.t.storageId.equals(storageId) &
+        where:
+            CloudStorageEntry.t.storageId.equals(storageId) &
             CloudStorageEntry.t.path.equals(path),
       );
       return (numRows > 0);
@@ -42,8 +48,10 @@ class DatabaseCloudStorage extends CloudStorage {
   }
 
   @override
-  Future<Uri?> getPublicUrl(
-      {required Session session, required String path}) async {
+  Future<Uri?> getPublicUrl({
+    required Session session,
+    required String path,
+  }) async {
     if (storageId != 'public') return null;
 
     var exists = await fileExists(session: session, path: path);
@@ -120,8 +128,9 @@ class DatabaseCloudStorage extends CloudStorage {
       expiration: expiration,
       authKey: _generateAuthKey(),
     );
-    var inserted =
-        await session.db.insertRow<CloudStorageDirectUploadEntry>(uploadEntry);
+    var inserted = await session.db.insertRow<CloudStorageDirectUploadEntry>(
+      uploadEntry,
+    );
 
     var uri = Uri(
       scheme: config.apiServer.publicScheme,
@@ -170,7 +179,11 @@ class DatabaseCloudStorage extends CloudStorage {
     const chars =
         'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
     var rnd = Random();
-    return String.fromCharCodes(Iterable.generate(
-        len, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
+    return String.fromCharCodes(
+      Iterable.generate(
+        len,
+        (_) => chars.codeUnitAt(rnd.nextInt(chars.length)),
+      ),
+    );
   }
 }

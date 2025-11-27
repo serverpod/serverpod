@@ -26,8 +26,8 @@ import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/
 /// concrete class.
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 /// {@category Endpoint}
-abstract class EndpointAppleIDPBase extends _i1.EndpointRef {
-  EndpointAppleIDPBase(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointAppleIdpBase extends _i1.EndpointRef {
+  EndpointAppleIdpBase(_i1.EndpointCaller caller) : super(caller);
 
   /// Signs in a user with their Apple account.
   ///
@@ -56,10 +56,10 @@ abstract class EndpointAppleIDPBase extends _i1.EndpointRef {
 /// methods.
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 /// Alternatively you can build up your own endpoint on top of the same business
-/// logic by using [EmailIDP].
+/// logic by using [EmailIdp].
 /// {@category Endpoint}
-abstract class EndpointEmailIDPBase extends _i1.EndpointRef {
-  EndpointEmailIDPBase(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointEmailIdpBase extends _i1.EndpointRef {
+  EndpointEmailIdpBase(_i1.EndpointCaller caller) : super(caller);
 
   /// Logs in the user and returns a new session.
   ///
@@ -110,9 +110,8 @@ abstract class EndpointEmailIDPBase extends _i1.EndpointRef {
   ///   already expired.
   /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
   ///   does not comply with the password policy.
-  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
-  ///   for the given [accountRequestId], [verificationCode] is invalid, or
-  ///   the request has not been verified yet.
+  /// - [EmailAccountRequestExceptionReason.invalid] if the [registrationToken]
+  ///   is invalid.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
@@ -182,8 +181,8 @@ abstract class EndpointEmailIDPBase extends _i1.EndpointRef {
 /// If you would like modify the authentication flow, consider extending this
 /// class and overriding the relevant methods.
 /// {@category Endpoint}
-abstract class EndpointGoogleIDPBase extends _i1.EndpointRef {
-  EndpointGoogleIDPBase(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointGoogleIdpBase extends _i1.EndpointRef {
+  EndpointGoogleIdpBase(_i1.EndpointCaller caller) : super(caller);
 
   /// Validates a Google ID token and either logs in the associated user or
   /// creates a new user account if the Google account ID is not yet known.
@@ -197,8 +196,8 @@ abstract class EndpointGoogleIDPBase extends _i1.EndpointRef {
 
 /// Base endpoint for Passkey-based authentication.
 /// {@category Endpoint}
-abstract class EndpointPasskeyIDPBase extends _i1.EndpointRef {
-  EndpointPasskeyIDPBase(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointPasskeyIdpBase extends _i1.EndpointRef {
+  EndpointPasskeyIdpBase(_i1.EndpointCaller caller) : super(caller);
 
   /// Returns a new challenge to be used for a login or registration request.
   _i2.Future<({_i4.ByteData challenge, _i1.UuidValue id})> createChallenge();
@@ -206,12 +205,14 @@ abstract class EndpointPasskeyIDPBase extends _i1.EndpointRef {
   /// Registers a Passkey for the [session]'s current user.
   ///
   /// Throws if the user is not authenticated.
-  _i2.Future<void> register(
-      {required _i5.PasskeyRegistrationRequest registrationRequest});
+  _i2.Future<void> register({
+    required _i5.PasskeyRegistrationRequest registrationRequest,
+  });
 
   /// Authenticates the user related to the given Passkey.
-  _i2.Future<_i3.AuthSuccess> login(
-      {required _i6.PasskeyLoginRequest loginRequest});
+  _i2.Future<_i3.AuthSuccess> login({
+    required _i6.PasskeyLoginRequest loginRequest,
+  });
 }
 
 class Caller extends _i1.ModuleEndpointCaller {

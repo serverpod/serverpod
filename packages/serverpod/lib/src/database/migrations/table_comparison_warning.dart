@@ -42,10 +42,10 @@ abstract class ComparisonWarning<T extends ComparisonWarning<T>> {
     required this.name,
     this.expected, // The expected value in comparison.
     this.found, // The found value in comparison.
-  })  : isMissing = expected != null && found == null,
-        isAdded = expected == null && found != null,
-        isMismatch = expected != null && found != null && expected != found,
-        subs = [];
+  }) : isMissing = expected != null && found == null,
+       isAdded = expected == null && found != null,
+       isMismatch = expected != null && found != null && expected != found,
+       subs = [];
 
   /// Generates a formatted string representation of the warning and its sub-warnings.
   /// The output is indented according to the [indentLevel] for hierarchical clarity.

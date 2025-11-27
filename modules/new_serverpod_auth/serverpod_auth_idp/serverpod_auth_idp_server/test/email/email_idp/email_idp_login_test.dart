@@ -14,13 +14,13 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
 
         final authUser = await fixture.authUsers.create(session);
 
@@ -43,51 +43,54 @@ void main() {
       });
 
       test(
-          'when login is called with correct credentials then it returns auth session token',
-          () async {
-        final result = fixture.emailIDP.login(
-          session,
-          email: email,
-          password: password,
-        );
+        'when login is called with correct credentials then it returns auth session token',
+        () async {
+          final result = fixture.emailIdp.login(
+            session,
+            email: email,
+            password: password,
+          );
 
-        await expectLater(result, completion(isA<AuthSuccess>()));
-      });
+          await expectLater(result, completion(isA<AuthSuccess>()));
+        },
+      );
 
       test(
-          'when login is called with invalid credentials then it throws EmailAccountLoginException with invalidCredentials',
-          () async {
-        final result = fixture.emailIDP.login(
-          session,
-          email: email,
-          password: 'WrongPassword123!',
-        );
+        'when login is called with invalid credentials then it throws EmailAccountLoginException with invalidCredentials',
+        () async {
+          final result = fixture.emailIdp.login(
+            session,
+            email: email,
+            password: 'WrongPassword123!',
+          );
 
-        await expectLater(
-          result,
-          throwsA(
-            isA<EmailAccountLoginException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountLoginExceptionReason.invalidCredentials,
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountLoginException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountLoginExceptionReason.invalidCredentials,
+              ),
             ),
-          ),
-        );
-      });
+          );
+        },
+      );
 
       test(
-          'when login is called, then the returned AuthSuccess contains the users scopes',
-          () async {
-        final result = await fixture.emailIDP.login(
-          session,
-          email: email,
-          password: password,
-        );
+        'when login is called, then the returned AuthSuccess contains the users scopes',
+        () async {
+          final result = await fixture.emailIdp.login(
+            session,
+            email: email,
+            password: password,
+          );
 
-        expect(result.scopeNames, contains('test-scope'));
-        expect(result.scopeNames, contains('admin'));
-        expect(result.scopeNames, hasLength(2));
-      });
+          expect(result.scopeNames, contains('test-scope'));
+          expect(result.scopeNames, contains('admin'));
+          expect(result.scopeNames, hasLength(2));
+        },
+      );
     },
   );
 
@@ -97,13 +100,13 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
 
         final authUser = await fixture.authUsers.create(session);
         await fixture.authUsers.update(
@@ -125,19 +128,20 @@ void main() {
       });
 
       test(
-          'when login is called with correct credentials then it throws AuthUserBlockedException',
-          () async {
-        final result = fixture.emailIDP.login(
-          session,
-          email: email,
-          password: password,
-        );
+        'when login is called with correct credentials then it throws AuthUserBlockedException',
+        () async {
+          final result = fixture.emailIdp.login(
+            session,
+            email: email,
+            password: password,
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<AuthUserBlockedException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<AuthUserBlockedException>()),
+          );
+        },
+      );
     },
   );
 
@@ -147,7 +151,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
       const maxLoginAttempts = RateLimit(
@@ -158,8 +162,8 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'pepper',
             failedLoginRateLimit: maxLoginAttempts,
           ),
@@ -176,7 +180,7 @@ void main() {
 
         // Make initial failed login attempt to hit the rate limit
         try {
-          await fixture.emailIDP.login(
+          await fixture.emailIdp.login(
             session,
             email: email,
             password: 'WrongPassword123!',
@@ -191,46 +195,48 @@ void main() {
       });
 
       test(
-          'when login is called with valid credentials then it throws EmailAccountLoginException with reason "tooManyAttempts"',
-          () async {
-        final result = fixture.emailIDP.login(
-          session,
-          email: email,
-          password: password,
-        );
+        'when login is called with valid credentials then it throws EmailAccountLoginException with reason "tooManyAttempts"',
+        () async {
+          final result = fixture.emailIdp.login(
+            session,
+            email: email,
+            password: password,
+          );
 
-        await expectLater(
-          result,
-          throwsA(
-            isA<EmailAccountLoginException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountLoginExceptionReason.tooManyAttempts,
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountLoginException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountLoginExceptionReason.tooManyAttempts,
+              ),
             ),
-          ),
-        );
-      });
+          );
+        },
+      );
 
       test(
-          'when login is called with invalid credentials then it throws EmailAccountLoginException with reason "tooManyAttempts"',
-          () async {
-        final result = fixture.emailIDP.login(
-          session,
-          email: email,
-          password: '$password-invalid',
-        );
+        'when login is called with invalid credentials then it throws EmailAccountLoginException with reason "tooManyAttempts"',
+        () async {
+          final result = fixture.emailIdp.login(
+            session,
+            email: email,
+            password: '$password-invalid',
+          );
 
-        await expectLater(
-          result,
-          throwsA(
-            isA<EmailAccountLoginException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountLoginExceptionReason.tooManyAttempts,
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountLoginException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountLoginExceptionReason.tooManyAttempts,
+              ),
             ),
-          ),
-        );
-      });
+          );
+        },
+      );
     },
   );
 
@@ -240,11 +246,11 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
       });
 
       tearDown(() async {
@@ -252,25 +258,26 @@ void main() {
       });
 
       test(
-          'when login is called then it throws EmailAccountLoginException with invalidCredentials',
-          () async {
-        final result = fixture.emailIDP.login(
-          session,
-          email: 'nonexistent@serverpod.dev',
-          password: 'Password123!',
-        );
+        'when login is called then it throws EmailAccountLoginException with invalidCredentials',
+        () async {
+          final result = fixture.emailIdp.login(
+            session,
+            email: 'nonexistent@serverpod.dev',
+            password: 'Password123!',
+          );
 
-        await expectLater(
-          result,
-          throwsA(
-            isA<EmailAccountLoginException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountLoginExceptionReason.invalidCredentials,
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountLoginException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountLoginExceptionReason.invalidCredentials,
+              ),
             ),
-          ),
-        );
-      });
+          );
+        },
+      );
     },
   );
 
@@ -280,7 +287,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const maxLoginAttempts = RateLimit(
         maxAttempts: 1,
         timeframe: Duration(hours: 1),
@@ -289,8 +296,8 @@ void main() {
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'pepper',
             failedLoginRateLimit: maxLoginAttempts,
           ),
@@ -298,7 +305,7 @@ void main() {
 
         // Make initial failed login attempt to hit the rate limit
         try {
-          await fixture.emailIDP.login(
+          await fixture.emailIdp.login(
             session,
             email: email,
             password: 'WrongPassword123!',
@@ -313,25 +320,26 @@ void main() {
       });
 
       test(
-          'when login is called then it throws EmailAccountLoginException with reason "tooManyAttempts"',
-          () async {
-        final result = fixture.emailIDP.login(
-          session,
-          email: email,
-          password: 'Password123!',
-        );
+        'when login is called then it throws EmailAccountLoginException with reason "tooManyAttempts"',
+        () async {
+          final result = fixture.emailIdp.login(
+            session,
+            email: email,
+            password: 'Password123!',
+          );
 
-        await expectLater(
-          result,
-          throwsA(
-            isA<EmailAccountLoginException>().having(
-              (final e) => e.reason,
-              'reason',
-              EmailAccountLoginExceptionReason.tooManyAttempts,
+          await expectLater(
+            result,
+            throwsA(
+              isA<EmailAccountLoginException>().having(
+                (final e) => e.reason,
+                'reason',
+                EmailAccountLoginExceptionReason.tooManyAttempts,
+              ),
             ),
-          ),
-        );
-      });
+          );
+        },
+      );
     },
   );
 }

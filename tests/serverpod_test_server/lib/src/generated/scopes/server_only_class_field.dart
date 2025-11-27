@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../scopes/serverOnly/server_only_class.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class ServerOnlyClassField
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -26,17 +27,19 @@ abstract class ServerOnlyClassField
   }) = _ServerOnlyClassFieldImpl;
 
   factory ServerOnlyClassField.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ServerOnlyClassField(
-      serverOnlyClassList: (jsonSerialization['serverOnlyClassList'] as List?)
-          ?.map(
-              (e) => _i2.ServerOnlyClass.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      serverOnlyClassMap: (jsonSerialization['serverOnlyClassMap'] as Map?)
-          ?.map((k, v) => MapEntry(
-                k as String,
-                _i2.ServerOnlyClass.fromJson((v as Map<String, dynamic>)),
-              )),
+      serverOnlyClassList: jsonSerialization['serverOnlyClassList'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.ServerOnlyClass>>(
+              jsonSerialization['serverOnlyClassList'],
+            ),
+      serverOnlyClassMap: jsonSerialization['serverOnlyClassMap'] == null
+          ? null
+          : _i3.Protocol().deserialize<Map<String, _i2.ServerOnlyClass>>(
+              jsonSerialization['serverOnlyClassMap'],
+            ),
     );
   }
 
@@ -54,18 +57,21 @@ abstract class ServerOnlyClassField
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ServerOnlyClassField',
       if (serverOnlyClassList != null)
-        'serverOnlyClassList':
-            serverOnlyClassList?.toJson(valueToJson: (v) => v.toJson()),
+        'serverOnlyClassList': serverOnlyClassList?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
       if (serverOnlyClassMap != null)
-        'serverOnlyClassMap':
-            serverOnlyClassMap?.toJson(valueToJson: (v) => v.toJson()),
+        'serverOnlyClassMap': serverOnlyClassMap?.toJson(
+          valueToJson: (v) => v.toJson(),
+        ),
     };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {'__className__': 'ServerOnlyClassField'};
   }
 
   @override
@@ -81,9 +87,9 @@ class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
     List<_i2.ServerOnlyClass>? serverOnlyClassList,
     Map<String, _i2.ServerOnlyClass>? serverOnlyClassMap,
   }) : super._(
-          serverOnlyClassList: serverOnlyClassList,
-          serverOnlyClassMap: serverOnlyClassMap,
-        );
+         serverOnlyClassList: serverOnlyClassList,
+         serverOnlyClassMap: serverOnlyClassMap,
+       );
 
   /// Returns a shallow copy of this [ServerOnlyClassField]
   /// with some or all fields replaced by the given arguments.
@@ -99,15 +105,16 @@ class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
           : this.serverOnlyClassList?.map((e0) => e0.copyWith()).toList(),
       serverOnlyClassMap:
           serverOnlyClassMap is Map<String, _i2.ServerOnlyClass>?
-              ? serverOnlyClassMap
-              : this.serverOnlyClassMap?.map((
-                    key0,
-                    value0,
-                  ) =>
-                      MapEntry(
-                        key0,
-                        value0.copyWith(),
-                      )),
+          ? serverOnlyClassMap
+          : this.serverOnlyClassMap?.map(
+              (
+                key0,
+                value0,
+              ) => MapEntry(
+                key0,
+                value0.copyWith(),
+              ),
+            ),
     );
   }
 }

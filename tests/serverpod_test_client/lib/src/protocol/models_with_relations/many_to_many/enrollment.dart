@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/many_to_many/student.dart' as _i2;
 import '../../models_with_relations/many_to_many/course.dart' as _i3;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
 
 abstract class Enrollment implements _i1.SerializableModel {
   Enrollment._({
@@ -37,13 +38,13 @@ abstract class Enrollment implements _i1.SerializableModel {
       studentId: jsonSerialization['studentId'] as int,
       student: jsonSerialization['student'] == null
           ? null
-          : _i2.Student.fromJson(
-              (jsonSerialization['student'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i2.Student>(
+              jsonSerialization['student'],
+            ),
       courseId: jsonSerialization['courseId'] as int,
       course: jsonSerialization['course'] == null
           ? null
-          : _i3.Course.fromJson(
-              (jsonSerialization['course'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i3.Course>(jsonSerialization['course']),
     );
   }
 
@@ -73,6 +74,7 @@ abstract class Enrollment implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Enrollment',
       if (id != null) 'id': id,
       'studentId': studentId,
       if (student != null) 'student': student?.toJson(),
@@ -97,12 +99,12 @@ class _EnrollmentImpl extends Enrollment {
     required int courseId,
     _i3.Course? course,
   }) : super._(
-          id: id,
-          studentId: studentId,
-          student: student,
-          courseId: courseId,
-          course: course,
-        );
+         id: id,
+         studentId: studentId,
+         student: student,
+         courseId: courseId,
+         course: course,
+       );
 
   /// Returns a shallow copy of this [Enrollment]
   /// with some or all fields replaced by the given arguments.

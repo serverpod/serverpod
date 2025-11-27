@@ -44,7 +44,10 @@ class InsightsEndpoint extends Endpoint {
 
   /// Get the latest [numEntries] from the session log.
   Future<SessionLogResult> getSessionLog(
-      Session session, int? numEntries, SessionLogFilter? filter) async {
+    Session session,
+    int? numEntries,
+    SessionLogFilter? filter,
+  ) async {
     // Filter for errors and slow
     Expression where;
     if (filter == null || (!filter.slow && !filter.error && !filter.open)) {
@@ -53,7 +56,8 @@ class InsightsEndpoint extends Endpoint {
       where = SessionLogEntry.t.isOpen.equals(true);
     } else {
       if (filter.slow && filter.error) {
-        where = SessionLogEntry.t.slow.equals(true) |
+        where =
+            SessionLogEntry.t.slow.equals(true) |
             SessionLogEntry.t.error.notEquals(null);
       } else if (filter.slow) {
         where = SessionLogEntry.t.slow.equals(true);
@@ -101,8 +105,11 @@ class InsightsEndpoint extends Endpoint {
         orderBy: MessageLogEntry.t.order,
       );
 
-      final (logRows, queryRows, messageRows) =
-          await (futureLogRows, futureQueryRows, futureMessageRows).wait;
+      final (logRows, queryRows, messageRows) = await (
+        futureLogRows,
+        futureQueryRows,
+        futureMessageRows,
+      ).wait;
 
       sessionLogInfo.add(
         SessionLogInfo(
@@ -119,7 +126,10 @@ class InsightsEndpoint extends Endpoint {
 
   /// Get the latest [numEntries] from the session log.
   Future<SessionLogResult> getOpenSessionLog(
-      Session session, int? numEntries, SessionLogFilter? filter) async {
+    Session session,
+    int? numEntries,
+    SessionLogFilter? filter,
+  ) async {
     return SessionLogResult(sessionLog: []);
   }
 
@@ -196,7 +206,8 @@ class InsightsEndpoint extends Endpoint {
   /// See also:
   /// - [getLiveDatabaseDefinition]
   Future<List<TableDefinition>> getTargetTableDefinition(
-      Session session) async {
+    Session session,
+  ) async {
     return session.serverpod.serializationManager.getTargetTableDefinitions();
   }
 
@@ -327,7 +338,9 @@ class InsightsEndpoint extends Endpoint {
   Future<String> fetchFile(Session session, String path) async {
     // Test the file in unix format.
     if (!PathUtil.isFileWhitelisted(
-        path, session.serverpod.filesWhitelistedForInsights)) {
+      path,
+      session.serverpod.filesWhitelistedForInsights,
+    )) {
       throw AccessDeniedException(
         message: 'File is not in whitelist: $path',
       );

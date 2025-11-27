@@ -18,9 +18,9 @@ class FakeTokenManager implements TokenManager {
     final AuthUsers authUsers = const AuthUsers(),
     final String tokenIssuer = 'fake',
     final bool usesRefreshTokens = true,
-  })  : _tokenIssuer = tokenIssuer,
-        _usesRefreshTokens = usesRefreshTokens,
-        _authUsers = authUsers;
+  }) : _tokenIssuer = tokenIssuer,
+       _usesRefreshTokens = usesRefreshTokens,
+       _authUsers = authUsers;
 
   @override
   Future<AuthSuccess> issueToken(
@@ -45,8 +45,9 @@ class FakeTokenManager implements TokenManager {
     }
 
     final tokenId = _storage.generateTokenId();
-    final refreshTokenId =
-        _usesRefreshTokens ? _storage.generateRefreshTokenId() : null;
+    final refreshTokenId = _usesRefreshTokens
+        ? _storage.generateRefreshTokenId()
+        : null;
 
     final scopeSet = scopes
         .where((final scope) => scope.name != null)

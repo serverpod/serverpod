@@ -24,14 +24,16 @@ abstract class BigIntDefaultPersist implements _i1.SerializableModel {
   }) = _BigIntDefaultPersistImpl;
 
   factory BigIntDefaultPersist.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return BigIntDefaultPersist(
       id: jsonSerialization['id'] as int?,
       bigIntDefaultPersistStr:
           jsonSerialization['bigIntDefaultPersistStr'] == null
-              ? null
-              : _i1.BigIntJsonExtension.fromJson(
-                  jsonSerialization['bigIntDefaultPersistStr']),
+          ? null
+          : _i1.BigIntJsonExtension.fromJson(
+              jsonSerialization['bigIntDefaultPersistStr'],
+            ),
     );
   }
 
@@ -52,6 +54,7 @@ abstract class BigIntDefaultPersist implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'BigIntDefaultPersist',
       if (id != null) 'id': id,
       if (bigIntDefaultPersistStr != null)
         'bigIntDefaultPersistStr': bigIntDefaultPersistStr?.toJson(),
@@ -71,9 +74,9 @@ class _BigIntDefaultPersistImpl extends BigIntDefaultPersist {
     int? id,
     BigInt? bigIntDefaultPersistStr,
   }) : super._(
-          id: id,
-          bigIntDefaultPersistStr: bigIntDefaultPersistStr,
-        );
+         id: id,
+         bigIntDefaultPersistStr: bigIntDefaultPersistStr,
+       );
 
   /// Returns a shallow copy of this [BigIntDefaultPersist]
   /// with some or all fields replaced by the given arguments.

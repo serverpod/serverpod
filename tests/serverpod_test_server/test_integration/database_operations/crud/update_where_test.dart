@@ -48,85 +48,87 @@ void main() {
       });
 
       group(
-          'when updating where number equals specific value for a single column',
-          () {
-        const updatedNumber = 42;
-        late List<Types> updated;
+        'when updating where number equals specific value for a single column',
+        () {
+          const updatedNumber = 42;
+          late List<Types> updated;
 
-        setUp(() async {
-          updated = await Types.db.updateWhere(
-            session,
-            columnValues: (t) => [t.anInt(updatedNumber)],
-            where: (t) => t.anInt.equals(1),
-          );
-        });
+          setUp(() async {
+            updated = await Types.db.updateWhere(
+              session,
+              columnValues: (t) => [t.anInt(updatedNumber)],
+              where: (t) => t.anInt.equals(1),
+            );
+          });
 
-        test('then the updated result returns all matching updated rows', () {
-          expect(updated, hasLength(2));
-          var numbers = updated.map((row) => row.anInt);
-          expect(numbers, everyElement(updatedNumber));
-        });
+          test('then the updated result returns all matching updated rows', () {
+            expect(updated, hasLength(2));
+            var numbers = updated.map((row) => row.anInt);
+            expect(numbers, everyElement(updatedNumber));
+          });
 
-        test('then all matching rows are updated in the database', () async {
-          var dbRows = await Types.db.find(
-            session,
-            where: (t) => t.anInt.equals(updatedNumber),
-          );
-          expect(dbRows, hasLength(2));
-          var dbNumbers = dbRows.map((row) => row.anInt);
-          expect(dbNumbers, everyElement(updatedNumber));
-        });
+          test('then all matching rows are updated in the database', () async {
+            var dbRows = await Types.db.find(
+              session,
+              where: (t) => t.anInt.equals(updatedNumber),
+            );
+            expect(dbRows, hasLength(2));
+            var dbNumbers = dbRows.map((row) => row.anInt);
+            expect(dbNumbers, everyElement(updatedNumber));
+          });
 
-        test('then non-selected columns remain unchanged', () {
-          var emails = updated.map((e) => e.aString);
-          expect(
-            emails,
-            containsAll(['first', 'duplicate']),
-          );
-        });
-      });
+          test('then non-selected columns remain unchanged', () {
+            var emails = updated.map((e) => e.aString);
+            expect(
+              emails,
+              containsAll(['first', 'duplicate']),
+            );
+          });
+        },
+      );
 
       group(
-          'when updating where number matches complex criteria for a single column',
-          () {
-        const updatedComplexNumber = 200;
-        late List<Types> updated;
+        'when updating where number matches complex criteria for a single column',
+        () {
+          const updatedComplexNumber = 200;
+          late List<Types> updated;
 
-        setUp(() async {
-          updated = await Types.db.updateWhere(
-            session,
-            columnValues: (t) => [t.anInt(updatedComplexNumber)],
-            where: (t) => t.anInt.equals(2) | t.anInt.equals(3),
-          );
-        });
+          setUp(() async {
+            updated = await Types.db.updateWhere(
+              session,
+              columnValues: (t) => [t.anInt(updatedComplexNumber)],
+              where: (t) => t.anInt.equals(2) | t.anInt.equals(3),
+            );
+          });
 
-        test('then the updated result returns only matching rows', () {
-          expect(updated, hasLength(2));
-          var numbers = updated.map((row) => row.anInt);
-          expect(numbers, everyElement(updatedComplexNumber));
-        });
+          test('then the updated result returns only matching rows', () {
+            expect(updated, hasLength(2));
+            var numbers = updated.map((row) => row.anInt);
+            expect(numbers, everyElement(updatedComplexNumber));
+          });
 
-        test('then only matching rows are updated in the database', () async {
-          var dbRows = await Types.db.find(
-            session,
-            where: (t) => t.anInt.equals(updatedComplexNumber),
-          );
-          expect(dbRows, hasLength(2));
-          var emails = dbRows.map((e) => e.aString);
-          expect(
-            emails,
-            containsAll(['second', 'third']),
-          );
-        });
+          test('then only matching rows are updated in the database', () async {
+            var dbRows = await Types.db.find(
+              session,
+              where: (t) => t.anInt.equals(updatedComplexNumber),
+            );
+            expect(dbRows, hasLength(2));
+            var emails = dbRows.map((e) => e.aString);
+            expect(
+              emails,
+              containsAll(['second', 'third']),
+            );
+          });
 
-        test('then non-selected columns remain unchanged', () {
-          var emails = updated.map((e) => e.aString);
-          expect(
-            emails,
-            containsAll(['second', 'third']),
-          );
-        });
-      });
+          test('then non-selected columns remain unchanged', () {
+            var emails = updated.map((e) => e.aString);
+            expect(
+              emails,
+              containsAll(['second', 'third']),
+            );
+          });
+        },
+      );
 
       group('when updating where criteria matches for multiple columns', () {
         const updatedInt = 42;
@@ -144,27 +146,31 @@ void main() {
           );
         });
 
-        test('then the updated result returns updated rows with new values',
-            () {
-          expect(updated, hasLength(2));
-          var updatedNumbers = updated.map((row) => row.anInt);
-          expect(updatedNumbers, everyElement(updatedInt));
-          var updatedStrings = updated.map((row) => row.aString);
-          expect(updatedStrings, everyElement(updatedString));
-        });
+        test(
+          'then the updated result returns updated rows with new values',
+          () {
+            expect(updated, hasLength(2));
+            var updatedNumbers = updated.map((row) => row.anInt);
+            expect(updatedNumbers, everyElement(updatedInt));
+            var updatedStrings = updated.map((row) => row.aString);
+            expect(updatedStrings, everyElement(updatedString));
+          },
+        );
 
-        test('then only selected columns are updated in the database',
-            () async {
-          var dbUpdatedRows = await Types.db.find(
-            session,
-            where: (t) => t.anInt.equals(updatedInt),
-          );
-          expect(dbUpdatedRows, hasLength(2));
-          var dbUpdatedNumbers = dbUpdatedRows.map((row) => row.anInt);
-          expect(dbUpdatedNumbers, everyElement(updatedInt));
-          var dbUpdatedStrings = dbUpdatedRows.map((row) => row.aString);
-          expect(dbUpdatedStrings, everyElement(updatedString));
-        });
+        test(
+          'then only selected columns are updated in the database',
+          () async {
+            var dbUpdatedRows = await Types.db.find(
+              session,
+              where: (t) => t.anInt.equals(updatedInt),
+            );
+            expect(dbUpdatedRows, hasLength(2));
+            var dbUpdatedNumbers = dbUpdatedRows.map((row) => row.anInt);
+            expect(dbUpdatedNumbers, everyElement(updatedInt));
+            var dbUpdatedStrings = dbUpdatedRows.map((row) => row.aString);
+            expect(dbUpdatedStrings, everyElement(updatedString));
+          },
+        );
 
         test('then non-matching rows remain unchanged', () async {
           var nonMatching = await Types.db.findFirstRow(
@@ -284,8 +290,10 @@ void main() {
         setUp(() async {
           updated = await Types.db.updateWhere(
             session,
-            columnValues: (t) =>
-                [t.anInt(updatedIntFromNull), t.aString(updatedStringFromNull)],
+            columnValues: (t) => [
+              t.anInt(updatedIntFromNull),
+              t.aString(updatedStringFromNull),
+            ],
             where: (t) => t.anInt.equals(null),
           );
         });
@@ -453,8 +461,9 @@ void main() {
             session,
             where: (t) => t.anInt.equals(matchingInt),
           );
-          var unchangedRows =
-              allRows.where((r) => r.aString != limitedUpdateString).toList();
+          var unchangedRows = allRows
+              .where((r) => r.aString != limitedUpdateString)
+              .toList();
           expect(unchangedRows, hasLength(2));
           expect(
             unchangedRows.map((r) => r.aString).toSet(),
@@ -581,8 +590,9 @@ void main() {
               aString: 'first',
               aByteData: ByteData.view(Uint8List.fromList([1, 2, 3]).buffer),
               aDuration: Duration(seconds: 30),
-              aUuid:
-                  UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
+              aUuid: UuidValue.fromString(
+                '550e8400-e29b-41d4-a716-446655440000',
+              ),
               aUri: Uri.parse('https://serverpod.dev'),
               aBigInt: BigInt.from(123456789),
               aVector: Vector([1.0, 2.0, 3.0]),
@@ -596,7 +606,7 @@ void main() {
               aSet: {1, 2, 3},
               aRecord: (
                 'original',
-                optionalUri: Uri.parse('https://example.com')
+                optionalUri: Uri.parse('https://example.com'),
               ),
             ),
             Types(
@@ -607,8 +617,9 @@ void main() {
               aString: 'second',
               aByteData: ByteData.view(Uint8List.fromList([7, 8, 9]).buffer),
               aDuration: Duration(minutes: 1),
-              aUuid:
-                  UuidValue.fromString('456e7890-e12b-34c5-a678-901234567890'),
+              aUuid: UuidValue.fromString(
+                '456e7890-e12b-34c5-a678-901234567890',
+              ),
               aUri: Uri.parse('https://example.com'),
               aBigInt: BigInt.from(987654321),
               aVector: Vector([7.0, 8.0, 9.0]),
@@ -641,7 +652,8 @@ void main() {
               t.aByteData(ByteData.view(Uint8List.fromList([4, 5, 6]).buffer)),
               t.aDuration(Duration(minutes: 5)),
               t.aUuid(
-                  UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000')),
+                UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'),
+              ),
               t.aUri(Uri.parse('https://updated.com')),
               t.aBigInt(BigInt.from(555666777)),
               t.aVector(Vector([4.0, 5.0, 6.0])),
@@ -669,15 +681,18 @@ void main() {
           expect(updated.first.aDateTime, DateTime.utc(2024, 12, 31));
           expect(updated.first.aString, 'updated');
           expect(
-              Uint8List.view(
-                updated.first.aByteData!.buffer,
-                updated.first.aByteData!.offsetInBytes,
-                updated.first.aByteData!.lengthInBytes,
-              ).toList(),
-              [4, 5, 6]);
+            Uint8List.view(
+              updated.first.aByteData!.buffer,
+              updated.first.aByteData!.offsetInBytes,
+              updated.first.aByteData!.lengthInBytes,
+            ).toList(),
+            [4, 5, 6],
+          );
           expect(updated.first.aDuration, Duration(minutes: 5));
-          expect(updated.first.aUuid,
-              UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'));
+          expect(
+            updated.first.aUuid,
+            UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'),
+          );
           expect(updated.first.aUri, Uri.parse('https://updated.com'));
           expect(updated.first.aBigInt, BigInt.from(555666777));
           expect(updated.first.aVector, Vector([4.0, 5.0, 6.0]));
@@ -689,8 +704,10 @@ void main() {
           expect(updated.first.aList, [4, 5, 6]);
           expect(updated.first.aMap, {3: 30, 4: 40});
           expect(updated.first.aSet, {4, 5, 6});
-          expect(updated.first.aRecord,
-              ('updated', optionalUri: Uri.parse('https://updated.com')));
+          expect(updated.first.aRecord, (
+            'updated',
+            optionalUri: Uri.parse('https://updated.com'),
+          ));
         });
 
         test('then all data types are updated in the database', () async {
@@ -705,15 +722,18 @@ void main() {
           expect(dbRow.aDateTime, DateTime.utc(2024, 12, 31));
           expect(dbRow.aString, 'updated');
           expect(
-              Uint8List.view(
-                dbRow.aByteData!.buffer,
-                dbRow.aByteData!.offsetInBytes,
-                dbRow.aByteData!.lengthInBytes,
-              ).toList(),
-              [4, 5, 6]);
+            Uint8List.view(
+              dbRow.aByteData!.buffer,
+              dbRow.aByteData!.offsetInBytes,
+              dbRow.aByteData!.lengthInBytes,
+            ).toList(),
+            [4, 5, 6],
+          );
           expect(dbRow.aDuration, Duration(minutes: 5));
-          expect(dbRow.aUuid,
-              UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'));
+          expect(
+            dbRow.aUuid,
+            UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000'),
+          );
           expect(dbRow.aUri, Uri.parse('https://updated.com'));
           expect(dbRow.aBigInt, BigInt.from(555666777));
           expect(dbRow.aVector, Vector([4.0, 5.0, 6.0]));
@@ -725,8 +745,10 @@ void main() {
           expect(dbRow.aList, [4, 5, 6]);
           expect(dbRow.aMap, {3: 30, 4: 40});
           expect(dbRow.aSet, {4, 5, 6});
-          expect(dbRow.aRecord,
-              ('updated', optionalUri: Uri.parse('https://updated.com')));
+          expect(dbRow.aRecord, (
+            'updated',
+            optionalUri: Uri.parse('https://updated.com'),
+          ));
         });
 
         test('then non-matching rows remain unchanged', () async {

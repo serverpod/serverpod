@@ -35,10 +35,11 @@ void main() {
       config = GeneratorConfigBuilder()
           .withServerPackageDirectoryPathParts(testProjectPathParts)
           .withModules([
-        ModuleConfigBuilder('test_module')
-            .withServerPackageDirectoryPathParts(split(moduleProject.path))
-            .build()
-      ]).build();
+            ModuleConfigBuilder('test_module')
+                .withServerPackageDirectoryPathParts(split(moduleProject.path))
+                .build(),
+          ])
+          .build();
     });
 
     tearDown(() {
@@ -49,13 +50,15 @@ void main() {
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'models',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            'models',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -78,13 +81,15 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'protocol',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            'protocol',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -104,48 +109,53 @@ fields:
     });
 
     group(
-        'placed in a subdirectory of the module "lib/src/models" directory when loaded',
-        () {
-      late List<ModelSource> models;
+      'placed in a subdirectory of the module "lib/src/models" directory when loaded',
+      () {
+        late List<ModelSource> models;
 
-      setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'models',
-          'sub',
-          modelFileName,
-        ));
-        modelFile.createSync(recursive: true);
-        modelFile.writeAsStringSync('''
+        setUp(() async {
+          var modelFile = File(
+            join(
+              moduleProject.path,
+              'lib',
+              'src',
+              'models',
+              'sub',
+              modelFileName,
+            ),
+          );
+          modelFile.createSync(recursive: true);
+          modelFile.writeAsStringSync('''
 class: Example
 fields:
   name: String
 
 ''');
-        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-      });
+          models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+        });
 
-      test('then the class is serialized.', () async {
-        expect(models, hasLength(1));
-      });
+        test('then the class is serialized.', () async {
+          expect(models, hasLength(1));
+        });
 
-      test('then modelSource has the correct subDirPathParts.', () async {
-        expect(models.firstOrNull?.subDirPathParts, ['sub']);
-      });
-    });
+        test('then modelSource has the correct subDirPathParts.', () async {
+          expect(models.firstOrNull?.subDirPathParts, ['sub']);
+        });
+      },
+    );
 
     group('placed in the module "lib/src" directory when loaded', () {
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -172,10 +182,11 @@ fields:
       config = GeneratorConfigBuilder()
           .withServerPackageDirectoryPathParts(testProjectPathParts)
           .withModules([
-        ModuleConfigBuilder('test_module')
-            .withServerPackageDirectoryPathParts(split(moduleProject.path))
-            .build()
-      ]).build();
+            ModuleConfigBuilder('test_module')
+                .withServerPackageDirectoryPathParts(split(moduleProject.path))
+                .build(),
+          ])
+          .build();
     });
 
     tearDown(() {
@@ -186,13 +197,15 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'models',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            'models',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -215,13 +228,15 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'protocol',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            'protocol',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -241,81 +256,89 @@ fields:
     });
 
     group(
-        'placed in a subdirectory of the module "lib/src/models" directory when loaded',
-        () {
-      late List<ModelSource> models;
+      'placed in a subdirectory of the module "lib/src/models" directory when loaded',
+      () {
+        late List<ModelSource> models;
 
-      setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'models',
-          'sub',
-          modelFileName,
-        ));
-        modelFile.createSync(recursive: true);
-        modelFile.writeAsStringSync('''
+        setUp(() async {
+          var modelFile = File(
+            join(
+              moduleProject.path,
+              'lib',
+              'src',
+              'models',
+              'sub',
+              modelFileName,
+            ),
+          );
+          modelFile.createSync(recursive: true);
+          modelFile.writeAsStringSync('''
 class: Example
 fields:
   name: String
 
 ''');
-        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-      });
+          models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+        });
 
-      test('then the class is serialized.', () async {
-        expect(models, hasLength(1));
-      });
+        test('then the class is serialized.', () async {
+          expect(models, hasLength(1));
+        });
 
-      test('then modelSource has the correct subDirPathParts.', () async {
-        expect(models.firstOrNull?.subDirPathParts, ['sub']);
-      });
-    });
+        test('then modelSource has the correct subDirPathParts.', () async {
+          expect(models.firstOrNull?.subDirPathParts, ['sub']);
+        });
+      },
+    );
 
     group(
-        'placed in a subdirectory of the module "lib/src/protocol" directory when loaded',
-        () {
-      late List<ModelSource> models;
+      'placed in a subdirectory of the module "lib/src/protocol" directory when loaded',
+      () {
+        late List<ModelSource> models;
 
-      setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'protocol',
-          'sub',
-          modelFileName,
-        ));
-        modelFile.createSync(recursive: true);
-        modelFile.writeAsStringSync('''
+        setUp(() async {
+          var modelFile = File(
+            join(
+              moduleProject.path,
+              'lib',
+              'src',
+              'protocol',
+              'sub',
+              modelFileName,
+            ),
+          );
+          modelFile.createSync(recursive: true);
+          modelFile.writeAsStringSync('''
 class: Example
 fields:
   name: String
 
 ''');
-        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-      });
+          models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+        });
 
-      test('then the class is serialized.', () async {
-        expect(models, hasLength(1));
-      });
+        test('then the class is serialized.', () async {
+          expect(models, hasLength(1));
+        });
 
-      test('then modelSource has the correct subDirPathParts.', () async {
-        expect(models.firstOrNull?.subDirPathParts, ['sub']);
-      });
-    });
+        test('then modelSource has the correct subDirPathParts.', () async {
+          expect(models.firstOrNull?.subDirPathParts, ['sub']);
+        });
+      },
+    );
 
     group('placed in the module "lib/src" directory when loaded', () {
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -342,10 +365,11 @@ fields:
       config = GeneratorConfigBuilder()
           .withServerPackageDirectoryPathParts(testProjectPathParts)
           .withModules([
-        ModuleConfigBuilder('test_module')
-            .withServerPackageDirectoryPathParts(split(moduleProject.path))
-            .build()
-      ]).build();
+            ModuleConfigBuilder('test_module')
+                .withServerPackageDirectoryPathParts(split(moduleProject.path))
+                .build(),
+          ])
+          .build();
     });
 
     tearDown(() {
@@ -356,13 +380,15 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'models',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            'models',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -385,13 +411,15 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'protocol',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            'protocol',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -411,80 +439,88 @@ fields:
     });
 
     group(
-        'placed in a subdirectory of the module "lib/src/models" directory when loaded',
-        () {
-      late List<ModelSource> models;
+      'placed in a subdirectory of the module "lib/src/models" directory when loaded',
+      () {
+        late List<ModelSource> models;
 
-      setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'models',
-          'sub',
-          modelFileName,
-        ));
-        modelFile.createSync(recursive: true);
-        modelFile.writeAsStringSync('''
+        setUp(() async {
+          var modelFile = File(
+            join(
+              moduleProject.path,
+              'lib',
+              'src',
+              'models',
+              'sub',
+              modelFileName,
+            ),
+          );
+          modelFile.createSync(recursive: true);
+          modelFile.writeAsStringSync('''
 class: Example
 fields:
   name: String
 
 ''');
-        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-      });
+          models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+        });
 
-      test('then the class is serialized.', () async {
-        expect(models, hasLength(1));
-      });
+        test('then the class is serialized.', () async {
+          expect(models, hasLength(1));
+        });
 
-      test('then modelSource has the correct subDirPathParts.', () async {
-        expect(models.firstOrNull?.subDirPathParts, ['sub']);
-      });
-    });
+        test('then modelSource has the correct subDirPathParts.', () async {
+          expect(models.firstOrNull?.subDirPathParts, ['sub']);
+        });
+      },
+    );
 
     group(
-        'placed in a subdirectory of the module "lib/src/protocol" directory when loaded',
-        () {
-      late List<ModelSource> models;
+      'placed in a subdirectory of the module "lib/src/protocol" directory when loaded',
+      () {
+        late List<ModelSource> models;
 
-      setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'protocol',
-          'sub',
-          modelFileName,
-        ));
-        modelFile.createSync(recursive: true);
-        modelFile.writeAsStringSync('''
+        setUp(() async {
+          var modelFile = File(
+            join(
+              moduleProject.path,
+              'lib',
+              'src',
+              'protocol',
+              'sub',
+              modelFileName,
+            ),
+          );
+          modelFile.createSync(recursive: true);
+          modelFile.writeAsStringSync('''
 class: Example
 fields:
   name: String
 
 ''');
-        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-      });
+          models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+        });
 
-      test('then the class is serialized.', () async {
-        expect(models, hasLength(1));
-      });
+        test('then the class is serialized.', () async {
+          expect(models, hasLength(1));
+        });
 
-      test('then modelSource has the correct subDirPathParts.', () async {
-        expect(models.firstOrNull?.subDirPathParts, ['sub']);
-      });
-    });
+        test('then modelSource has the correct subDirPathParts.', () async {
+          expect(models.firstOrNull?.subDirPathParts, ['sub']);
+        });
+      },
+    );
 
     group('placed in the "lib" directory when loaded', () {
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -507,12 +543,14 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'my_feature',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'my_feature',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -535,12 +573,14 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -563,13 +603,15 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'my_feature',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            'my_feature',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -600,10 +642,11 @@ fields:
       config = GeneratorConfigBuilder()
           .withServerPackageDirectoryPathParts(testProjectPathParts)
           .withModules([
-        ModuleConfigBuilder('test_module')
-            .withServerPackageDirectoryPathParts(split(moduleProject.path))
-            .build()
-      ]).build();
+            ModuleConfigBuilder('test_module')
+                .withServerPackageDirectoryPathParts(split(moduleProject.path))
+                .build(),
+          ])
+          .build();
     });
 
     tearDown(() {
@@ -614,13 +657,15 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'models',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            'models',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -643,13 +688,15 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'protocol',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            'protocol',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -669,80 +716,88 @@ fields:
     });
 
     group(
-        'placed in a subdirectory of the module "lib/src/models" directory when loaded',
-        () {
-      late List<ModelSource> models;
+      'placed in a subdirectory of the module "lib/src/models" directory when loaded',
+      () {
+        late List<ModelSource> models;
 
-      setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'models',
-          'sub',
-          modelFileName,
-        ));
-        modelFile.createSync(recursive: true);
-        modelFile.writeAsStringSync('''
+        setUp(() async {
+          var modelFile = File(
+            join(
+              moduleProject.path,
+              'lib',
+              'src',
+              'models',
+              'sub',
+              modelFileName,
+            ),
+          );
+          modelFile.createSync(recursive: true);
+          modelFile.writeAsStringSync('''
 class: Example
 fields:
   name: String
 
 ''');
-        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-      });
+          models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+        });
 
-      test('then the class is serialized.', () async {
-        expect(models, hasLength(1));
-      });
+        test('then the class is serialized.', () async {
+          expect(models, hasLength(1));
+        });
 
-      test('then modelSource has the correct subDirPathParts.', () async {
-        expect(models.firstOrNull?.subDirPathParts, ['sub']);
-      });
-    });
+        test('then modelSource has the correct subDirPathParts.', () async {
+          expect(models.firstOrNull?.subDirPathParts, ['sub']);
+        });
+      },
+    );
 
     group(
-        'placed in a subdirectory of the module "lib/src/protocol" directory when loaded',
-        () {
-      late List<ModelSource> models;
+      'placed in a subdirectory of the module "lib/src/protocol" directory when loaded',
+      () {
+        late List<ModelSource> models;
 
-      setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'protocol',
-          'sub',
-          modelFileName,
-        ));
-        modelFile.createSync(recursive: true);
-        modelFile.writeAsStringSync('''
+        setUp(() async {
+          var modelFile = File(
+            join(
+              moduleProject.path,
+              'lib',
+              'src',
+              'protocol',
+              'sub',
+              modelFileName,
+            ),
+          );
+          modelFile.createSync(recursive: true);
+          modelFile.writeAsStringSync('''
 class: Example
 fields:
   name: String
 
 ''');
-        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-      });
+          models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+        });
 
-      test('then the class is serialized.', () async {
-        expect(models, hasLength(1));
-      });
+        test('then the class is serialized.', () async {
+          expect(models, hasLength(1));
+        });
 
-      test('then modelSource has the correct subDirPathParts.', () async {
-        expect(models.firstOrNull?.subDirPathParts, ['sub']);
-      });
-    });
+        test('then modelSource has the correct subDirPathParts.', () async {
+          expect(models.firstOrNull?.subDirPathParts, ['sub']);
+        });
+      },
+    );
 
     group('placed in the "lib" directory when loaded', () {
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -765,12 +820,14 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'my_feature',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'my_feature',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -793,12 +850,14 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -821,13 +880,15 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'my_feature',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            'my_feature',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -858,10 +919,11 @@ fields:
       config = GeneratorConfigBuilder()
           .withServerPackageDirectoryPathParts(testProjectPathParts)
           .withModules([
-        ModuleConfigBuilder('test_module')
-            .withServerPackageDirectoryPathParts(split(moduleProject.path))
-            .build()
-      ]).build();
+            ModuleConfigBuilder('test_module')
+                .withServerPackageDirectoryPathParts(split(moduleProject.path))
+                .build(),
+          ])
+          .build();
     });
 
     tearDown(() {
@@ -872,13 +934,15 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'models',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            'models',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -901,13 +965,15 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'protocol',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            'protocol',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -927,80 +993,88 @@ fields:
     });
 
     group(
-        'placed in a subdirectory of the module "lib/src/models" directory when loaded',
-        () {
-      late List<ModelSource> models;
+      'placed in a subdirectory of the module "lib/src/models" directory when loaded',
+      () {
+        late List<ModelSource> models;
 
-      setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'models',
-          'sub',
-          modelFileName,
-        ));
-        modelFile.createSync(recursive: true);
-        modelFile.writeAsStringSync('''
+        setUp(() async {
+          var modelFile = File(
+            join(
+              moduleProject.path,
+              'lib',
+              'src',
+              'models',
+              'sub',
+              modelFileName,
+            ),
+          );
+          modelFile.createSync(recursive: true);
+          modelFile.writeAsStringSync('''
 class: Example
 fields:
   name: String
 
 ''');
-        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-      });
+          models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+        });
 
-      test('then the class is serialized.', () async {
-        expect(models, hasLength(1));
-      });
+        test('then the class is serialized.', () async {
+          expect(models, hasLength(1));
+        });
 
-      test('then modelSource has the correct subDirPathParts.', () async {
-        expect(models.firstOrNull?.subDirPathParts, ['sub']);
-      });
-    });
+        test('then modelSource has the correct subDirPathParts.', () async {
+          expect(models.firstOrNull?.subDirPathParts, ['sub']);
+        });
+      },
+    );
 
     group(
-        'placed in a subdirectory of the module "lib/src/protocol" directory when loaded',
-        () {
-      late List<ModelSource> models;
+      'placed in a subdirectory of the module "lib/src/protocol" directory when loaded',
+      () {
+        late List<ModelSource> models;
 
-      setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'protocol',
-          'sub',
-          modelFileName,
-        ));
-        modelFile.createSync(recursive: true);
-        modelFile.writeAsStringSync('''
+        setUp(() async {
+          var modelFile = File(
+            join(
+              moduleProject.path,
+              'lib',
+              'src',
+              'protocol',
+              'sub',
+              modelFileName,
+            ),
+          );
+          modelFile.createSync(recursive: true);
+          modelFile.writeAsStringSync('''
 class: Example
 fields:
   name: String
 
 ''');
-        models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-      });
+          models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+        });
 
-      test('then the class is serialized.', () async {
-        expect(models, hasLength(1));
-      });
+        test('then the class is serialized.', () async {
+          expect(models, hasLength(1));
+        });
 
-      test('then modelSource has the correct subDirPathParts.', () async {
-        expect(models.firstOrNull?.subDirPathParts, ['sub']);
-      });
-    });
+        test('then modelSource has the correct subDirPathParts.', () async {
+          expect(models.firstOrNull?.subDirPathParts, ['sub']);
+        });
+      },
+    );
 
     group('placed in the "lib" directory when loaded', () {
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -1023,12 +1097,14 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'my_feature',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'my_feature',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -1051,12 +1127,14 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example
@@ -1079,13 +1157,15 @@ fields:
       late List<ModelSource> models;
 
       setUp(() async {
-        var modelFile = File(join(
-          moduleProject.path,
-          'lib',
-          'src',
-          'my_feature',
-          modelFileName,
-        ));
+        var modelFile = File(
+          join(
+            moduleProject.path,
+            'lib',
+            'src',
+            'my_feature',
+            modelFileName,
+          ),
+        );
         modelFile.createSync(recursive: true);
         modelFile.writeAsStringSync('''
 class: Example

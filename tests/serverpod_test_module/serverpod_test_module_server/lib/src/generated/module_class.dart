@@ -35,7 +35,8 @@ abstract class ModuleClass
       record: jsonSerialization['record'] == null
           ? null
           : _i2.Protocol().deserialize<(bool,)?>(
-              (jsonSerialization['record'] as Map<String, dynamic>)),
+              (jsonSerialization['record'] as Map<String, dynamic>),
+            ),
     );
   }
 
@@ -56,6 +57,7 @@ abstract class ModuleClass
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_test_module.ModuleClass',
       'name': name,
       'data': data,
       if (record != null) 'record': _i2.mapRecordToJson(record),
@@ -65,6 +67,7 @@ abstract class ModuleClass
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_test_module.ModuleClass',
       'name': name,
       'data': data,
       if (record != null) 'record': _i2.mapRecordToJson(record),
@@ -85,10 +88,10 @@ class _ModuleClassImpl extends ModuleClass {
     required int data,
     (bool,)? record,
   }) : super._(
-          name: name,
-          data: data,
-          record: record,
-        );
+         name: name,
+         data: data,
+         record: record,
+       );
 
   /// Returns a shallow copy of this [ModuleClass]
   /// with some or all fields replaced by the given arguments.
@@ -105,8 +108,8 @@ class _ModuleClassImpl extends ModuleClass {
       record: record is (bool,)?
           ? record
           : this.record == null
-              ? null
-              : (this.record!.$1,),
+          ? null
+          : (this.record!.$1,),
     );
   }
 }

@@ -1,10 +1,10 @@
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/common.dart';
 import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_extension.dart';
 
 import '../../../../generated/protocol.dart';
 import '../../../../utils/byte_data_extension.dart';
-import '../../../../utils/secret_hash_util.dart';
 import '../../util/session_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
@@ -16,16 +16,16 @@ import '../email_idp_server_exceptions.dart';
 ///
 /// This class also contains utility functions for administration tasks, such as deleting failed login attempts.
 /// {@endtemplate}
-class EmailIDPAuthenticationUtil {
-  final SecretHashUtil _hashUtil;
+class EmailIdpAuthenticationUtil {
+  final Argon2HashUtil _hashUtil;
   final RateLimit _failedLoginRateLimit;
 
-  /// Creates a new instance of [EmailIDPAuthenticationUtil].
-  EmailIDPAuthenticationUtil({
-    required final SecretHashUtil hashUtil,
+  /// Creates a new instance of [EmailIdpAuthenticationUtil].
+  EmailIdpAuthenticationUtil({
+    required final Argon2HashUtil hashUtil,
     required final RateLimit failedLoginRateLimit,
-  })  : _hashUtil = hashUtil,
-        _failedLoginRateLimit = failedLoginRateLimit;
+  }) : _hashUtil = hashUtil,
+       _failedLoginRateLimit = failedLoginRateLimit;
 
   /// Returns the [AuthUser]'s ID upon successful email/password verification.
   ///
@@ -66,8 +66,8 @@ class EmailIDPAuthenticationUtil {
       throw EmailAccountNotFoundException();
     }
 
-    if (!await _hashUtil.validateHash(
-      value: password,
+    if (!await _hashUtil.validateHashFromString(
+      secret: password,
       hash: account.passwordHash.asUint8List,
       salt: account.passwordSalt.asUint8List,
     )) {
@@ -83,7 +83,7 @@ class EmailIDPAuthenticationUtil {
   ///
   /// If [olderThan] is `null`, this will remove all attempts outside the time
   /// window that is checked upon login, as configured in
-  /// [EmailIDPConfig.emailSignInFailureResetTime].
+  /// [EmailIdpConfig.emailSignInFailureResetTime].
   ///
   /// If [email] is provided, only attempts for the given email will be deleted.
   /// {@endtemplate}
@@ -116,16 +116,17 @@ class EmailIDPAuthenticationUtil {
     final String email, {
     required final Transaction? transaction,
   }) async {
-    final oldestRelevantAttempt =
-        clock.now().subtract(_failedLoginRateLimit.timeframe);
-
-    final failedLoginAttemptCount =
-        await EmailAccountFailedLoginAttempt.db.count(
-      session,
-      where: (final t) =>
-          t.email.equals(email) & (t.attemptedAt > oldestRelevantAttempt),
-      transaction: transaction,
+    final oldestRelevantAttempt = clock.now().subtract(
+      _failedLoginRateLimit.timeframe,
     );
+
+    final failedLoginAttemptCount = await EmailAccountFailedLoginAttempt.db
+        .count(
+          session,
+          where: (final t) =>
+              t.email.equals(email) & (t.attemptedAt > oldestRelevantAttempt),
+          transaction: transaction,
+        );
 
     return failedLoginAttemptCount >= _failedLoginRateLimit.maxAttempts;
   }

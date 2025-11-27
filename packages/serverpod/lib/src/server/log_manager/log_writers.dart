@@ -95,7 +95,7 @@ class DatabaseLogWriter extends LogWriter {
   int? _sessionLogId;
 
   DatabaseLogWriter({required Session logWriterSession})
-      : _logWriterSession = logWriterSession;
+    : _logWriterSession = logWriterSession;
 
   @override
   Future<void> logEntry(LogEntry entry) async {
@@ -535,15 +535,17 @@ class MultipleLogWriter extends LogWriter {
   Future<int> closeLog(SessionLogEntry entry) async {
     int? databaseLogId;
 
-    var responses = await Future.wait(_logWriters.map((writer) async {
-      var logId = await writer.closeLog(entry);
+    var responses = await Future.wait(
+      _logWriters.map((writer) async {
+        var logId = await writer.closeLog(entry);
 
-      if (writer is DatabaseLogWriter) {
-        databaseLogId = logId;
-      }
+        if (writer is DatabaseLogWriter) {
+          databaseLogId = logId;
+        }
 
-      return logId;
-    }));
+        return logId;
+      }),
+    );
 
     return databaseLogId ?? responses.firstOrNull ?? 0;
   }

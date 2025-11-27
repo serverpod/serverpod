@@ -11,7 +11,8 @@ void main() {
           .withName('uuid')
           .withTypeDefinition('UuidValue', false)
           .withDefaults(
-              defaultPersistValue: '\'550e8400-e29b-41d4-a716-446655440000\'')
+            defaultPersistValue: '\'550e8400-e29b-41d4-a716-446655440000\'',
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -113,7 +114,8 @@ void main() {
           .withName('uuid')
           .withTypeDefinition('UuidValue', true)
           .withDefaults(
-              defaultPersistValue: '\'550e8400-e29b-41d4-a716-446655440000\'')
+            defaultPersistValue: '\'550e8400-e29b-41d4-a716-446655440000\'',
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -335,7 +337,8 @@ void main() {
           .withName('uuid')
           .withTypeDefinition('UuidValue', false)
           .withDefaults(
-              defaultModelValue: '550e8400-e29b-41d4-a716-446655440000')
+            defaultModelValue: '550e8400-e29b-41d4-a716-446655440000',
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -387,7 +390,8 @@ void main() {
           .withName('uuid')
           .withTypeDefinition('UuidValue', true)
           .withDefaults(
-              defaultModelValue: '550e8400-e29b-41d4-a716-446655440000')
+            defaultModelValue: '550e8400-e29b-41d4-a716-446655440000',
+          )
           .build();
 
       var model = ModelClassDefinitionBuilder()

@@ -14,8 +14,9 @@ class HotReloader {
         'Hot reload not available. You need to run dart with --enable-vm-service.',
       );
     }
-    var wsURL =
-        vms_utils.convertToWebSocketUrl(serviceProtocolUrl: devServiceURL);
+    var wsURL = vms_utils.convertToWebSocketUrl(
+      serviceProtocolUrl: devServiceURL,
+    );
     return vms_io.vmServiceConnectUri(wsURL.toString());
   }
 

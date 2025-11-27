@@ -8,7 +8,6 @@ import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_
 import '../../../../../core.dart';
 import '../../../../generated/protocol.dart';
 import '../../../../utils/byte_data_extension.dart';
-import '../../../../utils/secret_hash_util.dart';
 import '../../../../utils/uint8list_extension.dart';
 import '../../util/session_extension.dart';
 import '../email_idp_config.dart';
@@ -19,25 +18,25 @@ import '../email_idp_server_exceptions.dart';
 /// account creation.
 ///
 /// The main entry point is the [startRegistration] method, which returns a
-/// [EmailIDPAccountCreationResult] with the result of the operation.
+/// [EmailIdpAccountCreationResult] with the result of the operation.
 ///
 /// This class also contains utility functions for administration tasks, such as
 /// deleting expired account creations and verifying account creations.
 ///
 /// {@endtemplate}
-class EmailIDPAccountCreationUtil {
-  final SecretHashUtil _hashUtils;
-  final EmailIDPAccountCreationUtilsConfig _config;
+class EmailIdpAccountCreationUtil {
+  final Argon2HashUtil _hashUtils;
+  final EmailIdpAccountCreationUtilsConfig _config;
   final AuthUsers _authUsers;
 
-  /// Creates a new [EmailIDPAccountCreationUtil] instance.
-  EmailIDPAccountCreationUtil({
-    required final EmailIDPAccountCreationUtilsConfig config,
-    required final SecretHashUtil passwordHashUtils,
+  /// Creates a new [EmailIdpAccountCreationUtil] instance.
+  EmailIdpAccountCreationUtil({
+    required final EmailIdpAccountCreationUtilsConfig config,
+    required final Argon2HashUtil passwordHashUtils,
     required final AuthUsers authUsers,
-  })  : _config = config,
-        _authUsers = authUsers,
-        _hashUtils = passwordHashUtils;
+  }) : _config = config,
+       _authUsers = authUsers,
+       _hashUtils = passwordHashUtils;
 
   /// {@template email_idp_account_creation_util.start_account_creation}
   /// Starts the account creation process for creating a new email account.
@@ -89,9 +88,11 @@ class EmailIDPAccountCreationUtil {
       transaction: transaction,
     );
     if (pendingAccountRequest != null) {
-      if (pendingAccountRequest.createdAt.isBefore(clock.now().subtract(
-            _config.registrationVerificationCodeLifetime,
-          ))) {
+      if (pendingAccountRequest.createdAt.isBefore(
+        clock.now().subtract(
+          _config.registrationVerificationCodeLifetime,
+        ),
+      )) {
         await EmailAccountRequest.db.deleteRow(
           session,
           pendingAccountRequest,
@@ -102,8 +103,8 @@ class EmailIDPAccountCreationUtil {
       }
     }
 
-    final verificationCodeHash = await _hashUtils.createHash(
-      value: verificationCode,
+    final verificationCodeHash = await _hashUtils.createHashFromString(
+      secret: verificationCode,
     );
 
     final challenge = await SecretChallenge.db.insertRow(
@@ -193,7 +194,7 @@ class EmailIDPAccountCreationUtil {
     }
 
     final challenge = request.getChallenge;
-    await _validateHash(verificationCode, challenge);
+    await _validateHashFromString(verificationCode, challenge);
 
     if (request.isExpired(_config.registrationVerificationCodeLifetime)) {
       await EmailAccountRequest.db.deleteRow(
@@ -205,8 +206,8 @@ class EmailIDPAccountCreationUtil {
     }
 
     final createAccountToken = const Uuid().v4();
-    final createAccountTokenHash = await _hashUtils.createHash(
-      value: createAccountToken,
+    final createAccountTokenHash = await _hashUtils.createHashFromString(
+      secret: createAccountToken,
     );
 
     await _insertCreateAccountChallenge(
@@ -245,7 +246,7 @@ class EmailIDPAccountCreationUtil {
   /// In case of an invalid [completeAccountCreationToken], the failed attempt will be
   /// logged to the database outside of the [transaction] and can not be rolled
   /// back.
-  Future<EmailIDPCompleteAccountCreationResult> completeAccountCreation(
+  Future<EmailIdpCompleteAccountCreationResult> completeAccountCreation(
     final Session session, {
     required final String completeAccountCreationToken,
     required final String password,
@@ -255,8 +256,9 @@ class EmailIDPAccountCreationUtil {
       throw EmailPasswordPolicyViolationException();
     }
 
-    final credentials =
-        _tryDecodeCompleteAccountCreationToken(completeAccountCreationToken);
+    final credentials = _tryDecodeCompleteAccountCreationToken(
+      completeAccountCreationToken,
+    );
     if (credentials == null) {
       throw EmailAccountRequestInvalidVerificationCodeException();
     }
@@ -272,7 +274,7 @@ class EmailIDPAccountCreationUtil {
       throw EmailAccountRequestNotVerifiedException();
     }
 
-    await _validateHash(
+    await _validateHashFromString(
       credentials.verificationCode,
       createAccountChallenge,
     );
@@ -298,11 +300,11 @@ class EmailIDPAccountCreationUtil {
       transaction: transaction,
     );
 
-    final passwordHash = await _hashUtils.createHash(
-      value: password,
+    final passwordHash = await _hashUtils.createHashFromString(
+      secret: password,
     );
 
-    await EmailAccount.db.insertRow(
+    final emailAccount = await EmailAccount.db.insertRow(
       session,
       EmailAccount(
         authUserId: newUser.id,
@@ -313,7 +315,15 @@ class EmailIDPAccountCreationUtil {
       transaction: transaction,
     );
 
-    return EmailIDPCompleteAccountCreationResult._(
+    await _config.onAfterAccountCreated?.call(
+      session,
+      email: emailAccount.email,
+      authUserId: emailAccount.authUserId,
+      emailAccountId: emailAccount.id!,
+      transaction: transaction,
+    );
+
+    return EmailIdpCompleteAccountCreationResult._(
       authUserId: newUser.id,
       accountRequestId: request.id!,
       email: request.email,
@@ -343,12 +353,12 @@ class EmailIDPAccountCreationUtil {
     return request;
   }
 
-  Future<void> _validateHash(
+  Future<void> _validateHashFromString(
     final String verificationCode,
     final SecretChallenge challenge,
   ) async {
-    if (!await _hashUtils.validateHash(
-      value: verificationCode,
+    if (!await _hashUtils.validateHashFromString(
+      secret: verificationCode,
       hash: challenge.challengeCodeHash.asUint8List,
       salt: challenge.challengeCodeSalt.asUint8List,
     )) {
@@ -378,8 +388,8 @@ class EmailIDPAccountCreationUtil {
     required final Transaction transaction,
   }) async {
     final passwordHash = password != null
-        ? await _hashUtils.createHash(
-            value: password,
+        ? await _hashUtils.createHashFromString(
+            secret: password,
           )
         : HashResult.empty();
 
@@ -420,8 +430,8 @@ class EmailIDPAccountCreationUtil {
     required final Transaction transaction,
   }) async {
     final lastValidDateTime = clock.now().subtract(
-          _config.registrationVerificationCodeLifetime,
-        );
+      _config.registrationVerificationCodeLifetime,
+    );
 
     await EmailAccountRequest.db.deleteWhere(
       session,
@@ -479,8 +489,9 @@ class EmailIDPAccountCreationUtil {
 
     final updated = await EmailAccountRequest.db.updateWhere(
       session,
-      columnValues: (final t) =>
-          [t.createAccountChallengeId(createAccountChallenge.id!)],
+      columnValues: (final t) => [
+        t.createAccountChallengeId(createAccountChallenge.id!),
+      ],
       where: (final t) =>
           t.id.equals(accountRequestId) &
           t.createAccountChallengeId.equals(null),
@@ -549,13 +560,13 @@ class EmailIDPAccountCreationUtil {
         transaction: transaction,
       );
 
-      final recentRequests =
-          await EmailAccountRequestCompletionAttempt.db.count(
-        session,
-        where: (final t) =>
-            t.emailAccountRequestId.equals(emailAccountRequestId),
-        transaction: transaction,
-      );
+      final recentRequests = await EmailAccountRequestCompletionAttempt.db
+          .count(
+            session,
+            where: (final t) =>
+                t.emailAccountRequestId.equals(emailAccountRequestId),
+            transaction: transaction,
+          );
 
       if (recentRequests >
           _config.registrationVerificationCodeAllowedAttempts) {
@@ -570,8 +581,11 @@ class EmailIDPAccountCreationUtil {
   }
 }
 
-/// Configuration for the [EmailIDPAccountCreationUtil] class.
-class EmailIDPAccountCreationUtilsConfig {
+/// Configuration for the [EmailIdpAccountCreationUtil] class.
+class EmailIdpAccountCreationUtilsConfig {
+  /// Callback to be invoked after a new email account has been created.
+  final AfterAccountCreatedFunction? onAfterAccountCreated;
+
   /// Function for validating the password.
   final PasswordValidationFunction passwordValidationFunction;
 
@@ -586,22 +600,24 @@ class EmailIDPAccountCreationUtilsConfig {
 
   /// Function for sending the registration verification code.
   final SendRegistrationVerificationCodeFunction?
-      sendRegistrationVerificationCode;
+  sendRegistrationVerificationCode;
 
-  /// Creates a new [EmailIDPAccountCreationUtilsConfig] instance.
-  EmailIDPAccountCreationUtilsConfig({
+  /// Creates a new [EmailIdpAccountCreationUtilsConfig] instance.
+  EmailIdpAccountCreationUtilsConfig({
     required this.passwordValidationFunction,
     required this.registrationVerificationCodeGenerator,
     required this.registrationVerificationCodeLifetime,
     required this.registrationVerificationCodeAllowedAttempts,
     required this.sendRegistrationVerificationCode,
+    required this.onAfterAccountCreated,
   });
 
-  /// Creates a new [EmailIDPAccountCreationUtilsConfig] instance from an
-  /// [EmailIDPConfig] instance.
-  factory EmailIDPAccountCreationUtilsConfig.fromEmailIDPConfig(
-      final EmailIDPConfig config) {
-    return EmailIDPAccountCreationUtilsConfig(
+  /// Creates a new [EmailIdpAccountCreationUtilsConfig] instance from an
+  /// [EmailIdpConfig] instance.
+  factory EmailIdpAccountCreationUtilsConfig.fromEmailIdpConfig(
+    final EmailIdpConfig config,
+  ) {
+    return EmailIdpAccountCreationUtilsConfig(
       passwordValidationFunction: config.passwordValidationFunction,
       registrationVerificationCodeGenerator:
           config.registrationVerificationCodeGenerator,
@@ -610,12 +626,13 @@ class EmailIDPAccountCreationUtilsConfig {
       registrationVerificationCodeAllowedAttempts:
           config.registrationVerificationCodeAllowedAttempts,
       sendRegistrationVerificationCode: config.sendRegistrationVerificationCode,
+      onAfterAccountCreated: config.onAfterAccountCreated,
     );
   }
 }
 
-/// The result of the [EmailIDPAccountCreationUtil.completeAccountCreation] operation.
-class EmailIDPCompleteAccountCreationResult {
+/// The result of the [EmailIdpAccountCreationUtil.completeAccountCreation] operation.
+class EmailIdpCompleteAccountCreationResult {
   /// The ID of the new authentication user.
   final UuidValue authUserId;
 
@@ -628,7 +645,7 @@ class EmailIDPCompleteAccountCreationResult {
   /// The email address used during registration.
   final String email;
 
-  EmailIDPCompleteAccountCreationResult._({
+  EmailIdpCompleteAccountCreationResult._({
     required this.authUserId,
     required this.accountRequestId,
     required this.email,
@@ -636,21 +653,21 @@ class EmailIDPCompleteAccountCreationResult {
   });
 }
 
-/// The result of the [EmailIDPAccountCreationUtil.finalizeAccountRequest] operation.
+/// The result of the [EmailIdpAccountCreationUtil.finalizeAccountRequest] operation.
 ///
 /// This describes the detailed status of the operation to the caller.
 ///
 /// In the general case the caller should take care not to leak this to clients,
 /// such that outside clients can not use this result to determine whether a
 /// specific account is registered on the server.
-class EmailIDPFinalizeAccountRequestResult {
+class EmailIdpFinalizeAccountRequestResult {
   /// The ID of the new email authentication.
   final UuidValue accountId;
 
   /// The email address used during registration.
   final String email;
 
-  EmailIDPFinalizeAccountRequestResult._({
+  EmailIdpFinalizeAccountRequestResult._({
     required this.accountId,
     required this.email,
   });

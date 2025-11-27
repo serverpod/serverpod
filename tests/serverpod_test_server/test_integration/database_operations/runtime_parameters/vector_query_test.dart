@@ -10,115 +10,124 @@ const totalVectors = 5000;
 const vectorDimension = 512;
 
 void main() {
-  withServerpod('Given a large number of vectors with very similar distances',
-      (sessionBuilder, _) {
-    final session = sessionBuilder.build();
-    final queryVector =
-        Vector([0.5, 0.5] + List.filled(vectorDimension - 2, 0.0));
+  withServerpod(
+    'Given a large number of vectors with very similar distances',
+    (sessionBuilder, _) {
+      final session = sessionBuilder.build();
+      final queryVector = Vector(
+        [0.5, 0.5] + List.filled(vectorDimension - 2, 0.0),
+      );
 
-    setUpAll(() async {
-      final random = math.Random(42);
-      final zeroFilledVector = Vector(List.filled(vectorDimension, 0.0));
+      setUpAll(() async {
+        final random = math.Random(42);
+        final zeroFilledVector = Vector(List.filled(vectorDimension, 0.0));
 
-      // Create 5000 vectors with very similar distances around the query point
-      // [0.5, 0.5, ...]. This creates many borderline cases where low efSearch
-      // might miss some vectors.
-      final testVectors = [
-        for (int i = 0; i < totalVectors; i++)
-          ObjectWithVector(
-            vector: zeroFilledVector,
-            vectorIndexedHnsw: generateTestVector(i, random: random),
-            vectorIndexedHnswWithParams: zeroFilledVector,
-            vectorIndexedIvfflat: zeroFilledVector,
-            vectorIndexedIvfflatWithParams: zeroFilledVector,
-          ),
-      ];
+        // Create 5000 vectors with very similar distances around the query point
+        // [0.5, 0.5, ...]. This creates many borderline cases where low efSearch
+        // might miss some vectors.
+        final testVectors = [
+          for (int i = 0; i < totalVectors; i++)
+            ObjectWithVector(
+              vector: zeroFilledVector,
+              vectorIndexedHnsw: generateTestVector(i, random: random),
+              vectorIndexedHnswWithParams: zeroFilledVector,
+              vectorIndexedIvfflat: zeroFilledVector,
+              vectorIndexedIvfflatWithParams: zeroFilledVector,
+            ),
+        ];
 
-      await ObjectWithVector.db.insert(session, testVectors);
-    });
+        await ObjectWithVector.db.insert(session, testVectors);
+      });
 
-    group('when using conservative and aggressive index query parameters', () {
-      late List<ObjectWithVector> conservativeResults;
-      late List<ObjectWithVector> aggressiveResults;
+      group('when using conservative and aggressive index query parameters', () {
+        late List<ObjectWithVector> conservativeResults;
+        late List<ObjectWithVector> aggressiveResults;
 
-      /// Runs a vector query with the given efSearch and iterativeScan
-      /// parameters. Sequential scan is disabled to ensure that the queries
-      /// only use the HNSW index and are affected by the efSearch parameter.
-      Future<List<ObjectWithVector>> runVectorQuery({
-        required int efSearch,
-        required IterativeScan iterativeScan,
-      }) async {
-        return session.db.transaction((transaction) async {
-          await transaction.setRuntimeParameters((params) => [
+        /// Runs a vector query with the given efSearch and iterativeScan
+        /// parameters. Sequential scan is disabled to ensure that the queries
+        /// only use the HNSW index and are affected by the efSearch parameter.
+        Future<List<ObjectWithVector>> runVectorQuery({
+          required int efSearch,
+          required IterativeScan iterativeScan,
+        }) async {
+          return session.db.transaction((transaction) async {
+            await transaction.setRuntimeParameters(
+              (params) => [
                 params.vectorIndexQuery(enableSeqScan: false),
                 params.hnswIndexQuery(
                   efSearch: efSearch,
                   iterativeScan: iterativeScan,
                 ),
-              ]);
+              ],
+            );
 
-          return ObjectWithVector.db.find(
-            session,
-            orderBy: (t) => t.vectorIndexedHnsw.distanceL2(queryVector),
-            limit: 30,
-            transaction: transaction,
+            return ObjectWithVector.db.find(
+              session,
+              orderBy: (t) => t.vectorIndexedHnsw.distanceL2(queryVector),
+              limit: 30,
+              transaction: transaction,
+            );
+          });
+        }
+
+        setUpAll(() async {
+          conservativeResults = await runVectorQuery(
+            efSearch: 2,
+            iterativeScan: IterativeScan.relaxed,
+          );
+
+          aggressiveResults = await runVectorQuery(
+            efSearch: 500,
+            iterativeScan: IterativeScan.strict,
           );
         });
-      }
 
-      setUpAll(() async {
-        conservativeResults = await runVectorQuery(
-          efSearch: 2,
-          iterativeScan: IterativeScan.relaxed,
-        );
+        test('then intersection ratio of found vectors is less than 0.5.', () {
+          var conservativeIds = conservativeResults.map((v) => v.id).toSet();
+          var aggressiveIds = aggressiveResults.map((v) => v.id).toSet();
 
-        aggressiveResults = await runVectorQuery(
-          efSearch: 500,
-          iterativeScan: IterativeScan.strict,
-        );
-      });
+          var intersection = conservativeIds.intersection(aggressiveIds);
+          var unionSize = conservativeIds.union(aggressiveIds).length;
+          var intersectionRatio = intersection.length / unionSize;
 
-      test('then intersection ratio of found vectors is less than 0.5.', () {
-        var conservativeIds = conservativeResults.map((v) => v.id).toSet();
-        var aggressiveIds = aggressiveResults.map((v) => v.id).toSet();
+          print('Conservative IDs: $conservativeIds');
+          print('Aggressive IDs: $aggressiveIds');
+          print('Intersection ratio: $intersectionRatio');
+          // Usually less than 0.1, but we allow up to 0.5 to avoid flakiness.
+          expect(intersectionRatio, lessThan(0.5));
+        });
 
-        var intersection = conservativeIds.intersection(aggressiveIds);
-        var unionSize = conservativeIds.union(aggressiveIds).length;
-        var intersectionRatio = intersection.length / unionSize;
-
-        print('Conservative IDs: $conservativeIds');
-        print('Aggressive IDs: $aggressiveIds');
-        print('Intersection ratio: $intersectionRatio');
-        // Usually less than 0.1, but we allow up to 0.5 to avoid flakiness.
-        expect(intersectionRatio, lessThan(0.5));
-      });
-
-      test(
+        test(
           'then aggressive efSearch top vector is at least as close to query vector.',
           () {
-        final conservativeFirst = conservativeResults.first.vectorIndexedHnsw;
-        final aggressiveFirst = aggressiveResults.first.vectorIndexedHnsw;
+            final conservativeFirst =
+                conservativeResults.first.vectorIndexedHnsw;
+            final aggressiveFirst = aggressiveResults.first.vectorIndexedHnsw;
 
-        final conservativeBest = l2(conservativeFirst, queryVector);
-        final aggressiveBest = l2(aggressiveFirst, queryVector);
+            final conservativeBest = l2(conservativeFirst, queryVector);
+            final aggressiveBest = l2(aggressiveFirst, queryVector);
 
-        print('Best conservative distance: $conservativeBest');
-        print('Best aggressive distance: $aggressiveBest');
-        expect(aggressiveBest, lessThanOrEqualTo(conservativeBest));
-      });
+            print('Best conservative distance: $conservativeBest');
+            print('Best aggressive distance: $aggressiveBest');
+            expect(aggressiveBest, lessThanOrEqualTo(conservativeBest));
+          },
+        );
 
-      test(
+        test(
           'then aggressive efSearch average results are closer to query vector.',
           () {
-        final conservativeAvg = avgL2(conservativeResults, queryVector);
-        final aggressiveAvg = avgL2(aggressiveResults, queryVector);
+            final conservativeAvg = avgL2(conservativeResults, queryVector);
+            final aggressiveAvg = avgL2(aggressiveResults, queryVector);
 
-        print('Average conservative distance: $conservativeAvg');
-        print('Average aggressive distance: $aggressiveAvg');
-        expect(aggressiveAvg, lessThan(conservativeAvg));
+            print('Average conservative distance: $conservativeAvg');
+            print('Average aggressive distance: $aggressiveAvg');
+            expect(aggressiveAvg, lessThan(conservativeAvg));
+          },
+        );
       });
-    });
-  }, testGroupTagsOverride: [TestTags.concurrencyOneTestTag]);
+    },
+    testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
+  );
 }
 
 /// Helper function to generate test vectors with very similar distances.

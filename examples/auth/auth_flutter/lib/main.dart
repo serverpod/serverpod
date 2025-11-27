@@ -23,12 +23,13 @@ void main() {
   // You can set the variable when running or building your app like this:
   // E.g. `flutter run --dart-define=SERVER_URL=https://api.example.com/`
   const serverUrlFromEnv = String.fromEnvironment('SERVER_URL');
-  final serverUrl =
-      serverUrlFromEnv.isEmpty ? 'http://$localhost:8080/' : serverUrlFromEnv;
+  final serverUrl = serverUrlFromEnv.isEmpty
+      ? 'http://$localhost:8080/'
+      : serverUrlFromEnv;
 
   client = Client(serverUrl)
     ..connectivityMonitor = FlutterConnectivityMonitor()
-    ..authSessionManager = ClientAuthSessionManager();
+    ..authSessionManager = FlutterAuthSessionManager();
 
   client.auth.initialize();
 
@@ -70,12 +71,12 @@ class _MainPageState extends State<MainPage> {
 
     // NOTE: This is the only required setState to ensure that the  UI gets
     // updated when the auth state changes.
-    client.auth.authInfo.addListener(_updateSignedInState);
+    client.auth.authInfoListenable.addListener(_updateSignedInState);
   }
 
   @override
   void dispose() {
-    client.auth.authInfo.removeListener(_updateSignedInState);
+    client.auth.authInfoListenable.removeListener(_updateSignedInState);
     super.dispose();
   }
 

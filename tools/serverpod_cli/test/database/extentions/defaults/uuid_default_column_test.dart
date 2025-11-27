@@ -13,13 +13,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should not have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"uuid" uuid NOT NULL',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should not have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"uuid" uuid NOT NULL',
+          );
+        },
+      );
     });
 
     group('with gen_random_uuid() as default value', () {
@@ -32,13 +33,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"uuid" uuid NOT NULL DEFAULT gen_random_uuid()',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"uuid" uuid NOT NULL DEFAULT gen_random_uuid()',
+          );
+        },
+      );
     });
 
     group('with gen_random_uuid_v7() as default value', () {
@@ -51,13 +53,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"uuid" uuid NOT NULL DEFAULT gen_random_uuid_v7()',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"uuid" uuid NOT NULL DEFAULT gen_random_uuid_v7()',
+          );
+        },
+      );
     });
 
     group('with a specific UUID string as default value', () {
@@ -70,13 +73,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"uuid" uuid NOT NULL DEFAULT \'550e8400-e29b-41d4-a716-446655440000\'::uuid',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"uuid" uuid NOT NULL DEFAULT \'550e8400-e29b-41d4-a716-446655440000\'::uuid',
+          );
+        },
+      );
     });
 
     group('with nullable column and no default value', () {
@@ -88,13 +92,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"uuid" uuid',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"uuid" uuid',
+          );
+        },
+      );
     });
 
     group('with nullable column and default value', () {
@@ -107,13 +112,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"uuid" uuid DEFAULT gen_random_uuid()',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"uuid" uuid DEFAULT gen_random_uuid()',
+          );
+        },
+      );
     });
   });
 }

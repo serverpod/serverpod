@@ -57,27 +57,28 @@ void main() async {
     );
 
     test(
-        'when deleting models filtered on any many relation in combination with other filter then result is as expected.',
-        () async {
-      var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
-      var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
+      'when deleting models filtered on any many relation in combination with other filter then result is as expected.',
+      () async {
+        var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
+        var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
 
-      await Cat.db.insert(session, [
-        Cat(name: 'Kitten1', motherId: zelda.id),
-        Cat(name: 'Kitten2', motherId: zelda.id),
-        Cat(name: 'Kitten3', motherId: zelda.id),
-        Cat(name: 'Smulan II', motherId: smulan.id),
-      ]);
+        await Cat.db.insert(session, [
+          Cat(name: 'Kitten1', motherId: zelda.id),
+          Cat(name: 'Kitten2', motherId: zelda.id),
+          Cat(name: 'Kitten3', motherId: zelda.id),
+          Cat(name: 'Smulan II', motherId: smulan.id),
+        ]);
 
-      var deletedCats = await Cat.db.deleteWhere(
-        session,
-        where: (t) => t.kittens.any() | t.name.equals('Zelda'),
-      );
+        var deletedCats = await Cat.db.deleteWhere(
+          session,
+          where: (t) => t.kittens.any() | t.name.equals('Zelda'),
+        );
 
-      expect(deletedCats, hasLength(2));
-      var deletedCatIds = deletedCats.map((c) => c.id).toList();
-      expect(deletedCatIds, containsAll([zelda.id, smulan.id]));
-    });
+        expect(deletedCats, hasLength(2));
+        var deletedCatIds = deletedCats.map((c) => c.id).toList();
+        expect(deletedCatIds, containsAll([zelda.id, smulan.id]));
+      },
+    );
 
     test(
       'when deleting models filtered on OR filtered any many relation then result is as expected.',

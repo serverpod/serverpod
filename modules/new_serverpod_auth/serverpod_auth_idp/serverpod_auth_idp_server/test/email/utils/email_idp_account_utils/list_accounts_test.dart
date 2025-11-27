@@ -9,7 +9,7 @@ void main() {
     'Given multiple email accounts',
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue authUserId1;
       late UuidValue authUserId2;
       const email1 = 'test1@serverpod.dev';
@@ -18,7 +18,7 @@ void main() {
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
 
         final authUser1 = await fixture.authUsers.create(session);
         authUserId1 = authUser1.id;
@@ -53,101 +53,107 @@ void main() {
       });
 
       test(
-          'when listAccounts is called with email then only that email account is returned',
-          () async {
-        final accounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
-            session,
-            email: email1,
-            transaction: transaction,
-          ),
-        );
+        'when listAccounts is called with email then only that email account is returned',
+        () async {
+          final accounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+              session,
+              email: email1,
+              transaction: transaction,
+            ),
+          );
 
-        expect(accounts, hasLength(1));
-        expect(accounts.single.email, equals(email1));
-      });
-
-      test(
-          'when listAccounts is called with authUserId then all accounts for that user are returned',
-          () async {
-        final accounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
-            session,
-            authUserId: authUserId1,
-            transaction: transaction,
-          ),
-        );
-
-        expect(accounts, hasLength(2));
-        final emails = accounts.map((final a) => a.email);
-        expect(emails, containsAll([email1, email2]));
-        expect(
-          accounts.every((final a) => a.authUserId == authUserId1),
-          isTrue,
-        );
-      });
+          expect(accounts, hasLength(1));
+          expect(accounts.single.email, equals(email1));
+        },
+      );
 
       test(
-          'when listAccounts is called with both email and authUserId then only matching account is returned',
-          () async {
-        final accounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
-            session,
-            email: email1,
-            authUserId: authUserId1,
-            transaction: transaction,
-          ),
-        );
+        'when listAccounts is called with authUserId then all accounts for that user are returned',
+        () async {
+          final accounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+              session,
+              authUserId: authUserId1,
+              transaction: transaction,
+            ),
+          );
 
-        expect(accounts, hasLength(1));
-        expect(accounts.single.email, equals(email1));
-        expect(accounts.single.authUserId, equals(authUserId1));
-      });
-
-      test(
-          'when listAccounts is called with non-matching filters then no accounts are returned',
-          () async {
-        final accounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
-            session,
-            email: email1,
-            authUserId: authUserId2,
-            transaction: transaction,
-          ),
-        );
-
-        expect(accounts, isEmpty);
-      });
+          expect(accounts, hasLength(2));
+          final emails = accounts.map((final a) => a.email);
+          expect(emails, containsAll([email1, email2]));
+          expect(
+            accounts.every((final a) => a.authUserId == authUserId1),
+            isTrue,
+          );
+        },
+      );
 
       test(
-          'when listAccounts is called with neither email nor authUserId then all accounts are returned',
-          () async {
-        final accounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
-            session,
-            transaction: transaction,
-          ),
-        );
+        'when listAccounts is called with both email and authUserId then only matching account is returned',
+        () async {
+          final accounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+              session,
+              email: email1,
+              authUserId: authUserId1,
+              transaction: transaction,
+            ),
+          );
 
-        expect(accounts, hasLength(3));
-        final emails = accounts.map((final a) => a.email);
-        expect(emails, containsAll([email1, email2, email3]));
-      });
+          expect(accounts, hasLength(1));
+          expect(accounts.single.email, equals(email1));
+          expect(accounts.single.authUserId, equals(authUserId1));
+        },
+      );
 
       test(
-          'when listAccounts is called with uppercase email then account is found',
-          () async {
-        final accounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
-            session,
-            email: email1.toUpperCase(),
-            transaction: transaction,
-          ),
-        );
+        'when listAccounts is called with non-matching filters then no accounts are returned',
+        () async {
+          final accounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+              session,
+              email: email1,
+              authUserId: authUserId2,
+              transaction: transaction,
+            ),
+          );
 
-        expect(accounts, hasLength(1));
-        expect(accounts.single.email, equals(email1));
-      });
+          expect(accounts, isEmpty);
+        },
+      );
+
+      test(
+        'when listAccounts is called with neither email nor authUserId then all accounts are returned',
+        () async {
+          final accounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+              session,
+              transaction: transaction,
+            ),
+          );
+
+          expect(accounts, hasLength(3));
+          final emails = accounts.map((final a) => a.email);
+          expect(emails, containsAll([email1, email2, email3]));
+        },
+      );
+
+      test(
+        'when listAccounts is called with uppercase email then account is found',
+        () async {
+          final accounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+              session,
+              email: email1.toUpperCase(),
+              transaction: transaction,
+            ),
+          );
+
+          expect(accounts, hasLength(1));
+          expect(accounts.single.email, equals(email1));
+        },
+      );
     },
   );
 
@@ -155,11 +161,11 @@ void main() {
     'Given no email accounts',
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
       });
 
       tearDown(() async {
@@ -168,7 +174,7 @@ void main() {
 
       test('when listAccounts is called then empty list is returned', () async {
         final accounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
+          (final transaction) => fixture.emailIdp.utils.account.listAccounts(
             session,
             transaction: transaction,
           ),

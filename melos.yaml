@@ -38,3 +38,5 @@ scripts:
     run: melos exec --no-flutter --category="noTemplates" -c 1 -- dart pub downgrade
   downgrade:
     run: melos downgrade_flutter && melos downgrade_dart
+  sort_pubspec_dependencies:
+    run: melos exec -- "cd \"\$SERVERPOD_HOME\" && dart run sort_pubspec_dependencies --pubspec-path=\"\$MELOS_PACKAGE_PATH/pubspec.yaml\""

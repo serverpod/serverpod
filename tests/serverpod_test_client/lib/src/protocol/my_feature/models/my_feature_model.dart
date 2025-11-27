@@ -29,7 +29,10 @@ abstract class MyFeatureModel implements _i1.SerializableModel {
   MyFeatureModel copyWith({String? name});
   @override
   Map<String, dynamic> toJson() {
-    return {'name': name};
+    return {
+      '__className__': 'MyFeatureModel',
+      'name': name,
+    };
   }
 
   @override

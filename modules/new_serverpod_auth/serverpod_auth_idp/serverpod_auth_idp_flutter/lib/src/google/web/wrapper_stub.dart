@@ -57,8 +57,10 @@ class GSIButtonConfiguration {
     this.logoAlignment,
     this.minimumWidth,
     this.locale,
-  }) : assert(minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
-            'Invalid minimumWidth. Must be between 0 and 400.');
+  }) : assert(
+         minimumWidth == null || (minimumWidth > 0 && minimumWidth <= 400),
+         'Invalid minimumWidth. Must be between 0 and 400.',
+       );
 
   /// The button type: icon, or standard button.
   final GSIButtonType? type;

@@ -12,7 +12,8 @@ part of 'freezed_custom_class.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods',
+);
 
 FreezedCustomClass _$FreezedCustomClassFromJson(Map<String, dynamic> json) {
   return _FreezedCustomClass.fromJson(json);
@@ -33,8 +34,9 @@ mixin _$FreezedCustomClass {
 /// @nodoc
 abstract class $FreezedCustomClassCopyWith<$Res> {
   factory $FreezedCustomClassCopyWith(
-          FreezedCustomClass value, $Res Function(FreezedCustomClass) then) =
-      _$FreezedCustomClassCopyWithImpl<$Res, FreezedCustomClass>;
+    FreezedCustomClass value,
+    $Res Function(FreezedCustomClass) then,
+  ) = _$FreezedCustomClassCopyWithImpl<$Res, FreezedCustomClass>;
   @useResult
   $Res call({String firstName, String lastName, int age});
 }
@@ -56,29 +58,33 @@ class _$FreezedCustomClassCopyWithImpl<$Res, $Val extends FreezedCustomClass>
     Object? lastName = null,
     Object? age = null,
   }) {
-    return _then(_value.copyWith(
-      firstName: null == firstName
-          ? _value.firstName
-          : firstName // ignore: cast_nullable_to_non_nullable
-              as String,
-      lastName: null == lastName
-          ? _value.lastName
-          : lastName // ignore: cast_nullable_to_non_nullable
-              as String,
-      age: null == age
-          ? _value.age
-          : age // ignore: cast_nullable_to_non_nullable
-              as int,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            firstName: null == firstName
+                ? _value.firstName
+                : firstName // ignore: cast_nullable_to_non_nullable
+                      as String,
+            lastName: null == lastName
+                ? _value.lastName
+                : lastName // ignore: cast_nullable_to_non_nullable
+                      as String,
+            age: null == age
+                ? _value.age
+                : age // ignore: cast_nullable_to_non_nullable
+                      as int,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$_FreezedCustomClassCopyWith<$Res>
     implements $FreezedCustomClassCopyWith<$Res> {
-  factory _$$_FreezedCustomClassCopyWith(_$_FreezedCustomClass value,
-          $Res Function(_$_FreezedCustomClass) then) =
-      __$$_FreezedCustomClassCopyWithImpl<$Res>;
+  factory _$$_FreezedCustomClassCopyWith(
+    _$_FreezedCustomClass value,
+    $Res Function(_$_FreezedCustomClass) then,
+  ) = __$$_FreezedCustomClassCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String firstName, String lastName, int age});
@@ -89,8 +95,9 @@ class __$$_FreezedCustomClassCopyWithImpl<$Res>
     extends _$FreezedCustomClassCopyWithImpl<$Res, _$_FreezedCustomClass>
     implements _$$_FreezedCustomClassCopyWith<$Res> {
   __$$_FreezedCustomClassCopyWithImpl(
-      _$_FreezedCustomClass _value, $Res Function(_$_FreezedCustomClass) _then)
-      : super(_value, _then);
+    _$_FreezedCustomClass _value,
+    $Res Function(_$_FreezedCustomClass) _then,
+  ) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -99,28 +106,33 @@ class __$$_FreezedCustomClassCopyWithImpl<$Res>
     Object? lastName = null,
     Object? age = null,
   }) {
-    return _then(_$_FreezedCustomClass(
-      firstName: null == firstName
-          ? _value.firstName
-          : firstName // ignore: cast_nullable_to_non_nullable
-              as String,
-      lastName: null == lastName
-          ? _value.lastName
-          : lastName // ignore: cast_nullable_to_non_nullable
-              as String,
-      age: null == age
-          ? _value.age
-          : age // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
+    return _then(
+      _$_FreezedCustomClass(
+        firstName: null == firstName
+            ? _value.firstName
+            : firstName // ignore: cast_nullable_to_non_nullable
+                  as String,
+        lastName: null == lastName
+            ? _value.lastName
+            : lastName // ignore: cast_nullable_to_non_nullable
+                  as String,
+        age: null == age
+            ? _value.age
+            : age // ignore: cast_nullable_to_non_nullable
+                  as int,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$_FreezedCustomClass implements _FreezedCustomClass {
-  const _$_FreezedCustomClass(
-      {required this.firstName, required this.lastName, required this.age});
+  const _$_FreezedCustomClass({
+    required this.firstName,
+    required this.lastName,
+    required this.age,
+  });
 
   factory _$_FreezedCustomClass.fromJson(Map<String, dynamic> json) =>
       _$$_FreezedCustomClassFromJson(json);
@@ -158,21 +170,22 @@ class _$_FreezedCustomClass implements _FreezedCustomClass {
   @pragma('vm:prefer-inline')
   _$$_FreezedCustomClassCopyWith<_$_FreezedCustomClass> get copyWith =>
       __$$_FreezedCustomClassCopyWithImpl<_$_FreezedCustomClass>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_FreezedCustomClassToJson(
-      this,
-    );
+    return _$$_FreezedCustomClassToJson(this);
   }
 }
 
 abstract class _FreezedCustomClass implements FreezedCustomClass {
-  const factory _FreezedCustomClass(
-      {required final String firstName,
-      required final String lastName,
-      required final int age}) = _$_FreezedCustomClass;
+  const factory _FreezedCustomClass({
+    required final String firstName,
+    required final String lastName,
+    required final int age,
+  }) = _$_FreezedCustomClass;
 
   factory _FreezedCustomClass.fromJson(Map<String, dynamic> json) =
       _$_FreezedCustomClass.fromJson;

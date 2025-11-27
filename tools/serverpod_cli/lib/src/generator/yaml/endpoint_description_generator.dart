@@ -30,7 +30,7 @@ class EndpointDescriptionGenerator extends CodeGenerator {
     return {
       p.joinAll([
         ...config.generatedServerEndpointDescriptionFilePathParts,
-      ]): out
+      ]): out,
     };
   }
 }

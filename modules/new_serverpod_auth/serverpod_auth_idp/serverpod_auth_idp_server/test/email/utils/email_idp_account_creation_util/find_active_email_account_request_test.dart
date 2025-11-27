@@ -14,14 +14,14 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
 
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
 
         accountRequestId = await session.db.transaction(
           (final transaction) => fixture.accountCreationUtil.startRegistration(
@@ -37,21 +37,22 @@ void main() {
       });
 
       test(
-          'when find active email account request is called then it returns the account request',
-          () async {
-        final request = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.findActiveEmailAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            transaction: transaction,
-          ),
-        );
+        'when find active email account request is called then it returns the account request',
+        () async {
+          final request = await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.findActiveEmailAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  transaction: transaction,
+                ),
+          );
 
-        expect(request, isNotNull);
-        expect(request!.id, equals(accountRequestId));
-        expect(request.email, equals(email));
-      });
+          expect(request, isNotNull);
+          expect(request!.id, equals(accountRequestId));
+          expect(request.email, equals(email));
+        },
+      );
     },
   );
 
@@ -61,7 +62,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
       const registrationVerificationCodeLifetime = Duration(hours: 1);
@@ -69,8 +70,8 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeLifetime:
                 registrationVerificationCodeLifetime,
@@ -86,10 +87,10 @@ void main() {
           () => session.db.transaction(
             (final transaction) =>
                 fixture.accountCreationUtil.startRegistration(
-              session,
-              email: email,
-              transaction: transaction,
-            ),
+                  session,
+                  email: email,
+                  transaction: transaction,
+                ),
           ),
         );
       });
@@ -99,19 +100,20 @@ void main() {
       });
 
       test(
-          'when find active email account request is called then it returns null',
-          () async {
-        final request = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.findActiveEmailAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            transaction: transaction,
-          ),
-        );
+        'when find active email account request is called then it returns null',
+        () async {
+          final request = await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.findActiveEmailAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  transaction: transaction,
+                ),
+          );
 
-        expect(request, isNull);
-      });
+          expect(request, isNull);
+        },
+      );
     },
   );
 
@@ -121,12 +123,12 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       final accountRequestId = const Uuid().v4obj();
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
       });
 
       tearDown(() async {
@@ -134,19 +136,20 @@ void main() {
       });
 
       test(
-          'when find active email account request is called then it returns null',
-          () async {
-        final request = await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.findActiveEmailAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            transaction: transaction,
-          ),
-        );
+        'when find active email account request is called then it returns null',
+        () async {
+          final request = await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.findActiveEmailAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  transaction: transaction,
+                ),
+          );
 
-        expect(request, isNull);
-      });
+          expect(request, isNull);
+        },
+      );
     },
   );
 }

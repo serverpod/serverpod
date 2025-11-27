@@ -19,15 +19,18 @@ class Templates {
 
   /// Recursively loads templates from subdirectories
   Future<void> _loadTemplatesRecursively(
-      Directory dir, String relativePath) async {
+    Directory dir,
+    String relativePath,
+  ) async {
     await for (var entity in dir.list()) {
       if (entity is File && extension(entity.path).toLowerCase() == '.html') {
         var file = entity;
         var fileName = basenameWithoutExtension(file.path);
 
         // Create template key with relative path
-        var templateKey =
-            relativePath.isEmpty ? fileName : '$relativePath/$fileName';
+        var templateKey = relativePath.isEmpty
+            ? fileName
+            : '$relativePath/$fileName';
 
         var data = await file.readAsString();
 
@@ -37,8 +40,9 @@ class Templates {
         );
       } else if (entity is Directory) {
         var subDirName = basename(entity.path);
-        var newRelativePath =
-            relativePath.isEmpty ? subDirName : '$relativePath/$subDirName';
+        var newRelativePath = relativePath.isEmpty
+            ? subDirName
+            : '$relativePath/$subDirName';
         await _loadTemplatesRecursively(entity, newRelativePath);
       }
     }

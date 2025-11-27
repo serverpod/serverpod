@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/bulk_query_column_description.dart' as _i2;
+import 'package:serverpod/src/generated/protocol.dart' as _i3;
 
 abstract class BulkQueryResult
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -31,14 +32,14 @@ abstract class BulkQueryResult
 
   factory BulkQueryResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return BulkQueryResult(
-      headers: (jsonSerialization['headers'] as List)
-          .map((e) => _i2.BulkQueryColumnDescription.fromJson(
-              (e as Map<String, dynamic>)))
-          .toList(),
+      headers: _i3.Protocol().deserialize<List<_i2.BulkQueryColumnDescription>>(
+        jsonSerialization['headers'],
+      ),
       data: jsonSerialization['data'] as String,
       numAffectedRows: jsonSerialization['numAffectedRows'] as int,
-      duration:
-          _i1.DurationJsonExtension.fromJson(jsonSerialization['duration']),
+      duration: _i1.DurationJsonExtension.fromJson(
+        jsonSerialization['duration'],
+      ),
     );
   }
 
@@ -62,6 +63,7 @@ abstract class BulkQueryResult
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.BulkQueryResult',
       'headers': headers.toJson(valueToJson: (v) => v.toJson()),
       'data': data,
       'numAffectedRows': numAffectedRows,
@@ -72,6 +74,7 @@ abstract class BulkQueryResult
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.BulkQueryResult',
       'headers': headers.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'data': data,
       'numAffectedRows': numAffectedRows,
@@ -92,11 +95,11 @@ class _BulkQueryResultImpl extends BulkQueryResult {
     required int numAffectedRows,
     required Duration duration,
   }) : super._(
-          headers: headers,
-          data: data,
-          numAffectedRows: numAffectedRows,
-          duration: duration,
-        );
+         headers: headers,
+         data: data,
+         numAffectedRows: numAffectedRows,
+         duration: duration,
+       );
 
   /// Returns a shallow copy of this [BulkQueryResult]
   /// with some or all fields replaced by the given arguments.

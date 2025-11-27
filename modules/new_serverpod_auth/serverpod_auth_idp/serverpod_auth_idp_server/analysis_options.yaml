@@ -4,3 +4,6 @@ analyzer:
   exclude:
     - lib/src/generated/**
     - test/test_tools/serverpod_test_tools.dart
+
+formatter:
+  trailing_commas: preserve

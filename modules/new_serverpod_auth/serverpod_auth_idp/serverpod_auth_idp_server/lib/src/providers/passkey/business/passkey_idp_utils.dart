@@ -10,16 +10,16 @@ import '../../../generated/protocol.dart';
 import '../../../utils/byte_data_extension.dart';
 
 /// Utility functions for the Passkey identity provider.
-final class PasskeyIDPUtils {
+final class PasskeyIdpUtils {
   final Duration _challengeLifetime;
   final Passkeys _passkeys;
 
-  /// Creates a new instance of [PasskeyIDPUtils].
-  PasskeyIDPUtils({
+  /// Creates a new instance of [PasskeyIdpUtils].
+  PasskeyIdpUtils({
     required final Duration challengeLifetime,
     required final Passkeys passkeys,
-  })  : _challengeLifetime = challengeLifetime,
-        _passkeys = passkeys;
+  }) : _challengeLifetime = challengeLifetime,
+       _passkeys = passkeys;
 
   /// Returns the challenge and deletes it from the database (as each challenge
   /// should only be used once).
@@ -183,10 +183,12 @@ final class PasskeyIDPUtils {
     );
 
     return removedAccounts
-        .map((final account) => (
-              authUserId: account.authUserId,
-              passkeyAccountId: account.id!,
-            ))
+        .map(
+          (final account) => (
+            authUserId: account.authUserId,
+            passkeyAccountId: account.id!,
+          ),
+        )
         .toList();
   }
 }

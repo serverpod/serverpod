@@ -41,7 +41,7 @@ void main() {
                 )
                 .build(),
           )
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -56,24 +56,26 @@ void main() {
       name: testClassName,
     );
 
-    test('fromJson method should pass data as dynamic to custom class fromJson',
-        () {
-      var fromJsonConstructor =
-          CompilationUnitHelpers.tryFindConstructorDeclaration(
-        maybeClassNamedExample!,
-        name: 'fromJson',
-      );
+    test(
+      'fromJson method should pass data as dynamic to custom class fromJson',
+      () {
+        var fromJsonConstructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+              maybeClassNamedExample!,
+              name: 'fromJson',
+            );
 
-      var fromJsonCode = fromJsonConstructor!.toSource();
+        var fromJsonCode = fromJsonConstructor!.toSource();
 
-      expect(
-        fromJsonCode.contains(
-          "CustomClass.fromJson(jsonSerialization['customClassField'])",
-        ),
-        isTrue,
-        reason:
-            'The fromJson method should pass data as dynamic to CustomClass.fromJson but doesn\'t.',
-      );
-    });
+        expect(
+          fromJsonCode.contains(
+            "CustomClass.fromJson(jsonSerialization['customClassField'])",
+          ),
+          isTrue,
+          reason:
+              'The fromJson method should pass data as dynamic to CustomClass.fromJson but doesn\'t.',
+        );
+      },
+    );
   });
 }

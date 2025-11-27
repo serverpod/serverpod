@@ -1,13 +1,12 @@
-import 'package:serverpod_auth_core_server/profile.dart';
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 
 import '../providers/passkey/passkey.dart';
 
-/// AuthServices factory for creating [PasskeyIDP] instances.
+/// AuthServices factory for creating [PasskeyIdp] instances.
 class PasskeyIdentityProviderFactory
-    extends IdentityProviderFactory<PasskeyIDP> {
+    extends IdentityProviderFactory<PasskeyIdp> {
   /// The configuration for the Passkey identity provider.
-  final PasskeyIDPConfig config;
+  final PasskeyIdpConfig config;
 
   /// Creates a new [PasskeyIdentityProviderFactory].
   PasskeyIdentityProviderFactory(
@@ -15,12 +14,12 @@ class PasskeyIdentityProviderFactory
   );
 
   @override
-  PasskeyIDP construct({
+  PasskeyIdp construct({
     required final TokenManager tokenManager,
     required final AuthUsers authUsers,
     required final UserProfiles userProfiles,
   }) {
-    return PasskeyIDP(
+    return PasskeyIdp(
       config,
       tokenIssuer: tokenManager,
       authUsers: authUsers,

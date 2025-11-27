@@ -12,23 +12,27 @@ import 'package:test/test.dart';
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManagerFactory = new_auth_core.AuthSessionsTokenManagerFactory(
-    new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
-  );
+  final tokenManagerFactory =
+      new_auth_core.ServerSideSessionsTokenManagerFactory(
+        new_auth_core.ServerSideSessionsConfig(
+          sessionKeyHashPepper: 'test-pepper',
+        ),
+      );
 
-  const newEmailIDPConfig =
-      new_auth_idp.EmailIDPConfig(secretHashPepper: 'test');
-  late final new_auth_idp.EmailIDP newEmailIDP;
+  const newEmailIdpConfig = new_auth_idp.EmailIdpConfig(
+    secretHashPepper: 'test',
+  );
+  late final new_auth_idp.EmailIdp newEmailIdp;
 
   setUpAll(() async {
     new_auth_core.AuthServices.set(
       identityProviders: [
-        new_auth_idp.EmailIdentityProviderFactory(newEmailIDPConfig),
+        new_auth_idp.EmailIdentityProviderFactory(newEmailIdpConfig),
       ],
       primaryTokenManager: tokenManagerFactory,
     );
-    newEmailIDP = new_auth_core.AuthServices.instance.emailIDP;
-    AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
+    newEmailIdp = new_auth_core.AuthServices.instance.emailIdp;
+    AuthMigrations.config = AuthMigrationConfig(emailIdp: newEmailIdp);
   });
 
   tearDownAll(() async {
@@ -154,10 +158,7 @@ void main() {
         expect(
           (await new_auth_idp.EmailAccount.db.find(
             session,
-          ))
-              .single
-              .passwordHash
-              .lengthInBytes,
+          )).single.passwordHash.lengthInBytes,
           greaterThan(0),
         );
       });
@@ -184,14 +185,15 @@ void main() {
           await expectLater(
             AuthMigrations.migrateUsers(
               session,
-              userMigration: (
-                final session, {
-                required final newAuthUserId,
-                required final oldUserId,
-                final transaction,
-              }) {
-                throw UnimplementedError();
-              },
+              userMigration:
+                  (
+                    final session, {
+                    required final newAuthUserId,
+                    required final oldUserId,
+                    final transaction,
+                  }) {
+                    throw UnimplementedError();
+                  },
             ),
             throwsUnimplementedError,
           );
@@ -224,14 +226,18 @@ void main() {
 
         await AuthMigrations.migrateUsers(
           session,
-          userMigration: (
-            final session, {
-            required final newAuthUserId,
-            required final oldUserId,
-            final transaction,
-          }) async {
-            migratedUser = (oldUserId: oldUserId, newAuthUserId: newAuthUserId);
-          },
+          userMigration:
+              (
+                final session, {
+                required final newAuthUserId,
+                required final oldUserId,
+                final transaction,
+              }) async {
+                migratedUser = (
+                  oldUserId: oldUserId,
+                  newAuthUserId: newAuthUserId,
+                );
+              },
           legacyUserId: userInfo.id!,
         );
 
@@ -241,11 +247,10 @@ void main() {
           password: password,
         );
 
-        authUserId = (await newEmailIDP.admin.findAccount(
+        authUserId = (await newEmailIdp.admin.findAccount(
           session,
           email: email,
-        ))!
-            .authUserId;
+        ))!.authUserId;
       });
 
       test(
@@ -278,7 +283,7 @@ void main() {
         'when attempting to authenticate against the new system with the credentials, then that succeeds.',
         () async {
           expect(
-            await newEmailIDP.utils.authentication.authenticate(
+            await newEmailIdp.utils.authentication.authenticate(
               session,
               email: email,
               password: password,
@@ -293,8 +298,10 @@ void main() {
         'when reading the profile, then it matches the original user info.',
         () async {
           const userProfiles = new_auth_profile.UserProfiles();
-          final profile =
-              await userProfiles.findUserProfileByUserId(session, authUserId);
+          final profile = await userProfiles.findUserProfileByUserId(
+            session,
+            authUserId,
+          );
 
           expect(profile.email, userInfo.email);
           expect(profile.userName, userInfo.userName);
@@ -321,20 +328,19 @@ void main() {
 
         AuthMigrations.config = AuthMigrationConfig(
           importProfile: false,
-          emailIDP: newEmailIDP,
+          emailIdp: newEmailIdp,
         );
 
         await AuthMigrations.migrateUsers(session, userMigration: null);
 
         AuthMigrations.config = AuthMigrationConfig(
-          emailIDP: newEmailIDP,
+          emailIdp: newEmailIdp,
         );
 
-        authUserId = (await newEmailIDP.admin.findAccount(
+        authUserId = (await newEmailIdp.admin.findAccount(
           session,
           email: email,
-        ))!
-            .authUserId;
+        ))!.authUserId;
       });
 
       test(
@@ -376,21 +382,24 @@ void main() {
 
         await AuthMigrations.migrateUsers(
           session,
-          userMigration: (
-            final session, {
-            required final newAuthUserId,
-            required final oldUserId,
-            final transaction,
-          }) async {
-            migratedUser = (oldUserId: oldUserId, newAuthUserId: newAuthUserId);
-          },
+          userMigration:
+              (
+                final session, {
+                required final newAuthUserId,
+                required final oldUserId,
+                final transaction,
+              }) async {
+                migratedUser = (
+                  oldUserId: oldUserId,
+                  newAuthUserId: newAuthUserId,
+                );
+              },
         );
 
-        authUserId = (await newEmailIDP.admin.findAccount(
+        authUserId = (await newEmailIdp.admin.findAccount(
           session,
           email: email,
-        ))!
-            .authUserId;
+        ))!.authUserId;
       });
 
       test(
@@ -456,7 +465,7 @@ void main() {
           );
 
           expect(
-            await newEmailIDP.utils.authentication.authenticate(
+            await newEmailIdp.utils.authentication.authenticate(
               session,
               email: email,
               password: password,
@@ -479,14 +488,17 @@ void main() {
           );
 
           await expectLater(
-            () => newEmailIDP.utils.authentication.authenticate(
+            () => newEmailIdp.utils.authentication.authenticate(
               session,
               email: email,
               password: wrongPassword,
               transaction: session.transaction,
             ),
-            throwsA(isA<
-                new_auth_idp.EmailAuthenticationInvalidCredentialsException>()),
+            throwsA(
+              isA<
+                new_auth_idp.EmailAuthenticationInvalidCredentialsException
+              >(),
+            ),
           );
         },
       );
@@ -495,7 +507,7 @@ void main() {
         'when attempting to authenticate against the new system with the credentials, then that fails (because the password has not been set).',
         () async {
           await expectLater(
-            () => newEmailIDP.utils.authentication.authenticate(
+            () => newEmailIdp.utils.authentication.authenticate(
               session,
               email: email,
               // This is the user's password in the legacy system, but since it has not been set during the import,
@@ -503,8 +515,11 @@ void main() {
               password: password,
               transaction: session.transaction,
             ),
-            throwsA(isA<
-                new_auth_idp.EmailAuthenticationInvalidCredentialsException>()),
+            throwsA(
+              isA<
+                new_auth_idp.EmailAuthenticationInvalidCredentialsException
+              >(),
+            ),
           );
         },
       );
@@ -513,8 +528,10 @@ void main() {
         'when reading the profile, then it matches the original user info.',
         () async {
           const userProfiles = new_auth_profile.UserProfiles();
-          final profile =
-              await userProfiles.findUserProfileByUserId(session, authUserId);
+          final profile = await userProfiles.findUserProfileByUserId(
+            session,
+            authUserId,
+          );
 
           expect(profile.email, userInfo.email);
           expect(profile.userName, userInfo.userName);

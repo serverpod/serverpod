@@ -49,6 +49,7 @@ abstract class TokenPair implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.TokenPair',
       'refreshToken': refreshToken,
       'accessToken': accessToken,
     };
@@ -65,9 +66,9 @@ class _TokenPairImpl extends TokenPair {
     required String refreshToken,
     required String accessToken,
   }) : super._(
-          refreshToken: refreshToken,
-          accessToken: accessToken,
-        );
+         refreshToken: refreshToken,
+         accessToken: accessToken,
+       );
 
   /// Returns a shallow copy of this [TokenPair]
   /// with some or all fields replaced by the given arguments.

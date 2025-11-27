@@ -220,7 +220,7 @@ class MigrationGenerator {
       DatabaseMigrationVersion(
         module: MigrationConstants.repairMigrationModuleName,
         version: repairMigrationName,
-      )
+      ),
     ];
 
     List<DatabaseMigrationVersion> removedModules = _removedModulesDiff(
@@ -310,9 +310,11 @@ class MigrationGenerator {
     }
 
     for (var module in installedModules) {
-      if (targetModules.any((version) =>
-          version.module == module.module &&
-          version.version != module.version)) {
+      if (targetModules.any(
+        (version) =>
+            version.module == module.module &&
+            version.version != module.version,
+      )) {
         return true;
       }
     }
@@ -399,13 +401,16 @@ class MigrationGenerator {
       removedModules: removedModules,
     );
 
-    var repairMigrationFile = File(path.join(
-      MigrationConstants.repairMigrationDirectory(directory).path,
-      '$repairMigrationName.sql',
-    ));
+    var repairMigrationFile = File(
+      path.join(
+        MigrationConstants.repairMigrationDirectory(directory).path,
+        '$repairMigrationName.sql',
+      ),
+    );
 
-    var targetDirectory =
-        MigrationConstants.repairMigrationDirectory(directory);
+    var targetDirectory = MigrationConstants.repairMigrationDirectory(
+      directory,
+    );
 
     if (targetDirectory.existsSync()) {
       targetDirectory.deleteSync(recursive: true);
@@ -453,21 +458,21 @@ class MigrationVersion {
       // Load the database definition
       var databaseDefinitionProjectPath =
           MigrationConstants.databaseDefinitionProjectJSONPath(
-        projectDirectory,
-        versionName,
-      );
+            projectDirectory,
+            versionName,
+          );
 
       var databaseDefinitionProject =
           await _readMigrationDataFile<DatabaseDefinition>(
-        databaseDefinitionProjectPath,
-        serializationManager,
-      );
+            databaseDefinitionProjectPath,
+            serializationManager,
+          );
 
       var databaseDefinitionPath =
           MigrationConstants.databaseDefinitionJSONPath(
-        projectDirectory,
-        versionName,
-      );
+            projectDirectory,
+            versionName,
+          );
       var databaseDefinition = await _readMigrationDataFile<DatabaseDefinition>(
         databaseDefinitionPath,
         serializationManager,

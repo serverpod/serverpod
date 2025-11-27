@@ -4,7 +4,9 @@ import 'scope.dart';
 
 /// The [AuthenticationHandler] for the servers service connection.
 Future<AuthenticationInfo?> serviceAuthenticationHandler(
-    Session session, String key) async {
+  Session session,
+  String key,
+) async {
   try {
     var parts = key.split(':');
     // var name = parts[0];
@@ -15,7 +17,9 @@ Future<AuthenticationInfo?> serviceAuthenticationHandler(
     }
 
     if (secret == session.server.serverpod.config.serviceSecret) {
-      return AuthenticationInfo('0', <Scope>{Scope.none});
+      return AuthenticationInfo('0', <Scope>{
+        Scope.none,
+      }, authId: 'service-auth');
     }
   } catch (e) {
     return null;

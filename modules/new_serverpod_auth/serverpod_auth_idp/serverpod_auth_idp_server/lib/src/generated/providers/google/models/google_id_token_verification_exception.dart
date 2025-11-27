@@ -27,7 +27,8 @@ abstract class GoogleIdTokenVerificationException
       _GoogleIdTokenVerificationExceptionImpl;
 
   factory GoogleIdTokenVerificationException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return GoogleIdTokenVerificationException();
   }
 
@@ -37,12 +38,16 @@ abstract class GoogleIdTokenVerificationException
   GoogleIdTokenVerificationException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_idp.GoogleIdTokenVerificationException',
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_idp.GoogleIdTokenVerificationException',
+    };
   }
 
   @override

@@ -18,10 +18,10 @@ abstract class DoubleDefaultMix implements _i1.SerializableModel {
     double? doubleDefaultAndDefaultModel,
     double? doubleDefaultAndDefaultPersist,
     double? doubleDefaultModelAndDefaultPersist,
-  })  : doubleDefaultAndDefaultModel = doubleDefaultAndDefaultModel ?? 20.5,
-        doubleDefaultAndDefaultPersist = doubleDefaultAndDefaultPersist ?? 10.5,
-        doubleDefaultModelAndDefaultPersist =
-            doubleDefaultModelAndDefaultPersist ?? 10.5;
+  }) : doubleDefaultAndDefaultModel = doubleDefaultAndDefaultModel ?? 20.5,
+       doubleDefaultAndDefaultPersist = doubleDefaultAndDefaultPersist ?? 10.5,
+       doubleDefaultModelAndDefaultPersist =
+           doubleDefaultModelAndDefaultPersist ?? 10.5;
 
   factory DoubleDefaultMix({
     int? id,
@@ -67,6 +67,7 @@ abstract class DoubleDefaultMix implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DoubleDefaultMix',
       if (id != null) 'id': id,
       'doubleDefaultAndDefaultModel': doubleDefaultAndDefaultModel,
       'doubleDefaultAndDefaultPersist': doubleDefaultAndDefaultPersist,
@@ -90,12 +91,12 @@ class _DoubleDefaultMixImpl extends DoubleDefaultMix {
     double? doubleDefaultAndDefaultPersist,
     double? doubleDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          doubleDefaultAndDefaultModel: doubleDefaultAndDefaultModel,
-          doubleDefaultAndDefaultPersist: doubleDefaultAndDefaultPersist,
-          doubleDefaultModelAndDefaultPersist:
-              doubleDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         doubleDefaultAndDefaultModel: doubleDefaultAndDefaultModel,
+         doubleDefaultAndDefaultPersist: doubleDefaultAndDefaultPersist,
+         doubleDefaultModelAndDefaultPersist:
+             doubleDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [DoubleDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -115,7 +116,7 @@ class _DoubleDefaultMixImpl extends DoubleDefaultMix {
           doubleDefaultAndDefaultPersist ?? this.doubleDefaultAndDefaultPersist,
       doubleDefaultModelAndDefaultPersist:
           doubleDefaultModelAndDefaultPersist ??
-              this.doubleDefaultModelAndDefaultPersist,
+          this.doubleDefaultModelAndDefaultPersist,
     );
   }
 }

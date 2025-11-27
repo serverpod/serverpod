@@ -21,32 +21,32 @@ class GeneratorConfigBuilder {
   List<String>? _relativeServerTestToolsPathParts;
 
   GeneratorConfigBuilder()
-      : _name = _defaultName,
-        _type = _defaultType,
-        _serverPackage = 'example_server',
-        _dartClientPackage = 'example_client',
-        _dartClientDependsOnServiceClient = false,
-        _serverPackageDirectoryPathParts = [],
-        _relativeDartClientPackagePathParts = ['..', 'example_client'],
-        _modules = [
-          ModuleConfig(
-            type: PackageType.internal,
-            name: 'serverpod',
-            nickname: 'serverpod',
-            migrationVersions: ['0000000000000000000'],
-            serverPackageDirectoryPathParts: [],
-          ),
-          ModuleConfig(
-            type: _defaultType,
-            name: _defaultName,
-            nickname: _defaultName,
-            migrationVersions: ['0000000000000000000'],
-            serverPackageDirectoryPathParts: [],
-          ),
-        ],
-        _extraClasses = [],
-        _enabledFeatures = [ServerpodFeature.database],
-        _enabledExperimentalFeatures = [];
+    : _name = _defaultName,
+      _type = _defaultType,
+      _serverPackage = 'example_server',
+      _dartClientPackage = 'example_client',
+      _dartClientDependsOnServiceClient = false,
+      _serverPackageDirectoryPathParts = [],
+      _relativeDartClientPackagePathParts = ['..', 'example_client'],
+      _modules = [
+        ModuleConfig(
+          type: PackageType.internal,
+          name: 'serverpod',
+          nickname: 'serverpod',
+          migrationVersions: ['0000000000000000000'],
+          serverPackageDirectoryPathParts: [],
+        ),
+        ModuleConfig(
+          type: _defaultType,
+          name: _defaultName,
+          nickname: _defaultName,
+          migrationVersions: ['0000000000000000000'],
+          serverPackageDirectoryPathParts: [],
+        ),
+      ],
+      _extraClasses = [],
+      _enabledFeatures = [ServerpodFeature.database],
+      _enabledExperimentalFeatures = [];
 
   GeneratorConfigBuilder withName(String name) {
     _name = name;
@@ -62,19 +62,22 @@ class GeneratorConfigBuilder {
   }
 
   GeneratorConfigBuilder withDartClientDependsOnServiceClient(
-      bool dartClientDependsOnServiceClient) {
+    bool dartClientDependsOnServiceClient,
+  ) {
     _dartClientDependsOnServiceClient = dartClientDependsOnServiceClient;
     return this;
   }
 
   GeneratorConfigBuilder withServerPackageDirectoryPathParts(
-      List<String> serverPackageDirectoryPathParts) {
+    List<String> serverPackageDirectoryPathParts,
+  ) {
     _serverPackageDirectoryPathParts = serverPackageDirectoryPathParts;
     return this;
   }
 
   GeneratorConfigBuilder withRelativeDartClientPackagePathParts(
-      List<String> relativeDartClientPackagePathParts) {
+    List<String> relativeDartClientPackagePathParts,
+  ) {
     _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
     return this;
   }

@@ -48,6 +48,7 @@ abstract class BulkDataException
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.BulkDataException',
       'message': message,
       if (query != null) 'query': query,
     };
@@ -56,6 +57,7 @@ abstract class BulkDataException
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.BulkDataException',
       'message': message,
       if (query != null) 'query': query,
     };
@@ -74,9 +76,9 @@ class _BulkDataExceptionImpl extends BulkDataException {
     required String message,
     String? query,
   }) : super._(
-          message: message,
-          query: query,
-        );
+         message: message,
+         query: query,
+       );
 
   /// Returns a shallow copy of this [BulkDataException]
   /// with some or all fields replaced by the given arguments.

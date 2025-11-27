@@ -32,7 +32,10 @@ abstract class EmptyModelWithTable implements _i1.SerializableModel {
   EmptyModelWithTable copyWith({int? id});
   @override
   Map<String, dynamic> toJson() {
-    return {if (id != null) 'id': id};
+    return {
+      '__className__': 'EmptyModelWithTable',
+      if (id != null) 'id': id,
+    };
   }
 
   @override

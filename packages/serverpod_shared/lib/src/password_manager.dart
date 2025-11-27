@@ -41,8 +41,9 @@ class PasswordManager {
       },
     );
 
-    final userDefinedEnvPasswords =
-        _findUserDefinedPasswordsFromEnv(environment);
+    final userDefinedEnvPasswords = _findUserDefinedPasswordsFromEnv(
+      environment,
+    );
 
     envPasswords.addAll(userDefinedEnvPasswords);
 
@@ -56,17 +57,19 @@ class PasswordManager {
   Map<String, String> _findUserDefinedPasswordsFromEnv(
     Map<String, String> environment,
   ) {
-    final userDefinedEnvPasswords = environment.entries.where(
-      (entry) {
-        if (!entry.key.startsWith(_userDefinedPasswordPrefix)) return false;
-        return entry.key.length > _userDefinedPasswordPrefix.length;
-      },
-    ).map(
-      (entry) => MapEntry(
-        entry.key.substring(_userDefinedPasswordPrefix.length),
-        entry.value,
-      ),
-    );
+    final userDefinedEnvPasswords = environment.entries
+        .where(
+          (entry) {
+            if (!entry.key.startsWith(_userDefinedPasswordPrefix)) return false;
+            return entry.key.length > _userDefinedPasswordPrefix.length;
+          },
+        )
+        .map(
+          (entry) => MapEntry(
+            entry.key.substring(_userDefinedPasswordPrefix.length),
+            entry.value,
+          ),
+        );
 
     return Map.fromEntries(userDefinedEnvPasswords);
   }
@@ -115,7 +118,8 @@ class PasswordManager {
   }) {
     var containsReservedPasswords = ServerpodPassword.values.any(
       (password) => config.any(
-        (entry) => (entry.envName == password.envVariable ||
+        (entry) =>
+            (entry.envName == password.envVariable ||
             entry.alias == password.configKey),
       ),
     );

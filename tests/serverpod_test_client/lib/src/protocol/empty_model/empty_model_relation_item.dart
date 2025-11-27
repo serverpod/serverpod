@@ -24,7 +24,8 @@ abstract class EmptyModelRelationItem implements _i1.SerializableModel {
   }) = _EmptyModelRelationItemImpl;
 
   factory EmptyModelRelationItem.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return EmptyModelRelationItem(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
@@ -48,6 +49,7 @@ abstract class EmptyModelRelationItem implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'EmptyModelRelationItem',
       if (id != null) 'id': id,
       'name': name,
     };
@@ -66,9 +68,9 @@ class _EmptyModelRelationItemImpl extends EmptyModelRelationItem {
     int? id,
     required String name,
   }) : super._(
-          id: id,
-          name: name,
-        );
+         id: id,
+         name: name,
+       );
 
   /// Returns a shallow copy of this [EmptyModelRelationItem]
   /// with some or all fields replaced by the given arguments.

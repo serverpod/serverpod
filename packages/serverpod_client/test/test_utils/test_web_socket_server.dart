@@ -42,8 +42,9 @@ abstract class TestWebSocketServer {
     );
     await server.mountAndStart(requestHandler);
 
-    var webSocketHost =
-        Uri.parse('ws://${InternetAddress.loopbackIPv4.host}:${server.port}');
+    var webSocketHost = Uri.parse(
+      'ws://${InternetAddress.loopbackIPv4.host}:${server.port}',
+    );
     onConnected?.call(webSocketHost);
 
     return server;

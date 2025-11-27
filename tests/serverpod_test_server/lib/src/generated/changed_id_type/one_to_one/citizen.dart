@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/one_to_one/address.dart' as _i2;
 import '../../changed_id_type/one_to_one/company.dart' as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
 
 abstract class CitizenInt
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -44,22 +45,27 @@ abstract class CitizenInt
       name: jsonSerialization['name'] as String,
       address: jsonSerialization['address'] == null
           ? null
-          : _i2.AddressUuid.fromJson(
-              (jsonSerialization['address'] as Map<String, dynamic>)),
-      companyId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['companyId']),
+          : _i4.Protocol().deserialize<_i2.AddressUuid>(
+              jsonSerialization['address'],
+            ),
+      companyId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['companyId'],
+      ),
       company: jsonSerialization['company'] == null
           ? null
-          : _i3.CompanyUuid.fromJson(
-              (jsonSerialization['company'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i3.CompanyUuid>(
+              jsonSerialization['company'],
+            ),
       oldCompanyId: jsonSerialization['oldCompanyId'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(
-              jsonSerialization['oldCompanyId']),
+              jsonSerialization['oldCompanyId'],
+            ),
       oldCompany: jsonSerialization['oldCompany'] == null
           ? null
-          : _i3.CompanyUuid.fromJson(
-              (jsonSerialization['oldCompany'] as Map<String, dynamic>)),
+          : _i4.Protocol().deserialize<_i3.CompanyUuid>(
+              jsonSerialization['oldCompany'],
+            ),
     );
   }
 
@@ -100,6 +106,7 @@ abstract class CitizenInt
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'CitizenInt',
       if (id != null) 'id': id,
       'name': name,
       if (address != null) 'address': address?.toJson(),
@@ -113,6 +120,7 @@ abstract class CitizenInt
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'CitizenInt',
       if (id != null) 'id': id,
       'name': name,
       if (address != null) 'address': address?.toJsonForProtocol(),
@@ -173,14 +181,14 @@ class _CitizenIntImpl extends CitizenInt {
     _i1.UuidValue? oldCompanyId,
     _i3.CompanyUuid? oldCompany,
   }) : super._(
-          id: id,
-          name: name,
-          address: address,
-          companyId: companyId,
-          company: company,
-          oldCompanyId: oldCompanyId,
-          oldCompany: oldCompany,
-        );
+         id: id,
+         name: name,
+         address: address,
+         companyId: companyId,
+         company: company,
+         oldCompanyId: oldCompanyId,
+         oldCompany: oldCompany,
+       );
 
   /// Returns a shallow copy of this [CitizenInt]
   /// with some or all fields replaced by the given arguments.
@@ -201,8 +209,9 @@ class _CitizenIntImpl extends CitizenInt {
       address: address is _i2.AddressUuid? ? address : this.address?.copyWith(),
       companyId: companyId ?? this.companyId,
       company: company is _i3.CompanyUuid? ? company : this.company?.copyWith(),
-      oldCompanyId:
-          oldCompanyId is _i1.UuidValue? ? oldCompanyId : this.oldCompanyId,
+      oldCompanyId: oldCompanyId is _i1.UuidValue?
+          ? oldCompanyId
+          : this.oldCompanyId,
       oldCompany: oldCompany is _i3.CompanyUuid?
           ? oldCompany
           : this.oldCompany?.copyWith(),
@@ -214,23 +223,23 @@ class CitizenIntUpdateTable extends _i1.UpdateTable<CitizenIntTable> {
   CitizenIntUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> companyId(
-          _i1.UuidValue value) =>
-      _i1.ColumnValue(
-        table.companyId,
-        value,
-      );
+    _i1.UuidValue value,
+  ) => _i1.ColumnValue(
+    table.companyId,
+    value,
+  );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> oldCompanyId(
-          _i1.UuidValue? value) =>
-      _i1.ColumnValue(
-        table.oldCompanyId,
-        value,
-      );
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
+    table.oldCompanyId,
+    value,
+  );
 }
 
 class CitizenIntTable extends _i1.Table<int?> {
@@ -305,11 +314,11 @@ class CitizenIntTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        companyId,
-        oldCompanyId,
-      ];
+    id,
+    name,
+    companyId,
+    oldCompanyId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -345,10 +354,10 @@ class CitizenIntInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'address': _address,
-        'company': _company,
-        'oldCompany': _oldCompany,
-      };
+    'address': _address,
+    'company': _company,
+    'oldCompany': _oldCompany,
+  };
 
   @override
   _i1.Table<int?> get table => CitizenInt.t;

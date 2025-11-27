@@ -33,8 +33,9 @@ abstract class EndpointMethodAnalyzer {
     if (isStream) {
       return MethodStreamDefinition(
         name: method.displayName,
-        documentationComment:
-            stripDocumentationTemplateMarkers(method.documentationComment),
+        documentationComment: stripDocumentationTemplateMarkers(
+          method.documentationComment,
+        ),
         annotations: AnnotationAnalyzer.parseAnnotations(method),
         parameters: parameters.required,
         parametersNamed: parameters.named,
@@ -45,8 +46,9 @@ abstract class EndpointMethodAnalyzer {
 
     return MethodCallDefinition(
       name: method.displayName,
-      documentationComment:
-          stripDocumentationTemplateMarkers(method.documentationComment),
+      documentationComment: stripDocumentationTemplateMarkers(
+        method.documentationComment,
+      ),
       annotations: AnnotationAnalyzer.parseAnnotations(method),
       parameters: parameters.required,
       parametersNamed: parameters.named,
@@ -186,6 +188,9 @@ extension on List<FormalParameterElement> {
 }
 
 extension on Parameters {
-  bool _hasStream() => [...required, ...positional, ...named]
-      .any((element) => element.type.dartType?.isDartAsyncStream ?? false);
+  bool _hasStream() => [
+    ...required,
+    ...positional,
+    ...named,
+  ].any((element) => element.type.dartType?.isDartAsyncStream ?? false);
 }

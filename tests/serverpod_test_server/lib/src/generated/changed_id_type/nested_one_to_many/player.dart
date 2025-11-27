@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/nested_one_to_many/team.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class PlayerUuid
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -40,8 +41,7 @@ abstract class PlayerUuid
       teamId: jsonSerialization['teamId'] as int?,
       team: jsonSerialization['team'] == null
           ? null
-          : _i2.TeamInt.fromJson(
-              (jsonSerialization['team'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.TeamInt>(jsonSerialization['team']),
     );
   }
 
@@ -73,6 +73,7 @@ abstract class PlayerUuid
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'PlayerUuid',
       if (id != null) 'id': id?.toJson(),
       'name': name,
       if (teamId != null) 'teamId': teamId,
@@ -83,6 +84,7 @@ abstract class PlayerUuid
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'PlayerUuid',
       if (id != null) 'id': id?.toJson(),
       'name': name,
       if (teamId != null) 'teamId': teamId,
@@ -129,11 +131,11 @@ class _PlayerUuidImpl extends PlayerUuid {
     int? teamId,
     _i2.TeamInt? team,
   }) : super._(
-          id: id,
-          name: name,
-          teamId: teamId,
-          team: team,
-        );
+         id: id,
+         name: name,
+         teamId: teamId,
+         team: team,
+       );
 
   /// Returns a shallow copy of this [PlayerUuid]
   /// with some or all fields replaced by the given arguments.
@@ -158,14 +160,14 @@ class PlayerUuidUpdateTable extends _i1.UpdateTable<PlayerUuidTable> {
   PlayerUuidUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> teamId(int? value) => _i1.ColumnValue(
-        table.teamId,
-        value,
-      );
+    table.teamId,
+    value,
+  );
 }
 
 class PlayerUuidTable extends _i1.Table<_i1.UuidValue?> {
@@ -204,10 +206,10 @@ class PlayerUuidTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        teamId,
-      ];
+    id,
+    name,
+    teamId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

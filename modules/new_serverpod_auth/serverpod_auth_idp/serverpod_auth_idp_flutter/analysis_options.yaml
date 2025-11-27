@@ -6,3 +6,6 @@ linter:
     public_member_api_docs: true
     unawaited_futures: true
     discarded_futures: true
+
+formatter:
+  trailing_commas: preserve

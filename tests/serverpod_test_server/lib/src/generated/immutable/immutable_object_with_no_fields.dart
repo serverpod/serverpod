@@ -21,7 +21,8 @@ abstract class ImmutableObjectWithNoFields
       _ImmutableObjectWithNoFieldsImpl;
 
   factory ImmutableObjectWithNoFields.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithNoFields();
   }
 
@@ -46,12 +47,12 @@ abstract class ImmutableObjectWithNoFields
 
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {'__className__': 'ImmutableObjectWithNoFields'};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {'__className__': 'ImmutableObjectWithNoFields'};
   }
 
   @override

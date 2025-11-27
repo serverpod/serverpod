@@ -25,7 +25,8 @@ abstract class ImmutableObjectWithTable implements _i1.SerializableModel {
   }) = _ImmutableObjectWithTableImpl;
 
   factory ImmutableObjectWithTable.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableObjectWithTable(
       id: jsonSerialization['id'] as int?,
       variable: jsonSerialization['variable'] as String,
@@ -78,6 +79,7 @@ abstract class ImmutableObjectWithTable implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ImmutableObjectWithTable',
       if (id != null) 'id': id,
       'variable': variable,
     };
@@ -96,9 +98,9 @@ class _ImmutableObjectWithTableImpl extends ImmutableObjectWithTable {
     int? id,
     required String variable,
   }) : super._(
-          id: id,
-          variable: variable,
-        );
+         id: id,
+         variable: variable,
+       );
 
   /// Returns a shallow copy of this [ImmutableObjectWithTable]
   /// with some or all fields replaced by the given arguments.

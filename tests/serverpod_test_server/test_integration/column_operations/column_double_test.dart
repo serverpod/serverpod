@@ -33,147 +33,172 @@ void main() async {
       expect(result.length, 4);
     });
 
-    test('when filtering using equals then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDouble.equals(1.0),
-      );
+    test(
+      'when filtering using equals then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDouble.equals(1.0),
+        );
 
-      expect(result.first.aDouble, 1.0);
-    });
-
-    test('when filtering using equals with null then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDouble.equals(null),
-      );
-
-      expect(result.first.aDouble, isNull);
-    });
-
-    test('when filtering using notEquals then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDouble.notEquals(1.0),
-      );
-
-      expect(result.length, 3);
-    });
+        expect(result.first.aDouble, 1.0);
+      },
+    );
 
     test(
-        'when filtering using notEquals with null then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDouble.notEquals(null),
-      );
+      'when filtering using equals with null then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDouble.equals(null),
+        );
 
-      expect(result.length, 3);
-    });
-
-    test('when filtering using inSet then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDouble.inSet({1.0, 2.0}),
-      );
-
-      expect(result.length, 2);
-    });
-
-    test('when filtering using empty inSet then no rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDouble.inSet({}),
-      );
-
-      expect(result, isEmpty);
-    });
-
-    test('when filtering using notInSet then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDouble.notInSet({1.0}),
-      );
-
-      expect(result.length, 3);
-    });
-
-    test('when filtering using empty notInSet then all rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDouble.notInSet({}),
-      );
-
-      expect(result.length, 4);
-    });
-
-    test('when filtering using greater than then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDouble > 1.0,
-      );
-
-      expect(result.length, 2);
-    });
+        expect(result.first.aDouble, isNull);
+      },
+    );
 
     test(
-        'when filtering using greater or equal than then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDouble >= 1.0,
-      );
+      'when filtering using notEquals then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDouble.notEquals(1.0),
+        );
 
-      expect(result.length, 3);
-    });
-
-    test('when filtering using less than then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDouble < 3.0,
-      );
-
-      expect(result.length, 2);
-    });
+        expect(result.length, 3);
+      },
+    );
 
     test(
-        'when filtering using less or equal than then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDouble <= 3.0,
-      );
+      'when filtering using notEquals with null then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDouble.notEquals(null),
+        );
 
-      expect(result.length, 3);
-    });
+        expect(result.length, 3);
+      },
+    );
 
-    test('when filtering using between then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDouble.between(1.0, 2.0),
-      );
+    test(
+      'when filtering using inSet then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDouble.inSet({1.0, 2.0}),
+        );
 
-      expect(result.length, 2);
-    });
+        expect(result.length, 2);
+      },
+    );
 
-    test('when filtering using not between then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDouble.notBetween(1.0, 2.0),
-      );
+    test(
+      'when filtering using empty inSet then no rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDouble.inSet({}),
+        );
 
-      expect(result.first.aDouble, 3.0);
-    });
+        expect(result, isEmpty);
+      },
+    );
+
+    test(
+      'when filtering using notInSet then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDouble.notInSet({1.0}),
+        );
+
+        expect(result.length, 3);
+      },
+    );
+
+    test(
+      'when filtering using empty notInSet then all rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDouble.notInSet({}),
+        );
+
+        expect(result.length, 4);
+      },
+    );
+
+    test(
+      'when filtering using greater than then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDouble > 1.0,
+        );
+
+        expect(result.length, 2);
+      },
+    );
+
+    test(
+      'when filtering using greater or equal than then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDouble >= 1.0,
+        );
+
+        expect(result.length, 3);
+      },
+    );
+
+    test(
+      'when filtering using less than then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDouble < 3.0,
+        );
+
+        expect(result.length, 2);
+      },
+    );
+
+    test(
+      'when filtering using less or equal than then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDouble <= 3.0,
+        );
+
+        expect(result.length, 3);
+      },
+    );
+
+    test(
+      'when filtering using between then matching rows are returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDouble.between(1.0, 2.0),
+        );
+
+        expect(result.length, 2);
+      },
+    );
+
+    test(
+      'when filtering using not between then matching row is returned.',
+      () async {
+        var result = await Types.db.find(
+          session,
+          where: (t) => t.aDouble.notBetween(1.0, 2.0),
+        );
+
+        expect(result.first.aDouble, 3.0);
+      },
+    );
   });
 }

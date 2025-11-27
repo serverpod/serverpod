@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i2;
 
 abstract class AuthUserModel
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -31,11 +32,12 @@ abstract class AuthUserModel
   factory AuthUserModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return AuthUserModel(
       id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
+      scopeNames: _i2.Protocol().deserialize<Set<String>>(
+        jsonSerialization['scopeNames'],
+      ),
       blocked: jsonSerialization['blocked'] as bool,
     );
   }
@@ -63,6 +65,7 @@ abstract class AuthUserModel
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.AuthUserModel',
       'id': id.toJson(),
       'createdAt': createdAt.toJson(),
       'scopeNames': scopeNames.toJson(),
@@ -73,6 +76,7 @@ abstract class AuthUserModel
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth_core.AuthUserModel',
       'id': id.toJson(),
       'createdAt': createdAt.toJson(),
       'scopeNames': scopeNames.toJson(),
@@ -93,11 +97,11 @@ class _AuthUserModelImpl extends AuthUserModel {
     required Set<String> scopeNames,
     required bool blocked,
   }) : super._(
-          id: id,
-          createdAt: createdAt,
-          scopeNames: scopeNames,
-          blocked: blocked,
-        );
+         id: id,
+         createdAt: createdAt,
+         scopeNames: scopeNames,
+         blocked: blocked,
+       );
 
   /// Returns a shallow copy of this [AuthUserModel]
   /// with some or all fields replaced by the given arguments.

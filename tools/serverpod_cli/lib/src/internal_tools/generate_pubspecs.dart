@@ -61,7 +61,7 @@ void performGeneratePubspecs({
         Replacement(
           slotName: '#--CONDITIONALLY_REMOVE_LINE--#',
           replacement: '',
-        )
+        ),
       ],
       fileNameReplacements: [],
     );

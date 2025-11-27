@@ -15,9 +15,9 @@ void main() {
 
   group('Given SelectQueryBuilder', () {
     group('when filtering causes a long join name.', () {
-      var query = SelectQueryBuilder(table: citizenTable)
-          .withWhere(relationTable.id.equals(1))
-          .build();
+      var query = SelectQueryBuilder(
+        table: citizenTable,
+      ).withWhere(relationTable.id.equals(1)).build();
       var expectedTruncatedName =
           'citizen_thisFieldIsExactly61CharactersLongAndIsThereforeVale9b4';
 

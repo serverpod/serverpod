@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class ObjectUser
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -38,8 +39,9 @@ abstract class ObjectUser
       userInfoId: jsonSerialization['userInfoId'] as int,
       userInfo: jsonSerialization['userInfo'] == null
           ? null
-          : _i2.UserInfo.fromJson(
-              (jsonSerialization['userInfo'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.UserInfo>(
+              jsonSerialization['userInfo'],
+            ),
     );
   }
 
@@ -71,6 +73,7 @@ abstract class ObjectUser
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectUser',
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       'userInfoId': userInfoId,
@@ -81,6 +84,7 @@ abstract class ObjectUser
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ObjectUser',
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       'userInfoId': userInfoId,
@@ -127,11 +131,11 @@ class _ObjectUserImpl extends ObjectUser {
     required int userInfoId,
     _i2.UserInfo? userInfo,
   }) : super._(
-          id: id,
-          name: name,
-          userInfoId: userInfoId,
-          userInfo: userInfo,
-        );
+         id: id,
+         name: name,
+         userInfoId: userInfoId,
+         userInfo: userInfo,
+       );
 
   /// Returns a shallow copy of this [ObjectUser]
   /// with some or all fields replaced by the given arguments.
@@ -147,8 +151,9 @@ class _ObjectUserImpl extends ObjectUser {
       id: id is int? ? id : this.id,
       name: name is String? ? name : this.name,
       userInfoId: userInfoId ?? this.userInfoId,
-      userInfo:
-          userInfo is _i2.UserInfo? ? userInfo : this.userInfo?.copyWith(),
+      userInfo: userInfo is _i2.UserInfo?
+          ? userInfo
+          : this.userInfo?.copyWith(),
     );
   }
 }
@@ -157,14 +162,14 @@ class ObjectUserUpdateTable extends _i1.UpdateTable<ObjectUserTable> {
   ObjectUserUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String? value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> userInfoId(int value) => _i1.ColumnValue(
-        table.userInfoId,
-        value,
-      );
+    table.userInfoId,
+    value,
+  );
 }
 
 class ObjectUserTable extends _i1.Table<int?> {
@@ -203,10 +208,10 @@ class ObjectUserTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        userInfoId,
-      ];
+    id,
+    name,
+    userInfoId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

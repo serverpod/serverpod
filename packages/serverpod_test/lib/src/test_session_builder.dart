@@ -5,12 +5,17 @@ import 'test_serverpod.dart';
 /// An override for the authentication state in a test session.
 abstract class AuthenticationOverride {
   /// Sets the session to be authenticated with the provided [userIdentifier] and [scopes].
+  ///
+  /// If [authId] is not provided, a new UUID will be generated.
   static AuthenticationOverride authenticationInfo(
     String userIdentifier,
     Set<Scope> scopes, {
     String? authId,
-  }) =>
-      _AuthenticationInfoOverride(userIdentifier, scopes, authId: authId);
+  }) => _AuthenticationInfoOverride(
+    userIdentifier,
+    scopes,
+    authId: authId ?? const Uuid().v4().toString(),
+  );
 
   /// Sets the session to be unauthenticated. This is the default.
   static AuthenticationOverride unauthenticated() => _Unauthenticated();
@@ -33,11 +38,11 @@ class InternalTestSessionBuilder extends TestSessionBuilder {
     required bool enableLogging,
     required List<InternalServerpodSession> allTestSessions,
     required InternalServerpodSession mainServerpodSession,
-  })  : _allTestSessions = allTestSessions,
-        _authenticationOverride = authenticationOverride,
-        _testServerpod = testServerpod,
-        _enableLogging = enableLogging,
-        _mainServerpodSession = mainServerpodSession;
+  }) : _allTestSessions = allTestSessions,
+       _authenticationOverride = authenticationOverride,
+       _testServerpod = testServerpod,
+       _enableLogging = enableLogging,
+       _mainServerpodSession = mainServerpodSession;
 
   @override
   Session build() {
@@ -111,12 +116,12 @@ class _AuthenticationInfoOverride extends AuthenticationOverride {
   _AuthenticationInfoOverride(
     String userIdentifier,
     Set<Scope> scopes, {
-    String? authId,
+    required String authId,
   }) : _authenticationInfo = AuthenticationInfo(
-          userIdentifier,
-          scopes,
-          authId: authId,
-        );
+         userIdentifier,
+         scopes,
+         authId: authId,
+       );
 
   /// The authentication info to use for the session.
   AuthenticationInfo get authenticationInfo => _authenticationInfo;

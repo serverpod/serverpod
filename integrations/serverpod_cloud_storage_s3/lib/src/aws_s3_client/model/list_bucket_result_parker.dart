@@ -15,23 +15,28 @@ abstract class ListBucketResultParker
   @BuiltValueField(wireName: "ListBucketResult")
   ListBucketResult? get result;
 
-  factory ListBucketResultParker(
-          [Function(ListBucketResultParkerBuilder b)? updates]) =
-      _$ListBucketResultParker;
+  factory ListBucketResultParker([
+    Function(ListBucketResultParkerBuilder b)? updates,
+  ]) = _$ListBucketResultParker;
 
   String toJson() {
-    return json
-        .encode(serializers.serializeWith(ListBucketResult.serializer, this));
+    return json.encode(
+      serializers.serializeWith(ListBucketResult.serializer, this),
+    );
   }
 
   static ListBucketResultParker fromJson(String jsonString) {
     return serializers.deserializeWith(
-        ListBucketResultParker.serializer, json.decode(jsonString))!;
+      ListBucketResultParker.serializer,
+      json.decode(jsonString),
+    )!;
   }
 
   static ListBucketResultParker fromJsonMap(Map<String, dynamic> jsonMap) {
     return serializers.deserializeWith(
-        ListBucketResultParker.serializer, jsonMap)!;
+      ListBucketResultParker.serializer,
+      jsonMap,
+    )!;
   }
 
   static Serializer<ListBucketResultParker> get serializer =>

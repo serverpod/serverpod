@@ -49,8 +49,9 @@ abstract class TestHttpServer {
     );
     await server.mountAndStart(requestHandler);
 
-    final httpHost =
-        Uri.http('${InternetAddress.loopbackIPv4.host}:${server.port}');
+    final httpHost = Uri.http(
+      '${InternetAddress.loopbackIPv4.host}:${server.port}',
+    );
     onConnected?.call(httpHost);
 
     return server;

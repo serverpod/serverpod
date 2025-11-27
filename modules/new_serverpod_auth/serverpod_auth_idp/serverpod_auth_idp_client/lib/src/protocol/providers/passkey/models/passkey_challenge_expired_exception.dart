@@ -22,7 +22,8 @@ abstract class PasskeyChallengeExpiredException
       _PasskeyChallengeExpiredExceptionImpl;
 
   factory PasskeyChallengeExpiredException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return PasskeyChallengeExpiredException();
   }
 
@@ -32,7 +33,9 @@ abstract class PasskeyChallengeExpiredException
   PasskeyChallengeExpiredException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_idp.PasskeyChallengeExpiredException',
+    };
   }
 
   @override

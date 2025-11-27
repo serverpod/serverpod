@@ -67,31 +67,31 @@ class Endpoints extends _i1.EndpointDispatch {
         'virtualMethod': _i1.MethodConnector(
           name: 'virtualMethod',
           params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['concreteBase'] as _i2.ConcreteBaseEndpoint)
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['concreteBase'] as _i2.ConcreteBaseEndpoint)
                   .virtualMethod(session),
         ),
         'concreteMethod': _i1.MethodConnector(
           name: 'concreteMethod',
           params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['concreteBase'] as _i2.ConcreteBaseEndpoint)
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['concreteBase'] as _i2.ConcreteBaseEndpoint)
                   .concreteMethod(session),
         ),
         'abstractBaseMethod': _i1.MethodConnector(
           name: 'abstractBaseMethod',
           params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['concreteBase'] as _i2.ConcreteBaseEndpoint)
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['concreteBase'] as _i2.ConcreteBaseEndpoint)
                   .abstractBaseMethod(session),
         ),
       },
@@ -107,16 +107,16 @@ class Endpoints extends _i1.EndpointDispatch {
               name: 'name',
               type: _i1.getType<String>(),
               nullable: false,
-            )
+            ),
           },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['module'] as _i3.ModuleEndpoint).hello(
-            session,
-            params['name'],
-          ),
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['module'] as _i3.ModuleEndpoint).hello(
+                session,
+                params['name'],
+              ),
         ),
         'modifyModuleObject': _i1.MethodConnector(
           name: 'modifyModuleObject',
@@ -125,16 +125,17 @@ class Endpoints extends _i1.EndpointDispatch {
               name: 'object',
               type: _i1.getType<_i7.ModuleClass>(),
               nullable: false,
-            )
+            ),
           },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['module'] as _i3.ModuleEndpoint).modifyModuleObject(
-            session,
-            params['object'],
-          ),
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['module'] as _i3.ModuleEndpoint)
+                  .modifyModuleObject(
+                    session,
+                    params['object'],
+                  ),
         ),
       },
     );
@@ -145,21 +146,21 @@ class Endpoints extends _i1.EndpointDispatch {
         'wasStreamOpenCalled': _i1.MethodConnector(
           name: 'wasStreamOpenCalled',
           params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['streaming'] as _i4.StreamingEndpoint)
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['streaming'] as _i4.StreamingEndpoint)
                   .wasStreamOpenCalled(session),
         ),
         'wasStreamClosedCalled': _i1.MethodConnector(
           name: 'wasStreamClosedCalled',
           params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['streaming'] as _i4.StreamingEndpoint)
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['streaming'] as _i4.StreamingEndpoint)
                   .wasStreamClosedCalled(session),
         ),
         'intEchoStream': _i1.MethodStreamConnector(
@@ -169,18 +170,19 @@ class Endpoints extends _i1.EndpointDispatch {
             'stream': _i1.StreamParameterDescription<int>(
               name: 'stream',
               nullable: false,
-            )
+            ),
           },
           returnType: _i1.MethodStreamReturnType.streamType,
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-            Map<String, Stream> streamParams,
-          ) =>
-              (endpoints['streaming'] as _i4.StreamingEndpoint).intEchoStream(
-            session,
-            streamParams['stream']!.cast<int>(),
-          ),
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) => (endpoints['streaming'] as _i4.StreamingEndpoint)
+                  .intEchoStream(
+                    session,
+                    streamParams['stream']!.cast<int>(),
+                  ),
         ),
         'simpleInputReturnStream': _i1.MethodStreamConnector(
           name: 'simpleInputReturnStream',
@@ -189,19 +191,19 @@ class Endpoints extends _i1.EndpointDispatch {
             'stream': _i1.StreamParameterDescription<int>(
               name: 'stream',
               nullable: false,
-            )
+            ),
           },
           returnType: _i1.MethodStreamReturnType.futureType,
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-            Map<String, Stream> streamParams,
-          ) =>
-              (endpoints['streaming'] as _i4.StreamingEndpoint)
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) => (endpoints['streaming'] as _i4.StreamingEndpoint)
                   .simpleInputReturnStream(
-            session,
-            streamParams['stream']!.cast<int>(),
-          ),
+                    session,
+                    streamParams['stream']!.cast<int>(),
+                  ),
         ),
       },
     );
@@ -212,24 +214,25 @@ class Endpoints extends _i1.EndpointDispatch {
         'unauthenticatedMethod': _i1.MethodConnector(
           name: 'unauthenticatedMethod',
           params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['unauthenticated'] as _i5.UnauthenticatedEndpoint)
-                  .unauthenticatedMethod(session),
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['unauthenticated'] as _i5.UnauthenticatedEndpoint)
+                      .unauthenticatedMethod(session),
         ),
         'unauthenticatedStream': _i1.MethodStreamConnector(
           name: 'unauthenticatedStream',
           params: {},
           streamParams: {},
           returnType: _i1.MethodStreamReturnType.streamType,
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-            Map<String, Stream> streamParams,
-          ) =>
-              (endpoints['unauthenticated'] as _i5.UnauthenticatedEndpoint)
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) => (endpoints['unauthenticated'] as _i5.UnauthenticatedEndpoint)
                   .unauthenticatedStream(session),
         ),
       },
@@ -241,52 +244,56 @@ class Endpoints extends _i1.EndpointDispatch {
         'unauthenticatedMethod': _i1.MethodConnector(
           name: 'unauthenticatedMethod',
           params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['partiallyUnauthenticated']
-                      as _i5.PartiallyUnauthenticatedEndpoint)
-                  .unauthenticatedMethod(session),
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['partiallyUnauthenticated']
+                          as _i5.PartiallyUnauthenticatedEndpoint)
+                      .unauthenticatedMethod(session),
         ),
         'authenticatedMethod': _i1.MethodConnector(
           name: 'authenticatedMethod',
           params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['partiallyUnauthenticated']
-                      as _i5.PartiallyUnauthenticatedEndpoint)
-                  .authenticatedMethod(session),
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['partiallyUnauthenticated']
+                          as _i5.PartiallyUnauthenticatedEndpoint)
+                      .authenticatedMethod(session),
         ),
         'unauthenticatedStream': _i1.MethodStreamConnector(
           name: 'unauthenticatedStream',
           params: {},
           streamParams: {},
           returnType: _i1.MethodStreamReturnType.streamType,
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-            Map<String, Stream> streamParams,
-          ) =>
-              (endpoints['partiallyUnauthenticated']
-                      as _i5.PartiallyUnauthenticatedEndpoint)
-                  .unauthenticatedStream(session),
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) =>
+                  (endpoints['partiallyUnauthenticated']
+                          as _i5.PartiallyUnauthenticatedEndpoint)
+                      .unauthenticatedStream(session),
         ),
         'authenticatedStream': _i1.MethodStreamConnector(
           name: 'authenticatedStream',
           params: {},
           streamParams: {},
           returnType: _i1.MethodStreamReturnType.streamType,
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-            Map<String, Stream> streamParams,
-          ) =>
-              (endpoints['partiallyUnauthenticated']
-                      as _i5.PartiallyUnauthenticatedEndpoint)
-                  .authenticatedStream(session),
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) =>
+                  (endpoints['partiallyUnauthenticated']
+                          as _i5.PartiallyUnauthenticatedEndpoint)
+                      .authenticatedStream(session),
         ),
       },
     );
@@ -297,22 +304,24 @@ class Endpoints extends _i1.EndpointDispatch {
         'myFeatureMethod': _i1.MethodConnector(
           name: 'myFeatureMethod',
           params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['myModuleFeature'] as _i6.MyModuleFeatureEndpoint)
-                  .myFeatureMethod(session),
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['myModuleFeature'] as _i6.MyModuleFeatureEndpoint)
+                      .myFeatureMethod(session),
         ),
         'myFeatureModel': _i1.MethodConnector(
           name: 'myFeatureModel',
           params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['myModuleFeature'] as _i6.MyModuleFeatureEndpoint)
-                  .myFeatureModel(session),
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['myModuleFeature'] as _i6.MyModuleFeatureEndpoint)
+                      .myFeatureModel(session),
         ),
       },
     );

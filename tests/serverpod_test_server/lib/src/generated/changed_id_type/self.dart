@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../changed_id_type/self.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class ChangedIdTypeSelf
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -47,26 +48,30 @@ abstract class ChangedIdTypeSelf
       name: jsonSerialization['name'] as String,
       previous: jsonSerialization['previous'] == null
           ? null
-          : _i2.ChangedIdTypeSelf.fromJson(
-              (jsonSerialization['previous'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.ChangedIdTypeSelf>(
+              jsonSerialization['previous'],
+            ),
       nextId: jsonSerialization['nextId'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['nextId']),
       next: jsonSerialization['next'] == null
           ? null
-          : _i2.ChangedIdTypeSelf.fromJson(
-              (jsonSerialization['next'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.ChangedIdTypeSelf>(
+              jsonSerialization['next'],
+            ),
       parentId: jsonSerialization['parentId'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['parentId']),
       parent: jsonSerialization['parent'] == null
           ? null
-          : _i2.ChangedIdTypeSelf.fromJson(
-              (jsonSerialization['parent'] as Map<String, dynamic>)),
-      children: (jsonSerialization['children'] as List?)
-          ?.map((e) =>
-              _i2.ChangedIdTypeSelf.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+          : _i3.Protocol().deserialize<_i2.ChangedIdTypeSelf>(
+              jsonSerialization['parent'],
+            ),
+      children: jsonSerialization['children'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.ChangedIdTypeSelf>>(
+              jsonSerialization['children'],
+            ),
     );
   }
 
@@ -110,6 +115,7 @@ abstract class ChangedIdTypeSelf
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ChangedIdTypeSelf',
       if (id != null) 'id': id?.toJson(),
       'name': name,
       if (previous != null) 'previous': previous?.toJson(),
@@ -125,6 +131,7 @@ abstract class ChangedIdTypeSelf
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ChangedIdTypeSelf',
       if (id != null) 'id': id?.toJson(),
       'name': name,
       if (previous != null) 'previous': previous?.toJsonForProtocol(),
@@ -190,15 +197,15 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
     _i2.ChangedIdTypeSelf? parent,
     List<_i2.ChangedIdTypeSelf>? children,
   }) : super._(
-          id: id,
-          name: name,
-          previous: previous,
-          nextId: nextId,
-          next: next,
-          parentId: parentId,
-          parent: parent,
-          children: children,
-        );
+         id: id,
+         name: name,
+         previous: previous,
+         nextId: nextId,
+         next: next,
+         parentId: parentId,
+         parent: parent,
+         children: children,
+       );
 
   /// Returns a shallow copy of this [ChangedIdTypeSelf]
   /// with some or all fields replaced by the given arguments.
@@ -223,8 +230,9 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
       nextId: nextId is _i1.UuidValue? ? nextId : this.nextId,
       next: next is _i2.ChangedIdTypeSelf? ? next : this.next?.copyWith(),
       parentId: parentId is _i1.UuidValue? ? parentId : this.parentId,
-      parent:
-          parent is _i2.ChangedIdTypeSelf? ? parent : this.parent?.copyWith(),
+      parent: parent is _i2.ChangedIdTypeSelf?
+          ? parent
+          : this.parent?.copyWith(),
       children: children is List<_i2.ChangedIdTypeSelf>?
           ? children
           : this.children?.map((e0) => e0.copyWith()).toList(),
@@ -237,9 +245,9 @@ class ChangedIdTypeSelfUpdateTable
   ChangedIdTypeSelfUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> nextId(_i1.UuidValue? value) =>
       _i1.ColumnValue(
@@ -248,16 +256,16 @@ class ChangedIdTypeSelfUpdateTable
       );
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> parentId(
-          _i1.UuidValue? value) =>
-      _i1.ColumnValue(
-        table.parentId,
-        value,
-      );
+    _i1.UuidValue? value,
+  ) => _i1.ColumnValue(
+    table.parentId,
+    value,
+  );
 }
 
 class ChangedIdTypeSelfTable extends _i1.Table<_i1.UuidValue?> {
   ChangedIdTypeSelfTable({super.tableRelation})
-      : super(tableName: 'changed_id_type_self') {
+    : super(tableName: 'changed_id_type_self') {
     updateTable = ChangedIdTypeSelfUpdateTable(this);
     name = _i1.ColumnString(
       'name',
@@ -356,18 +364,19 @@ class ChangedIdTypeSelfTable extends _i1.Table<_i1.UuidValue?> {
     _children = _i1.ManyRelation<_i2.ChangedIdTypeSelfTable>(
       tableWithRelations: relationTable,
       table: _i2.ChangedIdTypeSelfTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _children!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        nextId,
-        parentId,
-      ];
+    id,
+    name,
+    nextId,
+    parentId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -410,11 +419,11 @@ class ChangedIdTypeSelfInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'previous': _previous,
-        'next': _next,
-        'parent': _parent,
-        'children': _children,
-      };
+    'previous': _previous,
+    'next': _next,
+    'parent': _parent,
+    'children': _children,
+  };
 
   @override
   _i1.Table<_i1.UuidValue?> get table => ChangedIdTypeSelf.t;
@@ -619,7 +628,7 @@ class ChangedIdTypeSelfRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<ChangedIdTypeSelfUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ChangedIdTypeSelf>(
@@ -634,7 +643,7 @@ class ChangedIdTypeSelfRepository {
   Future<List<ChangedIdTypeSelf>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ChangedIdTypeSelfUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> where,
     int? limit,
     int? offset,
@@ -825,8 +834,9 @@ class ChangedIdTypeSelfAttachRowRepository {
       throw ArgumentError.notNull('changedIdTypeSelf.id');
     }
 
-    var $nestedChangedIdTypeSelf =
-        nestedChangedIdTypeSelf.copyWith(parentId: changedIdTypeSelf.id);
+    var $nestedChangedIdTypeSelf = nestedChangedIdTypeSelf.copyWith(
+      parentId: changedIdTypeSelf.id,
+    );
     await session.db.updateRow<_i2.ChangedIdTypeSelf>(
       $nestedChangedIdTypeSelf,
       columns: [_i2.ChangedIdTypeSelf.t.parentId],
@@ -852,8 +862,9 @@ class ChangedIdTypeSelfDetachRepository {
       throw ArgumentError.notNull('changedIdTypeSelf.id');
     }
 
-    var $changedIdTypeSelf =
-        changedIdTypeSelf.map((e) => e.copyWith(parentId: null)).toList();
+    var $changedIdTypeSelf = changedIdTypeSelf
+        .map((e) => e.copyWith(parentId: null))
+        .toList();
     await session.db.update<_i2.ChangedIdTypeSelf>(
       $changedIdTypeSelf,
       columns: [_i2.ChangedIdTypeSelf.t.parentId],

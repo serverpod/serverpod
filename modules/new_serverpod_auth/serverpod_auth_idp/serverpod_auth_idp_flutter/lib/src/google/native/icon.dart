@@ -56,7 +56,8 @@ class GoogleSignInIcon extends StatelessWidget {
       GSIButtonSize.large => 20.0,
     };
 
-    final backgroundSize = (backgroundColor == null ? 2.0 : 0.0) +
+    final backgroundSize =
+        (backgroundColor == null ? 2.0 : 0.0) +
         switch (size) {
           GSIButtonSize.small => iconSize + 10,
           GSIButtonSize.medium => iconSize + 12,

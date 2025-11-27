@@ -28,7 +28,8 @@ abstract class ServerpodSqlException
   }) = _ServerpodSqlExceptionImpl;
 
   factory ServerpodSqlException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ServerpodSqlException(
       message: jsonSerialization['message'] as String,
       sql: jsonSerialization['sql'] as String,
@@ -49,6 +50,7 @@ abstract class ServerpodSqlException
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ServerpodSqlException',
       'message': message,
       'sql': sql,
     };
@@ -57,6 +59,7 @@ abstract class ServerpodSqlException
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.ServerpodSqlException',
       'message': message,
       'sql': sql,
     };
@@ -73,9 +76,9 @@ class _ServerpodSqlExceptionImpl extends ServerpodSqlException {
     required String message,
     required String sql,
   }) : super._(
-          message: message,
-          sql: sql,
-        );
+         message: message,
+         sql: sql,
+       );
 
   /// Returns a shallow copy of this [ServerpodSqlException]
   /// with some or all fields replaced by the given arguments.

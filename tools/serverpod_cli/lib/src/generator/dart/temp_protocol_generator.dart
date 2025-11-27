@@ -18,10 +18,12 @@ class DartTemporaryProtocolGenerator extends CodeGenerator {
       config: config,
     );
     return {
-      p.joinAll([...config.generatedServeModelPathParts, 'protocol.dart']):
-          serverSideGenerator
-              .generateTemporaryProtocol(models: models)
-              .generateCode()
+      p.joinAll([
+        ...config.generatedServeModelPathParts,
+        'protocol.dart',
+      ]): serverSideGenerator
+          .generateTemporaryProtocol(models: models)
+          .generateCode(),
     };
   }
 

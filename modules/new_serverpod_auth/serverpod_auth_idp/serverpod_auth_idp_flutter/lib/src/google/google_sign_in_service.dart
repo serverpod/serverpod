@@ -40,7 +40,7 @@ class GoogleSignInService {
   /// directly to the [GoogleSignIn] initialize method. See the documentation
   /// of [GoogleSignIn.initialize] for more details.
   Future<GoogleSignIn> ensureInitialized({
-    required ClientAuthSessionManager auth,
+    required FlutterAuthSessionManager auth,
     String? clientId,
     String? serverClientId,
     String? nonce,
@@ -66,12 +66,14 @@ class GoogleSignInService {
     return googleSignIn;
   }
 
-  void _initializeClient(ClientAuthSessionManager auth) {
-    auth.authInfo.addListener(() {
+  void _initializeClient(FlutterAuthSessionManager auth) {
+    auth.authInfoListenable.addListener(() {
       if (!auth.isAuthenticated) {
         unawaited(
-          googleSignIn.signOut().onError((e, _) =>
-              debugPrint('Failed to sign out from Google: ${e.toString()}')),
+          googleSignIn.signOut().onError(
+            (e, _) =>
+                debugPrint('Failed to sign out from Google: ${e.toString()}'),
+          ),
         );
       }
     });
@@ -103,8 +105,8 @@ class GoogleSignInService {
   }
 }
 
-/// Expose convenient methods on [ClientAuthSessionManager].
-extension DisconnectGoogleSignIn on ClientAuthSessionManager {
+/// Expose convenient methods on [FlutterAuthSessionManager].
+extension DisconnectGoogleSignIn on FlutterAuthSessionManager {
   /// Initializes Google Sign-In for the client.
   ///
   /// This method is idempotent and can be called multiple times and from
@@ -144,8 +146,9 @@ extension DisconnectGoogleSignIn on ClientAuthSessionManager {
   /// flow again on the next sign-in, including the account picker and consent
   /// screens.
   Future<void> disconnectGoogleAccount() async {
-    final signIn =
-        await GoogleSignInService.instance.ensureInitialized(auth: this);
+    final signIn = await GoogleSignInService.instance.ensureInitialized(
+      auth: this,
+    );
     await signIn.disconnect();
 
     // NOTE: This delay prevents the Google Sign-In web button to render before

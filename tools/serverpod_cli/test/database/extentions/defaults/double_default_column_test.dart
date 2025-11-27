@@ -13,13 +13,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should not have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"doubleDefault" double precision NOT NULL',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should not have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"doubleDefault" double precision NOT NULL',
+          );
+        },
+      );
     });
 
     group('with 10.5 as default value', () {
@@ -32,13 +33,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"doubleDefault" double precision NOT NULL DEFAULT 10.5',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"doubleDefault" double precision NOT NULL DEFAULT 10.5',
+          );
+        },
+      );
     });
 
     group('with 20.5 as default value', () {
@@ -51,13 +53,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should have the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"doubleDefault" double precision NOT NULL DEFAULT 20.5',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should have the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"doubleDefault" double precision NOT NULL DEFAULT 20.5',
+          );
+        },
+      );
     });
 
     group('with nullable column and no default value', () {
@@ -69,13 +72,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"doubleDefault" double precision',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with no default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"doubleDefault" double precision',
+          );
+        },
+      );
     });
 
     group('with nullable column and 10.5 as default value', () {
@@ -88,13 +92,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"doubleDefault" double precision DEFAULT 10.5',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"doubleDefault" double precision DEFAULT 10.5',
+          );
+        },
+      );
     });
 
     group('with nullable column and 20.5 as default value', () {
@@ -107,13 +112,14 @@ void main() {
       );
 
       test(
-          'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
-          () {
-        expect(
-          defaultColumn.toPgSqlFragment(),
-          '"doubleDefault" double precision DEFAULT 20.5',
-        );
-      });
+        'when converting to PostgreSQL SQL code, then it should be nullable with the default value',
+        () {
+          expect(
+            defaultColumn.toPgSqlFragment(),
+            '"doubleDefault" double precision DEFAULT 20.5',
+          );
+        },
+      );
     });
   });
 }

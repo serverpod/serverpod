@@ -27,7 +27,8 @@ abstract class ImmutableChildObject extends _i2.ImmutableObject
   }) = _ImmutableChildObjectImpl;
 
   factory ImmutableChildObject.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ImmutableChildObject(
       variable: jsonSerialization['variable'] as String,
       childVariable: jsonSerialization['childVariable'] as String,
@@ -76,6 +77,7 @@ abstract class ImmutableChildObject extends _i2.ImmutableObject
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ImmutableChildObject',
       'variable': variable,
       'childVariable': childVariable,
     };
@@ -92,9 +94,9 @@ class _ImmutableChildObjectImpl extends ImmutableChildObject {
     required String variable,
     required String childVariable,
   }) : super._(
-          variable: variable,
-          childVariable: childVariable,
-        );
+         variable: variable,
+         childVariable: childVariable,
+       );
 
   /// Returns a shallow copy of this [ImmutableChildObject]
   /// with some or all fields replaced by the given arguments.

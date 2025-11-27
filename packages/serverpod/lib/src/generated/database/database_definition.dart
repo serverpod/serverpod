@@ -13,6 +13,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/table_definition.dart' as _i2;
 import '../database/database_migration_version.dart' as _i3;
+import 'package:serverpod/src/generated/protocol.dart' as _i4;
 
 /// Defines the structure of the database used by Serverpod.
 abstract class DatabaseDefinition
@@ -37,13 +38,13 @@ abstract class DatabaseDefinition
     return DatabaseDefinition(
       name: jsonSerialization['name'] as String?,
       moduleName: jsonSerialization['moduleName'] as String,
-      tables: (jsonSerialization['tables'] as List)
-          .map((e) => _i2.TableDefinition.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      installedModules: (jsonSerialization['installedModules'] as List)
-          .map((e) => _i3.DatabaseMigrationVersion.fromJson(
-              (e as Map<String, dynamic>)))
-          .toList(),
+      tables: _i4.Protocol().deserialize<List<_i2.TableDefinition>>(
+        jsonSerialization['tables'],
+      ),
+      installedModules: _i4.Protocol()
+          .deserialize<List<_i3.DatabaseMigrationVersion>>(
+            jsonSerialization['installedModules'],
+          ),
       migrationApiVersion: jsonSerialization['migrationApiVersion'] as int,
     );
   }
@@ -78,11 +79,13 @@ abstract class DatabaseDefinition
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.DatabaseDefinition',
       if (name != null) 'name': name,
       'moduleName': moduleName,
       'tables': tables.toJson(valueToJson: (v) => v.toJson()),
-      'installedModules':
-          installedModules.toJson(valueToJson: (v) => v.toJson()),
+      'installedModules': installedModules.toJson(
+        valueToJson: (v) => v.toJson(),
+      ),
       'migrationApiVersion': migrationApiVersion,
     };
   }
@@ -90,11 +93,13 @@ abstract class DatabaseDefinition
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.DatabaseDefinition',
       if (name != null) 'name': name,
       'moduleName': moduleName,
       'tables': tables.toJson(valueToJson: (v) => v.toJsonForProtocol()),
-      'installedModules':
-          installedModules.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'installedModules': installedModules.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
       'migrationApiVersion': migrationApiVersion,
     };
   }
@@ -115,12 +120,12 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
     required List<_i3.DatabaseMigrationVersion> installedModules,
     required int migrationApiVersion,
   }) : super._(
-          name: name,
-          moduleName: moduleName,
-          tables: tables,
-          installedModules: installedModules,
-          migrationApiVersion: migrationApiVersion,
-        );
+         name: name,
+         moduleName: moduleName,
+         tables: tables,
+         installedModules: installedModules,
+         migrationApiVersion: migrationApiVersion,
+       );
 
   /// Returns a shallow copy of this [DatabaseDefinition]
   /// with some or all fields replaced by the given arguments.
@@ -137,7 +142,8 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
       name: name is String? ? name : this.name,
       moduleName: moduleName ?? this.moduleName,
       tables: tables ?? this.tables.map((e0) => e0.copyWith()).toList(),
-      installedModules: installedModules ??
+      installedModules:
+          installedModules ??
           this.installedModules.map((e0) => e0.copyWith()).toList(),
       migrationApiVersion: migrationApiVersion ?? this.migrationApiVersion,
     );

@@ -37,7 +37,8 @@ class RequestPasswordResetForm extends StatelessWidget {
         ],
       ),
       actionButton: ActionButton(
-        onPressed: controller.emailController.text.isNotEmpty &&
+        onPressed:
+            controller.emailController.text.isNotEmpty &&
                 controller.state == EmailAuthState.idle
             ? controller.startPasswordReset
             : null,

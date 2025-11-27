@@ -18,25 +18,27 @@ class RepairMigration {
   /// Loads the repair migration from the repair migration directory.
   /// Returns null if no repair migration is found.
   static RepairMigration? load(Directory projectRootDirectory) {
-    var repairMigrationDirectory =
-        MigrationConstants.repairMigrationDirectory(projectRootDirectory);
+    var repairMigrationDirectory = MigrationConstants.repairMigrationDirectory(
+      projectRootDirectory,
+    );
 
     if (!repairMigrationDirectory.existsSync()) {
       return null;
     }
 
-    var repairMigrationFiles =
-        repairMigrationDirectory.listSync().whereType<File>();
+    var repairMigrationFiles = repairMigrationDirectory
+        .listSync()
+        .whereType<File>();
     if (repairMigrationFiles.isEmpty) {
       return null;
     }
 
     var migrationSqlFile = repairMigrationFiles.cast<File?>().firstWhere(
-          (element) => element != null
-              ? path.basename(element.path).endsWith('.sql')
-              : false,
-          orElse: () => null,
-        );
+      (element) => element != null
+          ? path.basename(element.path).endsWith('.sql')
+          : false,
+      orElse: () => null,
+    );
 
     if (migrationSqlFile == null) {
       return null;

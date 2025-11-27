@@ -32,14 +32,16 @@ abstract class EnumDefaultPersist implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       byNameEnumDefaultPersist:
           jsonSerialization['byNameEnumDefaultPersist'] == null
-              ? null
-              : _i2.ByNameEnum.fromJson(
-                  (jsonSerialization['byNameEnumDefaultPersist'] as String)),
+          ? null
+          : _i2.ByNameEnum.fromJson(
+              (jsonSerialization['byNameEnumDefaultPersist'] as String),
+            ),
       byIndexEnumDefaultPersist:
           jsonSerialization['byIndexEnumDefaultPersist'] == null
-              ? null
-              : _i3.ByIndexEnum.fromJson(
-                  (jsonSerialization['byIndexEnumDefaultPersist'] as int)),
+          ? null
+          : _i3.ByIndexEnum.fromJson(
+              (jsonSerialization['byIndexEnumDefaultPersist'] as int),
+            ),
     );
   }
 
@@ -63,6 +65,7 @@ abstract class EnumDefaultPersist implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'EnumDefaultPersist',
       if (id != null) 'id': id,
       if (byNameEnumDefaultPersist != null)
         'byNameEnumDefaultPersist': byNameEnumDefaultPersist?.toJson(),
@@ -85,10 +88,10 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
     _i2.ByNameEnum? byNameEnumDefaultPersist,
     _i3.ByIndexEnum? byIndexEnumDefaultPersist,
   }) : super._(
-          id: id,
-          byNameEnumDefaultPersist: byNameEnumDefaultPersist,
-          byIndexEnumDefaultPersist: byIndexEnumDefaultPersist,
-        );
+         id: id,
+         byNameEnumDefaultPersist: byNameEnumDefaultPersist,
+         byIndexEnumDefaultPersist: byIndexEnumDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [EnumDefaultPersist]
   /// with some or all fields replaced by the given arguments.

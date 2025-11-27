@@ -24,7 +24,8 @@ abstract class PasskeyPublicKeyNotFoundException
       _PasskeyPublicKeyNotFoundExceptionImpl;
 
   factory PasskeyPublicKeyNotFoundException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return PasskeyPublicKeyNotFoundException();
   }
 
@@ -34,12 +35,16 @@ abstract class PasskeyPublicKeyNotFoundException
   PasskeyPublicKeyNotFoundException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_idp.PasskeyPublicKeyNotFoundException',
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_idp.PasskeyPublicKeyNotFoundException',
+    };
   }
 
   @override

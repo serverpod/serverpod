@@ -8,15 +8,6 @@ import 'package:meta/meta_meta.dart';
 /// - No server code to handle requests towards the endpoint will be generated.
 const doNotGenerate = _DoNotGenerate();
 
-/// Used to annotate endpoints that should be ignored by the Serverpod code
-/// analyzer.
-///
-/// If an endpoint class is annotated with this annotation:
-/// - No client code to call the endpoint will ge generated.
-/// - No server code to handle requests towards the endpoint will be generated.
-@Deprecated('Use `@doNotGenerate` instead')
-const ignoreEndpoint = doNotGenerate;
-
 /// Used to annotate endpoint classes and methods that should not use authentication.
 ///
 /// If an endpoint (class or method) is annotated with this annotation:

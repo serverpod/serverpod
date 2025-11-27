@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/one_to_many/customer.dart' as _i2;
 import '../../changed_id_type/one_to_many/comment.dart' as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
 
 abstract class OrderUuid
     implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
@@ -41,11 +42,14 @@ abstract class OrderUuid
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization['customer'] == null
           ? null
-          : _i2.CustomerInt.fromJson(
-              (jsonSerialization['customer'] as Map<String, dynamic>)),
-      comments: (jsonSerialization['comments'] as List?)
-          ?.map((e) => _i3.CommentInt.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+          : _i4.Protocol().deserialize<_i2.CustomerInt>(
+              jsonSerialization['customer'],
+            ),
+      comments: jsonSerialization['comments'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i3.CommentInt>>(
+              jsonSerialization['comments'],
+            ),
     );
   }
 
@@ -80,6 +84,7 @@ abstract class OrderUuid
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'OrderUuid',
       'id': id.toJson(),
       'description': description,
       'customerId': customerId,
@@ -92,6 +97,7 @@ abstract class OrderUuid
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'OrderUuid',
       'id': id.toJson(),
       'description': description,
       'customerId': customerId,
@@ -147,12 +153,12 @@ class _OrderUuidImpl extends OrderUuid {
     _i2.CustomerInt? customer,
     List<_i3.CommentInt>? comments,
   }) : super._(
-          id: id,
-          description: description,
-          customerId: customerId,
-          customer: customer,
-          comments: comments,
-        );
+         id: id,
+         description: description,
+         customerId: customerId,
+         customer: customer,
+         comments: comments,
+       );
 
   /// Returns a shallow copy of this [OrderUuid]
   /// with some or all fields replaced by the given arguments.
@@ -169,8 +175,9 @@ class _OrderUuidImpl extends OrderUuid {
       id: id ?? this.id,
       description: description ?? this.description,
       customerId: customerId ?? this.customerId,
-      customer:
-          customer is _i2.CustomerInt? ? customer : this.customer?.copyWith(),
+      customer: customer is _i2.CustomerInt?
+          ? customer
+          : this.customer?.copyWith(),
       comments: comments is List<_i3.CommentInt>?
           ? comments
           : this.comments?.map((e0) => e0.copyWith()).toList(),
@@ -182,14 +189,14 @@ class OrderUuidUpdateTable extends _i1.UpdateTable<OrderUuidTable> {
   OrderUuidUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
-        table.description,
-        value,
-      );
+    table.description,
+    value,
+  );
 
   _i1.ColumnValue<int, int> customerId(int value) => _i1.ColumnValue(
-        table.customerId,
-        value,
-      );
+    table.customerId,
+    value,
+  );
 }
 
 class OrderUuidTable extends _i1.Table<_i1.UuidValue> {
@@ -256,17 +263,18 @@ class OrderUuidTable extends _i1.Table<_i1.UuidValue> {
     _comments = _i1.ManyRelation<_i3.CommentIntTable>(
       tableWithRelations: relationTable,
       table: _i3.CommentIntTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _comments!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        description,
-        customerId,
-      ];
+    id,
+    description,
+    customerId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -295,9 +303,9 @@ class OrderUuidInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'customer': _customer,
-        'comments': _comments,
-      };
+    'customer': _customer,
+    'comments': _comments,
+  };
 
   @override
   _i1.Table<_i1.UuidValue> get table => OrderUuid.t;
@@ -604,8 +612,9 @@ class OrderUuidAttachRepository {
       throw ArgumentError.notNull('orderUuid.id');
     }
 
-    var $commentInt =
-        commentInt.map((e) => e.copyWith(orderId: orderUuid.id)).toList();
+    var $commentInt = commentInt
+        .map((e) => e.copyWith(orderId: orderUuid.id))
+        .toList();
     await session.db.update<_i3.CommentInt>(
       $commentInt,
       columns: [_i3.CommentInt.t.orderId],

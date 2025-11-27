@@ -1,7 +1,7 @@
 import 'package:serverpod_auth_core_server/auth_user.dart';
+import 'package:serverpod_auth_core_server/common.dart';
 
 import '../../../generated/protocol.dart';
-import '../../../utils/secret_hash_util.dart';
 import 'email_idp_config.dart';
 import 'email_idp_server_exceptions.dart';
 import 'utils/email_idp_account_creation_util.dart';
@@ -20,43 +20,48 @@ import 'utils/email_idp_password_reset_util.dart';
 /// - [accountCreation] - Utilities for creating and verifying email accounts
 /// - [passwordReset] - Utilities for resetting passwords
 ///
-/// For most standard use cases, the methods exposed by [EmailIDP] and
-/// [EmailIDPAdmin] should be sufficient.
-class EmailIDPUtils {
-  /// {@macro email_idp_hash_util}
-  final SecretHashUtil hashUtil;
+/// For most standard use cases, the methods exposed by [EmailIdp] and
+/// [EmailIdpAdmin] should be sufficient.
+class EmailIdpUtils {
+  /// General hash util for the email identity provider.
+  ///
+  /// Follows OWASP recommended parameters for storing passwords.
+  final Argon2HashUtil hashUtil;
 
   /// {@macro email_idp_account_creation_util}
-  late final EmailIDPAccountCreationUtil accountCreation;
+  late final EmailIdpAccountCreationUtil accountCreation;
 
   /// {@macro email_idp_password_reset_util}
-  late final EmailIDPPasswordResetUtil passwordReset;
+  late final EmailIdpPasswordResetUtil passwordReset;
 
   /// {@macro email_idp_authentication_utils}
-  late final EmailIDPAuthenticationUtil authentication;
+  late final EmailIdpAuthenticationUtil authentication;
 
   /// {@macro email_idp_account_utils}
-  final EmailIDPAccountUtils account;
+  final EmailIdpAccountUtils account;
 
-  /// Creates a new instance of [EmailIDPUtils].
-  EmailIDPUtils({
-    required final EmailIDPConfig config,
-    required final AuthUsers authUsers,
-  })  : hashUtil = SecretHashUtil(
-          hashPepper: config.secretHashPepper,
-          hashSaltLength: config.secretHashSaltLength,
-        ),
-        account = EmailIDPAccountUtils() {
-    accountCreation = EmailIDPAccountCreationUtil(
-      config: EmailIDPAccountCreationUtilsConfig.fromEmailIDPConfig(config),
+  /// Creates a new instance of [EmailIdpUtils].
+  EmailIdpUtils({
+    required final EmailIdpConfig config,
+    final AuthUsers authUsers = const AuthUsers(),
+  }) : hashUtil = Argon2HashUtil(
+         hashPepper: config.secretHashPepper,
+         fallbackHashPeppers: config.fallbackSecretHashPeppers,
+         hashSaltLength: config.secretHashSaltLength,
+         // 19MiB memory cost as recommended by OWASP: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
+         memory: 19456,
+       ),
+       account = EmailIdpAccountUtils() {
+    accountCreation = EmailIdpAccountCreationUtil(
+      config: EmailIdpAccountCreationUtilsConfig.fromEmailIdpConfig(config),
       passwordHashUtils: hashUtil,
       authUsers: authUsers,
     );
-    passwordReset = EmailIDPPasswordResetUtil(
-      config: EmailIDPPasswordResetUtilsConfig.fromEmailIDPConfig(config),
+    passwordReset = EmailIdpPasswordResetUtil(
+      config: EmailIdpPasswordResetUtilsConfig.fromEmailIdpConfig(config),
       passwordHashUtils: hashUtil,
     );
-    authentication = EmailIDPAuthenticationUtil(
+    authentication = EmailIdpAuthenticationUtil(
       hashUtil: hashUtil,
       failedLoginRateLimit: config.failedLoginRateLimit,
     );
@@ -65,7 +70,8 @@ class EmailIDPUtils {
   /// Replaces server-side exceptions by client-side exceptions, hiding details
   /// that could leak account information.
   static Future<T> withReplacedServerEmailException<T>(
-      final Future<T> Function() fn) async {
+    final Future<T> Function() fn,
+  ) async {
     try {
       return await fn();
     } on EmailServerException catch (e) {

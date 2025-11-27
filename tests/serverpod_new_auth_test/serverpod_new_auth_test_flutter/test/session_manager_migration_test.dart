@@ -18,17 +18,17 @@ void main() {
           'test_${DateTime.now().microsecondsSinceEpoch}@serverpod.dev';
       const password = 'Asdf123!!!!!';
 
-      final userId =
-          await client.emailAccountBackwardsCompatibilityTest.createLegacyUser(
-        email: email,
-        password: password,
-      );
+      final userId = await client.emailAccountBackwardsCompatibilityTest
+          .createLegacyUser(
+            email: email,
+            password: password,
+          );
 
       final authKey = await client.emailAccountBackwardsCompatibilityTest
           .createLegacySession(
-        userId: userId,
-        scopes: {'test'},
-      );
+            userId: userId,
+            scopes: {'test'},
+          );
 
       final legacyStorage = _TestLegacyStorage();
 
@@ -86,8 +86,9 @@ void main() {
         isNull, // the session has not been migrated yet
       );
 
-      final newSessionClient = Client('http://localhost:8080/')
-        ..authSessionManager = ClientAuthSessionManager(storage: TestStorage());
+      final newSessionClient = Client(
+        'http://localhost:8080/',
+      )..authSessionManager = FlutterAuthSessionManager(storage: TestStorage());
 
       await newSessionClient.auth.initAndImportLegacySessionIfNeeded(
         newSessionClient.modules.serverpod_auth_bridge,

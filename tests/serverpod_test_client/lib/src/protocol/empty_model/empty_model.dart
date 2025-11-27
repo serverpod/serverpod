@@ -27,7 +27,7 @@ abstract class EmptyModel implements _i1.SerializableModel {
   EmptyModel copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {'__className__': 'EmptyModel'};
   }
 
   @override

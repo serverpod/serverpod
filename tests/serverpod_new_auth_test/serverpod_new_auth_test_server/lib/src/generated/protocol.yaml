@@ -4,7 +4,10 @@ authTest:
   - deleteSasTokens:
   - createJwtToken:
   - deleteJwtRefreshTokens:
+  - destroySpecificRefreshToken:
   - checkSession:
+authenticatedStreamingTest:
+  - openAuthenticatedStream:
 emailAccountBackwardsCompatibilityTest:
   - createLegacyUser:
   - createLegacySession:

@@ -11,8 +11,8 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
-  serverpod_client: SERVERPOD_VERSION
   serverpod_auth_client: SERVERPOD_VERSION
+  serverpod_client: SERVERPOD_VERSION
   serverpod_test_module_client:
     path: ../serverpod_test_module/serverpod_test_module_client
   serverpod_test_shared:
@@ -22,9 +22,9 @@ dev_dependencies:
   test: ^1.25.5
 
 dependency_overrides:
+  serverpod_auth_client:
+    path: ../../modules/legacy/serverpod_auth/serverpod_auth_client
   serverpod_client:
     path: ../../packages/serverpod_client
-  serverpod_auth_client:
-    path: ../../modules/serverpod_auth/serverpod_auth_client
   serverpod_serialization:
     path: ../../packages/serverpod_serialization

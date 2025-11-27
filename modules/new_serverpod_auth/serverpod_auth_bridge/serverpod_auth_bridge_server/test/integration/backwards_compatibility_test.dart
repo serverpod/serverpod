@@ -7,13 +7,13 @@ import 'package:test/test.dart';
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManagerFactory = AuthSessionsTokenManagerFactory(
-    AuthSessionsConfig(
+  final tokenManagerFactory = ServerSideSessionsTokenManagerFactory(
+    ServerSideSessionsConfig(
       sessionKeyHashPepper: 'test-pepper',
     ),
   );
 
-  const newEmailIDPConfig = EmailIDPConfig(secretHashPepper: 'test');
+  const newEmailIdpConfig = EmailIdpConfig(secretHashPepper: 'test');
 
   withServerpod('Given no legacy passwords,', (
     final sessionBuilder,
@@ -25,7 +25,7 @@ void main() {
       session = sessionBuilder.build();
       AuthServices.set(
         identityProviders: [
-          EmailIdentityProviderFactory(newEmailIDPConfig),
+          EmailIdentityProviderFactory(newEmailIdpConfig),
         ],
         primaryTokenManager: tokenManagerFactory,
       );

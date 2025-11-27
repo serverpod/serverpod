@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i2;
 
 abstract class AuthUser
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -19,8 +20,8 @@ abstract class AuthUser
     DateTime? createdAt,
     required this.scopeNames,
     bool? blocked,
-  })  : createdAt = createdAt ?? DateTime.now(),
-        blocked = blocked ?? false;
+  }) : createdAt = createdAt ?? DateTime.now(),
+       blocked = blocked ?? false;
 
   factory AuthUser({
     _i1.UuidValue? id,
@@ -34,11 +35,12 @@ abstract class AuthUser
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      createdAt:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
+      scopeNames: _i2.Protocol().deserialize<Set<String>>(
+        jsonSerialization['scopeNames'],
+      ),
       blocked: jsonSerialization['blocked'] as bool,
     );
   }
@@ -74,6 +76,7 @@ abstract class AuthUser
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.AuthUser',
       if (id != null) 'id': id?.toJson(),
       'createdAt': createdAt.toJson(),
       'scopeNames': scopeNames.toJson(),
@@ -83,7 +86,13 @@ abstract class AuthUser
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_core.AuthUser',
+      if (id != null) 'id': id?.toJson(),
+      'createdAt': createdAt.toJson(),
+      'scopeNames': scopeNames.toJson(),
+      'blocked': blocked,
+    };
   }
 
   static AuthUserInclude include() {
@@ -125,11 +134,11 @@ class _AuthUserImpl extends AuthUser {
     required Set<String> scopeNames,
     bool? blocked,
   }) : super._(
-          id: id,
-          createdAt: createdAt,
-          scopeNames: scopeNames,
-          blocked: blocked,
-        );
+         id: id,
+         createdAt: createdAt,
+         scopeNames: scopeNames,
+         blocked: blocked,
+       );
 
   /// Returns a shallow copy of this [AuthUser]
   /// with some or all fields replaced by the given arguments.
@@ -166,14 +175,14 @@ class AuthUserUpdateTable extends _i1.UpdateTable<AuthUserTable> {
       );
 
   _i1.ColumnValue<bool, bool> blocked(bool value) => _i1.ColumnValue(
-        table.blocked,
-        value,
-      );
+    table.blocked,
+    value,
+  );
 }
 
 class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
   AuthUserTable({super.tableRelation})
-      : super(tableName: 'serverpod_auth_core_user') {
+    : super(tableName: 'serverpod_auth_core_user') {
     updateTable = AuthUserUpdateTable(this);
     createdAt = _i1.ColumnDateTime(
       'createdAt',
@@ -202,11 +211,11 @@ class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        createdAt,
-        scopeNames,
-        blocked,
-      ];
+    id,
+    createdAt,
+    scopeNames,
+    blocked,
+  ];
 }
 
 class AuthUserInclude extends _i1.IncludeObject {

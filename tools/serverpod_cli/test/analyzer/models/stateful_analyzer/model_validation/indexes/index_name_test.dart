@@ -10,11 +10,11 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-      'Given a class with an index when analyzing models then the index name is set correctly.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with an index when analyzing models then the index name is set correctly.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         table: example
         fields:
@@ -23,31 +23,35 @@ void main() {
           example_index:
             fields: name
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors but some were generated.',
-    );
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors but some were generated.',
+      );
 
-    var definition = definitions.firstOrNull as ModelClassDefinition?;
-    var index = definition?.indexes.firstOrNull;
-    expect(index?.name, 'example_index');
-  });
+      var definition = definitions.firstOrNull as ModelClassDefinition?;
+      var index = definition?.indexes.firstOrNull;
+      expect(index?.name, 'example_index');
+    },
+  );
 
   test(
-      'Given a class with an index key that is not a string, then collect an error that the index name has to be defined as a string.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with an index key that is not a string, then collect an error that the index name has to be defined as a string.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         table: example
         fields:
@@ -56,26 +60,30 @@ void main() {
           1:
             fields: name
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error but none was generated.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'Key must be of type String.',
-    );
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'Key must be of type String.',
+      );
+    },
+  );
 
   test(
     'Given a class with an index key that is not a string in snake_case_format, then collect an error that the index name is using an invalid format.',
@@ -91,12 +99,15 @@ void main() {
             PascalCaseIndex:
               fields: name
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -115,11 +126,11 @@ void main() {
 
   group('Index relationships.', () {
     test(
-        'Given two classes with the same index name defined, then collect an error notifying that the index name is already in use.',
-        () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+      'Given two classes with the same index name defined, then collect an error notifying that the index name is already in use.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
           class: Example
           table: example
           fields:
@@ -128,9 +139,9 @@ void main() {
             example_index:
               fields: name
           ''',
-        ).build(),
-        ModelSourceBuilder().withFileName('example_collision').withYaml(
-          '''
+          ).build(),
+          ModelSourceBuilder().withFileName('example_collision').withYaml(
+            '''
           class: ExampleCollision
           table: example_collision
           fields:
@@ -139,12 +150,55 @@ void main() {
             example_index:
               fields: name
           ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        var analyzer = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        );
+        analyzer.validateAll();
+
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error but none was generated.',
+        );
+
+        var error = collector.errors.first;
+        expect(
+          error.message,
+          'The index name "example_index" is already used by the model class "ExampleCollision".',
+        );
+      },
+    );
+  });
+
+  test(
+    'Given an index with a name that is longer than 63 characters, then collect an error that the index name is too long.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+        class: Example
+        table: example
+        fields:
+          name: String
+        indexes:
+          this_index_name_is_exactly_64_characters_long_and_is_invalid_aaa:
+            fields: name
+        ''',
         ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer =
-          StatefulAnalyzer(config, models, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
       analyzer.validateAll();
 
       expect(
@@ -156,52 +210,17 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'The index name "example_index" is already used by the model class "ExampleCollision".',
+        'The index name "this_index_name_is_exactly_64_characters_long_and_is_invalid_aaa" exceeds the 63 character index name limitation.',
       );
-    });
-  });
-
-  test(
-      'Given an index with a name that is longer than 63 characters, then collect an error that the index name is too long.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
-        class: Example
-        table: example
-        fields:
-          name: String
-        indexes:
-          this_index_name_is_exactly_64_characters_long_and_is_invalid_aaa:
-            fields: name
-        ''',
-      ).build()
-    ];
-
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
-
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error but none was generated.',
-    );
-
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'The index name "this_index_name_is_exactly_64_characters_long_and_is_invalid_aaa" exceeds the 63 character index name limitation.',
-    );
-  });
+    },
+  );
 
   group(
-      'Given an index with a name that is 63 characters when analyzing models',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given an index with a name that is 63 characters when analyzing models',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         table: example
         fields:
@@ -210,34 +229,40 @@ void main() {
           this_index_name_is_exactly_63_characters_long_and_is_valid_aaaa:
             fields: name
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    var definitions = analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
 
-    var errors = collector.errors;
-    test('then no errors are collected.', () {
-      expect(errors, isEmpty);
-    });
+      var errors = collector.errors;
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
+      });
 
-    var definition = definitions.firstOrNull as ModelClassDefinition?;
+      var definition = definitions.firstOrNull as ModelClassDefinition?;
 
-    test('then the index definition is created.', () {
-      var index = definition?.indexes.firstOrNull;
-      expect(index?.name,
-          'this_index_name_is_exactly_63_characters_long_and_is_valid_aaaa');
-    }, skip: errors.isNotEmpty);
-  });
+      test('then the index definition is created.', () {
+        var index = definition?.indexes.firstOrNull;
+        expect(
+          index?.name,
+          'this_index_name_is_exactly_63_characters_long_and_is_valid_aaaa',
+        );
+      }, skip: errors.isNotEmpty);
+    },
+  );
 
   test(
-      'Given a class with an index name that matches the table name when analyzing models then collect an error that the index name cannot be the same as the table name.',
-      () {
-    var models = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a class with an index name that matches the table name when analyzing models then collect an error that the index name cannot be the same as the table name.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
         class: Example
         table: example
         fields:
@@ -246,24 +271,28 @@ void main() {
           example:
             fields: name
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, models, onErrorsCollector(collector));
-    analyzer.validateAll();
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
 
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error but none was generated.',
-    );
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
 
-    var error = collector.errors.first;
-    expect(
-      error.message,
-      'The index name "example" cannot be the same as the table name. Use a unique name for the index.',
-    );
-  });
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The index name "example" cannot be the same as the table name. Use a unique name for the index.',
+      );
+    },
+  );
 }

@@ -15,95 +15,106 @@ const generator = DartServerCodeGenerator();
 
 void main() {
   group(
-      'Given an exception class named DefaultException with string fields having defaultModelValue when generating code',
-      () {
-    ClassDeclaration? baseClass;
-    ConstructorDeclaration? privateConstructor;
+    'Given an exception class named DefaultException with string fields having defaultModelValue when generating code',
+    () {
+      ClassDeclaration? baseClass;
+      ConstructorDeclaration? privateConstructor;
 
-    setUpAll(() {
-      var testClassName = 'DefaultException';
-      var testClassFileName = 'default_exception';
-      var expectedFilePath =
-          path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+      setUpAll(() {
+        var testClassName = 'DefaultException';
+        var testClassFileName = 'default_exception';
+        var expectedFilePath = path.join(
+          'lib',
+          'src',
+          'generated',
+          '$testClassFileName.dart',
+        );
 
-      var fields = [
-        FieldDefinitionBuilder()
-            .withName('defaultMessage')
-            .withTypeDefinition('String', false)
-            .withDefaults(defaultModelValue: '\'Default error message\'')
-            .build(),
-        FieldDefinitionBuilder()
-            .withName('defaultNullMessage')
-            .withTypeDefinition('String', true)
-            .withDefaults(defaultModelValue: '\'Default model error message\'')
-            .build(),
-      ];
+        var fields = [
+          FieldDefinitionBuilder()
+              .withName('defaultMessage')
+              .withTypeDefinition('String', false)
+              .withDefaults(defaultModelValue: '\'Default error message\'')
+              .build(),
+          FieldDefinitionBuilder()
+              .withName('defaultNullMessage')
+              .withTypeDefinition('String', true)
+              .withDefaults(
+                defaultModelValue: '\'Default model error message\'',
+              )
+              .build(),
+        ];
 
-      var models = [
-        ExceptionClassDefinitionBuilder()
-            .withClassName(testClassName)
-            .withFileName(testClassFileName)
-            .withFields(fields)
-            .build()
-      ];
+        var models = [
+          ExceptionClassDefinitionBuilder()
+              .withClassName(testClassName)
+              .withFileName(testClassFileName)
+              .withFields(fields)
+              .build(),
+        ];
 
-      var codeMap = generator.generateSerializableModelsCode(
-        models: models,
-        config: config,
-      );
+        var codeMap = generator.generateSerializableModelsCode(
+          models: models,
+          config: config,
+        );
 
-      var compilationUnit =
-          parseString(content: codeMap[expectedFilePath]!).unit;
+        var compilationUnit = parseString(
+          content: codeMap[expectedFilePath]!,
+        ).unit;
 
-      baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName,
-      );
+        baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
 
-      privateConstructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
-        baseClass!,
-        name: '_',
-      );
-    });
-
-    group('then the DefaultException has a private constructor', () {
-      test('defined', () {
-        expect(privateConstructor, isNotNull);
+        privateConstructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+              baseClass!,
+              name: '_',
+            );
       });
 
-      test(
-        'with the class vars as params',
-        () {
-          expect(
-            privateConstructor?.parameters.toSource(),
-            '({String? defaultMessage, String? defaultNullMessage})',
-          );
-        },
-      );
+      group('then the DefaultException has a private constructor', () {
+        test('defined', () {
+          expect(privateConstructor, isNotNull);
+        });
 
-      test(
-        'with defaultMessage default value set correctly',
-        () {
-          var initializer = privateConstructor?.initializers
-              .firstWhere((e) => e.toSource().contains('defaultMessage'));
-          expect(
-            initializer?.toSource(),
-            "defaultMessage = defaultMessage ?? 'Default error message'",
-          );
-        },
-      );
+        test(
+          'with the class vars as params',
+          () {
+            expect(
+              privateConstructor?.parameters.toSource(),
+              '({String? defaultMessage, String? defaultNullMessage})',
+            );
+          },
+        );
 
-      test(
-        'with defaultNullMessage default value set correctly',
-        () {
-          var initializer = privateConstructor?.initializers
-              .firstWhere((e) => e.toSource().contains('defaultNullMessage'));
-          expect(
-            initializer?.toSource(),
-            "defaultNullMessage = defaultNullMessage ?? 'Default model error message'",
-          );
-        },
-      );
-    });
-  });
+        test(
+          'with defaultMessage default value set correctly',
+          () {
+            var initializer = privateConstructor?.initializers.firstWhere(
+              (e) => e.toSource().contains('defaultMessage'),
+            );
+            expect(
+              initializer?.toSource(),
+              "defaultMessage = defaultMessage ?? 'Default error message'",
+            );
+          },
+        );
+
+        test(
+          'with defaultNullMessage default value set correctly',
+          () {
+            var initializer = privateConstructor?.initializers.firstWhere(
+              (e) => e.toSource().contains('defaultNullMessage'),
+            );
+            expect(
+              initializer?.toSource(),
+              "defaultNullMessage = defaultNullMessage ?? 'Default model error message'",
+            );
+          },
+        );
+      });
+    },
+  );
 }

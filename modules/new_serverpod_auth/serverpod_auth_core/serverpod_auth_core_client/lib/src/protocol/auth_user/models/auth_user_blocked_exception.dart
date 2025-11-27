@@ -19,7 +19,8 @@ abstract class AuthUserBlockedException
   factory AuthUserBlockedException() = _AuthUserBlockedExceptionImpl;
 
   factory AuthUserBlockedException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return AuthUserBlockedException();
   }
 
@@ -29,7 +30,7 @@ abstract class AuthUserBlockedException
   AuthUserBlockedException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {'__className__': 'serverpod_auth_core.AuthUserBlockedException'};
   }
 
   @override

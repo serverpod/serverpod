@@ -30,19 +30,24 @@ abstract class ObjectWithSparseVector implements _i1.SerializableModel {
   }) = _ObjectWithSparseVectorImpl;
 
   factory ObjectWithSparseVector.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ObjectWithSparseVector(
       id: jsonSerialization['id'] as int?,
       sparseVector: _i1.SparseVectorJsonExtension.fromJson(
-          jsonSerialization['sparseVector']),
+        jsonSerialization['sparseVector'],
+      ),
       sparseVectorNullable: jsonSerialization['sparseVectorNullable'] == null
           ? null
           : _i1.SparseVectorJsonExtension.fromJson(
-              jsonSerialization['sparseVectorNullable']),
+              jsonSerialization['sparseVectorNullable'],
+            ),
       sparseVectorIndexedHnsw: _i1.SparseVectorJsonExtension.fromJson(
-          jsonSerialization['sparseVectorIndexedHnsw']),
+        jsonSerialization['sparseVectorIndexedHnsw'],
+      ),
       sparseVectorIndexedHnswWithParams: _i1.SparseVectorJsonExtension.fromJson(
-          jsonSerialization['sparseVectorIndexedHnswWithParams']),
+        jsonSerialization['sparseVectorIndexedHnswWithParams'],
+      ),
     );
   }
 
@@ -72,13 +77,14 @@ abstract class ObjectWithSparseVector implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithSparseVector',
       if (id != null) 'id': id,
       'sparseVector': sparseVector.toJson(),
       if (sparseVectorNullable != null)
         'sparseVectorNullable': sparseVectorNullable?.toJson(),
       'sparseVectorIndexedHnsw': sparseVectorIndexedHnsw.toJson(),
-      'sparseVectorIndexedHnswWithParams':
-          sparseVectorIndexedHnswWithParams.toJson(),
+      'sparseVectorIndexedHnswWithParams': sparseVectorIndexedHnswWithParams
+          .toJson(),
     };
   }
 
@@ -98,12 +104,12 @@ class _ObjectWithSparseVectorImpl extends ObjectWithSparseVector {
     required _i1.SparseVector sparseVectorIndexedHnsw,
     required _i1.SparseVector sparseVectorIndexedHnswWithParams,
   }) : super._(
-          id: id,
-          sparseVector: sparseVector,
-          sparseVectorNullable: sparseVectorNullable,
-          sparseVectorIndexedHnsw: sparseVectorIndexedHnsw,
-          sparseVectorIndexedHnswWithParams: sparseVectorIndexedHnswWithParams,
-        );
+         id: id,
+         sparseVector: sparseVector,
+         sparseVectorNullable: sparseVectorNullable,
+         sparseVectorIndexedHnsw: sparseVectorIndexedHnsw,
+         sparseVectorIndexedHnswWithParams: sparseVectorIndexedHnswWithParams,
+       );
 
   /// Returns a shallow copy of this [ObjectWithSparseVector]
   /// with some or all fields replaced by the given arguments.
@@ -124,7 +130,8 @@ class _ObjectWithSparseVectorImpl extends ObjectWithSparseVector {
           : this.sparseVectorNullable?.clone(),
       sparseVectorIndexedHnsw:
           sparseVectorIndexedHnsw ?? this.sparseVectorIndexedHnsw.clone(),
-      sparseVectorIndexedHnswWithParams: sparseVectorIndexedHnswWithParams ??
+      sparseVectorIndexedHnswWithParams:
+          sparseVectorIndexedHnswWithParams ??
           this.sparseVectorIndexedHnswWithParams.clone(),
     );
   }

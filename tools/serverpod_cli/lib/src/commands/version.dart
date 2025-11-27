@@ -8,8 +8,8 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 class VersionCommand extends ServerpodCommand {
   final Version _cliVersion;
   VersionCommand(Version cliVersion)
-      : _cliVersion = cliVersion,
-        super(options: []);
+    : _cliVersion = cliVersion,
+      super(options: []);
 
   static const usageDescription =
       'Prints the active version of the Serverpod CLI.';

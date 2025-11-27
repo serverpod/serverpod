@@ -10,7 +10,7 @@ void main() {
   group('Given a `Client` declaration', () {
     group('when creating the session manager directly', () {
       final client = Client('http://localhost:8080/');
-      final authSessionManager = ClientAuthSessionManager(storage: storage);
+      final authSessionManager = FlutterAuthSessionManager(storage: storage);
 
       test('then accessing `client.auth` throws.', () {
         expect(() => client.auth, throwsStateError);
@@ -28,7 +28,7 @@ void main() {
     group('when passing `Caller` to the session manager', () {
       final client = Client('http://localhost:8080/');
 
-      final authSessionManager = ClientAuthSessionManager(
+      final authSessionManager = FlutterAuthSessionManager(
         storage: storage,
         caller: client.modules.serverpod_auth_core,
       );
@@ -49,7 +49,7 @@ void main() {
 
   group('when using the `authSessionManager` extension', () {
     final client = Client('http://localhost:8080/')
-      ..authSessionManager = ClientAuthSessionManager(storage: storage);
+      ..authSessionManager = FlutterAuthSessionManager(storage: storage);
 
     test('then `client.auth` is available.', () {
       expect(client.auth, isNotNull);
@@ -66,7 +66,7 @@ void main() {
   });
 
   group('Given more than one Client sharing the same auth session manager', () {
-    final sharedSessionManager = ClientAuthSessionManager(storage: storage);
+    final sharedSessionManager = FlutterAuthSessionManager(storage: storage);
 
     final client1 = Client('http://localhost:8080/')
       ..authSessionManager = sharedSessionManager;
@@ -78,8 +78,7 @@ void main() {
       expect(client1.auth, client2.auth);
     });
 
-    test(
-        'when retrieving caller from `client.auth` '
+    test('when retrieving caller from `client.auth` '
         'then it is the caller from the latest configured client.', () {
       expect(sharedSessionManager.caller, client2.modules.serverpod_auth_core);
     });

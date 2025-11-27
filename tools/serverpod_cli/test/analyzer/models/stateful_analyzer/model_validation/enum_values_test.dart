@@ -17,12 +17,15 @@ void main() {
           '''
           enum: ExampleEnum
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -44,12 +47,15 @@ void main() {
           enum: ExampleEnum
           values:
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -73,12 +79,15 @@ void main() {
             value1: 1
             value2: 2
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -102,12 +111,15 @@ void main() {
           - 1
           - 2
         ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -130,12 +142,15 @@ void main() {
           values:
             - 
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -158,12 +173,15 @@ void main() {
           values:
             - Invalid-Value
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -186,12 +204,15 @@ void main() {
           values:
             - Invalid.Value
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -214,12 +235,15 @@ void main() {
           values:
             - 123Invalid
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -243,12 +267,15 @@ void main() {
             - duplicated
             - duplicated
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -274,12 +301,15 @@ void main() {
           values:
             - lowerCAPS
           ''',
-        ).build()
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-          .validateAll();
+      StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
       expect(
         collector.errors,
@@ -297,12 +327,15 @@ void main() {
         values:
           - M
         ''',
-      ).build()
+      ).build(),
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-        .validateAll();
+    StatefulAnalyzer(
+      config,
+      modelSources,
+      onErrorsCollector(collector),
+    ).validateAll();
 
     expect(
       collector.errors,
@@ -312,28 +345,32 @@ void main() {
   });
 
   test(
-      'Given a value with numbers at the end of the value then no errors are generated.',
-      () {
-    var modelSources = [
-      ModelSourceBuilder().withYaml(
-        '''
+    'Given a value with numbers at the end of the value then no errors are generated.',
+    () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
         enum: ExampleEnum
         values:
           - enum123
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-        .validateAll();
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
 
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors.',
-    );
-  });
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors.',
+      );
+    },
+  );
 
   test('Given a value with snake_case value then no errors are generated.', () {
     var modelSources = [
@@ -343,12 +380,15 @@ void main() {
         values:
           - snake_case
         ''',
-      ).build()
+      ).build(),
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-        .validateAll();
+    StatefulAnalyzer(
+      config,
+      modelSources,
+      onErrorsCollector(collector),
+    ).validateAll();
 
     expect(
       collector.errors,
@@ -365,55 +405,15 @@ void main() {
         values:
           - PascalCase
         ''',
-      ).build()
+      ).build(),
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-        .validateAll();
-
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors.',
-    );
-  });
-
-  test('Given a value starting with an _ value then no errors are generated.',
-      () {
-    var modelSources = [
-      ModelSourceBuilder().withYaml(
-        '''
-        enum: ExampleEnum
-        values:
-          - _private
-        ''',
-      ).build()
-    ];
-
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-        .validateAll();
-
-    expect(
-      collector.errors,
-      isEmpty,
-      reason: 'Expected no errors.',
-    );
-  });
-
-  test('Given a value with UPPERCASE value then no errors are generated.', () {
-    var modelSources = [
-      ModelSourceBuilder().withYaml('''
-enum: ExampleEnum
-values:
-  - UPPERCASE
-''').build()
-    ];
-
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
-        .validateAll();
+    StatefulAnalyzer(
+      config,
+      modelSources,
+      onErrorsCollector(collector),
+    ).validateAll();
 
     expect(
       collector.errors,
@@ -423,27 +423,82 @@ values:
   });
 
   test(
-      'Given a valid enum with two values, then the enum definition should contain two values.',
-      () {
+    'Given a value starting with an _ value then no errors are generated.',
+    () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
+        enum: ExampleEnum
+        values:
+          - _private
+        ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors.',
+      );
+    },
+  );
+
+  test('Given a value with UPPERCASE value then no errors are generated.', () {
     var modelSources = [
-      ModelSourceBuilder().withYaml(
-        '''
+      ModelSourceBuilder().withYaml('''
+enum: ExampleEnum
+values:
+  - UPPERCASE
+''').build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(
+      config,
+      modelSources,
+      onErrorsCollector(collector),
+    ).validateAll();
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors.',
+    );
+  });
+
+  test(
+    'Given a valid enum with two values, then the enum definition should contain two values.',
+    () {
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
         enum: ExampleEnum
         values:
           - first
           - second
         ''',
-      ).build()
-    ];
+        ).build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    var analyzer =
-        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        modelSources,
+        onErrorsCollector(collector),
+      );
 
-    var definitions = analyzer.validateAll();
+      var definitions = analyzer.validateAll();
 
-    var definition = definitions.first as EnumDefinition;
-    expect(definition.values.first.name, 'first');
-    expect(definition.values.last.name, 'second');
-  });
+      var definition = definitions.first as EnumDefinition;
+      expect(definition.values.first.name, 'first');
+      expect(definition.values.last.name, 'second');
+    },
+  );
 }

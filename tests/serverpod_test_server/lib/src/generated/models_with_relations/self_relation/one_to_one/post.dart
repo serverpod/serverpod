@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/self_relation/one_to_one/post.dart'
     as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Post._({
@@ -39,13 +40,11 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       content: jsonSerialization['content'] as String,
       previous: jsonSerialization['previous'] == null
           ? null
-          : _i2.Post.fromJson(
-              (jsonSerialization['previous'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.Post>(jsonSerialization['previous']),
       nextId: jsonSerialization['nextId'] as int?,
       next: jsonSerialization['next'] == null
           ? null
-          : _i2.Post.fromJson(
-              (jsonSerialization['next'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.Post>(jsonSerialization['next']),
     );
   }
 
@@ -80,6 +79,7 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Post',
       if (id != null) 'id': id,
       'content': content,
       if (previous != null) 'previous': previous?.toJson(),
@@ -91,6 +91,7 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Post',
       if (id != null) 'id': id,
       'content': content,
       if (previous != null) 'previous': previous?.toJsonForProtocol(),
@@ -145,12 +146,12 @@ class _PostImpl extends Post {
     int? nextId,
     _i2.Post? next,
   }) : super._(
-          id: id,
-          content: content,
-          previous: previous,
-          nextId: nextId,
-          next: next,
-        );
+         id: id,
+         content: content,
+         previous: previous,
+         nextId: nextId,
+         next: next,
+       );
 
   /// Returns a shallow copy of this [Post]
   /// with some or all fields replaced by the given arguments.
@@ -177,14 +178,14 @@ class PostUpdateTable extends _i1.UpdateTable<PostTable> {
   PostUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> content(String value) => _i1.ColumnValue(
-        table.content,
-        value,
-      );
+    table.content,
+    value,
+  );
 
   _i1.ColumnValue<int, int> nextId(int? value) => _i1.ColumnValue(
-        table.nextId,
-        value,
-      );
+    table.nextId,
+    value,
+  );
 }
 
 class PostTable extends _i1.Table<int?> {
@@ -238,10 +239,10 @@ class PostTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        content,
-        nextId,
-      ];
+    id,
+    content,
+    nextId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -270,9 +271,9 @@ class PostInclude extends _i1.IncludeObject {
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'previous': _previous,
-        'next': _next,
-      };
+    'previous': _previous,
+    'next': _next,
+  };
 
   @override
   _i1.Table<int?> get table => Post.t;

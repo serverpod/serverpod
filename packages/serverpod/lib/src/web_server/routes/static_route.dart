@@ -7,23 +7,28 @@ class StaticRoute extends Route {
   static CacheControlHeader? _defaultFactory(
     Request ctx,
     FileInfo fileInfo,
-  ) =>
-      null;
+  ) => null;
 
   /// Returns a [CacheControlHeader] with private and no-cache.
-  CacheControlFactory privateNoCache() =>
-      (_, __) => CacheControlHeader(privateCache: true, noCache: true);
+  static CacheControlFactory privateNoCache() =>
+      (_, _) => CacheControlHeader(privateCache: true, noCache: true);
 
   /// Returns a [CacheControlHeader] with no-store.
-  CacheControlFactory noStore() => (_, __) => CacheControlHeader(noStore: true);
+  static CacheControlFactory noStore() =>
+      (_, _) => CacheControlHeader(noStore: true);
 
   /// Returns a [CacheControlHeader] with public, and possibly max-age set to [maxAge].
-  CacheControlFactory public({int? maxAge}) =>
-      (_, __) => CacheControlHeader(publicCache: true, maxAge: maxAge);
+  static CacheControlFactory public({Duration? maxAge}) =>
+      (_, _) =>
+          CacheControlHeader(publicCache: true, maxAge: maxAge?.inSeconds);
 
   /// Returns a [CacheControlHeader] with public, immutable, and possibly max-age set to [maxAge].
-  CacheControlFactory publicImmutable({int? maxAge}) => (_, __) =>
-      CacheControlHeader(publicCache: true, immutable: true, maxAge: maxAge);
+  static CacheControlFactory publicImmutable({Duration? maxAge}) =>
+      (_, _) => CacheControlHeader(
+        publicCache: true,
+        immutable: true,
+        maxAge: maxAge?.inSeconds,
+      );
 
   final Handler _handler;
 
@@ -34,9 +39,11 @@ class StaticRoute extends Route {
   /// Use [cacheControlFactory] to customize what [CacheControlHeader] to
   /// return for a given asset. Default is to leave caching behavior to client
   /// side heuristics.
-  factory StaticRoute.directory(Directory root,
-      {CacheBustingConfig? cacheBustingConfig,
-      CacheControlFactory cacheControlFactory = _defaultFactory}) {
+  factory StaticRoute.directory(
+    Directory root, {
+    CacheBustingConfig? cacheBustingConfig,
+    CacheControlFactory cacheControlFactory = _defaultFactory,
+  }) {
     return StaticRoute._(
       StaticHandler.directory(
         root,
@@ -51,8 +58,10 @@ class StaticRoute extends Route {
   /// Use [cacheControlFactory] to customize what [CacheControlHeader] to
   /// return for a given asset. Default is to leave caching behavior to client
   /// side heuristics.
-  factory StaticRoute.file(File file,
-      {CacheControlFactory cacheControlFactory = _defaultFactory}) {
+  factory StaticRoute.file(
+    File file, {
+    CacheControlFactory cacheControlFactory = _defaultFactory,
+  }) {
     return StaticRoute._(
       StaticHandler.file(
         file,

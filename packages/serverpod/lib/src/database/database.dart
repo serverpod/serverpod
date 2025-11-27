@@ -38,8 +38,8 @@ class Database {
   Database._({
     required Session session,
     required DatabasePoolManager poolManager,
-  })  : _session = session,
-        _databaseConnection = DatabaseConnection(poolManager);
+  }) : _session = session,
+       _databaseConnection = DatabaseConnection(poolManager);
 
   /// Returns a list of [TableRow]s matching the given query parameters.
   ///

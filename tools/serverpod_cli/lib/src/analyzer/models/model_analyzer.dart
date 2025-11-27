@@ -38,7 +38,9 @@ class SerializableModelAnalyzer {
 
   /// Best effort attempt to extract a model definition from a yaml file.
   static SerializableModelDefinition? extractModelDefinition(
-      ModelSource modelSource, List<TypeDefinition> extraClasses) {
+    ModelSource modelSource,
+    List<TypeDefinition> extraClasses,
+  ) {
     var outFileName = _transformFileNameWithoutPathOrExtension(
       modelSource.yamlSourceUri,
     );
@@ -117,12 +119,13 @@ class SerializableModelAnalyzer {
       var firstLine = yaml.split('\n').first;
       collector.addError(
         SourceSpanSeverityException(
-            'The top level object in the class yaml file must be a Map.',
-            SourceSpan(
-              SourceLocation(0, sourceUrl: sourceUri),
-              SourceLocation(firstLine.length, sourceUrl: sourceUri),
-              firstLine,
-            )),
+          'The top level object in the class yaml file must be a Map.',
+          SourceSpan(
+            SourceLocation(0, sourceUrl: sourceUri),
+            SourceLocation(firstLine.length, sourceUrl: sourceUri),
+            firstLine,
+          ),
+        ),
       );
       return;
     }
@@ -165,7 +168,8 @@ class SerializableModelAnalyzer {
         break;
       default:
         throw UnimplementedError(
-            'Validation for $definitionType is not implemented.');
+          'Validation for $definitionType is not implemented.',
+        );
     }
 
     validateYamlModel(

@@ -13,6 +13,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/database_migration_action.dart' as _i2;
 import '../database/database_migration_warning.dart' as _i3;
+import 'package:serverpod/src/generated/protocol.dart' as _i4;
 
 abstract class DatabaseMigration
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -30,14 +31,12 @@ abstract class DatabaseMigration
 
   factory DatabaseMigration.fromJson(Map<String, dynamic> jsonSerialization) {
     return DatabaseMigration(
-      actions: (jsonSerialization['actions'] as List)
-          .map((e) =>
-              _i2.DatabaseMigrationAction.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      warnings: (jsonSerialization['warnings'] as List)
-          .map((e) => _i3.DatabaseMigrationWarning.fromJson(
-              (e as Map<String, dynamic>)))
-          .toList(),
+      actions: _i4.Protocol().deserialize<List<_i2.DatabaseMigrationAction>>(
+        jsonSerialization['actions'],
+      ),
+      warnings: _i4.Protocol().deserialize<List<_i3.DatabaseMigrationWarning>>(
+        jsonSerialization['warnings'],
+      ),
       migrationApiVersion: jsonSerialization['migrationApiVersion'] as int,
     );
   }
@@ -59,6 +58,7 @@ abstract class DatabaseMigration
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.DatabaseMigration',
       'actions': actions.toJson(valueToJson: (v) => v.toJson()),
       'warnings': warnings.toJson(valueToJson: (v) => v.toJson()),
       'migrationApiVersion': migrationApiVersion,
@@ -68,6 +68,7 @@ abstract class DatabaseMigration
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.DatabaseMigration',
       'actions': actions.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'warnings': warnings.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'migrationApiVersion': migrationApiVersion,
@@ -86,10 +87,10 @@ class _DatabaseMigrationImpl extends DatabaseMigration {
     required List<_i3.DatabaseMigrationWarning> warnings,
     required int migrationApiVersion,
   }) : super._(
-          actions: actions,
-          warnings: warnings,
-          migrationApiVersion: migrationApiVersion,
-        );
+         actions: actions,
+         warnings: warnings,
+         migrationApiVersion: migrationApiVersion,
+       );
 
   /// Returns a shallow copy of this [DatabaseMigration]
   /// with some or all fields replaced by the given arguments.

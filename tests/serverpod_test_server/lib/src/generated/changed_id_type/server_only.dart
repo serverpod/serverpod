@@ -20,11 +20,13 @@ abstract class ServerOnlyChangedIdFieldClass
       _ServerOnlyChangedIdFieldClassImpl;
 
   factory ServerOnlyChangedIdFieldClass.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ServerOnlyChangedIdFieldClass(
-        id: jsonSerialization['id'] == null
-            ? null
-            : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']));
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+    );
   }
 
   static final t = ServerOnlyChangedIdFieldClassTable();
@@ -43,7 +45,10 @@ abstract class ServerOnlyChangedIdFieldClass
   ServerOnlyChangedIdFieldClass copyWith({_i1.UuidValue? id});
   @override
   Map<String, dynamic> toJson() {
-    return {if (id != null) 'id': id?.toJson()};
+    return {
+      '__className__': 'ServerOnlyChangedIdFieldClass',
+      if (id != null) 'id': id?.toJson(),
+    };
   }
 
   @override
@@ -92,7 +97,8 @@ class _ServerOnlyChangedIdFieldClassImpl extends ServerOnlyChangedIdFieldClass {
   @override
   ServerOnlyChangedIdFieldClass copyWith({Object? id = _Undefined}) {
     return ServerOnlyChangedIdFieldClass(
-        id: id is _i1.UuidValue? ? id : this.id);
+      id: id is _i1.UuidValue? ? id : this.id,
+    );
   }
 }
 
@@ -103,7 +109,7 @@ class ServerOnlyChangedIdFieldClassUpdateTable
 
 class ServerOnlyChangedIdFieldClassTable extends _i1.Table<_i1.UuidValue?> {
   ServerOnlyChangedIdFieldClassTable({super.tableRelation})
-      : super(tableName: 'server_only_changed_id_field_class') {
+    : super(tableName: 'server_only_changed_id_field_class') {
     updateTable = ServerOnlyChangedIdFieldClassUpdateTable(this);
   }
 
@@ -307,9 +313,10 @@ class ServerOnlyChangedIdFieldClassRepository {
   Future<ServerOnlyChangedIdFieldClass?> updateById(
     _i1.Session session,
     _i1.UuidValue id, {
-    required _i1
-        .ColumnValueListBuilder<ServerOnlyChangedIdFieldClassUpdateTable>
-        columnValues,
+    required _i1.ColumnValueListBuilder<
+      ServerOnlyChangedIdFieldClassUpdateTable
+    >
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ServerOnlyChangedIdFieldClass>(
@@ -323,11 +330,12 @@ class ServerOnlyChangedIdFieldClassRepository {
   /// Returns the list of updated rows.
   Future<List<ServerOnlyChangedIdFieldClass>> updateWhere(
     _i1.Session session, {
-    required _i1
-        .ColumnValueListBuilder<ServerOnlyChangedIdFieldClassUpdateTable>
-        columnValues,
+    required _i1.ColumnValueListBuilder<
+      ServerOnlyChangedIdFieldClassUpdateTable
+    >
+    columnValues,
     required _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>
-        where,
+    where,
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
@@ -377,7 +385,7 @@ class ServerOnlyChangedIdFieldClassRepository {
   Future<List<ServerOnlyChangedIdFieldClass>> deleteWhere(
     _i1.Session session, {
     required _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>
-        where,
+    where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ServerOnlyChangedIdFieldClass>(

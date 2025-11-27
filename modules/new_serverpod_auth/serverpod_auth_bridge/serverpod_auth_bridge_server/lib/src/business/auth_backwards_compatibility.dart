@@ -13,7 +13,7 @@ abstract final class AuthBackwardsCompatibility {
   /// Should match the previous `AuthServices`.
   static AuthBackwardsCompatibilityConfig get config =>
       AuthBackwardsCompatibilityConfig(
-        emailIDP: AuthServices.instance.emailIDP,
+        emailIdp: AuthServices.instance.emailIdp,
       );
 
   /// Set a legacy `serverpod_auth` `EmailAuth` "hash" as a fallback password
@@ -73,7 +73,7 @@ abstract final class AuthBackwardsCompatibility {
     await DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
       final transaction,
     ) async {
-      final emailAccount = await config.emailIDP.admin.findAccount(
+      final emailAccount = await config.emailIdp.admin.findAccount(
         session,
         email: email,
         transaction: transaction,
@@ -105,7 +105,7 @@ abstract final class AuthBackwardsCompatibility {
 
       // The account was already migrated without a password, and now we need to
       // set the password to the correct one from the old system.
-      await config.emailIDP.admin.setPassword(
+      await config.emailIdp.admin.setPassword(
         session,
         email: email,
         password: password,
@@ -211,26 +211,26 @@ abstract final class AuthBackwardsCompatibility {
     required final String? accessToken,
     final Transaction? transaction,
   }) async {
-    final accountDetails =
-        await AuthServices.instance.googleIDP.admin.fetchAccountDetails(
-      session,
-      idToken: idToken,
-      accessToken: accessToken,
-    );
+    final accountDetails = await AuthServices.instance.googleIdp.admin
+        .fetchAccountDetails(
+          session,
+          idToken: idToken,
+          accessToken: accessToken,
+        );
 
-    final legacyUserIdentifier =
-        await LegacyExternalUserIdentifier.db.findFirstRow(
-      session,
-      where: (final t) =>
-          t.userIdentifier.equals(accountDetails.userIdentifier),
-      transaction: transaction,
-    );
+    final legacyUserIdentifier = await LegacyExternalUserIdentifier.db
+        .findFirstRow(
+          session,
+          where: (final t) =>
+              t.userIdentifier.equals(accountDetails.userIdentifier),
+          transaction: transaction,
+        );
 
     if (legacyUserIdentifier != null) {
       await DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
         final transaction,
       ) async {
-        await AuthServices.instance.googleIDP.admin.linkGoogleAuthentication(
+        await AuthServices.instance.googleIdp.admin.linkGoogleAuthentication(
           session,
           authUserId: legacyUserIdentifier.authUserId,
           accountDetails: accountDetails,

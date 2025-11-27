@@ -24,27 +24,29 @@ void main() async {
       await Emails.createAccountRequest(session, userName, email, password);
     });
 
-    test('when inspecting password hash then password is hashed using Argon2id',
-        () async {
-      var createAccountRequest =
-          await EmailCreateAccountRequest.db.findFirstRow(
-        session,
-        where: (t) => t.userName.equals(userName) & t.email.equals(email),
-      );
+    test(
+      'when inspecting password hash then password is hashed using Argon2id',
+      () async {
+        var createAccountRequest = await EmailCreateAccountRequest.db
+            .findFirstRow(
+              session,
+              where: (t) => t.userName.equals(userName) & t.email.equals(email),
+            );
 
-      expect(
-        createAccountRequest,
-        isNotNull,
-        reason: 'Failed to find create account request',
-      );
-      var passwordHash = createAccountRequest!.hash;
+        expect(
+          createAccountRequest,
+          isNotNull,
+          reason: 'Failed to find create account request',
+        );
+        var passwordHash = createAccountRequest!.hash;
 
-      expect(
-        passwordHash,
-        contains('argon2id'),
-        reason: 'Password hash is not using Argon2id',
-      );
-    });
+        expect(
+          passwordHash,
+          contains('argon2id'),
+          reason: 'Password hash is not using Argon2id',
+        );
+      },
+    );
   });
 
   withServerpod('Given a created user', (sessionBuilder, _) {
@@ -58,29 +60,32 @@ void main() async {
     });
 
     test(
-        'when inspecting email auth hash then password is hashed using Argon2id',
-        () async {
-      var emailAuth = await EmailAuth.db.findFirstRow(
-        session,
-        where: (t) => t.email.equals(email),
-      );
-      expect(
-        emailAuth,
-        isNotNull,
-        reason: 'Failed to find email auth entry',
-      );
+      'when inspecting email auth hash then password is hashed using Argon2id',
+      () async {
+        var emailAuth = await EmailAuth.db.findFirstRow(
+          session,
+          where: (t) => t.email.equals(email),
+        );
+        expect(
+          emailAuth,
+          isNotNull,
+          reason: 'Failed to find email auth entry',
+        );
 
-      var passwordHash = emailAuth!.hash;
-      expect(
-        passwordHash,
-        contains('argon2id'),
-        reason: 'Password hash is not using Argon2id',
-      );
-    });
+        var passwordHash = emailAuth!.hash;
+        expect(
+          passwordHash,
+          contains('argon2id'),
+          reason: 'Password hash is not using Argon2id',
+        );
+      },
+    );
   });
 
-  withServerpod('Given user with legacy password hash when authenticating',
-      (sessionBuilder, _) {
+  withServerpod('Given user with legacy password hash when authenticating', (
+    sessionBuilder,
+    _,
+  ) {
     var session = sessionBuilder.build();
     var userName = 'test';
     var email = 'test@serverpod.dev';
@@ -88,8 +93,10 @@ void main() async {
 
     setUp(() async {
       await Emails.createUser(session, userName, email, password);
-      var entry = await EmailAuth.db
-          .findFirstRow(session, where: (t) => t.email.equals(email));
+      var entry = await EmailAuth.db.findFirstRow(
+        session,
+        where: (t) => t.email.equals(email),
+      );
       assert(entry != null, 'Failed to find email auth entry');
       var withLegacyHash = entry!.copyWith(
         // Legacy hash of the password 'hunter2'
@@ -101,8 +108,11 @@ void main() async {
 
     test('then user can authenticate', () async {
       var authResponse = await Emails.authenticate(session, email, password);
-      expect(authResponse.success, isTrue,
-          reason: 'Failed to authenticate user.');
+      expect(
+        authResponse.success,
+        isTrue,
+        reason: 'Failed to authenticate user.',
+      );
     });
 
     test('then hash is migrated.', () async {
@@ -126,8 +136,10 @@ void main() async {
     });
   });
 
-  withServerpod('Given all password hash types in database',
-      (sessionBuilder, _) {
+  withServerpod('Given all password hash types in database', (
+    sessionBuilder,
+    _,
+  ) {
     var session = sessionBuilder.build();
 
     setUp(
@@ -187,144 +199,164 @@ void main() async {
     );
 
     test(
-        'when migrating auth entries then updated rows matches legacy hashes stored.',
-        () async {
-      var updatedRows = await Emails.migrateLegacyPasswordHashes(
-        session,
-        batchSize: 2,
-      );
-      expect(updatedRows, 5);
-    });
+      'when migrating auth entries then updated rows matches legacy hashes stored.',
+      () async {
+        var updatedRows = await Emails.migrateLegacyPasswordHashes(
+          session,
+          batchSize: 2,
+        );
+        expect(updatedRows, 5);
+      },
+    );
 
     test(
-        'when migrating auth entries with a maxMigratedEntries then updated rows matches maxMigratedEntries legacy hashes stored.',
-        () async {
-      var updatedRows = await Emails.migrateLegacyPasswordHashes(
-        session,
-        batchSize: 2,
-        maxMigratedEntries: 0,
-      );
-      expect(updatedRows, 0);
-    });
+      'when migrating auth entries with a maxMigratedEntries then updated rows matches maxMigratedEntries legacy hashes stored.',
+      () async {
+        var updatedRows = await Emails.migrateLegacyPasswordHashes(
+          session,
+          batchSize: 2,
+          maxMigratedEntries: 0,
+        );
+        expect(updatedRows, 0);
+      },
+    );
 
     test(
-        'when migrating auth entries with a maxMigratedEntries then updated rows matches maxMigratedEntries legacy hashes stored.',
-        () async {
-      var updatedRows = await Emails.migrateLegacyPasswordHashes(
-        session,
-        batchSize: 2,
-        maxMigratedEntries: 3,
-      );
-      expect(updatedRows, 3);
-    });
+      'when migrating auth entries with a maxMigratedEntries then updated rows matches maxMigratedEntries legacy hashes stored.',
+      () async {
+        var updatedRows = await Emails.migrateLegacyPasswordHashes(
+          session,
+          batchSize: 2,
+          maxMigratedEntries: 3,
+        );
+        expect(updatedRows, 3);
+      },
+    );
 
     test(
-        'when migrating auth entries multiple times with maxMigratedEntries defined then total updated rows matches total legacy hashes stored.',
-        () async {
-      var migrateHashes = () => Emails.migrateLegacyPasswordHashes(
-            session,
-            batchSize: 2,
-            maxMigratedEntries: 3,
-          );
-      var updatedRows1 = await migrateHashes();
-      var updatedRows2 = await migrateHashes();
-      var updatedRows3 = await migrateHashes();
+      'when migrating auth entries multiple times with maxMigratedEntries defined then total updated rows matches total legacy hashes stored.',
+      () async {
+        var migrateHashes = () => Emails.migrateLegacyPasswordHashes(
+          session,
+          batchSize: 2,
+          maxMigratedEntries: 3,
+        );
+        var updatedRows1 = await migrateHashes();
+        var updatedRows2 = await migrateHashes();
+        var updatedRows3 = await migrateHashes();
 
-      var totalUpdatedRows = updatedRows1 + updatedRows2 + updatedRows3;
-      expect(totalUpdatedRows, 5);
-    });
+        var totalUpdatedRows = updatedRows1 + updatedRows2 + updatedRows3;
+        expect(totalUpdatedRows, 5);
+      },
+    );
 
     test(
-        'when migrating auth entries then all legacy hashes are stored with migrate algorithm.',
-        () async {
-      await Emails.migrateLegacyPasswordHashes(session, batchSize: 2);
+      'when migrating auth entries then all legacy hashes are stored with migrate algorithm.',
+      () async {
+        await Emails.migrateLegacyPasswordHashes(session, batchSize: 2);
 
-      var emailAuth = await EmailAuth.db.find(
-        session,
-        where: (t) => t.email.inSet({
-          'test1@serverpod.dev',
-          'test2@serverpod.dev',
-          'test3@serverpod.dev',
-          'test4@serverpod.dev',
-          'test5@serverpod.dev',
-        }),
-      );
+        var emailAuth = await EmailAuth.db.find(
+          session,
+          where: (t) => t.email.inSet({
+            'test1@serverpod.dev',
+            'test2@serverpod.dev',
+            'test3@serverpod.dev',
+            'test4@serverpod.dev',
+            'test5@serverpod.dev',
+          }),
+        );
 
-      expect(emailAuth, hasLength(5));
-      var hashes = emailAuth.map((e) => e.hash).toList();
-      expect(
-        hashes,
-        everyElement(contains('migratedLegacy')),
-        reason:
-            'Not all legacy hashes where migrated to migratedLegacy algorithm',
-      );
-    });
+        expect(emailAuth, hasLength(5));
+        var hashes = emailAuth.map((e) => e.hash).toList();
+        expect(
+          hashes,
+          everyElement(contains('migratedLegacy')),
+          reason:
+              'Not all legacy hashes where migrated to migratedLegacy algorithm',
+        );
+      },
+    );
 
     group('when migrating auth entries', () {
       setUp(() async => await Emails.migrateLegacyPasswordHashes(session));
 
       test(
-          'then user that had legacy password returns PasswordValidationSuccess.',
-          () async {
-        var emailAuth = await EmailAuth.db.findFirstRow(
-          session,
-          where: (t) => t.email.equals('test1@serverpod.dev'),
-        );
+        'then user that had legacy password returns PasswordValidationSuccess.',
+        () async {
+          var emailAuth = await EmailAuth.db.findFirstRow(
+            session,
+            where: (t) => t.email.equals('test1@serverpod.dev'),
+          );
 
-        expect(emailAuth, isNotNull, reason: 'Failed to find email auth entry');
-        var passwordHash = emailAuth!.hash;
+          expect(
+            emailAuth,
+            isNotNull,
+            reason: 'Failed to find email auth entry',
+          );
+          var passwordHash = emailAuth!.hash;
 
-        expect(
-          await Emails.validatePasswordHash(
-            'hunter0',
-            'test1@serverpod.dev',
-            passwordHash,
-          ),
-          isA<PasswordValidationSuccess>(),
-        );
-      });
-
-      test(
-          'then user with already migrated legacy password hash returns PasswordValidationSuccess.',
-          () async {
-        var emailAuth = await EmailAuth.db.findFirstRow(
-          session,
-          where: (t) => t.email.equals('test6@serverpod.dev'),
-        );
-
-        expect(emailAuth, isNotNull, reason: 'Failed to find email auth entry');
-        var passwordHash = emailAuth!.hash;
-
-        expect(
-          await Emails.validatePasswordHash(
-            'hunter2',
-            'test6@serverpod.dev',
-            passwordHash,
-          ),
-          isA<PasswordValidationSuccess>(),
-        );
-      });
+          expect(
+            await Emails.validatePasswordHash(
+              'hunter0',
+              'test1@serverpod.dev',
+              passwordHash,
+            ),
+            isA<PasswordValidationSuccess>(),
+          );
+        },
+      );
 
       test(
-          'then user with argon2id password hash returns PasswordValidationSuccess.',
-          () async {
-        var emailAuth = await EmailAuth.db.findFirstRow(
-          session,
-          where: (t) => t.email.equals('test7@serverpod.dev'),
-        );
+        'then user with already migrated legacy password hash returns PasswordValidationSuccess.',
+        () async {
+          var emailAuth = await EmailAuth.db.findFirstRow(
+            session,
+            where: (t) => t.email.equals('test6@serverpod.dev'),
+          );
 
-        expect(emailAuth, isNotNull, reason: 'Failed to find email auth entry');
-        var passwordHash = emailAuth!.hash;
+          expect(
+            emailAuth,
+            isNotNull,
+            reason: 'Failed to find email auth entry',
+          );
+          var passwordHash = emailAuth!.hash;
 
-        expect(
-          await Emails.validatePasswordHash(
-            'hunter2',
-            'test7@serverpod.dev',
-            passwordHash,
-          ),
-          isA<PasswordValidationSuccess>(),
-        );
-      });
+          expect(
+            await Emails.validatePasswordHash(
+              'hunter2',
+              'test6@serverpod.dev',
+              passwordHash,
+            ),
+            isA<PasswordValidationSuccess>(),
+          );
+        },
+      );
+
+      test(
+        'then user with argon2id password hash returns PasswordValidationSuccess.',
+        () async {
+          var emailAuth = await EmailAuth.db.findFirstRow(
+            session,
+            where: (t) => t.email.equals('test7@serverpod.dev'),
+          );
+
+          expect(
+            emailAuth,
+            isNotNull,
+            reason: 'Failed to find email auth entry',
+          );
+          var passwordHash = emailAuth!.hash;
+
+          expect(
+            await Emails.validatePasswordHash(
+              'hunter2',
+              'test7@serverpod.dev',
+              passwordHash,
+            ),
+            isA<PasswordValidationSuccess>(),
+          );
+        },
+      );
     });
   });
 
@@ -336,24 +368,25 @@ void main() async {
         '1d24f0d21861e659c50c87ae03b679dc66ac7dd5fb1b03140e53f9331eeb0a31';
 
     test(
-        'then validation returns PasswordValidationFailed with generated and passed in hash.',
-        () async {
-      late String actualStoredHash;
-      late String actualPasswordHash;
-      final validationResponse = await Emails.validatePasswordHash(
-        'notHunter4',
-        'test7@serverpod.dev',
-        hunter4PasswordHash,
-      );
-      expect(validationResponse, isA<PasswordValidationFailed>());
+      'then validation returns PasswordValidationFailed with generated and passed in hash.',
+      () async {
+        late String actualStoredHash;
+        late String actualPasswordHash;
+        final validationResponse = await Emails.validatePasswordHash(
+          'notHunter4',
+          'test7@serverpod.dev',
+          hunter4PasswordHash,
+        );
+        expect(validationResponse, isA<PasswordValidationFailed>());
 
-      if (validationResponse is PasswordValidationFailed) {
-        actualPasswordHash = validationResponse.passwordHash;
-        actualStoredHash = validationResponse.storedHash;
-      }
+        if (validationResponse is PasswordValidationFailed) {
+          actualPasswordHash = validationResponse.passwordHash;
+          actualStoredHash = validationResponse.storedHash;
+        }
 
-      expect(actualStoredHash, hunter4PasswordHash);
-      expect(actualPasswordHash, notHunter4PasswordHash);
-    });
+        expect(actualStoredHash, hunter4PasswordHash);
+        expect(actualPasswordHash, notHunter4PasswordHash);
+      },
+    );
   });
 }

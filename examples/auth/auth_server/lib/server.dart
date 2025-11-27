@@ -21,26 +21,29 @@ void run(List<String> args) async {
   );
 
   // Configure our token managers.
-  final authSessionsConfig = AuthSessionsConfig(
-    sessionKeyHashPepper: pod.getPassword('authSessionsSessionKeyHashPepper')!,
+  final serverSideSessionsConfig = ServerSideSessionsConfig(
+    sessionKeyHashPepper: pod.getPassword(
+      'serverSideSessionKeyHashPepper',
+    )!,
   );
 
-  final authenticationTokenConfig = AuthenticationTokenConfig(
-    refreshTokenHashPepper:
-        pod.getPassword('authenticationTokenRefreshTokenHashPepper')!,
-    algorithm: AuthenticationTokenAlgorithm.hmacSha512(
-      SecretKey(pod.getPassword('authenticationTokenPrivateKey')!),
+  final jwtTokenConfig = JwtConfig(
+    refreshTokenHashPepper: pod.getPassword(
+      'jwtRefreshTokenHashPepper',
+    )!,
+    algorithm: JwtAlgorithm.hmacSha512(
+      SecretKey(pod.getPassword('jwtPrivateKey')!),
     ),
   );
 
   // Configure our identity providers.
-  final googleIDPConfig = GoogleIDPConfig(
+  final googleIdpConfig = GoogleIdpConfig(
     clientSecret: GoogleClientSecret.fromJsonString(
       pod.getPassword('googleClientSecret')!,
     ),
   );
 
-  final appleIDPConfig = AppleIDPConfig(
+  final appleIdpConfig = AppleIdpConfig(
     serviceIdentifier: pod.getPassword('appleServiceIdentifier')!,
     bundleIdentifier: pod.getPassword('appleBundleIdentifier')!,
     redirectUri: pod.getPassword('appleRedirectUri')!,
@@ -49,57 +52,71 @@ void run(List<String> args) async {
     key: pod.getPassword('appleKey')!,
   );
 
-  final emailIDPConfig = EmailIDPConfig(
+  final emailIdpConfig = EmailIdpConfig(
     secretHashPepper: pod.getPassword('emailSecretHashPepper')!,
-    sendRegistrationVerificationCode: (
-      session, {
-      required accountRequestId,
-      required email,
-      required verificationCode,
-      required transaction,
-    }) {
-      // NOTE: Here you call your mail service to send the verification code to
-      // the user. For testing, we will just log the verification code.
-      session.log('[EmailIDP] Registration code ($email): $verificationCode');
-    },
-    sendPasswordResetVerificationCode: (
-      session, {
-      required email,
-      required passwordResetRequestId,
-      required verificationCode,
-      required transaction,
-    }) {
-      // NOTE: Here you call your mail service to send the verification code to
-      // the user. For testing, we will just log the verification code.
-      session.log('[EmailIDP] Password reset code ($email): $verificationCode');
-    },
+    sendRegistrationVerificationCode:
+        (
+          session, {
+          required accountRequestId,
+          required email,
+          required verificationCode,
+          required transaction,
+        }) {
+          // NOTE: Here you call your mail service to send the verification code to
+          // the user. For testing, we will just log the verification code.
+          session.log(
+            '[EmailIdp] Registration code ($email): $verificationCode',
+          );
+        },
+    sendPasswordResetVerificationCode:
+        (
+          session, {
+          required email,
+          required passwordResetRequestId,
+          required verificationCode,
+          required transaction,
+        }) {
+          // NOTE: Here you call your mail service to send the verification code to
+          // the user. For testing, we will just log the verification code.
+          session.log(
+            '[EmailIdp] Password reset code ($email): $verificationCode',
+          );
+        },
   );
 
-  final passkeyIDPConfig = PasskeyIDPConfig(
+  final passkeyIdpConfig = PasskeyIdpConfig(
     challengeLifetime: Duration(seconds: 30),
     hostname: 'localhost',
   );
 
   final authServices = AuthServices.set(
-      primaryTokenManager: AuthSessionsTokenManagerFactory(authSessionsConfig),
-      identityProviders: [
-        GoogleIdentityProviderFactory(googleIDPConfig),
-        AppleIdentityProviderFactory(appleIDPConfig),
-        EmailIdentityProviderFactory(emailIDPConfig),
-        PasskeyIdentityProviderFactory(passkeyIDPConfig),
-      ],
-      additionalTokenManagers: [
-        AuthenticationTokensTokenManagerFactory(
-          authenticationTokenConfig,
-        ),
-      ]);
+    primaryTokenManager: ServerSideSessionsTokenManagerFactory(
+      serverSideSessionsConfig,
+    ),
+    identityProviders: [
+      GoogleIdentityProviderFactory(googleIdpConfig),
+      AppleIdentityProviderFactory(appleIdpConfig),
+      EmailIdentityProviderFactory(emailIdpConfig),
+      PasskeyIdentityProviderFactory(passkeyIdpConfig),
+    ],
+    additionalTokenManagers: [
+      JwtTokenManagerFactory(
+        jwtTokenConfig,
+      ),
+    ],
+  );
 
   pod.authenticationHandler = authServices.authenticationHandler;
 
-  pod.webServer.addRoute(
-    AuthServices.instance.appleIDP.revokedNotificationRoute(),
-    '/hooks/apple-notification',
-  );
+  pod.webServer
+    ..addRoute(
+      AuthServices.instance.appleIdp.revokedNotificationRoute(),
+      '/hooks/apple-notification', // must match path configured on apple
+    )
+    ..addRoute(
+      AuthServices.instance.appleIdp.webAuthenticationCallbackRoute(),
+      '/auth/callback', // must match path configured on apple
+    );
 
   // Start the server.
   await pod.start();

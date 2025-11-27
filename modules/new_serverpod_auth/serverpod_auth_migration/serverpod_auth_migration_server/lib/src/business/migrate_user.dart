@@ -17,7 +17,7 @@ Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
   final Session session,
   final legacy_auth.UserInfo userInfo, {
   required final Transaction transaction,
-  required final auth_next.EmailIDP newEmailIDP,
+  required final auth_next.EmailIdp newEmailIdp,
   final new_auth_user.AuthUsers authUsers = const new_auth_user.AuthUsers(),
 }) async {
   var migratedUser = await MigratedUser.db.findFirstRow(
@@ -47,7 +47,7 @@ Future<(MigratedUser migratedUser, bool didCreate)> migrateUserIfNeeded(
     oldUserId: userInfo.id!,
     newAuthUserId: authUser.id,
     transaction: transaction,
-    newEmailIDP: newEmailIDP,
+    newEmailIdp: newEmailIdp,
   );
 
   await _importUserIdentifier(
@@ -89,7 +89,7 @@ Future<void> _importEmailAccounts(
   required final int oldUserId,
   required final UuidValue newAuthUserId,
   required final Transaction transaction,
-  required final auth_next.EmailIDP newEmailIDP,
+  required final auth_next.EmailIdp newEmailIdp,
 }) async {
   final emailAuths = await legacy_auth.EmailAuth.db.find(
     session,
@@ -97,7 +97,7 @@ Future<void> _importEmailAccounts(
     transaction: transaction,
   );
   for (final emailAuth in emailAuths) {
-    final newEmailAccountId = await newEmailIDP.admin.createEmailAuthentication(
+    final newEmailAccountId = await newEmailIdp.admin.createEmailAuthentication(
       session,
       authUserId: newAuthUserId,
       email: emailAuth.email,
@@ -175,8 +175,9 @@ Future<void> _importProfile(
     transaction: transaction,
   );
 
-  final profileImageUrl =
-      userInfo.imageUrl != null ? Uri.tryParse(userInfo.imageUrl!) : null;
+  final profileImageUrl = userInfo.imageUrl != null
+      ? Uri.tryParse(userInfo.imageUrl!)
+      : null;
   if (profileImageUrl != null) {
     try {
       await userProfiles.setUserImageFromUrl(

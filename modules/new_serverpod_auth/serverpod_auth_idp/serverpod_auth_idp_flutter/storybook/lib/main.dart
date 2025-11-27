@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:storybook_toolkit/storybook_toolkit.dart';
 
+import 'stories/apple.dart';
 import 'stories/email.dart';
 import 'stories/google.dart';
 import 'stories/signin.dart';
@@ -10,11 +11,12 @@ import 'utils/client.dart';
 import 'utils/wrapper.dart';
 
 final client = Client('http://localhost:8080/')
-  ..authSessionManager = ClientAuthSessionManager();
+  ..authSessionManager = FlutterAuthSessionManager();
 
 void main() {
   client.auth.initialize();
   client.auth.initializeGoogleSignIn();
+  client.auth.initializeAppleSignIn();
 
   runApp(const MainApp());
 }
@@ -39,7 +41,12 @@ class MainApp extends StatelessWidget {
             orientation: Orientation.portrait,
           ),
         ),
-        stories: [...emailStories, ...googleStories, ...signInStories],
+        stories: [
+          ...emailStories,
+          ...googleStories,
+          ...appleStories,
+          ...signInStories,
+        ],
       ),
     );
   }

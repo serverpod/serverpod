@@ -15,13 +15,18 @@ void main() {
       final nonExistentPath = path.join(tempDir.path, 'nonexistent');
 
       await expectLater(
-        GeneratorConfig.load(nonExistentPath),
-        throwsA(isA<ServerpodProjectNotFoundException>().having(
-          (e) => e.message,
-          'message',
-          'Failed to load pubspec.yaml. Are you running serverpod from your '
-              'projects server root directory?',
-        )),
+        GeneratorConfig.load(
+          serverRootDir: nonExistentPath,
+          interactive: false,
+        ),
+        throwsA(
+          isA<ServerpodProjectNotFoundException>().having(
+            (e) => e.message,
+            'message',
+            'Failed to load pubspec.yaml. Are you running serverpod from your '
+                'projects server root directory?',
+          ),
+        ),
       );
     },
   );
@@ -51,13 +56,18 @@ dependencies:
 ''');
 
       await expectLater(
-        GeneratorConfig.load(serverDir.path),
-        throwsA(isA<ServerpodProjectNotFoundException>().having(
-          (e) => e.message,
-          'message',
-          'Could not find the Serverpod dependency in the directory ${serverDir.path}. Are you running serverpod from your '
-              'projects root directory?',
-        )),
+        GeneratorConfig.load(
+          serverRootDir: serverDir.path,
+          interactive: false,
+        ),
+        throwsA(
+          isA<ServerpodProjectNotFoundException>().having(
+            (e) => e.message,
+            'message',
+            'Could not find the Serverpod dependency in the directory ${serverDir.path}. Are you running serverpod from your '
+                'projects root directory?',
+          ),
+        ),
       );
     },
   );

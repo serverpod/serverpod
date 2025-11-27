@@ -23,7 +23,7 @@ class MigrationVersionBuilder {
           module: 'serverpod',
           version: '00000000000000',
         ),
-        DatabaseMigrationVersion(module: _moduleName, version: _versionName)
+        DatabaseMigrationVersion(module: _moduleName, version: _versionName),
       ],
       tables: [],
       migrationApiVersion: 0,
@@ -36,7 +36,7 @@ class MigrationVersionBuilder {
           module: 'serverpod',
           version: '00000000000000',
         ),
-        DatabaseMigrationVersion(module: _moduleName, version: _versionName)
+        DatabaseMigrationVersion(module: _moduleName, version: _versionName),
       ],
       tables: [],
       migrationApiVersion: 0,

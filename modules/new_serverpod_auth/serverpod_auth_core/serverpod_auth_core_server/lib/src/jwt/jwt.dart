@@ -1,9 +1,10 @@
 export '../auth_user/auth_user.dart';
-export '../common/integrations/adapters/authentication_tokens_token_manager.dart';
-export '../common/integrations/adapters/authentication_tokens_token_manager_factory.dart';
+export '../common/integrations/adapters/jwt_token_manager.dart';
+export '../common/integrations/adapters/jwt_token_manager_factory.dart';
+export '../common/utils/argon2_hash_util.dart';
 export '../generated/protocol.dart'
     show
-        AuthenticationTokenInfo,
+        JwtTokenInfo,
         AuthSuccess,
         RefreshTokenExpiredException,
         RefreshTokenInvalidSecretException,
@@ -11,9 +12,8 @@ export '../generated/protocol.dart'
         RefreshTokenNotFoundException,
         TokenPair;
 export 'business/authentication_info_from_jwt.dart' show AuthenticationInfoJwt;
-export 'business/authentication_token_config.dart';
-export 'business/authentication_tokens.dart';
-export 'business/authentication_tokens_admin.dart';
+export 'business/jwt.dart';
+export 'business/jwt_admin.dart';
+export 'business/jwt_config.dart';
 export 'endpoints/jwt_tokens_endpoint.dart';
-export 'util/authentication_token_info_extension.dart'
-    show AuthenticationTokenInfoExtension;
+export 'util/jwt_token_info_extension.dart' show JwtTokenInfoExtension;

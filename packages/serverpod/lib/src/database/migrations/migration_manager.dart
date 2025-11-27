@@ -38,9 +38,11 @@ class MigrationManager {
     String? appliedVersionName = repairMigration.versionName;
     await _withMigrationLock(session, () async {
       var appliedRepairMigration = await DatabaseMigrationVersion.db
-          .findFirstRow(session,
-              where: (t) => t.module
-                  .equals(MigrationConstants.repairMigrationModuleName));
+          .findFirstRow(
+            session,
+            where: (t) =>
+                t.module.equals(MigrationConstants.repairMigrationModuleName),
+          );
 
       if (appliedRepairMigration != null &&
           appliedRepairMigration.version == repairMigration.versionName) {
@@ -115,7 +117,9 @@ class MigrationManager {
 
     var index = availableVersions.indexOf(fromVersion);
     if (index == -1) {
-      throw Exception('Version $fromVersion not found in project.');
+      throw Exception(
+        'DB has migration version $fromVersion registered but it is not found in the project files.',
+      );
     }
     return availableVersions.sublist(index + 1);
   }
@@ -275,18 +279,22 @@ class MigrationManager {
     availableVersions.clear();
     var warnings = <String>[];
     try {
-      availableVersions.addAll(MigrationVersions.listVersions(
-        projectDirectory: _projectDirectory,
-      ));
+      availableVersions.addAll(
+        MigrationVersions.listVersions(
+          projectDirectory: _projectDirectory,
+        ),
+      );
     } catch (e) {
       warnings.add(
-          'Failed to determine migration versions for project: ${e.toString()}');
+        'Failed to determine migration versions for project: ${e.toString()}',
+      );
     }
 
     if (warnings.isNotEmpty) {
       stderr.writeln(
-          'WARNING: The following module migration registries could not be '
-          'loaded:');
+        'WARNING: The following module migration registries could not be '
+        'loaded:',
+      );
       for (var warning in warnings) {
         stderr.writeln(' - $warning');
       }
@@ -477,8 +485,8 @@ class MigrationManager {
     var allInfoWarnings = <String>[];
 
     var liveDatabase = await DatabaseAnalyzer.analyze(session.db);
-    var targetTables =
-        session.serverpod.serializationManager.getTargetTableDefinitions();
+    var targetTables = session.serverpod.serializationManager
+        .getTargetTableDefinitions();
 
     // Analyze custom SQL using the instance's project directory
     var customSqlAnalysis = _analyzeCustomSQL();
@@ -523,7 +531,8 @@ class MigrationManager {
         stderr.writeln(' - $warning');
       }
       stderr.writeln(
-          'Hint: Did you forget to apply the migrations (--apply-migrations) or run a repair migration (--apply-repair-migration)?');
+        'Hint: Did you forget to apply the migrations (--apply-migrations) or run a repair migration (--apply-repair-migration)?',
+      );
     }
 
     // Print informational warnings

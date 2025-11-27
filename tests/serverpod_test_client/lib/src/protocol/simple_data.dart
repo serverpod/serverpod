@@ -51,6 +51,7 @@ abstract class SimpleData implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'SimpleData',
       if (id != null) 'id': id,
       'num': num,
     };
@@ -69,9 +70,9 @@ class _SimpleDataImpl extends SimpleData {
     int? id,
     required int num,
   }) : super._(
-          id: id,
-          num: num,
-        );
+         id: id,
+         num: num,
+       );
 
   /// Returns a shallow copy of this [SimpleData]
   /// with some or all fields replaced by the given arguments.

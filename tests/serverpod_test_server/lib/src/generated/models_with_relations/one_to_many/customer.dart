@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_many/order.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Customer
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -33,9 +34,11 @@ abstract class Customer
     return Customer(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      orders: (jsonSerialization['orders'] as List?)
-          ?.map((e) => _i2.Order.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      orders: jsonSerialization['orders'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.Order>>(
+              jsonSerialization['orders'],
+            ),
     );
   }
 
@@ -64,6 +67,7 @@ abstract class Customer
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Customer',
       if (id != null) 'id': id,
       'name': name,
       if (orders != null)
@@ -74,6 +78,7 @@ abstract class Customer
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Customer',
       if (id != null) 'id': id,
       'name': name,
       if (orders != null)
@@ -119,10 +124,10 @@ class _CustomerImpl extends Customer {
     required String name,
     List<_i2.Order>? orders,
   }) : super._(
-          id: id,
-          name: name,
-          orders: orders,
-        );
+         id: id,
+         name: name,
+         orders: orders,
+       );
 
   /// Returns a shallow copy of this [Customer]
   /// with some or all fields replaced by the given arguments.
@@ -147,9 +152,9 @@ class CustomerUpdateTable extends _i1.UpdateTable<CustomerTable> {
   CustomerUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 }
 
 class CustomerTable extends _i1.Table<int?> {
@@ -195,16 +200,17 @@ class CustomerTable extends _i1.Table<int?> {
     _orders = _i1.ManyRelation<_i2.OrderTable>(
       tableWithRelations: relationTable,
       table: _i2.OrderTable(
-          tableRelation: relationTable.tableRelation!.lastRelation),
+        tableRelation: relationTable.tableRelation!.lastRelation,
+      ),
     );
     return _orders!;
   }
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-      ];
+    id,
+    name,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

@@ -14,6 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/column_definition.dart' as _i2;
 import '../database/foreign_key_definition.dart' as _i3;
 import '../database/index_definition.dart' as _i4;
+import 'package:serverpod/src/generated/protocol.dart' as _i5;
 
 /// The definition of a (desired) table in the database.
 abstract class TableDefinition
@@ -49,17 +50,15 @@ abstract class TableDefinition
       module: jsonSerialization['module'] as String?,
       schema: jsonSerialization['schema'] as String,
       tableSpace: jsonSerialization['tableSpace'] as String?,
-      columns: (jsonSerialization['columns'] as List)
-          .map(
-              (e) => _i2.ColumnDefinition.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      foreignKeys: (jsonSerialization['foreignKeys'] as List)
-          .map((e) =>
-              _i3.ForeignKeyDefinition.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      indexes: (jsonSerialization['indexes'] as List)
-          .map((e) => _i4.IndexDefinition.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      columns: _i5.Protocol().deserialize<List<_i2.ColumnDefinition>>(
+        jsonSerialization['columns'],
+      ),
+      foreignKeys: _i5.Protocol().deserialize<List<_i3.ForeignKeyDefinition>>(
+        jsonSerialization['foreignKeys'],
+      ),
+      indexes: _i5.Protocol().deserialize<List<_i4.IndexDefinition>>(
+        jsonSerialization['indexes'],
+      ),
       managed: jsonSerialization['managed'] as bool?,
     );
   }
@@ -110,6 +109,7 @@ abstract class TableDefinition
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.TableDefinition',
       'name': name,
       if (dartName != null) 'dartName': dartName,
       if (module != null) 'module': module,
@@ -125,14 +125,16 @@ abstract class TableDefinition
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.TableDefinition',
       'name': name,
       if (dartName != null) 'dartName': dartName,
       if (module != null) 'module': module,
       'schema': schema,
       if (tableSpace != null) 'tableSpace': tableSpace,
       'columns': columns.toJson(valueToJson: (v) => v.toJsonForProtocol()),
-      'foreignKeys':
-          foreignKeys.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      'foreignKeys': foreignKeys.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
       'indexes': indexes.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (managed != null) 'managed': managed,
     };
@@ -158,16 +160,16 @@ class _TableDefinitionImpl extends TableDefinition {
     required List<_i4.IndexDefinition> indexes,
     bool? managed,
   }) : super._(
-          name: name,
-          dartName: dartName,
-          module: module,
-          schema: schema,
-          tableSpace: tableSpace,
-          columns: columns,
-          foreignKeys: foreignKeys,
-          indexes: indexes,
-          managed: managed,
-        );
+         name: name,
+         dartName: dartName,
+         module: module,
+         schema: schema,
+         tableSpace: tableSpace,
+         columns: columns,
+         foreignKeys: foreignKeys,
+         indexes: indexes,
+         managed: managed,
+       );
 
   /// Returns a shallow copy of this [TableDefinition]
   /// with some or all fields replaced by the given arguments.

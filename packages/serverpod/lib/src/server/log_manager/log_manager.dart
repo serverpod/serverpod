@@ -35,7 +35,7 @@ class SessionLogManager {
 
   bool _isLoggingOpened;
 
-  /// Creates a new [LogManager] from [RuntimeSettings].
+  /// Creates a new [SessionLogManager] from [RuntimeSettings].
   @internal
   SessionLogManager(
     LogWriter logWriter, {
@@ -43,15 +43,15 @@ class SessionLogManager {
     required LogSettings Function(Session) settingsForSession,
     required String serverId,
     bool disableLoggingSlowSessions = false,
-  })  : _logOrderId = 0,
-        _numberOfQueries = 0,
-        _logWriter = logWriter,
-        _settingsForSession = settingsForSession,
-        _serverId = serverId,
-        _isLoggingOpened = false,
-        _disableSlowSessionLogging = disableLoggingSlowSessions,
-        _session = session,
-        _logTasks = _FutureTaskManager() {
+  }) : _logOrderId = 0,
+       _numberOfQueries = 0,
+       _logWriter = logWriter,
+       _settingsForSession = settingsForSession,
+       _serverId = serverId,
+       _isLoggingOpened = false,
+       _disableSlowSessionLogging = disableLoggingSlowSessions,
+       _session = session,
+       _logTasks = _FutureTaskManager() {
     var settings = _settingsForSession(session);
     if (!settings.logAllSessions) return;
 
@@ -262,7 +262,7 @@ class SessionLogManager {
 
       var sessionLogEntry = SessionLogEntry(
         serverId: _serverId,
-        time: now,
+        time: session.startTime,
         touched: now,
         endpoint: session.endpoint,
         method: session.method,
@@ -290,9 +290,10 @@ class SessionLogManager {
     var duration = session.duration;
     LogSettings logSettings = _settingsForSession(session);
 
-    var slowMicros =
-        (logSettings.slowSessionDuration * _microNormalizer).toInt();
-    var isSlow = duration > Duration(microseconds: slowMicros) &&
+    var slowMicros = (logSettings.slowSessionDuration * _microNormalizer)
+        .toInt();
+    var isSlow =
+        duration > Duration(microseconds: slowMicros) &&
         !_disableSlowSessionLogging;
 
     if (logSettings.logAllSessions ||
@@ -303,7 +304,7 @@ class SessionLogManager {
 
       var sessionLogEntry = SessionLogEntry(
         serverId: _serverId,
-        time: now,
+        time: session.startTime,
         touched: now,
         endpoint: session.endpoint,
         method: session.method,
@@ -321,7 +322,8 @@ class SessionLogManager {
       } catch (e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');
         stderr.writeln(
-            'CALL: ${session.callName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId');
+          'CALL: ${session.callName} duration: ${duration.inMilliseconds}ms numQueries: $_numberOfQueries authenticatedUser: $authenticatedUserId',
+        );
         if (exception != null) {
           stderr.writeln('CALL error: $exception');
           stderr.writeln('$stackTrace');
@@ -333,20 +335,6 @@ class SessionLogManager {
     }
     return null;
   }
-}
-
-/// The [LogManager] handles logging and logging settings. Typically only used
-/// internally by Serverpod.
-class LogManager {
-  /// The [RuntimeSettings] the log manager retrieves its settings from.
-  @Deprecated('Will be removed in 3.0.0')
-  final RuntimeSettings runtimeSettings;
-
-  /// Creates a new [LogManager] from [RuntimeSettings].
-  LogManager(
-    this.runtimeSettings, {
-    required String serverId,
-  });
 }
 
 extension on Session {
@@ -370,14 +358,16 @@ class _FutureTaskManager {
     _tasksCompleter ??= Completer<void>();
     _pendingTasks.add(task);
 
-    task().then((value) {
-      _completeTask(task);
-    }).onError((error, stackTrace) {
-      _completeTask(task);
-      var e = error;
-      if (e is Exception) throw e;
-      if (e is Error) throw e;
-    });
+    task()
+        .then((value) {
+          _completeTask(task);
+        })
+        .onError((error, stackTrace) {
+          _completeTask(task);
+          var e = error;
+          if (e is Exception) throw e;
+          if (e is Error) throw e;
+        });
   }
 
   void _completeTask(_TaskCallback task) {

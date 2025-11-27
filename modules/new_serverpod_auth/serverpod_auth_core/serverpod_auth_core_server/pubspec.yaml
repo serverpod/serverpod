@@ -3,11 +3,11 @@
 
 name: serverpod_auth_core_server
 description: Serverpod core authentication server module.
-version: 3.0.0-alpha.3
+version: 3.0.0-rc.2
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: '^3.8.0'
 
 dependencies:
   clock: ^1.1.1
@@ -17,13 +17,13 @@ dependencies:
   image: ^4.0.15
   meta: ^1.15.0
   pointycastle: '>=3.7.4 <5.0.0'
-  serverpod: 3.0.0-alpha.3
-  serverpod_shared: 3.0.0-alpha.3
+  serverpod: 3.0.0-rc.2
+  serverpod_shared: 3.0.0-rc.2
   uuid: ^4.1.0
 
 dev_dependencies:
-  serverpod_lints: 3.0.0-alpha.3
-  serverpod_test: 3.0.0-alpha.3
+  serverpod_lints: 3.0.0-rc.2
+  serverpod_test: 3.0.0-rc.2
   test: ^1.25.5
 
 dependency_overrides:

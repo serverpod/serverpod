@@ -26,7 +26,8 @@ abstract class PasskeyChallengeNotFoundException
       _PasskeyChallengeNotFoundExceptionImpl;
 
   factory PasskeyChallengeNotFoundException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return PasskeyChallengeNotFoundException();
   }
 
@@ -36,12 +37,16 @@ abstract class PasskeyChallengeNotFoundException
   PasskeyChallengeNotFoundException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_idp.PasskeyChallengeNotFoundException',
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_idp.PasskeyChallengeNotFoundException',
+    };
   }
 
   @override

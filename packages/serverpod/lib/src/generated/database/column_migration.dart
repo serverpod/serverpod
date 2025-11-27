@@ -63,6 +63,7 @@ abstract class ColumnMigration
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ColumnMigration',
       'columnName': columnName,
       'addNullable': addNullable,
       'removeNullable': removeNullable,
@@ -74,6 +75,7 @@ abstract class ColumnMigration
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.ColumnMigration',
       'columnName': columnName,
       'addNullable': addNullable,
       'removeNullable': removeNullable,
@@ -98,12 +100,12 @@ class _ColumnMigrationImpl extends ColumnMigration {
     required bool changeDefault,
     String? newDefault,
   }) : super._(
-          columnName: columnName,
-          addNullable: addNullable,
-          removeNullable: removeNullable,
-          changeDefault: changeDefault,
-          newDefault: newDefault,
-        );
+         columnName: columnName,
+         addNullable: addNullable,
+         removeNullable: removeNullable,
+         changeDefault: changeDefault,
+         newDefault: newDefault,
+       );
 
   /// Returns a shallow copy of this [ColumnMigration]
   /// with some or all fields replaced by the given arguments.

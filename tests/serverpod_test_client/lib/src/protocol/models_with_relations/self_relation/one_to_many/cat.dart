@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../../models_with_relations/self_relation/one_to_many/cat.dart'
     as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class Cat implements _i1.SerializableModel {
   Cat._({
@@ -38,11 +39,12 @@ abstract class Cat implements _i1.SerializableModel {
       motherId: jsonSerialization['motherId'] as int?,
       mother: jsonSerialization['mother'] == null
           ? null
-          : _i2.Cat.fromJson(
-              (jsonSerialization['mother'] as Map<String, dynamic>)),
-      kittens: (jsonSerialization['kittens'] as List?)
-          ?.map((e) => _i2.Cat.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+          : _i3.Protocol().deserialize<_i2.Cat>(jsonSerialization['mother']),
+      kittens: jsonSerialization['kittens'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.Cat>>(
+              jsonSerialization['kittens'],
+            ),
     );
   }
 
@@ -72,6 +74,7 @@ abstract class Cat implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Cat',
       if (id != null) 'id': id,
       'name': name,
       if (motherId != null) 'motherId': motherId,
@@ -97,12 +100,12 @@ class _CatImpl extends Cat {
     _i2.Cat? mother,
     List<_i2.Cat>? kittens,
   }) : super._(
-          id: id,
-          name: name,
-          motherId: motherId,
-          mother: mother,
-          kittens: kittens,
-        );
+         id: id,
+         name: name,
+         motherId: motherId,
+         mother: mother,
+         kittens: kittens,
+       );
 
   /// Returns a shallow copy of this [Cat]
   /// with some or all fields replaced by the given arguments.

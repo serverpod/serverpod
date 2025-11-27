@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class Town implements _i1.SerializableModel {
   Town._({
@@ -35,8 +36,7 @@ abstract class Town implements _i1.SerializableModel {
       mayorId: jsonSerialization['mayorId'] as int?,
       mayor: jsonSerialization['mayor'] == null
           ? null
-          : _i2.Citizen.fromJson(
-              (jsonSerialization['mayor'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.Citizen>(jsonSerialization['mayor']),
     );
   }
 
@@ -63,6 +63,7 @@ abstract class Town implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Town',
       if (id != null) 'id': id,
       'name': name,
       if (mayorId != null) 'mayorId': mayorId,
@@ -85,11 +86,11 @@ class _TownImpl extends Town {
     int? mayorId,
     _i2.Citizen? mayor,
   }) : super._(
-          id: id,
-          name: name,
-          mayorId: mayorId,
-          mayor: mayor,
-        );
+         id: id,
+         name: name,
+         mayorId: mayorId,
+         mayor: mayor,
+       );
 
   /// Returns a shallow copy of this [Town]
   /// with some or all fields replaced by the given arguments.

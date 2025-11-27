@@ -14,7 +14,7 @@ void main() {
       ModelClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -40,7 +40,7 @@ void main() {
       ModelClassDefinitionBuilder()
           .withClassName('User')
           .withFileName('user')
-          .build()
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableModelsCode(
@@ -66,25 +66,26 @@ void main() {
   });
 
   test(
-      'Given a server-side only class when generating the code then the protocol exports the class',
-      () {
-    var models = [
-      ModelClassDefinitionBuilder()
-          .withClassName('Example')
-          .withFileName('example')
-          .withServerOnly(true)
-          .build()
-    ];
+    'Given a server-side only class when generating the code then the protocol exports the class',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName('Example')
+            .withFileName('example')
+            .withServerOnly(true)
+            .build(),
+      ];
 
-    var codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
 
-    expect(
-      codeMap.values.first,
-      contains("export 'example.dart';"),
-      reason: 'Expected example class to be exported',
-    );
-  });
+      expect(
+        codeMap.values.first,
+        contains("export 'example.dart';"),
+        reason: 'Expected example class to be exported',
+      );
+    },
+  );
 }

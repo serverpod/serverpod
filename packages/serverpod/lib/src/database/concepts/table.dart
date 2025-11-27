@@ -51,17 +51,21 @@ class Table<T_ID> {
       );
     }
     if (equalsType<T_ID, int>()) {
-      id = ColumnInt(
-        'id',
-        this,
-        hasDefault: true,
-      ) as ColumnComparable<T_ID>;
+      id =
+          ColumnInt(
+                'id',
+                this,
+                hasDefault: true,
+              )
+              as ColumnComparable<T_ID>;
     } else if (equalsType<T_ID, UuidValue>()) {
-      id = ColumnUuid(
-        'id',
-        this,
-        hasDefault: true,
-      ) as ColumnComparable<T_ID>;
+      id =
+          ColumnUuid(
+                'id',
+                this,
+                hasDefault: true,
+              )
+              as ColumnComparable<T_ID>;
     } else {
       throw Exception('Unsupported id type: $T_ID');
     }
@@ -100,7 +104,8 @@ T createRelationTable<T>({
   TableRelation? tableRelation,
   required T Function(
     TableRelation foreignTableRelation,
-  ) createTable,
+  )
+  createTable,
 }) {
   var relationDefinition = TableRelationEntry(
     relationAlias: relationFieldName,

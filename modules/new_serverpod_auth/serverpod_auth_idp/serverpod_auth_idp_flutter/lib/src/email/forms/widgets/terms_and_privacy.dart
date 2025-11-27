@@ -39,10 +39,10 @@ class TermsAndPrivacyText extends StatelessWidget {
           child: Theme(
             data: Theme.of(context).copyWith(
               textTheme: Theme.of(context).textTheme.copyWith(
-                    bodyMedium: const TextStyle(
-                      fontSize: 12,
-                    ),
-                  ),
+                bodyMedium: const TextStyle(
+                  fontSize: 12,
+                ),
+              ),
             ),
             child: DefaultTextStyle(
               style: const TextStyle(

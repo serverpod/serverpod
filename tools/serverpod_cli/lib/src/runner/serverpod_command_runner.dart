@@ -16,12 +16,14 @@ Future<void> _preCommandEnvironmentChecks() async {
   // Check that required tools are installed
   if (!await CommandLineTools.existsCommand('dart', ['--version'])) {
     log.error(
-        'Failed to run serverpod. You need to have dart installed and in your \$PATH');
+      'Failed to run serverpod. You need to have dart installed and in your \$PATH',
+    );
     throw ExitException.error();
   }
   if (!await CommandLineTools.existsCommand('flutter', ['--version'])) {
     log.error(
-        'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
+      'Failed to run serverpod. You need to have flutter installed and in your \$PATH',
+    );
     throw ExitException.error();
   }
 
@@ -59,9 +61,9 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
     super.onBeforeRunCommand,
     super.setLogLevel,
     super.onAnalyticsEvent,
-  })  : _productionMode = productionMode,
-        _cliVersion = cliVersion,
-        super(globalOptions: GlobalOption.values);
+  }) : _productionMode = productionMode,
+       _cliVersion = cliVersion,
+       super(globalOptions: GlobalOption.values);
 
   @override
   Future<void> runCommand(ArgResults topLevelResults) async {
@@ -125,6 +127,14 @@ enum GlobalOption<V> implements OptionDefinition<V> {
   quiet(BetterCommandRunnerFlags.quietOption),
   verbose(BetterCommandRunnerFlags.verboseOption),
   analytics(BetterCommandRunnerFlags.analyticsOption),
+  interactive(
+    FlagOption(
+      argName: 'interactive',
+      negatable: true,
+      helpText:
+          'Enable interactive prompts. Automatically disabled in CI environments.',
+    ),
+  ),
   version(
     FlagOption(
       argName: 'version',

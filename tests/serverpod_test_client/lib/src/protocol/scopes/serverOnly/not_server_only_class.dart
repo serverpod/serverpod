@@ -29,7 +29,10 @@ abstract class NotServerOnlyClass implements _i1.SerializableModel {
   NotServerOnlyClass copyWith({String? foo});
   @override
   Map<String, dynamic> toJson() {
-    return {'foo': foo};
+    return {
+      '__className__': 'NotServerOnlyClass',
+      'foo': foo,
+    };
   }
 
   @override

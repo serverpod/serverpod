@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/one_to_one/citizen.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class TownInt
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -38,8 +39,9 @@ abstract class TownInt
       mayorId: jsonSerialization['mayorId'] as int?,
       mayor: jsonSerialization['mayor'] == null
           ? null
-          : _i2.CitizenInt.fromJson(
-              (jsonSerialization['mayor'] as Map<String, dynamic>)),
+          : _i3.Protocol().deserialize<_i2.CitizenInt>(
+              jsonSerialization['mayor'],
+            ),
     );
   }
 
@@ -71,6 +73,7 @@ abstract class TownInt
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'TownInt',
       if (id != null) 'id': id,
       'name': name,
       if (mayorId != null) 'mayorId': mayorId,
@@ -81,6 +84,7 @@ abstract class TownInt
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'TownInt',
       if (id != null) 'id': id,
       'name': name,
       if (mayorId != null) 'mayorId': mayorId,
@@ -127,11 +131,11 @@ class _TownIntImpl extends TownInt {
     int? mayorId,
     _i2.CitizenInt? mayor,
   }) : super._(
-          id: id,
-          name: name,
-          mayorId: mayorId,
-          mayor: mayor,
-        );
+         id: id,
+         name: name,
+         mayorId: mayorId,
+         mayor: mayor,
+       );
 
   /// Returns a shallow copy of this [TownInt]
   /// with some or all fields replaced by the given arguments.
@@ -156,14 +160,14 @@ class TownIntUpdateTable extends _i1.UpdateTable<TownIntTable> {
   TownIntUpdateTable(super.table);
 
   _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
-        table.name,
-        value,
-      );
+    table.name,
+    value,
+  );
 
   _i1.ColumnValue<int, int> mayorId(int? value) => _i1.ColumnValue(
-        table.mayorId,
-        value,
-      );
+    table.mayorId,
+    value,
+  );
 }
 
 class TownIntTable extends _i1.Table<int?> {
@@ -202,10 +206,10 @@ class TownIntTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        name,
-        mayorId,
-      ];
+    id,
+    name,
+    mayorId,
+  ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {

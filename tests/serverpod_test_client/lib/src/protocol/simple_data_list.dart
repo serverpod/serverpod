@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'simple_data.dart' as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class SimpleDataList implements _i1.SerializableModel {
   SimpleDataList._({required this.rows});
@@ -21,9 +22,10 @@ abstract class SimpleDataList implements _i1.SerializableModel {
 
   factory SimpleDataList.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDataList(
-        rows: (jsonSerialization['rows'] as List)
-            .map((e) => _i2.SimpleData.fromJson((e as Map<String, dynamic>)))
-            .toList());
+      rows: _i3.Protocol().deserialize<List<_i2.SimpleData>>(
+        jsonSerialization['rows'],
+      ),
+    );
   }
 
   List<_i2.SimpleData> rows;
@@ -34,7 +36,10 @@ abstract class SimpleDataList implements _i1.SerializableModel {
   SimpleDataList copyWith({List<_i2.SimpleData>? rows});
   @override
   Map<String, dynamic> toJson() {
-    return {'rows': rows.toJson(valueToJson: (v) => v.toJson())};
+    return {
+      '__className__': 'SimpleDataList',
+      'rows': rows.toJson(valueToJson: (v) => v.toJson()),
+    };
   }
 
   @override
@@ -45,7 +50,7 @@ abstract class SimpleDataList implements _i1.SerializableModel {
 
 class _SimpleDataListImpl extends SimpleDataList {
   _SimpleDataListImpl({required List<_i2.SimpleData> rows})
-      : super._(rows: rows);
+    : super._(rows: rows);
 
   /// Returns a shallow copy of this [SimpleDataList]
   /// with some or all fields replaced by the given arguments.
@@ -53,6 +58,7 @@ class _SimpleDataListImpl extends SimpleDataList {
   @override
   SimpleDataList copyWith({List<_i2.SimpleData>? rows}) {
     return SimpleDataList(
-        rows: rows ?? this.rows.map((e0) => e0.copyWith()).toList());
+      rows: rows ?? this.rows.map((e0) => e0.copyWith()).toList(),
+    );
   }
 }

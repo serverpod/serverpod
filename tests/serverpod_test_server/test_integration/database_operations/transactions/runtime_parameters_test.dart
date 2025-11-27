@@ -5,19 +5,20 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  test(
-      'Given a transaction with HnswIndexQueryOptions parameters '
+  test('Given a transaction with HnswIndexQueryOptions parameters '
       'when setting parameters using transaction.setRuntimeParameters '
       'then options are applied locally to the transaction', () async {
     await session.db.transaction((transaction) async {
-      await transaction.setRuntimeParameters((params) => [
-            params.hnswIndexQuery(
-              efSearch: 75,
-              iterativeScan: IterativeScan.strict,
-              maxScanTuples: 750,
-              scanMemMultiplier: 3,
-            ),
-          ]);
+      await transaction.setRuntimeParameters(
+        (params) => [
+          params.hnswIndexQuery(
+            efSearch: 75,
+            iterativeScan: IterativeScan.strict,
+            maxScanTuples: 750,
+            scanMemMultiplier: 3,
+          ),
+        ],
+      );
 
       var checkQuery = HnswIndexQueryOptions().buildCheckValues();
       var result = await session.db.unsafeQuery(
@@ -34,18 +35,19 @@ void main() async {
     });
   });
 
-  test(
-      'Given a transaction with IvfflatIndexQueryOptions parameters '
+  test('Given a transaction with IvfflatIndexQueryOptions parameters '
       'when setting parameters using transaction.setRuntimeParameters '
       'then options are applied locally to the transaction', () async {
     await session.db.transaction((transaction) async {
-      await transaction.setRuntimeParameters((params) => [
-            params.ivfflatIndexQuery(
-              probes: 8,
-              iterativeScan: IterativeScan.relaxed,
-              maxProbes: 20,
-            ),
-          ]);
+      await transaction.setRuntimeParameters(
+        (params) => [
+          params.ivfflatIndexQuery(
+            probes: 8,
+            iterativeScan: IterativeScan.relaxed,
+            maxProbes: 20,
+          ),
+        ],
+      );
 
       var checkQuery = IvfflatIndexQueryOptions().buildCheckValues();
       var result = await session.db.unsafeQuery(
@@ -61,22 +63,23 @@ void main() async {
     });
   });
 
-  test(
-      'Given a transaction with VectorIndexQueryOptions parameters '
+  test('Given a transaction with VectorIndexQueryOptions parameters '
       'when setting parameters using transaction.setRuntimeParameters '
       'then options are applied locally to the transaction', () async {
     await session.db.transaction((transaction) async {
-      await transaction.setRuntimeParameters((params) => [
-            params.vectorIndexQuery(
-              enableIndexScan: true,
-              enableSeqScan: false,
-              minParallelTableScanSize: 2048,
-              parallelSetupCost: 3,
-              maintenanceWorkMem: 65536 * 4,
-              maxParallelMaintenanceWorkers: 8,
-              maxParallelWorkersPerGather: 4,
-            ),
-          ]);
+      await transaction.setRuntimeParameters(
+        (params) => [
+          params.vectorIndexQuery(
+            enableIndexScan: true,
+            enableSeqScan: false,
+            minParallelTableScanSize: 2048,
+            parallelSetupCost: 3,
+            maintenanceWorkMem: 65536 * 4,
+            maxParallelMaintenanceWorkers: 8,
+            maxParallelWorkersPerGather: 4,
+          ),
+        ],
+      );
 
       var checkQuery = VectorIndexQueryOptions().buildCheckValues();
       var result = await session.db.unsafeQuery(
@@ -96,33 +99,34 @@ void main() async {
     });
   });
 
-  test(
-      'Given a transaction with mixed runtime parameters '
+  test('Given a transaction with mixed runtime parameters '
       'when setting multiple different parameter types using transaction.setRuntimeParameters '
       'then all options are applied locally to the transaction', () async {
     await session.db.transaction((transaction) async {
-      await transaction.setRuntimeParameters((params) => [
-            params.hnswIndexQuery(
-              efSearch: 50,
-              iterativeScan: IterativeScan.relaxed,
-              maxScanTuples: 500,
-              scanMemMultiplier: 2,
-            ),
-            params.ivfflatIndexQuery(
-              probes: 6,
-              iterativeScan: IterativeScan.relaxed,
-              maxProbes: 12,
-            ),
-            params.vectorIndexQuery(
-              enableIndexScan: false,
-              enableSeqScan: true,
-              minParallelTableScanSize: 1024,
-              parallelSetupCost: 2,
-              maintenanceWorkMem: 65536 * 3,
-              maxParallelMaintenanceWorkers: 6,
-              maxParallelWorkersPerGather: 3,
-            ),
-          ]);
+      await transaction.setRuntimeParameters(
+        (params) => [
+          params.hnswIndexQuery(
+            efSearch: 50,
+            iterativeScan: IterativeScan.relaxed,
+            maxScanTuples: 500,
+            scanMemMultiplier: 2,
+          ),
+          params.ivfflatIndexQuery(
+            probes: 6,
+            iterativeScan: IterativeScan.relaxed,
+            maxProbes: 12,
+          ),
+          params.vectorIndexQuery(
+            enableIndexScan: false,
+            enableSeqScan: true,
+            minParallelTableScanSize: 1024,
+            parallelSetupCost: 2,
+            maintenanceWorkMem: 65536 * 3,
+            maxParallelMaintenanceWorkers: 6,
+            maxParallelWorkersPerGather: 3,
+          ),
+        ],
+      );
 
       var hnswCheckQuery = HnswIndexQueryOptions().buildCheckValues();
       var hnswResult = await session.db.unsafeQuery(
@@ -161,18 +165,19 @@ void main() async {
     });
   });
 
-  test(
-      'Given a transaction with runtime parameters containing null values '
+  test('Given a transaction with runtime parameters containing null values '
       'when setting parameters using transaction.setRuntimeParameters '
       'then only non-null values are applied to the transaction', () async {
     await session.db.transaction((transaction) async {
-      await transaction.setRuntimeParameters((params) => [
-            MapRuntimeParameters({
-              'hnsw.ef_search': 80,
-              'hnsw.iterative_scan': null,
-              'hnsw.scan_mem_multiplier': 4,
-            }),
-          ]);
+      await transaction.setRuntimeParameters(
+        (params) => [
+          MapRuntimeParameters({
+            'hnsw.ef_search': 80,
+            'hnsw.iterative_scan': null,
+            'hnsw.scan_mem_multiplier': 4,
+          }),
+        ],
+      );
 
       var checkQuery = HnswIndexQueryOptions().buildCheckValues();
       var result = await session.db.unsafeQuery(
@@ -190,48 +195,53 @@ void main() async {
   });
 
   test(
-      'Given a transaction with custom runtime parameters supplied to the Serverpod instance '
-      'when setting parameters using transaction.setRuntimeParameters '
-      'then parameters set to null are cleared', () async {
-    var customSession = await IntegrationTestServer(
+    'Given a transaction with custom runtime parameters supplied to the Serverpod instance '
+    'when setting parameters using transaction.setRuntimeParameters '
+    'then parameters set to null are cleared',
+    () async {
+      var customSession = await IntegrationTestServer(
         runtimeParametersBuilder: (params) => [
-              params.hnswIndexQuery(
-                iterativeScan: IterativeScan.strict,
-              ),
-            ]).session();
+          params.hnswIndexQuery(
+            iterativeScan: IterativeScan.strict,
+          ),
+        ],
+      ).session();
 
-    var checkQuery = HnswIndexQueryOptions().buildCheckValues();
+      var checkQuery = HnswIndexQueryOptions().buildCheckValues();
 
-    await customSession.db.transaction((transaction) async {
-      var resultBefore = await customSession.db.unsafeQuery(
-        checkQuery,
-        transaction: transaction,
-      );
+      await customSession.db.transaction((transaction) async {
+        var resultBefore = await customSession.db.unsafeQuery(
+          checkQuery,
+          transaction: transaction,
+        );
 
-      expect(resultBefore.length, 1);
-      var rowBefore = resultBefore.first.toColumnMap();
-      expect(rowBefore['hnsw_iterative_scan'], 'strict_order');
+        expect(resultBefore.length, 1);
+        var rowBefore = resultBefore.first.toColumnMap();
+        expect(rowBefore['hnsw_iterative_scan'], 'strict_order');
 
-      await transaction.setRuntimeParameters((params) => [
+        await transaction.setRuntimeParameters(
+          (params) => [
             MapRuntimeParameters({
               'hnsw.iterative_scan': null,
             }),
-          ]);
+          ],
+        );
 
-      var resultInside = await customSession.db.unsafeQuery(
-        checkQuery,
-        transaction: transaction,
-      );
+        var resultInside = await customSession.db.unsafeQuery(
+          checkQuery,
+          transaction: transaction,
+        );
 
-      expect(resultInside.length, 1);
-      var rowInside = resultInside.first.toColumnMap();
-      expect(rowInside['hnsw_iterative_scan'], isEmpty);
-    });
+        expect(resultInside.length, 1);
+        var rowInside = resultInside.first.toColumnMap();
+        expect(rowInside['hnsw_iterative_scan'], isEmpty);
+      });
 
-    var resultAfter = await customSession.db.unsafeQuery(checkQuery);
+      var resultAfter = await customSession.db.unsafeQuery(checkQuery);
 
-    expect(resultAfter.length, 1);
-    var rowAfter = resultAfter.first.toColumnMap();
-    expect(rowAfter['hnsw_iterative_scan'], 'strict_order');
-  });
+      expect(resultAfter.length, 1);
+      var rowAfter = resultAfter.first.toColumnMap();
+      expect(rowAfter['hnsw_iterative_scan'], 'strict_order');
+    },
+  );
 }

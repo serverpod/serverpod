@@ -53,6 +53,7 @@ abstract class ParentUser implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ParentUser',
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (userInfoId != null) 'userInfoId': userInfoId,
@@ -73,10 +74,10 @@ class _ParentUserImpl extends ParentUser {
     String? name,
     int? userInfoId,
   }) : super._(
-          id: id,
-          name: name,
-          userInfoId: userInfoId,
-        );
+         id: id,
+         name: name,
+         userInfoId: userInfoId,
+       );
 
   /// Returns a shallow copy of this [ParentUser]
   /// with some or all fields replaced by the given arguments.

@@ -21,19 +21,21 @@ class ServerpodPackagesVersionCheckWarnings {
 }
 
 extension on PubspecPlus {
-  Iterable<HostedDep> get serverpodDeps =>
-      deps.whereType<HostedDep>().where((d) => const [
-            'serverpod',
-            'serverpod_client',
-          ].contains(d.name));
+  Iterable<HostedDep> get serverpodDeps => deps.whereType<HostedDep>().where(
+    (d) => const [
+      'serverpod',
+      'serverpod_client',
+    ].contains(d.name),
+  );
 }
 
 extension on PubspecLockParser {
-  Iterable<LockedPackage> get serverpodPackages =>
-      allPackages.where((p) => const [
-            'serverpod',
-            'serverpod_client',
-          ].contains(p.name));
+  Iterable<LockedPackage> get serverpodPackages => allPackages.where(
+    (p) => const [
+      'serverpod',
+      'serverpod_client',
+    ].contains(p.name),
+  );
 }
 
 List<SourceSpanSeverityException> validateServerpodPackagesVersion(
@@ -42,7 +44,7 @@ List<SourceSpanSeverityException> validateServerpodPackagesVersion(
 ) {
   return [
     for (var dep in pubspecPlus.serverpodDeps)
-      ..._validatePackageCompatibilities(dep, version)
+      ..._validatePackageCompatibilities(dep, version),
   ];
 }
 
@@ -72,16 +74,23 @@ List<SourceSpanSeverityException> _validatePackageCompatibilities(
   var span = serverpodDep.span;
   var version = serverpodDep.dependency.version;
   if (!version.allowsAny(cliVersion)) {
-    packageWarnings.add(SourceSpanSeverityException(
-        ServerpodPackagesVersionCheckWarnings.incompatibleVersion, span,
-        severity: SourceSpanSeverity.warning));
+    packageWarnings.add(
+      SourceSpanSeverityException(
+        ServerpodPackagesVersionCheckWarnings.incompatibleVersion,
+        span,
+        severity: SourceSpanSeverity.warning,
+      ),
+    );
   }
 
   if (version is! Version) {
-    packageWarnings.add(SourceSpanSeverityException(
+    packageWarnings.add(
+      SourceSpanSeverityException(
         ServerpodPackagesVersionCheckWarnings.approximateVersion(cliVersion),
         span,
-        severity: SourceSpanSeverity.warning));
+        severity: SourceSpanSeverity.warning,
+      ),
+    );
   }
 
   return packageWarnings;

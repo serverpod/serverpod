@@ -6,7 +6,7 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     hide Caller, Protocol;
 
-class EndpointAuthEmail extends EndpointEmailIDPBase {
+class EndpointAuthEmail extends EndpointEmailIdpBase {
   EndpointAuthEmail(super.caller);
 
   final _mockData = MockAuthData();
@@ -115,20 +115,37 @@ class EndpointAuthEmail extends EndpointEmailIDPBase {
   }
 }
 
-class GoogleIDPEndpoint extends EndpointGoogleIDPBase {
-  GoogleIDPEndpoint(super.caller);
+class GoogleIdpEndpoint extends EndpointGoogleIdpBase {
+  GoogleIdpEndpoint(super.caller);
 
   final _mockData = MockAuthData();
 
   @override
-  String get name => 'googleIDP';
+  String get name => 'googleIdp';
 
   @override
   Future<AuthSuccess> login({
     required String idToken,
     required String? accessToken,
-  }) =>
-      Future.value(_mockData.authSuccess);
+  }) => Future.value(_mockData.authSuccess);
+}
+
+class AppleIdpEndpoint extends EndpointAppleIdpBase {
+  AppleIdpEndpoint(super.caller);
+
+  final _mockData = MockAuthData();
+
+  @override
+  String get name => 'appleIdp';
+
+  @override
+  Future<AuthSuccess> login({
+    required String identityToken,
+    required String authorizationCode,
+    required bool isNativeApplePlatformSignIn,
+    String? firstName,
+    String? lastName,
+  }) => Future.value(_mockData.authSuccess);
 }
 
 class Modules {
@@ -141,33 +158,37 @@ class Modules {
 
 class Client extends ServerpodClientShared {
   Client(String host)
-      : super(
-          host,
-          Protocol(),
-          connectionTimeout: const Duration(seconds: 1),
-          streamingConnectionTimeout: const Duration(seconds: 1),
-        ) {
+    : super(
+        host,
+        Protocol(),
+        connectionTimeout: const Duration(seconds: 1),
+        streamingConnectionTimeout: const Duration(seconds: 1),
+      ) {
     authEmail = EndpointAuthEmail(this);
-    googleIDP = GoogleIDPEndpoint(this);
+    googleIdp = GoogleIdpEndpoint(this);
+    appleIdp = AppleIdpEndpoint(this);
     modules = Modules(this);
   }
 
   late final EndpointAuthEmail authEmail;
 
-  late final GoogleIDPEndpoint googleIDP;
+  late final GoogleIdpEndpoint googleIdp;
+
+  late final AppleIdpEndpoint appleIdp;
 
   late final Modules modules;
 
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
-        'emailAuth': authEmail,
-        'googleIDP': googleIDP,
-      };
+    'emailAuth': authEmail,
+    'googleIdp': googleIdp,
+    'appleIdp': appleIdp,
+  };
 
   @override
   Map<String, ModuleEndpointCaller> get moduleLookup => {
-        'serverpod_auth_core': modules.auth,
-      };
+    'serverpod_auth_core': modules.auth,
+  };
 
   @override
   Future<T> callServerEndpoint<T>(
@@ -196,9 +217,9 @@ class MockAuthData {
   UuidValue? passwordResetRequestId;
 
   AuthSuccess get authSuccess => AuthSuccess(
-        authStrategy: AuthStrategy.session.name,
-        token: 'session-key',
-        authUserId: authUserId,
-        scopeNames: {},
-      );
+    authStrategy: AuthStrategy.session.name,
+    token: 'session-key',
+    authUserId: authUserId,
+    scopeNames: {},
+  );
 }

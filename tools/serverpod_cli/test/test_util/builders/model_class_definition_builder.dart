@@ -28,19 +28,19 @@ class ModelClassDefinitionBuilder {
   InheritanceDefinition? _extendsClass;
 
   ModelClassDefinitionBuilder()
-      : _fileName = 'example',
-        _sourceFileName = 'example.yaml',
-        _className = 'Example',
-        _idType = SupportedIdType.int,
-        _idTypeNullable = true,
-        _fields = [],
-        _subDirParts = [],
-        _managedMigration = true,
-        _serverOnly = false,
-        _indexes = [],
-        _childClasses = [],
-        _isSealed = false,
-        _isImmutable = false;
+    : _fileName = 'example',
+      _sourceFileName = 'example.yaml',
+      _className = 'Example',
+      _idType = SupportedIdType.int,
+      _idTypeNullable = true,
+      _fields = [],
+      _subDirParts = [],
+      _managedMigration = true,
+      _serverOnly = false,
+      _indexes = [],
+      _childClasses = [],
+      _isSealed = false,
+      _isImmutable = false;
 
   ModelClassDefinition build() {
     if (_tableName != null) {
@@ -48,9 +48,11 @@ class ModelClassDefinitionBuilder {
         0,
         () => FieldDefinitionBuilder()
             .withPrimaryKey(type: _idType, isNullable: _idTypeNullable)
-            .withScope(_serverOnly
-                ? ModelFieldScopeDefinition.serverOnly
-                : ModelFieldScopeDefinition.all)
+            .withScope(
+              _serverOnly
+                  ? ModelFieldScopeDefinition.serverOnly
+                  : ModelFieldScopeDefinition.all,
+            )
             .withShouldPersist(true)
             .build(),
       );
@@ -167,8 +169,9 @@ class ModelClassDefinitionBuilder {
                 .withNullable(nullable)
                 .withClassName('List')
                 .withGenerics([
-              TypeDefinitionBuilder().withClassName(className).build()
-            ]).build(),
+                  TypeDefinitionBuilder().withClassName(className).build(),
+                ])
+                .build(),
           )
           .build(),
     );
@@ -192,9 +195,10 @@ class ModelClassDefinitionBuilder {
                 .withNullable(nullable)
                 .withClassName('Map')
                 .withGenerics([
-              TypeDefinitionBuilder().withClassName(keyType).build(),
-              TypeDefinitionBuilder().withClassName(valueType).build(),
-            ]).build(),
+                  TypeDefinitionBuilder().withClassName(keyType).build(),
+                  TypeDefinitionBuilder().withClassName(valueType).build(),
+                ])
+                .build(),
           )
           .build(),
     );
@@ -202,7 +206,8 @@ class ModelClassDefinitionBuilder {
   }
 
   ModelClassDefinitionBuilder withField(
-      SerializableModelFieldDefinition field) {
+    SerializableModelFieldDefinition field,
+  ) {
     _fields.add(() => field);
     return this;
   }
@@ -227,16 +232,18 @@ class ModelClassDefinitionBuilder {
             .withName(fieldName)
             .withTypeDefinition(className, true)
             .withShouldPersist(false)
-            .withRelation(ObjectRelationDefinition(
-              parentTable: parentTable,
-              parentTableIdType: foreignIdType ?? TypeDefinition.int,
-              fieldName: foreignFieldName,
-              foreignFieldName: 'id',
-              isForeignKeyOrigin: false,
-              nullableRelation: nullableRelation,
-            ))
+            .withRelation(
+              ObjectRelationDefinition(
+                parentTable: parentTable,
+                parentTableIdType: foreignIdType ?? TypeDefinition.int,
+                fieldName: foreignFieldName,
+                foreignFieldName: 'id',
+                isForeignKeyOrigin: false,
+                nullableRelation: nullableRelation,
+              ),
+            )
             .build();
-      }
+      },
     ]);
     return this;
   }
@@ -256,23 +263,27 @@ class ModelClassDefinitionBuilder {
           .withName(fieldName)
           .withTypeDefinition(className, true)
           .withShouldPersist(false)
-          .withRelation(ObjectRelationDefinition(
-            parentTable: parentTable,
-            parentTableIdType: foreignTableIdType,
-            fieldName: foreignFieldName,
-            foreignFieldName: 'id',
-            nullableRelation: nullableRelation,
-            isForeignKeyOrigin: true,
-          ))
+          .withRelation(
+            ObjectRelationDefinition(
+              parentTable: parentTable,
+              parentTableIdType: foreignTableIdType,
+              fieldName: foreignFieldName,
+              foreignFieldName: 'id',
+              nullableRelation: nullableRelation,
+              isForeignKeyOrigin: true,
+            ),
+          )
           .build(),
       () => FieldDefinitionBuilder()
           .withName(foreignFieldName)
           .withIdType(type: foreignTableIdType, isNullable: nullableRelation)
           .withShouldPersist(true)
-          .withRelation(ForeignRelationDefinitionBuilder()
-              .withParentTable(parentTable)
-              .withReferenceFieldName('id')
-              .build())
+          .withRelation(
+            ForeignRelationDefinitionBuilder()
+                .withParentTable(parentTable)
+                .withReferenceFieldName('id')
+                .build(),
+          )
           .build(),
     ]);
     return this;
@@ -292,17 +303,21 @@ class ModelClassDefinitionBuilder {
                 .withNullable(true)
                 .withClassName('List')
                 .withGenerics([
-              TypeDefinitionBuilder().withClassName(className).build()
-            ]).build(),
+                  TypeDefinitionBuilder().withClassName(className).build(),
+                ])
+                .build(),
           )
-          .withRelation(ListRelationDefinition(
-            fieldName: 'id',
-            foreignKeyOwnerIdType: foreignKeyOwnerIdType ?? TypeDefinition.int,
-            foreignFieldName:
-                '\$_${_className.camelCase}${fieldName.pascalCase}${_className.pascalCase}Id',
-            nullableRelation: true,
-            implicitForeignField: true,
-          ))
+          .withRelation(
+            ListRelationDefinition(
+              fieldName: 'id',
+              foreignKeyOwnerIdType:
+                  foreignKeyOwnerIdType ?? TypeDefinition.int,
+              foreignFieldName:
+                  '\$_${_className.camelCase}${fieldName.pascalCase}${_className.pascalCase}Id',
+              nullableRelation: true,
+              implicitForeignField: true,
+            ),
+          )
           .build();
     });
     return this;
@@ -324,16 +339,20 @@ class ModelClassDefinitionBuilder {
                 .withNullable(true)
                 .withClassName('List')
                 .withGenerics([
-              TypeDefinitionBuilder().withClassName(className).build()
-            ]).build(),
+                  TypeDefinitionBuilder().withClassName(className).build(),
+                ])
+                .build(),
           )
-          .withRelation(ListRelationDefinition(
-            fieldName: 'id',
-            foreignKeyOwnerIdType: foreignKeyOwnerIdType ?? TypeDefinition.int,
-            foreignFieldName: foreignKeyFieldName,
-            nullableRelation: nullableRelation,
-            implicitForeignField: false,
-          ))
+          .withRelation(
+            ListRelationDefinition(
+              fieldName: 'id',
+              foreignKeyOwnerIdType:
+                  foreignKeyOwnerIdType ?? TypeDefinition.int,
+              foreignFieldName: foreignKeyFieldName,
+              nullableRelation: nullableRelation,
+              implicitForeignField: false,
+            ),
+          )
           .build();
     });
 
@@ -352,7 +371,12 @@ class ModelClassDefinitionBuilder {
   ModelClassDefinitionBuilder withFields(
     List<SerializableModelFieldDefinition> fields,
   ) {
-    _fields = fields.map((f) => () => f).toList();
+    _fields = fields
+        .map(
+          (f) =>
+              () => f,
+        )
+        .toList();
     return this;
   }
 
@@ -366,16 +390,20 @@ class ModelClassDefinitionBuilder {
   ModelClassDefinitionBuilder withIndexesFromDefinitions(
     List<IndexDefinition> indexes,
   ) {
-    return withIndexes(indexes
-        .map((index) => SerializableModelIndexDefinition(
+    return withIndexes(
+      indexes
+          .map(
+            (index) => SerializableModelIndexDefinition(
               name: index.indexName,
               type: index.type,
               unique: index.isUnique,
               fields: index.elements.map((e) => e.definition).toList(),
               vectorDistanceFunction: index.vectorDistanceFunction,
               parameters: index.parameters,
-            ))
-        .toList());
+            ),
+          )
+          .toList(),
+    );
   }
 
   ModelClassDefinitionBuilder withDocumentation(List<String>? documentation) {
@@ -393,7 +421,8 @@ class ModelClassDefinitionBuilder {
   }
 
   ModelClassDefinitionBuilder withExtendsClass(
-      ModelClassDefinition parentClass) {
+    ModelClassDefinition parentClass,
+  ) {
     _extendsClass = ResolvedInheritanceDefinition(parentClass);
     return this;
   }

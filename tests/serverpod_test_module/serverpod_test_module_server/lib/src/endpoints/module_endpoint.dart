@@ -7,7 +7,9 @@ class ModuleEndpoint extends Endpoint {
   }
 
   Future<ModuleClass> modifyModuleObject(
-      Session session, ModuleClass object) async {
+    Session session,
+    ModuleClass object,
+  ) async {
     object.data = 42;
     return object;
   }

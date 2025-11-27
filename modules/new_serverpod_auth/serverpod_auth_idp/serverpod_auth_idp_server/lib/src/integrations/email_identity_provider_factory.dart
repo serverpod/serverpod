@@ -1,12 +1,11 @@
-import 'package:serverpod_auth_core_server/profile.dart';
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 
 import '../../providers/email.dart';
 
-/// AuthServices factory for creating [EmailIDP] instances.
-class EmailIdentityProviderFactory extends IdentityProviderFactory<EmailIDP> {
-  /// The configuration that will be used to create the [EmailIDP].
-  final EmailIDPConfig config;
+/// AuthServices factory for creating [EmailIdp] instances.
+class EmailIdentityProviderFactory extends IdentityProviderFactory<EmailIdp> {
+  /// The configuration that will be used to create the [EmailIdp].
+  final EmailIdpConfig config;
 
   /// Creates a new [EmailIdentityProviderFactory].
   EmailIdentityProviderFactory(
@@ -14,12 +13,12 @@ class EmailIdentityProviderFactory extends IdentityProviderFactory<EmailIDP> {
   );
 
   @override
-  EmailIDP construct({
+  EmailIdp construct({
     required final TokenManager tokenManager,
     required final AuthUsers authUsers,
     required final UserProfiles userProfiles,
   }) {
-    return EmailIDP(
+    return EmailIdp(
       config,
       tokenManager: tokenManager,
       authUsers: authUsers,
@@ -28,8 +27,8 @@ class EmailIdentityProviderFactory extends IdentityProviderFactory<EmailIDP> {
   }
 }
 
-/// Extension to get the EmailIDP instance from the AuthServices.
-extension EmailIDPGetter on AuthServices {
-  /// Returns the EmailIDP instance from the AuthServices.
-  EmailIDP get emailIDP => AuthServices.getIdentityProvider<EmailIDP>();
+/// Extension to get the EmailIdp instance from the AuthServices.
+extension EmailIdpGetter on AuthServices {
+  /// Returns the EmailIdp instance from the AuthServices.
+  EmailIdp get emailIdp => AuthServices.getIdentityProvider<EmailIdp>();
 }

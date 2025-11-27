@@ -110,8 +110,9 @@ extension MapJsonExtension<K, V> on Map<K, V> {
     if (_keyType != String) {
       return entries.map((e) {
         var serializedKey = keyToJson != null ? keyToJson(e.key) : e.key;
-        var serializedValue =
-            valueToJson != null ? valueToJson(e.value) : e.value;
+        var serializedValue = valueToJson != null
+            ? valueToJson(e.value)
+            : e.value;
         return {'k': serializedKey, 'v': serializedValue};
       }).toList();
     }
@@ -141,23 +142,6 @@ extension SetJsonExtension<T> on Set<T> {
     if (valueToJson == null) return toList();
 
     return map<dynamic>(valueToJson).toList();
-  }
-
-  /// Returns a deserialized version of the [Set].
-  static Set<T>? fromJson<T>(
-    dynamic value, {
-    required T Function(dynamic) itemFromJson,
-  }) {
-    if (value is Set<T>) return value;
-
-    var set = (value as List?)?.map(itemFromJson).toSet();
-
-    if (set != null && value!.length != set.length) {
-      throw Exception(
-          'Input list for Set contained duplicate items. List with length ${value.length} resulted in a set with only ${set.length} item(s).');
-    }
-
-    return set;
   }
 }
 

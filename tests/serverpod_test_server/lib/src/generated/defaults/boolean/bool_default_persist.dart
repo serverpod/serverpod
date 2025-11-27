@@ -61,6 +61,7 @@ abstract class BoolDefaultPersist
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'BoolDefaultPersist',
       if (id != null) 'id': id,
       if (boolDefaultPersistTrue != null)
         'boolDefaultPersistTrue': boolDefaultPersistTrue,
@@ -72,6 +73,7 @@ abstract class BoolDefaultPersist
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'BoolDefaultPersist',
       if (id != null) 'id': id,
       if (boolDefaultPersistTrue != null)
         'boolDefaultPersistTrue': boolDefaultPersistTrue,
@@ -118,10 +120,10 @@ class _BoolDefaultPersistImpl extends BoolDefaultPersist {
     bool? boolDefaultPersistTrue,
     bool? boolDefaultPersistFalse,
   }) : super._(
-          id: id,
-          boolDefaultPersistTrue: boolDefaultPersistTrue,
-          boolDefaultPersistFalse: boolDefaultPersistFalse,
-        );
+         id: id,
+         boolDefaultPersistTrue: boolDefaultPersistTrue,
+         boolDefaultPersistFalse: boolDefaultPersistFalse,
+       );
 
   /// Returns a shallow copy of this [BoolDefaultPersist]
   /// with some or all fields replaced by the given arguments.
@@ -163,7 +165,7 @@ class BoolDefaultPersistUpdateTable
 
 class BoolDefaultPersistTable extends _i1.Table<int?> {
   BoolDefaultPersistTable({super.tableRelation})
-      : super(tableName: 'bool_default_persist') {
+    : super(tableName: 'bool_default_persist') {
     updateTable = BoolDefaultPersistUpdateTable(this);
     boolDefaultPersistTrue = _i1.ColumnBool(
       'boolDefaultPersistTrue',
@@ -185,10 +187,10 @@ class BoolDefaultPersistTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        boolDefaultPersistTrue,
-        boolDefaultPersistFalse,
-      ];
+    id,
+    boolDefaultPersistTrue,
+    boolDefaultPersistFalse,
+  ];
 }
 
 class BoolDefaultPersistInclude extends _i1.IncludeObject {
@@ -386,7 +388,7 @@ class BoolDefaultPersistRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<BoolDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<BoolDefaultPersist>(
@@ -401,7 +403,7 @@ class BoolDefaultPersistRepository {
   Future<List<BoolDefaultPersist>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<BoolDefaultPersistUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<BoolDefaultPersistTable> where,
     int? limit,
     int? offset,

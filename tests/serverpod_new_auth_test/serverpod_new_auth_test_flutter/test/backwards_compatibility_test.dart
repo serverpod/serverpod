@@ -9,28 +9,29 @@ void main() {
   test(
     'Given a legacy user, when importing the user, then their legacy password can be migrated later on and used for the login.',
     () async {
-      final client = Client('http://localhost:8080/')
-        ..authSessionManager = ClientAuthSessionManager(storage: TestStorage());
+      final client = Client(
+        'http://localhost:8080/',
+      )..authSessionManager = FlutterAuthSessionManager(storage: TestStorage());
 
       final email =
           'test_${DateTime.now().microsecondsSinceEpoch}@serverpod.dev';
       const password = 'Asdf123!!!!!';
 
-      final userId =
-          await client.emailAccountBackwardsCompatibilityTest.createLegacyUser(
-        email: email,
-        password: password,
-      );
+      final userId = await client.emailAccountBackwardsCompatibilityTest
+          .createLegacyUser(
+            email: email,
+            password: password,
+          );
 
       await client.emailAccountBackwardsCompatibilityTest.migrateUser(
         legacyUserId: userId,
         password: password,
       );
 
-      final newAuthUserId =
-          await client.emailAccountBackwardsCompatibilityTest.getNewAuthUserId(
-        userId: userId,
-      );
+      final newAuthUserId = await client.emailAccountBackwardsCompatibilityTest
+          .getNewAuthUserId(
+            userId: userId,
+          );
 
       expect(
         await client.emailAccountBackwardsCompatibilityTest.checkLegacyPassword(
@@ -54,15 +55,21 @@ void main() {
           email: email,
           password: password,
         ),
-        isA<AuthSuccess>()
-            .having((final s) => s.authUserId, 'authUserId', newAuthUserId),
+        isA<AuthSuccess>().having(
+          (final s) => s.authUserId,
+          'authUserId',
+          newAuthUserId,
+        ),
       );
 
       // calling into the normal email endpoint succeeds now as well, as the password has been imported
       expect(
         await client.emailAccount.login(email: email, password: password),
-        isA<AuthSuccess>()
-            .having((final s) => s.authUserId, 'authUserId', newAuthUserId),
+        isA<AuthSuccess>().having(
+          (final s) => s.authUserId,
+          'authUserId',
+          newAuthUserId,
+        ),
       );
 
       expect(

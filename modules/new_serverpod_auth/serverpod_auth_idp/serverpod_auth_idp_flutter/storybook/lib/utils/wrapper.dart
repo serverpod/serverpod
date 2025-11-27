@@ -7,8 +7,9 @@ import 'package:storybook_toolkit/storybook_toolkit.dart';
 /// This function is temporary to fix the canvas color issue in the storybook.
 /// It will be removed in favor of the default wrapper builder after it's fixed.
 Widget wrapperBuilder(BuildContext context, Widget? child) {
-  final LocalizationData localization =
-      context.watch<LocalizationNotifier>().value;
+  final LocalizationData localization = context
+      .watch<LocalizationNotifier>()
+      .value;
   return MaterialApp(
     theme: ThemeData.light().copyWith(
       canvasColor: Colors.white,

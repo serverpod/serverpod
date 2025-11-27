@@ -16,19 +16,19 @@ class EnumDefinitionBuilder {
   List<String>? _documentation;
 
   EnumDefinitionBuilder()
-      : _fileName = 'example',
-        _sourceFileName = 'example.yaml',
-        _className = 'Example',
-        _serialized = EnumSerialization.byName,
-        _subDirParts = [],
-        _serverOnly = false,
-        _defaultValue = null,
-        _values = [
-          ProtocolEnumValueDefinition('A'),
-          ProtocolEnumValueDefinition('B'),
-          ProtocolEnumValueDefinition('C'),
-        ],
-        _documentation = [];
+    : _fileName = 'example',
+      _sourceFileName = 'example.yaml',
+      _className = 'Example',
+      _serialized = EnumSerialization.byName,
+      _subDirParts = [],
+      _serverOnly = false,
+      _defaultValue = null,
+      _values = [
+        ProtocolEnumValueDefinition('A'),
+        ProtocolEnumValueDefinition('B'),
+        ProtocolEnumValueDefinition('C'),
+      ],
+      _documentation = [];
 
   EnumDefinition build() {
     var enumDefinition = EnumDefinition(
@@ -78,7 +78,8 @@ class EnumDefinitionBuilder {
   }
 
   EnumDefinitionBuilder withDefaultValue(
-      ProtocolEnumValueDefinition defaultValue) {
+    ProtocolEnumValueDefinition defaultValue,
+  ) {
     _defaultValue = defaultValue;
     return this;
   }

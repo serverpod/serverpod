@@ -20,9 +20,9 @@ class _ProfileWidgetState extends State<ProfileWidget> {
   void initState() {
     super.initState();
 
-    widget.client.modules.serverpod_auth_core.userProfileInfo
-        .get()
-        .then((profile) {
+    widget.client.modules.serverpod_auth_core.userProfileInfo.get().then((
+      profile,
+    ) {
       if (!mounted) return;
       setState(() {
         _userProfile = profile;

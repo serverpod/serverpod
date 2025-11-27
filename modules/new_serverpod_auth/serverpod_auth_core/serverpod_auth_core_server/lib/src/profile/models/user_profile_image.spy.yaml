@@ -1,5 +1,4 @@
 class: UserProfileImage
-serverOnly: true
 table: serverpod_auth_core_profile_image
 fields:
   id: UuidValue?, defaultPersist=random_v7

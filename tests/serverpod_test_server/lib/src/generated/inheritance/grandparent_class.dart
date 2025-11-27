@@ -18,7 +18,8 @@ class GrandparentClass
 
   factory GrandparentClass.fromJson(Map<String, dynamic> jsonSerialization) {
     return GrandparentClass(
-        grandParentField: jsonSerialization['grandParentField'] as String);
+      grandParentField: jsonSerialization['grandParentField'] as String,
+    );
   }
 
   String grandParentField;
@@ -28,17 +29,24 @@ class GrandparentClass
   @_i1.useResult
   GrandparentClass copyWith({String? grandParentField}) {
     return GrandparentClass(
-        grandParentField: grandParentField ?? this.grandParentField);
+      grandParentField: grandParentField ?? this.grandParentField,
+    );
   }
 
   @override
   Map<String, dynamic> toJson() {
-    return {'grandParentField': grandParentField};
+    return {
+      '__className__': 'GrandparentClass',
+      'grandParentField': grandParentField,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'grandParentField': grandParentField};
+    return {
+      '__className__': 'GrandparentClass',
+      'grandParentField': grandParentField,
+    };
   }
 
   @override

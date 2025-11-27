@@ -31,8 +31,9 @@ abstract class UserProfileModel implements _i1.SerializableModel {
 
   factory UserProfileModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserProfileModel(
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
       userName: jsonSerialization['userName'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
       email: jsonSerialization['email'] as String?,
@@ -72,6 +73,7 @@ abstract class UserProfileModel implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.UserProfileModel',
       'authUserId': authUserId.toJson(),
       if (userName != null) 'userName': userName,
       if (fullName != null) 'fullName': fullName,
@@ -96,12 +98,12 @@ class _UserProfileModelImpl extends UserProfileModel {
     String? email,
     Uri? imageUrl,
   }) : super._(
-          authUserId: authUserId,
-          userName: userName,
-          fullName: fullName,
-          email: email,
-          imageUrl: imageUrl,
-        );
+         authUserId: authUserId,
+         userName: userName,
+         fullName: fullName,
+         email: email,
+         imageUrl: imageUrl,
+       );
 
   /// Returns a shallow copy of this [UserProfileModel]
   /// with some or all fields replaced by the given arguments.

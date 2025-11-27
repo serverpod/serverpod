@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i2;
 
 abstract class AuthSuccess
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
@@ -39,13 +40,15 @@ abstract class AuthSuccess
       tokenExpiresAt: jsonSerialization['tokenExpiresAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(
-              jsonSerialization['tokenExpiresAt']),
+              jsonSerialization['tokenExpiresAt'],
+            ),
       refreshToken: jsonSerialization['refreshToken'] as String?,
-      authUserId:
-          _i1.UuidValueJsonExtension.fromJson(jsonSerialization['authUserId']),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-          (jsonSerialization['scopeNames'] as List),
-          itemFromJson: (e) => e as String)!,
+      authUserId: _i1.UuidValueJsonExtension.fromJson(
+        jsonSerialization['authUserId'],
+      ),
+      scopeNames: _i2.Protocol().deserialize<Set<String>>(
+        jsonSerialization['scopeNames'],
+      ),
     );
   }
 
@@ -86,6 +89,7 @@ abstract class AuthSuccess
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.AuthSuccess',
       'authStrategy': authStrategy,
       'token': token,
       if (tokenExpiresAt != null) 'tokenExpiresAt': tokenExpiresAt?.toJson(),
@@ -98,6 +102,7 @@ abstract class AuthSuccess
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth_core.AuthSuccess',
       'authStrategy': authStrategy,
       'token': token,
       if (tokenExpiresAt != null) 'tokenExpiresAt': tokenExpiresAt?.toJson(),
@@ -124,13 +129,13 @@ class _AuthSuccessImpl extends AuthSuccess {
     required _i1.UuidValue authUserId,
     required Set<String> scopeNames,
   }) : super._(
-          authStrategy: authStrategy,
-          token: token,
-          tokenExpiresAt: tokenExpiresAt,
-          refreshToken: refreshToken,
-          authUserId: authUserId,
-          scopeNames: scopeNames,
-        );
+         authStrategy: authStrategy,
+         token: token,
+         tokenExpiresAt: tokenExpiresAt,
+         refreshToken: refreshToken,
+         authUserId: authUserId,
+         scopeNames: scopeNames,
+       );
 
   /// Returns a shallow copy of this [AuthSuccess]
   /// with some or all fields replaced by the given arguments.
@@ -147,8 +152,9 @@ class _AuthSuccessImpl extends AuthSuccess {
     return AuthSuccess(
       authStrategy: authStrategy ?? this.authStrategy,
       token: token ?? this.token,
-      tokenExpiresAt:
-          tokenExpiresAt is DateTime? ? tokenExpiresAt : this.tokenExpiresAt,
+      tokenExpiresAt: tokenExpiresAt is DateTime?
+          ? tokenExpiresAt
+          : this.tokenExpiresAt,
       refreshToken: refreshToken is String? ? refreshToken : this.refreshToken,
       authUserId: authUserId ?? this.authUserId,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),

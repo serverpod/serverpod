@@ -25,7 +25,8 @@ abstract class ObjectWithSelfParent
   }) = _ObjectWithSelfParentImpl;
 
   factory ObjectWithSelfParent.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return ObjectWithSelfParent(
       id: jsonSerialization['id'] as int?,
       other: jsonSerialization['other'] as int?,
@@ -54,6 +55,7 @@ abstract class ObjectWithSelfParent
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithSelfParent',
       if (id != null) 'id': id,
       if (other != null) 'other': other,
     };
@@ -62,6 +64,7 @@ abstract class ObjectWithSelfParent
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ObjectWithSelfParent',
       if (id != null) 'id': id,
       if (other != null) 'other': other,
     };
@@ -104,9 +107,9 @@ class _ObjectWithSelfParentImpl extends ObjectWithSelfParent {
     int? id,
     int? other,
   }) : super._(
-          id: id,
-          other: other,
-        );
+         id: id,
+         other: other,
+       );
 
   /// Returns a shallow copy of this [ObjectWithSelfParent]
   /// with some or all fields replaced by the given arguments.
@@ -128,14 +131,14 @@ class ObjectWithSelfParentUpdateTable
   ObjectWithSelfParentUpdateTable(super.table);
 
   _i1.ColumnValue<int, int> other(int? value) => _i1.ColumnValue(
-        table.other,
-        value,
-      );
+    table.other,
+    value,
+  );
 }
 
 class ObjectWithSelfParentTable extends _i1.Table<int?> {
   ObjectWithSelfParentTable({super.tableRelation})
-      : super(tableName: 'object_with_self_parent') {
+    : super(tableName: 'object_with_self_parent') {
     updateTable = ObjectWithSelfParentUpdateTable(this);
     other = _i1.ColumnInt(
       'other',
@@ -149,9 +152,9 @@ class ObjectWithSelfParentTable extends _i1.Table<int?> {
 
   @override
   List<_i1.Column> get columns => [
-        id,
-        other,
-      ];
+    id,
+    other,
+  ];
 }
 
 class ObjectWithSelfParentInclude extends _i1.IncludeObject {
@@ -349,7 +352,7 @@ class ObjectWithSelfParentRepository {
     _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectWithSelfParentUpdateTable>
-        columnValues,
+    columnValues,
     _i1.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithSelfParent>(
@@ -364,7 +367,7 @@ class ObjectWithSelfParentRepository {
   Future<List<ObjectWithSelfParent>> updateWhere(
     _i1.Session session, {
     required _i1.ColumnValueListBuilder<ObjectWithSelfParentUpdateTable>
-        columnValues,
+    columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithSelfParentTable> where,
     int? limit,
     int? offset,

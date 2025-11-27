@@ -22,9 +22,9 @@ class SignInWidgetsColumn extends StatelessWidget {
     required this.children,
     super.key,
   }) : assert(
-          width > 0 && width <= 400,
-          'Invalid width. Must be between 0 and 400.',
-        );
+         width > 0 && width <= 400,
+         'Invalid width. Must be between 0 and 400.',
+       );
 
   @override
   Widget build(BuildContext context) {

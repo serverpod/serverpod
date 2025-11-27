@@ -18,10 +18,10 @@ abstract class IntDefaultMix implements _i1.SerializableModel {
     int? intDefaultAndDefaultModel,
     int? intDefaultAndDefaultPersist,
     int? intDefaultModelAndDefaultPersist,
-  })  : intDefaultAndDefaultModel = intDefaultAndDefaultModel ?? 20,
-        intDefaultAndDefaultPersist = intDefaultAndDefaultPersist ?? 10,
-        intDefaultModelAndDefaultPersist =
-            intDefaultModelAndDefaultPersist ?? 10;
+  }) : intDefaultAndDefaultModel = intDefaultAndDefaultModel ?? 20,
+       intDefaultAndDefaultPersist = intDefaultAndDefaultPersist ?? 10,
+       intDefaultModelAndDefaultPersist =
+           intDefaultModelAndDefaultPersist ?? 10;
 
   factory IntDefaultMix({
     int? id,
@@ -65,6 +65,7 @@ abstract class IntDefaultMix implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'IntDefaultMix',
       if (id != null) 'id': id,
       'intDefaultAndDefaultModel': intDefaultAndDefaultModel,
       'intDefaultAndDefaultPersist': intDefaultAndDefaultPersist,
@@ -87,11 +88,11 @@ class _IntDefaultMixImpl extends IntDefaultMix {
     int? intDefaultAndDefaultPersist,
     int? intDefaultModelAndDefaultPersist,
   }) : super._(
-          id: id,
-          intDefaultAndDefaultModel: intDefaultAndDefaultModel,
-          intDefaultAndDefaultPersist: intDefaultAndDefaultPersist,
-          intDefaultModelAndDefaultPersist: intDefaultModelAndDefaultPersist,
-        );
+         id: id,
+         intDefaultAndDefaultModel: intDefaultAndDefaultModel,
+         intDefaultAndDefaultPersist: intDefaultAndDefaultPersist,
+         intDefaultModelAndDefaultPersist: intDefaultModelAndDefaultPersist,
+       );
 
   /// Returns a shallow copy of this [IntDefaultMix]
   /// with some or all fields replaced by the given arguments.
@@ -109,7 +110,8 @@ class _IntDefaultMixImpl extends IntDefaultMix {
           intDefaultAndDefaultModel ?? this.intDefaultAndDefaultModel,
       intDefaultAndDefaultPersist:
           intDefaultAndDefaultPersist ?? this.intDefaultAndDefaultPersist,
-      intDefaultModelAndDefaultPersist: intDefaultModelAndDefaultPersist ??
+      intDefaultModelAndDefaultPersist:
+          intDefaultModelAndDefaultPersist ??
           this.intDefaultModelAndDefaultPersist,
     );
   }

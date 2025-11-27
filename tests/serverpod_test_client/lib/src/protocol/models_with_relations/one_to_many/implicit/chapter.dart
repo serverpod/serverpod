@@ -47,6 +47,7 @@ abstract class Chapter implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Chapter',
       if (id != null) 'id': id,
       'title': title,
     };
@@ -65,9 +66,9 @@ class _ChapterImpl extends Chapter {
     int? id,
     required String title,
   }) : super._(
-          id: id,
-          title: title,
-        );
+         id: id,
+         title: title,
+       );
 
   /// Returns a shallow copy of this [Chapter]
   /// with some or all fields replaced by the given arguments.

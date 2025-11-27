@@ -1,5 +1,4 @@
 class: UserProfile
-serverOnly: true
 table: serverpod_auth_core_profile
 fields:
   id: UuidValue?, defaultPersist=random_v7

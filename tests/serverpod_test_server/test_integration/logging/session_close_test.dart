@@ -26,33 +26,36 @@ void main() {
       });
 
       test(
-          'when closing session with error, the error should be logged and the session should be closed',
-          () async {
-        await IOOverrides.runZoned(
-          () async {
-            await sessionBuilder.build().close(error: TestError());
-          },
-          stdout: () => record,
-        );
+        'when closing session with error, the error should be logged and the session should be closed',
+        () async {
+          await IOOverrides.runZoned(
+            () async {
+              await sessionBuilder.build().close(error: TestError());
+            },
+            stdout: () => record,
+          );
 
-        expect(record.output, contains('TestError'));
-      });
+          expect(record.output, contains('TestError'));
+        },
+      );
 
       test(
-          'when closing session with error and stackTrace, the error should be logged and the session should be closed',
-          () async {
-        await IOOverrides.runZoned(
-          () async {
-            await sessionBuilder.build().close(
+        'when closing session with error and stackTrace, the error should be logged and the session should be closed',
+        () async {
+          await IOOverrides.runZoned(
+            () async {
+              await sessionBuilder.build().close(
                 error: TestError(),
-                stackTrace: StackTrace.fromString('TestStackTrace'));
-          },
-          stdout: () => record,
-        );
+                stackTrace: StackTrace.fromString('TestStackTrace'),
+              );
+            },
+            stdout: () => record,
+          );
 
-        expect(record.output, contains('TestError'));
-        expect(record.output, contains('TestStackTrace'));
-      });
+          expect(record.output, contains('TestError'));
+          expect(record.output, contains('TestStackTrace'));
+        },
+      );
     },
   );
 }

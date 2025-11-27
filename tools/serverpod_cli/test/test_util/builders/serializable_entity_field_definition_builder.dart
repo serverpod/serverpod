@@ -15,16 +15,16 @@ class FieldDefinitionBuilder {
   bool _isRequired;
 
   FieldDefinitionBuilder()
-      : _name = 'name',
-        _type = TypeDefinition(
-          className: 'String',
-          nullable: true,
-        ),
-        _scope = ModelFieldScopeDefinition.all,
-        _shouldPersist = true,
-        _defaultModelValue = null,
-        _defaultPersistValue = null,
-        _isRequired = false;
+    : _name = 'name',
+      _type = TypeDefinition(
+        className: 'String',
+        nullable: true,
+      ),
+      _scope = ModelFieldScopeDefinition.all,
+      _shouldPersist = true,
+      _defaultModelValue = null,
+      _defaultPersistValue = null,
+      _isRequired = false;
 
   FieldDefinitionBuilder withName(String name) {
     _name = name;

@@ -24,7 +24,8 @@ class ResourceManager {
       return Directory(p.join(versionedDir.path, 'serverpod_template'));
     } else {
       return Directory(
-          p.join(serverpodHome, 'templates', 'serverpod_templates'));
+        p.join(serverpodHome, 'templates', 'serverpod_templates'),
+      );
     }
   }
 

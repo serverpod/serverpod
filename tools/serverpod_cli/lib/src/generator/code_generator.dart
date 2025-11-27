@@ -41,13 +41,18 @@ abstract class CodeGenerator {
 
 extension GenerateCode on Library {
   String generateCode({Allocator? allocator}) {
-    var code = accept(DartEmitter(
-      useNullSafetySyntax: true,
-      allocator: allocator ?? Allocator.simplePrefixing(),
-    )).toString();
+    var code = accept(
+      DartEmitter(
+        useNullSafetySyntax: true,
+        allocator: allocator ?? Allocator.simplePrefixing(),
+      ),
+    ).toString();
 
     try {
-      return DartFormatter(languageVersion: Version(3, 6, 0)).format('''
+      return DartFormatter(
+        languageVersion: Version(3, 8, 0),
+        trailingCommas: TrailingCommas.preserve,
+      ).format('''
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 

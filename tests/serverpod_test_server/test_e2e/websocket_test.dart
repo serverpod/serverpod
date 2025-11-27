@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 
 import 'package:serverpod/src/authentication/scope.dart';
@@ -42,16 +44,17 @@ void main() {
 
     test('Test extraClassNames', () async {
       expect(
-          client.serializationManager
-              .getClassNameForObject(CustomClass('test')),
-          'CustomClass');
+        client.serializationManager.getClassNameForObject(CustomClass('test')),
+        'CustomClass',
+      );
 
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );
 
-      var resultFuture =
-          client.customTypes.stream.timeout(const Duration(seconds: 4)).first;
+      var resultFuture = client.customTypes.stream
+          .timeout(const Duration(seconds: 4))
+          .first;
 
       await client.customTypes.sendStreamMessage(CustomClass('test'));
 
@@ -94,11 +97,14 @@ void main() {
     });
 
     test('Authenticate with correct credentials', () async {
-      var response =
-          await client.authentication.authenticate('test@foo.bar', 'password');
+      var response = await client.authentication.authenticate(
+        'test@foo.bar',
+        'password',
+      );
       if (response.success) {
-        await client.authenticationKeyManager!
-            .put('${response.keyId}:${response.key}');
+        await client.authenticationKeyManager!.put(
+          '${response.keyId}:${response.key}',
+        );
       }
       expect(response.success, equals(true));
       expect(response.userInfo, isNotNull);
@@ -144,11 +150,14 @@ void main() {
       await Future.delayed(const Duration(seconds: 1));
 
       // Authenticate and upgrade stream.
-      var response =
-          await client.authentication.authenticate('test@foo.bar', 'password');
+      var response = await client.authentication.authenticate(
+        'test@foo.bar',
+        'password',
+      );
       if (response.success) {
-        await client.authenticationKeyManager!
-            .put('${response.keyId}:${response.key}');
+        await client.authenticationKeyManager!.put(
+          '${response.keyId}:${response.key}',
+        );
       }
       expect(response.success, equals(true));
       expect(response.userInfo, isNotNull);
@@ -182,10 +191,13 @@ void main() {
           'password',
         );
         assert(response.success, 'Failed to authenticate user');
-        await client.authenticationKeyManager
-            ?.put('${response.keyId}:${response.key}');
+        await client.authenticationKeyManager?.put(
+          '${response.keyId}:${response.key}',
+        );
         assert(
-            await client.modules.auth.status.isSignedIn(), 'Failed to sign in');
+          await client.modules.auth.status.isSignedIn(),
+          'Failed to sign in',
+        );
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
@@ -204,17 +216,20 @@ void main() {
       });
 
       test(
-          'when sending message to stream endpoint that requires "admin" scope then message is ignored.',
-          () async {
-        await client.adminScopeRequired.sendStreamMessage(SimpleData(num: 666));
+        'when sending message to stream endpoint that requires "admin" scope then message is ignored.',
+        () async {
+          await client.adminScopeRequired.sendStreamMessage(
+            SimpleData(num: 666),
+          );
 
-        expectLater(
-          client.adminScopeRequired.stream.first.timeout(
-            Duration(seconds: 2),
-          ),
-          throwsA(isA<TimeoutException>()),
-        );
-      });
+          expectLater(
+            client.adminScopeRequired.stream.first.timeout(
+              Duration(seconds: 2),
+            ),
+            throwsA(isA<TimeoutException>()),
+          );
+        },
+      );
     });
 
     group('Given signed in user with "admin" scope', () {
@@ -225,10 +240,13 @@ void main() {
           [Scope.admin.name!],
         );
         assert(response.success, 'Failed to authenticate user');
-        await client.authenticationKeyManager
-            ?.put('${response.keyId}:${response.key}');
+        await client.authenticationKeyManager?.put(
+          '${response.keyId}:${response.key}',
+        );
         assert(
-            await client.modules.auth.status.isSignedIn(), 'Failed to sign in');
+          await client.modules.auth.status.isSignedIn(),
+          'Failed to sign in',
+        );
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
@@ -247,14 +265,14 @@ void main() {
       });
 
       test(
-          'when sending message to stream endpoint that requires "admin" scope then message is processed.',
-          () async {
-        const streamedNumber = 666;
-        await client.adminScopeRequired.sendStreamMessage(
-          SimpleData(num: streamedNumber),
-        );
+        'when sending message to stream endpoint that requires "admin" scope then message is processed.',
+        () async {
+          const streamedNumber = 666;
+          await client.adminScopeRequired.sendStreamMessage(
+            SimpleData(num: streamedNumber),
+          );
 
-        expectLater(
+          expectLater(
             client.adminScopeRequired.stream.first.timeout(
               Duration(seconds: 2),
             ),
@@ -264,8 +282,10 @@ void main() {
                 'num',
                 streamedNumber,
               ),
-            ));
-      });
+            ),
+          );
+        },
+      );
     });
   });
 
@@ -286,13 +306,17 @@ void main() {
 
       // We should be connected shortly after opening the stream.
       await Future.delayed(const Duration(seconds: 1));
-      expect(client.streamingConnectionStatus,
-          StreamingConnectionStatus.connected);
+      expect(
+        client.streamingConnectionStatus,
+        StreamingConnectionStatus.connected,
+      );
 
       // We should still be connected after 5 seconds.
       await Future.delayed(const Duration(seconds: 5));
-      expect(client.streamingConnectionStatus,
-          StreamingConnectionStatus.connected);
+      expect(
+        client.streamingConnectionStatus,
+        StreamingConnectionStatus.connected,
+      );
     });
 
     test('Disconnect', () async {

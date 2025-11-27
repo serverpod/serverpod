@@ -6,12 +6,12 @@ import 'email_idp_server_exceptions.dart';
 import 'email_idp_utils.dart';
 
 /// Collection of email-account admin methods.
-final class EmailIDPAdmin {
-  final EmailIDPUtils _utils;
+final class EmailIdpAdmin {
+  final EmailIdpUtils _utils;
 
-  /// Creates a new instance of [EmailIDPAdmin].
-  EmailIDPAdmin({
-    required final EmailIDPUtils utils,
+  /// Creates a new instance of [EmailIdpAdmin].
+  EmailIdpAdmin({
+    required final EmailIdpUtils utils,
   }) : _utils = utils;
 
   /// {@macro email_idp_account_creation_util.create_email_authentication}
@@ -46,10 +46,10 @@ final class EmailIDPAdmin {
       transaction,
       (final transaction) =>
           _utils.accountCreation.deleteEmailAccountRequestById(
-        session,
-        accountRequestId,
-        transaction: transaction,
-      ),
+            session,
+            accountRequestId,
+            transaction: transaction,
+          ),
     );
   }
 
@@ -63,9 +63,9 @@ final class EmailIDPAdmin {
       transaction,
       (final transaction) =>
           _utils.accountCreation.deleteExpiredAccountRequests(
-        session,
-        transaction: transaction,
-      ),
+            session,
+            transaction: transaction,
+          ),
     );
   }
 
@@ -83,11 +83,11 @@ final class EmailIDPAdmin {
       transaction,
       (final transaction) =>
           _utils.passwordReset.deletePasswordResetRequestAttempts(
-        session,
-        olderThan: Duration.zero,
-        email: email,
-        transaction: transaction,
-      ),
+            session,
+            olderThan: Duration.zero,
+            email: email,
+            transaction: transaction,
+          ),
     );
   }
 
@@ -201,8 +201,7 @@ final class EmailIDPAdmin {
         email: email,
         transaction: transaction,
       ),
-    ))
-        .firstOrNull;
+    )).firstOrNull;
   }
 
   /// {@macro email_idp_account_creation_util.find_active_email_account_request}
@@ -216,10 +215,10 @@ final class EmailIDPAdmin {
       transaction,
       (final transaction) =>
           _utils.accountCreation.findActiveEmailAccountRequest(
-        session,
-        accountRequestId: accountRequestId,
-        transaction: transaction,
-      ),
+            session,
+            accountRequestId: accountRequestId,
+            transaction: transaction,
+          ),
     );
   }
 
@@ -246,8 +245,7 @@ final class EmailIDPAdmin {
           session,
           email: email,
           transaction: transaction,
-        ))
-            .singleOrNull;
+        )).singleOrNull;
 
         if (account == null) {
           throw EmailAccountNotFoundException();

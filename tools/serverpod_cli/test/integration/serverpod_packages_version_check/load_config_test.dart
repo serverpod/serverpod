@@ -15,23 +15,26 @@ void main() {
     return file;
   }
 
-  test(
-      'Given a missing server pubspec.yaml '
+  test('Given a missing server pubspec.yaml '
       'when calling GeneratorConfig.load '
       'then a ServerpodProjectNotFoundException is thrown', () async {
     await expectLater(
-      GeneratorConfig.load((await getServerPubspecFile()).parent.path),
-      throwsA(isA<ServerpodProjectNotFoundException>().having(
-        (e) => e.message,
-        'message',
-        'Failed to load pubspec.yaml. Are you running serverpod from your '
-            'projects server root directory?',
-      )),
+      GeneratorConfig.load(
+        serverRootDir: (await getServerPubspecFile()).parent.path,
+        interactive: false,
+      ),
+      throwsA(
+        isA<ServerpodProjectNotFoundException>().having(
+          (e) => e.message,
+          'message',
+          'Failed to load pubspec.yaml. Are you running serverpod from your '
+              'projects server root directory?',
+        ),
+      ),
     );
   });
 
-  test(
-      'Given an invalid server pubspec.yaml '
+  test('Given an invalid server pubspec.yaml '
       'when calling GeneratorConfig.load '
       'then a ServerpodProjectNotFoundException is thrown', () async {
     var serverPubspecFile = await getServerPubspecFile();
@@ -39,18 +42,22 @@ void main() {
     // TODO: https://github.com/serverpod/serverpod/issues/3298
     // particular bad error message in this case
     await expectLater(
-      GeneratorConfig.load(serverPubspecFile.parent.path),
-      throwsA(isA<ServerpodProjectNotFoundException>().having(
-        (e) => e.message,
-        'message',
-        'Failed to load pubspec.yaml. Are you running serverpod from your '
-            'projects server root directory?',
-      )),
+      GeneratorConfig.load(
+        serverRootDir: serverPubspecFile.parent.path,
+        interactive: false,
+      ),
+      throwsA(
+        isA<ServerpodProjectNotFoundException>().having(
+          (e) => e.message,
+          'message',
+          'Failed to load pubspec.yaml. Are you running serverpod from your '
+              'projects server root directory?',
+        ),
+      ),
     );
   });
 
-  test(
-      'Given a valid server pubspec.yaml but a missing client pubspec.yaml '
+  test('Given a valid server pubspec.yaml but a missing client pubspec.yaml '
       'when calling GeneratorConfig.load '
       'then a ServerpodProjectNotFoundException is thrown', () async {
     // TODO: https://github.com/serverpod/serverpod/issues/3298
@@ -62,13 +69,18 @@ dependencies:
   serverpod: ^1.0.0
 ''');
     await expectLater(
-      GeneratorConfig.load(serverPubspecFile.parent.path),
-      throwsA(isA<ServerpodProjectNotFoundException>().having(
-        (e) => e.message,
-        'message',
-        'Failed to load client pubspec.yaml. If you are using a none default path '
-            'it has to be specified in the config/generator.yaml file!',
-      )),
+      GeneratorConfig.load(
+        serverRootDir: serverPubspecFile.parent.path,
+        interactive: false,
+      ),
+      throwsA(
+        isA<ServerpodProjectNotFoundException>().having(
+          (e) => e.message,
+          'message',
+          'Failed to load client pubspec.yaml. If you are using a none default path '
+              'it has to be specified in the config/generator.yaml file!',
+        ),
+      ),
     );
   });
 }

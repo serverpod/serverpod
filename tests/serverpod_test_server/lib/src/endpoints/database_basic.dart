@@ -82,7 +82,9 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<SimpleData> insertRowSimpleData(
-      Session session, SimpleData simpleData) {
+    Session session,
+    SimpleData simpleData,
+  ) {
     return SimpleData.db.insertRow(
       session,
       simpleData,
@@ -90,7 +92,9 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<SimpleData> updateRowSimpleData(
-      Session session, SimpleData simpleData) {
+    Session session,
+    SimpleData simpleData,
+  ) {
     return SimpleData.db.updateRow(
       session,
       simpleData,
@@ -146,8 +150,10 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<List<int>> deleteAllInTypes(Session session) async {
-    var result =
-        await Types.db.deleteWhere(session, where: (t) => Constant.bool(true));
+    var result = await Types.db.deleteWhere(
+      session,
+      where: (t) => Constant.bool(true),
+    );
 
     return result.map((e) => e.id!).toList();
   }
@@ -181,7 +187,9 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<ObjectWithObject> storeObjectWithObject(
-      Session session, ObjectWithObject object) async {
+    Session session,
+    ObjectWithObject object,
+  ) async {
     return await ObjectWithObject.db.insertRow(session, object);
   }
 

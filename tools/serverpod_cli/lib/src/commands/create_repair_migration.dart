@@ -6,6 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
@@ -15,20 +16,26 @@ import 'create_migration.dart' show CreateMigrationCommand;
 enum CreateRepairMigrationOption<V> implements OptionDefinition<V> {
   force(CreateMigrationCommand.forceOption),
   tag(CreateMigrationCommand.tagOption),
-  version(StringOption(
-    argName: 'version',
-    argAbbrev: 'v',
-    helpText: 'The target version for the repair. If not specified, the latest '
-        'migration version will be repaired.',
-  )),
-  mode(StringOption(
-    argName: 'mode',
-    argAbbrev: 'm',
-    defaultsTo: 'development',
-    helpText: 'Used to specify which database configuration to use when '
-        'fetching the live database definition.',
-    allowedValues: runModes,
-  ));
+  version(
+    StringOption(
+      argName: 'version',
+      argAbbrev: 'v',
+      helpText:
+          'The target version for the repair. If not specified, the latest '
+          'migration version will be repaired.',
+    ),
+  ),
+  mode(
+    StringOption(
+      argName: 'mode',
+      argAbbrev: 'm',
+      defaultsTo: 'development',
+      helpText:
+          'Used to specify which database configuration to use when '
+          'fetching the live database definition.',
+      allowedValues: runModes,
+    ),
+  );
 
   static const runModes = <String>['development', 'staging', 'production'];
 
@@ -49,7 +56,7 @@ class CreateRepairMigrationCommand
       'live database instead of comparing to the latest migration.';
 
   CreateRepairMigrationCommand()
-      : super(options: CreateRepairMigrationOption.values);
+    : super(options: CreateRepairMigrationOption.values);
 
   @override
   Future<void> runWithConfig(
@@ -57,13 +64,20 @@ class CreateRepairMigrationCommand
   ) async {
     bool force = commandConfig.value(CreateRepairMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateRepairMigrationOption.tag);
+
+    // Get interactive flag from global configuration
+    final interactive = serverpodRunner.globalConfiguration.optionalValue(
+      GlobalOption.interactive,
+    );
+
     String mode = commandConfig.value(CreateRepairMigrationOption.mode);
-    String? targetVersion =
-        commandConfig.optionalValue(CreateRepairMigrationOption.version);
+    String? targetVersion = commandConfig.optionalValue(
+      CreateRepairMigrationOption.version,
+    );
 
     GeneratorConfig config;
     try {
-      config = await GeneratorConfig.load();
+      config = await GeneratorConfig.load(interactive: interactive);
     } catch (_) {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
@@ -100,8 +114,9 @@ class CreateRepairMigrationCommand
           log.error('Unable to find any migration versions.');
         } else {
           log.error(
-              'Unable to find the specified target migration "${e.targetName}".'
-              'Please select on of the available versions: ${e.versionsFound}.');
+            'Unable to find the specified target migration "${e.targetName}".'
+            'Please select on of the available versions: ${e.versionsFound}.',
+          );
         }
       } on MigrationVersionLoadException catch (e) {
         log.error(
@@ -112,9 +127,11 @@ class CreateRepairMigrationCommand
         );
         log.error(e.exception);
       } on MigrationLiveDatabaseDefinitionException catch (e) {
-        log.error('Unable to fetch live database schema from server. '
-            'Make sure the server is running and is connected to the '
-            'database.');
+        log.error(
+          'Unable to fetch live database schema from server. '
+          'Make sure the server is running and is connected to the '
+          'database.',
+        );
         log.error(e.exception);
       } on MigrationRepairWriteException catch (e) {
         log.error('Unable to write repair migration.');

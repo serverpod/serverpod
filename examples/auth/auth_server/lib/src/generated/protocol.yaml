@@ -1,6 +1,6 @@
-appleIDP:
+appleIdp:
   - login:
-emailIDP:
+emailIdp:
   - login:
   - startRegistration:
   - verifyRegistrationCode:
@@ -8,9 +8,9 @@ emailIDP:
   - startPasswordReset:
   - verifyPasswordResetCode:
   - finishPasswordReset:
-googleIDP:
+googleIdp:
   - login:
-passkeyIDP:
+passkeyIdp:
   - createChallenge:
   - register:
   - login:

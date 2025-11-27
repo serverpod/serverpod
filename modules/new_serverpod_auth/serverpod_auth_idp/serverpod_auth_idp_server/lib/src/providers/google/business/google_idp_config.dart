@@ -7,22 +7,24 @@ import 'google_idp_utils.dart';
 
 /// Function to be called to check whether a Google account details match the
 /// requirements during registration.
-typedef GoogleAccountDetailsValidation = void Function(
-  GoogleAccountDetails accountDetails,
-);
+typedef GoogleAccountDetailsValidation =
+    void Function(
+      GoogleAccountDetails accountDetails,
+    );
 
 /// Function to be called to extract additional information from Google APIs
 /// using the access token. The [session] and [transaction] can be used to
 /// store additional information in the database.
-typedef GetExtraGoogleInfoCallback = Future<void> Function(
-  Session session, {
-  required GoogleAccountDetails accountDetails,
-  required String accessToken,
-  required Transaction? transaction,
-});
+typedef GetExtraGoogleInfoCallback =
+    Future<void> Function(
+      Session session, {
+      required GoogleAccountDetails accountDetails,
+      required String accessToken,
+      required Transaction? transaction,
+    });
 
 /// Configuration for the Google identity provider.
-class GoogleIDPConfig {
+class GoogleIdpConfig {
   /// The client secret used for the Google sign-in.
   final GoogleClientSecret clientSecret;
 
@@ -49,8 +51,8 @@ class GoogleIDPConfig {
   /// information from Google APIs.
   final GetExtraGoogleInfoCallback? getExtraGoogleInfoCallback;
 
-  /// Creates a new instance of [GoogleIDPConfig].
-  GoogleIDPConfig({
+  /// Creates a new instance of [GoogleIdpConfig].
+  GoogleIdpConfig({
     required this.clientSecret,
     this.googleAccountDetailsValidation = validateGoogleAccountDetails,
     this.getExtraGoogleInfoCallback,

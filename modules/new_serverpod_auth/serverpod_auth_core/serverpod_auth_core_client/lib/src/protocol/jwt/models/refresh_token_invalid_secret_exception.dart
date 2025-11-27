@@ -20,7 +20,8 @@ abstract class RefreshTokenInvalidSecretException
       _RefreshTokenInvalidSecretExceptionImpl;
 
   factory RefreshTokenInvalidSecretException.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return RefreshTokenInvalidSecretException();
   }
 
@@ -30,7 +31,9 @@ abstract class RefreshTokenInvalidSecretException
   RefreshTokenInvalidSecretException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_core.RefreshTokenInvalidSecretException',
+    };
   }
 
   @override

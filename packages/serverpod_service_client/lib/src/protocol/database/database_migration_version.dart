@@ -29,7 +29,8 @@ abstract class DatabaseMigrationVersion implements _i1.SerializableModel {
   }) = _DatabaseMigrationVersionImpl;
 
   factory DatabaseMigrationVersion.fromJson(
-      Map<String, dynamic> jsonSerialization) {
+    Map<String, dynamic> jsonSerialization,
+  ) {
     return DatabaseMigrationVersion(
       id: jsonSerialization['id'] as int?,
       module: jsonSerialization['module'] as String,
@@ -66,6 +67,7 @@ abstract class DatabaseMigrationVersion implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.DatabaseMigrationVersion',
       if (id != null) 'id': id,
       'module': module,
       'version': version,
@@ -88,11 +90,11 @@ class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
     required String version,
     DateTime? timestamp,
   }) : super._(
-          id: id,
-          module: module,
-          version: version,
-          timestamp: timestamp,
-        );
+         id: id,
+         module: module,
+         version: version,
+         timestamp: timestamp,
+       );
 
   /// Returns a shallow copy of this [DatabaseMigrationVersion]
   /// with some or all fields replaced by the given arguments.

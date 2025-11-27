@@ -9,7 +9,7 @@ void main() {
     'Given multiple email accounts',
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue authUserId1;
       late UuidValue authUserId2;
       const email1 = 'test1@serverpod.dev';
@@ -18,7 +18,7 @@ void main() {
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
 
         final authUser1 = await fixture.authUsers.create(session);
         authUserId1 = authUser1.id;
@@ -53,137 +53,142 @@ void main() {
       });
 
       test(
-          'when deleteAccount is called with email then only that email account is deleted',
-          () async {
-        final deletedAccounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.deleteAccount(
-            session,
-            email: email1,
-            authUserId: null,
-            transaction: transaction,
-          ),
-        );
+        'when deleteAccount is called with email then only that email account is deleted',
+        () async {
+          final deletedAccounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.deleteAccount(
+              session,
+              email: email1,
+              authUserId: null,
+              transaction: transaction,
+            ),
+          );
 
-        expect(deletedAccounts, hasLength(1));
-        expect(deletedAccounts.single.email, equals(email1));
+          expect(deletedAccounts, hasLength(1));
+          expect(deletedAccounts.single.email, equals(email1));
 
-        final remainingAccounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
-            session,
-            transaction: transaction,
-          ),
-        );
-        expect(remainingAccounts, hasLength(2));
-        final remainingEmails = remainingAccounts.map((final a) => a.email);
-        expect(remainingEmails, isNot(contains(email1)));
-        expect(remainingEmails, containsAll([email2, email3]));
-      });
-
-      test(
-          'when deleteAccount is called with authUserId then all accounts for that user are deleted',
-          () async {
-        final deletedAccounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.deleteAccount(
-            session,
-            email: null,
-            authUserId: authUserId1,
-            transaction: transaction,
-          ),
-        );
-
-        expect(deletedAccounts, hasLength(2));
-        final deletedEmails = deletedAccounts.map((final a) => a.email);
-        expect(deletedEmails, containsAll([email1, email2]));
-        expect(
-          deletedAccounts.every((final a) => a.authUserId == authUserId1),
-          isTrue,
-        );
-
-        final remainingAccounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
-            session,
-            transaction: transaction,
-          ),
-        );
-        expect(remainingAccounts, hasLength(1));
-        expect(remainingAccounts.single.email, equals(email3));
-      });
+          final remainingAccounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+              session,
+              transaction: transaction,
+            ),
+          );
+          expect(remainingAccounts, hasLength(2));
+          final remainingEmails = remainingAccounts.map((final a) => a.email);
+          expect(remainingEmails, isNot(contains(email1)));
+          expect(remainingEmails, containsAll([email2, email3]));
+        },
+      );
 
       test(
-          'when deleteAccount is called with both email and authUserId then only matching account is deleted',
-          () async {
-        final deletedAccounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.deleteAccount(
-            session,
-            email: email1,
-            authUserId: authUserId1,
-            transaction: transaction,
-          ),
-        );
+        'when deleteAccount is called with authUserId then all accounts for that user are deleted',
+        () async {
+          final deletedAccounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.deleteAccount(
+              session,
+              email: null,
+              authUserId: authUserId1,
+              transaction: transaction,
+            ),
+          );
 
-        expect(deletedAccounts, hasLength(1));
-        expect(deletedAccounts.single.email, equals(email1));
-        expect(deletedAccounts.single.authUserId, equals(authUserId1));
+          expect(deletedAccounts, hasLength(2));
+          final deletedEmails = deletedAccounts.map((final a) => a.email);
+          expect(deletedEmails, containsAll([email1, email2]));
+          expect(
+            deletedAccounts.every((final a) => a.authUserId == authUserId1),
+            isTrue,
+          );
 
-        final remainingAccounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
-            session,
-            transaction: transaction,
-          ),
-        );
-        expect(remainingAccounts, hasLength(2));
-        final remainingEmails = remainingAccounts.map((final a) => a.email);
-        expect(remainingEmails, containsAll([email2, email3]));
-        expect(remainingEmails, isNot(contains(email1)));
-      });
-
-      test(
-          'when deleteAccount is called with non-matching filters then no accounts are deleted',
-          () async {
-        final deletedAccounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.deleteAccount(
-            session,
-            email: email1,
-            authUserId: authUserId2,
-            transaction: transaction,
-          ),
-        );
-
-        expect(deletedAccounts, isEmpty);
-
-        final remainingAccounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
-            session,
-            transaction: transaction,
-          ),
-        );
-        expect(remainingAccounts, hasLength(3));
-      });
+          final remainingAccounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+              session,
+              transaction: transaction,
+            ),
+          );
+          expect(remainingAccounts, hasLength(1));
+          expect(remainingAccounts.single.email, equals(email3));
+        },
+      );
 
       test(
-          'when deleteAccount is called with neither email nor authUserId then all accounts are deleted',
-          () async {
-        final deletedAccounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.deleteAccount(
-            session,
-            email: null,
-            authUserId: null,
-            transaction: transaction,
-          ),
-        );
+        'when deleteAccount is called with both email and authUserId then only matching account is deleted',
+        () async {
+          final deletedAccounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.deleteAccount(
+              session,
+              email: email1,
+              authUserId: authUserId1,
+              transaction: transaction,
+            ),
+          );
 
-        expect(deletedAccounts, hasLength(3));
-        final deletedEmails = deletedAccounts.map((final a) => a.email);
-        expect(deletedEmails, containsAll([email1, email2, email3]));
+          expect(deletedAccounts, hasLength(1));
+          expect(deletedAccounts.single.email, equals(email1));
+          expect(deletedAccounts.single.authUserId, equals(authUserId1));
 
-        final remainingAccounts = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.utils.account.listAccounts(
-            session,
-            transaction: transaction,
-          ),
-        );
-        expect(remainingAccounts, isEmpty);
-      });
+          final remainingAccounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+              session,
+              transaction: transaction,
+            ),
+          );
+          expect(remainingAccounts, hasLength(2));
+          final remainingEmails = remainingAccounts.map((final a) => a.email);
+          expect(remainingEmails, containsAll([email2, email3]));
+          expect(remainingEmails, isNot(contains(email1)));
+        },
+      );
+
+      test(
+        'when deleteAccount is called with non-matching filters then no accounts are deleted',
+        () async {
+          final deletedAccounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.deleteAccount(
+              session,
+              email: email1,
+              authUserId: authUserId2,
+              transaction: transaction,
+            ),
+          );
+
+          expect(deletedAccounts, isEmpty);
+
+          final remainingAccounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+              session,
+              transaction: transaction,
+            ),
+          );
+          expect(remainingAccounts, hasLength(3));
+        },
+      );
+
+      test(
+        'when deleteAccount is called with neither email nor authUserId then all accounts are deleted',
+        () async {
+          final deletedAccounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.deleteAccount(
+              session,
+              email: null,
+              authUserId: null,
+              transaction: transaction,
+            ),
+          );
+
+          expect(deletedAccounts, hasLength(3));
+          final deletedEmails = deletedAccounts.map((final a) => a.email);
+          expect(deletedEmails, containsAll([email1, email2, email3]));
+
+          final remainingAccounts = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.utils.account.listAccounts(
+              session,
+              transaction: transaction,
+            ),
+          );
+          expect(remainingAccounts, isEmpty);
+        },
+      );
     },
   );
 }

@@ -43,8 +43,12 @@ MigrationVersion _createMigrationVersion(
 }
 
 void main() {
-  var testAssetsPath =
-      path.join('test', 'integration', 'migrations', 'test_assets');
+  var testAssetsPath = path.join(
+    'test',
+    'integration',
+    'migrations',
+    'test_assets',
+  );
   var tempDirectory = Directory(path.join(testAssetsPath, 'temp'));
 
   setUp(() {

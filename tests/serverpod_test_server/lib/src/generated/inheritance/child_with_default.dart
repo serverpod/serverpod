@@ -55,6 +55,7 @@ abstract class ChildWithDefault extends _i1.ParentWithDefault
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ChildWithDefault',
       'name': name,
       'parentDefault': parentDefault,
       'age': age,
@@ -65,6 +66,7 @@ abstract class ChildWithDefault extends _i1.ParentWithDefault
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ChildWithDefault',
       'name': name,
       'parentDefault': parentDefault,
       'age': age,
@@ -85,11 +87,11 @@ class _ChildWithDefaultImpl extends ChildWithDefault {
     required int age,
     int? childDefault,
   }) : super._(
-          name: name,
-          parentDefault: parentDefault,
-          age: age,
-          childDefault: childDefault,
-        );
+         name: name,
+         parentDefault: parentDefault,
+         age: age,
+         childDefault: childDefault,
+       );
 
   /// Returns a shallow copy of this [ChildWithDefault]
   /// with some or all fields replaced by the given arguments.

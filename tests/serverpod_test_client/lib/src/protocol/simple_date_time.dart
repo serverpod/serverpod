@@ -27,8 +27,9 @@ abstract class SimpleDateTime implements _i1.SerializableModel {
   factory SimpleDateTime.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDateTime(
       id: jsonSerialization['id'] as int?,
-      dateTime:
-          _i1.DateTimeJsonExtension.fromJson(jsonSerialization['dateTime']),
+      dateTime: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['dateTime'],
+      ),
     );
   }
 
@@ -50,6 +51,7 @@ abstract class SimpleDateTime implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'SimpleDateTime',
       if (id != null) 'id': id,
       'dateTime': dateTime.toJson(),
     };
@@ -68,9 +70,9 @@ class _SimpleDateTimeImpl extends SimpleDateTime {
     int? id,
     required DateTime dateTime,
   }) : super._(
-          id: id,
-          dateTime: dateTime,
-        );
+         id: id,
+         dateTime: dateTime,
+       );
 
   /// Returns a shallow copy of this [SimpleDateTime]
   /// with some or all fields replaced by the given arguments.

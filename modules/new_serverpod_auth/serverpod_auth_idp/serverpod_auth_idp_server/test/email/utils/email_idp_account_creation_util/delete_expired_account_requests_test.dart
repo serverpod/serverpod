@@ -14,7 +14,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
       late String verificationCode;
@@ -23,8 +23,8 @@ void main() {
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
           ),
@@ -44,28 +44,29 @@ void main() {
       });
 
       test(
-          'when deleting expired account requests then request can still be verified',
-          () async {
-        await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.deleteExpiredAccountRequests(
-            session,
-            transaction: transaction,
-          ),
-        );
+        'when deleting expired account requests then request can still be verified',
+        () async {
+          await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.deleteExpiredAccountRequests(
+                  session,
+                  transaction: transaction,
+                ),
+          );
 
-        // Should still succeed
-        final result = session.db.transaction(
-          (final transaction) => fixture.emailIDP.verifyRegistrationCode(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
-        );
+          // Should still succeed
+          final result = session.db.transaction(
+            (final transaction) => fixture.emailIdp.verifyRegistrationCode(
+              session,
+              accountRequestId: accountRequestId,
+              verificationCode: verificationCode,
+              transaction: transaction,
+            ),
+          );
 
-        await expectLater(result, completes);
-      });
+          await expectLater(result, completes);
+        },
+      );
     },
   );
 
@@ -75,7 +76,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
       const verificationCode = '12345678';
@@ -85,8 +86,8 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             registrationVerificationCodeLifetime:
@@ -104,10 +105,10 @@ void main() {
           () => session.db.transaction(
             (final transaction) =>
                 fixture.accountCreationUtil.startRegistration(
-              session,
-              email: email,
-              transaction: transaction,
-            ),
+                  session,
+                  email: email,
+                  transaction: transaction,
+                ),
           ),
         );
       });
@@ -120,33 +121,34 @@ void main() {
       // attempting to verify an expired request within the valid timeframe
       // of that request.
       test(
-          'when deleting expired account requests then attempting to verify expired request within requests timeframe throws request not found exception',
-          () async {
-        await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.deleteExpiredAccountRequests(
-            session,
-            transaction: transaction,
-          ),
-        );
-
-        await withClock(clockBeforeTimeframe, () async {
-          final result = session.db.transaction(
+        'when deleting expired account requests then attempting to verify expired request within requests timeframe throws request not found exception',
+        () async {
+          await session.db.transaction(
             (final transaction) =>
-                fixture.accountCreationUtil.verifyRegistrationCode(
-              session,
-              accountRequestId: accountRequestId,
-              verificationCode: verificationCode,
-              transaction: transaction,
-            ),
+                fixture.accountCreationUtil.deleteExpiredAccountRequests(
+                  session,
+                  transaction: transaction,
+                ),
           );
 
-          await expectLater(
-            result,
-            throwsA(isA<EmailAccountRequestNotFoundException>()),
-          );
-        });
-      });
+          await withClock(clockBeforeTimeframe, () async {
+            final result = session.db.transaction(
+              (final transaction) =>
+                  fixture.accountCreationUtil.verifyRegistrationCode(
+                    session,
+                    accountRequestId: accountRequestId,
+                    verificationCode: verificationCode,
+                    transaction: transaction,
+                  ),
+            );
+
+            await expectLater(
+              result,
+              throwsA(isA<EmailAccountRequestNotFoundException>()),
+            );
+          });
+        },
+      );
     },
   );
 }

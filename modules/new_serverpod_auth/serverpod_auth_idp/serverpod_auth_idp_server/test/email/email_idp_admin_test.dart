@@ -12,14 +12,14 @@ void main() {
     'Given an existing auth user',
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue authUserId;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
 
         final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
@@ -30,44 +30,47 @@ void main() {
       });
 
       test(
-          'when createEmailAuthentication is called with valid parameters then it creates email authentication that can be used to authenticate',
-          () async {
-        final emailAccountId = await session.db.transaction(
-          (final transaction) =>
-              fixture.emailIDP.admin.createEmailAuthentication(
-            session,
-            authUserId: authUserId,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
-        );
+        'when createEmailAuthentication is called with valid parameters then it creates email authentication that can be used to authenticate',
+        () async {
+          final emailAccountId = await session.db.transaction(
+            (final transaction) =>
+                fixture.emailIdp.admin.createEmailAuthentication(
+                  session,
+                  authUserId: authUserId,
+                  email: email,
+                  password: password,
+                  transaction: transaction,
+                ),
+          );
 
-        expect(emailAccountId, isA<UuidValue>());
+          expect(emailAccountId, isA<UuidValue>());
 
-        final authResult = await session.db.transaction(
-          (final transaction) => fixture.authenticationUtil.authenticate(
-            session,
-            email: email,
-            password: password,
-            transaction: transaction,
-          ),
-        );
+          final authResult = await session.db.transaction(
+            (final transaction) => fixture.authenticationUtil.authenticate(
+              session,
+              email: email,
+              password: password,
+              transaction: transaction,
+            ),
+          );
 
-        expect(authResult, equals(authUserId));
-      });
+          expect(authResult, equals(authUserId));
+        },
+      );
     },
   );
 
-  withServerpod('Given an email account',
-      (final sessionBuilder, final endpoints) {
+  withServerpod('Given an email account', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
     late Session session;
-    late EmailIDPTestFixture fixture;
+    late EmailIdpTestFixture fixture;
     const email = 'test@serverpod.dev';
     late UuidValue emailAccountId;
     setUp(() async {
       session = sessionBuilder.build();
-      fixture = EmailIDPTestFixture();
+      fixture = EmailIdpTestFixture();
       final authUser = await fixture.authUsers.create(session);
       final emailAccount = await fixture.createEmailAccount(
         session,
@@ -82,30 +85,33 @@ void main() {
     });
 
     test(
-        'when findAccount is called with uppercase email then it finds email account',
-        () async {
-      final result = await session.db.transaction(
-        (final transaction) => fixture.emailIDP.admin.findAccount(
-          session,
-          email: email.toUpperCase(),
-          transaction: transaction,
-        ),
-      );
+      'when findAccount is called with uppercase email then it finds email account',
+      () async {
+        final result = await session.db.transaction(
+          (final transaction) => fixture.emailIdp.admin.findAccount(
+            session,
+            email: email.toUpperCase(),
+            transaction: transaction,
+          ),
+        );
 
-      expect(result, isNotNull);
-      expect(result?.id, equals(emailAccountId));
-    });
+        expect(result, isNotNull);
+        expect(result?.id, equals(emailAccountId));
+      },
+    );
   });
 
-  withServerpod('Given an email account without password',
-      (final sessionBuilder, final endpoints) {
+  withServerpod('Given an email account without password', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
     late Session session;
-    late EmailIDPTestFixture fixture;
+    late EmailIdpTestFixture fixture;
     const email = 'test@serverpod.dev';
 
     setUp(() async {
       session = sessionBuilder.build();
-      fixture = EmailIDPTestFixture();
+      fixture = EmailIdpTestFixture();
 
       final authUser = await fixture.authUsers.create(session);
 
@@ -123,7 +129,7 @@ void main() {
 
     test('when findAccount is called then hasPassword is false', () async {
       final result = await session.db.transaction(
-        (final transaction) => fixture.emailIDP.admin.findAccount(
+        (final transaction) => fixture.emailIdp.admin.findAccount(
           session,
           email: email,
           transaction: transaction,
@@ -135,28 +141,29 @@ void main() {
     });
 
     test(
-        'when setPassword is called with uppercase email then it sets password',
-        () async {
-      await session.db.transaction(
-        (final transaction) => fixture.emailIDP.admin.setPassword(
-          session,
-          email: email.toUpperCase(),
-          password: 'NewPassword123!',
-          transaction: transaction,
-        ),
-      );
+      'when setPassword is called with uppercase email then it sets password',
+      () async {
+        await session.db.transaction(
+          (final transaction) => fixture.emailIdp.admin.setPassword(
+            session,
+            email: email.toUpperCase(),
+            password: 'NewPassword123!',
+            transaction: transaction,
+          ),
+        );
 
-      // Verify password was set
-      final result = await session.db.transaction(
-        (final transaction) => fixture.emailIDP.admin.findAccount(
-          session,
-          email: email,
-          transaction: transaction,
-        ),
-      );
+        // Verify password was set
+        final result = await session.db.transaction(
+          (final transaction) => fixture.emailIdp.admin.findAccount(
+            session,
+            email: email,
+            transaction: transaction,
+          ),
+        );
 
-      expect(result?.hasPassword, isTrue);
-    });
+        expect(result?.hasPassword, isTrue);
+      },
+    );
   });
 
   withServerpod(
@@ -165,13 +172,13 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
 
         final authUser = await fixture.authUsers.create(session);
 
@@ -189,7 +196,7 @@ void main() {
 
       test('when findAccount is called then hasPassword is true', () async {
         final result = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.admin.findAccount(
+          (final transaction) => fixture.emailIdp.admin.findAccount(
             session,
             email: email,
             transaction: transaction,
@@ -208,7 +215,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
       const passwordResetLifetime = Duration(minutes: 15);
@@ -219,8 +226,8 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             passwordResetVerificationCodeLifetime: passwordResetLifetime,
             passwordResetVerificationCodeGenerator: () => verificationCode,
@@ -236,13 +243,14 @@ void main() {
         );
 
         clockBeforeTimeframe = Clock.fixed(
-          DateTime.now()
-              .subtract(passwordResetLifetime + const Duration(hours: 1)),
+          DateTime.now().subtract(
+            passwordResetLifetime + const Duration(hours: 1),
+          ),
         );
         // Create an expired password reset request using startPasswordReset
         await withClock(clockBeforeTimeframe, () async {
           expiredRequestId = await session.db.transaction(
-            (final transaction) => fixture.emailIDP.startPasswordReset(
+            (final transaction) => fixture.emailIdp.startPasswordReset(
               session,
               email: email,
               transaction: transaction,
@@ -256,36 +264,37 @@ void main() {
       });
 
       test(
-          'when deleteExpiredPasswordResetRequests is called then expired request is deleted',
-          () async {
-        // Delete expired requests
-        await session.db.transaction(
-          (final transaction) =>
-              fixture.emailIDP.admin.deleteExpiredPasswordResetRequests(
-            session,
-            transaction: transaction,
-          ),
-        );
-
-        // Verify expired request by trying to complete it withing request lifetime
-        final result = withClock(
-          clockBeforeTimeframe,
-          () => session.db.transaction(
+        'when deleteExpiredPasswordResetRequests is called then expired request is deleted',
+        () async {
+          // Delete expired requests
+          await session.db.transaction(
             (final transaction) =>
-                fixture.emailIDP.utils.passwordReset.verifyPasswordResetCode(
-              session,
-              passwordResetRequestId: expiredRequestId,
-              verificationCode: verificationCode,
-              transaction: transaction,
-            ),
-          ),
-        );
+                fixture.emailIdp.admin.deleteExpiredPasswordResetRequests(
+                  session,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailPasswordResetRequestNotFoundException>()),
-        );
-      });
+          // Verify expired request by trying to complete it withing request lifetime
+          final result = withClock(
+            clockBeforeTimeframe,
+            () => session.db.transaction(
+              (final transaction) =>
+                  fixture.emailIdp.utils.passwordReset.verifyPasswordResetCode(
+                    session,
+                    passwordResetRequestId: expiredRequestId,
+                    verificationCode: verificationCode,
+                    transaction: transaction,
+                  ),
+            ),
+          );
+
+          await expectLater(
+            result,
+            throwsA(isA<EmailPasswordResetRequestNotFoundException>()),
+          );
+        },
+      );
     },
   );
 
@@ -293,15 +302,15 @@ void main() {
     'Given an existing account request',
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
 
         accountRequestId = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.startRegistration(
+          (final transaction) => fixture.emailIdp.startRegistration(
             session,
             email: 'test@serverpod.dev',
             transaction: transaction,
@@ -314,40 +323,42 @@ void main() {
       });
 
       test(
-          'when findActiveEmailAccountRequest is called then it returns the request',
-          () async {
-        final result = await session.db.transaction(
-          (final transaction) =>
-              fixture.emailIDP.admin.findActiveEmailAccountRequest(
-            session,
-            accountRequestId: accountRequestId,
-            transaction: transaction,
-          ),
-        );
+        'when findActiveEmailAccountRequest is called then it returns the request',
+        () async {
+          final result = await session.db.transaction(
+            (final transaction) =>
+                fixture.emailIdp.admin.findActiveEmailAccountRequest(
+                  session,
+                  accountRequestId: accountRequestId,
+                  transaction: transaction,
+                ),
+          );
 
-        expect(result, isNotNull);
-        expect(result?.id, equals(accountRequestId));
-      });
+          expect(result, isNotNull);
+          expect(result?.id, equals(accountRequestId));
+        },
+      );
 
       test(
-          'when deleteEmailAccountRequestById is called then it deletes the request',
-          () async {
-        await session.db.transaction(
-          (final transaction) =>
-              fixture.emailIDP.admin.deleteEmailAccountRequestById(
+        'when deleteEmailAccountRequestById is called then it deletes the request',
+        () async {
+          await session.db.transaction(
+            (final transaction) =>
+                fixture.emailIdp.admin.deleteEmailAccountRequestById(
+                  session,
+                  accountRequestId,
+                  transaction: transaction,
+                ),
+          );
+
+          // Verify request was deleted
+          final result = await EmailAccountRequest.db.findById(
             session,
             accountRequestId,
-            transaction: transaction,
-          ),
-        );
-
-        // Verify request was deleted
-        final result = await EmailAccountRequest.db.findById(
-          session,
-          accountRequestId,
-        );
-        expect(result, isNull);
-      });
+          );
+          expect(result, isNull);
+        },
+      );
     },
   );
 
@@ -355,11 +366,11 @@ void main() {
     'Given no email account exists',
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
       });
 
       tearDown(() async {
@@ -368,7 +379,7 @@ void main() {
 
       test('when findAccount is called then it returns null', () async {
         final result = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.admin.findAccount(
+          (final transaction) => fixture.emailIdp.admin.findAccount(
             session,
             email: 'nonexistent@serverpod.dev',
             transaction: transaction,
@@ -379,22 +390,23 @@ void main() {
       });
 
       test(
-          'when setPassword is called then it throws EmailAccountNotFoundException',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) => fixture.emailIDP.admin.setPassword(
-            session,
-            email: 'nonexistent@serverpod.dev',
-            password: 'Password123!',
-            transaction: transaction,
-          ),
-        );
+        'when setPassword is called then it throws EmailAccountNotFoundException',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin.setPassword(
+              session,
+              email: 'nonexistent@serverpod.dev',
+              password: 'Password123!',
+              transaction: transaction,
+            ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountNotFoundException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountNotFoundException>()),
+          );
+        },
+      );
     },
   );
 
@@ -402,196 +414,205 @@ void main() {
     'Given no account request exists',
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
       });
 
       tearDown(() async {
         await fixture.tearDown(session);
       });
 
-      test('when findActiveEmailAccountRequest is called then it returns null',
-          () async {
-        final result = await session.db.transaction(
-          (final transaction) =>
-              fixture.emailIDP.admin.findActiveEmailAccountRequest(
-            session,
-            accountRequestId: const Uuid().v4obj(),
-            transaction: transaction,
-          ),
-        );
+      test(
+        'when findActiveEmailAccountRequest is called then it returns null',
+        () async {
+          final result = await session.db.transaction(
+            (final transaction) =>
+                fixture.emailIdp.admin.findActiveEmailAccountRequest(
+                  session,
+                  accountRequestId: const Uuid().v4obj(),
+                  transaction: transaction,
+                ),
+          );
 
-        expect(result, isNull);
-      });
+          expect(result, isNull);
+        },
+      );
     },
   );
 
   withServerpod(
-      'Given email account with maximum number of allowed password reset attempts',
-      rollbackDatabase: RollbackDatabase.disabled,
-      testGroupTagsOverride: TestTags.concurrencyOneTestTags,
-      (final sessionBuilder, final endpoints) {
-    late Session session;
-    late EmailIDPTestFixture fixture;
-    const email = 'test@serverpod.dev';
-    const password = 'Password123!';
-    const maxPasswordResetAttempts = RateLimit(
-      maxAttempts: 1,
-      timeframe: Duration(hours: 1),
-    );
-
-    setUp(() async {
-      session = sessionBuilder.build();
-      fixture = EmailIDPTestFixture(
-        config: const EmailIDPConfig(
-          secretHashPepper: 'pepper',
-          maxPasswordResetAttempts: maxPasswordResetAttempts,
-        ),
+    'Given email account with maximum number of allowed password reset attempts',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const password = 'Password123!';
+      const maxPasswordResetAttempts = RateLimit(
+        maxAttempts: 1,
+        timeframe: Duration(hours: 1),
       );
 
-      final authUser = await fixture.authUsers.create(session);
-      await fixture.createEmailAccount(
-        session,
-        authUserId: authUser.id,
-        email: email,
-        password: EmailAccountPassword.fromString(password),
-      );
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            maxPasswordResetAttempts: maxPasswordResetAttempts,
+          ),
+        );
 
-      // Make initial request to hit the rate limit
-      await session.db.transaction(
-        (final transaction) => fixture.emailIDP.startPasswordReset(
+        final authUser = await fixture.authUsers.create(session);
+        await fixture.createEmailAccount(
           session,
+          authUserId: authUser.id,
           email: email,
-          transaction: transaction,
-        ),
-      );
-    });
+          password: EmailAccountPassword.fromString(password),
+        );
 
-    tearDown(() async {
-      await fixture.tearDown(session);
-    });
-
-    test(
-        'when deletePasswordResetRequestsAttemptsForEmail is called then user can request password reset again',
-        () async {
-      await session.db.transaction(
-        (final transaction) =>
-            fixture.emailIDP.admin.deletePasswordResetRequestsAttemptsForEmail(
-          session,
-          email: email,
-          transaction: transaction,
-        ),
-      );
-
-      final result = session.db.transaction(
-        (final transaction) => fixture.emailIDP.startPasswordReset(
-          session,
-          email: email,
-          transaction: transaction,
-        ),
-      );
-
-      await expectLater(result, completion(isA<UuidValue>()));
-    });
-  });
-
-  withServerpod(
-      'Given email account with maximum number allowed failed login attempts',
-      rollbackDatabase: RollbackDatabase.disabled,
-      testGroupTagsOverride: TestTags.concurrencyOneTestTags,
-      (final sessionBuilder, final endpoints) {
-    late Session session;
-    late EmailIDPTestFixture fixture;
-    const email = 'test@serverpod.dev';
-    const password = 'Password123!';
-    const maxFailedLoginAttempts = RateLimit(
-      maxAttempts: 1,
-      timeframe: Duration(hours: 1),
-    );
-
-    setUp(() async {
-      session = sessionBuilder.build();
-      fixture = EmailIDPTestFixture(
-        config: const EmailIDPConfig(
-          secretHashPepper: 'pepper',
-          failedLoginRateLimit: maxFailedLoginAttempts,
-        ),
-      );
-      final authUser = await fixture.authUsers.create(session);
-      await fixture.createEmailAccount(
-        session,
-        authUserId: authUser.id,
-        email: email,
-        password: EmailAccountPassword.fromString(password),
-      );
-
-      // Make initial failed login attempt to hit the rate limit
-      try {
+        // Make initial request to hit the rate limit
         await session.db.transaction(
-          (final transaction) => fixture.emailIDP.login(
+          (final transaction) => fixture.emailIdp.startPasswordReset(
             session,
             email: email,
-            password: 'WrongPassword123!',
             transaction: transaction,
           ),
         );
-      } on EmailAccountLoginException {
-        // Expected
-      }
-    });
+      });
 
-    tearDown(() async {
-      await fixture.tearDown(session);
-    });
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
 
-    test(
+      test(
+        'when deletePasswordResetRequestsAttemptsForEmail is called then user can request password reset again',
+        () async {
+          await session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin
+                .deletePasswordResetRequestsAttemptsForEmail(
+                  session,
+                  email: email,
+                  transaction: transaction,
+                ),
+          );
+
+          final result = session.db.transaction(
+            (final transaction) => fixture.emailIdp.startPasswordReset(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
+          );
+
+          await expectLater(result, completion(isA<UuidValue>()));
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given email account with maximum number allowed failed login attempts',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const password = 'Password123!';
+      const maxFailedLoginAttempts = RateLimit(
+        maxAttempts: 1,
+        timeframe: Duration(hours: 1),
+      );
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
+            secretHashPepper: 'pepper',
+            failedLoginRateLimit: maxFailedLoginAttempts,
+          ),
+        );
+        final authUser = await fixture.authUsers.create(session);
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+          password: EmailAccountPassword.fromString(password),
+        );
+
+        // Make initial failed login attempt to hit the rate limit
+        try {
+          await session.db.transaction(
+            (final transaction) => fixture.emailIdp.login(
+              session,
+              email: email,
+              password: 'WrongPassword123!',
+              transaction: transaction,
+            ),
+          );
+        } on EmailAccountLoginException {
+          // Expected
+        }
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
         'when deleteFailedLoginAttempts is called with older than zero then user can login again',
         () async {
-      await session.db.transaction(
-        (final transaction) => fixture.emailIDP.admin.deleteFailedLoginAttempts(
-          session,
-          olderThan: const Duration(microseconds: 0),
-          transaction: transaction,
-        ),
+          await session.db.transaction(
+            (final transaction) =>
+                fixture.emailIdp.admin.deleteFailedLoginAttempts(
+                  session,
+                  olderThan: const Duration(microseconds: 0),
+                  transaction: transaction,
+                ),
+          );
+
+          final result = session.db.transaction(
+            (final transaction) => fixture.emailIdp.login(
+              session,
+              email: email,
+              password: password,
+              transaction: transaction,
+            ),
+          );
+
+          await expectLater(result, completion(isA<AuthSuccess>()));
+        },
       );
 
-      final result = session.db.transaction(
-        (final transaction) => fixture.emailIDP.login(
-          session,
-          email: email,
-          password: password,
-          transaction: transaction,
-        ),
-      );
-
-      await expectLater(result, completion(isA<AuthSuccess>()));
-    });
-
-    test(
+      test(
         'when deleteFailedLoginAttempts is called without older than user is still blocked from logging in',
         () async {
-      await session.db.transaction(
-        (final transaction) => fixture.emailIDP.admin.deleteFailedLoginAttempts(
-          session,
-          transaction: transaction,
-        ),
-      );
+          await session.db.transaction(
+            (final transaction) =>
+                fixture.emailIdp.admin.deleteFailedLoginAttempts(
+                  session,
+                  transaction: transaction,
+                ),
+          );
 
-      final result = session.db.transaction(
-        (final transaction) => fixture.emailIDP.login(
-          session,
-          email: email,
-          password: password,
-          transaction: transaction,
-        ),
-      );
+          final result = session.db.transaction(
+            (final transaction) => fixture.emailIdp.login(
+              session,
+              email: email,
+              password: password,
+              transaction: transaction,
+            ),
+          );
 
-      await expectLater(result, throwsA(isA<EmailAccountLoginException>()));
-    });
-  });
+          await expectLater(result, throwsA(isA<EmailAccountLoginException>()));
+        },
+      );
+    },
+  );
 
   withServerpod(
     'Given an email account with password and password reset request',
@@ -599,14 +620,14 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue authUserId;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
 
         final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
@@ -619,7 +640,7 @@ void main() {
         );
 
         await session.db.transaction(
-          (final transaction) => fixture.emailIDP.startPasswordReset(
+          (final transaction) => fixture.emailIdp.startPasswordReset(
             session,
             email: email,
             transaction: transaction,
@@ -632,120 +653,125 @@ void main() {
       });
 
       test(
-          'when deleteEmailAccount is called with lowercase email then account is deleted',
-          () async {
-        await session.db.transaction(
-          (final transaction) => fixture.emailIDP.admin.deleteEmailAccount(
-            session,
-            email: email,
-            transaction: transaction,
-          ),
-        );
+        'when deleteEmailAccount is called with lowercase email then account is deleted',
+        () async {
+          await session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin.deleteEmailAccount(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
+          );
 
-        final result = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.admin.findAccount(
-            session,
-            email: email,
-            transaction: transaction,
-          ),
-        );
+          final result = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin.findAccount(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
+          );
 
-        expect(result, isNull);
-      });
-
-      test(
-          'when deleteEmailAccount is called with uppercase email then account is deleted',
-          () async {
-        await session.db.transaction(
-          (final transaction) => fixture.emailIDP.admin.deleteEmailAccount(
-            session,
-            email: email.toUpperCase(),
-            transaction: transaction,
-          ),
-        );
-
-        final result = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.admin.findAccount(
-            session,
-            email: email,
-            transaction: transaction,
-          ),
-        );
-
-        expect(result, isNull);
-      });
+          expect(result, isNull);
+        },
+      );
 
       test(
-          'when deleteEmailAccount is called then related password reset requests are deleted',
-          () async {
-        final resetRequestsBefore =
-            await EmailAccountPasswordResetRequest.db.find(
-          session,
-        );
-        expect(resetRequestsBefore.length, greaterThan(0));
+        'when deleteEmailAccount is called with uppercase email then account is deleted',
+        () async {
+          await session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin.deleteEmailAccount(
+              session,
+              email: email.toUpperCase(),
+              transaction: transaction,
+            ),
+          );
 
-        await session.db.transaction(
-          (final transaction) => fixture.emailIDP.admin.deleteEmailAccount(
-            session,
-            email: email,
-            transaction: transaction,
-          ),
-        );
+          final result = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin.findAccount(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
+          );
 
-        final resetRequestsAfter =
-            await EmailAccountPasswordResetRequest.db.find(
-          session,
-        );
-        expect(resetRequestsAfter, isEmpty);
-      });
-
-      test(
-          'when deleteEmailAccountByAuthUserId is called then account is deleted',
-          () async {
-        await session.db.transaction(
-          (final transaction) =>
-              fixture.emailIDP.admin.deleteEmailAccountByAuthUserId(
-            session,
-            authUserId: authUserId,
-            transaction: transaction,
-          ),
-        );
-
-        final result = await session.db.transaction(
-          (final transaction) => fixture.emailIDP.admin.findAccount(
-            session,
-            email: email,
-            transaction: transaction,
-          ),
-        );
-
-        expect(result, isNull);
-      });
+          expect(result, isNull);
+        },
+      );
 
       test(
-          'when deleteEmailAccountByAuthUserId is called then related password reset requests are deleted',
-          () async {
-        final resetRequestsBefore =
-            await EmailAccountPasswordResetRequest.db.find(
-          session,
-        );
-        expect(resetRequestsBefore.length, greaterThan(0));
+        'when deleteEmailAccount is called then related password reset requests are deleted',
+        () async {
+          final resetRequestsBefore = await EmailAccountPasswordResetRequest.db
+              .find(
+                session,
+              );
+          expect(resetRequestsBefore.length, greaterThan(0));
 
-        await session.db.transaction(
-          (final transaction) =>
-              fixture.emailIDP.admin.deleteEmailAccountByAuthUserId(
-            session,
-            authUserId: authUserId,
-            transaction: transaction,
-          ),
-        );
+          await session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin.deleteEmailAccount(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
+          );
 
-        final resetRequestsAfter =
-            await EmailAccountPasswordResetRequest.db.find(
-          session,
-        );
-        expect(resetRequestsAfter, isEmpty);
-      });
+          final resetRequestsAfter = await EmailAccountPasswordResetRequest.db
+              .find(
+                session,
+              );
+          expect(resetRequestsAfter, isEmpty);
+        },
+      );
+
+      test(
+        'when deleteEmailAccountByAuthUserId is called then account is deleted',
+        () async {
+          await session.db.transaction(
+            (final transaction) =>
+                fixture.emailIdp.admin.deleteEmailAccountByAuthUserId(
+                  session,
+                  authUserId: authUserId,
+                  transaction: transaction,
+                ),
+          );
+
+          final result = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin.findAccount(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
+          );
+
+          expect(result, isNull);
+        },
+      );
+
+      test(
+        'when deleteEmailAccountByAuthUserId is called then related password reset requests are deleted',
+        () async {
+          final resetRequestsBefore = await EmailAccountPasswordResetRequest.db
+              .find(
+                session,
+              );
+          expect(resetRequestsBefore.length, greaterThan(0));
+
+          await session.db.transaction(
+            (final transaction) =>
+                fixture.emailIdp.admin.deleteEmailAccountByAuthUserId(
+                  session,
+                  authUserId: authUserId,
+                  transaction: transaction,
+                ),
+          );
+
+          final resetRequestsAfter = await EmailAccountPasswordResetRequest.db
+              .find(
+                session,
+              );
+          expect(resetRequestsAfter, isEmpty);
+        },
+      );
     },
   );
 
@@ -753,11 +779,11 @@ void main() {
     'Given no email account exists',
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
       });
 
       tearDown(() async {
@@ -765,39 +791,41 @@ void main() {
       });
 
       test(
-          'when deleteEmailAccount is called then it throws EmailAccountNotFoundException',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) => fixture.emailIDP.admin.deleteEmailAccount(
-            session,
-            email: 'nonexistent@serverpod.dev',
-            transaction: transaction,
-          ),
-        );
+        'when deleteEmailAccount is called then it throws EmailAccountNotFoundException',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin.deleteEmailAccount(
+              session,
+              email: 'nonexistent@serverpod.dev',
+              transaction: transaction,
+            ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountNotFoundException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountNotFoundException>()),
+          );
+        },
+      );
 
       test(
-          'when deleteEmailAccountByAuthUserId is called then it throws EmailAccountNotFoundException',
-          () async {
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.emailIDP.admin.deleteEmailAccountByAuthUserId(
-            session,
-            authUserId: const Uuid().v4obj(),
-            transaction: transaction,
-          ),
-        );
+        'when deleteEmailAccountByAuthUserId is called then it throws EmailAccountNotFoundException',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.emailIdp.admin.deleteEmailAccountByAuthUserId(
+                  session,
+                  authUserId: const Uuid().v4obj(),
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountNotFoundException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountNotFoundException>()),
+          );
+        },
+      );
     },
   );
 }

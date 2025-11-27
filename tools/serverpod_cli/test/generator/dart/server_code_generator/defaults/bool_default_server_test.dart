@@ -15,172 +15,197 @@ const generator = DartServerCodeGenerator();
 
 void main() {
   group(
-      'Given a class named BoolDefault with bool fields having defaultModelValue when generating code',
-      () {
-    ClassDeclaration? baseClass;
-    ConstructorDeclaration? privateConstructor;
+    'Given a class named BoolDefault with bool fields having defaultModelValue when generating code',
+    () {
+      ClassDeclaration? baseClass;
+      ConstructorDeclaration? privateConstructor;
 
-    setUpAll(() {
-      var testClassName = 'BoolDefault';
-      var testClassFileName = 'bool_default';
-      var expectedFilePath =
-          path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+      setUpAll(() {
+        var testClassName = 'BoolDefault';
+        var testClassFileName = 'bool_default';
+        var expectedFilePath = path.join(
+          'lib',
+          'src',
+          'generated',
+          '$testClassFileName.dart',
+        );
 
-      var fields = [
-        FieldDefinitionBuilder()
-            .withName('boolDefaultTrue')
-            .withTypeDefinition('bool', false)
-            .withDefaults(defaultModelValue: 'true')
-            .build(),
-        FieldDefinitionBuilder()
-            .withName('boolDefaultFalse')
-            .withTypeDefinition('bool', false)
-            .withDefaults(defaultModelValue: 'false')
-            .build(),
-        FieldDefinitionBuilder()
-            .withName('boolDefaultNullFalse')
-            .withTypeDefinition('bool', true)
-            .withDefaults(defaultModelValue: 'false')
-            .build(),
-      ];
+        var fields = [
+          FieldDefinitionBuilder()
+              .withName('boolDefaultTrue')
+              .withTypeDefinition('bool', false)
+              .withDefaults(defaultModelValue: 'true')
+              .build(),
+          FieldDefinitionBuilder()
+              .withName('boolDefaultFalse')
+              .withTypeDefinition('bool', false)
+              .withDefaults(defaultModelValue: 'false')
+              .build(),
+          FieldDefinitionBuilder()
+              .withName('boolDefaultNullFalse')
+              .withTypeDefinition('bool', true)
+              .withDefaults(defaultModelValue: 'false')
+              .build(),
+        ];
 
-      var models = [
-        ModelClassDefinitionBuilder()
-            .withClassName(testClassName)
-            .withFileName(testClassFileName)
-            .withFields(fields)
-            .build()
-      ];
+        var models = [
+          ModelClassDefinitionBuilder()
+              .withClassName(testClassName)
+              .withFileName(testClassFileName)
+              .withFields(fields)
+              .build(),
+        ];
 
-      var codeMap = generator.generateSerializableModelsCode(
-        models: models,
-        config: config,
-      );
+        var codeMap = generator.generateSerializableModelsCode(
+          models: models,
+          config: config,
+        );
 
-      var compilationUnit =
-          parseString(content: codeMap[expectedFilePath]!).unit;
+        var compilationUnit = parseString(
+          content: codeMap[expectedFilePath]!,
+        ).unit;
 
-      baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName,
-      );
+        baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
 
-      privateConstructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
-        baseClass!,
-        name: '_',
-      );
-    });
-
-    group('then the BoolDefault has a private constructor', () {
-      test('defined', () {
-        expect(privateConstructor, isNotNull);
+        privateConstructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+              baseClass!,
+              name: '_',
+            );
       });
 
-      test(
-        'with the class vars as params',
-        () {
-          expect(
-            privateConstructor?.parameters.toSource(),
-            '({bool? boolDefaultTrue, bool? boolDefaultFalse, bool? boolDefaultNullFalse})',
-          );
-        },
-      );
+      group('then the BoolDefault has a private constructor', () {
+        test('defined', () {
+          expect(privateConstructor, isNotNull);
+        });
 
-      test(
-        'with boolDefaultTrue default value set correctly',
-        () {
-          var initializer = privateConstructor?.initializers
-              .firstWhere((e) => e.toSource().contains('boolDefaultTrue'));
-          expect(initializer?.toSource(),
-              'boolDefaultTrue = boolDefaultTrue ?? true');
-        },
-      );
+        test(
+          'with the class vars as params',
+          () {
+            expect(
+              privateConstructor?.parameters.toSource(),
+              '({bool? boolDefaultTrue, bool? boolDefaultFalse, bool? boolDefaultNullFalse})',
+            );
+          },
+        );
 
-      test(
-        'with boolDefaultFalse default value set correctly',
-        () {
-          var initializer = privateConstructor?.initializers
-              .firstWhere((e) => e.toSource().contains('boolDefaultFalse'));
-          expect(initializer?.toSource(),
-              'boolDefaultFalse = boolDefaultFalse ?? false');
-        },
-      );
+        test(
+          'with boolDefaultTrue default value set correctly',
+          () {
+            var initializer = privateConstructor?.initializers.firstWhere(
+              (e) => e.toSource().contains('boolDefaultTrue'),
+            );
+            expect(
+              initializer?.toSource(),
+              'boolDefaultTrue = boolDefaultTrue ?? true',
+            );
+          },
+        );
 
-      test(
-        'with boolDefaultNullFalse default value set correctly',
-        () {
-          var initializer = privateConstructor?.initializers
-              .firstWhere((e) => e.toSource().contains('boolDefaultNullFalse'));
-          expect(initializer?.toSource(),
-              'boolDefaultNullFalse = boolDefaultNullFalse ?? false');
-        },
-      );
-    });
-  });
+        test(
+          'with boolDefaultFalse default value set correctly',
+          () {
+            var initializer = privateConstructor?.initializers.firstWhere(
+              (e) => e.toSource().contains('boolDefaultFalse'),
+            );
+            expect(
+              initializer?.toSource(),
+              'boolDefaultFalse = boolDefaultFalse ?? false',
+            );
+          },
+        );
+
+        test(
+          'with boolDefaultNullFalse default value set correctly',
+          () {
+            var initializer = privateConstructor?.initializers.firstWhere(
+              (e) => e.toSource().contains('boolDefaultNullFalse'),
+            );
+            expect(
+              initializer?.toSource(),
+              'boolDefaultNullFalse = boolDefaultNullFalse ?? false',
+            );
+          },
+        );
+      });
+    },
+  );
 
   group(
-      'Given a class named BoolDefaultPersist with bool fields having defaultPersistValue when generating code',
-      () {
-    ClassDeclaration? baseClass;
-    ConstructorDeclaration? privateConstructor;
+    'Given a class named BoolDefaultPersist with bool fields having defaultPersistValue when generating code',
+    () {
+      ClassDeclaration? baseClass;
+      ConstructorDeclaration? privateConstructor;
 
-    setUpAll(() {
-      var testClassName = 'BoolDefaultPersist';
-      var testClassFileName = 'bool_default_persist';
-      var expectedFilePath =
-          path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+      setUpAll(() {
+        var testClassName = 'BoolDefaultPersist';
+        var testClassFileName = 'bool_default_persist';
+        var expectedFilePath = path.join(
+          'lib',
+          'src',
+          'generated',
+          '$testClassFileName.dart',
+        );
 
-      var fields = [
-        FieldDefinitionBuilder()
-            .withName('boolDefaultPersistTrue')
-            .withTypeDefinition('bool', true)
-            .withDefaults(defaultPersistValue: 'true')
-            .build(),
-        FieldDefinitionBuilder()
-            .withName('boolDefaultPersistFalse')
-            .withTypeDefinition('bool', true)
-            .withDefaults(defaultPersistValue: 'false')
-            .build(),
-      ];
+        var fields = [
+          FieldDefinitionBuilder()
+              .withName('boolDefaultPersistTrue')
+              .withTypeDefinition('bool', true)
+              .withDefaults(defaultPersistValue: 'true')
+              .build(),
+          FieldDefinitionBuilder()
+              .withName('boolDefaultPersistFalse')
+              .withTypeDefinition('bool', true)
+              .withDefaults(defaultPersistValue: 'false')
+              .build(),
+        ];
 
-      var models = [
-        ModelClassDefinitionBuilder()
-            .withClassName(testClassName)
-            .withFileName(testClassFileName)
-            .withFields(fields)
-            .build()
-      ];
+        var models = [
+          ModelClassDefinitionBuilder()
+              .withClassName(testClassName)
+              .withFileName(testClassFileName)
+              .withFields(fields)
+              .build(),
+        ];
 
-      var codeMap = generator.generateSerializableModelsCode(
-        models: models,
-        config: config,
-      );
+        var codeMap = generator.generateSerializableModelsCode(
+          models: models,
+          config: config,
+        );
 
-      var compilationUnit =
-          parseString(content: codeMap[expectedFilePath]!).unit;
-      baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName,
-      );
+        var compilationUnit = parseString(
+          content: codeMap[expectedFilePath]!,
+        ).unit;
+        baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
 
-      privateConstructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
-        baseClass!,
-        name: '_',
-      );
-    });
-
-    group('then the BoolDefaultPersist has a private constructor', () {
-      test('defined', () {
-        expect(privateConstructor, isNotNull);
+        privateConstructor =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+              baseClass!,
+              name: '_',
+            );
       });
 
-      test(
-        'with the class vars as params',
-        () {
-          expect(privateConstructor?.parameters.toSource(),
-              '({this.boolDefaultPersistTrue, this.boolDefaultPersistFalse})');
-        },
-      );
-    });
-  });
+      group('then the BoolDefaultPersist has a private constructor', () {
+        test('defined', () {
+          expect(privateConstructor, isNotNull);
+        });
+
+        test(
+          'with the class vars as params',
+          () {
+            expect(
+              privateConstructor?.parameters.toSource(),
+              '({this.boolDefaultPersistTrue, this.boolDefaultPersistFalse})',
+            );
+          },
+        );
+      });
+    },
+  );
 }

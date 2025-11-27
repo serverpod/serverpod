@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:passkeys_server/passkeys_server.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/src/generated/protocol.dart';
 
@@ -11,23 +10,23 @@ import 'passkey_idp_config.dart';
 import 'passkey_idp_utils.dart';
 
 /// Passkey account management functions.
-final class PasskeyIDP {
+final class PasskeyIdp {
   /// The method used when authenticating with the Passkey identity provider.
   static const String method = 'passkey';
 
   /// Administrative methods for working with Passkey-backed accounts.
-  final PasskeyIDPAdmin admin;
+  final PasskeyIdpAdmin admin;
 
   /// The configuration for the Passkey identity provider.
-  final PasskeyIDPConfig config;
+  final PasskeyIdpConfig config;
 
   /// Utility functions for the Passkey identity provider.
-  final PasskeyIDPUtils utils;
+  final PasskeyIdpUtils utils;
 
   final AuthUsers _authUsers;
   final TokenIssuer _tokenIssuer;
 
-  PasskeyIDP._(
+  PasskeyIdp._(
     this.config,
     this._tokenIssuer,
     this.utils,
@@ -35,23 +34,24 @@ final class PasskeyIDP {
     this._authUsers,
   );
 
-  /// Creates a new instance of [PasskeyIDP].
-  factory PasskeyIDP(
-    final PasskeyIDPConfig config, {
+  /// Creates a new instance of [PasskeyIdp].
+  factory PasskeyIdp(
+    final PasskeyIdpConfig config, {
     required final TokenIssuer tokenIssuer,
     final AuthUsers authUsers = const AuthUsers(),
   }) {
-    final utils = PasskeyIDPUtils(
+    final utils = PasskeyIdpUtils(
       challengeLifetime: config.challengeLifetime,
-      passkeys:
-          Passkeys(config: PasskeysConfig(relyingPartyId: config.hostname)),
+      passkeys: Passkeys(
+        config: PasskeysConfig(relyingPartyId: config.hostname),
+      ),
     );
 
-    return PasskeyIDP._(
+    return PasskeyIdp._(
       config,
       tokenIssuer,
       utils,
-      PasskeyIDPAdmin(
+      PasskeyIdpAdmin(
         challengeLifetime: config.challengeLifetime,
         utils: utils,
       ),
@@ -68,8 +68,10 @@ final class PasskeyIDP {
       session.db,
       transaction,
       (final transaction) async {
-        final challenge =
-            await utils.createChallenge(session, transaction: transaction);
+        final challenge = await utils.createChallenge(
+          session,
+          transaction: transaction,
+        );
 
         return (id: challenge.id!, challenge: challenge.challenge);
       },
@@ -83,8 +85,9 @@ final class PasskeyIDP {
     required final PasskeyRegistrationRequest request,
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
-        (final transaction) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
       await utils.registerPasskey(
         session,
         authUserId: authUserId,
@@ -102,8 +105,9 @@ final class PasskeyIDP {
     required final PasskeyLoginRequest request,
     final Transaction? transaction,
   }) async {
-    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction,
-        (final transaction) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
+      final transaction,
+    ) async {
       final authUserId = await utils.authenticate(
         session,
         request: request,
@@ -132,7 +136,4 @@ final class PasskeyIDP {
 }
 
 /// A challenge to be used for a passkey registration or login.
-typedef PasskeyChallengeResponse = ({
-  UuidValue id,
-  ByteData challenge,
-});
+typedef PasskeyChallengeResponse = ({UuidValue id, ByteData challenge});

@@ -9,42 +9,45 @@ void main() {
   var config = GeneratorConfigBuilder().withAuthModule().build();
 
   test(
-      'Given a module class with the same name as a user defined class then there is no name conflict reported.',
-      () {
-    var models = [
-      ModelSourceBuilder()
-          .withModuleAlias('auth')
-          .withFileName('user_info')
-          .withYaml(
-        '''
+    'Given a module class with the same name as a user defined class then there is no name conflict reported.',
+    () {
+      var models = [
+        ModelSourceBuilder()
+            .withModuleAlias('auth')
+            .withFileName('user_info')
+            .withYaml(
+              '''
         class: UserInfo
         table: serverpod_user_info
         fields:
           nickname: String
         ''',
-      ).build(),
-      ModelSourceBuilder()
-          .withModuleAlias('protocol')
-          .withFileName('user_info')
-          .withYaml(
-        '''
+            )
+            .build(),
+        ModelSourceBuilder()
+            .withModuleAlias('protocol')
+            .withFileName('user_info')
+            .withYaml(
+              '''
         class: UserInfo
         table: user_info
         fields:
           name: String
         ''',
-      ).build()
-    ];
+            )
+            .build(),
+      ];
 
-    var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      config,
-      models,
-      onErrorsCollector(collector),
-    );
-    analyzer.validateAll();
-    var errors = collector.errors;
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+      var errors = collector.errors;
 
-    expect(errors, isEmpty);
-  });
+      expect(errors, isEmpty);
+    },
+  );
 }

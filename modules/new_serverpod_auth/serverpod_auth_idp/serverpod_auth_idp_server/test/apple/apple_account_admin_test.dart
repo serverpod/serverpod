@@ -8,13 +8,19 @@ import 'package:test/test.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
+  final tokenManager = ServerSideSessionsTokenManager(
+    config: ServerSideSessionsConfig(
+      sessionKeyHashPepper: 'test-pepper',
+    ),
+  );
+
   withServerpod(
     'Given 1 active and 1 expired Apple-backed auth user,',
     (final sessionBuilder, final _) {
       late Session session;
       late UuidValue activeUser;
       late UuidValue inactiveUser;
-      late AppleIDPAdmin admin;
+      late AppleIdpAdmin admin;
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -23,48 +29,53 @@ void main() {
         activeUser = await _createAppleBackedUser(session, authUsers);
         inactiveUser = await _createAppleBackedUser(session, authUsers);
 
-        final signInWithApple = _SignInWithAppleFake(knownRefreshTokens: {
-          activeUser.uuid,
-        });
-        final utils = AppleIDPUtils(
+        final signInWithApple = _SignInWithAppleFake(
+          knownRefreshTokens: {
+            activeUser.uuid,
+          },
+        );
+        final utils = AppleIdpUtils(
+          tokenManager: tokenManager,
           signInWithApple: signInWithApple,
           authUsers: authUsers,
         );
-        admin = AppleIDPAdmin(
+        admin = AppleIdpAdmin(
           utils: utils,
         );
       });
 
       test(
-          'when calling `AppleAccountsAdmin.checkAccountStatus`, then the callback is invoked for the expired one.',
-          () async {
-        final expiredUsers = <UuidValue>{};
+        'when calling `AppleAccountsAdmin.checkAccountStatus`, then the callback is invoked for the expired one.',
+        () async {
+          final expiredUsers = <UuidValue>{};
 
-        await admin.checkAccountStatus(
-          session,
-          onExpiredUserAuthentication: expiredUsers.add,
-        );
+          await admin.checkAccountStatus(
+            session,
+            onExpiredUserAuthentication: expiredUsers.add,
+          );
 
-        expect(expiredUsers, equals({inactiveUser}));
-      });
+          expect(expiredUsers, equals({inactiveUser}));
+        },
+      );
 
       test(
-          'when calling `AppleAccountsAdmin.checkAccountStatus`, then all `lastRefreshedAt` timestamps are updated.',
-          () async {
-        final timeBeforeUpdate = DateTime.now();
+        'when calling `AppleAccountsAdmin.checkAccountStatus`, then all `lastRefreshedAt` timestamps are updated.',
+        () async {
+          final timeBeforeUpdate = DateTime.now();
 
-        await admin.checkAccountStatus(
-          session,
-          onExpiredUserAuthentication: (final _) {},
-        );
-
-        for (final appleAccount in await AppleAccount.db.find(session)) {
-          expect(
-            appleAccount.lastRefreshedAt.isAfter(timeBeforeUpdate),
-            isTrue,
+          await admin.checkAccountStatus(
+            session,
+            onExpiredUserAuthentication: (final _) {},
           );
-        }
-      });
+
+          for (final appleAccount in await AppleAccount.db.find(session)) {
+            expect(
+              appleAccount.lastRefreshedAt.isAfter(timeBeforeUpdate),
+              isTrue,
+            );
+          }
+        },
+      );
     },
   );
 }

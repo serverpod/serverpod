@@ -51,11 +51,11 @@ class FutureCallScanner {
     required ShouldSkipScan shouldSkipScan,
     required DispatchEntries dispatchEntries,
     required FutureCallDiagnosticsService diagnosticsService,
-  })  : _internalSession = internalSession,
-        _scanInterval = scanInterval,
-        _shouldSkipScan = shouldSkipScan,
-        _dispatchEntries = dispatchEntries,
-        _diagnosticReporting = diagnosticsService;
+  }) : _internalSession = internalSession,
+       _scanInterval = scanInterval,
+       _shouldSkipScan = shouldSkipScan,
+       _dispatchEntries = dispatchEntries,
+       _diagnosticReporting = diagnosticsService;
 
   /// Scans the database for overdue future calls and queues them for execution.
   Future<void> scanFutureCallEntries() async {

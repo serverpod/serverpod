@@ -15,8 +15,8 @@ class StatefulAnalyzer {
 
   /// Returns true if any of the models have severe errors.
   bool get hasSevereErrors => _modelStates.values.any(
-        (state) => CodeAnalysisCollector.containsSevereErrors(state.errors),
-      );
+    (state) => CodeAnalysisCollector.containsSevereErrors(state.errors),
+  );
 
   Function(Uri, CodeGenerationCollector)? _onErrorsChangedNotifier;
 
@@ -38,7 +38,8 @@ class StatefulAnalyzer {
   List<SerializableModelDefinition> get _validProjectModels => _modelStates
       .values
       .where(
-          (state) => !CodeAnalysisCollector.containsSevereErrors(state.errors))
+        (state) => !CodeAnalysisCollector.containsSevereErrors(state.errors),
+      )
       .where((state) => state.source.moduleAlias == defaultModuleAlias)
       .map((state) => state.model)
       .whereType<SerializableModelDefinition>()
@@ -118,11 +119,16 @@ class StatefulAnalyzer {
   }
 
   void _validateAllModels() {
-    var modelsToValidate = _modelStates.values
-        .where((state) => state.source.moduleAlias == defaultModuleAlias);
+    var modelsToValidate = _modelStates.values.where(
+      (state) => state.source.moduleAlias == defaultModuleAlias,
+    );
     var modelsWithDocumentPath = _modelStates.values
-        .map((state) =>
-            (documentPath: state.source.yamlSourceUri.path, model: state.model))
+        .map(
+          (state) => (
+            documentPath: state.source.yamlSourceUri.path,
+            model: state.model,
+          ),
+        )
         .whereType<ModelWithDocumentPath>()
         .toList();
 

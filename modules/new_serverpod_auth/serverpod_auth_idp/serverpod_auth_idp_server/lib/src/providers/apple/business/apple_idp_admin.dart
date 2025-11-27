@@ -4,11 +4,11 @@ import '../../../generated/protocol.dart';
 import 'apple_idp_utils.dart';
 
 /// Collection of Apple-account admin methods.
-final class AppleIDPAdmin {
-  final AppleIDPUtils _utils;
+final class AppleIdpAdmin {
+  final AppleIdpUtils _utils;
 
   /// Creates a new instance of the admin utilities.
-  AppleIDPAdmin({required final AppleIDPUtils utils}) : _utils = utils;
+  AppleIdpAdmin({required final AppleIdpUtils utils}) : _utils = utils;
 
   /// Checks whether all accounts are in good standing with Apple and that the
   /// authorization has not been revoked.
@@ -21,12 +21,13 @@ final class AppleIDPAdmin {
   /// revoked.
   Future<void> checkAccountStatus(
     final Session session, {
+
     /// Callback to be invoked when an Apple authentication has been revoked.
     ///
     /// In this case all sessions associated with this sign-in method should be
     /// removed.
     required final void Function(UuidValue authUserId)
-        onExpiredUserAuthentication,
+    onExpiredUserAuthentication,
     final Transaction? transaction,
     final int databaseBatchSize = 100,
   }) async {

@@ -1,0 +1,15 @@
+### A class that holds child objects.
+class: PolymorphicChildContainer
+fields:
+  ### Direct contained child.
+  child: PolymorphicChild
+  ### Nullable direct contained child.
+  nullableChild: PolymorphicChild?
+  ### List of children.
+  childrenList: List<PolymorphicChild>
+  ### List of nullable children.
+  nullableChildrenList: List<PolymorphicChild?>
+  ### Map of children.
+  childrenMap: Map<String, PolymorphicChild>
+  ### Map of nullable children.
+  nullableChildrenMap: Map<String, PolymorphicChild?>

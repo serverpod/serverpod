@@ -7,10 +7,12 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group('Given a class with "defaultPersist" Duration fields,', () {
-    tearDownAll(() async => DurationDefaultPersist.db.deleteWhere(
-          session,
-          where: (_) => Constant.bool(true),
-        ));
+    tearDownAll(
+      () async => DurationDefaultPersist.db.deleteWhere(
+        session,
+        where: (_) => Constant.bool(true),
+      ),
+    );
 
     test(
       'when creating a record in the database, then the "defaultPersist=1d 2h 10min 30s 100ms" field should be the expected duration',
@@ -44,8 +46,9 @@ void main() async {
         VALUES (DEFAULT);
         ''',
         );
-        var databaseObject =
-            await DurationDefaultPersist.db.findFirstRow(session);
+        var databaseObject = await DurationDefaultPersist.db.findFirstRow(
+          session,
+        );
         expect(
           databaseObject?.durationDefaultPersist,
           equals(

@@ -12,15 +12,15 @@ class IndexDefinitionBuilder {
   Map<String, String>? _parameters;
 
   IndexDefinitionBuilder()
-      : _indexName = 'example_index',
-        _elements = [],
-        _type = 'btree',
-        _isUnique = false,
-        _isPrimary = false,
-        _predicate = null,
-        _vectorDistanceFunction = null,
-        _vectorColumnType = null,
-        _parameters = null;
+    : _indexName = 'example_index',
+      _elements = [],
+      _type = 'btree',
+      _isUnique = false,
+      _isPrimary = false,
+      _predicate = null,
+      _vectorDistanceFunction = null,
+      _vectorColumnType = null,
+      _parameters = null;
 
   IndexDefinition build() {
     return IndexDefinition(
@@ -40,7 +40,9 @@ class IndexDefinitionBuilder {
     _indexName = '${tableName}_pkey';
     _elements = [
       IndexElementDefinition(
-          definition: 'id', type: IndexElementDefinitionType.column)
+        definition: 'id',
+        type: IndexElementDefinitionType.column,
+      ),
     ];
     _type = 'btree';
     _isUnique = true;

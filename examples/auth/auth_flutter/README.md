@@ -51,3 +51,34 @@ flutter run -d chrome --web-hostname localhost --web-port 7357
 
 > For more information on how to configure the credentials for each platform
 > see the [Google Sign-In for Flutter documentation](https://pub.dev/packages/google_sign_in).
+
+## Sign-In With Apple Setup
+
+Additional steps are required to run the app with Apple Sign-In on Android and
+web platforms.
+
+For **Android** and **web**, run the app passing the `--dart-define` flag with
+the Apple service identifier and redirect URI:
+
+```bash
+flutter run \
+  --dart-define=APPLE_SERVICE_IDENTIFIER=com.example.app.service \
+  --dart-define=APPLE_REDIRECT_URI=https://example.com/auth/apple/callback
+```
+
+It is also possible to set these parameters through the code by providing them
+when initializing Apple Sign-In:
+
+```dart
+await client.auth.initializeAppleSignIn(
+  serviceIdentifier: 'com.example.app.service',
+  redirectUri: 'https://example.com/auth/apple/callback',
+);
+```
+
+**Note**: These configuration parameters are **not required** for native Apple
+platforms (iOS/macOS), as they use the native Apple Sign-In flow. They are only
+needed for Android and web platforms.
+
+> For more information on how to configure Apple Sign-In credentials, see the
+> [Sign in with Apple documentation](https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_js/incorporating_sign_in_with_apple_into_other_platforms).

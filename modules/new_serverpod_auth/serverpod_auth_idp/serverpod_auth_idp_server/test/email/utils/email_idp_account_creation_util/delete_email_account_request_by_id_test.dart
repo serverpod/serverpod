@@ -13,7 +13,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
       const verificationCode = '12345678';
@@ -21,8 +21,8 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
           ),
@@ -42,32 +42,33 @@ void main() {
       });
 
       test(
-          'when delete email account request by id is called then attempting to verify registration code throws request not found exception',
-          () async {
-        await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.deleteEmailAccountRequestById(
-            session,
-            accountRequestId,
-            transaction: transaction,
-          ),
-        );
+        'when delete email account request by id is called then attempting to verify registration code throws request not found exception',
+        () async {
+          await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.deleteEmailAccountRequestById(
+                  session,
+                  accountRequestId,
+                  transaction: transaction,
+                ),
+          );
 
-        final result = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyRegistrationCode(
-            session,
-            accountRequestId: accountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
-        );
+          final result = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.verifyRegistrationCode(
+                  session,
+                  accountRequestId: accountRequestId,
+                  verificationCode: verificationCode,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountRequestNotFoundException>()),
-        );
-      });
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountRequestNotFoundException>()),
+          );
+        },
+      );
     },
   );
 
@@ -77,7 +78,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue firstAccountRequestId;
       late UuidValue secondAccountRequestId;
       const firstEmail = 'test1@serverpod.dev';
@@ -88,8 +89,8 @@ void main() {
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
           ),
@@ -117,29 +118,30 @@ void main() {
       });
 
       test(
-          'when delete email account request by id is called for one user then other user can still verify its registration code',
-          () async {
-        await session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.deleteEmailAccountRequestById(
-            session,
-            firstAccountRequestId,
-            transaction: transaction,
-          ),
-        );
+        'when delete email account request by id is called for one user then other user can still verify its registration code',
+        () async {
+          await session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.deleteEmailAccountRequestById(
+                  session,
+                  firstAccountRequestId,
+                  transaction: transaction,
+                ),
+          );
 
-        final secondVerifyAccountRequestFuture = session.db.transaction(
-          (final transaction) =>
-              fixture.accountCreationUtil.verifyRegistrationCode(
-            session,
-            accountRequestId: secondAccountRequestId,
-            verificationCode: verificationCode,
-            transaction: transaction,
-          ),
-        );
+          final secondVerifyAccountRequestFuture = session.db.transaction(
+            (final transaction) =>
+                fixture.accountCreationUtil.verifyRegistrationCode(
+                  session,
+                  accountRequestId: secondAccountRequestId,
+                  verificationCode: verificationCode,
+                  transaction: transaction,
+                ),
+          );
 
-        await expectLater(secondVerifyAccountRequestFuture, completes);
-      });
+          await expectLater(secondVerifyAccountRequestFuture, completes);
+        },
+      );
     },
   );
 }

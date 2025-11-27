@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:clock/clock.dart';
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:http/http.dart' as http;
 
 /// Utility class for verifying Google ID tokens.
@@ -70,14 +70,14 @@ class GoogleIdTokenVerifier {
   }) async {
     final keys = await _getKeys();
 
-    JWT? verifiedJwt;
-    JWTException? lastException;
+    dart_jsonwebtoken.JWT? verifiedJwt;
+    dart_jsonwebtoken.JWTException? lastException;
 
     for (final key in keys) {
       try {
-        verifiedJwt = JWT.verify(idToken, key);
+        verifiedJwt = dart_jsonwebtoken.JWT.verify(idToken, key);
         break;
-      } on JWTException catch (e) {
+      } on dart_jsonwebtoken.JWTException catch (e) {
         lastException = e;
         continue;
       }
@@ -99,7 +99,7 @@ class GoogleIdTokenVerifier {
   /// Certificates are cached for 1 hour to reduce network requests. If the
   /// request fails, the cache update is postponed for 10 minutes up to 5 times.
   /// If the request fails 5 times, throws [GoogleIdTokenValidationServerException].
-  static Future<List<JWTKey>> _getKeys() async {
+  static Future<List<dart_jsonwebtoken.JWTKey>> _getKeys() async {
     if (!_cachedKeySet.shouldUpdate) {
       return _cachedKeySet.keys;
     }
@@ -124,17 +124,18 @@ class GoogleIdTokenVerifier {
     if (response.statusCode != 200) {
       if (_cachedKeySet.postponeExpiration()) return;
       throw GoogleIdTokenValidationServerException(
-          'Failed to fetch certificates');
+        'Failed to fetch certificates',
+      );
     }
 
     final jwksJson = jsonDecode(response.body) as Map<String, dynamic>;
-    final jwksList =
-        (jwksJson['keys'] as List<dynamic>).cast<Map<String, dynamic>>();
+    final jwksList = (jwksJson['keys'] as List<dynamic>)
+        .cast<Map<String, dynamic>>();
 
-    final keys = <JWTKey>[];
+    final keys = <dart_jsonwebtoken.JWTKey>[];
     for (final jwk in jwksList) {
       try {
-        final key = JWTKey.fromJWK(jwk);
+        final key = dart_jsonwebtoken.JWTKey.fromJWK(jwk);
         keys.add(key);
       } catch (e) {
         // Skip invalid keys
@@ -170,8 +171,10 @@ class GoogleIdTokenVerifier {
     if (iat == null) {
       throw GoogleIdTokenValidationServerException('Missing issued at claim');
     }
-    final issuedAt =
-        DateTime.fromMillisecondsSinceEpoch(iat * 1000, isUtc: true);
+    final issuedAt = DateTime.fromMillisecondsSinceEpoch(
+      iat * 1000,
+      isUtc: true,
+    );
     if (issuedAt.isAfter(now)) {
       throw GoogleIdTokenValidationServerException('Invalid issued at time');
     }
@@ -198,7 +201,7 @@ class GoogleIdTokenVerifier {
 /// Controls the logic for updating the cache, checking if it should be updated,
 /// and providing a list of [JWTKey] for verification.
 class _CachedKeySet {
-  final List<JWTKey> _keys;
+  final List<dart_jsonwebtoken.JWTKey> _keys;
   DateTime expiry;
   int failedAttempts = 0;
 
@@ -222,7 +225,7 @@ class _CachedKeySet {
     return true;
   }
 
-  List<JWTKey> get keys {
+  List<dart_jsonwebtoken.JWTKey> get keys {
     if (_keys.isEmpty) {
       throw StateError('No keys available');
     }
