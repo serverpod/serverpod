@@ -20,59 +20,19 @@ void run(List<String> args) async {
     Endpoints(),
   );
 
-  // Configure our token managers.
-  final serverSideSessionsConfig = ServerSideSessionsConfig(
-    sessionKeyHashPepper: pod.getPassword(
-      'serverSideSessionKeyHashPepper',
-    )!,
-  );
-
-  final jwtTokenConfig = JwtConfig(
-    refreshTokenHashPepper: pod.getPassword(
-      'jwtRefreshTokenHashPepper',
-    )!,
-    algorithm: JwtAlgorithm.hmacSha512(
-      SecretKey(pod.getPassword('jwtPrivateKey')!),
-    ),
-  );
-
-  // Configure our identity providers.
-  final googleIdpConfig = GoogleIdpConfig(
-    clientSecret: GoogleClientSecret.fromJsonString(
-      pod.getPassword('googleClientSecret')!,
-    ),
-  );
-
-  final appleIdpConfig = AppleIdpConfig(
-    serviceIdentifier: pod.getPassword('appleServiceIdentifier')!,
-    bundleIdentifier: pod.getPassword('appleBundleIdentifier')!,
-    redirectUri: pod.getPassword('appleRedirectUri')!,
-    teamId: pod.getPassword('appleTeamId')!,
-    keyId: pod.getPassword('appleKeyId')!,
-    key: pod.getPassword('appleKey')!,
-  );
-
-  final emailIdpConfig = EmailIdpConfig(
-    secretHashPepper: pod.getPassword('emailSecretHashPepper')!,
-    sendRegistrationVerificationCode: _sendRegistrationCode,
-    sendPasswordResetVerificationCode: _sendPasswordResetCode,
-  );
-
-  final passkeyIdpConfig = PasskeyIdpConfig(
-    challengeLifetime: Duration(seconds: 30),
-    hostname: 'localhost',
-  );
-
   pod.initializeAuthServices(
     tokenManagerBuilders: [
-      serverSideSessionsConfig,
-      jwtTokenConfig,
+      ServerSideSessionsConfigFromPasswords(),
+      JwtConfigFromPasswords(),
     ],
     identityProviderBuilders: [
-      googleIdpConfig,
-      appleIdpConfig,
-      emailIdpConfig,
-      passkeyIdpConfig,
+      AppleIdpConfigFromPasswords(),
+      EmailIdpConfigFromPasswords(
+        sendRegistrationVerificationCode: _sendRegistrationCode,
+        sendPasswordResetVerificationCode: _sendPasswordResetCode,
+      ),
+      GoogleIdpConfigFromPasswords(),
+      PasskeyIdpConfigFromPasswords(),
     ],
   );
 
