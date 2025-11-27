@@ -30,11 +30,11 @@ void main() {
         var targetStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $tableName 
-fields:
-  anInt: int
-''',
+  class: MigratedTable
+  table: $tableName
+  fields:
+    anInt: int
+  ''',
         };
 
         var createMigrationExitCode =
@@ -89,25 +89,25 @@ fields:
         var targetStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: ${tables[0]}
-fields:
-  anInt: int
-''',
+  class: MigratedTable
+  table: ${tables[0]}
+  fields:
+    anInt: int
+  ''',
           'migrated_table_2':
               '''
-class: MigratedTable2
-table: ${tables[1]} 
-fields:
-  aBool: bool
-''',
+  class: MigratedTable2
+  table: ${tables[1]}
+  fields:
+    aBool: bool
+  ''',
           'migrated_table_3':
               '''
-class: MigratedTable3
-table: ${tables[2]} 
-fields:
-  aString: String
-''',
+  class: MigratedTable3
+  table: ${tables[2]}
+  fields:
+    aString: String
+  ''',
         };
 
         var createMigrationExitCode =
@@ -153,11 +153,11 @@ fields:
       var tag = 'drop-table';
       var initialStateProtocols = {
         'migrated_table': '''
-class: MigratedTable
-table: migrated_table
-fields:
-  anInt: int
-''',
+  class: MigratedTable
+  table: migrated_table
+  fields:
+    anInt: int
+  ''',
       };
       await MigrationTestUtils.createInitialState(
         migrationProtocols: [initialStateProtocols],
@@ -195,11 +195,11 @@ fields:
         var initialStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+  ''',
         };
         await MigrationTestUtils.createInitialState(
           migrationProtocols: [initialStateProtocols],
@@ -255,11 +255,11 @@ fields:
         var initialStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+  ''',
         };
         await MigrationTestUtils.createInitialState(
           migrationProtocols: [initialStateProtocols],
@@ -270,12 +270,12 @@ fields:
         var targetStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-  $addedColumn: String?
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+    $addedColumn: String?
+  ''',
         };
         var createMigrationExitCode =
             await MigrationTestUtils.createMigrationFromProtocols(
@@ -335,12 +335,12 @@ fields:
         var initialStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-  $columnToRemove: String
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+    $columnToRemove: String
+  ''',
         };
         await MigrationTestUtils.createInitialState(
           migrationProtocols: [initialStateProtocols],
@@ -350,11 +350,11 @@ fields:
         var targetStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+  ''',
         };
         var createMigrationExitCode =
             await MigrationTestUtils.createMigrationFromProtocols(
@@ -413,12 +413,12 @@ fields:
       var initialStateProtocols = {
         'migrated_table':
             '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-  $columnToRemove: String
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+    $columnToRemove: String
+  ''',
       };
       await MigrationTestUtils.createInitialState(
         migrationProtocols: [initialStateProtocols],
@@ -428,11 +428,11 @@ fields:
       var targetStateProtocols = {
         'migrated_table':
             '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+  ''',
       };
       var createMigrationExitCode =
           await MigrationTestUtils.createMigrationFromProtocols(
@@ -461,11 +461,11 @@ fields:
       var initialStateProtocols = {
         'migrated_table':
             '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+  ''',
       };
       await MigrationTestUtils.createInitialState(
         migrationProtocols: [initialStateProtocols],
@@ -476,12 +476,12 @@ fields:
       var targetStateProtocols = {
         'migrated_table':
             '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-  $addedColumn: String
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+    $addedColumn: String
+  ''',
       };
       var createMigrationExitCode =
           await MigrationTestUtils.createMigrationFromProtocols(
@@ -512,11 +512,11 @@ fields:
         var initialStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+  ''',
         };
         await MigrationTestUtils.createInitialState(
           migrationProtocols: [initialStateProtocols],
@@ -527,12 +527,12 @@ fields:
         var targetStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-  $addedColumn: String
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+    $addedColumn: String
+  ''',
         };
         var createMigrationExitCode =
             await MigrationTestUtils.createMigrationFromProtocols(
@@ -593,12 +593,12 @@ fields:
         var initialStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-  $columnToModify: String
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+    $columnToModify: String
+  ''',
         };
         await MigrationTestUtils.createInitialState(
           migrationProtocols: [initialStateProtocols],
@@ -608,12 +608,12 @@ fields:
         var targetStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-  $columnToModify: String?
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+    $columnToModify: String?
+  ''',
         };
         var createMigrationExitCode =
             await MigrationTestUtils.createMigrationFromProtocols(
@@ -682,12 +682,12 @@ fields:
         var initialStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-  $columnToModify: String?
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+    $columnToModify: String?
+  ''',
         };
         await MigrationTestUtils.createInitialState(
           migrationProtocols: [initialStateProtocols],
@@ -697,12 +697,12 @@ fields:
         var targetStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-  $columnToModify: String
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+    $columnToModify: String
+  ''',
         };
         var createMigrationExitCode =
             await MigrationTestUtils.createMigrationFromProtocols(
@@ -772,12 +772,12 @@ fields:
         var initialStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-  $columnToModify: String?
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+    $columnToModify: String?
+  ''',
         };
         await MigrationTestUtils.createInitialState(
           migrationProtocols: [initialStateProtocols],
@@ -787,12 +787,12 @@ fields:
         var targetStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-  $columnToModify: String
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+    $columnToModify: String
+  ''',
         };
         var createMigrationExitCode =
             await MigrationTestUtils.createMigrationFromProtocols(
@@ -824,11 +824,11 @@ fields:
         var initialStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+  ''',
         };
         await MigrationTestUtils.createInitialState(
           migrationProtocols: [initialStateProtocols],
@@ -839,16 +839,16 @@ fields:
         var targetStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-indexes:
-  $addedIndex:
-    fields: anInt
-    unique: false
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+  indexes:
+    $addedIndex:
+      fields: anInt
+      unique: false
 
-''',
+  ''',
         };
         var createMigrationExitCode =
             await MigrationTestUtils.createMigrationFromProtocols(
@@ -908,15 +908,15 @@ indexes:
         var initialStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-indexes:
-  $indexToRemove:
-    fields: anInt
-    unique: false
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+  indexes:
+    $indexToRemove:
+      fields: anInt
+      unique: false
+  ''',
         };
         await MigrationTestUtils.createInitialState(
           migrationProtocols: [initialStateProtocols],
@@ -926,12 +926,12 @@ indexes:
         var targetStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
 
-''',
+  ''',
         };
         var createMigrationExitCode =
             await MigrationTestUtils.createMigrationFromProtocols(
@@ -990,11 +990,11 @@ fields:
         var initialStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+  ''',
         };
         await MigrationTestUtils.createInitialState(
           migrationProtocols: [initialStateProtocols],
@@ -1004,11 +1004,11 @@ fields:
         var targetStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int, relation(parent=migrated_table)
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int, relation(parent=migrated_table)
+  ''',
         };
         var createMigrationExitCode =
             await MigrationTestUtils.createMigrationFromProtocols(
@@ -1067,11 +1067,11 @@ fields:
         var initialStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int, relation(parent=migrated_table)
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int, relation(parent=migrated_table)
+  ''',
         };
         await MigrationTestUtils.createInitialState(
           migrationProtocols: [initialStateProtocols],
@@ -1081,11 +1081,11 @@ fields:
         var targetStateProtocols = {
           'migrated_table':
               '''
-class: MigratedTable
-table: $table 
-fields:
-  anInt: int
-''',
+  class: MigratedTable
+  table: $table
+  fields:
+    anInt: int
+  ''',
         };
         var createMigrationExitCode =
             await MigrationTestUtils.createMigrationFromProtocols(
@@ -1141,8 +1141,8 @@ fields:
         var tag = 'invalid-protocol';
         var targetStateProtocols = {
           'migrated_table': '''
-This is not a valid protocol file, in yaml format
-''',
+  This is not a valid protocol file, in yaml format
+  ''',
         };
 
         var createMigrationExitCode =
@@ -1175,12 +1175,12 @@ This is not a valid protocol file, in yaml format
         var tag = 'managed-false';
         var targetStateProtocols = {
           'migrated_table': '''
-class: MigratedTable
-managedMigration: false
-table: migrated_table
-fields:
-  name: String
-''',
+  class: MigratedTable
+  managedMigration: false
+  table: migrated_table
+  fields:
+    name: String
+  ''',
         };
 
         var createMigrationExitCode =
@@ -1221,11 +1221,11 @@ fields:
           var initialStateProtocols = {
             oldTable:
                 '''
-class: OldTable
-table: $oldTable
-fields:
-  name: String
-''',
+  class: OldTable
+  table: $oldTable
+  fields:
+    name: String
+  ''',
           };
           await MigrationTestUtils.createInitialState(
             migrationProtocols: [initialStateProtocols],
@@ -1237,19 +1237,19 @@ fields:
           var targetStateProtocols = {
             oldTable:
                 '''
-class: OldTable
-table: $oldTable
-fields:
-  name: String
-  newTableId: NewTable?, relation(optional)
-''',
+  class: OldTable
+  table: $oldTable
+  fields:
+    name: String
+    newTableId: NewTable?, relation(optional)
+  ''',
             newTable:
                 '''
-class: NewTable
-table: $newTable
-fields:
-  description: String
-''',
+  class: NewTable
+  table: $newTable
+  fields:
+    description: String
+  ''',
           };
 
           var createMigrationExitCode =
@@ -1288,6 +1288,93 @@ fields:
             relations,
             isNotEmpty,
             reason: 'Could not find relation from old_table to new_table.',
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given existing protocol model with camelCase column migrated to snake_case with column override',
+    () {
+      tearDown(() async {
+        await MigrationTestUtils.migrationTestCleanup(
+          resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+          serviceClient: serviceClient,
+        );
+      });
+
+      test(
+        'when creating and applying migration then database contains new column name.',
+        () async {
+          var tag = 'rename-column-with-override';
+          var table = 'migrated_table';
+          var initialStateProtocols = {
+            'migrated_table':
+                '''
+  class: MigratedTable
+  table: $table
+  fields:
+    camelCase: int
+  ''',
+          };
+          await MigrationTestUtils.createInitialState(
+            migrationProtocols: [initialStateProtocols],
+            tag: tag,
+          );
+
+          var targetStateProtocols = {
+            'migrated_table':
+                '''
+  class: MigratedTable
+  table: $table
+  fields:
+    camelCase: int, column=snake_case
+  ''',
+          };
+          var createMigrationExitCode =
+              await MigrationTestUtils.createMigrationFromProtocols(
+                protocols: targetStateProtocols,
+                tag: tag,
+                force: true,
+              );
+          expect(
+            createMigrationExitCode,
+            0,
+            reason: 'Failed to create migration, exit code was not 0.',
+          );
+
+          var applyMigrationExitCode =
+              await MigrationTestUtils.runApplyMigrations();
+          expect(
+            applyMigrationExitCode,
+            0,
+            reason: 'Failed to apply migration, exit code was not 0.',
+          );
+
+          var liveDefinition = await serviceClient.insights
+              .getLiveDatabaseDefinition();
+          var databaseTables = liveDefinition.tables.map((t) => t.name);
+          expect(
+            databaseTables,
+            contains(table),
+            reason: 'Could not find migration table in live table definitions.',
+          );
+
+          var migratedTable = liveDefinition.tables.firstWhere(
+            (t) => t.name == table,
+          );
+          var databaseColumns = migratedTable.columns.map((c) => c.name);
+          expect(
+            databaseColumns,
+            contains('snake_case'),
+            reason:
+                'Could not find snake_case column in migrated table columns.',
+          );
+          expect(
+            databaseColumns,
+            isNot(contains('camelCase')),
+            reason: 'Found camelCase column in migrated table columns.',
           );
         },
       );
