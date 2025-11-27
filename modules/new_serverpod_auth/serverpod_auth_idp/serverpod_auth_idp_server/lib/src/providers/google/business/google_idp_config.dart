@@ -86,6 +86,19 @@ class GoogleIdpConfig implements IdentityProviderBuilder<GoogleIdp> {
   }
 }
 
+/// Creates a new [GoogleIdpConfig] from keys on the `passwords.yaml` file.
+///
+/// This constructor requires that a [Serverpod] instance has already been initialized.
+class GoogleIdpConfigFromPasswords extends GoogleIdpConfig {
+  /// Creates a new [GoogleIdpConfigFromPasswords] instance.
+  GoogleIdpConfigFromPasswords()
+    : super(
+        clientSecret: GoogleClientSecret.fromJsonString(
+          Serverpod.instance.getPassword('googleClientSecret')!,
+        ),
+      );
+}
+
 /// Contains information about the credentials for the server to access Google's
 /// APIs. The secrets are typically loaded from
 /// `config/google_client_secret.json`. The file can be downloaded from Google's

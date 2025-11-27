@@ -193,6 +193,34 @@ class EmailIdpConfig implements IdentityProviderBuilder<EmailIdp> {
   }
 }
 
+/// Creates a new [EmailIdpConfig] instance from keys on the `passwords.yaml` file.
+///
+/// This constructor requires that a [Serverpod] instance has already been initialized.
+class EmailIdpConfigFromPasswords extends EmailIdpConfig {
+  /// Creates a new [EmailIdpConfigFromPasswords] instance.
+  EmailIdpConfigFromPasswords({
+    super.fallbackSecretHashPeppers,
+    super.registrationVerificationCodeLifetime,
+    super.registrationVerificationCodeAllowedAttempts,
+    super.registrationVerificationCodeGenerator,
+    super.passwordResetVerificationCodeLifetime,
+    super.passwordResetVerificationCodeAllowedAttempts,
+    super.passwordResetVerificationCodeGenerator,
+    super.sendRegistrationVerificationCode,
+    super.sendPasswordResetVerificationCode,
+    super.onPasswordResetCompleted,
+    super.failedLoginRateLimit,
+    super.passwordValidationFunction,
+    super.maxPasswordResetAttempts,
+    super.secretHashSaltLength,
+    super.onAfterAccountCreated,
+  }) : super(
+         secretHashPepper: Serverpod.instance.getPassword(
+           'emailSecretHashPepper',
+         )!,
+       );
+}
+
 /// A rolling rate limit which allows [maxAttempts] in the most recent [timeframe].
 class RateLimit {
   /// The maximum number of attempts allowed within the timeframe.

@@ -1,3 +1,5 @@
+import 'package:serverpod/serverpod.dart';
+
 import '../../common/integrations/token_manager_builder.dart';
 import '../session.dart';
 
@@ -75,6 +77,24 @@ class ServerSideSessionsConfig
     config: this,
     authUsers: authUsers,
   );
+}
+
+/// Creates a new [ServerSideSessionsConfig] from keys on the `passwords.yaml` file.
+///
+/// This constructor requires that a [Serverpod] instance has already been initialized.
+class ServerSideSessionsConfigFromPasswords extends ServerSideSessionsConfig {
+  /// Creates a new [ServerSideSessionsConfigFromPasswords] instance.
+  ServerSideSessionsConfigFromPasswords({
+    super.fallbackSessionKeyHashPeppers,
+    super.sessionKeySecretLength,
+    super.sessionKeyHashSaltLength,
+    super.defaultSessionLifetime,
+    super.defaultSessionInactivityTimeout,
+  }) : super(
+         sessionKeyHashPepper: Serverpod.instance.getPassword(
+           'serverSideSessionKeyHashPepper',
+         )!,
+       );
 }
 
 void _validateSessionKeyHashPepper(final String sessionKeyHashPepper) {

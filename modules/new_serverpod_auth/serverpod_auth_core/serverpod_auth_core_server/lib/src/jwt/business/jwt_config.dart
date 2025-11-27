@@ -181,6 +181,31 @@ class JwtConfig implements TokenManagerBuilder<JwtTokenManager> {
   );
 }
 
+/// Creates a new [JwtConfig] from keys on the `passwords.yaml` file.
+///
+/// This constructor requires that a [Serverpod] instance has already been initialized.
+class JwtConfigFromPasswords extends JwtConfig {
+  /// Creates a new [JwtConfigFromPasswords] instance.
+  JwtConfigFromPasswords({
+    super.fallbackRefreshTokenHashPeppers,
+    super.accessTokenLifetime,
+    super.refreshTokenLifetime,
+    super.issuer,
+    super.refreshTokenFixedSecretLength,
+    super.refreshTokenRotatingSecretLength,
+    super.refreshTokenRotatingSecretSaltLength,
+    super.extraClaimsProvider,
+    super.fallbackVerificationAlgorithms,
+  }) : super(
+         refreshTokenHashPepper: Serverpod.instance.getPassword(
+           'jwtRefreshTokenHashPepper',
+         )!,
+         algorithm: JwtAlgorithm.hmacSha512(
+           SecretKey(Serverpod.instance.getPassword('jwtPrivateKey')!),
+         ),
+       );
+}
+
 void _validateRefreshTokenHashPepper(final String refreshTokenHashPepper) {
   if (refreshTokenHashPepper.isEmpty) {
     throw ArgumentError.value(

@@ -1,3 +1,5 @@
+import 'package:serverpod/serverpod.dart';
+
 import '../../../../../core.dart';
 import 'passkey_idp.dart';
 
@@ -31,4 +33,16 @@ class PasskeyIdpConfig implements IdentityProviderBuilder<PasskeyIdp> {
       authUsers: authUsers,
     );
   }
+}
+
+/// Creates a new [PasskeyIdpConfig] from keys on the `passwords.yaml` file.
+///
+/// This constructor requires that a [Serverpod] instance has already been initialized.
+class PasskeyIdpConfigFromPasswords extends PasskeyIdpConfig {
+  /// Creates a new [PasskeyIdpConfigFromPasswords] instance.
+  PasskeyIdpConfigFromPasswords({
+    super.challengeLifetime,
+  }) : super(
+         hostname: Serverpod.instance.getPassword('passkeyHostname')!,
+       );
 }
