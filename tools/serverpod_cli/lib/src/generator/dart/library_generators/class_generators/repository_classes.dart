@@ -2,7 +2,7 @@ import 'package:code_builder/code_builder.dart';
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/config/generator_config_options.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
 
 class BuildRepositoryClass {
@@ -11,7 +11,7 @@ class BuildRepositoryClass {
 
   /// Returns true if the transaction parameter should be required.
   bool get _requireTransactionParameter =>
-      config.isFeatureEnabled(ServerpodFeature.requireTransactionParameter);
+      config.transactionParameterMode == TransactionParameterMode.required;
 
   /// Builds the transaction parameter for repository methods.
   ///

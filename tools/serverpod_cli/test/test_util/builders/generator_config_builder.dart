@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
+import 'package:serverpod_cli/src/config/generator_config_options.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
@@ -19,6 +20,7 @@ class GeneratorConfigBuilder {
   List<ServerpodFeature> _enabledFeatures;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
+  TransactionParameterMode _transactionParameterMode;
 
   GeneratorConfigBuilder()
     : _name = _defaultName,
@@ -46,7 +48,8 @@ class GeneratorConfigBuilder {
       ],
       _extraClasses = [],
       _enabledFeatures = [ServerpodFeature.database],
-      _enabledExperimentalFeatures = [];
+      _enabledExperimentalFeatures = [],
+      _transactionParameterMode = TransactionParameterMode.optional;
 
   GeneratorConfigBuilder withName(String name) {
     _name = name;
@@ -124,6 +127,13 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withTransactionParameterMode(
+    TransactionParameterMode mode,
+  ) {
+    _transactionParameterMode = mode;
+    return this;
+  }
+
   GeneratorConfig build() {
     return GeneratorConfig(
       name: _name,
@@ -138,6 +148,7 @@ class GeneratorConfigBuilder {
       enabledFeatures: _enabledFeatures,
       experimentalFeatures: _enabledExperimentalFeatures,
       relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,
+      transactionParameterMode: _transactionParameterMode,
     );
   }
 }

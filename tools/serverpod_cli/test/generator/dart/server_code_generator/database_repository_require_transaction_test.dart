@@ -1,6 +1,6 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/config/generator_config_options.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
@@ -28,10 +28,13 @@ void main() {
   );
 
   group(
-    'Given a class with table name when generating code with requireTransactionParameter feature disabled',
+    'Given a class with table name when generating code with transaction_parameter set to optional',
     () {
       var tableName = 'example_table';
-      var config = GeneratorConfigBuilder().withName(projectName).build();
+      var config = GeneratorConfigBuilder()
+          .withName(projectName)
+          .withTransactionParameterMode(TransactionParameterMode.optional)
+          .build();
       var models = [
         ModelClassDefinitionBuilder()
             .withFileName(testClassFileName)
@@ -111,15 +114,12 @@ void main() {
   );
 
   group(
-    'Given a class with table name when generating code with requireTransactionParameter feature enabled',
+    'Given a class with table name when generating code with transaction_parameter set to required',
     () {
       var tableName = 'example_table';
       var config = GeneratorConfigBuilder()
           .withName(projectName)
-          .withEnabledFeatures([
-            ServerpodFeature.database,
-            ServerpodFeature.requireTransactionParameter,
-          ])
+          .withTransactionParameterMode(TransactionParameterMode.required)
           .build();
       var models = [
         ModelClassDefinitionBuilder()
