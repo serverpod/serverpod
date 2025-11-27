@@ -635,7 +635,7 @@ class MigrationVersion {
       if (previousFile.existsSync()) {
         var content = await previousFile.readAsString();
         if (content.trim().isNotEmpty) {
-          setupContent.writeln(content);
+          setupContent.write(content);
         }
       }
 
@@ -658,9 +658,9 @@ class MigrationVersion {
         var migrationContent = await migrationFileToAccumulate.readAsString();
         if (migrationContent.trim().isNotEmpty) {
           if (setupContent.isNotEmpty) {
-            setupContent.writeln(); // Add separator
+            setupContent.write('\n\n'); // Add separator
           }
-          setupContent.writeln(migrationContent);
+          setupContent.write(migrationContent);
         }
       }
 
