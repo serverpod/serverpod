@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
-import '../email.dart';
+import '../business/email_idp.dart';
 
 /// Base endpoint for email-based accounts.
 ///

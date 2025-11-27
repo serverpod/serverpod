@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
-import '../google.dart';
+import '../business/google_idp.dart';
 
 /// Base endpoint for Google Account-based authentication.
 ///

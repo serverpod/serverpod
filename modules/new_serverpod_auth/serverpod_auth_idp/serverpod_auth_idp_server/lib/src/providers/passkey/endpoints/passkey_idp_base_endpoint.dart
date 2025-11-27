@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
-import '../passkey.dart';
+import '../business/passkey_idp.dart';
 
 /// Base endpoint for Passkey-based authentication.
 abstract class PasskeyIdpBaseEndpoint extends Endpoint {
