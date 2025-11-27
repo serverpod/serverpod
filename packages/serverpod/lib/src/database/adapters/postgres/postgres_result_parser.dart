@@ -32,18 +32,11 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
         throw ArgumentError('Cannot resolve list relation without id.');
       }
 
-      final relationList = _extractRelationalList(
+      resolvedTableRow[relationField] = _extractRelationalList(
         primaryKey,
         relationTable,
         resolvedListRelations,
       );
-
-      // Parse each item in the relation list for deserialization
-      resolvedTableRow[relationField] = relationList.map((relation) {
-        if (relation is! Map<String, dynamic>) return relation;
-
-        return relation;
-      }).toList();
     } else {
       resolvedTableRow[relationField] = resolvePrefixedQueryRow(
         relationTable,
