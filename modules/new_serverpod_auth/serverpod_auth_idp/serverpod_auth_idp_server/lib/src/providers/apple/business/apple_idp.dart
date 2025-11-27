@@ -142,3 +142,29 @@ extension AppleIdpGetter on AuthServices {
   /// Returns the AppleIdp instance from the AuthServices.
   AppleIdp get appleIdp => AuthServices.getIdentityProvider<AppleIdp>();
 }
+
+/// Extension to configure AppleIdp routes on the web server.
+extension AppleIdpConfigureRoutes on Serverpod {
+  /// Configures the routes for the AppleIdp. Must be called after the web
+  /// server is initialized. If any of the paths are not provided, its route
+  /// will not be added.
+  void configureAppleIdpRoutes({
+    final String? revokedNotificationRoutePath = '/hooks/apple-notification',
+    final String? webAuthenticationCallbackRoutePath = '/auth/apple/callback',
+  }) {
+    final appleIdp = AuthServices.instance.appleIdp;
+
+    if (revokedNotificationRoutePath != null) {
+      webServer.addRoute(
+        appleIdp.revokedNotificationRoute(),
+        revokedNotificationRoutePath,
+      );
+    }
+    if (webAuthenticationCallbackRoutePath != null) {
+      webServer.addRoute(
+        appleIdp.webAuthenticationCallbackRoute(),
+        webAuthenticationCallbackRoutePath,
+      );
+    }
+  }
+}
