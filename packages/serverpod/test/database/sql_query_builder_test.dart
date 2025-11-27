@@ -889,7 +889,7 @@ void main() {
           query,
           'DELETE FROM "${table.tableName}" WHERE TRUE '
           'RETURNING "${table.tableName}"."id" AS "${table.tableName}.id", '
-          '"${table.tableName}"."user_name" AS "${table.tableName}.user_name", '
+          '"${table.tableName}"."user_name" AS "${table.tableName}.userName", '
           '"${table.tableName}"."age" AS "${table.tableName}.age"',
         );
       },
@@ -1069,7 +1069,7 @@ void main() {
         expect(
           query,
           'SELECT "$tableName"."id" AS "$tableName.id", '
-          '"$tableName"."user_name" AS "$tableName.user_name", '
+          '"$tableName"."user_name" AS "$tableName.userName", '
           '"$tableName"."age" AS "$tableName.age" '
           'FROM "$tableName"',
         );
