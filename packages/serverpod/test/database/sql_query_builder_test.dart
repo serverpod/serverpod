@@ -879,6 +879,23 @@ void main() {
     );
 
     test(
+      'when deleting a table with explicit column names then the explicit column name is used in the sql',
+      () {
+        final table = TableWithColumnOverride();
+        final query = DeleteQueryBuilder(
+          table: table,
+        ).withReturn(Returning.all).withWhere(Constant.bool(true)).build();
+        expect(
+          query,
+          'DELETE FROM "${table.tableName}" WHERE TRUE '
+          'RETURNING "${table.tableName}"."id" AS "${table.tableName}.id", '
+          '"${table.tableName}"."user_name" AS "${table.tableName}.user_name", '
+          '"${table.tableName}"."age" AS "${table.tableName}.age"',
+        );
+      },
+    );
+
+    test(
       'when column where expression has different table as base then exception is thrown.',
       () {
         var queryBuilder = DeleteQueryBuilder(

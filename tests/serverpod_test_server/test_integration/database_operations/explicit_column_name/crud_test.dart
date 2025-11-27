@@ -1,7 +1,6 @@
-import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
-import '../../../../../packages/serverpod/lib/src/database/sql_query_builder.dart';
+
 import '../../test_tools/serverpod_test_tools.dart';
 
 void main() {
@@ -12,7 +11,6 @@ void main() {
 
       late TableWithExplicitColumnName data;
       late TableWithExplicitColumnNameRepository db;
-      late TableWithExplicitColumnNameTable table;
 
       setUp(() {
         data = TableWithExplicitColumnName(
@@ -20,7 +18,6 @@ void main() {
           description: 'description',
         );
         db = TableWithExplicitColumnName.db;
-        table = TableWithExplicitColumnName.t;
       });
 
       group('when inserting', () {
@@ -61,19 +58,6 @@ void main() {
           expect(result, isNotNull);
           final retrieved = await db.findById(session, inserted.id!);
           expect(retrieved, isNull);
-        });
-
-        test('the explicit column name is used in the sql', () {
-          final query = DeleteQueryBuilder(
-            table: table,
-          ).withReturn(Returning.all).withWhere(Constant.bool(true)).build();
-          expect(
-            query,
-            'DELETE FROM "${table.tableName}" WHERE TRUE '
-            'RETURNING "${table.tableName}"."id" AS "${table.tableName}.id", '
-            '"${table.tableName}"."user_name" AS "${table.tableName}.user_name", '
-            '"${table.tableName}"."user_description" AS "${table.tableName}.user_description"',
-          );
         });
       });
     },
