@@ -60,7 +60,7 @@ class Table<T_ID> {
 
   /// Cached flag indicating whether any columns have explicit column names
   /// that differ from their field names. Computed lazily on first access.
-  late final bool _hasColumnMapping = _computeHasColumnMapping();
+  late final bool hasColumnMapping = _computeHasColumnMapping();
 
   /// Creates a new [Table]. Typically, this is done only by generated code.
   Table({
@@ -126,7 +126,7 @@ class Table<T_ID> {
     Map<String, dynamic> rowData,
   ) {
     // If no column mapping is needed, return the original data
-    if (!_hasColumnMapping) return rowData;
+    if (!hasColumnMapping) return rowData;
 
     // Create new map with field names
     return {

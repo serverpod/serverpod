@@ -355,9 +355,11 @@ class InsertQueryBuilder {
         })
         .join(', ');
 
+    var returning = buildReturningClause(_table);
+
     return columnNames.isEmpty
-        ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES RETURNING *'
-        : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values RETURNING *';
+        ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES RETURNING $returning'
+        : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values RETURNING $returning';
   }
 
   /// Builds the insert SQL query.
@@ -541,6 +543,22 @@ String _buildColumnAliases(List<Column> columns) {
               DatabaseConstants.pgsqlMaxNameLimitation,
             )}"',
       )
+      .join(', ');
+}
+
+/// Builds the returning clause for a query.
+String buildReturningClause(Table table, {String? tableAlias}) {
+  if (!table.hasColumnMapping) return '*';
+  return table.columns
+      .map((column) {
+        final queryColumnName = tableAlias != null
+            ? '$tableAlias.${column.columnName}'
+            : column.toString();
+        return '$queryColumnName AS "${truncateIdentifier(
+          column.fieldName,
+          DatabaseConstants.pgsqlMaxNameLimitation,
+        )}"';
+      })
       .join(', ');
 }
 

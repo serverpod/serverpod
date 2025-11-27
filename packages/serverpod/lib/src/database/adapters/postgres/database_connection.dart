@@ -207,8 +207,11 @@ class DatabaseConnection {
         .map((columnName) => '"$columnName" = data."$columnName"')
         .join(', ');
 
+    const tableAlias = 't';
+    var returning = buildReturningClause(table, tableAlias: tableAlias);
+
     var query =
-        'UPDATE "${table.tableName}" AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
+        'UPDATE "${table.tableName}" AS $tableAlias SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = $tableAlias.id RETURNING $returning';
 
     return (await _mappedResultsQuery(
           session,
