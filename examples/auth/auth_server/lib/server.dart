@@ -90,11 +90,11 @@ void run(List<String> args) async {
   );
 
   AuthServices.set(
-    tokenManagers: [
+    tokenManagerBuilders: [
       serverSideSessionsConfig,
       jwtTokenConfig,
     ],
-    identityProviders: [
+    identityProviderBuilders: [
       googleIdpConfig,
       appleIdpConfig,
       emailIdpConfig,

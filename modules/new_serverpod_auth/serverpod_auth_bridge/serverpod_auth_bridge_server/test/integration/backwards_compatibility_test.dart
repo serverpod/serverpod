@@ -22,17 +22,17 @@ void main() {
     setUp(() {
       session = sessionBuilder.build();
       AuthServices.set(
-        identityProviders: [
+        identityProviderBuilders: [
           newEmailIdpConfig,
         ],
-        tokenManagers: [tokenManagerConfig],
+        tokenManagerBuilders: [tokenManagerConfig],
       );
     });
 
     tearDown(() {
       AuthServices.set(
-        identityProviders: [],
-        tokenManagers: [tokenManagerConfig],
+        identityProviderBuilders: [],
+        tokenManagerBuilders: [tokenManagerConfig],
       );
     });
 

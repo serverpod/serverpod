@@ -27,69 +27,77 @@ class AuthServices {
 
   /// Creates a new [AuthServices] instance and sets it as the global instance.
   ///
-  /// [tokenManagers] is the list of factories for the token managers. The first
-  /// token manager in the list will be used as the primary token manager, and
-  /// the rest as additional token managers.
-  /// [identityProviders] is a list of factories for the identity providers.
-  /// [authUsersConfig] is the configuration for the auth users manager.
-  /// [userProfileConfig] is the configuration for the user profiles manager.
+  /// [tokenManagerBuilders] is the list of token manager builders. The first in
+  /// the list will be used as the primary token manager, and the others as
+  /// additional token managers.
+  ///
+  /// [identityProviderBuilders] is a list of [IdentityProviderBuilder] that
+  /// build the identity providers used by authentication endpoints. Each one
+  /// creates a provider instance with the appropriate token manager dependency.
+  ///
+  /// [authUsersConfig] is the configuration for the auth users manager that
+  /// will be used to create the auth users manager.
+  ///
+  /// [userProfileConfig] is the configuration for the user profiles manager
+  /// that will be used to create the user profiles manager.
   ///
   /// These are passed to the [AuthServices] constructor to create the instance.
-  /// {@macro auth_services_constructor}
   static void set({
-    required final List<TokenManagerBuilder> tokenManagers,
-    final List<IdentityProviderBuilder> identityProviders = const [],
+    required final List<TokenManagerBuilder> tokenManagerBuilders,
+    final List<IdentityProviderBuilder> identityProviderBuilders = const [],
     final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
     final UserProfileConfig userProfileConfig = const UserProfileConfig(),
   }) {
     final instance = AuthServices(
+      primaryTokenManagerBuilder: tokenManagerBuilders.first,
+      identityProviderBuilders: identityProviderBuilders,
+      additionalTokenManagerBuilders: tokenManagerBuilders.skip(1).toList(),
       authUsers: AuthUsers(config: authUsersConfig),
       userProfiles: UserProfiles(config: userProfileConfig),
-      primaryTokenManager: tokenManagers.first,
-      identityProviders: identityProviders,
-      additionalTokenManagers: tokenManagers.skip(1).toList(),
     );
     _instance = instance;
   }
 
   /// Creates a new [AuthServices] instance.
   ///
-  /// Use [AuthServices.set] to create a new instance and set it as the global instance.
-  /// {@template auth_services_constructor}
+  /// Use [AuthServices.set] to create a new instance and set it as the global
+  /// instance.
+  ///
+  /// [primaryTokenManagerBuilder] is the primary token manager builder that
+  /// will build the token manager used by identity providers for issuing new
+  /// tokens. The builder is used to build the token manager instance with the
+  /// necessary dependencies.
+  ///
+  /// [identityProviderBuilders] is a list of [IdentityProviderBuilder] that
+  /// build the identity providers used by authentication endpoints. Each one
+  /// creates a provider instance with the appropriate token manager dependency.
+  ///
+  /// [additionalTokenManagerBuilders] is a list of additional token manager
+  /// builders that are used to build additional token managers that handle
+  /// token lifecycle operations alongside the [primaryTokenManagerBuilder].
+  /// These additional token managers are used to validate tokens in the same
+  /// order they are represented in the list.
+  ///
   /// [authUsers] is the default manager for managing auth users.
   ///
   /// [userProfiles] is the default manager for managing user profiles.
-  ///
-  /// [primaryTokenManager] is the primary token manager used by identity providers
-  /// for issuing new tokens. The factory is used to construct the token manager
-  /// instance with the necessary dependencies.
-  ///
-  /// [identityProviders] is a list of [IdentityProviderBuilder] instances that
-  /// build the identity providers used by authentication endpoints. Each builder
-  /// creates a provider instance with the appropriate token manager dependency.
-  ///
-  /// [additionalTokenManagers] is a list of additional token managers factories
-  /// that are used to construct additional token managers that handle token lifecycle
-  /// operations alongside the [primaryTokenManager]. These additional token managers
-  /// are used to validate tokens in the same order they are represented in the list.
-  /// {@endtemplate}
   AuthServices({
+    required final TokenManagerBuilder primaryTokenManagerBuilder,
+    final List<IdentityProviderBuilder> identityProviderBuilders = const [],
+    final List<TokenManagerBuilder> additionalTokenManagerBuilders = const [],
     this.authUsers = const AuthUsers(),
     this.userProfiles = const UserProfiles(),
-    required final TokenManagerBuilder primaryTokenManager,
-    final List<IdentityProviderBuilder> identityProviders = const [],
-    final List<TokenManagerBuilder> additionalTokenManagers = const [],
   }) {
     tokenManager = MultiTokenManager(
-      primaryTokenManager: primaryTokenManager.build(authUsers: authUsers),
-      additionalTokenManagers: additionalTokenManagers
-          .map(
-            (final factory) => factory.build(authUsers: authUsers),
-          )
+      primaryTokenManager: primaryTokenManagerBuilder.build(
+        authUsers: authUsers,
+      ),
+      additionalTokenManagers: additionalTokenManagerBuilders
+          .map((final factory) => factory.build(authUsers: authUsers))
           .toList(),
     );
 
-    for (final provider in identityProviders) {
+    for (final provider in identityProviderBuilders) {
       _providers[provider.type] = provider.build(
         tokenManager: tokenManager,
         authUsers: authUsers,
@@ -105,9 +113,10 @@ class AuthServices {
     final provider = instance._providers[T];
     if (provider == null) {
       throw StateError(
-        'Provider for $T is not registered. '
-        'To register this provider, add its IdentityProviderBuilder to the identityProviders list when calling AuthServices.set(). '
-        'Example: AuthServices.set(defaultTokenManager: ..., identityProviders: [YourProviderBuilder()])',
+        'Provider for $T is not registered. To register this provider, add its '
+        'IdentityProviderBuilder to the identityProvidersBuilders list when calling '
+        'AuthServices.set(). Example: AuthServices.set(tokenManagerBuilders: ..., '
+        'tokenManagerBuilders: ..., identityProviderBuilders: [YourProviderBuilder()]).',
       );
     }
     return provider as T;

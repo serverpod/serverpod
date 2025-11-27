@@ -13,8 +13,8 @@ void main() {
 
   tearDown(() {
     AuthServices.set(
-      tokenManagers: [tokenManagerConfig],
-      identityProviders: [],
+      tokenManagerBuilders: [tokenManagerConfig],
+      identityProviderBuilders: [],
     );
   });
 
@@ -64,8 +64,8 @@ void main() {
               },
         );
         AuthServices.set(
-          identityProviders: [config],
-          tokenManagers: [tokenManagerConfig],
+          identityProviderBuilders: [config],
+          tokenManagerBuilders: [tokenManagerConfig],
         );
       });
 
@@ -178,8 +178,8 @@ void main() {
               AuthBackwardsCompatibility.clearLegacyPassword,
         );
         AuthServices.set(
-          identityProviders: [config],
-          tokenManagers: [tokenManagerConfig],
+          identityProviderBuilders: [config],
+          tokenManagerBuilders: [tokenManagerConfig],
         );
       });
 

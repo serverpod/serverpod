@@ -14,8 +14,8 @@ final tokenManagerConfig = ServerSideSessionsConfig(
 void main() {
   setUp(() async {
     AuthServices.set(
-      tokenManagers: [tokenManagerConfig],
-      identityProviders: [
+      tokenManagerBuilders: [tokenManagerConfig],
+      identityProviderBuilders: [
         const EmailIdpConfig(
           secretHashPepper: 'test',
         ),
@@ -25,8 +25,8 @@ void main() {
 
   tearDown(() async {
     AuthServices.set(
-      tokenManagers: [tokenManagerConfig],
-      identityProviders: [],
+      tokenManagerBuilders: [tokenManagerConfig],
+      identityProviderBuilders: [],
     );
   });
 
@@ -58,8 +58,8 @@ void main() {
                 },
           );
           AuthServices.set(
-            identityProviders: [config],
-            tokenManagers: [tokenManagerConfig],
+            identityProviderBuilders: [config],
+            tokenManagerBuilders: [tokenManagerConfig],
           );
 
           clientReceivedRequestId = await endpoints.emailAccount
@@ -125,8 +125,8 @@ void main() {
                 },
           );
           AuthServices.set(
-            identityProviders: [config],
-            tokenManagers: [tokenManagerConfig],
+            identityProviderBuilders: [config],
+            tokenManagerBuilders: [tokenManagerConfig],
           );
 
           clientReceivedRequestId = await endpoints.emailAccount
@@ -186,8 +186,8 @@ void main() {
           registrationVerificationCodeLifetime: verificationCodeLifetime,
         );
         AuthServices.set(
-          identityProviders: [config],
-          tokenManagers: [tokenManagerConfig],
+          identityProviderBuilders: [config],
+          tokenManagerBuilders: [tokenManagerConfig],
         );
 
         await endpoints.emailAccount.startRegistration(
@@ -384,8 +384,8 @@ void main() {
               },
         );
         AuthServices.set(
-          identityProviders: [config],
-          tokenManagers: [tokenManagerConfig],
+          identityProviderBuilders: [config],
+          tokenManagerBuilders: [tokenManagerConfig],
         );
       });
 
@@ -538,8 +538,8 @@ void main() {
           secretHashPepper: 'test',
         );
         AuthServices.set(
-          identityProviders: [config],
-          tokenManagers: [tokenManagerConfig],
+          identityProviderBuilders: [config],
+          tokenManagerBuilders: [tokenManagerConfig],
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -710,8 +710,8 @@ void main() {
           secretHashPepper: 'test',
         );
         AuthServices.set(
-          identityProviders: [config],
-          tokenManagers: [tokenManagerConfig],
+          identityProviderBuilders: [config],
+          tokenManagerBuilders: [tokenManagerConfig],
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -942,8 +942,8 @@ void main() {
         );
 
         AuthServices.set(
-          identityProviders: [config],
-          tokenManagers: [tokenManagerConfig],
+          identityProviderBuilders: [config],
+          tokenManagerBuilders: [tokenManagerConfig],
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -1049,8 +1049,8 @@ extension on TestEndpoints {
     );
 
     AuthServices.set(
-      identityProviders: [config],
-      tokenManagers: [tokenManagerConfig],
+      identityProviderBuilders: [config],
+      tokenManagerBuilders: [tokenManagerConfig],
     );
 
     await emailAccount.startRegistration(
@@ -1100,8 +1100,8 @@ extension on TestEndpoints {
           },
     );
     AuthServices.set(
-      identityProviders: [config],
-      tokenManagers: [tokenManagerConfig],
+      identityProviderBuilders: [config],
+      tokenManagerBuilders: [tokenManagerConfig],
     );
 
     await emailAccount.startPasswordReset(

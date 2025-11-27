@@ -23,7 +23,7 @@ void run(final List<String> args) async {
   const universalHashPepper = 'test-pepper';
 
   AuthServices.set(
-    tokenManagers: [
+    tokenManagerBuilders: [
       ServerSideSessionsConfig(
         sessionKeyHashPepper: universalHashPepper,
       ),
@@ -34,7 +34,7 @@ void run(final List<String> args) async {
         ),
       ),
     ],
-    identityProviders: [
+    identityProviderBuilders: [
       EmailIdpConfig(
         secretHashPepper: pod.getPassword(
           'serverpod_auth_idp_email_secretHashPepper',

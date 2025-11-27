@@ -22,10 +22,8 @@ void main() {
 
   setUpAll(() async {
     new_auth_core.AuthServices.set(
-      tokenManagers: [tokenManagerConfig],
-      identityProviders: [
-        newEmailIdpConfig,
-      ],
+      tokenManagerBuilders: [tokenManagerConfig],
+      identityProviderBuilders: [newEmailIdpConfig],
     );
     newEmailIdp = new_auth_core.AuthServices.instance.emailIdp;
     AuthMigrations.config = AuthMigrationConfig(emailIdp: newEmailIdp);
@@ -33,8 +31,8 @@ void main() {
 
   tearDownAll(() async {
     new_auth_core.AuthServices.set(
-      tokenManagers: [tokenManagerConfig],
-      identityProviders: [],
+      tokenManagerBuilders: [tokenManagerConfig],
+      identityProviderBuilders: [],
     );
   });
 

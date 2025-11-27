@@ -30,11 +30,11 @@ void main() {
 
         setUp(() {
           AuthServices.set(
-            tokenManagers: [
+            tokenManagerBuilders: [
               FakeTokenManagerBuilder(tokenStorage: fakeTokenStorage),
               ...tokenManagerBuilders,
             ],
-            identityProviders: identityProviderBuilders,
+            identityProviderBuilders: identityProviderBuilders,
           );
 
           authServices = AuthServices.instance;
@@ -51,22 +51,22 @@ void main() {
 
         setUp(() {
           AuthServices.set(
-            tokenManagers: [
+            tokenManagerBuilders: [
               FakeTokenManagerBuilder(tokenStorage: FakeTokenStorage()),
               ...tokenManagerBuilders,
             ],
-            identityProviders: identityProviderBuilders,
+            identityProviderBuilders: identityProviderBuilders,
           );
           firstAuthServices = AuthServices.instance;
 
           AuthServices.set(
-            tokenManagers: [
+            tokenManagerBuilders: [
               FakeTokenManagerBuilder(
                 tokenStorage: FakeTokenStorage(),
               ),
               ...tokenManagerBuilders,
             ],
-            identityProviders: identityProviderBuilders,
+            identityProviderBuilders: identityProviderBuilders,
           );
           secondAuthServices = AuthServices.instance;
         });
@@ -102,8 +102,11 @@ void main() {
         ];
 
         AuthServices.set(
-          tokenManagers: [fakeTokenManagerBuilder, ...tokenManagerBuilders],
-          identityProviders: identityProviderBuilders,
+          tokenManagerBuilders: [
+            fakeTokenManagerBuilder,
+            ...tokenManagerBuilders,
+          ],
+          identityProviderBuilders: identityProviderBuilders,
         );
       });
 
@@ -196,8 +199,8 @@ void main() {
         ];
 
         AuthServices.set(
-          tokenManagers: [fakeTokenManagerBuilder, ...tokenManagers],
-          identityProviders: multipleProviderBuilders,
+          tokenManagerBuilders: [fakeTokenManagerBuilder, ...tokenManagers],
+          identityProviderBuilders: multipleProviderBuilders,
         );
       });
 
@@ -239,8 +242,8 @@ void main() {
         ];
 
         AuthServices.set(
-          tokenManagers: [fakeTokenManagerBuilder, ...tokenManagers],
-          identityProviders: identityProviderBuilders,
+          tokenManagerBuilders: [fakeTokenManagerBuilder, ...tokenManagers],
+          identityProviderBuilders: identityProviderBuilders,
         );
 
         authServices = AuthServices.instance;

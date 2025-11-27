@@ -22,10 +22,10 @@ void main() {
 
   setUpAll(() async {
     new_auth_core.AuthServices.set(
-      identityProviders: [
+      identityProviderBuilders: [
         newEmailIdpConfig,
       ],
-      tokenManagers: [tokenManagerConfig],
+      tokenManagerBuilders: [tokenManagerConfig],
     );
     newEmailIdp = new_auth_core.AuthServices.instance.emailIdp;
     AuthMigrations.config = AuthMigrationConfig(emailIdp: newEmailIdp);
@@ -33,8 +33,8 @@ void main() {
 
   tearDownAll(() async {
     new_auth_core.AuthServices.set(
-      identityProviders: [],
-      tokenManagers: [tokenManagerConfig],
+      identityProviderBuilders: [],
+      tokenManagerBuilders: [tokenManagerConfig],
     );
   });
   withServerpod(
