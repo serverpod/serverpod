@@ -1,14 +1,14 @@
-import 'client_auth_info_storage.dart';
+import 'client_auth_success_storage.dart';
 
-/// Implements the cache layer for a [ClientAuthInfoStorage] implementation. The
+/// Implements the cache layer for a [ClientAuthSuccessStorage] implementation. The
 /// [get] methods return is cached, so the operation can be performed with no
 /// performance concerns.
-class CachedClientAuthInfoStorage implements ClientAuthInfoStorage {
+class CachedClientAuthSuccessStorage implements ClientAuthSuccessStorage {
   /// The delegate to perform the actual (un-cached) storage operations.
-  final ClientAuthInfoStorage _delegate;
+  final ClientAuthSuccessStorage _delegate;
 
-  /// Creates a new [CachedClientAuthInfoStorage].
-  CachedClientAuthInfoStorage({required ClientAuthInfoStorage delegate})
+  /// Creates a new [CachedClientAuthSuccessStorage].
+  CachedClientAuthSuccessStorage({required ClientAuthSuccessStorage delegate})
     : _delegate = delegate;
 
   /// Control whether the value can be recovered from the internal cache on

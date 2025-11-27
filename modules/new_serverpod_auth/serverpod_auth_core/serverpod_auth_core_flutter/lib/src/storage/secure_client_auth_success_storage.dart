@@ -4,17 +4,17 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 /// Exposes the [FlutterSecureStorage] class for convenience.
 export 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-/// A [ClientAuthInfoStorage] based on [FlutterSecureStorage].
-class SecureClientAuthInfoStorage extends CachedClientAuthInfoStorage {
-  /// Creates a [SecureClientAuthInfoStorage] instance.
-  SecureClientAuthInfoStorage({
+/// A [ClientAuthSuccessStorage] based on [FlutterSecureStorage].
+class SecureClientAuthSuccessStorage extends CachedClientAuthSuccessStorage {
+  /// Creates a [SecureClientAuthSuccessStorage] instance.
+  SecureClientAuthSuccessStorage({
     /// Custom secure storage to use.
     FlutterSecureStorage? secureStorage,
 
     /// Override the default key name to store the auth info on the storage.
     String? authSuccessStorageKey,
   }) : super(
-         delegate: KeyValueClientAuthInfoStorage(
+         delegate: KeyValueClientAuthSuccessStorage(
            keyValueStorage: FlutterSecureKeyValueStorage(secureStorage),
            authSuccessStorageKey: authSuccessStorageKey,
          ),

@@ -2,7 +2,7 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 import 'package:test/test.dart';
 
 /// A simple in-memory storage for testing
-class InMemoryClientAuthInfoStorage implements ClientAuthInfoStorage {
+class InMemoryClientAuthSuccessStorage implements ClientAuthSuccessStorage {
   AuthSuccess? _data;
 
   @override
@@ -19,10 +19,10 @@ class InMemoryClientAuthInfoStorage implements ClientAuthInfoStorage {
 void main() {
   group('Given a platform-agnostic ClientAuthSessionManager', () {
     late ClientAuthSessionManager sessionManager;
-    late InMemoryClientAuthInfoStorage storage;
+    late InMemoryClientAuthSuccessStorage storage;
 
     setUp(() {
-      storage = InMemoryClientAuthInfoStorage();
+      storage = InMemoryClientAuthSuccessStorage();
       sessionManager = ClientAuthSessionManager(
         storage: storage,
       );
@@ -115,13 +115,13 @@ void main() {
     );
   });
 
-  group('Given a CachedClientAuthInfoStorage', () {
-    late CachedClientAuthInfoStorage cachedStorage;
-    late InMemoryClientAuthInfoStorage delegateStorage;
+  group('Given a CachedClientAuthSuccessStorage', () {
+    late CachedClientAuthSuccessStorage cachedStorage;
+    late InMemoryClientAuthSuccessStorage delegateStorage;
 
     setUp(() {
-      delegateStorage = InMemoryClientAuthInfoStorage();
-      cachedStorage = CachedClientAuthInfoStorage(delegate: delegateStorage);
+      delegateStorage = InMemoryClientAuthSuccessStorage();
+      cachedStorage = CachedClientAuthSuccessStorage(delegate: delegateStorage);
     });
 
     test('when calling get multiple times then data is cached.', () async {
@@ -190,11 +190,11 @@ void main() {
     );
   });
 
-  group('Given a KeyValueClientAuthInfoStorage', () {
+  group('Given a KeyValueClientAuthSuccessStorage', () {
     test(
       'when storing and retrieving AuthSuccess then data is preserved.',
       () async {
-        final storage = KeyValueClientAuthInfoStorage(
+        final storage = KeyValueClientAuthSuccessStorage(
           keyValueStorage: _InMemoryKeyValueStorage(),
         );
 
@@ -220,7 +220,7 @@ void main() {
     );
 
     test('when setting null then stored data is null.', () async {
-      final storage = KeyValueClientAuthInfoStorage(
+      final storage = KeyValueClientAuthSuccessStorage(
         keyValueStorage: _InMemoryKeyValueStorage(),
       );
 

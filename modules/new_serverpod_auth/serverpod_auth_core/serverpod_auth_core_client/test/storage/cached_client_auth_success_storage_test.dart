@@ -4,11 +4,11 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 import '../test_utils/storage_delegate.dart';
 
 void main() {
-  late TestCachedAuthInfoStorage storage;
+  late TestCachedAuthSuccessStorage storage;
 
-  group('Given an uninitialized CachedClientAuthInfoStorage', () {
+  group('Given an uninitialized CachedClientAuthSuccessStorage', () {
     setUp(() {
-      storage = TestCachedAuthInfoStorage.create();
+      storage = TestCachedAuthSuccessStorage.create();
     });
 
     test('when calling get then it returns null', () async {
@@ -39,9 +39,9 @@ void main() {
     );
   });
 
-  group('Given a CachedClientAuthInfoStorage with data in storage', () {
+  group('Given a CachedClientAuthSuccessStorage with data in storage', () {
     setUp(() async {
-      storage = TestCachedAuthInfoStorage.create();
+      storage = TestCachedAuthSuccessStorage.create();
       await storage.delegate.set(_authSuccess);
     });
 
@@ -106,7 +106,7 @@ void main() {
 
   group('Given storage operations that throw exceptions', () {
     setUp(() {
-      storage = TestCachedAuthInfoStorage.create();
+      storage = TestCachedAuthSuccessStorage.create();
     });
 
     test('when calling set then it propagates the exception.', () async {
@@ -141,16 +141,16 @@ void main() {
   });
 }
 
-/// A [CachedClientAuthInfoStorage] implementation for testing that exposes the
+/// A [CachedClientAuthSuccessStorage] implementation for testing that exposes the
 /// underlying delegate instance.
-class TestCachedAuthInfoStorage extends CachedClientAuthInfoStorage {
-  late final TestClientAuthInfoStorage delegate;
+class TestCachedAuthSuccessStorage extends CachedClientAuthSuccessStorage {
+  late final TestClientAuthSuccessStorage delegate;
 
-  TestCachedAuthInfoStorage._({required super.delegate});
+  TestCachedAuthSuccessStorage._({required super.delegate});
 
-  factory TestCachedAuthInfoStorage.create() {
-    final delegate = TestClientAuthInfoStorage();
-    final testStorage = TestCachedAuthInfoStorage._(delegate: delegate);
+  factory TestCachedAuthSuccessStorage.create() {
+    final delegate = TestClientAuthSuccessStorage();
+    final testStorage = TestCachedAuthSuccessStorage._(delegate: delegate);
     testStorage.delegate = delegate;
     return testStorage;
   }

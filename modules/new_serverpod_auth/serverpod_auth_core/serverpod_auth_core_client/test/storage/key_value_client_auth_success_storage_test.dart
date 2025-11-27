@@ -5,35 +5,38 @@ import '../test_utils/storage_delegate.dart';
 
 void main() {
   const key = 'test_key';
-  late TestKeyValueAuthInfoStorage storage;
+  late TestKeyValueAuthSuccessStorage storage;
 
-  group('Given a KeyValueClientAuthInfoStorage created with default key', () {
-    const defaultKey = 'serverpod_auth_success_key';
+  group(
+    'Given a KeyValueClientAuthSuccessStorage created with default key',
+    () {
+      const defaultKey = 'serverpod_auth_success_key';
 
-    setUp(() {
-      storage = TestKeyValueAuthInfoStorage.create();
-    });
+      setUp(() {
+        storage = TestKeyValueAuthSuccessStorage.create();
+      });
 
-    test('when calling set then it uses the default key.', () async {
-      await storage.set(_authSuccess);
+      test('when calling set then it uses the default key.', () async {
+        await storage.set(_authSuccess);
 
-      expect(await storage.delegate.get(defaultKey), isNotNull);
-    });
+        expect(await storage.delegate.get(defaultKey), isNotNull);
+      });
 
-    test('when calling get then it uses the default key.', () async {
-      await storage.delegate.set(defaultKey, _authSuccess.toString());
+      test('when calling get then it uses the default key.', () async {
+        await storage.delegate.set(defaultKey, _authSuccess.toString());
 
-      final result = await storage.get();
+        final result = await storage.get();
 
-      expect(result, isNotNull);
-    });
-  });
+        expect(result, isNotNull);
+      });
+    },
+  );
 
-  group('Given a KeyValueClientAuthInfoStorage created with custom key', () {
+  group('Given a KeyValueClientAuthSuccessStorage created with custom key', () {
     const customKey = 'custom_auth_key';
 
     setUp(() {
-      storage = TestKeyValueAuthInfoStorage.create(
+      storage = TestKeyValueAuthSuccessStorage.create(
         authSuccessStorageKey: customKey,
       );
     });
@@ -53,9 +56,11 @@ void main() {
     });
   });
 
-  group('Given an uninitialized KeyValueClientAuthInfoStorage', () {
+  group('Given an uninitialized KeyValueClientAuthSuccessStorage', () {
     setUp(() {
-      storage = TestKeyValueAuthInfoStorage.create(authSuccessStorageKey: key);
+      storage = TestKeyValueAuthSuccessStorage.create(
+        authSuccessStorageKey: key,
+      );
     });
 
     test('when calling get then it returns null', () async {
@@ -76,9 +81,11 @@ void main() {
     );
   });
 
-  group('Given a KeyValueClientAuthInfoStorage with data in storage', () {
+  group('Given a KeyValueClientAuthSuccessStorage with data in storage', () {
     setUp(() async {
-      storage = TestKeyValueAuthInfoStorage.create(authSuccessStorageKey: key);
+      storage = TestKeyValueAuthSuccessStorage.create(
+        authSuccessStorageKey: key,
+      );
       await storage.delegate.set(key, _authSuccess.toString());
     });
 
@@ -124,9 +131,11 @@ void main() {
   });
 
   test(
-    'Given a KeyValueClientAuthInfoStorage with invalid JSON data in storage, when calling get then it throws an exception.',
+    'Given a KeyValueClientAuthSuccessStorage with invalid JSON data in storage, when calling get then it throws an exception.',
     () async {
-      storage = TestKeyValueAuthInfoStorage.create(authSuccessStorageKey: key);
+      storage = TestKeyValueAuthSuccessStorage.create(
+        authSuccessStorageKey: key,
+      );
 
       await storage.delegate.set(key, 'invalid-json');
 
@@ -136,7 +145,7 @@ void main() {
 
   group('Given storage operations that throw exceptions', () {
     setUp(() {
-      storage = TestKeyValueAuthInfoStorage.create();
+      storage = TestKeyValueAuthSuccessStorage.create();
     });
 
     test('when calling set then it propagates the exception.', () async {
@@ -171,18 +180,20 @@ void main() {
   });
 }
 
-/// A [KeyValueClientAuthInfoStorage] implementation for testing that exposes
+/// A [KeyValueClientAuthSuccessStorage] implementation for testing that exposes
 /// the underlying delegate instance.
-class TestKeyValueAuthInfoStorage extends KeyValueClientAuthInfoStorage {
-  TestKeyValueAuthInfoStorage._({
+class TestKeyValueAuthSuccessStorage extends KeyValueClientAuthSuccessStorage {
+  TestKeyValueAuthSuccessStorage._({
     required super.keyValueStorage,
     super.authSuccessStorageKey,
   });
 
   TestKeyValueStorage get delegate => keyValueStorage as TestKeyValueStorage;
 
-  static TestKeyValueAuthInfoStorage create({String? authSuccessStorageKey}) {
-    final testStorage = TestKeyValueAuthInfoStorage._(
+  static TestKeyValueAuthSuccessStorage create({
+    String? authSuccessStorageKey,
+  }) {
+    final testStorage = TestKeyValueAuthSuccessStorage._(
       keyValueStorage: TestKeyValueStorage(),
       authSuccessStorageKey: authSuccessStorageKey,
     );
