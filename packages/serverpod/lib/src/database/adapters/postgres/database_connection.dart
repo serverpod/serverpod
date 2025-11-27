@@ -149,7 +149,7 @@ class DatabaseConnection {
           query,
           transaction: transaction,
         ).then((_mergeResultsWithNonPersistedFields(rows))))
-        .map(_poolManager.serializationManager.deserializeFromDatabase<T>)
+        .map(_poolManager.serializationManager.deserialize<T>)
         .toList();
   }
 
@@ -218,7 +218,7 @@ class DatabaseConnection {
           query,
           transaction: transaction,
         ).then((_mergeResultsWithNonPersistedFields(rows))))
-        .map(_poolManager.serializationManager.deserializeFromDatabase<T>)
+        .map(_poolManager.serializationManager.deserialize<T>)
         .toList();
   }
 
@@ -287,7 +287,7 @@ class DatabaseConnection {
       );
     }
 
-    return _poolManager.serializationManager.deserializeFromDatabase<T>(
+    return _poolManager.serializationManager.deserialize<T>(
       result.first,
     );
   }
@@ -374,10 +374,7 @@ class DatabaseConnection {
     );
 
     return result
-        .map(
-          (row) =>
-              _poolManager.serializationManager.deserializeFromDatabase<T>(row),
-        )
+        .map(_poolManager.serializationManager.deserialize<T>)
         .toList();
   }
 
@@ -681,10 +678,7 @@ class DatabaseConnection {
             include: include,
           ),
         )
-        .map(
-          (row) =>
-              _poolManager.serializationManager.deserializeFromDatabase<T>(row),
-        )
+        .map(_poolManager.serializationManager.deserialize<T>)
         .toList();
   }
 

@@ -14,22 +14,4 @@ abstract class SerializationManagerServer extends SerializationManager {
 
   /// The desired structure of the database.
   List<TableDefinition> getTargetTableDefinitions();
-
-  /// Deserialize the provided json [data] from the database to an object
-  /// of type [t] or [T].
-  T deserializeFromDatabase<T>(
-    dynamic data, [
-    Type? t,
-  ]) {
-    t ??= T;
-    final table = getTableForType(t);
-
-    if (table == null || data is! Map<String, dynamic>) {
-      return deserialize<T>(data, t);
-    }
-
-    // Create json with expected field name for SerializableModel
-    final json = table.parseRow(data);
-    return deserialize(json, t);
-  }
 }

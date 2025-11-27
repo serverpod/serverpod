@@ -42,7 +42,7 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
       resolvedTableRow[relationField] = relationList.map((relation) {
         if (relation is! Map<String, dynamic>) return relation;
 
-        return relationTable.parseRow(relation);
+        return relation;
       }).toList();
     } else {
       resolvedTableRow[relationField] = resolvePrefixedQueryRow(
@@ -101,7 +101,7 @@ Map<String, dynamic> _createColumnMapFromQueryAliasColumns(
     );
     var columnData = rawTableRow[queryKey];
     if (columnData != null) {
-      columnMap[column.columnName] = columnData;
+      columnMap[column.fieldName] = columnData;
     }
   }
 

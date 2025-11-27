@@ -119,24 +119,6 @@ class Table<T_ID> {
     }
     return str;
   }
-
-  /// Parse the provided [rowData] and return it with keys matching the
-  /// expected field names
-  Map<String, dynamic> parseRow(
-    Map<String, dynamic> rowData,
-  ) {
-    // If no column mapping is needed, return the original data
-    if (!hasColumnMapping) return rowData;
-
-    // Create new map with field names
-    return {
-      // Preserves non-persisted fields
-      ...rowData,
-      // map columns to field name
-      for (final column in columns)
-        column.fieldName: rowData[column.columnName],
-    };
-  }
 }
 
 /// Creates a new [Table] containing [TableRelation] with information
