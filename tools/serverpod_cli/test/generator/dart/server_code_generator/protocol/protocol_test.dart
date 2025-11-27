@@ -933,9 +933,7 @@ void main() {
               .withName('dateTimeMapMethod')
               .withReturnType(
                 TypeDefinitionBuilder().withClassName('Future').withGenerics([
-                  TypeDefinitionBuilder()
-                      .withMapOf('DateTime', 'bool')
-                      .build(),
+                  TypeDefinitionBuilder().withMapOf('DateTime', 'bool').build(),
                 ]).build(),
               )
               .buildMethodCallDefinition(),
@@ -976,19 +974,14 @@ void main() {
     () {
       var endpoints = [
         EndpointDefinitionBuilder().withMethods([
-          MethodDefinitionBuilder()
-              .withName('intMapMethod')
-              .withParameters([
-                ParameterDefinitionBuilder()
-                    .withName('intBoolMap')
-                    .withType(
-                      TypeDefinitionBuilder()
-                          .withMapOf('int', 'bool')
-                          .build(),
-                    )
-                    .build(),
-              ])
-              .buildMethodCallDefinition(),
+          MethodDefinitionBuilder().withName('intMapMethod').withParameters([
+            ParameterDefinitionBuilder()
+                .withName('intBoolMap')
+                .withType(
+                  TypeDefinitionBuilder().withMapOf('int', 'bool').build(),
+                )
+                .build(),
+          ]).buildMethodCallDefinition(),
         ]).build(),
       ];
 
@@ -1031,9 +1024,7 @@ void main() {
               .withReturnType(
                 TypeDefinitionBuilder().withClassName('Future').withGenerics([
                   TypeDefinitionBuilder().withClassName('List').withGenerics([
-                    TypeDefinitionBuilder()
-                        .withMapOf('int', 'String')
-                        .build(),
+                    TypeDefinitionBuilder().withMapOf('int', 'String').build(),
                   ]).build(),
                 ]).build(),
               )

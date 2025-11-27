@@ -38,8 +38,9 @@ void main() {
         var dateTime = DateTime.utc(2024, 3, 10, 8, 0);
         var map = {dateTime: true};
 
-        var result =
-            await client.mapParameters.returnDateTimeBoolMapNullable(map);
+        var result = await client.mapParameters.returnDateTimeBoolMapNullable(
+          map,
+        );
 
         expect(result, equals(map));
       },
@@ -48,8 +49,9 @@ void main() {
     test(
       'when a null map is sent to the server then null is returned.',
       () async {
-        var result =
-            await client.mapParameters.returnDateTimeBoolMapNullable(null);
+        var result = await client.mapParameters.returnDateTimeBoolMapNullable(
+          null,
+        );
 
         expect(result, isNull);
       },
@@ -87,8 +89,7 @@ void main() {
       () async {
         var map = {42: 'answer'};
 
-        var result =
-            await client.mapParameters.returnIntStringMapNullable(map);
+        var result = await client.mapParameters.returnIntStringMapNullable(map);
 
         expect(result, equals(map));
       },
@@ -97,8 +98,9 @@ void main() {
     test(
       'when a null map is sent to the server then null is returned.',
       () async {
-        var result =
-            await client.mapParameters.returnIntStringMapNullable(null);
+        var result = await client.mapParameters.returnIntStringMapNullable(
+          null,
+        );
 
         expect(result, isNull);
       },
