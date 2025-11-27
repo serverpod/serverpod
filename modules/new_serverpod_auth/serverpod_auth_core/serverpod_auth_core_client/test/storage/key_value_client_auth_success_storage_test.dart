@@ -7,27 +7,30 @@ void main() {
   const key = 'test_key';
   late TestKeyValueAuthSuccessStorage storage;
 
-  group('Given a KeyValueClientAuthSuccessStorage created with default key', () {
-    const defaultKey = 'serverpod_auth_success_key';
+  group(
+    'Given a KeyValueClientAuthSuccessStorage created with default key',
+    () {
+      const defaultKey = 'serverpod_auth_success_key';
 
-    setUp(() {
-      storage = TestKeyValueAuthSuccessStorage.create();
-    });
+      setUp(() {
+        storage = TestKeyValueAuthSuccessStorage.create();
+      });
 
-    test('when calling set then it uses the default key.', () async {
-      await storage.set(_authSuccess);
+      test('when calling set then it uses the default key.', () async {
+        await storage.set(_authSuccess);
 
-      expect(await storage.delegate.get(defaultKey), isNotNull);
-    });
+        expect(await storage.delegate.get(defaultKey), isNotNull);
+      });
 
-    test('when calling get then it uses the default key.', () async {
-      await storage.delegate.set(defaultKey, _authSuccess.toString());
+      test('when calling get then it uses the default key.', () async {
+        await storage.delegate.set(defaultKey, _authSuccess.toString());
 
-      final result = await storage.get();
+        final result = await storage.get();
 
-      expect(result, isNotNull);
-    });
-  });
+        expect(result, isNotNull);
+      });
+    },
+  );
 
   group('Given a KeyValueClientAuthSuccessStorage created with custom key', () {
     const customKey = 'custom_auth_key';
@@ -55,7 +58,9 @@ void main() {
 
   group('Given an uninitialized KeyValueClientAuthSuccessStorage', () {
     setUp(() {
-      storage = TestKeyValueAuthSuccessStorage.create(authSuccessStorageKey: key);
+      storage = TestKeyValueAuthSuccessStorage.create(
+        authSuccessStorageKey: key,
+      );
     });
 
     test('when calling get then it returns null', () async {
@@ -78,7 +83,9 @@ void main() {
 
   group('Given a KeyValueClientAuthSuccessStorage with data in storage', () {
     setUp(() async {
-      storage = TestKeyValueAuthSuccessStorage.create(authSuccessStorageKey: key);
+      storage = TestKeyValueAuthSuccessStorage.create(
+        authSuccessStorageKey: key,
+      );
       await storage.delegate.set(key, _authSuccess.toString());
     });
 
@@ -126,7 +133,9 @@ void main() {
   test(
     'Given a KeyValueClientAuthSuccessStorage with invalid JSON data in storage, when calling get then it throws an exception.',
     () async {
-      storage = TestKeyValueAuthSuccessStorage.create(authSuccessStorageKey: key);
+      storage = TestKeyValueAuthSuccessStorage.create(
+        authSuccessStorageKey: key,
+      );
 
       await storage.delegate.set(key, 'invalid-json');
 
@@ -181,7 +190,9 @@ class TestKeyValueAuthSuccessStorage extends KeyValueClientAuthSuccessStorage {
 
   TestKeyValueStorage get delegate => keyValueStorage as TestKeyValueStorage;
 
-  static TestKeyValueAuthSuccessStorage create({String? authSuccessStorageKey}) {
+  static TestKeyValueAuthSuccessStorage create({
+    String? authSuccessStorageKey,
+  }) {
     final testStorage = TestKeyValueAuthSuccessStorage._(
       keyValueStorage: TestKeyValueStorage(),
       authSuccessStorageKey: authSuccessStorageKey,
