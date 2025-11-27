@@ -95,7 +95,7 @@ class TableRelation {
 
   /// The foreign field name joined on.
   String get foreignFieldName {
-    return _tableRelationEntries.last.foreignField.columnName;
+    return _tableRelationEntries.last.foreignField.fieldName;
   }
 
   /// The foreign field name with including the table escaped.
