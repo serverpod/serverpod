@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as core;
 
-import 'storage/secure_client_auth_info_storage.dart';
+import 'storage/secure_client_auth_success_storage.dart';
 
 /// The [FlutterAuthSessionManager] keeps track of and manages the signed-in
 /// state of the user for Flutter applications. Users are typically authenticated
@@ -37,15 +37,15 @@ class FlutterAuthSessionManager extends core.ClientAuthSessionManager {
     Map<String, core.ClientAuthKeyProvider>? authKeyProviderDelegates,
 
     /// The storage to keep user authentication info. If missing, the
-    /// session manager will create a [SecureClientAuthInfoStorage].
-    core.ClientAuthInfoStorage? storage,
+    /// session manager will create a [SecureClientAuthSuccessStorage].
+    core.ClientAuthSuccessStorage? storage,
   }) {
     final authInfoNotifier = ValueNotifier<core.AuthSuccess?>(null);
 
     return FlutterAuthSessionManager._internal(
       caller: caller,
       authKeyProviderDelegates: authKeyProviderDelegates,
-      storage: storage ?? SecureClientAuthInfoStorage(),
+      storage: storage ?? SecureClientAuthSuccessStorage(),
       authInfoNotifier: authInfoNotifier,
       onAuthInfoChanged: (authInfo) {
         // Update the notifier with the new auth info value

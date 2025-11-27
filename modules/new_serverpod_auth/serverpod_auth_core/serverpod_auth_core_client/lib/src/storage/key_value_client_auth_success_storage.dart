@@ -1,15 +1,15 @@
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 
-/// Implements the [ClientAuthInfoStorage] for key-value based storages.
-class KeyValueClientAuthInfoStorage implements ClientAuthInfoStorage {
+/// Implements the [ClientAuthSuccessStorage] for key-value based storages.
+class KeyValueClientAuthSuccessStorage implements ClientAuthSuccessStorage {
   /// The key on the storage where the [AuthSuccess] will be stored.
   final String _storageKey;
 
   /// The key-value storage delegate to perform the actual storage operations.
   final KeyValueStorage keyValueStorage;
 
-  /// Creates a new [KeyValueClientAuthInfoStorage].
-  KeyValueClientAuthInfoStorage({
+  /// Creates a new [KeyValueClientAuthSuccessStorage].
+  KeyValueClientAuthSuccessStorage({
     required this.keyValueStorage,
 
     /// Override the default key name to store the auth info on the storage.

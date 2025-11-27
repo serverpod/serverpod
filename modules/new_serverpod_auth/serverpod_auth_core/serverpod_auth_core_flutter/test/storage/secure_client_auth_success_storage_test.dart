@@ -5,7 +5,7 @@ void main() {
   const key = 'test_key';
   late TestSecureKeyValueStorage storage;
 
-  group('Given a SecureClientAuthInfoStorage created with default key', () {
+  group('Given a SecureClientAuthSuccessStorage created with default key', () {
     const defaultKey = 'serverpod_auth_success_key';
 
     setUp(() {
@@ -31,7 +31,7 @@ void main() {
     });
   });
 
-  group('Given a SecureClientAuthInfoStorage created with custom key', () {
+  group('Given a SecureClientAuthSuccessStorage created with custom key', () {
     const customKey = 'custom_auth_key';
 
     setUp(() {
@@ -59,7 +59,7 @@ void main() {
     });
   });
 
-  group('Given an uninitialized SecureClientAuthInfoStorage', () {
+  group('Given an uninitialized SecureClientAuthSuccessStorage', () {
     setUp(() {
       FlutterSecureStorage.setMockInitialValues({});
       storage = TestSecureKeyValueStorage.create(authSuccessStorageKey: key);
@@ -83,7 +83,7 @@ void main() {
     );
   });
 
-  group('Given a SecureClientAuthInfoStorage with data in storage', () {
+  group('Given a SecureClientAuthSuccessStorage with data in storage', () {
     setUp(() async {
       FlutterSecureStorage.setMockInitialValues({});
       storage = TestSecureKeyValueStorage.create(authSuccessStorageKey: key);
@@ -132,7 +132,7 @@ void main() {
   });
 
   test(
-    'Given a SecureClientAuthInfoStorage with invalid JSON data in storage, when calling get then it throws an exception.',
+    'Given a SecureClientAuthSuccessStorage with invalid JSON data in storage, when calling get then it throws an exception.',
     () async {
       FlutterSecureStorage.setMockInitialValues({});
       storage = TestSecureKeyValueStorage.create(authSuccessStorageKey: key);
@@ -144,9 +144,9 @@ void main() {
   );
 }
 
-/// A [SecureClientAuthInfoStorage] implementation for testing that exposes the
+/// A [SecureClientAuthSuccessStorage] implementation for testing that exposes the
 /// underlying delegate instance.
-class TestSecureKeyValueStorage extends SecureClientAuthInfoStorage {
+class TestSecureKeyValueStorage extends SecureClientAuthSuccessStorage {
   late final FlutterSecureStorage delegate;
 
   /// Creates a new [FlutterSecureKeyValueStorage].

@@ -15,7 +15,7 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   late final Map<String, ClientAuthKeyProvider> _authKeyProviderDelegates;
 
   /// The secure storage to keep user authentication info.
-  final ClientAuthInfoStorage storage;
+  final ClientAuthSuccessStorage storage;
 
   /// Optional callback that is invoked when the auth info changes.
   /// The new auth info is passed as a parameter to the callback.
@@ -142,7 +142,7 @@ class ClientAuthSessionManager implements RefresherClientAuthKeyProvider {
   /// the storage.
   Future<void> restore() async {
     final storage = this.storage;
-    if (storage is CachedClientAuthInfoStorage) {
+    if (storage is CachedClientAuthSuccessStorage) {
       await storage.clearCache();
     }
     _authInfo = await storage.get();

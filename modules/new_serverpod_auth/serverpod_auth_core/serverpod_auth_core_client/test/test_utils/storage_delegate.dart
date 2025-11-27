@@ -1,9 +1,9 @@
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 
-/// A [ClientAuthInfoStorage] implementation for testing.
-class TestClientAuthInfoStorage
+/// A [ClientAuthSuccessStorage] implementation for testing.
+class TestClientAuthSuccessStorage
     with _TestMapStorage<AuthSuccess>
-    implements ClientAuthInfoStorage {
+    implements ClientAuthSuccessStorage {
   static const _keyName = 'test_key';
 
   @override
@@ -13,34 +13,34 @@ class TestClientAuthInfoStorage
   Future<AuthSuccess?> get() async => _get(_keyName);
 }
 
-/// A [CachedClientAuthInfoStorage] wrapper for testing.
-class TestCachedAuthInfoStorage extends CachedClientAuthInfoStorage {
-  final TestClientAuthInfoStorage delegate;
+/// A [CachedClientAuthSuccessStorage] wrapper for testing.
+class TestCachedAuthSuccessStorage extends CachedClientAuthSuccessStorage {
+  final TestClientAuthSuccessStorage delegate;
 
-  TestCachedAuthInfoStorage._({
+  TestCachedAuthSuccessStorage._({
     required this.delegate,
   }) : super(delegate: delegate);
 
-  factory TestCachedAuthInfoStorage.create() {
-    return TestCachedAuthInfoStorage._(
-      delegate: TestClientAuthInfoStorage(),
+  factory TestCachedAuthSuccessStorage.create() {
+    return TestCachedAuthSuccessStorage._(
+      delegate: TestClientAuthSuccessStorage(),
     );
   }
 }
 
-/// A [KeyValueClientAuthInfoStorage] wrapper for testing.
-class TestKeyValueAuthInfoStorage extends KeyValueClientAuthInfoStorage {
+/// A [KeyValueClientAuthSuccessStorage] wrapper for testing.
+class TestKeyValueAuthSuccessStorage extends KeyValueClientAuthSuccessStorage {
   final TestKeyValueStorage delegate;
 
-  TestKeyValueAuthInfoStorage._({
+  TestKeyValueAuthSuccessStorage._({
     required this.delegate,
     super.authSuccessStorageKey,
   }) : super(keyValueStorage: delegate);
 
-  factory TestKeyValueAuthInfoStorage.create({
+  factory TestKeyValueAuthSuccessStorage.create({
     String? authSuccessStorageKey,
   }) {
-    return TestKeyValueAuthInfoStorage._(
+    return TestKeyValueAuthSuccessStorage._(
       delegate: TestKeyValueStorage(),
       authSuccessStorageKey: authSuccessStorageKey,
     );

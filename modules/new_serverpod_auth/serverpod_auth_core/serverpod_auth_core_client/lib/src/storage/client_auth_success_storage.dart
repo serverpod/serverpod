@@ -4,7 +4,7 @@ export 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     show AuthSuccess;
 
 /// Exposes a method for the session manager to update the [AuthSuccess].
-abstract interface class ClientAuthInfoStorage {
+abstract interface class ClientAuthSuccessStorage {
   /// Set the authentication info.
   Future<void> set(AuthSuccess? data);
 
