@@ -20,7 +20,7 @@ class GeneratorConfigBuilder {
   List<ServerpodFeature> _enabledFeatures;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
-  TransactionParameterMode _transactionParameterMode;
+  DatabaseConfig _databaseConfig;
 
   GeneratorConfigBuilder()
     : _name = _defaultName,
@@ -49,7 +49,7 @@ class GeneratorConfigBuilder {
       _extraClasses = [],
       _enabledFeatures = [ServerpodFeature.database],
       _enabledExperimentalFeatures = [],
-      _transactionParameterMode = TransactionParameterMode.optional;
+      _databaseConfig = DatabaseConfig.defaultConfig;
 
   GeneratorConfigBuilder withName(String name) {
     _name = name;
@@ -127,10 +127,15 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withDatabaseConfig(DatabaseConfig config) {
+    _databaseConfig = config;
+    return this;
+  }
+
   GeneratorConfigBuilder withTransactionParameterMode(
     TransactionParameterMode mode,
   ) {
-    _transactionParameterMode = mode;
+    _databaseConfig = DatabaseConfig(transactionParameterMode: mode);
     return this;
   }
 
@@ -148,7 +153,7 @@ class GeneratorConfigBuilder {
       enabledFeatures: _enabledFeatures,
       experimentalFeatures: _enabledExperimentalFeatures,
       relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,
-      transactionParameterMode: _transactionParameterMode,
+      databaseConfig: _databaseConfig,
     );
   }
 }
