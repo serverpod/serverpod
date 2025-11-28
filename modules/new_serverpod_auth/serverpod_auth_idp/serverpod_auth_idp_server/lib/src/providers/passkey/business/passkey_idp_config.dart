@@ -4,7 +4,7 @@ import '../../../../../core.dart';
 import 'passkey_idp.dart';
 
 /// Configuration for the Passkey account module.
-class PasskeyIdpConfig implements IdentityProviderBuilder<PasskeyIdp> {
+class PasskeyIdpConfig extends IdentityProviderBuilder<PasskeyIdp> {
   /// The hostname to be used on the web and associated with any apps.
   ///
   /// This is also known as the "relying party".

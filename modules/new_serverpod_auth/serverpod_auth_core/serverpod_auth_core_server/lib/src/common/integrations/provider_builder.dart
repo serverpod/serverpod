@@ -5,7 +5,14 @@ import 'token_manager.dart';
 ///
 /// Responsible for building instances of identity providers with dependencies
 /// that can then be used by provider endpoints.
-abstract interface class IdentityProviderBuilder<T extends Object> {
+abstract class IdentityProviderBuilder<T extends Object> {
+  /// Creates a new [IdentityProviderBuilder] instance.
+  const IdentityProviderBuilder();
+
+  /// The type of the provider that this builder creates.
+  /// Used to store the provider in the AuthConfig.
+  Type get type => T;
+
   /// Builds a new instance of the identity provider.
   ///
   /// [tokenManager] is the token manager to use for the provider.
@@ -18,19 +25,11 @@ abstract interface class IdentityProviderBuilder<T extends Object> {
   });
 }
 
-/// Extension methods for [IdentityProviderBuilder].
-extension IdpBuilderExtension<T extends Object> on IdentityProviderBuilder<T> {
-  /// The type of the provider that this builder creates.
-  /// Used to store the provider in the AuthConfig.
-  Type get type => T;
-}
-
 /// A builder that returns a pre-built identity provider.
 ///
 /// Use this builder if you have a provider built from outside of the Serverpod
 /// authentication framework.
-class PreBuiltIdpBuilder<T extends Object>
-    implements IdentityProviderBuilder<T> {
+class PreBuiltIdpBuilder<T extends Object> extends IdentityProviderBuilder<T> {
   /// The pre-built identity provider.
   final T idp;
 

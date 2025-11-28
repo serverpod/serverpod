@@ -3,7 +3,7 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'fake_identity_provider.dart';
 
 /// A fake implementation of [IdentityProviderBuilder] for testing purposes.
-class FakeConfig implements IdentityProviderBuilder<FakeIdentityProvider> {
+class FakeConfig extends IdentityProviderBuilder<FakeIdentityProvider> {
   const FakeConfig();
 
   @override

@@ -5,7 +5,7 @@ import '../../../../../core.dart';
 import 'apple_idp.dart';
 
 /// Configuration for the Apple identity provider.
-class AppleIdpConfig implements IdentityProviderBuilder<AppleIdp> {
+class AppleIdpConfig extends IdentityProviderBuilder<AppleIdp> {
   /// The service identifier for the Sign in with Apple project.
   final String serviceIdentifier;
 

@@ -26,7 +26,7 @@ typedef GetExtraGoogleInfoCallback =
     });
 
 /// Configuration for the Google identity provider.
-class GoogleIdpConfig implements IdentityProviderBuilder<GoogleIdp> {
+class GoogleIdpConfig extends IdentityProviderBuilder<GoogleIdp> {
   /// The client secret used for the Google sign-in.
   final GoogleClientSecret clientSecret;
 
