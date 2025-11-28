@@ -912,6 +912,10 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
+    var includedFields = fields.where(
+      (field) => field.shouldIncludeField(serverCode),
+    );
+
     return Method(
       (m) {
         m.name = 'operator ==';
@@ -928,7 +932,7 @@ class SerializableModelLibraryGenerator {
         var comparisons = [
           refer('other').property('runtimeType').equalTo(refer('runtimeType')),
           refer('other').isA(refer(classDefinition.className)),
-          ...fields.map((field) {
+          ...includedFields.map((field) {
             var name = field.name;
             var thisProperty = refer(name);
             var otherProperty = refer('other').property(name);
@@ -970,6 +974,10 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
+    var includedFields = fields.where(
+      (field) => field.shouldIncludeField(serverCode),
+    );
+
     return Method(
       (m) {
         m.name = 'hashCode';
@@ -978,7 +986,7 @@ class SerializableModelLibraryGenerator {
 
         var expressions = [
           refer('runtimeType'),
-          ...fields.map((field) {
+          ...includedFields.map((field) {
             if (field.type.isCollectionType) {
               return refer(
                 'DeepCollectionEquality',
