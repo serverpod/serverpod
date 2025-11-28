@@ -78,7 +78,9 @@ void main() {
         () {
           expect(
             toStringMethod?.body.toString(),
-            contains("'MyException(message: \$message, errorCode: \$errorCode)'"),
+            contains(
+              "'MyException(message: \$message, errorCode: \$errorCode)'",
+            ),
           );
         },
       );
@@ -209,7 +211,9 @@ void main() {
         () {
           expect(
             toStringMethod?.body.toString(),
-            contains("'NullableFieldException(message: \$message, details: \$details)'"),
+            contains(
+              "'NullableFieldException(message: \$message, details: \$details)'",
+            ),
           );
         },
       );

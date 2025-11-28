@@ -1493,10 +1493,14 @@ class SerializableModelLibraryGenerator {
           m.body = literalString(className).returned.statement;
         } else {
           // For exceptions with fields, return "ClassName(field1: $field1, field2: $field2)"
-          var fieldStrings = visibleFields.map((field) {
-            return '${field.name}: \$${field.name}';
-          }).join(', ');
-          m.body = literalString('$className($fieldStrings)').returned.statement;
+          var fieldStrings = visibleFields
+              .map((field) {
+                return '${field.name}: \$${field.name}';
+              })
+              .join(', ');
+          m.body = literalString(
+            '$className($fieldStrings)',
+          ).returned.statement;
         }
       },
     );

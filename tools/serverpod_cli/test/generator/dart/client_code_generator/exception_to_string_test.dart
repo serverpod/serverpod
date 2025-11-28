@@ -80,7 +80,9 @@ void main() {
         () {
           expect(
             toStringMethod?.body.toString(),
-            contains("'MyException(message: \$message, errorCode: \$errorCode)'"),
+            contains(
+              "'MyException(message: \$message, errorCode: \$errorCode)'",
+            ),
           );
         },
       );
