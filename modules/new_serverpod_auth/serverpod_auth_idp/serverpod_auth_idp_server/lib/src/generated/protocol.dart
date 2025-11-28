@@ -244,15 +244,9 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
         _i2.ColumnDefinition(
           name: 'passwordHash',
-          columnType: _i2.ColumnType.bytea,
+          columnType: _i2.ColumnType.text,
           isNullable: false,
-          dartType: 'dart:typed_data:ByteData',
-        ),
-        _i2.ColumnDefinition(
-          name: 'passwordSalt',
-          columnType: _i2.ColumnType.bytea,
-          isNullable: false,
-          dartType: 'dart:typed_data:ByteData',
+          dartType: 'String',
         ),
       ],
       foreignKeys: [
@@ -1036,15 +1030,9 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
         _i2.ColumnDefinition(
           name: 'challengeCodeHash',
-          columnType: _i2.ColumnType.bytea,
+          columnType: _i2.ColumnType.text,
           isNullable: false,
-          dartType: 'dart:typed_data:ByteData',
-        ),
-        _i2.ColumnDefinition(
-          name: 'challengeCodeSalt',
-          columnType: _i2.ColumnType.bytea,
-          isNullable: false,
-          dartType: 'dart:typed_data:ByteData',
+          dartType: 'String',
         ),
       ],
       foreignKeys: [],

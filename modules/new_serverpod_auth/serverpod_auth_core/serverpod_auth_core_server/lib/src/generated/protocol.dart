@@ -104,15 +104,9 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
         _i2.ColumnDefinition(
           name: 'rotatingSecretHash',
-          columnType: _i2.ColumnType.bytea,
+          columnType: _i2.ColumnType.text,
           isNullable: false,
-          dartType: 'dart:typed_data:ByteData',
-        ),
-        _i2.ColumnDefinition(
-          name: 'rotatingSecretSalt',
-          columnType: _i2.ColumnType.bytea,
-          isNullable: false,
-          dartType: 'dart:typed_data:ByteData',
+          dartType: 'String',
         ),
         _i2.ColumnDefinition(
           name: 'lastUpdatedAt',
