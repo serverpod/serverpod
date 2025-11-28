@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/src/providers/apple/business/apple_idp_utils.dart';
+
+import '../apple_idp_utils.dart';
 
 sealed class _SignInWithAppleRoute extends Route {
   final AppleIdpUtils _utils;

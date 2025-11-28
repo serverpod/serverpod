@@ -17,7 +17,7 @@ import 'jwt_util.dart';
 import 'refresh_token_string.dart';
 
 /// Business logic for handling JWT-based access and refresh tokens.
-final class Jwt {
+class Jwt {
   /// The current JWT authentication module configuration.
   final JwtConfig config;
 

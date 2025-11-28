@@ -1,6 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/session.dart';
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_core_server/src/session/business/server_side_sessions_token.dart';
 import 'package:test/test.dart';
 

@@ -3,7 +3,7 @@ part of 'user_profiles.dart';
 /// Admin operations complementing the end-user [UserProfilesAdmin] functionality.
 ///
 /// An instance of this class is available at [UserProfiles.admin].
-final class UserProfilesAdmin {
+class UserProfilesAdmin {
   const UserProfilesAdmin._();
 
   /// Returns all user profiles that match the specified criteria.

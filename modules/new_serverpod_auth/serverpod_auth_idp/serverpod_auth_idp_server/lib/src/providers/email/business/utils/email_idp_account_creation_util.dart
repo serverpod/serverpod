@@ -3,10 +3,9 @@ import 'dart:convert';
 import 'package:clock/clock.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_extension.dart';
 
 import '../../../../../core.dart';
-import '../../../../generated/protocol.dart';
+import '../../util/email_string_extension.dart';
 import '../../util/session_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
@@ -647,21 +646,21 @@ class EmailIdpCompleteAccountCreationResult {
   });
 }
 
-/// The result of the [EmailIdpAccountCreationUtil.finalizeAccountRequest] operation.
+/// The result of the [EmailIdpAccountCreationUtil.completeAccountCreation] operation.
 ///
 /// This describes the detailed status of the operation to the caller.
 ///
 /// In the general case the caller should take care not to leak this to clients,
 /// such that outside clients can not use this result to determine whether a
 /// specific account is registered on the server.
-class EmailIdpFinalizeAccountRequestResult {
+class EmailIdpCompleteAccountRequestResult {
   /// The ID of the new email authentication.
   final UuidValue accountId;
 
   /// The email address used during registration.
   final String email;
 
-  EmailIdpFinalizeAccountRequestResult._({
+  EmailIdpCompleteAccountRequestResult._({
     required this.accountId,
     required this.email,
   });

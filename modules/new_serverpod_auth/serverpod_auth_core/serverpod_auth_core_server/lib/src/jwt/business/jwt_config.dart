@@ -1,6 +1,8 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/jwt.dart';
+
+import '../../common/integrations/token_manager_builder.dart';
+import '../jwt.dart';
 
 /// Context provided to the [JwtConfig.extraClaimsProvider].
 ///
@@ -56,7 +58,7 @@ sealed class JwtAlgorithm {
 }
 
 /// Configuration options for the JWT authentication module.
-class JwtConfig {
+class JwtConfig implements TokenManagerBuilder<JwtTokenManager> {
   /// The algorithm used to sign and verify the JWT tokens.
   ///
   /// Supported options are `HmacSha512` and `EcdsaSha512`.
@@ -169,6 +171,39 @@ class JwtConfig {
       _validateRefreshTokenHashPepper(fallbackPepper);
     }
   }
+
+  @override
+  JwtTokenManager build({
+    required final AuthUsers authUsers,
+  }) => JwtTokenManager(
+    config: this,
+    authUsers: authUsers,
+  );
+}
+
+/// Creates a new [JwtConfig] from keys on the `passwords.yaml` file.
+///
+/// This constructor requires that a [Serverpod] instance has already been initialized.
+class JwtConfigFromPasswords extends JwtConfig {
+  /// Creates a new [JwtConfigFromPasswords] instance.
+  JwtConfigFromPasswords({
+    super.fallbackRefreshTokenHashPeppers,
+    super.accessTokenLifetime,
+    super.refreshTokenLifetime,
+    super.issuer,
+    super.refreshTokenFixedSecretLength,
+    super.refreshTokenRotatingSecretLength,
+    super.refreshTokenRotatingSecretSaltLength,
+    super.extraClaimsProvider,
+    super.fallbackVerificationAlgorithms,
+  }) : super(
+         refreshTokenHashPepper: Serverpod.instance.getPassword(
+           'jwtRefreshTokenHashPepper',
+         )!,
+         algorithm: JwtAlgorithm.hmacSha512(
+           SecretKey(Serverpod.instance.getPassword('jwtPrivateKey')!),
+         ),
+       );
 }
 
 void _validateRefreshTokenHashPepper(final String refreshTokenHashPepper) {

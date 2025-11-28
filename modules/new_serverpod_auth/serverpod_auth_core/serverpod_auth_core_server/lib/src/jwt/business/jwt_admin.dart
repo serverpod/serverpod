@@ -12,7 +12,7 @@ import 'jwt_util.dart';
 import 'refresh_token_string.dart';
 
 /// Collection of admin functions for managing authentication tokens.
-final class JwtAdmin {
+class JwtAdmin {
   final Duration _refreshTokenLifetime;
   final JwtUtil _jwtUtil;
   final Argon2HashUtil _refreshTokenSecretHash;
