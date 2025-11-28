@@ -4005,6 +4005,43 @@ class Protocol extends _i1.SerializationManager {
       return (deserialize<Map<int, int>>(((data as Map)['p'] as List)[0]),)
           as T;
     }
+    if (t == Map<DateTime, bool>) {
+      return Map.fromEntries(
+            (data as List).map(
+              (e) => MapEntry(
+                deserialize<DateTime>(e['k']),
+                deserialize<bool>(e['v']),
+              ),
+            ),
+          )
+          as T;
+    }
+    if (t == _i1.getType<Map<DateTime, bool>?>()) {
+      return (data != null
+              ? Map.fromEntries(
+                  (data as List).map(
+                    (e) => MapEntry(
+                      deserialize<DateTime>(e['k']),
+                      deserialize<bool>(e['v']),
+                    ),
+                  ),
+                )
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<Map<int, String>?>()) {
+      return (data != null
+              ? Map.fromEntries(
+                  (data as List).map(
+                    (e) => MapEntry(
+                      deserialize<int>(e['k']),
+                      deserialize<String>(e['v']),
+                    ),
+                  ),
+                )
+              : null)
+          as T;
+    }
     if (t == List<_i187.UserInfo>) {
       return (data as List).map((e) => deserialize<_i187.UserInfo>(e)).toList()
           as T;

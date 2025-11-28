@@ -169,8 +169,7 @@ class Jwt {
       RefreshToken(
         authUserId: authUserId,
         fixedSecret: ByteData.sublistView(_generateRefreshTokenFixedSecret()),
-        rotatingSecretHash: ByteData.sublistView(newHash.hash),
-        rotatingSecretSalt: ByteData.sublistView(newHash.salt),
+        rotatingSecretHash: newHash,
         scopeNames: scopes.names,
         extraClaims: encodedExtraClaims,
         createdAt: currentTime,

@@ -149,8 +149,7 @@ class JwtAdmin {
 
     if (!await _refreshTokenSecretHash.validateHashFromBytes(
       secret: refreshTokenData.rotatingSecret,
-      hash: Uint8List.sublistView(refreshTokenRow.rotatingSecretHash),
-      salt: Uint8List.sublistView(refreshTokenRow.rotatingSecretSalt),
+      hashString: refreshTokenRow.rotatingSecretHash,
     )) {
       await RefreshToken.db.deleteRow(
         session,
@@ -172,8 +171,7 @@ class JwtAdmin {
     refreshTokenRow = await RefreshToken.db.updateRow(
       session,
       refreshTokenRow.copyWith(
-        rotatingSecretHash: ByteData.sublistView(newHash.hash),
-        rotatingSecretSalt: ByteData.sublistView(newHash.salt),
+        rotatingSecretHash: newHash,
         lastUpdatedAt: clock.now(),
       ),
       transaction: transaction,

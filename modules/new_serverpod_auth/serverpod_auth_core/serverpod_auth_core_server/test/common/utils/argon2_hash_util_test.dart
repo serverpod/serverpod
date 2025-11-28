@@ -27,8 +27,14 @@ void main() {
             secret: testSecret,
           );
 
-          expect(result.hash, isNotEmpty);
-          expect(result.salt, hasLength(testSaltLength));
+          expect(result, isNotEmpty);
+          expect(result, startsWith('\$argon2id\$'));
+          // Parse PHC string to verify salt length
+          final parts = result.split('\$');
+          expect(parts.length, equals(6));
+          final saltBase64 = parts[4];
+          final salt = base64Decode(saltBase64);
+          expect(salt, hasLength(testSaltLength));
         },
       );
 
@@ -43,8 +49,13 @@ void main() {
           salt: providedSalt,
         );
 
-        expect(result.salt, equals(providedSalt));
-        expect(result.hash, isNotEmpty);
+        expect(result, isNotEmpty);
+        expect(result, startsWith('\$argon2id\$'));
+        // Parse PHC string to verify salt matches
+        final parts = result.split('\$');
+        final saltBase64 = parts[4];
+        final salt = base64Decode(saltBase64);
+        expect(salt, equals(providedSalt));
       });
 
       test('then produces different hashes with different salts.', () async {
@@ -63,7 +74,7 @@ void main() {
           salt: salt2,
         );
 
-        expect(result1.hash, isNot(equals(result2.hash)));
+        expect(result1, isNot(equals(result2)));
       });
 
       test(
@@ -83,7 +94,7 @@ void main() {
             salt: salt,
           );
 
-          expect(result1.hash, equals(result2.hash));
+          expect(result1, equals(result2));
         },
       );
 
@@ -93,13 +104,13 @@ void main() {
         final result1 = await hashUtil.createHashFromString(secret: testSecret);
         final result2 = await hashUtil.createHashFromString(secret: testSecret);
 
-        expect(result1.hash, isNot(equals(result2.hash)));
+        expect(result1, isNot(equals(result2)));
       });
 
       test('then handles empty secret.', () async {
         final result = await hashUtil.createHashFromString(secret: '');
-        expect(result.hash, isNotEmpty);
-        expect(result.salt, isNotEmpty);
+        expect(result, isNotEmpty);
+        expect(result, startsWith('\$argon2id\$'));
       });
     });
 
@@ -111,8 +122,13 @@ void main() {
 
           final result = await hashUtil.createHashFromBytes(secret: testSecret);
 
-          expect(result.hash, isNotEmpty);
-          expect(result.salt, hasLength(testSaltLength));
+          expect(result, isNotEmpty);
+          expect(result, startsWith('\$argon2id\$'));
+          // Parse PHC string to verify salt length
+          final parts = result.split('\$');
+          final saltBase64 = parts[4];
+          final salt = base64Decode(saltBase64);
+          expect(salt, hasLength(testSaltLength));
         },
       );
 
@@ -127,8 +143,13 @@ void main() {
           salt: providedSalt,
         );
 
-        expect(result.salt, equals(providedSalt));
-        expect(result.hash, isNotEmpty);
+        expect(result, isNotEmpty);
+        expect(result, startsWith('\$argon2id\$'));
+        // Parse PHC string to verify salt matches
+        final parts = result.split('\$');
+        final saltBase64 = parts[4];
+        final salt = base64Decode(saltBase64);
+        expect(salt, equals(providedSalt));
       });
 
       test(
@@ -148,7 +169,7 @@ void main() {
             salt: salt,
           );
 
-          expect(result1.hash, equals(result2.hash));
+          expect(result1, equals(result2));
         },
       );
     });
@@ -161,8 +182,7 @@ void main() {
 
         final isValid = await hashUtil.validateHashFromString(
           secret: testSecret,
-          hash: result.hash,
-          salt: result.salt,
+          hashString: result,
         );
 
         expect(isValid, isTrue);
@@ -176,8 +196,7 @@ void main() {
 
         final isValid = await hashUtil.validateHashFromString(
           secret: incorrectSecret,
-          hash: result.hash,
-          salt: result.salt,
+          hashString: result,
         );
 
         expect(isValid, isFalse);
@@ -185,13 +204,10 @@ void main() {
 
       test('then returns false with empty hash.', () async {
         const testSecret = 'test-secret-123';
-        final emptyHash = Uint8List.fromList([]);
-        final salt = Uint8List.fromList(List.generate(16, (final i) => i + 1));
 
         final isValid = await hashUtil.validateHashFromString(
           secret: testSecret,
-          hash: emptyHash,
-          salt: salt,
+          hashString: '',
         );
 
         expect(isValid, isFalse);
@@ -201,15 +217,21 @@ void main() {
         const testSecret = 'test-secret-123';
 
         final result = await hashUtil.createHashFromString(secret: testSecret);
+        // Parse PHC string and modify salt
+        final parts = result.split('\$');
+        final saltBase64 = parts[4];
+        final salt = base64Decode(saltBase64);
         final wrongSalt = Uint8List.fromList([
-          ...result.salt.sublist(1),
-          result.salt.first + 1,
+          ...salt.sublist(1),
+          salt.first + 1,
         ]);
+        final wrongSaltBase64 = base64Encode(wrongSalt);
+        final wrongHash =
+            '\$${parts[1]}\$${parts[2]}\$${parts[3]}\$$wrongSaltBase64\$${parts[5]}';
 
         final isValid = await hashUtil.validateHashFromString(
           secret: testSecret,
-          hash: result.hash,
-          salt: wrongSalt,
+          hashString: wrongHash,
         );
 
         expect(isValid, isFalse);
@@ -227,8 +249,7 @@ void main() {
 
         final isValid = await differentPepperHashUtil.validateHashFromString(
           secret: testSecret,
-          hash: result.hash,
-          salt: result.salt,
+          hashString: result,
         );
 
         expect(isValid, isFalse);
@@ -243,8 +264,7 @@ void main() {
 
         final isValid = await hashUtil.validateHashFromBytes(
           secret: testSecret,
-          hash: result.hash,
-          salt: result.salt,
+          hashString: result,
         );
 
         expect(isValid, isTrue);
@@ -260,8 +280,7 @@ void main() {
 
         final isValid = await hashUtil.validateHashFromBytes(
           secret: incorrectSecret,
-          hash: result.hash,
-          salt: result.salt,
+          hashString: result,
         );
 
         expect(isValid, isFalse);
@@ -269,13 +288,10 @@ void main() {
 
       test('then returns false with empty hash.', () async {
         final testSecret = Uint8List.fromList(utf8.encode('test-secret-123'));
-        final emptyHash = Uint8List.fromList([]);
-        final salt = Uint8List.fromList(List.generate(16, (final i) => i + 1));
 
         final isValid = await hashUtil.validateHashFromBytes(
           secret: testSecret,
-          hash: emptyHash,
-          salt: salt,
+          hashString: '',
         );
 
         expect(isValid, isFalse);
@@ -288,8 +304,7 @@ void main() {
 
         final isValid = await hashUtil.validateHashFromString(
           secret: '',
-          hash: emptySecretHash.hash,
-          salt: emptySecretHash.salt,
+          hashString: emptySecretHash,
         );
 
         expect(isValid, isTrue);
@@ -305,7 +320,7 @@ void main() {
 
     late Argon2HashUtil oldPepperHashUtil;
     late Argon2HashUtil newPepperHashUtilWithFallback;
-    late HashResult oldPasswordHash;
+    late String oldPasswordHash;
 
     setUp(() async {
       oldPepperHashUtil = Argon2HashUtil(
@@ -329,8 +344,7 @@ void main() {
         final isValid = await newPepperHashUtilWithFallback
             .validateHashFromString(
               secret: testSecret,
-              hash: oldPasswordHash.hash,
-              salt: oldPasswordHash.salt,
+              hashString: oldPasswordHash,
             );
 
         expect(isValid, isTrue);
@@ -345,8 +359,7 @@ void main() {
         final isValid = await newPepperHashUtilWithFallback
             .validateHashFromString(
               secret: incorrectSecret,
-              hash: oldPasswordHash.hash,
-              salt: oldPasswordHash.salt,
+              hashString: oldPasswordHash,
             );
 
         expect(isValid, isFalse);
@@ -369,8 +382,7 @@ void main() {
         final isValidWithNewPepper = await newPepperOnlyUtil
             .validateHashFromString(
               secret: testSecret,
-              hash: newHash.hash,
-              salt: newHash.salt,
+              hashString: newHash,
             );
 
         expect(isValidWithNewPepper, isTrue);
@@ -383,8 +395,7 @@ void main() {
         final isValidWithOldPepper = await oldPepperOnlyUtil
             .validateHashFromString(
               secret: testSecret,
-              hash: newHash.hash,
-              salt: newHash.salt,
+              hashString: newHash,
             );
 
         expect(isValidWithOldPepper, isFalse);
@@ -413,31 +424,15 @@ void main() {
 
         final isValidOld = await multiPepperHashUtil.validateHashFromString(
           secret: testSecret,
-          hash: oldPasswordHash.hash,
-          salt: oldPasswordHash.salt,
+          hashString: oldPasswordHash,
         );
         final isValidVeryOld = await multiPepperHashUtil.validateHashFromString(
           secret: testSecret,
-          hash: veryOldPasswordHash.hash,
-          salt: veryOldPasswordHash.salt,
+          hashString: veryOldPasswordHash,
         );
 
         expect(isValidOld, isTrue);
         expect(isValidVeryOld, isTrue);
-      },
-    );
-  });
-
-  group('Given HashResult factory', () {
-    test(
-      'when HashResult.empty() is called then creates empty hash and salt.',
-      () {
-        final emptyHashResult = HashResult.empty();
-
-        expect(emptyHashResult.hash, isEmpty);
-        expect(emptyHashResult.salt, isEmpty);
-        expect(emptyHashResult.hash, isA<Uint8List>());
-        expect(emptyHashResult.salt, isA<Uint8List>());
       },
     );
   });

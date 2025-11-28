@@ -265,5 +265,5 @@ class EmailIdpAdmin {
 /// Extension methods for [EmailAccount].
 extension EmailAccountExtension on EmailAccount {
   /// Checks whether the email account has a password set.
-  bool get hasPassword => passwordHash.lengthInBytes > 0;
+  bool get hasPassword => passwordHash.isNotEmpty;
 }

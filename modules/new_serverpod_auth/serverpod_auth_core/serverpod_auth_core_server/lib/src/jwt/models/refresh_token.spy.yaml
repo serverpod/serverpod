@@ -17,7 +17,7 @@ fields:
   ### This is a `Map<String, dynamic>` where each entry's key is used as a claim name.
   ### The values must be JSON-encodable.
   ###
-  ### Users must ensure that the claims don't conflict with [registerd claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
+  ### Users must ensure that the claims don't conflict with [registered claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
   ### or the above-mentioned claim for [scopeNames].
   ###
   ### This is only stored as a serialized String in the database due to schema limitations.
@@ -44,15 +44,11 @@ fields:
   ### This is changed on every rotation of the refresh token,
   ### whenever a new access token is created.
   ###
-  ### Per default uses 64 bytes of random data, and its hash is stored peppered and salted.
-  rotatingSecretHash: ByteData
+  ### Per default uses 64 bytes of random data, and its hash is stored in PHC format:
+  ### $argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}$${base64Hash}
+  rotatingSecretHash: String
 
-  ### The salt used for computing the [rotatingSecretHash].
-  ###
-  ### Per default uses 16 bytes of random data.
-  rotatingSecretSalt: ByteData
-
-  ### The time when the [rotatingSecretHash] / [rotatingSecretSalt] pair was last updated.
+  ### The time when the [rotatingSecretHash] was last updated.
   lastUpdatedAt: DateTime, default=now
 
   ### The time when the first refresh token was created.

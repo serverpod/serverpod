@@ -225,6 +225,10 @@ mapParameters:
   - returnDurationMapNullableDurations:
   - returnNestedNonStringKeyedMapInsideRecordInsideMap:
   - returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap:
+  - returnDateTimeBoolMap:
+  - returnDateTimeBoolMapNullable:
+  - returnIntStringMap:
+  - returnIntStringMapNullable:
 methodSignaturePermutations:
   - echoPositionalArg:
   - echoNamedArg:

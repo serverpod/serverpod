@@ -512,9 +512,10 @@ class LibraryGenerator {
 
     library.body.add(protocol.build());
 
-    if (recordTypesToDeserialize.isNotEmpty) {
+    if (recordTypesToDeserialize.isNotEmpty ||
+        allTypesToDeserialize.any((type) => type.containsNonStringKeyedMap)) {
       library.body.addAll(
-        _deserializationMethodsForRecordTypes(recordTypesToDeserialize),
+        _containerDeserializationMethods(recordTypesToDeserialize),
       );
     }
 
@@ -1477,7 +1478,7 @@ class LibraryGenerator {
     }
   }
 
-  Iterable<Method> _deserializationMethodsForRecordTypes(
+  Iterable<Method> _containerDeserializationMethods(
     List<TypeDefinition> recordTypesToDeserialize,
   ) {
     return [
