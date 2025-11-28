@@ -4198,6 +4198,98 @@ class Endpoints extends _i1.EndpointDispatch {
                             (container) => _i61.mapContainerToJson(container),
                           ),
             ),
+        'returnDateTimeBoolMap': _i1.MethodConnector(
+          name: 'returnDateTimeBoolMap',
+          params: {
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<DateTime, bool>>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['mapParameters'] as _i26.MapParametersEndpoint)
+                      .returnDateTimeBoolMap(
+                        session,
+                        params['map'],
+                      )
+                      .then((container) => _i61.mapContainerToJson(container)),
+        ),
+        'returnDateTimeBoolMapNullable': _i1.MethodConnector(
+          name: 'returnDateTimeBoolMapNullable',
+          params: {
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<DateTime, bool>?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['mapParameters'] as _i26.MapParametersEndpoint)
+                      .returnDateTimeBoolMapNullable(
+                        session,
+                        params['map'],
+                      )
+                      .then(
+                        (container) => container == null
+                            ? null
+                            : _i61.mapContainerToJson(container),
+                      ),
+        ),
+        'returnIntStringMap': _i1.MethodConnector(
+          name: 'returnIntStringMap',
+          params: {
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<int, String>>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['mapParameters'] as _i26.MapParametersEndpoint)
+                      .returnIntStringMap(
+                        session,
+                        params['map'],
+                      )
+                      .then((container) => _i61.mapContainerToJson(container)),
+        ),
+        'returnIntStringMapNullable': _i1.MethodConnector(
+          name: 'returnIntStringMapNullable',
+          params: {
+            'map': _i1.ParameterDescription(
+              name: 'map',
+              type: _i1.getType<Map<int, String>?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['mapParameters'] as _i26.MapParametersEndpoint)
+                      .returnIntStringMapNullable(
+                        session,
+                        params['map'],
+                      )
+                      .then(
+                        (container) => container == null
+                            ? null
+                            : _i61.mapContainerToJson(container),
+                      ),
+        ),
       },
     );
     connectors['methodSignaturePermutations'] = _i1.EndpointConnector(
