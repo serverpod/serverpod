@@ -9,6 +9,8 @@ This release candidate is **not yet production-ready**. It is still under active
 
 This version comes packed with several improvements to the user experience when interacting with the authentication module on the server. Changes are listed below, but we also recommend checking the [server.dart](https://github.com/serverpod/serverpod/blob/main/examples/auth/auth_server/lib/server.dart) and [server_from_passwords.dart](https://github.com/serverpod/serverpod/blob/main/examples/auth/auth_server/lib/server_from_passwords.dart) files in the examples for a complete overview of the new API.
 
+There is also one major breaking change regarding the storage of Argon2 hashes instead of raw bytes. This change greatly improves compatibility with future changes to hash parameters, but will also lead to a drop of the table that stores emails and passwords. Manually editing the generated migration SQL file might be necessary to prevent losing registered emails.
+
 - feat: Introduces new `*FromPasswords` classes to simplify the configuration of auth services from passwords file or environment variables.
 - feat: Introduces a new `pod.initializeAuthServices` preferred method to configure auth services on the server.
 - feat: Exposes a convenience `configureAppleIdpRoutes` method on the `Serverpod` class to configure the Apple identity provider routes.
