@@ -93,6 +93,9 @@ class FutureCallManager {
   /// implementation with a specific [name].
   ///
   /// Throws an exception if a future call with the same name is already registered.
+  ///
+  /// If [start] has been called previously and the scanner is not yet scanning,
+  /// this will trigger the scanner to begin scanning for overdue future calls.
   void registerFutureCall(FutureCall futureCall, String name) {
     if (_futureCalls.containsKey(name)) {
       throw Exception('Added future call with duplicate name ($name)');
@@ -101,11 +104,25 @@ class FutureCallManager {
     _initializeFutureCall(futureCall, name);
 
     _futureCalls[name] = futureCall;
+
+    // If start() was called but scanner hasn't started scanning yet,
+    // start scanning now that we have registered calls
+    if (_scanner.isStarted) {
+      _scanner.startScanning();
+    }
   }
 
   /// Executes all scheduled future calls that are past their due date. This
   /// method scans the database for overdue tasks and processes them.
+  ///
+  /// If no future calls are registered, this method will skip processing
+  /// and return immediately.
   Future<void> runScheduledFutureCalls() async {
+    if (_futureCalls.isEmpty) {
+      stdout.writeln('No future calls registered. Skipping processing.');
+      return;
+    }
+
     stdout.writeln('Processing future calls.');
 
     await _scanner.scanFutureCallEntries();
@@ -148,8 +165,17 @@ class FutureCallManager {
 
   /// Starts the [FutureCallManager], enabling it to monitor the database
   /// for overdue future calls and execute them automatically.
+  ///
+  /// If no future calls are registered, the scanner will not begin scanning
+  /// until [registerFutureCall] is called. This prevents unnecessary database
+  /// queries when no future calls are known.
   void start() {
     _scanner.start();
+
+    // Only start scanning if there are registered future calls
+    if (_futureCalls.isNotEmpty) {
+      _scanner.startScanning();
+    }
   }
 
   /// Stops the [FutureCallManager], preventing it from monitoring and
