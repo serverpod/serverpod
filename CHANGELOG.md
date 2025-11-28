@@ -7,7 +7,7 @@ This release candidate is **not yet production-ready**. It is still under active
 
 ### New auth improvements from last rc
 
-This version comes packed with several improvements to the user experience when interacting with the authentication module on the server. Changes are listed below, but we also recommend checking the [server.dart](https://github.com/serverpod/serverpod/blob/main/examples/auth/auth_server/lib/server.dart) file in the examples for a complete overview of the new API.
+This version comes packed with several improvements to the user experience when interacting with the authentication module on the server. Changes are listed below, but we also recommend checking the [server.dart](https://github.com/serverpod/serverpod/blob/main/examples/auth/auth_server/lib/server.dart) and [server_from_passwords.dart](https://github.com/serverpod/serverpod/blob/main/examples/auth/auth_server/lib/server_from_passwords.dart) files in the examples for a complete overview of the new API.
 
 - feat: Introduces new `*FromPasswords` classes to simplify the configuration of auth services from passwords file or environment variables.
 - feat: Introduces a new `pod.initializeAuthServices` preferred method to configure auth services on the server.
