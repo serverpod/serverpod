@@ -7,6 +7,46 @@ import 'package:serverpod_cli/src/generator/types.dart';
 const _defaultName = 'example';
 const _defaultType = PackageType.server;
 
+/// Builder for [DatabaseGeneratorOptions].
+class DatabaseGeneratorOptionsBuilder {
+  TransactionParameterMode _transactionParameterMode =
+      TransactionParameterMode.optional;
+
+  DatabaseGeneratorOptionsBuilder withTransactionParameterMode(
+    TransactionParameterMode mode,
+  ) {
+    _transactionParameterMode = mode;
+    return this;
+  }
+
+  DatabaseGeneratorOptions build() {
+    return DatabaseGeneratorOptions(
+      transactionParameterMode: _transactionParameterMode,
+    );
+  }
+}
+
+/// Builder for [GeneratorOptions].
+class GeneratorOptionsBuilder {
+  DatabaseGeneratorOptions _database = DatabaseGeneratorOptions.defaultOptions;
+
+  GeneratorOptionsBuilder withDatabase(DatabaseGeneratorOptions database) {
+    _database = database;
+    return this;
+  }
+
+  GeneratorOptionsBuilder withDatabaseBuilder(
+    DatabaseGeneratorOptions Function(DatabaseGeneratorOptionsBuilder) builder,
+  ) {
+    _database = builder(DatabaseGeneratorOptionsBuilder());
+    return this;
+  }
+
+  GeneratorOptions build() {
+    return GeneratorOptions(database: _database);
+  }
+}
+
 class GeneratorConfigBuilder {
   String _name;
   PackageType _type;
@@ -20,7 +60,7 @@ class GeneratorConfigBuilder {
   List<ServerpodFeature> _enabledFeatures;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
-  DatabaseConfig _databaseConfig;
+  GeneratorOptions _generatorOptions;
 
   GeneratorConfigBuilder()
     : _name = _defaultName,
@@ -49,7 +89,7 @@ class GeneratorConfigBuilder {
       _extraClasses = [],
       _enabledFeatures = [ServerpodFeature.database],
       _enabledExperimentalFeatures = [],
-      _databaseConfig = DatabaseConfig.defaultConfig;
+      _generatorOptions = GeneratorOptions.defaultOptions;
 
   GeneratorConfigBuilder withName(String name) {
     _name = name;
@@ -127,15 +167,24 @@ class GeneratorConfigBuilder {
     return this;
   }
 
-  GeneratorConfigBuilder withDatabaseConfig(DatabaseConfig config) {
-    _databaseConfig = config;
+  GeneratorConfigBuilder withGeneratorOptions(GeneratorOptions options) {
+    _generatorOptions = options;
+    return this;
+  }
+
+  GeneratorConfigBuilder withGeneratorOptionsBuilder(
+    GeneratorOptions Function(GeneratorOptionsBuilder) builder,
+  ) {
+    _generatorOptions = builder(GeneratorOptionsBuilder());
     return this;
   }
 
   GeneratorConfigBuilder withTransactionParameterMode(
     TransactionParameterMode mode,
   ) {
-    _databaseConfig = DatabaseConfig(transactionParameterMode: mode);
+    _generatorOptions = GeneratorOptions(
+      database: DatabaseGeneratorOptions(transactionParameterMode: mode),
+    );
     return this;
   }
 
@@ -153,7 +202,7 @@ class GeneratorConfigBuilder {
       enabledFeatures: _enabledFeatures,
       experimentalFeatures: _enabledExperimentalFeatures,
       relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,
-      databaseConfig: _databaseConfig,
+      generatorOptions: _generatorOptions,
     );
   }
 }

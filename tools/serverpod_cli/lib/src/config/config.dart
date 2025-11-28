@@ -85,7 +85,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.extraClasses,
     required this.enabledFeatures,
     this.experimentalFeatures = const [],
-    this.databaseConfig = DatabaseConfig.defaultConfig,
+    this.generatorOptions = GeneratorOptions.defaultOptions,
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
        _modules = modules;
@@ -246,8 +246,8 @@ class GeneratorConfig implements ModelLoadConfig {
       experimentalFeatures.contains(feature) ||
       experimentalFeatures.contains(ExperimentalFeature.all);
 
-  /// Database-specific generator configuration.
-  final DatabaseConfig databaseConfig;
+  /// Generator options parsed from the `generator` section of the config.
+  final GeneratorOptions generatorOptions;
 
   /// All the modules defined in the config (of type module).
   List<ModuleConfig> get modules => _modules
@@ -429,7 +429,7 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
-    var databaseConfig = _parseDatabaseConfig(generatorConfig);
+    var generatorOptions = GeneratorOptions.parse(generatorConfig);
 
     return GeneratorConfig(
       name: name,
@@ -444,43 +444,8 @@ class GeneratorConfig implements ModelLoadConfig {
       extraClasses: extraClasses,
       enabledFeatures: enabledFeatures,
       experimentalFeatures: enabledExperimentalFeatures,
-      databaseConfig: databaseConfig,
+      generatorOptions: generatorOptions,
     );
-  }
-
-  static DatabaseConfig _parseDatabaseConfig(Map config) {
-    var generator = config['generator'];
-    if (generator is! Map) return DatabaseConfig.defaultConfig;
-
-    var database = generator['database'];
-    if (database is! Map) return DatabaseConfig.defaultConfig;
-
-    var transactionParameterMode = _parseTransactionParameterMode(database);
-
-    return DatabaseConfig(
-      transactionParameterMode: transactionParameterMode,
-    );
-  }
-
-  static TransactionParameterMode _parseTransactionParameterMode(
-    Map database,
-  ) {
-    var transactionParameter = database['transaction_parameter'];
-    if (transactionParameter == null) return TransactionParameterMode.optional;
-
-    if (transactionParameter == 'required') {
-      return TransactionParameterMode.required;
-    } else if (transactionParameter == 'optional') {
-      return TransactionParameterMode.optional;
-    } else {
-      log.warning(
-        'Invalid value \'$transactionParameter\' for '
-        '\'generator.database.transaction_parameter\'. '
-        'Expected \'required\' or \'optional\'. '
-        'Using default value \'optional\'.',
-      );
-      return TransactionParameterMode.optional;
-    }
   }
 
   static List<ServerpodFeature> _enabledFeatures(File file, Map config) {

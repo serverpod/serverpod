@@ -11,7 +11,7 @@ class BuildRepositoryClass {
 
   /// Returns true if the transaction parameter should be required.
   bool get _requireTransactionParameter =>
-      config.databaseConfig.transactionParameterMode ==
+      config.generatorOptions.database.transactionParameterMode ==
       TransactionParameterMode.required;
 
   /// Builds the transaction parameter for repository methods.

@@ -31,10 +31,6 @@ void main() {
     'Given a class with table name when generating code with transaction_parameter set to optional',
     () {
       var tableName = 'example_table';
-      var config = GeneratorConfigBuilder()
-          .withName(projectName)
-          .withTransactionParameterMode(TransactionParameterMode.optional)
-          .build();
       var models = [
         ModelClassDefinitionBuilder()
             .withFileName(testClassFileName)
@@ -42,19 +38,25 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late final config = GeneratorConfigBuilder()
+          .withName(projectName)
+          .withTransactionParameterMode(TransactionParameterMode.optional)
+          .build();
+
+      late final codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late final compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: repositoryClassName,
-      );
+      late final repositoryClass =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: repositoryClassName,
+          );
 
       test(
         'then transaction parameter is optional in the find method.',
@@ -117,10 +119,6 @@ void main() {
     'Given a class with table name when generating code with transaction_parameter set to required',
     () {
       var tableName = 'example_table';
-      var config = GeneratorConfigBuilder()
-          .withName(projectName)
-          .withTransactionParameterMode(TransactionParameterMode.required)
-          .build();
       var models = [
         ModelClassDefinitionBuilder()
             .withFileName(testClassFileName)
@@ -128,19 +126,25 @@ void main() {
             .build(),
       ];
 
-      var codeMap = generator.generateSerializableModelsCode(
+      late final config = GeneratorConfigBuilder()
+          .withName(projectName)
+          .withTransactionParameterMode(TransactionParameterMode.required)
+          .build();
+
+      late final codeMap = generator.generateSerializableModelsCode(
         models: models,
         config: config,
       );
 
-      var compilationUnit = parseString(
+      late final compilationUnit = parseString(
         content: codeMap[expectedFilePath]!,
       ).unit;
 
-      var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: repositoryClassName,
-      );
+      late final repositoryClass =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: repositoryClassName,
+          );
 
       test(
         'then transaction parameter is required in the find method.',
