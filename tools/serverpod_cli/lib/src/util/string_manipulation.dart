@@ -88,6 +88,8 @@ void extractDartDocTemplates(
 
   // Pattern to extract template name and content
   // Matches {@template name}...content...{@endtemplate}
+  // Note: Uses [^}]+ to match any template name characters, allowing for
+  // various naming conventions. The name is trimmed after extraction.
   final templatePattern = RegExp(
     r'^\s*///\s*\{@template\s+([^}]+)\}\s*$',
     multiLine: true,
@@ -207,6 +209,8 @@ String _resolveMacroReferences(
 ) {
   // Pattern to match entire lines containing only {@macro name}
   // This matches lines like: /// {@macro template.name}
+  // Note: Uses [^}]+ to match any template name characters, allowing for
+  // various naming conventions. The name is trimmed after extraction.
   final macroLinePattern = RegExp(
     r'^(\s*///\s*)\{@macro\s+([^}]+)\}\s*$',
     multiLine: true,
