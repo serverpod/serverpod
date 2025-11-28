@@ -311,7 +311,12 @@ class SerializableModelLibraryGenerator {
         );
       }
 
-      classBuilder.methods.add(_buildToStringMethod(serverCode));
+      classBuilder.methods.add(
+        _buildExceptionToStringMethod(
+          className,
+          classDefinition.fields,
+        ),
+      );
     });
   }
 
@@ -1465,6 +1470,34 @@ class SerializableModelLibraryGenerator {
           ).code,
           const Code(';'),
         ]);
+      },
+    );
+  }
+
+  Method _buildExceptionToStringMethod(
+    String className,
+    List<SerializableModelFieldDefinition> fields,
+  ) {
+    return Method(
+      (m) {
+        m.returns = refer('String');
+        m.name = 'toString';
+        m.annotations.add(refer('override'));
+
+        var visibleFields = fields.where(
+          (field) => field.shouldIncludeField(serverCode),
+        );
+
+        if (visibleFields.isEmpty) {
+          // For exceptions with no fields, return just the class name
+          m.body = literalString(className).returned.statement;
+        } else {
+          // For exceptions with fields, return "ClassName(field1: $field1, field2: $field2)"
+          var fieldStrings = visibleFields.map((field) {
+            return '${field.name}: \$${field.name}';
+          }).join(', ');
+          m.body = literalString('$className($fieldStrings)').returned.statement;
+        }
       },
     );
   }
