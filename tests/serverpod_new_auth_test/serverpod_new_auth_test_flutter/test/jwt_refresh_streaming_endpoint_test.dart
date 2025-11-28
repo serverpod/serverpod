@@ -13,7 +13,7 @@ void main() {
     authKeyManager = TestAuthKeyManager();
     client = Client(
       'http://localhost:8080/',
-      authenticationKeyManager: authKeyManager,
+      authKeyProvider: authKeyManager,
     );
   });
 

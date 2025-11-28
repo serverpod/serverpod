@@ -33,7 +33,7 @@ void main() {
     authKeyManager = TestAuthKeyManager();
     client = c.Client(
       serverUrl,
-      authenticationKeyManager: authKeyManager,
+      authKeyProvider: authKeyManager,
     );
   });
 

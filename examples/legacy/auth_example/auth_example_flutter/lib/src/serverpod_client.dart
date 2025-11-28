@@ -13,7 +13,7 @@ Future<void> initializeServerpodClient() async {
   // production servers.
   client = Client(
     'http://localhost:8080/',
-    authenticationKeyManager: FlutterAuthenticationKeyManager(),
+    authKeyProvider: FlutterAuthenticationKeyManager(),
   )..connectivityMonitor = FlutterConnectivityMonitor();
 
   // The session manager keeps track of the signed-in state of the user. You

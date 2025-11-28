@@ -325,7 +325,7 @@ class Client extends _i2.ServerpodClientShared {
   Client(
     String host, {
     dynamic securityContext,
-    _i2.AuthenticationKeyManager? authenticationKeyManager,
+    _i2.ClientAuthKeyProvider? authKeyProvider,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
     Function(
@@ -340,7 +340,7 @@ class Client extends _i2.ServerpodClientShared {
          host,
          _i7.Protocol(),
          securityContext: securityContext,
-         authenticationKeyManager: authenticationKeyManager,
+         authKeyProvider: authKeyProvider,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
          onFailedCall: onFailedCall,

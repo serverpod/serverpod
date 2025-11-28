@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 void main() {
   var serviceClient = Client(
     serviceServerUrl,
-    authenticationKeyManager: TestServiceKeyManager(
+    authKeyProvider: TestServiceKeyManager(
       '0',
       'super_SECRET_password',
     ),

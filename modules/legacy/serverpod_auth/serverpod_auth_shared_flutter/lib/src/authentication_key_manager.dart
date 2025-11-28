@@ -3,9 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const _prefsKey = 'serverpod_authentication_key';
 
-/// Implementation of a Serverpod [AuthenticationKeyManager] specifically for
+/// Implementation of a Serverpod [ClientAuthKeyProvider] specifically for
 /// Flutter. Authentication key is stored in the [SharedPreferences].
-class FlutterAuthenticationKeyManager extends BasicAuthenticationKeyManager {
+class FlutterAuthenticationKeyManager implements ClientAuthKeyProvider {
   bool _initialized = false;
   String? _authenticationKey;
 
@@ -22,6 +22,13 @@ class FlutterAuthenticationKeyManager extends BasicAuthenticationKeyManager {
   }) : _storage = storage ?? SharedPreferenceStorage();
 
   @override
+  Future<String?> get authHeaderValue async {
+    final key = await get();
+    if (key == null) return null;
+    return wrapAsBasicAuthHeaderValue(key);
+  }
+
+  /// Retrieves an authentication key.
   Future<String?> get() async {
     if (!_initialized) {
       _authenticationKey = await _storage.getString('${_prefsKey}_$runMode');
@@ -31,14 +38,14 @@ class FlutterAuthenticationKeyManager extends BasicAuthenticationKeyManager {
     return _authenticationKey;
   }
 
-  @override
+  /// Saves an authentication key retrieved by the server.
   Future<void> put(String key) async {
     _authenticationKey = key;
 
     await _storage.setString('${_prefsKey}_$runMode', key);
   }
 
-  @override
+  /// Removes the authentication key.
   Future<void> remove() async {
     _authenticationKey = null;
 

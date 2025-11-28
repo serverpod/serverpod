@@ -13,7 +13,7 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(
     serverUrl,
-    authenticationKeyManager: TestAuthKeyManager(),
+    authKeyProvider: TestAuthKeyManager(),
   );
 
   test(

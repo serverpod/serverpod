@@ -857,11 +857,11 @@ class LibraryGenerator {
                     ),
                     Parameter(
                       (p) => p
-                        ..name = 'authenticationKeyManager'
+                        ..name = 'authKeyProvider'
                         ..named = true
                         ..type = TypeReference(
                           (t) => t
-                            ..symbol = 'AuthenticationKeyManager'
+                            ..symbol = 'ClientAuthKeyProvider'
                             ..url = serverpodUrl(false)
                             ..isNullable = true,
                         ),
@@ -955,8 +955,8 @@ class LibraryGenerator {
                           ],
                           {
                             'securityContext': refer('securityContext'),
-                            'authenticationKeyManager': refer(
-                              'authenticationKeyManager',
+                            'authKeyProvider': refer(
+                              'authKeyProvider',
                             ),
                             'streamingConnectionTimeout': refer(
                               'streamingConnectionTimeout',

@@ -18,7 +18,7 @@ void main() {
         // prepare a proper authentication key
         client = Client(
           serverUrl,
-          authenticationKeyManager: TestAuthKeyManager(),
+          authKeyProvider: TestAuthKeyManager(),
         );
         var response = await client.authentication.authenticate(
           'test@foo.bar',

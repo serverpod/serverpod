@@ -50,7 +50,7 @@ void main() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
             'http://localhost:8080/',
-            authenticationKeyManager: authKeyManager,
+            authKeyProvider: authKeyManager,
           );
           authKeyManager.put(validTestToken);
         });
@@ -100,7 +100,7 @@ void main() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
             'http://localhost:8080/',
-            authenticationKeyManager: authKeyManager,
+            authKeyProvider: authKeyManager,
           );
           authKeyManager.put(invalidTestToken);
         });
@@ -144,7 +144,7 @@ void main() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
             'http://localhost:8080/',
-            authenticationKeyManager: authKeyManager,
+            authKeyProvider: authKeyManager,
           );
           authKeyManager.put(validTestToken);
         });
@@ -185,7 +185,7 @@ void main() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
             'http://localhost:8080/',
-            authenticationKeyManager: authKeyManager,
+            authKeyProvider: authKeyManager,
           );
           authKeyManager.put(invalidTestToken);
         });
@@ -269,7 +269,7 @@ void main() {
         final authKeyManager = TestAuthKeyManager();
         final client = Client(
           'http://localhost:8080/',
-          authenticationKeyManager: authKeyManager,
+          authKeyProvider: authKeyManager,
         );
         authKeyManager.put(validTestToken);
 
@@ -296,7 +296,7 @@ void main() {
         final authKeyManager = TestAuthKeyManager();
         final client = Client(
           'http://localhost:8080/',
-          authenticationKeyManager: authKeyManager,
+          authKeyProvider: authKeyManager,
         );
         authKeyManager.put(invalidTestToken);
 
@@ -324,7 +324,7 @@ void main() {
         final authKeyManager = TestAuthKeyManager();
         final client = Client(
           'http://localhost:8080/',
-          authenticationKeyManager: authKeyManager,
+          authKeyProvider: authKeyManager,
         );
         authKeyManager.put(validTestToken);
 
@@ -357,7 +357,7 @@ void main() {
         final authKeyManager = TestAuthKeyManager();
         final client = Client(
           'http://localhost:8080/',
-          authenticationKeyManager: authKeyManager,
+          authKeyProvider: authKeyManager,
         );
         authKeyManager.put(invalidTestToken);
 

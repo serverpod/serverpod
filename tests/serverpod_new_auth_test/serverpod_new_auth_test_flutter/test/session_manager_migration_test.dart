@@ -40,7 +40,7 @@ void main() {
 
       final legacySessionClient = Client(
         'http://localhost:8080/',
-        authenticationKeyManager: keyManager,
+        authKeyProvider: keyManager,
       );
 
       final legacySessionManager = legacy_auth_flutter.SessionManager(

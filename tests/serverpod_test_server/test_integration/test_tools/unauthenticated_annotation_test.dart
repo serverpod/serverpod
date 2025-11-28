@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 void main() {
   late Serverpod server;
   late Client client;
-  late AuthenticationKeyManager authKeyManager;
+  late TestAuthKeyManager authKeyManager;
 
   setUpAll(() async {
     server = IntegrationTestServer.create();
@@ -17,7 +17,7 @@ void main() {
     authKeyManager = TestAuthKeyManager();
     client = Client(
       serverUrl,
-      authenticationKeyManager: authKeyManager,
+      authKeyProvider: authKeyManager,
     );
 
     await client.authentication.removeAllUsers();

@@ -136,8 +136,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
   @Deprecated(
     'Use authKeyProvider instead, this will be removed in future releases.',
   )
-  AuthenticationKeyManager? get authenticationKeyManager =>
-      authKeyProvider as AuthenticationKeyManager?;
+  late final AuthenticationKeyManager? authenticationKeyManager;
 
   /// Looks up module callers by their name. Overridden by generated code.
   Map<String, ModuleEndpointCaller> get moduleLookup;
@@ -214,7 +213,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.host,
     this.serializationManager, {
     dynamic securityContext,
+    @Deprecated('Use authKeyProvider instead.')
     AuthenticationKeyManager? authenticationKeyManager,
+    ClientAuthKeyProvider? authKeyProvider,
     required Duration? streamingConnectionTimeout,
     required Duration? connectionTimeout,
     this.onFailedCall,
@@ -242,8 +243,11 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _disconnectWebSocketStreamOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
 
-    // This is a backwards compatibility assignment.
-    authKeyProvider ??= authenticationKeyManager;
+    // Backwards compatibility: use authenticationKeyManager if authKeyProvider is not provided.
+    this.authKeyProvider = authKeyProvider ?? authenticationKeyManager;
+    this.authenticationKeyManager =
+        authenticationKeyManager ??
+        (authKeyProvider is AuthenticationKeyManager ? authKeyProvider : null);
   }
 
   /// Handles a message received from the WebSocket stream. Typically, this
