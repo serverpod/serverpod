@@ -13,7 +13,7 @@ void main() {
     setUp(() async {
       client = Client(
         serverUrl,
-        authenticationKeyManager: authKeyManager,
+        authKeyProvider: authKeyManager,
       );
     });
 

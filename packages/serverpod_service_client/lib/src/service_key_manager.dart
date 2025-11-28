@@ -2,7 +2,7 @@ import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// The key manager used for the service protocol.
-class ServiceKeyManager extends BearerAuthenticationKeyManager {
+class ServiceKeyManager implements ClientAuthKeyProvider {
   /// Name of the client
   final String name;
 
@@ -20,12 +20,7 @@ class ServiceKeyManager extends BearerAuthenticationKeyManager {
   );
 
   @override
-  Future<String> get() async {
+  Future<String> get authHeaderValue async {
     return '$name:$serviceSecret';
   }
-
-  @override
-  Future<void> put(String key) async {}
-  @override
-  Future<void> remove() async {}
 }

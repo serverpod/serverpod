@@ -11,11 +11,11 @@ void main() {
     setUp(() async {
       primaryClient = Client(
         serverUrl,
-        authenticationKeyManager: TestAuthKeyManager(),
+        authKeyProvider: TestAuthKeyManager(),
       );
       secondaryClient = Client(
         serverUrl,
-        authenticationKeyManager: TestAuthKeyManager(),
+        authKeyProvider: TestAuthKeyManager(),
       );
 
       await _authenticateClient(primaryClient);

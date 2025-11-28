@@ -9,7 +9,7 @@ void main() {
   var client = Client(serverUrl);
   var serviceClient = service.Client(
     serviceServerUrl,
-    authenticationKeyManager: TestServiceKeyManager(
+    authKeyProvider: TestServiceKeyManager(
       '0',
       'super_SECRET_password',
     ),

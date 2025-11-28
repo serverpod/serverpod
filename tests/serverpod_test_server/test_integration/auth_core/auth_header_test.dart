@@ -20,7 +20,7 @@ void main() async {
     var authKeyManager = TestBasicAuthenticationKeyManager();
     var client = Client(
       'http://localhost:8080/',
-      authenticationKeyManager: authKeyManager,
+      authKeyProvider: authKeyManager,
     );
     late Serverpod server;
 
@@ -109,7 +109,7 @@ void main() async {
     var incorrectAuthKeyManager = TestIncorrectAuthKeyManager();
     var client = Client(
       'http://localhost:8080/',
-      authenticationKeyManager: incorrectAuthKeyManager,
+      authKeyProvider: incorrectAuthKeyManager,
     );
     late Serverpod server;
 
@@ -155,7 +155,7 @@ void main() async {
     var authKeyManager = TestAuthKeyManager();
     var client = Client(
       'http://localhost:8080/',
-      authenticationKeyManager: authKeyManager,
+      authKeyProvider: authKeyManager,
     );
     late Serverpod server;
 
@@ -264,18 +264,22 @@ void main() async {
 }
 
 /// A test implementation that yields backwards compatible Basic auth header values.
-class TestBasicAuthenticationKeyManager extends BasicAuthenticationKeyManager {
+class TestBasicAuthenticationKeyManager implements ClientAuthKeyProvider {
   String? _key;
 
   @override
+  Future<String?> get authHeaderValue async {
+    final key = await get();
+    if (key == null) return null;
+    return wrapAsBasicAuthHeaderValue(key);
+  }
+
   Future<String?> get() async => _key;
 
-  @override
   Future<void> put(String key) async {
     _key = key;
   }
 
-  @override
   Future<void> remove() async {
     _key = null;
   }
@@ -284,7 +288,8 @@ class TestBasicAuthenticationKeyManager extends BasicAuthenticationKeyManager {
 /// A test implementation that skips encoding of the key, i.e. yields invalid header values.
 class TestIncorrectAuthKeyManager extends TestAuthKeyManager {
   @override
-  Future<String?> toHeaderValue(String? key) async {
+  Future<String?> get authHeaderValue async {
+    final key = await get();
     return 'basic $key';
   }
 }

@@ -18,7 +18,7 @@ void main() {
       var testConnectivityMonitor = TestConnectivityMonitor();
       var client = Client(
         serverUrl,
-        authenticationKeyManager: TestAuthKeyManager(),
+        authKeyProvider: TestAuthKeyManager(),
         disconnectStreamsOnLostInternetConnection: true,
       );
 
@@ -58,7 +58,7 @@ void main() {
       var testConnectivityMonitor = TestConnectivityMonitor();
       var client = Client(
         serverUrl,
-        authenticationKeyManager: TestAuthKeyManager(),
+        authKeyProvider: TestAuthKeyManager(),
         disconnectStreamsOnLostInternetConnection: false,
       );
       client.connectivityMonitor = testConnectivityMonitor;

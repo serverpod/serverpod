@@ -17,7 +17,7 @@ void main() {
     (sessionBuilder, endpoints) {
       var serviceClient = Client(
         serviceServerUrl,
-        authenticationKeyManager: TestServiceKeyManager(
+        authKeyProvider: TestServiceKeyManager(
           '0',
           'super_SECRET_password',
         ),

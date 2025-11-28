@@ -17,7 +17,7 @@ void main() {
 
     client = c.Client(
       serverUrl,
-      authenticationKeyManager: TestAuthKeyManager(),
+      authKeyProvider: TestAuthKeyManager(),
     );
   });
 

@@ -24,7 +24,7 @@ class ConfigInfo {
     return Client(
       '${insightsServer.publicScheme}://'
       '${insightsServer.publicHost}:${insightsServer.port}/',
-      authenticationKeyManager: keyManager,
+      authKeyProvider: keyManager,
     );
   }
 }
