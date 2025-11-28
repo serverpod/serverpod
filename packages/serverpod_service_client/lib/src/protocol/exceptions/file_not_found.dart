@@ -43,7 +43,7 @@ abstract class FileNotFoundException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'FileNotFoundException(message: $message)';
   }
 }
 

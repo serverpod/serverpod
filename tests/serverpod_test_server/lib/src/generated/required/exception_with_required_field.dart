@@ -75,7 +75,7 @@ abstract class ExceptionWithRequiredField
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'ExceptionWithRequiredField(name: $name, email: $email, phone: $phone)';
   }
 }
 

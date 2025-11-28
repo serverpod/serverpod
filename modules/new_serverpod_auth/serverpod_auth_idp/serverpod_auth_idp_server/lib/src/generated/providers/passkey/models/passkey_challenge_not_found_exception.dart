@@ -51,7 +51,7 @@ abstract class PasskeyChallengeNotFoundException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'PasskeyChallengeNotFoundException';
   }
 }
 

@@ -86,7 +86,7 @@ abstract class ExceptionWithData
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'ExceptionWithData(message: $message, creationDate: $creationDate, errorFields: $errorFields, someNullableField: $someNullableField)';
   }
 }
 
