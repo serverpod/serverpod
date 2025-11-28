@@ -468,5 +468,165 @@ void main() {
         expect(result, null);
       },
     );
+
+    group('with template registry', () {
+      test(
+        'Given documentation with {@macro} reference and matching template then macro is resolved.',
+        () {
+          var input = '''/// {@macro example.method}''';
+          var templateRegistry = <String, String>{
+            'example.method': '/// This is the template content',
+          };
+          var result = stripDocumentationTemplateMarkers(
+            input,
+            templateRegistry: templateRegistry,
+          );
+          expect(result, '''/// This is the template content''');
+        },
+      );
+
+      test(
+        'Given documentation with {@macro} reference and no matching template then macro is kept.',
+        () {
+          var input = '''/// {@macro nonexistent.template}''';
+          var templateRegistry = <String, String>{
+            'example.method': '/// This is the template content',
+          };
+          var result = stripDocumentationTemplateMarkers(
+            input,
+            templateRegistry: templateRegistry,
+          );
+          expect(result, '''/// {@macro nonexistent.template}''');
+        },
+      );
+
+      test(
+        'Given documentation with {@macro} and additional content then macro is resolved while preserving other content.',
+        () {
+          var input = '''/// Some intro text
+/// {@macro example.method}
+/// Some outro text''';
+          var templateRegistry = <String, String>{
+            'example.method':
+                '/// Template content line 1\n/// Template content line 2',
+          };
+          var result = stripDocumentationTemplateMarkers(
+            input,
+            templateRegistry: templateRegistry,
+          );
+          expect(
+            result,
+            '''/// Some intro text
+/// Template content line 1
+/// Template content line 2
+/// Some outro text''',
+          );
+        },
+      );
+
+      test(
+        'Given documentation with multiple {@macro} references then all are resolved.',
+        () {
+          var input = '''/// {@macro first.template}
+/// {@macro second.template}''';
+          var templateRegistry = <String, String>{
+            'first.template': '/// First content',
+            'second.template': '/// Second content',
+          };
+          var result = stripDocumentationTemplateMarkers(
+            input,
+            templateRegistry: templateRegistry,
+          );
+          expect(
+            result,
+            '''/// First content
+/// Second content''',
+          );
+        },
+      );
+    });
+  });
+
+  group('extractDartDocTemplates', () {
+    test(
+      'Given documentation with template definition then template is extracted.',
+      () {
+        var input = '''/// {@template example.method}
+/// This is the content
+/// {@endtemplate}''';
+        var registry = <String, String>{};
+        extractDartDocTemplates(input, registry);
+        expect(registry['example.method'], '/// This is the content');
+      },
+    );
+
+    test(
+      'Given documentation with multi-line template then content is extracted.',
+      () {
+        var input = '''/// {@template example.method}
+/// Line 1
+/// Line 2
+/// Line 3
+/// {@endtemplate}''';
+        var registry = <String, String>{};
+        extractDartDocTemplates(input, registry);
+        expect(
+          registry['example.method'],
+          '''/// Line 1
+/// Line 2
+/// Line 3''',
+        );
+      },
+    );
+
+    test(
+      'Given documentation with multiple templates then all are extracted.',
+      () {
+        var input = '''/// {@template first.template}
+/// First content
+/// {@endtemplate}
+/// {@template second.template}
+/// Second content
+/// {@endtemplate}''';
+        var registry = <String, String>{};
+        extractDartDocTemplates(input, registry);
+        expect(registry['first.template'], '/// First content');
+        expect(registry['second.template'], '/// Second content');
+      },
+    );
+
+    test('Given null documentation then registry is unchanged.', () {
+      var registry = <String, String>{};
+      extractDartDocTemplates(null, registry);
+      expect(registry, isEmpty);
+    });
+
+    test('Given empty documentation then registry is unchanged.', () {
+      var registry = <String, String>{};
+      extractDartDocTemplates('', registry);
+      expect(registry, isEmpty);
+    });
+
+    test(
+      'Given documentation without templates then registry is unchanged.',
+      () {
+        var input = '''/// Just regular documentation
+/// without any templates''';
+        var registry = <String, String>{};
+        extractDartDocTemplates(input, registry);
+        expect(registry, isEmpty);
+      },
+    );
+
+    test(
+      'Given documentation with template with empty content then template is not added.',
+      () {
+        var input = '''/// {@template empty.template}
+/// {@endtemplate}''';
+        var registry = <String, String>{};
+        extractDartDocTemplates(input, registry);
+        expect(registry, isEmpty);
+      },
+    );
   });
 }
