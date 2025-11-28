@@ -54,7 +54,7 @@ abstract class EmailAccountLoginException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'EmailAccountLoginException(reason: $reason)';
   }
 }
 

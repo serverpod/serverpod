@@ -54,7 +54,7 @@ abstract class AccessDeniedException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'AccessDeniedException(message: $message)';
   }
 }
 

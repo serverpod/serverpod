@@ -50,7 +50,7 @@ abstract class PasskeyChallengeExpiredException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'PasskeyChallengeExpiredException';
   }
 }
 

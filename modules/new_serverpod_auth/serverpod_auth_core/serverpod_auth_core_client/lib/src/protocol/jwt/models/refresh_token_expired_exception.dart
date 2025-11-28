@@ -37,7 +37,7 @@ abstract class RefreshTokenExpiredException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'RefreshTokenExpiredException';
   }
 }
 
