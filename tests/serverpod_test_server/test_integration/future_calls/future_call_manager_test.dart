@@ -189,18 +189,20 @@ void main() async {
         );
       });
 
-      test('when executing all scheduled FutureCalls '
-          'then FutureCall entry is not removed from the database because no calls are registered',
-          () async {
-        await futureCallManager.runScheduledFutureCalls();
+      test(
+        'when executing all scheduled FutureCalls '
+        'then FutureCall entry is not removed from the database because no calls are registered',
+        () async {
+          await futureCallManager.runScheduledFutureCalls();
 
-        final futureCallEntries = await FutureCallEntry.db.find(
-          session,
-          where: (entry) => entry.name.equals(testCallName),
-        );
+          final futureCallEntries = await FutureCallEntry.db.find(
+            session,
+            where: (entry) => entry.name.equals(testCallName),
+          );
 
-        expect(futureCallEntries, hasLength(1));
-      });
+          expect(futureCallEntries, hasLength(1));
+        },
+      );
     },
   );
 
@@ -699,16 +701,18 @@ void main() async {
           await futureCallManager.stop();
         });
 
-        test('then scheduled call is not processed because scanner did not start',
-            () async {
-          // The entry should still be in the database because no scanning occurred
-          final futureCallEntries = await FutureCallEntry.db.find(
-            session,
-            where: (entry) => entry.name.equals(testCallName),
-          );
+        test(
+          'then scheduled call is not processed because scanner did not start',
+          () async {
+            // The entry should still be in the database because no scanning occurred
+            final futureCallEntries = await FutureCallEntry.db.find(
+              session,
+              where: (entry) => entry.name.equals(testCallName),
+            );
 
-          expect(futureCallEntries, hasLength(1));
-        });
+            expect(futureCallEntries, hasLength(1));
+          },
+        );
       });
     },
   );
