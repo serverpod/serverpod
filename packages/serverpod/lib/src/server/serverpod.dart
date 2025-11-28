@@ -766,7 +766,10 @@ class Serverpod {
 
     try {
       logVerbose('Initializing migration manager.');
-      var migrationManager = MigrationManager(Directory.current);
+      var migrationManager = MigrationManager(
+        Directory.current,
+        customMigrationsPath: config.migrationsPath,
+      );
 
       if (applyRepairMigration) {
         logVerbose('Applying database repair migration');

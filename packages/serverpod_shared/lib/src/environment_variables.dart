@@ -160,7 +160,10 @@ enum ServerpodEnv {
   applyMigrations,
 
   /// If true, the server will apply database repair migration on startup.
-  applyRepairMigration;
+  applyRepairMigration,
+
+  /// Custom migrations directory path relative to the server root.
+  migrationsPath;
 
   /// The key used in the environment configuration file.
   String get configKey {
@@ -206,6 +209,7 @@ enum ServerpodEnv {
       (ServerpodEnv.serverId) => 'serverId',
       (ServerpodEnv.applyMigrations) => 'applyMigrations',
       (ServerpodEnv.applyRepairMigration) => 'applyRepairMigration',
+      (ServerpodEnv.migrationsPath) => 'migrationsPath',
     };
   }
 
@@ -261,6 +265,7 @@ enum ServerpodEnv {
       (ServerpodEnv.serverId) => 'SERVERPOD_SERVER_ID',
       (ServerpodEnv.applyMigrations) => 'SERVERPOD_APPLY_MIGRATIONS',
       (ServerpodEnv.applyRepairMigration) => 'SERVERPOD_APPLY_REPAIR_MIGRATION',
+      (ServerpodEnv.migrationsPath) => 'SERVERPOD_MIGRATIONS_PATH',
     };
   }
 }

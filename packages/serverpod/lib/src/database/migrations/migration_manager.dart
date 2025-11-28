@@ -15,6 +15,10 @@ import '../extensions.dart';
 class MigrationManager {
   final Directory _projectDirectory;
 
+  /// Custom migrations path relative to the project directory.
+  /// If null, the default 'migrations' directory is used.
+  final String? _customMigrationsPath;
+
   /// List of installed migration versions. Available after [initialize] has
   /// been called.
   final List<DatabaseMigrationVersion> installedVersions = [];
@@ -26,7 +30,10 @@ class MigrationManager {
   /// Creates a new migration manager.
   ///
   /// The [projectDirectory] is the directory where the project is located.
-  MigrationManager(this._projectDirectory);
+  /// The [customMigrationsPath] is an optional custom path for migrations
+  /// relative to the project directory.
+  MigrationManager(this._projectDirectory, {String? customMigrationsPath})
+    : _customMigrationsPath = customMigrationsPath;
 
   /// Applies the repair migration to the database.
   Future<String?> applyRepairMigration(Session session) async {
@@ -145,6 +152,7 @@ class MigrationManager {
       var definitionSqlFile = MigrationConstants.databaseDefinitionSQLPath(
         _projectDirectory,
         latestVersion,
+        customMigrationsPath: _customMigrationsPath,
       );
       var sqlDefinition = await definitionSqlFile.readAsString();
 
@@ -156,6 +164,7 @@ class MigrationManager {
         var migrationSqlFile = MigrationConstants.databaseMigrationSQLPath(
           _projectDirectory,
           version,
+          customMigrationsPath: _customMigrationsPath,
         );
         var sqlMigration = await migrationSqlFile.readAsString();
 
@@ -207,6 +216,7 @@ class MigrationManager {
       availableVersions.addAll(
         MigrationVersions.listVersions(
           projectDirectory: _projectDirectory,
+          customMigrationsPath: _customMigrationsPath,
         ),
       );
     } catch (e) {
