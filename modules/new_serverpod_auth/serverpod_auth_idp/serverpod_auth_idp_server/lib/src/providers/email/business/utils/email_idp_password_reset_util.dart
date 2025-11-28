@@ -6,8 +6,6 @@ import 'package:serverpod_auth_core_server/common.dart';
 import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_extension.dart';
 
 import '../../../../generated/protocol.dart';
-import '../../../../utils/byte_data_extension.dart';
-import '../../../../utils/uint8list_extension.dart';
 import '../../util/session_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
@@ -87,8 +85,7 @@ class EmailIdpPasswordResetUtil {
     final challenge = await SecretChallenge.db.insertRow(
       session,
       SecretChallenge(
-        challengeCodeHash: verificationCodeHash.hash.asByteData,
-        challengeCodeSalt: verificationCodeHash.salt.asByteData,
+        challengeCodeHash: verificationCodeHash,
       ),
       transaction: transaction,
     );
@@ -184,8 +181,7 @@ class EmailIdpPasswordResetUtil {
 
     if (!await _passwordHashUtil.validateHashFromString(
       secret: verificationCode,
-      hash: challenge.challengeCodeHash.asUint8List,
-      salt: challenge.challengeCodeSalt.asUint8List,
+      hashString: challenge.challengeCodeHash,
     )) {
       throw EmailPasswordResetInvalidVerificationCodeException();
     }
@@ -276,8 +272,7 @@ class EmailIdpPasswordResetUtil {
 
     if (!await _passwordHashUtil.validateHashFromString(
       secret: credentials.verificationCode,
-      hash: setPasswordChallenge.challengeCodeHash.asUint8List,
-      salt: setPasswordChallenge.challengeCodeSalt.asUint8List,
+      hashString: setPasswordChallenge.challengeCodeHash,
     )) {
       throw EmailPasswordResetInvalidVerificationCodeException();
     }
@@ -329,14 +324,13 @@ class EmailIdpPasswordResetUtil {
     final Session session, {
     required final Transaction transaction,
     required final UuidValue resetRequestId,
-    required final HashResult setPasswordTokenHash,
+    required final String setPasswordTokenHash,
   }) async {
     final savePoint = await transaction.createSavepoint();
     final setPasswordChallenge = await SecretChallenge.db.insertRow(
       session,
       SecretChallenge(
-        challengeCodeHash: setPasswordTokenHash.hash.asByteData,
-        challengeCodeSalt: setPasswordTokenHash.salt.asByteData,
+        challengeCodeHash: setPasswordTokenHash,
       ),
       transaction: transaction,
     );
@@ -435,7 +429,7 @@ class EmailIdpPasswordResetUtil {
     required final Transaction transaction,
   }) async {
     final passwordHash = switch (password) {
-      null => HashResult.empty(),
+      null => '',
       final String value => await _passwordHashUtil.createHashFromString(
         secret: value,
       ),
@@ -444,8 +438,7 @@ class EmailIdpPasswordResetUtil {
     await EmailAccount.db.updateRow(
       session,
       emailAccount.copyWith(
-        passwordHash: passwordHash.hash.asByteData,
-        passwordSalt: passwordHash.salt.asByteData,
+        passwordHash: passwordHash,
       ),
       transaction: transaction,
     );

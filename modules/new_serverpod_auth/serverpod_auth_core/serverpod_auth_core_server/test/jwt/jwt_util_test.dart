@@ -572,8 +572,7 @@ RefreshToken _createRefreshToken() {
     authUserId: const Uuid().v4obj(),
     scopeNames: {},
     fixedSecret: ByteData(0),
-    rotatingSecretHash: ByteData(0),
-    rotatingSecretSalt: ByteData(0),
+    rotatingSecretHash: '',
     method: 'test',
   );
 }

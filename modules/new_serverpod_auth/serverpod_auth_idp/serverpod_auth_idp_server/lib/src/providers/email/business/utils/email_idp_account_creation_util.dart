@@ -7,8 +7,6 @@ import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_
 
 import '../../../../../core.dart';
 import '../../../../generated/protocol.dart';
-import '../../../../utils/byte_data_extension.dart';
-import '../../../../utils/uint8list_extension.dart';
 import '../../util/session_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
@@ -110,8 +108,7 @@ class EmailIdpAccountCreationUtil {
     final challenge = await SecretChallenge.db.insertRow(
       session,
       SecretChallenge(
-        challengeCodeHash: verificationCodeHash.hash.asByteData,
-        challengeCodeSalt: verificationCodeHash.salt.asByteData,
+        challengeCodeHash: verificationCodeHash,
       ),
       transaction: transaction,
     );
@@ -309,8 +306,7 @@ class EmailIdpAccountCreationUtil {
       EmailAccount(
         authUserId: newUser.id,
         email: request.email,
-        passwordHash: passwordHash.hash.asByteData,
-        passwordSalt: passwordHash.salt.asByteData,
+        passwordHash: passwordHash,
       ),
       transaction: transaction,
     );
@@ -359,8 +355,7 @@ class EmailIdpAccountCreationUtil {
   ) async {
     if (!await _hashUtils.validateHashFromString(
       secret: verificationCode,
-      hash: challenge.challengeCodeHash.asUint8List,
-      salt: challenge.challengeCodeSalt.asUint8List,
+      hashString: challenge.challengeCodeHash,
     )) {
       throw EmailAccountRequestInvalidVerificationCodeException();
     }
@@ -387,19 +382,19 @@ class EmailIdpAccountCreationUtil {
     required final String? password,
     required final Transaction transaction,
   }) async {
-    final passwordHash = password != null
-        ? await _hashUtils.createHashFromString(
-            secret: password,
-          )
-        : HashResult.empty();
+    final passwordHash = switch (password) {
+      final String password => await _hashUtils.createHashFromString(
+        secret: password,
+      ),
+      null => '',
+    };
 
     final account = await EmailAccount.db.insertRow(
       session,
       EmailAccount(
         authUserId: authUserId,
         email: email.normalizedEmail,
-        passwordHash: passwordHash.hash.asByteData,
-        passwordSalt: passwordHash.salt.asByteData,
+        passwordHash: passwordHash,
       ),
       transaction: transaction,
     );
@@ -475,14 +470,13 @@ class EmailIdpAccountCreationUtil {
     final Session session, {
     required final Transaction transaction,
     required final UuidValue accountRequestId,
-    required final HashResult createAccountTokenHash,
+    required final String createAccountTokenHash,
   }) async {
     final savePoint = await transaction.createSavepoint();
     final createAccountChallenge = await SecretChallenge.db.insertRow(
       session,
       SecretChallenge(
-        challengeCodeHash: createAccountTokenHash.hash.asByteData,
-        challengeCodeSalt: createAccountTokenHash.salt.asByteData,
+        challengeCodeHash: createAccountTokenHash,
       ),
       transaction: transaction,
     );
