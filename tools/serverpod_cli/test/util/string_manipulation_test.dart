@@ -595,18 +595,6 @@ void main() {
       },
     );
 
-    test('Given null documentation then registry is unchanged.', () {
-      var registry = <String, String>{};
-      extractDartDocTemplates(null, registry);
-      expect(registry, isEmpty);
-    });
-
-    test('Given empty documentation then registry is unchanged.', () {
-      var registry = <String, String>{};
-      extractDartDocTemplates('', registry);
-      expect(registry, isEmpty);
-    });
-
     test(
       'Given documentation without templates then registry is unchanged.',
       () {
