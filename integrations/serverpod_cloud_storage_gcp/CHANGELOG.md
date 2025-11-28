@@ -29,6 +29,7 @@ There is also one major breaking change regarding the storage of Argon2 hashes i
 #### New features
 - feat: Adds support for RPC middlewares. ([@gitrema](https://github.com/gitrema))
 - feat: Adds `maxConnectionCount` config option for database pool.
+- feat: The `Request.remoteInfo` now falls back to `connectionInfo.remote.address` instead of `'unknown'` when the information is missing in the headers.
 
 #### Fixes
 - fix: Filters implicit foreign key fields from hashCode/operator== in client code.
