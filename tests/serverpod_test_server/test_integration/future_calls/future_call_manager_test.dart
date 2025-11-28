@@ -652,7 +652,6 @@ void main() async {
         });
 
         test('then scanner starts and processes the due call', () async {
-          // The scanner should have started when we registered the call
           await expectLater(testCall.completer.future, completes);
         });
       });
@@ -704,7 +703,6 @@ void main() async {
         test(
           'then scheduled call is not processed because scanner did not start',
           () async {
-            // The entry should still be in the database because no scanning occurred
             final futureCallEntries = await FutureCallEntry.db.find(
               session,
               where: (entry) => entry.name.equals(testCallName),
