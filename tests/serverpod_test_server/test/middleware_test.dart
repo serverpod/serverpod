@@ -112,7 +112,7 @@ class TestRoute extends Route {
 final _authInfoProperty = ContextProperty<AuthenticationInfo>('authInfo');
 
 extension on Request {
-  AuthenticationInfo get authInfo => _authInfoProperty[this];
+  AuthenticationInfo get authInfo => _authInfoProperty.get(this);
 }
 
 class _AuthMiddleware {

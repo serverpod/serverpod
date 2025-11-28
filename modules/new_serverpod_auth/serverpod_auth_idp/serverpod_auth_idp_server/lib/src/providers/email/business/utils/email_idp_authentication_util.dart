@@ -140,7 +140,7 @@ class EmailIdpAuthenticationUtil {
         session,
         EmailAccountFailedLoginAttempt(
           email: email,
-          ipAddress: session.remoteIpAddress,
+          ipAddress: session.remoteIpAddress.toString(),
         ),
         transaction: transaction,
       );

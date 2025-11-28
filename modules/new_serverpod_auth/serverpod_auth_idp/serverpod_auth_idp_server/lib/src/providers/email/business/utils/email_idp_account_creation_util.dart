@@ -548,7 +548,7 @@ class EmailIdpAccountCreationUtil {
       await EmailAccountRequestCompletionAttempt.db.insertRow(
         session,
         EmailAccountRequestCompletionAttempt(
-          ipAddress: session.remoteIpAddress,
+          ipAddress: session.remoteIpAddress.toString(),
           emailAccountRequestId: emailAccountRequestId,
         ),
         transaction: transaction,
