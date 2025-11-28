@@ -1,3 +1,9 @@
+// This is an example of how to use initialize the auth services directly from a
+// passwords file or environment variables. The `*FromPasswords` classes exist
+// to simplify the secrets retrieval, while still allowing full customization of
+// each token manager and identity provider. This file is functionally identical
+// to the `server.dart` file.
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
