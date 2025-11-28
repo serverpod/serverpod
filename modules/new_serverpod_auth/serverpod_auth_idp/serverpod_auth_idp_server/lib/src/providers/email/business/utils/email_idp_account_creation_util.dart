@@ -652,21 +652,21 @@ class EmailIdpCompleteAccountCreationResult {
   });
 }
 
-/// The result of the [EmailIdpAccountCreationUtil.finalizeAccountRequest] operation.
+/// The result of the [EmailIdpAccountCreationUtil.completeAccountCreation] operation.
 ///
 /// This describes the detailed status of the operation to the caller.
 ///
 /// In the general case the caller should take care not to leak this to clients,
 /// such that outside clients can not use this result to determine whether a
 /// specific account is registered on the server.
-class EmailIdpFinalizeAccountRequestResult {
+class EmailIdpCompleteAccountRequestResult {
   /// The ID of the new email authentication.
   final UuidValue accountId;
 
   /// The email address used during registration.
   final String email;
 
-  EmailIdpFinalizeAccountRequestResult._({
+  EmailIdpCompleteAccountRequestResult._({
     required this.accountId,
     required this.email,
   });
