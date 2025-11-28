@@ -441,19 +441,18 @@ class GeneratorConfig implements ModelLoadConfig {
   }
 
   static List<ServerpodFeature> _enabledFeatures(File file, Map config) {
-    var enabledFeatures = <ServerpodFeature>[];
-    if (!file.existsSync()) return enabledFeatures;
-
-    if (!config.containsKey('features')) {
-      enabledFeatures.add(ServerpodFeature.database);
-    }
+    if (!file.existsSync()) return [];
 
     var features = config['features'];
 
-    if (features is! Map) return enabledFeatures;
+    // If features is not specified or not a Map, use defaults
+    if (features is! Map) {
+      return [ServerpodFeature.database];
+    }
 
+    // Return all features that are not explicitly disabled
     return ServerpodFeature.values
-        .where((feature) => features[feature.name.toString()] == true)
+        .where((feature) => features[feature.name.toString()] != false)
         .toList();
   }
 
