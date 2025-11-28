@@ -135,6 +135,7 @@ class MigrationGenerator {
       await migrationVersion.write(
         installedModules: databaseDefinitionNext.installedModules,
         removedModules: removedModules,
+        previousVersion: migrationRegistry.getLatest(),
       );
       migrationRegistry.add(versionName);
       await migrationRegistry.write();
@@ -518,6 +519,7 @@ class MigrationVersion {
   Future<void> write({
     required List<DatabaseMigrationVersion> installedModules,
     required List<DatabaseMigrationVersion> removedModules,
+    required String? previousVersion,
   }) async {
     var migrationDirectory = MigrationConstants.migrationVersionDirectory(
       projectDirectory,
@@ -587,5 +589,91 @@ class MigrationVersion {
       versionName,
     );
     await migrationSqlFile.writeAsString(migrationSql);
+
+    // Write the pre-database setup SQL file (copied from previous migration)
+    await _copyOrCreateCustomSqlFile(
+      projectDirectory,
+      previousVersion,
+      versionName,
+      MigrationConstants.preDatabaseSetupSQLPath,
+    );
+
+    // Write the post-database setup SQL file (copied from previous migration)
+    await _copyOrCreateCustomSqlFile(
+      projectDirectory,
+      previousVersion,
+      versionName,
+      MigrationConstants.postDatabaseSetupSQLPath,
+    );
+
+    // Write the pre-migration SQL file (always empty - specific to each migration)
+    var preMigrationSqlFile = MigrationConstants.preMigrationSQLPath(
+      projectDirectory,
+      versionName,
+    );
+    await preMigrationSqlFile.writeAsString('');
+
+    // Write the post-migration SQL file (always empty - specific to each migration)
+    var postMigrationSqlFile = MigrationConstants.postMigrationSQLPath(
+      projectDirectory,
+      versionName,
+    );
+    await postMigrationSqlFile.writeAsString('');
+  }
+
+  /// Copies custom SQL file from previous version or creates an empty one.
+  /// For database_setup files, also accumulates migration SQL from previous version.
+  /// Used for pre/post database setup SQL files that should be carried forward.
+  static Future<void> _copyOrCreateCustomSqlFile(
+    Directory projectDirectory,
+    String? previousVersion,
+    String currentVersion,
+    File Function(Directory, String) pathGetter,
+  ) async {
+    var currentFile = pathGetter(projectDirectory, currentVersion);
+
+    if (previousVersion != null) {
+      var setupContent = StringBuffer();
+
+      // Copy previous database_setup file content
+      var previousFile = pathGetter(projectDirectory, previousVersion);
+      if (previousFile.existsSync()) {
+        var content = await previousFile.readAsString();
+        if (content.trim().isNotEmpty) {
+          setupContent.write(content);
+        }
+      }
+
+      // For database_setup files, accumulate migration SQL from previous version
+      File? migrationFileToAccumulate;
+      if (pathGetter == MigrationConstants.preDatabaseSetupSQLPath) {
+        migrationFileToAccumulate = MigrationConstants.preMigrationSQLPath(
+          projectDirectory,
+          previousVersion,
+        );
+      } else if (pathGetter == MigrationConstants.postDatabaseSetupSQLPath) {
+        migrationFileToAccumulate = MigrationConstants.postMigrationSQLPath(
+          projectDirectory,
+          previousVersion,
+        );
+      }
+
+      if (migrationFileToAccumulate != null &&
+          migrationFileToAccumulate.existsSync()) {
+        var migrationContent = await migrationFileToAccumulate.readAsString();
+        if (migrationContent.trim().isNotEmpty) {
+          if (setupContent.isNotEmpty) {
+            setupContent.write('\n\n'); // Add separator
+          }
+          setupContent.write(migrationContent);
+        }
+      }
+
+      await currentFile.writeAsString(setupContent.toString());
+      return;
+    }
+
+    // No previous version or previous file doesn't exist - create empty
+    await currentFile.writeAsString('');
   }
 }
