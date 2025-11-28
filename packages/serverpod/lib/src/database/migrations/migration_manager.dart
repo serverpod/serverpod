@@ -291,7 +291,7 @@ class MigrationManager {
         stderr.writeln(' - $warning');
       }
       stderr.writeln(
-        'Hint: Did you forget to apply the migrations (--apply-migrations) or run a repair migration (--apply-repair-migration)?',
+        'Hint: Did you forget to run `serverpod generate`, apply the migrations (--apply-migrations), or run a repair migration (--apply-repair-migration)?',
       );
     }
 
