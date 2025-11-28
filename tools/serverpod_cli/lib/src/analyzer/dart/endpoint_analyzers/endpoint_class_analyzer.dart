@@ -18,12 +18,16 @@ abstract class EndpointClassAnalyzer {
   ///
   /// For [EndpointDefinition]s that are not part of this package, the field
   /// [EndpointDefinition.filePath] will be set to the library uri.
+  ///
+  /// If a [templateRegistry] is provided, it will be used to resolve
+  /// `{@macro}` references in documentation comments.
   static void parse(
     ClassElement element,
     Map<String, List<SourceSpanSeverityException>> validationErrors,
     String filePath,
-    List<EndpointDefinition> endpointDefinitions,
-  ) {
+    List<EndpointDefinition> endpointDefinitions, {
+    DartDocTemplateRegistry? templateRegistry,
+  }) {
     var className = element.displayName;
     var endpointName = _formatEndpointName(className);
     if (endpointDefinitions.any(
@@ -52,6 +56,7 @@ abstract class EndpointClassAnalyzer {
         validationErrors,
         parentFilePath,
         endpointDefinitions,
+        templateRegistry: templateRegistry,
       );
 
       parentEndpointDefinition = endpointDefinitions.firstWhere(
@@ -64,9 +69,15 @@ abstract class EndpointClassAnalyzer {
         name: endpointName,
         documentationComment: stripDocumentationTemplateMarkers(
           classDocumentationComment,
+          templateRegistry: templateRegistry,
         ),
         className: className,
-        methods: _parseEndpointMethods(element, validationErrors, filePath),
+        methods: _parseEndpointMethods(
+          element,
+          validationErrors,
+          filePath,
+          templateRegistry: templateRegistry,
+        ),
         filePath: filePath,
         annotations: annotations,
         isAbstract: element.isAbstract,
@@ -78,8 +89,9 @@ abstract class EndpointClassAnalyzer {
   static List<MethodDefinition> _parseEndpointMethods(
     ClassElement classElement,
     Map<String, List<SourceSpanSeverityException>> validationErrors,
-    String filePath,
-  ) {
+    String filePath, {
+    DartDocTemplateRegistry? templateRegistry,
+  }) {
     var endpointMethods = classElement.collectEndpointMethods(
       validationErrors: validationErrors,
       filePath: filePath,
@@ -93,6 +105,7 @@ abstract class EndpointClassAnalyzer {
         EndpointMethodAnalyzer.parse(
           method,
           parameters,
+          templateRegistry: templateRegistry,
         ),
       );
     }

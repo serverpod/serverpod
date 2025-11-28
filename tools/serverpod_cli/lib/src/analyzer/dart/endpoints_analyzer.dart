@@ -12,6 +12,7 @@ import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_clas
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
 import 'definitions.dart';
 
@@ -65,7 +66,14 @@ class EndpointsAnalyzer {
 
     List<(ResolvedLibraryResult, String)> validLibraries = [];
     Map<String, int> endpointClassMap = {};
+
+    // First pass: collect template definitions and validate libraries
+    DartDocTemplateRegistry templateRegistry = {};
+
     await for (var (library, filePath) in _libraries) {
+      // Extract templates from all classes in the library
+      _extractTemplatesFromLibrary(library, templateRegistry);
+
       var endpointClasses = _getEndpointClasses(library);
       if (endpointClasses.isEmpty) {
         continue;
@@ -118,6 +126,7 @@ class EndpointsAnalyzer {
           library,
           filePath,
           failingExceptions,
+          templateRegistry: templateRegistry,
         ),
       );
     }
@@ -128,6 +137,23 @@ class EndpointsAnalyzer {
 
     _endpointDefinitions = endpointDefs.toSet();
     return endpointDefs;
+  }
+
+  /// Extracts all {@template}...{@endtemplate} definitions from all classes
+  /// and methods in the library.
+  void _extractTemplatesFromLibrary(
+    ResolvedLibraryResult library,
+    DartDocTemplateRegistry registry,
+  ) {
+    for (var classElement in library.element.classes) {
+      // Extract templates from class documentation
+      extractDartDocTemplates(classElement.documentationComment, registry);
+
+      // Extract templates from method documentation
+      for (var method in classElement.methods) {
+        extractDartDocTemplates(method.documentationComment, registry);
+      }
+    }
   }
 
   Future<List<String>> _getErrorsForFile(
@@ -153,8 +179,9 @@ class EndpointsAnalyzer {
   List<EndpointDefinition> _parseLibrary(
     ResolvedLibraryResult library,
     String filePath,
-    Map<String, List<SourceSpanSeverityException>> validationErrors,
-  ) {
+    Map<String, List<SourceSpanSeverityException>> validationErrors, {
+    DartDocTemplateRegistry? templateRegistry,
+  }) {
     var endpointClasses = _getEndpointClasses(library).where(
       (element) => !validationErrors.containsKey(
         EndpointClassAnalyzer.elementNamespace(element, filePath),
@@ -168,6 +195,7 @@ class EndpointsAnalyzer {
         validationErrors,
         filePath,
         endpointDefinitions,
+        templateRegistry: templateRegistry,
       );
     }
 
