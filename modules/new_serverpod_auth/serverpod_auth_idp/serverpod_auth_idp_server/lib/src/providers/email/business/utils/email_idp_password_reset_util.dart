@@ -455,7 +455,7 @@ class EmailIdpPasswordResetUtil {
         await EmailAccountPasswordResetCompleteAttempt.db.insertRow(
           session,
           EmailAccountPasswordResetCompleteAttempt(
-            ipAddress: session.remoteIpAddress,
+            ipAddress: session.remoteIpAddress.toString(),
             passwordResetRequestId: passwordResetRequestId,
           ),
           transaction: transaction,
@@ -493,7 +493,7 @@ class EmailIdpPasswordResetUtil {
         session,
         EmailAccountPasswordResetRequestAttempt(
           email: email,
-          ipAddress: session.remoteIpAddress,
+          ipAddress: session.remoteIpAddress.toString(),
           attemptedAt: clock.now(),
         ),
         transaction: transaction,

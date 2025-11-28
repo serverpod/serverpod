@@ -28,7 +28,7 @@ ClientCallOpContext contextFromRequest(
     sessionId: null,
     userAuthInfo: null,
     remoteInfo: request.remoteInfo,
-    uri: request.requestedUri,
+    uri: request.url,
   );
 }
 
@@ -86,7 +86,7 @@ WebCallOpContext _fromWebCall(
   userAuthInfo: session.authInfoOrNull,
   sessionId: session.sessionId,
   remoteInfo: request?.remoteInfo,
-  uri: request?.requestedUri ?? Uri.http('', session.endpoint),
+  uri: request?.url ?? Uri.http('', session.endpoint),
 );
 
 MethodCallOpContext _fromMethodCall(
@@ -113,7 +113,7 @@ StreamOpContext _fromMethodStream(
   userAuthInfo: session.authInfoOrNull,
   sessionId: session.sessionId,
   remoteInfo: request?.remoteInfo,
-  uri: request?.requestedUri ?? Uri.http('localhost'),
+  uri: request?.url ?? Uri.http('localhost'),
   endpoint: session.endpoint,
   methodName: session.method,
   streamConnectionId: session.connectionId,
@@ -128,7 +128,7 @@ StreamOpContext _fromStreaming(
   userAuthInfo: session.authInfoOrNull,
   sessionId: session.sessionId,
   remoteInfo: session.remoteInfo,
-  uri: session.request.requestedUri,
+  uri: session.request.url,
   endpoint: session.endpoint,
   methodName: '-',
   streamConnectionId: null,

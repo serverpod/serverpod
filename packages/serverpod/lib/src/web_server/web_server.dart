@@ -179,7 +179,7 @@ class _SessionMiddleware extends MiddlewareObject {
       );
       final session = await SessionInternalMethods.createWebCallSession(
         server: _server,
-        endpoint: req.requestedUri.path,
+        endpoint: req.url.path,
         authenticationKey: authenticationKey,
         remoteInfo: req.remoteInfo,
       );
@@ -224,12 +224,12 @@ extension SessionEx on Request {
   /// The session associated with this request context.
   ///
   /// Throws, if no session has been initiated.
-  Session get session => _sessionProperty[this];
+  Session get session => _sessionProperty.get(this);
 
   /// The session associated with this request context, if any.
   ///
   /// Safe to use, even before session is initiated.
-  Session? get sessionOrNull => _sessionProperty.getOrNull(this);
+  Session? get sessionOrNull => _sessionProperty[this];
 }
 
 /// A [Route] defines a destination in Serverpod's web server. It will handle

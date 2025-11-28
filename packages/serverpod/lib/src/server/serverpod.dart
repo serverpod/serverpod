@@ -323,13 +323,13 @@ class Serverpod {
     mh.accessControlAllowOrigin =
         const AccessControlAllowOriginHeader.wildcard();
     mh.accessControlAllowMethods = AccessControlAllowMethodsHeader.methods(
-      methods: [Method.post],
+      [Method.post],
     );
   });
 
   static final _defaultHttpOptionsResponseHeaders = Headers.build((mh) {
     mh.accessControlAllowHeaders = AccessControlAllowHeadersHeader.headers(
-      headers: [
+      [
         'Content-Type',
         'Authorization',
         'Accept',

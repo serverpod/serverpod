@@ -102,7 +102,7 @@ Middleware loggingMiddleware({
       final stopwatch = Stopwatch()..start();
 
       final method = req.method;
-      final uri = req.requestedUri;
+      final uri = req.url;
 
       if (verbose) {
         log('$wallClockTime ${method.value} $uri');
