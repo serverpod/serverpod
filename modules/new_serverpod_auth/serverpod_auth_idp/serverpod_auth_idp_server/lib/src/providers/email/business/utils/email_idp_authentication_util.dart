@@ -4,7 +4,6 @@ import 'package:serverpod_auth_core_server/common.dart';
 import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_extension.dart';
 
 import '../../../../generated/protocol.dart';
-import '../../../../utils/byte_data_extension.dart';
 import '../../util/session_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
@@ -68,8 +67,7 @@ class EmailIdpAuthenticationUtil {
 
     if (!await _hashUtil.validateHashFromString(
       secret: password,
-      hash: account.passwordHash.asUint8List,
-      salt: account.passwordSalt.asUint8List,
+      hashString: account.passwordHash,
     )) {
       await _logFailedSignIn(session, email);
       throw EmailAuthenticationInvalidCredentialsException();

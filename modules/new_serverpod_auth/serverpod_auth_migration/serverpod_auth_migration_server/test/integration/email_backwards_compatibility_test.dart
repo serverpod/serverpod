@@ -158,8 +158,8 @@ void main() {
         expect(
           (await new_auth_idp.EmailAccount.db.find(
             session,
-          )).single.passwordHash.lengthInBytes,
-          greaterThan(0),
+          )).single.passwordHash,
+          isNotEmpty,
         );
       });
     },
