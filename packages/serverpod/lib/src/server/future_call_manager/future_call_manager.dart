@@ -44,6 +44,10 @@ class FutureCallManager {
   late final ServerpodTaskScheduler _scheduler;
   late final FutureCallScanner _scanner;
 
+  /// Tracks whether start() was called but the scanner hasn't been started
+  /// yet because there were no registered future calls at the time.
+  bool _hasPendingStart = false;
+
   /// Creates a new [FutureCallManager]. Typically, this is instantiated
   /// internally by the [Serverpod].
   ///
@@ -72,17 +76,10 @@ class FutureCallManager {
     _scanner = FutureCallScanner(
       internalSession: _internalSession,
       scanInterval: _config.scanInterval,
-      shouldSkipScan: _shouldSkipScan,
+      shouldSkipScan: _scheduler.isConcurrentLimitReached,
       dispatchEntries: _dispatchEntries,
       diagnosticsService: _diagnosticsService,
     );
-  }
-
-  /// Determines if the scanner should skip scanning.
-  /// Returns true if there are no registered future calls or if the
-  /// concurrent limit has been reached.
-  bool _shouldSkipScan() {
-    return _futureCalls.isEmpty || _scheduler.isConcurrentLimitReached();
   }
 
   /// Cancels a [FutureCall] with the specified [identifier]. If no future
@@ -101,8 +98,9 @@ class FutureCallManager {
   ///
   /// Throws an exception if a future call with the same name is already registered.
   ///
-  /// If [start] has been called previously and the scanner is not yet scanning,
-  /// this will trigger the scanner to begin scanning for overdue future calls.
+  /// If [start] has been called previously but the scanner hasn't started yet
+  /// (because there were no registered future calls), this will trigger the
+  /// scanner to begin scanning for overdue future calls.
   void registerFutureCall(FutureCall futureCall, String name) {
     if (_futureCalls.containsKey(name)) {
       throw Exception('Added future call with duplicate name ($name)');
@@ -112,8 +110,12 @@ class FutureCallManager {
 
     _futureCalls[name] = futureCall;
 
-    // Trigger scanner to start if it was started but waiting for registered calls
-    _scanner.start();
+    // If start() was called but we deferred starting the scanner,
+    // start it now that we have a registered future call.
+    if (_hasPendingStart) {
+      _hasPendingStart = false;
+      _scanner.start();
+    }
   }
 
   /// Executes all scheduled future calls that are past their due date. This
@@ -169,13 +171,22 @@ class FutureCallManager {
 
   /// Starts the [FutureCallManager], enabling it to monitor the database
   /// for overdue future calls and execute them automatically.
+  ///
+  /// If no future calls are registered, the scanner will not start immediately.
+  /// Instead, the scanner will be started when the first future call is
+  /// registered via [registerFutureCall].
   void start() {
-    _scanner.start();
+    if (_futureCalls.isNotEmpty) {
+      _scanner.start();
+    } else {
+      _hasPendingStart = true;
+    }
   }
 
   /// Stops the [FutureCallManager], preventing it from monitoring and
   /// executing overdue future calls.
   Future<void> stop() async {
+    _hasPendingStart = false;
     await _scanner.stop();
     await _scheduler.drain();
   }

@@ -26,7 +26,6 @@ class FutureCallScanner {
   final DispatchEntries _dispatchEntries;
 
   bool _isStopping = false;
-  bool _isStarted = false;
 
   var _scanCompleter = Completer<void>()..complete();
 
@@ -100,20 +99,8 @@ class FutureCallScanner {
 
   /// Starts the task scanner, which will scan the database for overdue future
   /// calls at the given interval.
-  ///
-  /// If the scanner is already started and the timer is not running,
-  /// this method will attempt to start the timer if conditions allow.
   void start() {
-    if (!_isStarted) {
-      _isStarted = true;
-      _isStopping = false;
-    }
-
-    _startScanningIfNeeded();
-  }
-
-  void _startScanningIfNeeded() {
-    if (_timer != null || !_isStarted || _shouldSkipScan()) {
+    if (_timer != null) {
       return;
     }
 
@@ -126,10 +113,8 @@ class FutureCallScanner {
   /// Stops the task scanner.
   Future<void> stop() async {
     _isStopping = true;
-    _isStarted = false;
 
     _timer?.cancel();
-    _timer = null;
 
     await _scanCompleter.future;
   }
