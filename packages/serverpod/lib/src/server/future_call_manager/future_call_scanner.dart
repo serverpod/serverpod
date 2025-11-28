@@ -101,24 +101,19 @@ class FutureCallScanner {
   /// Starts the task scanner, which will scan the database for overdue future
   /// calls at the given interval.
   ///
-  /// If the scanner is already started, this method has no effect.
-  /// Call [startScanning] to actually begin scanning if the scanner
-  /// has been started but not yet scanning.
+  /// If the scanner is already started and the timer is not running,
+  /// this method will attempt to start the timer if conditions allow.
   void start() {
-    if (_isStarted) {
-      return;
+    if (!_isStarted) {
+      _isStarted = true;
+      _isStopping = false;
     }
 
-    _isStarted = true;
-    _isStopping = false;
+    _startScanningIfNeeded();
   }
 
-  /// Begins the periodic scanning process for overdue future calls.
-  ///
-  /// This should only be called after [start] has been called and
-  /// when there are registered future calls to process.
-  void startScanning() {
-    if (_timer != null || !_isStarted) {
+  void _startScanningIfNeeded() {
+    if (_timer != null || !_isStarted || _shouldSkipScan()) {
       return;
     }
 
@@ -127,9 +122,6 @@ class FutureCallScanner {
       (_) => scanFutureCallEntries(),
     );
   }
-
-  /// Returns true if the scanner has been started via [start].
-  bool get isStarted => _isStarted;
 
   /// Stops the task scanner.
   Future<void> stop() async {

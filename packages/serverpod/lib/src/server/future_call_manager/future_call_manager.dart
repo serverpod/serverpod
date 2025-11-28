@@ -72,10 +72,17 @@ class FutureCallManager {
     _scanner = FutureCallScanner(
       internalSession: _internalSession,
       scanInterval: _config.scanInterval,
-      shouldSkipScan: _scheduler.isConcurrentLimitReached,
+      shouldSkipScan: _shouldSkipScan,
       dispatchEntries: _dispatchEntries,
       diagnosticsService: _diagnosticsService,
     );
+  }
+
+  /// Determines if the scanner should skip scanning.
+  /// Returns true if there are no registered future calls or if the
+  /// concurrent limit has been reached.
+  bool _shouldSkipScan() {
+    return _futureCalls.isEmpty || _scheduler.isConcurrentLimitReached();
   }
 
   /// Cancels a [FutureCall] with the specified [identifier]. If no future
@@ -105,11 +112,8 @@ class FutureCallManager {
 
     _futureCalls[name] = futureCall;
 
-    // If start() was called but scanner hasn't started scanning yet,
-    // start scanning now that we have registered calls
-    if (_scanner.isStarted) {
-      _scanner.startScanning();
-    }
+    // Trigger scanner to start if it was started but waiting for registered calls
+    _scanner.start();
   }
 
   /// Executes all scheduled future calls that are past their due date. This
@@ -165,17 +169,8 @@ class FutureCallManager {
 
   /// Starts the [FutureCallManager], enabling it to monitor the database
   /// for overdue future calls and execute them automatically.
-  ///
-  /// If no future calls are registered, the scanner will not begin scanning
-  /// until [registerFutureCall] is called. This prevents unnecessary database
-  /// queries when no future calls are known.
   void start() {
     _scanner.start();
-
-    // Only start scanning if there are registered future calls
-    if (_futureCalls.isNotEmpty) {
-      _scanner.startScanning();
-    }
   }
 
   /// Stops the [FutureCallManager], preventing it from monitoring and
