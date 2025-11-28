@@ -191,7 +191,7 @@ String? stripDocumentationTemplateMarkers(
   }
 
   // Clean up any resulting extra blank lines (more than one consecutive blank line)
-  result = result.replaceAll(RegExp(r'(\n\s*\n)\s*\n+'), r'$1');
+  result = result.replaceAll(RegExp(r'(\n\s*\n)\s*\n+'), '\$1');
 
   // Trim leading/trailing whitespace
   result = result.trim();
