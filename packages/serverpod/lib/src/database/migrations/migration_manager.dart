@@ -352,9 +352,13 @@ class MigrationManager {
       for (var version in versions) {
         final customSqlFiles = [
           MigrationConstants.preDatabaseSetupSQLPath(
-              _projectDirectory, version),
+            _projectDirectory,
+            version,
+          ),
           MigrationConstants.postDatabaseSetupSQLPath(
-              _projectDirectory, version),
+            _projectDirectory,
+            version,
+          ),
           MigrationConstants.preMigrationSQLPath(_projectDirectory, version),
           MigrationConstants.postMigrationSQLPath(_projectDirectory, version),
         ];
@@ -402,8 +406,9 @@ class MigrationManager {
             for (var match in alterPattern.allMatches(contentWithoutComments)) {
               affectedTables.add(match.group(1)!);
             }
-            for (var match
-                in createTablePattern.allMatches(contentWithoutComments)) {
+            for (var match in createTablePattern.allMatches(
+              contentWithoutComments,
+            )) {
               affectedTables.add(match.group(1)!);
             }
           }
@@ -420,7 +425,7 @@ class MigrationManager {
   /// Categorizes comparison warnings into critical vs informational based on
   /// custom SQL presence and affected tables.
   static ({List<String> critical, List<String> informational})
-      _categorizeWarnings(
+  _categorizeWarnings(
     List<ComparisonWarning> warnings,
     String tableName,
     bool hasCustomSQL,
@@ -433,7 +438,7 @@ class MigrationManager {
     if (!hasCustomSQL) {
       return (
         critical: warnings.map((w) => w.toString()).toList(),
-        informational: <String>[]
+        informational: <String>[],
       );
     }
 
@@ -544,7 +549,8 @@ class MigrationManager {
         stderr.writeln(' - $warning');
       }
       stderr.writeln(
-          'Note: These are expected when using custom SQL hooks and do not indicate a problem.');
+        'Note: These are expected when using custom SQL hooks and do not indicate a problem.',
+      );
     }
 
     // Only fail if there are critical warnings
