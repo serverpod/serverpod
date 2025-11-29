@@ -1763,48 +1763,223 @@ class Restrictions {
     if (content is! YamlList) {
       return [
         SourceSpanSeverityException(
-          'The "values" property must be a list of strings.',
+          'The "values" property must be a list.',
           span,
         ),
       ];
     }
 
-    var enumCount = _duplicatesCount(content);
+    // Extract enum value names for duplicate checking (supports both simple and enhanced)
+    var enumNames = <String>[];
+    for (var node in content.nodes) {
+      if (node is YamlScalar && node.value is String) {
+        // Simple enum value
+        enumNames.add(node.value as String);
+      } else if (node is YamlMap && node.nodes.isNotEmpty) {
+        // Enhanced enum value - first key is the enum name
+        var firstKey = node.nodes.keys.first;
+        if (firstKey is YamlScalar && firstKey.value is String) {
+          enumNames.add(firstKey.value as String);
+        }
+      }
+    }
+    var enumCount = _duplicatesCount(enumNames);
 
     var nodeExceptions = content.nodes.map((node) {
-      var enumValue = node.value;
-      if (node is! YamlScalar || enumValue is! String) {
-        return SourceSpanSeverityException(
-          'The "values" property must be a list of strings.',
-          node.span,
-        );
+      // Handle simple enum value (string)
+      if (node is YamlScalar && node.value is String) {
+        var enumValue = node.value as String;
+
+        if (!StringValidators.isValidEnumName(enumValue)) {
+          return SourceSpanSeverityException(
+            'Enum values must be valid dart enums.',
+            node.span,
+          );
+        }
+
+        if (enumCount[enumValue] != 1) {
+          return SourceSpanSeverityException(
+            'Enum values must be unique.',
+            node.span,
+          );
+        }
+
+        if (_globallyRestrictedKeywords.contains(enumValue)) {
+          return SourceSpanSeverityException(
+            'The enum value "$enumValue" is reserved and cannot be used.',
+            node.span,
+          );
+        }
+
+        return null;
       }
 
-      if (!StringValidators.isValidEnumName(node.value)) {
-        return SourceSpanSeverityException(
-          'Enum values must be valid dart enums.',
-          node.span,
-        );
+      // Handle enhanced enum value (map with properties)
+      if (node is YamlMap && node.nodes.isNotEmpty) {
+        var firstEntry = node.nodes.entries.first;
+        var keyNode = firstEntry.key;
+        if (keyNode is! YamlScalar) {
+          return SourceSpanSeverityException(
+            'Enum value name must be a string.',
+            node.span,
+          );
+        }
+
+        var enumValueName = keyNode.value;
+        if (enumValueName is! String) {
+          return SourceSpanSeverityException(
+            'Enum value name must be a string.',
+            keyNode.span,
+          );
+        }
+
+        if (!StringValidators.isValidEnumName(enumValueName)) {
+          return SourceSpanSeverityException(
+            'Enum values must be valid dart enums.',
+            keyNode.span,
+          );
+        }
+
+        if (enumCount[enumValueName] != 1) {
+          return SourceSpanSeverityException(
+            'Enum values must be unique.',
+            keyNode.span,
+          );
+        }
+
+        if (_globallyRestrictedKeywords.contains(enumValueName)) {
+          return SourceSpanSeverityException(
+            'The enum value "$enumValueName" is reserved and cannot be used.',
+            keyNode.span,
+          );
+        }
+
+        return null;
       }
 
-      if (enumCount[enumValue] != 1) {
-        return SourceSpanSeverityException(
-          'Enum values must be unique.',
-          node.span,
-        );
-      }
-
-      if (_globallyRestrictedKeywords.contains(enumValue)) {
-        return SourceSpanSeverityException(
-          'The enum value "$enumValue" is reserved and cannot be used.',
-          node.span,
-        );
-      }
-
-      return null;
+      // Invalid format
+      return SourceSpanSeverityException(
+        'Enum values must be strings or maps with property values.',
+        node.span,
+      );
     });
 
     return nodeExceptions.whereType<SourceSpanSeverityException>().toList();
+  }
+
+  List<SourceSpanSeverityException> validateEnumProperties(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    if (content is! YamlMap) {
+      return [
+        SourceSpanSeverityException(
+          'The "properties" property must be a map.',
+          span,
+        ),
+      ];
+    }
+
+    var errors = <SourceSpanSeverityException>[];
+
+    // Use nodes to access YamlNode objects with spans
+    for (var entry in content.nodes.entries) {
+      var keyNode = entry.key;
+      var valueNode = entry.value;
+      if (keyNode is! YamlScalar || valueNode is! YamlScalar) {
+        errors.add(
+          SourceSpanSeverityException(
+            'Property entries must be scalar values.',
+            span,
+          ),
+        );
+        continue;
+      }
+
+      var propertyName = keyNode.value;
+      var propertyValue = valueNode.value;
+
+      // Validate property name
+      if (propertyName is! String) {
+        errors.add(
+          SourceSpanSeverityException(
+            'Property names must be strings.',
+            keyNode.span,
+          ),
+        );
+        continue;
+      }
+
+      if (!StringValidators.isValidFieldName(propertyName)) {
+        errors.add(
+          SourceSpanSeverityException(
+            'Property names must be valid Dart variable names (e.g. camelCaseString).',
+            keyNode.span,
+          ),
+        );
+      }
+
+      if (_globallyRestrictedKeywords.contains(propertyName)) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The property name "$propertyName" is reserved and cannot be used.',
+            keyNode.span,
+          ),
+        );
+      }
+
+      // Validate property value (should be a string like "int" or "String, default='value'")
+      if (propertyValue is! String) {
+        errors.add(
+          SourceSpanSeverityException(
+            'Property values must be a type string (e.g. "int" or "String, default=\'value\'").',
+            valueNode.span,
+          ),
+        );
+        continue;
+      }
+
+      // Parse and validate the property type
+      var parts = propertyValue.split(',').map((s) => s.trim()).toList();
+      var type = parts[0];
+
+      // Validate type is a supported primitive type
+      var supportedPropertyTypes = [
+        'int',
+        'int?',
+        'double',
+        'double?',
+        'bool',
+        'bool?',
+        'String',
+        'String?',
+      ];
+
+      if (!supportedPropertyTypes.contains(type)) {
+        errors.add(
+          SourceSpanSeverityException(
+            'The property type "$type" is not supported. Supported types are: ${supportedPropertyTypes.join(', ')}.',
+            valueNode.span,
+          ),
+        );
+      }
+
+      // Validate modifiers (default=value)
+      for (var i = 1; i < parts.length; i++) {
+        var modifier = parts[i];
+        if (!modifier.startsWith('default=')) {
+          errors.add(
+            SourceSpanSeverityException(
+              'Invalid property modifier "$modifier". Only "default=value" is supported.',
+              valueNode.span,
+            ),
+          );
+        }
+      }
+    }
+
+    return errors;
   }
 
   List<SourceSpanSeverityException> validateDefaultKey(

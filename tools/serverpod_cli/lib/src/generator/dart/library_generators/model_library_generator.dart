@@ -3053,14 +3053,82 @@ class SerializableModelLibraryGenerator {
           e.implements.add(
             refer('SerializableModel', serverpodUrl(serverCode)),
           );
-          e.values.addAll([
-            for (var value in enumDefinition.values)
-              EnumValue((v) {
-                v
-                  ..name = value.name
-                  ..docs.addAll(value.documentation ?? []);
+
+          // Generate enhanced enum with properties
+          if (enumDefinition.isEnhanced) {
+            // Add enum values with property assignments
+            e.values.addAll([
+              for (var value in enumDefinition.values)
+                EnumValue((v) {
+                  v
+                    ..name = value.name
+                    ..docs.addAll(value.documentation ?? []);
+
+                  // Add property arguments
+                  if (value.propertyValues.isNotEmpty) {
+                    var args = <Expression>[];
+                    for (var property in enumDefinition.properties) {
+                      var propertyValue = value.propertyValues[property.name];
+                      if (propertyValue != null) {
+                        args.add(
+                          _formatPropertyValueForExpression(
+                            propertyValue,
+                            property.type,
+                          ),
+                        );
+                      } else if (property.defaultValue != null) {
+                        args.add(
+                          _formatPropertyValueForExpression(
+                            property.defaultValue,
+                            property.type,
+                          ),
+                        );
+                      }
+                    }
+                    v.arguments.addAll(args);
+                  }
+                }),
+            ]);
+
+            // Add constructor
+            e.constructors.add(
+              Constructor((c) {
+                c.constant = true;
+                for (var property in enumDefinition.properties) {
+                  c.requiredParameters.add(
+                    Parameter(
+                      (p) => p
+                        ..name = property.name
+                        ..toThis = true,
+                    ),
+                  );
+                }
               }),
-          ]);
+            );
+
+            // Add property fields
+            for (var property in enumDefinition.properties) {
+              e.fields.add(
+                Field((f) {
+                  f
+                    ..name = property.name
+                    ..modifier = FieldModifier.final$
+                    ..type = _parsePropertyType(property.type)
+                    ..docs.addAll(property.documentation ?? []);
+                }),
+              );
+            }
+          } else {
+            // Simple enum values (no properties)
+            e.values.addAll([
+              for (var value in enumDefinition.values)
+                EnumValue((v) {
+                  v
+                    ..name = value.name
+                    ..docs.addAll(value.documentation ?? []);
+                }),
+            ]);
+          }
 
           // Check if the enum has a value named "name"
           bool hasValueNamedName = enumDefinition.values.any(
@@ -3095,6 +3163,42 @@ class SerializableModelLibraryGenerator {
       );
     });
     return library;
+  }
+
+  /// Formats a property value as an Expression for code generation
+  Expression _formatPropertyValueForExpression(dynamic value, String type) {
+    if (type == 'int' || type == 'int?') {
+      return literalNum(value);
+    } else if (type == 'double' || type == 'double?') {
+      return literalNum(value);
+    } else if (type == 'bool' || type == 'bool?') {
+      return literalBool(value);
+    } else if (type == 'String' || type == 'String?') {
+      // value already has quotes from parsing, remove them for literal
+      var str = value.toString();
+      if (str.startsWith("'") && str.endsWith("'")) {
+        str = str.substring(1, str.length - 1);
+      }
+      return literalString(str);
+    }
+    // Default fallback - treat as string
+    return literalString(value.toString());
+  }
+
+  /// Parses a property type string to a Reference
+  Reference _parsePropertyType(String type) {
+    // Handle nullable types
+    var isNullable = type.endsWith('?');
+    var baseType = isNullable ? type.substring(0, type.length - 1) : type;
+
+    var typeRef = refer(baseType);
+    return isNullable
+        ? TypeReference(
+            (t) => t
+              ..symbol = baseType
+              ..isNullable = true,
+          )
+        : typeRef;
   }
 
   List<Method> enumSerializationMethodsByIndex(EnumDefinition enumDefinition) {
