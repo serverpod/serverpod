@@ -29,9 +29,10 @@ class AwsS3Uploader {
 
     /// The AWS region. Must be formatted correctly, e.g. us-west-1
     required String region,
-  }) async {
-    final endpoint = 'https://$bucket.s3-$region.amazonaws.com';
 
+    /// Full endpoint URL including bucket (e.g. https://my-bucket.s3-us-east-1.amazonaws.com or http://localhost:9000/my-bucket)
+    required String endpoint,
+  }) async {
     final stream = http.ByteStream(Stream.castFrom(file.openRead()));
     final length = await file.length();
 
@@ -107,13 +108,13 @@ class AwsS3Uploader {
     /// The AWS region. Must be formatted correctly, e.g. us-west-1
     required String region,
 
+    /// Full endpoint URL including bucket (e.g. https://my-bucket.s3-us-east-1.amazonaws.com or http://localhost:9000/my-bucket)
+    required String endpoint,
+
     /// The filename to upload as. If null, defaults to the given file's current filename.
     required String uploadDst,
     bool public = true,
   }) async {
-    final endpoint = 'https://$bucket.s3-$region.amazonaws.com';
-    // final uploadDest = '$destDir/${filename ?? path.basename(file.path)}';
-
     final stream = http.ByteStream.fromBytes(data.buffer.asUint8List());
 
     // final stream = http.ByteStream(Stream.castFrom(file.openRead()));
@@ -191,14 +192,15 @@ class AwsS3Uploader {
     /// The AWS region. Must be formatted correctly, e.g. us-west-1
     required String region,
 
+    /// Full endpoint URL including bucket (e.g. https://my-bucket.s3-us-east-1.amazonaws.com or http://localhost:9000/my-bucket)
+    required String endpoint,
+
     /// The filename to upload as. If null, defaults to the given file's current filename.
     required String uploadDst,
     Duration expires = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
     bool public = true,
   }) async {
-    final endpoint = 'https://$bucket.s3-$region.amazonaws.com';
-
     final policy = Policy.fromS3PresignedPost(
       uploadDst,
       bucket,

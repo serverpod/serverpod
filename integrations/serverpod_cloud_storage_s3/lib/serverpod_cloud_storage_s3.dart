@@ -3,4 +3,5 @@
 /// More dartdocs go here.
 library;
 
-export 'src/cloud_storage.dart/s3_cloud_storage.dart';
+export 'src/cloud_storage/s3_cloud_storage.dart';
+export 'src/cloud_storage/s3_overrides.dart';
