@@ -10,17 +10,8 @@ import 'package:test/test.dart';
 
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
-const pathToServerpodRoot = '../../../../../../../..';
-var testProjectDirectory = Directory(
-  path.joinAll([
-    'test',
-    'integration',
-    'analyzer',
-    'dart',
-    'endpoint_validation',
-    const Uuid().v4(),
-  ]),
-);
+var pathToServerpodRoot = Directory('../..').absolute.path;
+var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
 
 void main() {
   setUpAll(() async {
