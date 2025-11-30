@@ -26,7 +26,7 @@ abstract class Column<T> {
   final Table table;
 
   /// Query alias for the [Column].
-  String get queryAlias => '${table.queryPrefix}.$fieldName';
+  String get queryAlias => '${table.queryPrefix}.$columnName';
 
   /// Field name alias for the [Column] to be used in queries.
   String get fieldQueryAlias => '${table.queryPrefix}.$fieldName';
