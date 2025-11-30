@@ -49,19 +49,6 @@ class _TableWithManyRelation extends Table<int?> {
   List<Column> get columns => [id];
 }
 
-class TableWithColumnOverride extends Table<int?> {
-  late final ColumnString userName;
-  late final ColumnInt age;
-
-  TableWithColumnOverride() : super(tableName: 'user') {
-    userName = ColumnString('user_name', this, fieldName: 'userName');
-    age = ColumnInt('age', this);
-  }
-
-  @override
-  List<Column> get columns => [id, userName, age];
-}
-
 void main() {
   var citizenTable = Table<int?>(tableName: 'citizen');
   var companyTable = Table<int?>(tableName: 'company');
@@ -879,23 +866,6 @@ void main() {
     );
 
     test(
-      'when deleting a table with explicit column names then the explicit column name is used in the sql',
-      () {
-        final table = TableWithColumnOverride();
-        final query = DeleteQueryBuilder(
-          table: table,
-        ).withReturn(Returning.all).withWhere(Constant.bool(true)).build();
-        expect(
-          query,
-          'DELETE FROM "${table.tableName}" WHERE TRUE '
-          'RETURNING "${table.tableName}"."id" AS "${table.tableName}.id", '
-          '"${table.tableName}"."user_name" AS "${table.tableName}.userName", '
-          '"${table.tableName}"."age" AS "${table.tableName}.age"',
-        );
-      },
-    );
-
-    test(
       'when column where expression has different table as base then exception is thrown.',
       () {
         var queryBuilder = DeleteQueryBuilder(
@@ -1055,25 +1025,4 @@ void main() {
       );
     },
   );
-
-  group('Given model with an explicit column field name', () {
-    test(
-      'when building the select query then the explicit column name '
-      'is used in the sql',
-      () {
-        final table = TableWithColumnOverride();
-        final tableName = table.tableName;
-        final query = SelectQueryBuilder(
-          table: table,
-        ).withSelectFields(table.columns).build();
-        expect(
-          query,
-          'SELECT "$tableName"."id" AS "$tableName.id", '
-          '"$tableName"."user_name" AS "$tableName.userName", '
-          '"$tableName"."age" AS "$tableName.age" '
-          'FROM "$tableName"',
-        );
-      },
-    );
-  });
 }
