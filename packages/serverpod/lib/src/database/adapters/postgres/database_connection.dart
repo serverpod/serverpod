@@ -207,8 +207,11 @@ class DatabaseConnection {
         .map((columnName) => '"$columnName" = data."$columnName"')
         .join(', ');
 
+    const tableAlias = 't';
+    var returning = buildReturningClause(table, tableAlias: tableAlias);
+
     var query =
-        'UPDATE "${table.tableName}" AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
+        'UPDATE "${table.tableName}" AS $tableAlias SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = $tableAlias.id RETURNING $returning';
 
     return (await _mappedResultsQuery(
           session,
@@ -284,7 +287,9 @@ class DatabaseConnection {
       );
     }
 
-    return _poolManager.serializationManager.deserialize<T>(result.first);
+    return _poolManager.serializationManager.deserialize<T>(
+      result.first,
+    );
   }
 
   /// Updates all rows matching the WHERE expression with the specified column values.
@@ -369,7 +374,7 @@ class DatabaseConnection {
     );
 
     return result
-        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+        .map(_poolManager.serializationManager.deserialize<T>)
         .toList();
   }
 
@@ -673,7 +678,7 @@ class DatabaseConnection {
             include: include,
           ),
         )
-        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+        .map(_poolManager.serializationManager.deserialize<T>)
         .toList();
   }
 
@@ -855,7 +860,7 @@ class DatabaseConnection {
     Iterable<Column> column,
   ) {
     return rows
-        .map((row) => row.toJson() as Map<String, dynamic>)
+        .map((row) => row.toJsonForDatabase() as Map<String, dynamic>)
         .map((row) {
           var values = column
               .map((column) {

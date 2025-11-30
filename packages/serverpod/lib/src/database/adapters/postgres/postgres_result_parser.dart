@@ -94,7 +94,7 @@ Map<String, dynamic> _createColumnMapFromQueryAliasColumns(
     );
     var columnData = rawTableRow[queryKey];
     if (columnData != null) {
-      columnMap[column.columnName] = columnData;
+      columnMap[column.fieldName] = columnData;
     }
   }
 

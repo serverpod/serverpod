@@ -1,0 +1,11 @@
+# A contractor performs a single service for an organization.
+class: Contractor
+table: contractor
+fields:
+  name: String
+  serviceIdField: int?, column=fk_contractor_service_id
+  service: Service?, relation(field=serviceIdField)
+indexes:
+  contractor_service_unique_idx:
+    fields: serviceIdField
+    unique: true

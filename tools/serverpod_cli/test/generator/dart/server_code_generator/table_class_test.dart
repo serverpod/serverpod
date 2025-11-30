@@ -1,9 +1,12 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
+import '../../../test_util/builders/enum_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
 import '../../../test_util/builders/model_class_definition_builder.dart';
 import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
@@ -826,4 +829,126 @@ void main() {
       });
     },
   );
+
+  group('Given a class with a field with an explicit column name '
+      'when generating code', () {
+    const fieldName = 'userName';
+    const columnName = 'user_name';
+    const columnType = 'String';
+
+    final byNameEnumDefinition = EnumDefinitionBuilder()
+        .withClassName('ByNameEnum')
+        .withFileName('by_name_enum')
+        .withSerialized(EnumSerialization.byName)
+        .withValues([
+          ProtocolEnumValueDefinition('byName1'),
+          ProtocolEnumValueDefinition('byName2'),
+        ])
+        .build();
+
+    const enumFieldName = 'enumDefault';
+    const enumColumnName = 'enum_default';
+    var enumField = FieldDefinitionBuilder()
+        .withName(enumFieldName)
+        .withColumnNameOverride(enumColumnName)
+        .withEnumDefinition(byNameEnumDefinition, true)
+        .build();
+
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .withField(
+            FieldDefinitionBuilder()
+                .withName(fieldName)
+                .withColumnNameOverride(columnName)
+                .withTypeDefinition(columnType, true)
+                .withScope(ModelFieldScopeDefinition.all)
+                .withShouldPersist(true)
+                .build(),
+          )
+          .withField(enumField)
+          .build(),
+    ];
+
+    late final codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    late final compilationUnit = parseString(
+      content: codeMap[expectedFilePath]!,
+    ).unit;
+    late final maybeClassNamedExampleTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: '${testClassName}Table',
+        );
+
+    group('then the class named ${testClassName}Table', () {
+      test(
+        'has the columnName for a general field set to the explicit '
+        'column name provided, and field name set to the field name provided',
+        () {
+          var constructor =
+              CompilationUnitHelpers.tryFindConstructorDeclaration(
+                maybeClassNamedExampleTable!,
+                name: null,
+              );
+
+          expect(
+            constructor?.toSource(),
+            contains(
+              "Column$columnType('$columnName'",
+            ),
+            reason:
+                'columnName for $fieldName set to $columnName not found '
+                'in constructor.',
+          );
+
+          expect(
+            constructor?.toSource(),
+            contains(
+              "fieldName: '$fieldName'",
+            ),
+            reason:
+                'fieldName for $fieldName set to $fieldName not found '
+                'in constructor.',
+          );
+        },
+      );
+
+      test(
+        'has the columnName for an enum field set to the explicit '
+        'column name provided and the field name set to the field name provided',
+        () {
+          var constructor =
+              CompilationUnitHelpers.tryFindConstructorDeclaration(
+                maybeClassNamedExampleTable!,
+                name: null,
+              );
+
+          final constructorSource = constructor?.toSource();
+          expect(
+            constructorSource,
+            contains("ColumnEnum('$enumColumnName'"),
+            reason:
+                'columnName for $enumFieldName not set to $enumColumnName'
+                'in constructor',
+          );
+
+          expect(
+            constructorSource,
+            contains(
+              "fieldName: '$enumFieldName'",
+            ),
+            reason:
+                'fieldName for $enumFieldName set to $enumFieldName'
+                'in constructor',
+          );
+        },
+      );
+    });
+  });
 }
