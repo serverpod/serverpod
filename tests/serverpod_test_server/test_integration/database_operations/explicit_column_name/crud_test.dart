@@ -58,16 +58,26 @@ void main() {
         },
       );
 
-      test(
-        'when updating the entry then the updated object is returned',
-        () async {
-          const newUserName = 'newUserName';
-          inserted.userName = newUserName;
-          final updated = await db.updateRow(session, inserted);
+      group('when updating the entry', () {
+        late TableWithExplicitColumnName updatedReturn;
+        const newUserName = 'newUserName';
 
-          expect(updated.userName, newUserName);
-        },
-      );
+        setUp(() async {
+          inserted.userName = newUserName;
+          updatedReturn = await db.updateRow(session, inserted);
+        });
+
+        test('then the updated object is returned', () {
+          expect(updatedReturn.userName, newUserName);
+        });
+
+        test('then the entry is updated in the database', () async {
+          final retrieved = await db.findById(session, inserted.id!);
+
+          expect(retrieved, isNotNull);
+          expect(retrieved?.userName, newUserName);
+        });
+      });
 
       test('when deleting the entry then it is deleted', () async {
         final result = await db.deleteRow(session, inserted);
