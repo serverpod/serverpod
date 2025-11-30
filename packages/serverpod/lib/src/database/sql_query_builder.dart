@@ -539,7 +539,7 @@ String _buildColumnAliases(List<Column> columns) {
       .map(
         (column) =>
             '$column AS "${truncateIdentifier(
-              column.queryAlias,
+              column.fieldQueryAlias,
               DatabaseConstants.pgsqlMaxNameLimitation,
             )}"',
       )

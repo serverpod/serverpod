@@ -28,6 +28,9 @@ abstract class Column<T> {
   /// Query alias for the [Column].
   String get queryAlias => '${table.queryPrefix}.$fieldName';
 
+  /// Field name alias for the [Column] to be used in queries.
+  String get fieldQueryAlias => '${table.queryPrefix}.$fieldName';
+
   /// flag to tell if this [Column] has any [default] value
   final bool hasDefault;
 
