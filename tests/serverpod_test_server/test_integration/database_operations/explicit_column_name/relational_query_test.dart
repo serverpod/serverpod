@@ -1,13 +1,12 @@
 import 'package:serverpod/serverpod.dart' as pod;
 
 import 'package:serverpod_test_server/src/generated/protocol.dart';
-import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 
 import 'package:test/test.dart';
 
-void main() async {
-  final session = await IntegrationTestServer().session();
+import '../../test_tools/serverpod_test_tools.dart';
 
+void main() async {
   /**
    * The structure of the data used in this test is as follows:
    * 
@@ -31,28 +30,35 @@ void main() async {
    * }
    */
 
-  tearDown(() async {
-    await Employee.db.deleteWhere(
-      session,
-      where: (t) => pod.Constant.bool(true),
-    );
-    await Department.db.deleteWhere(
-      session,
-      where: (t) => pod.Constant.bool(true),
-    );
-    await Contractor.db.deleteWhere(
-      session,
-      where: (t) => pod.Constant.bool(true),
-    );
-    await Service.db.deleteWhere(
-      session,
-      where: (t) => pod.Constant.bool(true),
-    );
-  });
-
-  group(
+  withServerpod(
     'Given a model wih an explicit column name on the foreign key field',
-    () {
+    (
+      final sessionBuilder,
+      final endpoints,
+    ) {
+      late pod.Session session;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+      });
+      tearDown(() async {
+        await Employee.db.deleteWhere(
+          session,
+          where: (t) => pod.Constant.bool(true),
+        );
+        await Department.db.deleteWhere(
+          session,
+          where: (t) => pod.Constant.bool(true),
+        );
+        await Contractor.db.deleteWhere(
+          session,
+          where: (t) => pod.Constant.bool(true),
+        );
+        await Service.db.deleteWhere(
+          session,
+          where: (t) => pod.Constant.bool(true),
+        );
+      });
       test(
         'when fetching model including list relation then returned model '
         'has the attached data in the list relation.',
