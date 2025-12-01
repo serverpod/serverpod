@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
@@ -92,7 +94,6 @@ Future<void> _authenticateClient(Client client) async {
     'password',
   );
   expect(response.success, isTrue, reason: 'Authentication failed for client');
-  // ignore: deprecated_member_use
   await client.authenticationKeyManager?.put(
     '${response.keyId}:${response.key}',
   );

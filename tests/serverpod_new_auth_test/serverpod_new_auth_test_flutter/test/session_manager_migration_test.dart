@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:serverpod_auth_bridge_flutter/serverpod_auth_bridge_flutter.dart';
 import 'package:serverpod_auth_client/serverpod_auth_client.dart';

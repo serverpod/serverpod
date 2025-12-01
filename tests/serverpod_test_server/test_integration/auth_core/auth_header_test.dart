@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
@@ -264,7 +266,7 @@ void main() async {
 }
 
 /// A test implementation that yields backwards compatible Basic auth header values.
-class TestBasicAuthenticationKeyManager extends BasicAuthenticationKeyManager {
+class TestBasicAuthenticationKeyManager extends AuthenticationKeyManager {
   String? _key;
 
   @override
@@ -278,6 +280,12 @@ class TestBasicAuthenticationKeyManager extends BasicAuthenticationKeyManager {
   @override
   Future<void> remove() async {
     _key = null;
+  }
+
+  @override
+  Future<String?> toHeaderValue(String? key) async {
+    if (key == null) return null;
+    return wrapAsBasicAuthHeaderValue(key);
   }
 }
 

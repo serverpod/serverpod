@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
@@ -18,7 +20,6 @@ void main() {
     });
 
     tearDown(() async {
-      // ignore: deprecated_member_use
       await client.authenticationKeyManager?.remove();
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
@@ -33,7 +34,6 @@ void main() {
       'when sending a message to a restricted endpoint without authentication '
       'then the message should be ignored',
       () async {
-        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
@@ -63,7 +63,6 @@ void main() {
       var key = '${response.keyId}:${response.key}';
       await authKeyManager.put(key);
 
-      // ignore: deprecated_member_use
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );

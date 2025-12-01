@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' show UserInfo;
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
