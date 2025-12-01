@@ -481,8 +481,9 @@ class GeneratorConfig implements ModelLoadConfig {
 
       // Invalid value - warn and use default
       var span = featureNode.span;
+      var valueStr = featureValue == null ? 'null' : '\'$featureValue\'';
       var message =
-          'Invalid value for feature \'$featureName\': \'$featureValue\'. '
+          'Invalid value for feature \'$featureName\': $valueStr. '
           'Expected \'true\' or \'false\'. '
           'Using default value: $defaultValue.';
       log.warning(span.message(message));

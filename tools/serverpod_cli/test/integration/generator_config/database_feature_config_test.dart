@@ -30,7 +30,7 @@ class MockLogger extends VoidLogger {
   }
 }
 
-// Logger must be initialized once for all tests in this file
+// Shared logger instance that captures warnings and is reset before each test
 final testLogger = MockLogger();
 
 void main() {
@@ -252,6 +252,10 @@ features:
         expect(
           testLogger.output.warnings.first,
           contains('Invalid value for feature \'database\''),
+        );
+        expect(
+          testLogger.output.warnings.first,
+          contains('null'),
         );
         expect(
           testLogger.output.warnings.first,
