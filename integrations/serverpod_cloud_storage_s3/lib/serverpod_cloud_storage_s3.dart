@@ -4,4 +4,4 @@
 library;
 
 export 'src/cloud_storage/s3_cloud_storage.dart';
-export 'src/cloud_storage/s3_overrides.dart';
+export 'src/providers/s3_options.dart';

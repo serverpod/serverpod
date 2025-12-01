@@ -31,12 +31,14 @@ class AwsS3Uploader {
     required String region,
 
     /// Full endpoint URL including bucket (e.g. https://my-bucket.s3-us-east-1.amazonaws.com or http://localhost:9000/my-bucket)
-    required String endpoint,
+    String? endpoint,
   }) async {
     final stream = http.ByteStream(Stream.castFrom(file.openRead()));
     final length = await file.length();
 
-    final uri = Uri.parse(endpoint);
+    final uri = Uri.parse(
+      endpoint ?? 'https://$bucket.s3.$region.amazonaws.com',
+    );
     final req = http.MultipartRequest("POST", uri);
     final multipartFile = http.MultipartFile(
       'file',
@@ -109,7 +111,7 @@ class AwsS3Uploader {
     required String region,
 
     /// Full endpoint URL including bucket (e.g. https://my-bucket.s3-us-east-1.amazonaws.com or http://localhost:9000/my-bucket)
-    required String endpoint,
+    String? endpoint,
 
     /// The filename to upload as. If null, defaults to the given file's current filename.
     required String uploadDst,
@@ -120,7 +122,9 @@ class AwsS3Uploader {
     // final stream = http.ByteStream(Stream.castFrom(file.openRead()));
     final length = data.lengthInBytes;
 
-    final uri = Uri.parse(endpoint);
+    final uri = Uri.parse(
+      endpoint ?? 'https://$bucket.s3.$region.amazonaws.com',
+    );
     final req = http.MultipartRequest("POST", uri);
     final multipartFile = http.MultipartFile(
       'file',
