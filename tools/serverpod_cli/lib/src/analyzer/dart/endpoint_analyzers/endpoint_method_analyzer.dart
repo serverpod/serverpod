@@ -29,7 +29,7 @@ abstract class EndpointMethodAnalyzer {
   static MethodDefinition parse(
     MethodElement method,
     Parameters parameters, {
-    DartDocTemplateRegistry? templateRegistry,
+    required DartDocTemplateRegistry templateRegistry,
   }) {
     var isStream =
         method.returnType.isDartAsyncStream || parameters._hasStream();

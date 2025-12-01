@@ -29,11 +29,11 @@ List<String> splitIgnoringBracketsAndBracesAndQuotes(
         var isEscaped = index > 0 && input[index - 1] == '\\';
 
         if (insideDoubleQuote && char == '"' && !isEscaped) {
-          /// If inside "" and non escaped " is found, only descrease depth and switch bool value
+          /// If inside "" and non escaped " is found, only decrease depth and switch bool value
           depth--;
           insideDoubleQuote = false;
         } else if (insideSingleQuote && char == '\'' && !isEscaped) {
-          /// If inside ' and non escaped ' is found, only descrease depth and switch bool value
+          /// If inside ' and non escaped ' is found, only decrease depth and switch bool value
           depth--;
           insideSingleQuote = false;
         }
@@ -66,7 +66,7 @@ List<String> splitIgnoringBracketsAndBracesAndQuotes(
 typedef DartDocTemplateRegistry = Map<String, String>;
 
 /// Extracts all {@template name}...{@endtemplate} definitions from documentation
-/// and adds them to the provided [registry].
+/// and returns them as a registry.
 ///
 /// The template name is the identifier after {@template } and the content is
 /// everything between {@template name} and {@endtemplate}.
@@ -77,13 +77,12 @@ typedef DartDocTemplateRegistry = Map<String, String>;
 /// /// This is a method
 /// /// {@endtemplate}
 /// ```
-/// Will add to the registry: {'example.method': '/// This is a method'}
-void extractDartDocTemplates(
-  String? documentation,
-  DartDocTemplateRegistry registry,
-) {
+/// Will return: {'example.method': '/// This is a method'}
+DartDocTemplateRegistry extractDartDocTemplates(String? documentation) {
+  final registry = DartDocTemplateRegistry();
+
   if (documentation == null || documentation.isEmpty) {
-    return;
+    return registry;
   }
 
   // Pattern to extract template name and content
@@ -132,6 +131,8 @@ void extractDartDocTemplates(
       contentBuffer.write(line);
     }
   }
+
+  return registry;
 }
 
 /// Removes {@template ...} and {@endtemplate} markers from documentation
@@ -162,7 +163,7 @@ void extractDartDocTemplates(
 /// ```
 String? stripDocumentationTemplateMarkers(
   String? documentation, {
-  DartDocTemplateRegistry? templateRegistry,
+  required DartDocTemplateRegistry templateRegistry,
 }) {
   if (documentation == null || documentation.isEmpty) {
     return documentation;
@@ -188,7 +189,7 @@ String? stripDocumentationTemplateMarkers(
   result = result.replaceAll(endTemplateMarkerPattern, '');
 
   // Resolve {@macro name} references if template registry is provided
-  if (templateRegistry != null && templateRegistry.isNotEmpty) {
+  if (templateRegistry.isNotEmpty) {
     result = _resolveMacroReferences(result, templateRegistry);
   }
 

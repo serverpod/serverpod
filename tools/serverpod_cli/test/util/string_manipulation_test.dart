@@ -381,7 +381,10 @@ void main() {
         var input = '''/// {@template example.method}
 /// This is a method
 /// {@endtemplate}''';
-        var result = stripDocumentationTemplateMarkers(input);
+        var result = stripDocumentationTemplateMarkers(
+          input,
+          templateRegistry: {},
+        );
         expect(result, '''/// This is a method''');
       },
     );
@@ -391,7 +394,10 @@ void main() {
       () {
         var input = '''/// {@template example.method}
 /// This is a method''';
-        var result = stripDocumentationTemplateMarkers(input);
+        var result = stripDocumentationTemplateMarkers(
+          input,
+          templateRegistry: {},
+        );
         expect(result, '''/// This is a method''');
       },
     );
@@ -401,7 +407,10 @@ void main() {
       () {
         var input = '''/// This is a method
 /// {@endtemplate}''';
-        var result = stripDocumentationTemplateMarkers(input);
+        var result = stripDocumentationTemplateMarkers(
+          input,
+          templateRegistry: {},
+        );
         expect(result, '''/// This is a method''');
       },
     );
@@ -422,7 +431,10 @@ void main() {
 /// registration. If the email is already registered, the returned ID will not
 /// be valid.
 /// {@endtemplate}''';
-        var result = stripDocumentationTemplateMarkers(input);
+        var result = stripDocumentationTemplateMarkers(
+          input,
+          templateRegistry: {},
+        );
         expect(
           result,
           '''/// Starts the registration for a new user account with an email-based login
@@ -440,12 +452,15 @@ void main() {
     );
 
     test('Given null documentation then returns null.', () {
-      var result = stripDocumentationTemplateMarkers(null);
+      var result = stripDocumentationTemplateMarkers(
+        null,
+        templateRegistry: {},
+      );
       expect(result, null);
     });
 
     test('Given empty documentation then returns empty.', () {
-      var result = stripDocumentationTemplateMarkers('');
+      var result = stripDocumentationTemplateMarkers('', templateRegistry: {});
       expect(result, '');
     });
 
@@ -454,7 +469,10 @@ void main() {
       () {
         var input = '''/// This is a method
 /// with multiple lines''';
-        var result = stripDocumentationTemplateMarkers(input);
+        var result = stripDocumentationTemplateMarkers(
+          input,
+          templateRegistry: {},
+        );
         expect(result, input);
       },
     );
@@ -464,7 +482,10 @@ void main() {
       () {
         var input = '''/// {@template example.method}
 /// {@endtemplate}''';
-        var result = stripDocumentationTemplateMarkers(input);
+        var result = stripDocumentationTemplateMarkers(
+          input,
+          templateRegistry: {},
+        );
         expect(result, null);
       },
     );
@@ -554,8 +575,7 @@ void main() {
         var input = '''/// {@template example.method}
 /// This is the content
 /// {@endtemplate}''';
-        var registry = <String, String>{};
-        extractDartDocTemplates(input, registry);
+        var registry = extractDartDocTemplates(input);
         expect(registry['example.method'], '/// This is the content');
       },
     );
@@ -568,8 +588,7 @@ void main() {
 /// Line 2
 /// Line 3
 /// {@endtemplate}''';
-        var registry = <String, String>{};
-        extractDartDocTemplates(input, registry);
+        var registry = extractDartDocTemplates(input);
         expect(
           registry['example.method'],
           '''/// Line 1
@@ -588,20 +607,18 @@ void main() {
 /// {@template second.template}
 /// Second content
 /// {@endtemplate}''';
-        var registry = <String, String>{};
-        extractDartDocTemplates(input, registry);
+        var registry = extractDartDocTemplates(input);
         expect(registry['first.template'], '/// First content');
         expect(registry['second.template'], '/// Second content');
       },
     );
 
     test(
-      'Given documentation without templates then registry is unchanged.',
+      'Given documentation without templates then registry is empty.',
       () {
         var input = '''/// Just regular documentation
 /// without any templates''';
-        var registry = <String, String>{};
-        extractDartDocTemplates(input, registry);
+        var registry = extractDartDocTemplates(input);
         expect(registry, isEmpty);
       },
     );
@@ -611,8 +628,7 @@ void main() {
       () {
         var input = '''/// {@template empty.template}
 /// {@endtemplate}''';
-        var registry = <String, String>{};
-        extractDartDocTemplates(input, registry);
+        var registry = extractDartDocTemplates(input);
         expect(registry, isEmpty);
       },
     );

@@ -26,7 +26,7 @@ abstract class EndpointClassAnalyzer {
     Map<String, List<SourceSpanSeverityException>> validationErrors,
     String filePath,
     List<EndpointDefinition> endpointDefinitions, {
-    DartDocTemplateRegistry? templateRegistry,
+    required DartDocTemplateRegistry templateRegistry,
   }) {
     var className = element.displayName;
     var endpointName = _formatEndpointName(className);
@@ -90,7 +90,7 @@ abstract class EndpointClassAnalyzer {
     ClassElement classElement,
     Map<String, List<SourceSpanSeverityException>> validationErrors,
     String filePath, {
-    DartDocTemplateRegistry? templateRegistry,
+    required DartDocTemplateRegistry templateRegistry,
   }) {
     var endpointMethods = classElement.collectEndpointMethods(
       validationErrors: validationErrors,

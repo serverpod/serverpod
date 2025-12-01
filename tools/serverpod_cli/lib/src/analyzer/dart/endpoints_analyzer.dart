@@ -67,12 +67,10 @@ class EndpointsAnalyzer {
     List<(ResolvedLibraryResult, String)> validLibraries = [];
     Map<String, int> endpointClassMap = {};
 
-    // First pass: collect template definitions and validate libraries
-    DartDocTemplateRegistry templateRegistry = {};
+    final templateRegistry = DartDocTemplateRegistry();
 
     await for (var (library, filePath) in _libraries) {
-      // Extract templates from all classes in the library
-      _extractTemplatesFromLibrary(library, templateRegistry);
+      templateRegistry.addAll(_extractTemplatesFromLibrary(library));
 
       var endpointClasses = _getEndpointClasses(library);
       if (endpointClasses.isEmpty) {
@@ -141,19 +139,24 @@ class EndpointsAnalyzer {
 
   /// Extracts all {@template}...{@endtemplate} definitions from all classes
   /// and methods in the library.
-  void _extractTemplatesFromLibrary(
+  DartDocTemplateRegistry _extractTemplatesFromLibrary(
     ResolvedLibraryResult library,
-    DartDocTemplateRegistry registry,
   ) {
+    final registry = DartDocTemplateRegistry();
+
     for (var classElement in library.element.classes) {
       // Extract templates from class documentation
-      extractDartDocTemplates(classElement.documentationComment, registry);
+      registry.addAll(
+        extractDartDocTemplates(classElement.documentationComment),
+      );
 
       // Extract templates from method documentation
       for (var method in classElement.methods) {
-        extractDartDocTemplates(method.documentationComment, registry);
+        registry.addAll(extractDartDocTemplates(method.documentationComment));
       }
     }
+
+    return registry;
   }
 
   Future<List<String>> _getErrorsForFile(
@@ -180,7 +183,7 @@ class EndpointsAnalyzer {
     ResolvedLibraryResult library,
     String filePath,
     Map<String, List<SourceSpanSeverityException>> validationErrors, {
-    DartDocTemplateRegistry? templateRegistry,
+    required DartDocTemplateRegistry templateRegistry,
   }) {
     var endpointClasses = _getEndpointClasses(library).where(
       (element) => !validationErrors.containsKey(
