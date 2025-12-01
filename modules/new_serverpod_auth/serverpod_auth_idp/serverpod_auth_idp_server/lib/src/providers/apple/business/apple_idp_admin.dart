@@ -4,7 +4,7 @@ import '../../../generated/protocol.dart';
 import 'apple_idp_utils.dart';
 
 /// Collection of Apple-account admin methods.
-final class AppleIdpAdmin {
+class AppleIdpAdmin {
   final AppleIdpUtils _utils;
 
   /// Creates a new instance of the admin utilities.

@@ -4,7 +4,7 @@ import '../../generated/protocol.dart';
 import 'auth_users_config.dart';
 
 /// Management functions for auth users.
-final class AuthUsers {
+class AuthUsers {
   final AuthUsersConfig _config;
 
   /// Creates a new [AuthUsers] instance.

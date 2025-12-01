@@ -501,7 +501,7 @@ StreamOpContext _makeEventContext(
     sessionId: session?.sessionId,
     userAuthInfo: session?.authInfoOrNull,
     remoteInfo: session?.remoteInfo,
-    uri: request.requestedUri,
+    uri: request.url,
     endpoint: endpoint,
     methodName: method,
     streamConnectionId: streamConnectionId,

@@ -25,7 +25,7 @@ abstract class EndpointWebsocketRequestHandler {
     try {
       var session = await SessionInternalMethods.createStreamingSession(
         server: server,
-        uri: request.requestedUri,
+        uri: request.url,
         request: request,
         webSocket: webSocket,
       );

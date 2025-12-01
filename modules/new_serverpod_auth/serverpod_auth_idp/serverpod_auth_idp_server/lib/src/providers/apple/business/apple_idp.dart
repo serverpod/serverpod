@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
-import 'package:serverpod_auth_idp_server/src/providers/apple/business/routes/apple_server_notification_route.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
+import '../../../../core.dart';
 import 'apple_idp_admin.dart';
 import 'apple_idp_config.dart';
 import 'apple_idp_utils.dart';
+import 'routes/apple_server_notification_route.dart';
 
 /// Main class for the Apple identity provider.
 /// The methods defined here are intended to be called from an endpoint.
@@ -21,7 +21,7 @@ import 'apple_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-final class AppleIdp {
+class AppleIdp {
   /// The method used when authenticating with the Apple identity provider.
   static const String method = 'apple';
 
@@ -135,4 +135,36 @@ final class AppleIdp {
   /// {@macro apple_idp.webAuthenticationCallbackRoute}
   Route webAuthenticationCallbackRoute() =>
       AppleWebAuthenticationCallbackRoute(utils: utils);
+}
+
+/// Extension to get the AppleIdp instance from the AuthServices.
+extension AppleIdpGetter on AuthServices {
+  /// Returns the AppleIdp instance from the AuthServices.
+  AppleIdp get appleIdp => AuthServices.getIdentityProvider<AppleIdp>();
+}
+
+/// Extension to configure AppleIdp routes on the web server.
+extension AppleIdpConfigureRoutes on Serverpod {
+  /// Configures the routes for the AppleIdp. Must be called after the web
+  /// server is initialized. If any of the paths are not provided, its route
+  /// will not be added.
+  void configureAppleIdpRoutes({
+    final String? revokedNotificationRoutePath = '/hooks/apple-notification',
+    final String? webAuthenticationCallbackRoutePath = '/auth/apple/callback',
+  }) {
+    final appleIdp = AuthServices.instance.appleIdp;
+
+    if (revokedNotificationRoutePath != null) {
+      webServer.addRoute(
+        appleIdp.revokedNotificationRoute(),
+        revokedNotificationRoutePath,
+      );
+    }
+    if (webAuthenticationCallbackRoutePath != null) {
+      webServer.addRoute(
+        appleIdp.webAuthenticationCallbackRoute(),
+        webAuthenticationCallbackRoutePath,
+      );
+    }
+  }
 }

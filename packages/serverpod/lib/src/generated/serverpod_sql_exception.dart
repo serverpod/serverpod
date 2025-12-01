@@ -67,7 +67,7 @@ abstract class ServerpodSqlException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'ServerpodSqlException(message: $message, sql: $sql)';
   }
 }
 

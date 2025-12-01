@@ -4,7 +4,7 @@ import '../../../generated/protocol.dart';
 import 'google_idp_utils.dart';
 
 /// Collection of Google-account admin methods.
-final class GoogleIdpAdmin {
+class GoogleIdpAdmin {
   /// Utility functions for the Google identity provider.
   final GoogleIdpUtils utils;
 

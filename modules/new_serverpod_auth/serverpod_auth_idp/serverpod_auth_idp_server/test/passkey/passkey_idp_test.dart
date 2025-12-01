@@ -5,7 +5,6 @@ import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 import 'package:serverpod_auth_idp_server/src/utils/byte_data_extension.dart';
 import 'package:serverpod_auth_idp_server/src/utils/uint8list_extension.dart';
 import 'package:test/test.dart';
@@ -22,10 +21,10 @@ void main() {
   );
 
   final passKeyIdp = PasskeyIdp(
-    PasskeyIdpConfig(
+    const PasskeyIdpConfig(
       hostname: 'localhost',
     ),
-    tokenIssuer: tokenManager,
+    tokenManager: tokenManager,
   );
 
   withServerpod(

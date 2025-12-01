@@ -38,7 +38,7 @@ abstract class RefreshTokenMalformedException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'RefreshTokenMalformedException';
   }
 }
 

@@ -4,7 +4,7 @@ import '../widgets/admin_dashboard_widget.dart';
 class AdminTestRoute extends WidgetRoute {
   @override
   Future<TemplateWidget> build(Session session, Request request) async {
-    var path = request.requestedUri.path;
+    var path = request.url.path;
 
     if (path == '/admin/dashboard') {
       return AdminDashboardWidget();

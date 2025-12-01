@@ -15,7 +15,7 @@ export 'package:serverpod/server.dart';
 
 // Web server
 export 'package:serverpod/web_server.dart';
-export 'package:relic/relic.dart';
+export 'package:relic/relic.dart' hide QueryParameters;
 
 // Database
 export 'package:serverpod/database.dart';

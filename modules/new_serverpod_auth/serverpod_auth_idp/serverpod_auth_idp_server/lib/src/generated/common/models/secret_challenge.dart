@@ -11,20 +11,17 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'dart:typed_data' as _i2;
 
 abstract class SecretChallenge
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   SecretChallenge._({
     this.id,
     required this.challengeCodeHash,
-    required this.challengeCodeSalt,
   });
 
   factory SecretChallenge({
     _i1.UuidValue? id,
-    required _i2.ByteData challengeCodeHash,
-    required _i2.ByteData challengeCodeSalt,
+    required String challengeCodeHash,
   }) = _SecretChallengeImpl;
 
   factory SecretChallenge.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -32,12 +29,7 @@ abstract class SecretChallenge
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      challengeCodeHash: _i1.ByteDataJsonExtension.fromJson(
-        jsonSerialization['challengeCodeHash'],
-      ),
-      challengeCodeSalt: _i1.ByteDataJsonExtension.fromJson(
-        jsonSerialization['challengeCodeSalt'],
-      ),
+      challengeCodeHash: jsonSerialization['challengeCodeHash'] as String,
     );
   }
 
@@ -49,10 +41,9 @@ abstract class SecretChallenge
   _i1.UuidValue? id;
 
   /// The hash of the challenge code sent to the user.
-  _i2.ByteData challengeCodeHash;
-
-  /// The salt used to compute the [challengeCodeHash].
-  _i2.ByteData challengeCodeSalt;
+  ///
+  /// Stored in PHC format: $argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}$${base64Hash}
+  String challengeCodeHash;
 
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
@@ -62,16 +53,14 @@ abstract class SecretChallenge
   @_i1.useResult
   SecretChallenge copyWith({
     _i1.UuidValue? id,
-    _i2.ByteData? challengeCodeHash,
-    _i2.ByteData? challengeCodeSalt,
+    String? challengeCodeHash,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'serverpod_auth_idp.SecretChallenge',
       if (id != null) 'id': id?.toJson(),
-      'challengeCodeHash': challengeCodeHash.toJson(),
-      'challengeCodeSalt': challengeCodeSalt.toJson(),
+      'challengeCodeHash': challengeCodeHash,
     };
   }
 
@@ -115,12 +104,10 @@ class _Undefined {}
 class _SecretChallengeImpl extends SecretChallenge {
   _SecretChallengeImpl({
     _i1.UuidValue? id,
-    required _i2.ByteData challengeCodeHash,
-    required _i2.ByteData challengeCodeSalt,
+    required String challengeCodeHash,
   }) : super._(
          id: id,
          challengeCodeHash: challengeCodeHash,
-         challengeCodeSalt: challengeCodeSalt,
        );
 
   /// Returns a shallow copy of this [SecretChallenge]
@@ -129,13 +116,11 @@ class _SecretChallengeImpl extends SecretChallenge {
   @override
   SecretChallenge copyWith({
     Object? id = _Undefined,
-    _i2.ByteData? challengeCodeHash,
-    _i2.ByteData? challengeCodeSalt,
+    String? challengeCodeHash,
   }) {
     return SecretChallenge(
       id: id is _i1.UuidValue? ? id : this.id,
-      challengeCodeHash: challengeCodeHash ?? this.challengeCodeHash.clone(),
-      challengeCodeSalt: challengeCodeSalt ?? this.challengeCodeSalt.clone(),
+      challengeCodeHash: challengeCodeHash ?? this.challengeCodeHash,
     );
   }
 }
@@ -143,31 +128,19 @@ class _SecretChallengeImpl extends SecretChallenge {
 class SecretChallengeUpdateTable extends _i1.UpdateTable<SecretChallengeTable> {
   SecretChallengeUpdateTable(super.table);
 
-  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> challengeCodeHash(
-    _i2.ByteData value,
-  ) => _i1.ColumnValue(
-    table.challengeCodeHash,
-    value,
-  );
-
-  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> challengeCodeSalt(
-    _i2.ByteData value,
-  ) => _i1.ColumnValue(
-    table.challengeCodeSalt,
-    value,
-  );
+  _i1.ColumnValue<String, String> challengeCodeHash(String value) =>
+      _i1.ColumnValue(
+        table.challengeCodeHash,
+        value,
+      );
 }
 
 class SecretChallengeTable extends _i1.Table<_i1.UuidValue?> {
   SecretChallengeTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_idp_secret_challenge') {
     updateTable = SecretChallengeUpdateTable(this);
-    challengeCodeHash = _i1.ColumnByteData(
+    challengeCodeHash = _i1.ColumnString(
       'challengeCodeHash',
-      this,
-    );
-    challengeCodeSalt = _i1.ColumnByteData(
-      'challengeCodeSalt',
       this,
     );
   }
@@ -175,16 +148,14 @@ class SecretChallengeTable extends _i1.Table<_i1.UuidValue?> {
   late final SecretChallengeUpdateTable updateTable;
 
   /// The hash of the challenge code sent to the user.
-  late final _i1.ColumnByteData challengeCodeHash;
-
-  /// The salt used to compute the [challengeCodeHash].
-  late final _i1.ColumnByteData challengeCodeSalt;
+  ///
+  /// Stored in PHC format: $argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}$${base64Hash}
+  late final _i1.ColumnString challengeCodeHash;
 
   @override
   List<_i1.Column> get columns => [
     id,
     challengeCodeHash,
-    challengeCodeSalt,
   ];
 }
 

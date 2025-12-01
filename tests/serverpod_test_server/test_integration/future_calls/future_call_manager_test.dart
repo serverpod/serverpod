@@ -189,17 +189,20 @@ void main() async {
         );
       });
 
-      test('when executing all scheduled FutureCalls '
-          'then FutureCall entry is removed from the database', () async {
-        await futureCallManager.runScheduledFutureCalls();
+      test(
+        'when executing all scheduled FutureCalls '
+        'then FutureCall entry is not removed from the database because no calls are registered',
+        () async {
+          await futureCallManager.runScheduledFutureCalls();
 
-        final futureCallEntries = await FutureCallEntry.db.find(
-          session,
-          where: (entry) => entry.name.equals(testCallName),
-        );
+          final futureCallEntries = await FutureCallEntry.db.find(
+            session,
+            where: (entry) => entry.name.equals(testCallName),
+          );
 
-        expect(futureCallEntries, isEmpty);
-      });
+          expect(futureCallEntries, hasLength(1));
+        },
+      );
     },
   );
 
@@ -600,6 +603,114 @@ void main() async {
             expect(testCall.list.last?.num, firstButSlowest.num);
           };
         });
+      });
+    },
+  );
+
+  withServerpod(
+    'Given FutureCallManager with no registered future calls',
+    (sessionBuilder, _) {
+      late FutureCallManager futureCallManager;
+      var testCallName = 'deferred-registration-call';
+      var identifier = 'deferred-id';
+
+      setUp(() async {
+        futureCallManager =
+            FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+                .withConfig(
+                  FutureCallConfig(
+                    // Set a short scan interval for testing
+                    scanInterval: Duration(milliseconds: 1),
+                  ),
+                )
+                .build();
+      });
+
+      group('when start is called and then a future call is registered', () {
+        late CompleterTestCall testCall;
+
+        setUp(() async {
+          // Start the manager with no registered calls
+          futureCallManager.start();
+
+          // Schedule a future call that is already due
+          await futureCallManager.scheduleFutureCall(
+            testCallName,
+            SimpleData(num: 42),
+            DateTime.now().subtract(Duration(seconds: 1)),
+            '1',
+            identifier,
+          );
+
+          // Now register the future call
+          testCall = CompleterTestCall();
+          futureCallManager.registerFutureCall(testCall, testCallName);
+        });
+
+        tearDown(() async {
+          await futureCallManager.stop();
+        });
+
+        test('then scanner starts and processes the due call', () async {
+          await expectLater(testCall.completer.future, completes);
+        });
+      });
+    },
+  );
+
+  withServerpod(
+    'Given FutureCallManager with no registered future calls',
+    (sessionBuilder, _) {
+      late FutureCallManager futureCallManager;
+      late Session session;
+      var testCallName = 'no-registration-call';
+      var identifier = 'no-registration-id';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        futureCallManager =
+            FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
+                .withConfig(
+                  FutureCallConfig(
+                    // Set a short scan interval for testing
+                    scanInterval: Duration(milliseconds: 1),
+                  ),
+                )
+                .build();
+
+        // Schedule a future call in the database that is already due
+        await futureCallManager.scheduleFutureCall(
+          testCallName,
+          SimpleData(num: 99),
+          DateTime.now().subtract(Duration(seconds: 1)),
+          '1',
+          identifier,
+        );
+      });
+
+      group('when start is called without registering any future calls', () {
+        setUp(() async {
+          futureCallManager.start();
+          // Wait briefly to allow any potential scanning to occur
+          await Future.delayed(Duration(milliseconds: 50));
+        });
+
+        tearDown(() async {
+          await futureCallManager.stop();
+        });
+
+        test(
+          'then scheduled call is not processed because scanner did not start',
+          () async {
+            final futureCallEntries = await FutureCallEntry.db.find(
+              session,
+              where: (entry) => entry.name.equals(testCallName),
+            );
+
+            expect(futureCallEntries, hasLength(1));
+          },
+        );
       });
     },
   );
