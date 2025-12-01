@@ -233,10 +233,9 @@ String _resolveMacroReferences(
 
   return documentation.replaceAllMapped(macroLinePattern, (match) {
     final macroName = match.group(2)?.trim();
-    if (macroName != null && templateRegistry.containsKey(macroName)) {
-      return templateRegistry[macroName]!;
-    }
-    // If macro is not found in registry, keep the original line
-    return match.group(0)!;
+    return switch (templateRegistry.containsKey(macroName)) {
+      true => templateRegistry[macroName]!,
+      false => match.group(0)!, // Keep the original line if macro is not found
+    };
   });
 }
