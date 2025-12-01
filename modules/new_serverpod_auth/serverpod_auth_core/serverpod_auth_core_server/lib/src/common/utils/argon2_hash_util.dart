@@ -23,8 +23,10 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 /// See: https://en.wikipedia.org/wiki/Argon2
 /// {@endtemplate}
 final class Argon2HashUtil {
-  final String _hashPepper;
-  final List<String> _fallbackHashPeppers;
+  // The peppers to use for hashing.
+  // The first pepper is the primary pepper used for new hashes.
+  // The remaining peppers are used as fallback peppers for validating hashes.
+  final List<Uint8List> _hashPeppers;
   final int _hashSaltLength;
   final Argon2HashParameters _parameters;
 
@@ -41,8 +43,10 @@ final class Argon2HashUtil {
     final List<String> fallbackHashPeppers = const [],
     required final int hashSaltLength,
     final Argon2HashParameters? parameters,
-  }) : _hashPepper = hashPepper,
-       _fallbackHashPeppers = fallbackHashPeppers,
+  }) : _hashPeppers = [
+         utf8.encode(hashPepper),
+         ...fallbackHashPeppers.map(utf8.encode),
+       ],
        _hashSaltLength = hashSaltLength,
        _parameters = parameters ?? Argon2HashParameters();
 
@@ -58,7 +62,7 @@ final class Argon2HashUtil {
     @protected Uint8List? salt,
   }) async {
     salt ??= generateRandomBytes(_hashSaltLength);
-    final pepper = utf8.encode(_hashPepper);
+    final pepper = _hashPeppers.first;
     final secretBytes = utf8.encode(secret);
 
     final result = await _createHash(
@@ -82,7 +86,7 @@ final class Argon2HashUtil {
     @protected Uint8List? salt,
   }) async {
     salt ??= generateRandomBytes(_hashSaltLength);
-    final pepper = utf8.encode(_hashPepper);
+    final pepper = _hashPeppers.first;
 
     final result = await _createHash(
       secret: secret,
@@ -137,13 +141,11 @@ final class Argon2HashUtil {
       return false;
     }
 
-    final allPeppers = [_hashPepper, ..._fallbackHashPeppers];
-
-    for (final pepper in allPeppers) {
+    for (final pepper in _hashPeppers) {
       final computedHash = (await _createHashWithParameters(
         secret: secret,
         salt: parsed.salt,
-        pepper: utf8.encode(pepper),
+        pepper: pepper,
         memory: parsed.memory,
         iterations: parsed.iterations,
         lanes: parsed.lanes,
