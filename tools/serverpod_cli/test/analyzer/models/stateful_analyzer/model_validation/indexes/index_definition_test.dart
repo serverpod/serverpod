@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 
@@ -186,10 +187,15 @@ void main() {
           ''',
         ).build(),
       ];
+      final columnOverrideConfig = GeneratorConfigBuilder()
+          .withEnabledExperimentalFeatures([
+            ExperimentalFeature.columnOverride,
+          ])
+          .build();
 
       var collector = CodeGenerationCollector();
       var analyzer = StatefulAnalyzer(
-        config,
+        columnOverrideConfig,
         models,
         onErrorsCollector(collector),
       );
@@ -311,9 +317,15 @@ void main() {
         ).build(),
       ];
 
+      final columnOverrideConfig = GeneratorConfigBuilder()
+          .withEnabledExperimentalFeatures([
+            ExperimentalFeature.columnOverride,
+          ])
+          .build();
+
       var collector = CodeGenerationCollector();
       var analyzer = StatefulAnalyzer(
-        config,
+        columnOverrideConfig,
         models,
         onErrorsCollector(collector),
       );
