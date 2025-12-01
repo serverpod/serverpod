@@ -632,5 +632,50 @@ void main() {
         expect(registry, isEmpty);
       },
     );
+
+    test(
+      'Given documentation with a template containing a {@macro} reference then an error is thrown.',
+      () {
+        var input = '''/// {@template outer.template}
+/// {@macro inner.template}
+/// {@endtemplate}''';
+        expect(
+          () => extractDartDocTemplates(input),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.message,
+              'message',
+              'Nested macro reference found in template: "outer.template". '
+                  'Please remove the nested macro reference, as it is not supported.',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'Given documentation with a template containing a nested template then an error is thrown.',
+      () {
+        var input = '''/// {@template outer.template}
+/// Outer content line 1
+/// {@template inner.template}
+/// Inner content
+/// {@endtemplate}
+/// Outer content line 2
+/// {@endtemplate}''';
+
+        expect(
+          () => extractDartDocTemplates(input),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.message,
+              'message',
+              'Nested template found: "outer.template" in line: "/// {@template inner.template}". '
+                  'Please remove the nested template, as it is not supported.',
+            ),
+          ),
+        );
+      },
+    );
   });
 }

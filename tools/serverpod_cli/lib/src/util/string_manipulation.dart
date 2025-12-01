@@ -105,6 +105,13 @@ DartDocTemplateRegistry extractDartDocTemplates(String? documentation) {
   for (final line in lines) {
     final templateMatch = templatePattern.firstMatch(line);
     if (templateMatch != null) {
+      if (currentTemplateName != null) {
+        throw FormatException(
+          'Nested template found: "$currentTemplateName" in line: "$line". '
+          'Please remove the nested template, as it is not supported.',
+          line,
+        );
+      }
       // Start of a new template
       currentTemplateName = templateMatch.group(1)?.trim();
       contentBuffer.clear();
@@ -115,6 +122,13 @@ DartDocTemplateRegistry extractDartDocTemplates(String? documentation) {
       // End of current template
       if (currentTemplateName != null) {
         var content = contentBuffer.toString().trim();
+        if (content.contains('{@macro')) {
+          throw FormatException(
+            'Nested macro reference found in template: "$currentTemplateName". '
+            'Please remove the nested macro reference, as it is not supported.',
+            content,
+          );
+        }
         if (content.isNotEmpty) {
           registry[currentTemplateName] = content;
         }
