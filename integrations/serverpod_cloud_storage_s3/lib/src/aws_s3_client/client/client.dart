@@ -120,8 +120,8 @@ class AwsS3Client {
         '''$method
 /${unencodedPath.split('/').map(Uri.encodeComponent).join('/')}
 $canonicalQuery
-${canonicalHeaders.toString()}
-${signedHeaders.toString()}
+$canonicalHeaders
+$signedHeaders
 $payload''';
 
     final stringToSign = SigV4.buildStringToSign(
@@ -140,7 +140,7 @@ $payload''';
 
     final authorization =
         'AWS4-HMAC-SHA256 Credential=$_accessKey/$credentialScope, '
-        'SignedHeaders=${signedHeaders.toString()}, '
+        'SignedHeaders=$signedHeaders, '
         'Signature=$signature';
 
     final headers = {
