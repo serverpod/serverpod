@@ -440,20 +440,54 @@ class GeneratorConfig implements ModelLoadConfig {
     );
   }
 
-  static List<ServerpodFeature> _enabledFeatures(File file, Map config) {
+  /// Default values for each feature.
+  static const Map<ServerpodFeature, bool> _featureDefaults = {
+    ServerpodFeature.database: true,
+  };
+
+  static List<ServerpodFeature> _enabledFeatures(File file, YamlMap config) {
     if (!file.existsSync()) return [];
 
-    var features = config['features'];
+    var featuresNode = config.nodes['features'];
 
     // If features is not specified or not a Map, use defaults
-    if (features is! Map) {
-      return [ServerpodFeature.database];
+    if (featuresNode == null || featuresNode.value is! YamlMap) {
+      return ServerpodFeature.values
+          .where((f) => _featureDefaults[f] == true)
+          .toList();
     }
 
-    // Return all features that are not explicitly disabled
-    return ServerpodFeature.values
-        .where((feature) => features[feature.name.toString()] != false)
-        .toList();
+    var featuresMap = featuresNode.value as YamlMap;
+
+    // Return all features based on their explicit value or default
+    return ServerpodFeature.values.where((feature) {
+      var featureName = feature.name;
+      var featureNode = featuresMap.nodes[featureName];
+      var featureValue = featureNode?.value;
+      var defaultValue = _featureDefaults[feature] ?? false;
+
+      // If no value set, use default
+      if (featureNode == null) {
+        return defaultValue;
+      }
+
+      // Valid values are true or false
+      if (featureValue == true) {
+        return true;
+      }
+      if (featureValue == false) {
+        return false;
+      }
+
+      // Invalid value - warn and use default
+      var span = featureNode.span;
+      var message =
+          'Invalid value for feature \'$featureName\': \'$featureValue\'. '
+          'Expected \'true\' or \'false\'. '
+          'Using default value: $defaultValue.';
+      log.warning(span.message(message));
+      return defaultValue;
+    }).toList();
   }
 
   static List<ExperimentalFeature> _enabledExperimentalFeatures(
