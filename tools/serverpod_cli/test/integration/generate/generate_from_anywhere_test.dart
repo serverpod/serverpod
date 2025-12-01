@@ -4,27 +4,17 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 
 void main() {
-  late Directory tempDir;
-
   setUpAll(() {
     CommandLineExperimentalFeatures.initialize([]);
   });
 
-  setUp(() async {
-    tempDir = await Directory.systemTemp.createTemp('serverpod_anywhere_test_');
-  });
-
-  tearDown(() async {
-    await tempDir.delete(recursive: true);
-  });
-
   Future<Directory> createMockServerpodProject({
-    required Directory parent,
     required String projectName,
   }) async {
-    var serverDir = Directory(path.join(parent.path, '${projectName}_server'));
+    var serverDir = Directory(path.join(d.sandbox, '${projectName}_server'));
     await serverDir.create(recursive: true);
 
     var protocolDir = Directory(
@@ -65,7 +55,7 @@ dependencies:
   serverpod: ^2.0.0
 ''');
 
-    var clientDir = Directory(path.join(parent.path, '${projectName}_client'));
+    var clientDir = Directory(path.join(d.sandbox, '${projectName}_client'));
     await clientDir.create(recursive: true);
     var clientLibDir = Directory(
       path.join(clientDir.path, 'lib', 'src', 'protocol'),
@@ -88,12 +78,11 @@ dependencies:
       'then it finds the server directory',
       () async {
         await createMockServerpodProject(
-          parent: tempDir,
           projectName: 'myapp',
         );
 
         var originalDir = Directory.current;
-        Directory.current = tempDir;
+        Directory.current = Directory(d.sandbox);
 
         try {
           var config = await GeneratorConfig.load(interactive: false);
@@ -111,11 +100,10 @@ dependencies:
       'then it finds the sibling server directory',
       () async {
         await createMockServerpodProject(
-          parent: tempDir,
           projectName: 'myapp',
         );
 
-        var clientDir = Directory(path.join(tempDir.path, 'myapp_client'));
+        var clientDir = Directory(path.join(d.sandbox, 'myapp_client'));
 
         var originalDir = Directory.current;
         Directory.current = clientDir;
@@ -136,12 +124,11 @@ dependencies:
       'then it finds the server directory by searching upward',
       () async {
         await createMockServerpodProject(
-          parent: tempDir,
           projectName: 'myapp',
         );
 
         var protocolDir = Directory(
-          path.join(tempDir.path, 'myapp_server', 'lib', 'src', 'protocol'),
+          path.join(d.sandbox, 'myapp_server', 'lib', 'src', 'protocol'),
         );
 
         var originalDir = Directory.current;
@@ -163,7 +150,6 @@ dependencies:
       'then it uses the explicit path (backward compatibility)',
       () async {
         var serverDir = await createMockServerpodProject(
-          parent: tempDir,
           projectName: 'myapp',
         );
 
@@ -182,7 +168,7 @@ dependencies:
       'when GeneratorConfig.load is called without directory parameter, '
       'then it throws ServerpodProjectNotFoundException',
       () async {
-        var emptyDir = Directory(path.join(tempDir.path, 'empty'));
+        var emptyDir = Directory(path.join(d.sandbox, 'empty'));
         await emptyDir.create(recursive: true);
 
         var originalDir = Directory.current;
