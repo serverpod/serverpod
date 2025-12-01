@@ -7,29 +7,6 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
-class MockLogOutput {
-  List<String> warnings = [];
-
-  void warning(String message) {
-    warnings.add(message);
-  }
-
-  void reset() {
-    warnings.clear();
-  }
-}
-
-class MockLogger extends VoidLogger {
-  final MockLogOutput output = MockLogOutput();
-
-  MockLogger();
-
-  @override
-  void warning(String message, {bool newParagraph = false, LogType? type}) {
-    output.warning(message);
-  }
-}
-
 // Shared logger instance that captures warnings and is reset before each test
 final testLogger = MockLogger();
 
@@ -39,8 +16,12 @@ void main() {
     initializeLoggerWith(testLogger);
   });
 
-  setUp(() {
-    // Reset captured warnings before each test
+  tearDownAll(() {
+    resetLogger();
+  });
+
+  tearDown(() {
+    // Reset captured warnings after each test
     testLogger.output.reset();
   });
 
@@ -167,10 +148,11 @@ features:
     },
   );
 
-  group('Given a generator.yaml with invalid feature value', () {
-    test(
-      'when loading GeneratorConfig then database feature uses default value (true).',
-      () async {
+  group(
+    'Given a generator.yaml with invalid feature value when loading GeneratorConfig',
+    () {
+      late GeneratorConfig config;
+      setUp(() async {
         var projectDir = createMockServerpodProject(
           projectName: 'my_project',
           generatorYamlContent: '''
@@ -179,59 +161,53 @@ features:
   database: invalid
 ''',
         );
+
         await projectDir.create();
 
-        var config = await GeneratorConfig.load(
+        config = await GeneratorConfig.load(
           serverRootDir: path.join(d.sandbox, 'project', 'my_project_server'),
           interactive: false,
         );
+      });
 
-        expect(config.isFeatureEnabled(ServerpodFeature.database), isTrue);
-      },
-    );
+      test(
+        'then database feature uses default value (true).',
+        () async {
+          expect(config.isFeatureEnabled(ServerpodFeature.database), isTrue);
+        },
+      );
 
-    test(
-      'when loading GeneratorConfig then a warning is logged with source span.',
-      () async {
-        var projectDir = createMockServerpodProject(
-          projectName: 'my_project',
-          generatorYamlContent: '''
-type: server
-features:
-  database: invalid
-''',
-        );
-        await projectDir.create();
+      test(
+        'when loading GeneratorConfig then a warning is logged with source span.',
+        () async {
+          expect(testLogger.output.warnings, hasLength(1));
+          expect(
+            testLogger.output.warnings.first,
+            contains('Invalid value for feature \'database\''),
+          );
+          expect(
+            testLogger.output.warnings.first,
+            contains('\'invalid\''),
+          );
+          expect(
+            testLogger.output.warnings.first,
+            contains('Using default value: true'),
+          );
+          // Check that source span info is included (line number)
+          expect(
+            testLogger.output.warnings.first,
+            contains('line'),
+          );
+        },
+      );
+    },
+  );
 
-        await GeneratorConfig.load(
-          serverRootDir: path.join(d.sandbox, 'project', 'my_project_server'),
-          interactive: false,
-        );
-
-        expect(testLogger.output.warnings, hasLength(1));
-        expect(
-          testLogger.output.warnings.first,
-          contains('Invalid value for feature \'database\''),
-        );
-        expect(
-          testLogger.output.warnings.first,
-          contains('\'invalid\''),
-        );
-        expect(
-          testLogger.output.warnings.first,
-          contains('Using default value: true'),
-        );
-        // Check that source span info is included (line number)
-        expect(
-          testLogger.output.warnings.first,
-          contains('line'),
-        );
-      },
-    );
-
-    test(
-      'when loading GeneratorConfig with null feature value then a warning is logged.',
-      () async {
+  group(
+    'Given a generator.yaml with null feature value when loading GeneratorConfig',
+    () {
+      late GeneratorConfig config;
+      setUp(() async {
         var projectDir = createMockServerpodProject(
           projectName: 'my_project',
           generatorYamlContent: '''
@@ -242,28 +218,36 @@ features:
         );
         await projectDir.create();
 
-        var config = await GeneratorConfig.load(
+        config = await GeneratorConfig.load(
           serverRootDir: path.join(d.sandbox, 'project', 'my_project_server'),
           interactive: false,
         );
+      });
 
+      test('then database feature uses default value (true).', () {
         expect(config.isFeatureEnabled(ServerpodFeature.database), isTrue);
-        expect(testLogger.output.warnings, hasLength(1));
-        expect(
-          testLogger.output.warnings.first,
-          contains('Invalid value for feature \'database\''),
-        );
-        expect(
-          testLogger.output.warnings.first,
-          contains('null'),
-        );
-        expect(
-          testLogger.output.warnings.first,
-          contains('Using default value: true'),
-        );
-      },
-    );
-  });
+      });
+
+      test(
+        'then a warning is logged with source span.',
+        () {
+          expect(testLogger.output.warnings, hasLength(1));
+          expect(
+            testLogger.output.warnings.first,
+            contains('Invalid value for feature \'database\''),
+          );
+          expect(
+            testLogger.output.warnings.first,
+            contains('null'),
+          );
+          expect(
+            testLogger.output.warnings.first,
+            contains('Using default value: true'),
+          );
+        },
+      );
+    },
+  );
 }
 
 d.DirectoryDescriptor createMockServerpodProject({
@@ -328,4 +312,27 @@ dependencies:
     d.dir('${projectName}_server', serverDirContents),
     clientDir,
   ]);
+}
+
+class MockLogOutput {
+  List<String> warnings = [];
+
+  void warning(String message) {
+    warnings.add(message);
+  }
+
+  void reset() {
+    warnings.clear();
+  }
+}
+
+class MockLogger extends VoidLogger {
+  final MockLogOutput output = MockLogOutput();
+
+  MockLogger();
+
+  @override
+  void warning(String message, {bool newParagraph = false, LogType? type}) {
+    output.warning(message);
+  }
 }

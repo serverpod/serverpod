@@ -440,54 +440,43 @@ class GeneratorConfig implements ModelLoadConfig {
     );
   }
 
-  /// Default values for each feature.
-  static const Map<ServerpodFeature, bool> _featureDefaults = {
-    ServerpodFeature.database: true,
-  };
-
   static List<ServerpodFeature> _enabledFeatures(File file, YamlMap config) {
-    if (!file.existsSync()) return [];
-
-    var featuresNode = config.nodes['features'];
-
-    // If features is not specified or not a Map, use defaults
-    if (featuresNode == null || featuresNode.value is! YamlMap) {
+    if (!file.existsSync()) {
       return ServerpodFeature.values
-          .where((f) => _featureDefaults[f] == true)
+          .where((f) => f.missingFileDefault)
           .toList();
     }
 
-    var featuresMap = featuresNode.value as YamlMap;
+    var featuresNode = config.nodes['features'];
+    var featuresMap = featuresNode?.value as YamlMap?;
+
+    // If features is not specified or not a Map, use defaults
+    if (featuresMap == null) {
+      return ServerpodFeature.values.where((f) => f.defaultValue).toList();
+    }
 
     // Return all features based on their explicit value or default
     return ServerpodFeature.values.where((feature) {
       var featureName = feature.name;
       var featureNode = featuresMap.nodes[featureName];
-      var featureValue = featureNode?.value;
-      var defaultValue = _featureDefaults[feature] ?? false;
-
       // If no value set, use default
       if (featureNode == null) {
-        return defaultValue;
+        return feature.defaultValue;
       }
 
+      var featureValue = featureNode.value;
+
       // Valid values are true or false
-      if (featureValue == true) {
-        return true;
-      }
-      if (featureValue == false) {
-        return false;
-      }
+      if (featureValue is bool) return featureValue;
 
       // Invalid value - warn and use default
       var span = featureNode.span;
-      var valueStr = featureValue == null ? 'null' : '\'$featureValue\'';
       var message =
-          'Invalid value for feature \'$featureName\': $valueStr. '
+          'Invalid value for feature \'$featureName\': \'${featureValue.toString()}\'. '
           'Expected \'true\' or \'false\'. '
-          'Using default value: $defaultValue.';
+          'Using default value: ${feature.defaultValue}.';
       log.warning(span.message(message));
-      return defaultValue;
+      return feature.defaultValue;
     }).toList();
   }
 
