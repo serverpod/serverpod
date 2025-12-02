@@ -261,6 +261,110 @@ dependencies:
     );
 
     test(
+      'Given server exists in a workspace that is sibling to other servers within one level of system temp directory, '
+      'when search is called from deeply nested directory inside server, '
+      'then it finds the server directory by searching upward',
+      () async {
+        await d.dir(
+          'root',
+          [
+            d.dir('workspace', [
+              nonServerDir('app_client'),
+              nonServerDir('app_flutter'),
+              serverDir('app_server'),
+            ]),
+            serverDir('other_server'),
+          ],
+        ).create();
+
+        var deepDir = Directory(
+          path.join(
+            d.sandbox,
+            'root',
+            'workspace',
+            'app_server',
+            'lib',
+            'src',
+            'protocol',
+          ),
+        );
+        var result = ServerDirectoryFinder.search(deepDir);
+
+        expect(result, isNotNull);
+        expect(path.basename(result!.path), equals('app_server'));
+      },
+    );
+
+    test(
+      'Given server exists in a workspace that is sibling to other servers deep within system temp directory, '
+      'when search is called from deeply nested directory inside server, '
+      'then it finds the server directory by searching upward',
+      () async {
+        await d.dir('root', [
+          d.dir('subdir1', [
+            d.dir('subdir2', [
+              d.dir('workspace', [
+                nonServerDir('app_client'),
+                nonServerDir('app_flutter'),
+                serverDir('app_server'),
+              ]),
+              serverDir('other_server'),
+            ]),
+          ]),
+        ]).create();
+
+        var deepDir = Directory(
+          path.join(
+            d.sandbox,
+            'root',
+            'subdir1',
+            'subdir2',
+            'workspace',
+            'app_server',
+            'lib',
+            'src',
+            'protocol',
+          ),
+        );
+        var result = ServerDirectoryFinder.search(deepDir);
+
+        expect(result, isNotNull);
+        expect(path.basename(result!.path), equals('app_server'));
+      },
+    );
+
+    test(
+      'Given server exists in a workspace in one system temp directory that is sibling to other server on other system temp directory, '
+      'when search is called from deeply nested directory inside server, '
+      'then it finds the server directory by searching upward',
+      () async {
+        final serverTempDir = Directory.systemTemp.createTempSync();
+        final otherServerTempDir = Directory.systemTemp.createTempSync();
+
+        addTearDown(() {
+          serverTempDir.deleteSync(recursive: true);
+          otherServerTempDir.delete(recursive: true);
+        });
+
+        await d.dir(serverTempDir.path, [
+          nonServerDir('app_client'),
+          nonServerDir('app_flutter'),
+          serverDir('app_server'),
+        ]).create();
+
+        await serverDir(otherServerTempDir.path).create();
+
+        var deepDir = Directory(
+          path.join(serverTempDir.path, 'app_server', 'lib', 'src', 'protocol'),
+        );
+        var result = ServerDirectoryFinder.search(deepDir);
+
+        expect(result, isNotNull);
+        expect(path.basename(result!.path), equals('app_server'));
+      },
+    );
+
+    test(
       'Given .git directory blocks upward search, '
       'when searching from below .git boundary, '
       'then it does not find server above the boundary',

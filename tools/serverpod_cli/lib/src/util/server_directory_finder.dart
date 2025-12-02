@@ -324,6 +324,14 @@ class ServerDirectoryFinder {
       if (homeDir != null && p.normalize(dir.path) == p.normalize(homeDir)) {
         return true;
       }
+
+      // Stop at first level within top-level directories to prevent
+      // cross-contamination between concurrent or leftover of previous tests
+      final topLevelDirectories = [Directory.systemTemp.path, '/'];
+      if (topLevelDirectories.contains(p.normalize(dir.parent.path))) {
+        return true;
+      }
+
       return false;
     } on FileSystemException catch (_) {
       return true;
