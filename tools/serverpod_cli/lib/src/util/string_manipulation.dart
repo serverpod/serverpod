@@ -124,8 +124,8 @@ DartDocTemplateRegistry extractDartDocTemplates(String? documentation) {
         var content = contentBuffer.toString().trim();
         if (content.contains('{@macro')) {
           throw FormatException(
-            'Nested macro reference found in template: "$currentTemplateName". '
-            'Please remove the nested macro reference, as it is not supported.',
+            'Nested or unresolved macro reference found in template: '
+            '"$currentTemplateName". Please remove this incorrect reference.',
             content,
           );
         }

@@ -645,8 +645,8 @@ void main() {
             isA<FormatException>().having(
               (e) => e.message,
               'message',
-              'Nested macro reference found in template: "outer.template". '
-                  'Please remove the nested macro reference, as it is not supported.',
+              'Nested or unresolved macro reference found in template: "outer.template". '
+                  'Please remove this incorrect reference.',
             ),
           ),
         );
