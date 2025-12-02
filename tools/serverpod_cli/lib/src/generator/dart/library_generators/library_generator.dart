@@ -193,7 +193,7 @@ class LibraryGenerator {
             t ??= T;
 
             final dataClassName = getClassNameFromObjectJson(data);
-            if (dataClassName != null && dataClassName != t.toString()) {
+            if (dataClassName != null && dataClassName != getClassNameForType(t)) {
               try {
                 return deserializeByClassName({
                   'className': dataClassName,
@@ -286,6 +286,38 @@ class LibraryGenerator {
       ),
       Method(
         (m) => m
+          ..static = true
+          ..name = 'getClassNameForType'
+          ..returns = refer('String?')
+          ..requiredParameters.add(
+            Parameter(
+              (p) => p
+                ..name = 'type'
+                ..type = refer('Type'),
+            ),
+          )
+          ..body = Block.of([
+            const Code('return switch (type) {'),
+            if (unsealedModels.isNotEmpty ||
+                config.extraClasses.isNotEmpty) ...[
+              for (var extraClass in config.extraClasses)
+                Code.scope(
+                  (a) =>
+                      '${a(extraClass.reference(serverCode, config: config))} => '
+                      '\'${extraClass.className}\',',
+                ),
+              for (var classInfo in unsealedModels)
+                Code.scope(
+                  (a) =>
+                      '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))} => '
+                      '\'${classInfo.className}\',',
+                ),
+            ],
+            const Code('_ => null };'),
+          ]),
+      ),
+      Method(
+        (m) => m
           ..annotations.add(refer('override'))
           ..name = 'getClassNameForObject'
           ..returns = refer('String?')
@@ -307,23 +339,10 @@ class LibraryGenerator {
               return (data['__className__'] as String).replaceFirst('${config.name}.', '');
             }
           '''),
-            if (unsealedModels.isNotEmpty ||
-                config.extraClasses.isNotEmpty) ...[
-              const Code('switch (data) {'),
-              for (var extraClass in config.extraClasses)
-                Code.scope(
-                  (a) =>
-                      'case ${a(extraClass.reference(serverCode, config: config))}():'
-                      '  return \'${extraClass.className}\';',
-                ),
-              for (var classInfo in unsealedModels)
-                Code.scope(
-                  (a) =>
-                      'case ${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))}():'
-                      '  return \'${classInfo.className}\';',
-                ),
-              const Code('}'),
-            ],
+            const Code(
+              'className = getClassNameForType(data.runtimeType);'
+              'if(className != null) return className;',
+            ),
             if (config.name != 'serverpod' && serverCode)
               _buildGetClassNameForObjectDelegation(
                 serverpodProtocolUrl(serverCode),
