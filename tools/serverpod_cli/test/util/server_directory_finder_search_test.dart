@@ -21,8 +21,8 @@ void main() {
 
         expect(result, isNotNull);
         expect(
-          path.normalize(result!.path),
-          equals(path.normalize(testDir.path)),
+          path.canonicalize(result!.path),
+          equals(path.canonicalize(testDir.path)),
         );
       },
     );
