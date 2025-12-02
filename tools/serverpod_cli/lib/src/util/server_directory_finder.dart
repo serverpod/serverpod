@@ -116,7 +116,7 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
           ),
         );
 
-        if (isAtBoundary) break;
+        if (isAtBoundary || candidates.isNotEmpty) break;
 
         current = current.parent;
       }
