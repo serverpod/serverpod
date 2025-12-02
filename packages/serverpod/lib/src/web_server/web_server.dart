@@ -183,7 +183,7 @@ class _SessionMiddleware extends MiddlewareObject {
         req.headers.authorization?.headerValue,
       );
       final deferredSession = _Deferred(
-        SessionInternalMethods.createWebCallSession(
+        () => SessionInternalMethods.createWebCallSession(
           server: _server,
           endpoint: req.url.path,
           authenticationKey: authenticationKey,
@@ -224,11 +224,15 @@ class _ReportExceptionMiddleware extends MiddlewareObject {
 }
 
 class _Deferred<T> {
-  T? value; // set if future actually resolved
-  late final Future<T> future;
+  final Future<T> Function() _futureFactory;
+  T? value;
+  Future<T>? _cachedFuture;
 
-  _Deferred(Future<T> source) {
-    future = source.then((v) => value = v);
+  _Deferred(this._futureFactory);
+
+  Future<T> get future async {
+    _cachedFuture ??= _futureFactory().then((v) => value = v);
+    return _cachedFuture!;
   }
 }
 
