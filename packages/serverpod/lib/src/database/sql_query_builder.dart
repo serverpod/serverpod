@@ -549,15 +549,17 @@ String _buildColumnAliases(List<Column> columns) {
 /// Builds the returning clause for a query.
 String buildReturningClause(Table table, {String? tableAlias}) {
   if (!table.hasColumnMapping) return '*';
+
   return table.columns
       .map((column) {
-        final queryColumnName = tableAlias != null
-            ? '$tableAlias.${column.columnName}'
-            : column.toString();
-        return '$queryColumnName AS "${truncateIdentifier(
+        final queryColumnName =
+            '"${tableAlias ?? table.queryPrefix}"."${column.columnName}"';
+        final queryFieldName = truncateIdentifier(
           column.fieldName,
           DatabaseConstants.pgsqlMaxNameLimitation,
-        )}"';
+        );
+
+        return '$queryColumnName AS "$queryFieldName"';
       })
       .join(', ');
 }
