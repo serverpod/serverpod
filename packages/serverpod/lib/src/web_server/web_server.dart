@@ -181,7 +181,6 @@ class _SessionMiddleware extends MiddlewareObject {
         server: _server,
         endpoint: req.url.path,
         authenticationKey: authenticationKey,
-        remoteInfo: req.remoteInfo,
       );
       _sessionProperty[req] = session;
       try {
