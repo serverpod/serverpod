@@ -119,7 +119,7 @@ class _AuthMiddleware {
   Handler call(Handler next) {
     return (req) async {
       final session = await req.session;
-      final info = await session.authenticated;
+      final info = session.authenticated;
       if (info == null) return Response.unauthorized();
       _authInfoProperty[req] = info;
       return next(req);
