@@ -39,6 +39,8 @@ class MigrationGenerator {
   /// If [force] is true, the migration will be created even if there are
   /// warnings.
   /// If [write] is false, the migration will not be written to disk.
+  /// If [empty] is true, creates an empty migration without evaluating the
+  /// project state (useful for manual migration creation).
   ///
   /// Returns the migration version, or null if no migration was created.
   ///
@@ -53,10 +55,53 @@ class MigrationGenerator {
     required bool force,
     required GeneratorConfig config,
     bool write = true,
+    bool empty = false,
   }) async {
     var migrationRegistry = MigrationRegistry.load(
       MigrationConstants.migrationsBaseDirectory(directory),
     );
+
+    var versionName = createVersionName(tag);
+    var nextMigrationVersion = DatabaseMigrationVersion(
+      module: projectName,
+      version: versionName,
+    );
+
+    if (empty) {
+      var migrationVersion = MigrationVersion(
+        moduleName: projectName,
+        projectDirectory: directory,
+        versionName: versionName,
+        migration: DatabaseMigration(
+          actions: [],
+          warnings: [],
+          migrationApiVersion: DatabaseConstants.migrationApiVersion,
+        ),
+        databaseDefinitionProject: DatabaseDefinition(
+          moduleName: projectName,
+          tables: [],
+          installedModules: [nextMigrationVersion],
+          migrationApiVersion: DatabaseConstants.migrationApiVersion,
+        ),
+        databaseDefinitionFull: DatabaseDefinition(
+          moduleName: projectName,
+          tables: [],
+          installedModules: [nextMigrationVersion],
+          migrationApiVersion: DatabaseConstants.migrationApiVersion,
+        ),
+      );
+
+      if (write) {
+        await migrationVersion.write(
+          installedModules: [nextMigrationVersion],
+          removedModules: [],
+        );
+        migrationRegistry.add(versionName);
+        await migrationRegistry.write();
+      }
+
+      return migrationVersion;
+    }
 
     var databaseDefinitionLatest = await _getSourceDatabaseDefinition(
       projectName,
@@ -85,12 +130,6 @@ class MigrationGenerator {
       directory,
     );
 
-    var versionName = createVersionName(tag);
-    var nextMigrationVersion = DatabaseMigrationVersion(
-      module: projectName,
-      version: versionName,
-    );
-
     var databaseDefinitionNext = _mergeDatabaseDefinitions(
       databaseDefinitionProject,
       databaseDefinitions,
@@ -112,7 +151,7 @@ class MigrationGenerator {
 
     if (migration.isEmpty && !force) {
       log.info(
-        'No changes detected. Use --force to create an empty migration.',
+        'No changes detected. Use --force or --empty to create an empty migration.',
       );
       return null;
     }
