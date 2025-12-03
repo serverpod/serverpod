@@ -119,12 +119,12 @@ Future<bool> performCreate(
     success &= await log.progress(
       'Writing additional project files.',
       () async {
-        _copyServerUpgrade(
+        await _copyServerUpgrade(
           serverpodDirs,
           name: name,
           customServerpodPath: productionMode ? null : serverpodHome,
         );
-        _copyFlutterUpgrade(
+        await _copyFlutterUpgrade(
           serverpodDirs,
           name: name,
           customServerpodPath: productionMode ? null : serverpodHome,
@@ -228,7 +228,7 @@ Future<bool> _performUpgrade(
   success &= await log.progress(
     'Upgrading project.',
     () async {
-      _copyServerUpgrade(
+      await _copyServerUpgrade(
         serverpodDir,
         name: name,
         skipMain: true,
@@ -381,11 +381,11 @@ void _createDirectory(Directory dir) {
   dir.createSync();
 }
 
-void _copyFlutterUpgrade(
+Future<void> _copyFlutterUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
   String? customServerpodPath,
-}) {
+}) async {
   log.debug('Copying Flutter upgrade files.', newParagraph: true);
   var copier = Copier(
     srcDir: Directory(
@@ -407,7 +407,7 @@ void _copyFlutterUpgrade(
   copier.copyFiles();
 
   log.debug('Adding auth dependencies to Flutter pubspec', newParagraph: true);
-  _addAuthDependenciesToPubspec(
+  await _addAuthDependenciesToPubspec(
     pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
     dependency: 'serverpod_auth_idp_flutter',
     version: templateVersion,
@@ -438,13 +438,13 @@ void _copyFlutterUpgrade(
   );
 }
 
-void _copyServerUpgrade(
+Future<void> _copyServerUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
   bool skipMain = false,
   bool skipAuthDependencies = false,
   String? customServerpodPath,
-}) {
+}) async {
   var awsName = name.replaceAll('_', '-');
   var randomAwsId = math.Random.secure().nextInt(10000000).toString();
 
@@ -566,7 +566,7 @@ void _copyServerUpgrade(
       'Adding auth dependencies to server and client pubspecs',
       newParagraph: true,
     );
-    _addAuthDependenciesToPubspec(
+    await _addAuthDependenciesToPubspec(
       pubspecFile: File(p.join(serverpodDirs.serverDir.path, 'pubspec.yaml')),
       dependency: 'serverpod_auth_idp_server',
       version: templateVersion,
@@ -583,7 +583,7 @@ void _copyServerUpgrade(
         ),
       ],
     );
-    _addAuthDependenciesToPubspec(
+    await _addAuthDependenciesToPubspec(
       pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
       dependency: 'serverpod_auth_idp_client',
       version: templateVersion,
@@ -603,25 +603,34 @@ void _copyServerUpgrade(
   }
 }
 
-void _addAuthDependenciesToPubspec({
+Future<void> _addAuthDependenciesToPubspec({
   required File pubspecFile,
   required String dependency,
   required String version,
   required String? customServerpodPath,
   required String overridePath,
   List<({String name, String path})> transitiveDeps = const [],
-}) {
+}) async {
   if (!pubspecFile.existsSync()) {
     log.debug('Pubspec file not found: ${pubspecFile.path}');
     return;
   }
 
-  var contents = pubspecFile.readAsStringSync();
-  final editor = YamlEditor(contents);
+  final pubspecDir = pubspecFile.parent;
+  final success = await CommandLineTools.dartPubAdd(
+    pubspecDir,
+    dependency,
+    version,
+  );
 
-  editor.update(['dependencies', dependency], version);
+  if (!success) {
+    return;
+  }
 
   if (customServerpodPath != null) {
+    var contents = pubspecFile.readAsStringSync();
+    final editor = YamlEditor(contents);
+
     editor.update(
       ['dependency_overrides', dependency],
       {'path': '$customServerpodPath/$overridePath'},
@@ -632,9 +641,9 @@ void _addAuthDependenciesToPubspec({
         {'path': '$customServerpodPath/${dep.path}'},
       );
     }
-  }
 
-  pubspecFile.writeAsStringSync(editor.toString());
+    pubspecFile.writeAsStringSync(editor.toString());
+  }
 }
 
 void _copyServerTemplates(
