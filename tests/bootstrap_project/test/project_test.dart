@@ -12,7 +12,6 @@ const tempDirName = 'temp';
 void main() async {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final cliDartEntrypoint = getServerpodCliEntrypointPath(rootPath: rootPath);
   final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
@@ -51,16 +50,14 @@ void main() async {
     test(
       'when creating a new project then the project is created successfully and can be booted',
       () async {
-        createProcess = await startProcess(
-          'dart',
+        createProcess = await startServerPodCli(
           [
-            'run',
-            cliDartEntrypoint,
             'create',
             projectName,
             '-v',
             '--no-analytics',
           ],
+          rootPath: rootPath,
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -127,16 +124,14 @@ void main() async {
     test(
       'when creating a new project then the project can be booted without applying migrations',
       () async {
-        createProcess = await startProcess(
-          'dart',
+        createProcess = await startServerPodCli(
           [
-            'run',
-            cliDartEntrypoint,
             'create',
             projectName,
             '-v',
             '--no-analytics',
           ],
+          rootPath: rootPath,
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -215,16 +210,14 @@ void main() async {
 
     group('when creating a new project', () {
       setUpAll(() async {
-        var process = await startProcess(
-          'dart',
+        var process = await startServerPodCli(
           [
-            'run',
-            cliDartEntrypoint,
             'create',
             projectName,
             '-v',
             '--no-analytics',
           ],
+          rootPath: rootPath,
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -626,16 +619,14 @@ void main() async {
     test(
       'when removing generated files from a new project and running generate then the files are recreated successfully',
       () async {
-        createProcess = await startProcess(
-          'dart',
+        createProcess = await startServerPodCli(
           [
-            'run',
-            cliDartEntrypoint,
             'create',
             projectName,
             '-v',
             '--no-analytics',
           ],
+          rootPath: rootPath,
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -660,13 +651,11 @@ void main() async {
         );
         generatedClientDir.deleteSync(recursive: true);
 
-        var generateProcess = await runProcess(
-          'dart',
+        var generateProcess = await runServerPodCli(
           [
-            'run',
-            cliDartEntrypoint,
             'generate',
           ],
+          rootPath: rootPath,
           workingDirectory: commandRoot,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -747,16 +736,14 @@ void main() async {
     late Process createProcess;
 
     setUp(() async {
-      createProcess = await startProcess(
-        'dart',
+      createProcess = await startServerPodCli(
         [
-          'run',
-          cliDartEntrypoint,
           'create',
           projectName,
           '-v',
           '--no-analytics',
         ],
+        rootPath: rootPath,
         workingDirectory: tempPath,
         environment: {
           'SERVERPOD_HOME': rootPath,

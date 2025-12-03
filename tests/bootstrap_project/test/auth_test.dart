@@ -11,7 +11,6 @@ const tempDirName = 'temp_auth';
 void main() async {
   final rootPath = path.join(Directory.current.path, '..', '..');
   final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
-  final cliDartEntrypoint = getServerpodCliEntrypointPath(rootPath: rootPath);
   final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
@@ -37,16 +36,14 @@ void main() async {
 
     group('when creating a new project', () {
       setUpAll(() async {
-        var process = await startProcess(
-          'dart',
+        var process = await startServerPodCli(
           [
-            'run',
-            cliDartEntrypoint,
             'create',
             projectName,
             '-v',
             '--no-analytics',
           ],
+          rootPath: rootPath,
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
