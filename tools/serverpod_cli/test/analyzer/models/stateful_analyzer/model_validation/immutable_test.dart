@@ -115,9 +115,11 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          contains('not allowed for immutable classes'),
+          equals(
+            'The "default" value "now" is not allowed for immutable classes '
+            'because it is not a constant value.',
+          ),
         );
-        expect(firstError.message, contains('now'));
       },
     );
 
@@ -148,9 +150,11 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          contains('not allowed for immutable classes'),
+          equals(
+            'The "default" value "random" is not allowed for immutable classes '
+            'because it is not a constant value.',
+          ),
         );
-        expect(firstError.message, contains('random'));
       },
     );
 
@@ -181,9 +185,11 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          contains('not allowed for immutable classes'),
+          equals(
+            'The "default" value "random_v7" is not allowed for immutable classes '
+            'because it is not a constant value.',
+          ),
         );
-        expect(firstError.message, contains('random_v7'));
       },
     );
 
@@ -215,9 +221,12 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          contains('not allowed for immutable classes'),
+          equals(
+            'The "defaultModel" value "now" is not allowed for immutable classes '
+            'because it is not a constant value. If the model is persisted to '
+            'the database, use the "defaultPersist" key instead.',
+          ),
         );
-        expect(firstError.message, contains('defaultPersist'));
       },
     );
 
@@ -337,7 +346,10 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          contains('not allowed for immutable classes'),
+          equals(
+            'The "default" value "now" is not allowed for immutable classes '
+            'because it is not a constant value.',
+          ),
         );
       },
     );
@@ -377,7 +389,10 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          contains('not allowed for immutable classes'),
+          equals(
+            'The "default" value "now" is not allowed for immutable classes '
+            'because it is not a constant value.',
+          ),
         );
       },
     );
@@ -409,7 +424,10 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          contains('not allowed for immutable classes'),
+          equals(
+            'The "default" value "now" is not allowed for immutable classes '
+            'because it is not a constant value.',
+          ),
         );
       },
     );
