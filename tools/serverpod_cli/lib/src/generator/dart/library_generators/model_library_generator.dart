@@ -311,7 +311,12 @@ class SerializableModelLibraryGenerator {
         );
       }
 
-      classBuilder.methods.add(_buildToStringMethod(serverCode));
+      classBuilder.methods.add(
+        _buildExceptionToStringMethod(
+          className,
+          classDefinition.fields,
+        ),
+      );
     });
   }
 
@@ -912,6 +917,10 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
+    var includedFields = fields.where(
+      (field) => field.shouldIncludeField(serverCode),
+    );
+
     return Method(
       (m) {
         m.name = 'operator ==';
@@ -928,7 +937,7 @@ class SerializableModelLibraryGenerator {
         var comparisons = [
           refer('other').property('runtimeType').equalTo(refer('runtimeType')),
           refer('other').isA(refer(classDefinition.className)),
-          ...fields.map((field) {
+          ...includedFields.map((field) {
             var name = field.name;
             var thisProperty = refer(name);
             var otherProperty = refer('other').property(name);
@@ -970,6 +979,10 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
+    var includedFields = fields.where(
+      (field) => field.shouldIncludeField(serverCode),
+    );
+
     return Method(
       (m) {
         m.name = 'hashCode';
@@ -978,7 +991,7 @@ class SerializableModelLibraryGenerator {
 
         var expressions = [
           refer('runtimeType'),
-          ...fields.map((field) {
+          ...includedFields.map((field) {
             if (field.type.isCollectionType) {
               return refer(
                 'DeepCollectionEquality',
@@ -1457,6 +1470,38 @@ class SerializableModelLibraryGenerator {
           ).code,
           const Code(';'),
         ]);
+      },
+    );
+  }
+
+  Method _buildExceptionToStringMethod(
+    String className,
+    List<SerializableModelFieldDefinition> fields,
+  ) {
+    return Method(
+      (m) {
+        m.returns = refer('String');
+        m.name = 'toString';
+        m.annotations.add(refer('override'));
+
+        var visibleFields = fields.where(
+          (field) => field.shouldIncludeField(serverCode),
+        );
+
+        if (visibleFields.isEmpty) {
+          // For exceptions with no fields, return just the class name
+          m.body = literalString(className).returned.statement;
+        } else {
+          // For exceptions with fields, return "ClassName(field1: $field1, field2: $field2)"
+          var fieldStrings = visibleFields
+              .map((field) {
+                return '${field.name}: \$${field.name}';
+              })
+              .join(', ');
+          m.body = literalString(
+            '$className($fieldStrings)',
+          ).returned.statement;
+        }
       },
     );
   }

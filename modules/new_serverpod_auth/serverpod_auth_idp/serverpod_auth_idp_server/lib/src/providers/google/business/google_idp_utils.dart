@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/session.dart';
 
-import '../../../generated/protocol.dart';
+import '../../../../../core.dart';
 import 'google_idp_config.dart';
 import 'google_idp_token_verifier.dart';
 

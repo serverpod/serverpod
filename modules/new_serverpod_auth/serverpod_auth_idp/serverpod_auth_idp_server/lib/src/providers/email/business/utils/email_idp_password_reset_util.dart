@@ -2,12 +2,9 @@ import 'dart:convert';
 
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_extension.dart';
 
-import '../../../../generated/protocol.dart';
-import '../../../../utils/byte_data_extension.dart';
-import '../../../../utils/secret_hash_util.dart';
-import '../../../../utils/uint8list_extension.dart';
+import '../../../../../core.dart';
+import '../../util/email_string_extension.dart';
 import '../../util/session_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
@@ -22,13 +19,13 @@ import '../email_idp_server_exceptions.dart';
 /// deleting expired password reset requests and password reset attempts.
 /// {@endtemplate}
 class EmailIdpPasswordResetUtil {
-  final SecretHashUtil _passwordHashUtil;
+  final Argon2HashUtil _passwordHashUtil;
   final EmailIdpPasswordResetUtilsConfig _config;
 
   /// Creates a new [EmailIdpPasswordResetUtil] instance.
   EmailIdpPasswordResetUtil({
     required final EmailIdpPasswordResetUtilsConfig config,
-    required final SecretHashUtil passwordHashUtils,
+    required final Argon2HashUtil passwordHashUtils,
   }) : _config = config,
        _passwordHashUtil = passwordHashUtils;
 
@@ -80,15 +77,14 @@ class EmailIdpPasswordResetUtil {
 
     final verificationCode = _config.passwordResetVerificationCodeGenerator();
 
-    final verificationCodeHash = await _passwordHashUtil.createHash(
-      value: verificationCode,
+    final verificationCodeHash = await _passwordHashUtil.createHashFromString(
+      secret: verificationCode,
     );
 
     final challenge = await SecretChallenge.db.insertRow(
       session,
       SecretChallenge(
-        challengeCodeHash: verificationCodeHash.hash.asByteData,
-        challengeCodeSalt: verificationCodeHash.salt.asByteData,
+        challengeCodeHash: verificationCodeHash,
       ),
       transaction: transaction,
     );
@@ -182,10 +178,9 @@ class EmailIdpPasswordResetUtil {
 
     final challenge = resetRequest.getChallenge;
 
-    if (!await _passwordHashUtil.validateHash(
-      value: verificationCode,
-      hash: challenge.challengeCodeHash.asUint8List,
-      salt: challenge.challengeCodeSalt.asUint8List,
+    if (!await _passwordHashUtil.validateHashFromString(
+      secret: verificationCode,
+      hashString: challenge.challengeCodeHash,
     )) {
       throw EmailPasswordResetInvalidVerificationCodeException();
     }
@@ -201,8 +196,8 @@ class EmailIdpPasswordResetUtil {
     }
 
     final setPasswordToken = const Uuid().v4();
-    final setPasswordTokenHash = await _passwordHashUtil.createHash(
-      value: setPasswordToken,
+    final setPasswordTokenHash = await _passwordHashUtil.createHashFromString(
+      secret: setPasswordToken,
     );
 
     await _insertSetPasswordChallenge(
@@ -274,10 +269,9 @@ class EmailIdpPasswordResetUtil {
       throw EmailPasswordResetNotVerifiedException();
     }
 
-    if (!await _passwordHashUtil.validateHash(
-      value: credentials.verificationCode,
-      hash: setPasswordChallenge.challengeCodeHash.asUint8List,
-      salt: setPasswordChallenge.challengeCodeSalt.asUint8List,
+    if (!await _passwordHashUtil.validateHashFromString(
+      secret: credentials.verificationCode,
+      hashString: setPasswordChallenge.challengeCodeHash,
     )) {
       throw EmailPasswordResetInvalidVerificationCodeException();
     }
@@ -329,14 +323,13 @@ class EmailIdpPasswordResetUtil {
     final Session session, {
     required final Transaction transaction,
     required final UuidValue resetRequestId,
-    required final HashResult setPasswordTokenHash,
+    required final String setPasswordTokenHash,
   }) async {
     final savePoint = await transaction.createSavepoint();
     final setPasswordChallenge = await SecretChallenge.db.insertRow(
       session,
       SecretChallenge(
-        challengeCodeHash: setPasswordTokenHash.hash.asByteData,
-        challengeCodeSalt: setPasswordTokenHash.salt.asByteData,
+        challengeCodeHash: setPasswordTokenHash,
       ),
       transaction: transaction,
     );
@@ -435,15 +428,16 @@ class EmailIdpPasswordResetUtil {
     required final Transaction transaction,
   }) async {
     final passwordHash = switch (password) {
-      null => HashResult.empty(),
-      final String value => await _passwordHashUtil.createHash(value: value),
+      null => '',
+      final String value => await _passwordHashUtil.createHashFromString(
+        secret: value,
+      ),
     };
 
     await EmailAccount.db.updateRow(
       session,
       emailAccount.copyWith(
-        passwordHash: passwordHash.hash.asByteData,
-        passwordSalt: passwordHash.salt.asByteData,
+        passwordHash: passwordHash,
       ),
       transaction: transaction,
     );
@@ -461,7 +455,7 @@ class EmailIdpPasswordResetUtil {
         await EmailAccountPasswordResetCompleteAttempt.db.insertRow(
           session,
           EmailAccountPasswordResetCompleteAttempt(
-            ipAddress: session.remoteIpAddress,
+            ipAddress: session.remoteIpAddress.toString(),
             passwordResetRequestId: passwordResetRequestId,
           ),
           transaction: transaction,
@@ -499,7 +493,7 @@ class EmailIdpPasswordResetUtil {
         session,
         EmailAccountPasswordResetRequestAttempt(
           email: email,
-          ipAddress: session.remoteIpAddress,
+          ipAddress: session.remoteIpAddress.toString(),
           attemptedAt: clock.now(),
         ),
         transaction: transaction,

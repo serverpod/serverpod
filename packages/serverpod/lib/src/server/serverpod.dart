@@ -323,13 +323,13 @@ class Serverpod {
     mh.accessControlAllowOrigin =
         const AccessControlAllowOriginHeader.wildcard();
     mh.accessControlAllowMethods = AccessControlAllowMethodsHeader.methods(
-      methods: [Method.post],
+      [Method.post],
     );
   });
 
   static final _defaultHttpOptionsResponseHeaders = Headers.build((mh) {
     mh.accessControlAllowHeaders = AccessControlAllowHeadersHeader.headers(
-      headers: [
+      [
         'Content-Type',
         'Authorization',
         'Accept',
@@ -383,7 +383,6 @@ class Serverpod {
       _initializeServerpod(
         args,
         config: config,
-        experimentalFeatures: experimentalFeatures,
       );
     } on ExitException catch (e) {
       if (e.message.isNotEmpty) {
@@ -399,7 +398,6 @@ class Serverpod {
   void _initializeServerpod(
     List<String> args, {
     ServerpodConfig? config,
-    ExperimentalFeatures? experimentalFeatures,
   }) {
     stdout.writeln(
       'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
@@ -539,6 +537,7 @@ class Serverpod {
       httpOptionsResponseHeaders: httpOptionsResponseHeaders,
       securityContext: _securityContextConfig?.apiServer,
     );
+
     endpoints.initializeEndpoints(server);
 
     _internalSession = InternalSession(server: server, enableLogging: false);

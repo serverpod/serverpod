@@ -1,7 +1,4 @@
-import 'package:serverpod_auth_core_server/auth_user.dart';
-
-import '../../../generated/protocol.dart';
-import '../../../utils/secret_hash_util.dart';
+import '../../../../core.dart';
 import 'email_idp_config.dart';
 import 'email_idp_server_exceptions.dart';
 import 'utils/email_idp_account_creation_util.dart';
@@ -23,8 +20,10 @@ import 'utils/email_idp_password_reset_util.dart';
 /// For most standard use cases, the methods exposed by [EmailIdp] and
 /// [EmailIdpAdmin] should be sufficient.
 class EmailIdpUtils {
-  /// {@macro email_idp_hash_util}
-  final SecretHashUtil hashUtil;
+  /// General hash util for the email identity provider.
+  ///
+  /// Follows OWASP recommended parameters for storing passwords.
+  final Argon2HashUtil hashUtil;
 
   /// {@macro email_idp_account_creation_util}
   late final EmailIdpAccountCreationUtil accountCreation;
@@ -42,10 +41,12 @@ class EmailIdpUtils {
   EmailIdpUtils({
     required final EmailIdpConfig config,
     final AuthUsers authUsers = const AuthUsers(),
-  }) : hashUtil = SecretHashUtil(
+  }) : hashUtil = Argon2HashUtil(
          hashPepper: config.secretHashPepper,
          fallbackHashPeppers: config.fallbackSecretHashPeppers,
          hashSaltLength: config.secretHashSaltLength,
+         // 19MiB memory cost as recommended by OWASP: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
+         parameters: Argon2HashParameters(memory: 19456),
        ),
        account = EmailIdpAccountUtils() {
     accountCreation = EmailIdpAccountCreationUtil(

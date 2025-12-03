@@ -23,10 +23,14 @@ const _excludedMethodNameSet = {
 abstract class EndpointMethodAnalyzer {
   /// Parses an [MethodElement] into a [MethodDefinition].
   /// Assumes that the [MethodElement] is a valid endpoint method.
+  ///
+  /// If a [templateRegistry] is provided, it will be used to resolve
+  /// `{@macro}` references in documentation comments.
   static MethodDefinition parse(
     MethodElement method,
-    Parameters parameters,
-  ) {
+    Parameters parameters, {
+    required DartDocTemplateRegistry templateRegistry,
+  }) {
     var isStream =
         method.returnType.isDartAsyncStream || parameters._hasStream();
 
@@ -35,6 +39,7 @@ abstract class EndpointMethodAnalyzer {
         name: method.displayName,
         documentationComment: stripDocumentationTemplateMarkers(
           method.documentationComment,
+          templateRegistry: templateRegistry,
         ),
         annotations: AnnotationAnalyzer.parseAnnotations(method),
         parameters: parameters.required,
@@ -48,6 +53,7 @@ abstract class EndpointMethodAnalyzer {
       name: method.displayName,
       documentationComment: stripDocumentationTemplateMarkers(
         method.documentationComment,
+        templateRegistry: templateRegistry,
       ),
       annotations: AnnotationAnalyzer.parseAnnotations(method),
       parameters: parameters.required,

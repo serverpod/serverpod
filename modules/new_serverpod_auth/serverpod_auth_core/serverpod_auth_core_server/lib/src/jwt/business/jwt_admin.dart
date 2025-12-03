@@ -3,19 +3,19 @@ import 'dart:typed_data';
 import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/common.dart';
 import 'package:serverpod_auth_core_server/src/jwt/business/refresh_token_exceptions.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../generated/protocol.dart';
 import 'jwt_util.dart';
-import 'refresh_token_secret_hash.dart';
 import 'refresh_token_string.dart';
 
 /// Collection of admin functions for managing authentication tokens.
-final class JwtAdmin {
+class JwtAdmin {
   final Duration _refreshTokenLifetime;
   final JwtUtil _jwtUtil;
-  final RefreshTokenSecretHash _refreshTokenSecretHash;
+  final Argon2HashUtil _refreshTokenSecretHash;
   final int _refreshTokenRotatingSecretLength;
 
   /// Creates a new admin helper class instance.
@@ -23,7 +23,7 @@ final class JwtAdmin {
   JwtAdmin({
     required final Duration refreshTokenLifetime,
     required final JwtUtil jwtUtil,
-    required final RefreshTokenSecretHash refreshTokenSecretHash,
+    required final Argon2HashUtil refreshTokenSecretHash,
     required final int refreshTokenRotatingSecretLength,
   }) : _refreshTokenLifetime = refreshTokenLifetime,
        _jwtUtil = jwtUtil,
@@ -147,10 +147,9 @@ final class JwtAdmin {
       );
     }
 
-    if (!await _refreshTokenSecretHash.validateHash(
+    if (!await _refreshTokenSecretHash.validateHashFromBytes(
       secret: refreshTokenData.rotatingSecret,
-      hash: Uint8List.sublistView(refreshTokenRow.rotatingSecretHash),
-      salt: Uint8List.sublistView(refreshTokenRow.rotatingSecretSalt),
+      hashString: refreshTokenRow.rotatingSecretHash,
     )) {
       await RefreshToken.db.deleteRow(
         session,
@@ -165,13 +164,14 @@ final class JwtAdmin {
     }
 
     final newSecret = _generateRefreshTokenRotatingSecret();
-    final newHash = await _refreshTokenSecretHash.createHash(secret: newSecret);
+    final newHash = await _refreshTokenSecretHash.createHashFromBytes(
+      secret: newSecret,
+    );
 
     refreshTokenRow = await RefreshToken.db.updateRow(
       session,
       refreshTokenRow.copyWith(
-        rotatingSecretHash: ByteData.sublistView(newHash.hash),
-        rotatingSecretSalt: ByteData.sublistView(newHash.salt),
+        rotatingSecretHash: newHash,
         lastUpdatedAt: clock.now(),
       ),
       transaction: transaction,

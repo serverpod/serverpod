@@ -142,7 +142,18 @@ abstract class UserProfile
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_core.UserProfile',
+      if (id != null) 'id': id?.toJson(),
+      'authUserId': authUserId.toJson(),
+      if (authUser != null) 'authUser': authUser?.toJsonForProtocol(),
+      if (userName != null) 'userName': userName,
+      if (fullName != null) 'fullName': fullName,
+      if (email != null) 'email': email,
+      'createdAt': createdAt.toJson(),
+      if (imageId != null) 'imageId': imageId?.toJson(),
+      if (image != null) 'image': image?.toJsonForProtocol(),
+    };
   }
 
   static UserProfileInclude include({

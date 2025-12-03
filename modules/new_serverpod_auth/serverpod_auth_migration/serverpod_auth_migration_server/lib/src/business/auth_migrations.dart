@@ -8,7 +8,7 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart'
     as legacy_auth;
 
 /// Collection of helpers to migrate from `serverpod_auth` to the new packages.
-abstract final class AuthMigrations {
+abstract class AuthMigrations {
   /// The configuration to be used for all migrations.
   static var config = AuthMigrationConfig(
     emailIdp: AuthServices.instance.emailIdp,

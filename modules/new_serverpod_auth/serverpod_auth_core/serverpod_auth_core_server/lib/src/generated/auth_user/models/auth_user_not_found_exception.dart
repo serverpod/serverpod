@@ -43,7 +43,7 @@ abstract class AuthUserNotFoundException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'AuthUserNotFoundException';
   }
 }
 

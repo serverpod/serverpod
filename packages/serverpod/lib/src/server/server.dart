@@ -132,6 +132,8 @@ class Server implements RouterInjectable {
     if (serverpod.config.loggingMode == ServerpodLoggingMode.verbose) {
       router.use('/', _verboseLogging);
     }
+
+    // Register core middleware first to ensure they wrap all user middleware
     router
       ..use('/', _headers)
       ..use('/', _reportException)
@@ -151,6 +153,9 @@ class Server implements RouterInjectable {
       )
       ..any('/**', _endpoints);
   }
+
+  /// Adds a [Middleware] to the server
+  void addMiddleware(Middleware middleware) => _app.use('/', middleware);
 
   /// Starts the server.
   /// Returns true if the server was started successfully.
@@ -188,7 +193,7 @@ class Server implements RouterInjectable {
 
   Handler _verboseLogging(Handler next) {
     return (req) async {
-      final path = req.requestedUri.path;
+      final path = req.url.path;
       serverpod.logVerbose('handleRequest: ${req.method} $path');
       return await next(req);
     };
@@ -294,14 +299,14 @@ class Server implements RouterInjectable {
   }
 
   FutureOr<Result> _cloudStorage(Request req) async {
-    final uri = req.requestedUri;
+    final uri = req.url;
     assert(uri.path == '/serverpod_cloud_storage');
     return await _handleEndpointCall(uri, '', req);
   }
 
   Future<Response> _endpoints(Request req) async {
     final body = await _readBody(req);
-    return await _handleEndpointCall(req.requestedUri, body, req);
+    return await _handleEndpointCall(req.url, body, req);
   }
 
   Handler _dispatchWebSocket(

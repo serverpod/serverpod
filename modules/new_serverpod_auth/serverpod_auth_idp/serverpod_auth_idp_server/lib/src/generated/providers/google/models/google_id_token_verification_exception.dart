@@ -52,7 +52,7 @@ abstract class GoogleIdTokenVerificationException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'GoogleIdTokenVerificationException';
   }
 }
 

@@ -1,0 +1,17 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+name: middleware_client
+description: Starting point for a Serverpod client.
+
+environment:
+  sdk: '^3.8.0'
+
+dependencies:
+  serverpod_client: 3.0.0-rc.3
+
+dependency_overrides: 
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization

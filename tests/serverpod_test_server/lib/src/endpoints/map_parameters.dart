@@ -195,4 +195,32 @@ class MapParametersEndpoint extends Endpoint {
   ) async {
     return map;
   }
+
+  Future<Map<DateTime, bool>> returnDateTimeBoolMap(
+    Session session,
+    Map<DateTime, bool> map,
+  ) async {
+    return map;
+  }
+
+  Future<Map<DateTime, bool>?> returnDateTimeBoolMapNullable(
+    Session session,
+    Map<DateTime, bool>? map,
+  ) async {
+    return map;
+  }
+
+  Future<Map<int, String>> returnIntStringMap(
+    Session session,
+    Map<int, String> map,
+  ) async {
+    return map;
+  }
+
+  Future<Map<int, String>?> returnIntStringMapNullable(
+    Session session,
+    Map<int, String>? map,
+  ) async {
+    return map;
+  }
 }

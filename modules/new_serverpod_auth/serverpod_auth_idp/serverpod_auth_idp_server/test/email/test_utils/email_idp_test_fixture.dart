@@ -1,11 +1,10 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
-import 'package:serverpod_auth_idp_server/src/utils/uint8list_extension.dart';
 
 sealed class EmailAccountPassword {
   static EmailAccountPasswordHash fromPasswordHash(
-    final HashResult passwordHash,
+    final String passwordHash,
   ) {
     return EmailAccountPasswordHash(passwordHash);
   }
@@ -16,7 +15,7 @@ sealed class EmailAccountPassword {
 }
 
 final class EmailAccountPasswordHash extends EmailAccountPassword {
-  final HashResult passwordHash;
+  final String passwordHash;
 
   EmailAccountPasswordHash(this.passwordHash);
 }
@@ -42,10 +41,10 @@ final class EmailIdpTestFixture {
     tokenManager ??= AuthServices(
       authUsers: authUsers,
       userProfiles: userProfiles,
-      primaryTokenManager: ServerSideSessionsTokenManagerFactory(
-        ServerSideSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+      primaryTokenManagerBuilder: ServerSideSessionsConfig(
+        sessionKeyHashPepper: 'test-pepper',
       ),
-      identityProviders: [],
+      identityProviderBuilders: [],
     ).tokenManager;
 
     // Analyzer incorrectly suggests this should be initialized in the
@@ -64,8 +63,8 @@ final class EmailIdpTestFixture {
     final passwordHash = switch (password) {
       final EmailAccountPasswordHash password => password.passwordHash,
       final EmailAccountPasswordString password =>
-        await passwordHashUtil.createHash(value: password.password),
-      null => HashResult.empty(),
+        await passwordHashUtil.createHashFromString(secret: password.password),
+      null => '',
     };
 
     return await EmailAccount.db.insertRow(
@@ -73,8 +72,7 @@ final class EmailIdpTestFixture {
       EmailAccount(
         authUserId: authUserId,
         email: email.toLowerCase().trim(),
-        passwordHash: passwordHash.hash.asByteData,
-        passwordSalt: passwordHash.salt.asByteData,
+        passwordHash: passwordHash,
       ),
     );
   }
@@ -115,7 +113,7 @@ final class EmailIdpTestFixture {
     );
   }
 
-  SecretHashUtil get passwordHashUtil => emailIdp.utils.hashUtil;
+  Argon2HashUtil get passwordHashUtil => emailIdp.utils.hashUtil;
   EmailIdpAuthenticationUtil get authenticationUtil =>
       emailIdp.utils.authentication;
   EmailIdpPasswordResetUtil get passwordResetUtil =>

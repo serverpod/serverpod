@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/generated/common/models/auth_success.dart';
 
-import '../../../../auth_user.dart';
+import '../../../auth_user/auth_user.dart';
 import '../../../generated/common/models/auth_strategy.dart';
 import '../../../jwt/business/jwt.dart';
 import '../../../jwt/business/jwt_config.dart';

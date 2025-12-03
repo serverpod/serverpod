@@ -1903,6 +1903,37 @@ class EndpointMapParameters extends _i1.EndpointRef {
     'returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap',
     {'map': _i17.mapContainerToJson(map)},
   );
+
+  _i2.Future<Map<DateTime, bool>> returnDateTimeBoolMap(
+    Map<DateTime, bool> map,
+  ) => caller.callServerEndpoint<Map<DateTime, bool>>(
+    'mapParameters',
+    'returnDateTimeBoolMap',
+    {'map': _i17.mapContainerToJson(map)},
+  );
+
+  _i2.Future<Map<DateTime, bool>?> returnDateTimeBoolMapNullable(
+    Map<DateTime, bool>? map,
+  ) => caller.callServerEndpoint<Map<DateTime, bool>?>(
+    'mapParameters',
+    'returnDateTimeBoolMapNullable',
+    {'map': map == null ? null : _i17.mapContainerToJson(map)},
+  );
+
+  _i2.Future<Map<int, String>> returnIntStringMap(Map<int, String> map) =>
+      caller.callServerEndpoint<Map<int, String>>(
+        'mapParameters',
+        'returnIntStringMap',
+        {'map': _i17.mapContainerToJson(map)},
+      );
+
+  _i2.Future<Map<int, String>?> returnIntStringMapNullable(
+    Map<int, String>? map,
+  ) => caller.callServerEndpoint<Map<int, String>?>(
+    'mapParameters',
+    'returnIntStringMapNullable',
+    {'map': map == null ? null : _i17.mapContainerToJson(map)},
+  );
 }
 
 /// {@category Endpoint}

@@ -135,7 +135,7 @@ abstract class DefaultException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'DefaultException(defaultBoolean: $defaultBoolean, defaultDateTime: $defaultDateTime, defaultDouble: $defaultDouble, defaultDuration: $defaultDuration, defaultEnum: $defaultEnum, defaultInteger: $defaultInteger, defaultString: $defaultString, defaultUuid: $defaultUuid, defaultModelField: $defaultModelField, defaultMixField: $defaultMixField)';
   }
 }
 

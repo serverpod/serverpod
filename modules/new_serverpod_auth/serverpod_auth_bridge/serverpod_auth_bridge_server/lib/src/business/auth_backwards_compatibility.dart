@@ -7,7 +7,7 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 
 /// Collections of helper functions to work with legacy authentication data.
-abstract final class AuthBackwardsCompatibility {
+abstract class AuthBackwardsCompatibility {
   /// The configuration used for the backwards compatibility.
   ///
   /// Should match the previous `AuthServices`.

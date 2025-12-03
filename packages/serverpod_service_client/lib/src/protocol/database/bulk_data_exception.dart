@@ -53,7 +53,7 @@ abstract class BulkDataException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'BulkDataException(message: $message, query: $query)';
   }
 }
 

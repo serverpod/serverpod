@@ -86,7 +86,13 @@ abstract class AuthUser
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_core.AuthUser',
+      if (id != null) 'id': id?.toJson(),
+      'createdAt': createdAt.toJson(),
+      'scopeNames': scopeNames.toJson(),
+      'blocked': blocked,
+    };
   }
 
   static AuthUserInclude include() {
