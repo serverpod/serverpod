@@ -1351,8 +1351,56 @@ class Protocol extends _i1.SerializationManagerServer {
       );
     }
 
-    className = getClassNameForType(data.runtimeType);
-    if (className != null) return className;
+    switch (data) {
+      case _i4.SecretChallenge():
+        return 'SecretChallenge';
+      case _i5.AppleAccount():
+        return 'AppleAccount';
+      case _i6.EmailAccountFailedLoginAttempt():
+        return 'EmailAccountFailedLoginAttempt';
+      case _i7.EmailAccountRequest():
+        return 'EmailAccountRequest';
+      case _i8.EmailAccountRequestCompletionAttempt():
+        return 'EmailAccountRequestCompletionAttempt';
+      case _i9.EmailAccount():
+        return 'EmailAccount';
+      case _i10.EmailAccountLoginException():
+        return 'EmailAccountLoginException';
+      case _i11.EmailAccountLoginExceptionReason():
+        return 'EmailAccountLoginExceptionReason';
+      case _i12.EmailAccountPasswordResetException():
+        return 'EmailAccountPasswordResetException';
+      case _i13.EmailAccountPasswordResetExceptionReason():
+        return 'EmailAccountPasswordResetExceptionReason';
+      case _i14.EmailAccountRequestException():
+        return 'EmailAccountRequestException';
+      case _i15.EmailAccountRequestExceptionReason():
+        return 'EmailAccountRequestExceptionReason';
+      case _i16.EmailAccountPasswordResetCompleteAttempt():
+        return 'EmailAccountPasswordResetCompleteAttempt';
+      case _i17.EmailAccountPasswordResetRequest():
+        return 'EmailAccountPasswordResetRequest';
+      case _i18.EmailAccountPasswordResetRequestAttempt():
+        return 'EmailAccountPasswordResetRequestAttempt';
+      case _i19.GoogleAccount():
+        return 'GoogleAccount';
+      case _i20.GoogleIdTokenVerificationException():
+        return 'GoogleIdTokenVerificationException';
+      case _i21.PasskeyAccount():
+        return 'PasskeyAccount';
+      case _i22.PasskeyChallenge():
+        return 'PasskeyChallenge';
+      case _i23.PasskeyChallengeExpiredException():
+        return 'PasskeyChallengeExpiredException';
+      case _i24.PasskeyChallengeNotFoundException():
+        return 'PasskeyChallengeNotFoundException';
+      case _i25.PasskeyLoginRequest():
+        return 'PasskeyLoginRequest';
+      case _i26.PasskeyPublicKeyNotFoundException():
+        return 'PasskeyPublicKeyNotFoundException';
+      case _i27.PasskeyRegistrationRequest():
+        return 'PasskeyRegistrationRequest';
+    }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';

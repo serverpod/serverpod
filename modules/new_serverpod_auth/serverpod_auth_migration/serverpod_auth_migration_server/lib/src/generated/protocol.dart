@@ -200,8 +200,10 @@ class Protocol extends _i1.SerializationManagerServer {
       );
     }
 
-    className = getClassNameForType(data.runtimeType);
-    if (className != null) return className;
+    switch (data) {
+      case _i7.MigratedUser():
+        return 'MigratedUser';
+    }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';

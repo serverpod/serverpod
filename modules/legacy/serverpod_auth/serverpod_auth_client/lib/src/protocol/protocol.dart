@@ -206,8 +206,36 @@ class Protocol extends _i1.SerializationManager {
       );
     }
 
-    className = getClassNameForType(data.runtimeType);
-    if (className != null) return className;
+    switch (data) {
+      case _i2.AppleAuthInfo():
+        return 'AppleAuthInfo';
+      case _i3.AuthKey():
+        return 'AuthKey';
+      case _i4.AuthenticationFailReason():
+        return 'AuthenticationFailReason';
+      case _i5.AuthenticationResponse():
+        return 'AuthenticationResponse';
+      case _i6.EmailAuth():
+        return 'EmailAuth';
+      case _i7.EmailCreateAccountRequest():
+        return 'EmailCreateAccountRequest';
+      case _i8.EmailFailedSignIn():
+        return 'EmailFailedSignIn';
+      case _i9.EmailPasswordReset():
+        return 'EmailPasswordReset';
+      case _i10.EmailReset():
+        return 'EmailReset';
+      case _i11.GoogleRefreshToken():
+        return 'GoogleRefreshToken';
+      case _i12.UserImage():
+        return 'UserImage';
+      case _i13.UserInfo():
+        return 'UserInfo';
+      case _i14.UserInfoPublic():
+        return 'UserInfoPublic';
+      case _i15.UserSettingsConfig():
+        return 'UserSettingsConfig';
+    }
     return null;
   }
 

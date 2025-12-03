@@ -131,8 +131,18 @@ class Protocol extends _i1.SerializationManager {
       );
     }
 
-    className = getClassNameForType(data.runtimeType);
-    if (className != null) return className;
+    switch (data) {
+      case _i2.ModulePolymorphicGrandChild():
+        return 'ModulePolymorphicGrandChild';
+      case _i3.ModulePolymorphicChild():
+        return 'ModulePolymorphicChild';
+      case _i4.ModulePolymorphicParent():
+        return 'ModulePolymorphicParent';
+      case _i5.ModuleClass():
+        return 'ModuleClass';
+      case _i6.MyModuleFeatureModel():
+        return 'MyModuleFeatureModel';
+    }
     return null;
   }
 

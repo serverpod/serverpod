@@ -95,8 +95,6 @@ class Protocol extends _i1.SerializationManager {
       );
     }
 
-    className = getClassNameForType(data.runtimeType);
-    if (className != null) return className;
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_bridge.$className';

@@ -700,8 +700,46 @@ class Protocol extends _i1.SerializationManagerServer {
       );
     }
 
-    className = getClassNameForType(data.runtimeType);
-    if (className != null) return className;
+    switch (data) {
+      case _i3.AuthUser():
+        return 'AuthUser';
+      case _i4.AuthUserBlockedException():
+        return 'AuthUserBlockedException';
+      case _i5.AuthUserModel():
+        return 'AuthUserModel';
+      case _i6.AuthUserNotFoundException():
+        return 'AuthUserNotFoundException';
+      case _i7.AuthStrategy():
+        return 'AuthStrategy';
+      case _i8.AuthSuccess():
+        return 'AuthSuccess';
+      case _i9.JwtTokenInfo():
+        return 'JwtTokenInfo';
+      case _i10.RefreshToken():
+        return 'RefreshToken';
+      case _i11.RefreshTokenExpiredException():
+        return 'RefreshTokenExpiredException';
+      case _i12.RefreshTokenInvalidSecretException():
+        return 'RefreshTokenInvalidSecretException';
+      case _i13.RefreshTokenMalformedException():
+        return 'RefreshTokenMalformedException';
+      case _i14.RefreshTokenNotFoundException():
+        return 'RefreshTokenNotFoundException';
+      case _i15.TokenPair():
+        return 'TokenPair';
+      case _i16.UserProfile():
+        return 'UserProfile';
+      case _i17.UserProfileData():
+        return 'UserProfileData';
+      case _i18.UserProfileImage():
+        return 'UserProfileImage';
+      case _i19.UserProfileModel():
+        return 'UserProfileModel';
+      case _i20.ServerSideSession():
+        return 'ServerSideSession';
+      case _i21.ServerSideSessionInfo():
+        return 'ServerSideSessionInfo';
+    }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';

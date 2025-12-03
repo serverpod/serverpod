@@ -77,8 +77,10 @@ class Protocol extends _i1.SerializationManager {
       );
     }
 
-    className = getClassNameForType(data.runtimeType);
-    if (className != null) return className;
+    switch (data) {
+      case _i2.Greeting():
+        return 'Greeting';
+    }
     return null;
   }
 

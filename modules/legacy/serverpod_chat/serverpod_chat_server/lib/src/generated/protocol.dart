@@ -354,8 +354,30 @@ class Protocol extends _i1.SerializationManagerServer {
       );
     }
 
-    className = getClassNameForType(data.runtimeType);
-    if (className != null) return className;
+    switch (data) {
+      case _i4.ChatJoinChannel():
+        return 'ChatJoinChannel';
+      case _i5.ChatJoinChannelFailed():
+        return 'ChatJoinChannelFailed';
+      case _i6.ChatJoinedChannel():
+        return 'ChatJoinedChannel';
+      case _i7.ChatLeaveChannel():
+        return 'ChatLeaveChannel';
+      case _i8.ChatMessage():
+        return 'ChatMessage';
+      case _i9.ChatMessageAttachment():
+        return 'ChatMessageAttachment';
+      case _i10.ChatMessageAttachmentUploadDescription():
+        return 'ChatMessageAttachmentUploadDescription';
+      case _i11.ChatMessageChunk():
+        return 'ChatMessageChunk';
+      case _i12.ChatMessagePost():
+        return 'ChatMessagePost';
+      case _i13.ChatReadMessage():
+        return 'ChatReadMessage';
+      case _i14.ChatRequestMessageChunk():
+        return 'ChatRequestMessageChunk';
+    }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';

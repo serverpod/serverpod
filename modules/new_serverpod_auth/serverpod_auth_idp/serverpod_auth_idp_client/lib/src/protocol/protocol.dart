@@ -245,8 +245,32 @@ class Protocol extends _i1.SerializationManager {
       );
     }
 
-    className = getClassNameForType(data.runtimeType);
-    if (className != null) return className;
+    switch (data) {
+      case _i2.EmailAccountLoginException():
+        return 'EmailAccountLoginException';
+      case _i3.EmailAccountLoginExceptionReason():
+        return 'EmailAccountLoginExceptionReason';
+      case _i4.EmailAccountPasswordResetException():
+        return 'EmailAccountPasswordResetException';
+      case _i5.EmailAccountPasswordResetExceptionReason():
+        return 'EmailAccountPasswordResetExceptionReason';
+      case _i6.EmailAccountRequestException():
+        return 'EmailAccountRequestException';
+      case _i7.EmailAccountRequestExceptionReason():
+        return 'EmailAccountRequestExceptionReason';
+      case _i8.GoogleIdTokenVerificationException():
+        return 'GoogleIdTokenVerificationException';
+      case _i9.PasskeyChallengeExpiredException():
+        return 'PasskeyChallengeExpiredException';
+      case _i10.PasskeyChallengeNotFoundException():
+        return 'PasskeyChallengeNotFoundException';
+      case _i11.PasskeyLoginRequest():
+        return 'PasskeyLoginRequest';
+      case _i12.PasskeyPublicKeyNotFoundException():
+        return 'PasskeyPublicKeyNotFoundException';
+      case _i13.PasskeyRegistrationRequest():
+        return 'PasskeyRegistrationRequest';
+    }
     className = _i15.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';

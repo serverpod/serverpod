@@ -87,8 +87,10 @@ class Protocol extends _i1.SerializationManager {
       return (data['__className__'] as String).replaceFirst('chat.', '');
     }
 
-    className = getClassNameForType(data.runtimeType);
-    if (className != null) return className;
+    switch (data) {
+      case _i2.Channel():
+        return 'Channel';
+    }
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
