@@ -488,14 +488,14 @@ void main() {
   });
 
   group(
-      'Given an immutable class with table and non-constant default for defaultPersist',
-      () {
-    test(
-      'when a DateTime field has defaultPersist=now then no error is generated.',
-      () {
-        var modelSources = [
-          ModelSourceBuilder().withYaml(
-            '''
+    'Given an immutable class with table and non-constant default for defaultPersist',
+    () {
+      test(
+        'when a DateTime field has defaultPersist=now then no error is generated.',
+        () {
+          var modelSources = [
+            ModelSourceBuilder().withYaml(
+              '''
           class: Example
           immutable: true
           table: example
@@ -503,26 +503,26 @@ void main() {
             name: String
             when: DateTime?, defaultPersist=now
           ''',
-          ).build(),
-        ];
+            ).build(),
+          ];
 
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(
-          config,
-          modelSources,
-          onErrorsCollector(collector),
-        ).validateAll();
+          var collector = CodeGenerationCollector();
+          StatefulAnalyzer(
+            config,
+            modelSources,
+            onErrorsCollector(collector),
+          ).validateAll();
 
-        expect(collector.errors, isEmpty);
-      },
-    );
+          expect(collector.errors, isEmpty);
+        },
+      );
 
-    test(
-      'when a UuidValue field has defaultPersist=random then no error is generated.',
-      () {
-        var modelSources = [
-          ModelSourceBuilder().withYaml(
-            '''
+      test(
+        'when a UuidValue field has defaultPersist=random then no error is generated.',
+        () {
+          var modelSources = [
+            ModelSourceBuilder().withYaml(
+              '''
           class: Example
           immutable: true
           table: example
@@ -530,18 +530,19 @@ void main() {
             name: String
             uuid: UuidValue?, defaultPersist=random
           ''',
-          ).build(),
-        ];
+            ).build(),
+          ];
 
-        var collector = CodeGenerationCollector();
-        StatefulAnalyzer(
-          config,
-          modelSources,
-          onErrorsCollector(collector),
-        ).validateAll();
+          var collector = CodeGenerationCollector();
+          StatefulAnalyzer(
+            config,
+            modelSources,
+            onErrorsCollector(collector),
+          ).validateAll();
 
-        expect(collector.errors, isEmpty);
-      },
-    );
-  });
+          expect(collector.errors, isEmpty);
+        },
+      );
+    },
+  );
 }
