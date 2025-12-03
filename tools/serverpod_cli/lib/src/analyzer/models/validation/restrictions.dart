@@ -2136,15 +2136,75 @@ class Restrictions {
     dynamic content,
     SourceSpan? span,
   ) {
+    // Support legacy string format: partitionBy: field1, field2
+    if (content is String) {
+      return _validatePartitionByFields(content, span);
+    }
+
+    // Support new nested format - validation is handled by nested validators
+    if (content is YamlMap) {
+      return [];
+    }
+
+    return [
+      SourceSpanSeverityException(
+        'The "partitionBy" property must have at least one field (e.g. partitionBy: fieldName or partitionBy: {fields: fieldName}).',
+        span,
+      ),
+    ];
+  }
+
+  List<SourceSpanSeverityException> validatePartitionMethodValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    if (content == null) return [];
+
     if (content is! String) {
       return [
         SourceSpanSeverityException(
-          'The "partitionBy" property must have at least one field (e.g. partitionBy: fieldName).',
+          'The "method" property must be a string (list, range, or hash).',
           span,
         ),
       ];
     }
 
+    // These values must match PartitionMethod enum in serverpod_service_client
+    const validMethods = ['list', 'range', 'hash'];
+    if (!validMethods.contains(content)) {
+      return [
+        SourceSpanSeverityException(
+          'Invalid partition method "$content". Valid values are: ${validMethods.join(', ')}.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validatePartitionByFieldsValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    if (content is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "fields" property must have at least one field (e.g. fields: fieldName).',
+          span,
+        ),
+      ];
+    }
+
+    return _validatePartitionByFields(content, span);
+  }
+
+  List<SourceSpanSeverityException> _validatePartitionByFields(
+    String content,
+    SourceSpan? span,
+  ) {
     var definition = documentDefinition;
     if (definition is! ModelClassDefinition) return [];
 

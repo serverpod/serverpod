@@ -70,9 +70,13 @@ final class ModelClassDefinition extends ClassDefinition {
   /// The index over the primary key `id` is not part of this list.
   final List<SerializableModelIndexDefinition> indexes;
 
-  /// The fields to partition the table by using PostgreSQL's LIST partitioning.
+  /// The fields to partition the table by using PostgreSQL partitioning.
   /// This is used for tables that might have high traffic.
   final List<String> partitionBy;
+
+  /// The partition method to use (list, range, or hash).
+  /// Defaults to 'list' if not specified but partitionBy is set.
+  final String? partitionMethod;
 
   final bool manageMigration;
 
@@ -106,6 +110,7 @@ final class ModelClassDefinition extends ClassDefinition {
     this.tableName,
     this.indexes = const [],
     this.partitionBy = const [],
+    this.partitionMethod,
     super.subDirParts,
     super.documentation,
   }) : childClasses = childClasses ?? <InheritanceDefinition>[];

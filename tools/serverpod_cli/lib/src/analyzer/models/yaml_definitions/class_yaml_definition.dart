@@ -242,6 +242,17 @@ class ClassYamlDefinition {
         Keyword.partitionBy,
         keyRestriction: restrictions.validatePartitionByKey,
         valueRestriction: restrictions.validatePartitionByValue,
+        allowEmptyNestedValue: true,
+        nested: {
+          ValidateNode(
+            Keyword.method,
+            valueRestriction: restrictions.validatePartitionMethodValue,
+          ),
+          ValidateNode(
+            Keyword.fields,
+            valueRestriction: restrictions.validatePartitionByFieldsValue,
+          ),
+        },
       ),
     };
   }

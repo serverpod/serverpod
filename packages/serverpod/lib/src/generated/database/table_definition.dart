@@ -14,7 +14,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../database/column_definition.dart' as _i2;
 import '../database/foreign_key_definition.dart' as _i3;
 import '../database/index_definition.dart' as _i4;
-import 'package:serverpod/src/generated/protocol.dart' as _i5;
+import '../database/partition_method.dart' as _i5;
+import 'package:serverpod/src/generated/protocol.dart' as _i6;
 
 /// The definition of a (desired) table in the database.
 abstract class TableDefinition
@@ -30,6 +31,7 @@ abstract class TableDefinition
     required this.indexes,
     this.managed,
     this.partitionBy,
+    this.partitionMethod,
   });
 
   factory TableDefinition({
@@ -43,6 +45,7 @@ abstract class TableDefinition
     required List<_i4.IndexDefinition> indexes,
     bool? managed,
     List<String>? partitionBy,
+    _i5.PartitionMethod? partitionMethod,
   }) = _TableDefinitionImpl;
 
   factory TableDefinition.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -52,20 +55,25 @@ abstract class TableDefinition
       module: jsonSerialization['module'] as String?,
       schema: jsonSerialization['schema'] as String,
       tableSpace: jsonSerialization['tableSpace'] as String?,
-      columns: _i5.Protocol().deserialize<List<_i2.ColumnDefinition>>(
+      columns: _i6.Protocol().deserialize<List<_i2.ColumnDefinition>>(
         jsonSerialization['columns'],
       ),
-      foreignKeys: _i5.Protocol().deserialize<List<_i3.ForeignKeyDefinition>>(
+      foreignKeys: _i6.Protocol().deserialize<List<_i3.ForeignKeyDefinition>>(
         jsonSerialization['foreignKeys'],
       ),
-      indexes: _i5.Protocol().deserialize<List<_i4.IndexDefinition>>(
+      indexes: _i6.Protocol().deserialize<List<_i4.IndexDefinition>>(
         jsonSerialization['indexes'],
       ),
       managed: jsonSerialization['managed'] as bool?,
       partitionBy: jsonSerialization['partitionBy'] == null
           ? null
-          : _i5.Protocol().deserialize<List<String>>(
+          : _i6.Protocol().deserialize<List<String>>(
               jsonSerialization['partitionBy'],
+            ),
+      partitionMethod: jsonSerialization['partitionMethod'] == null
+          ? null
+          : _i5.PartitionMethod.fromJson(
+              (jsonSerialization['partitionMethod'] as String),
             ),
     );
   }
@@ -100,8 +108,12 @@ abstract class TableDefinition
   bool? managed;
 
   /// The fields to partition the table by, if any.
-  /// Uses PostgreSQL's LIST partitioning for tables with high traffic.
+  /// Uses PostgreSQL partitioning for tables with high traffic.
   List<String>? partitionBy;
+
+  /// The partition method to use (list, range, or hash).
+  /// Defaults to 'list' if not specified but partitionBy is set.
+  _i5.PartitionMethod? partitionMethod;
 
   /// Returns a shallow copy of this [TableDefinition]
   /// with some or all fields replaced by the given arguments.
@@ -117,6 +129,7 @@ abstract class TableDefinition
     List<_i4.IndexDefinition>? indexes,
     bool? managed,
     List<String>? partitionBy,
+    _i5.PartitionMethod? partitionMethod,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -132,6 +145,7 @@ abstract class TableDefinition
       'indexes': indexes.toJson(valueToJson: (v) => v.toJson()),
       if (managed != null) 'managed': managed,
       if (partitionBy != null) 'partitionBy': partitionBy?.toJson(),
+      if (partitionMethod != null) 'partitionMethod': partitionMethod?.toJson(),
     };
   }
 
@@ -151,6 +165,7 @@ abstract class TableDefinition
       'indexes': indexes.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (managed != null) 'managed': managed,
       if (partitionBy != null) 'partitionBy': partitionBy?.toJson(),
+      if (partitionMethod != null) 'partitionMethod': partitionMethod?.toJson(),
     };
   }
 
@@ -174,6 +189,7 @@ class _TableDefinitionImpl extends TableDefinition {
     required List<_i4.IndexDefinition> indexes,
     bool? managed,
     List<String>? partitionBy,
+    _i5.PartitionMethod? partitionMethod,
   }) : super._(
          name: name,
          dartName: dartName,
@@ -185,6 +201,7 @@ class _TableDefinitionImpl extends TableDefinition {
          indexes: indexes,
          managed: managed,
          partitionBy: partitionBy,
+         partitionMethod: partitionMethod,
        );
 
   /// Returns a shallow copy of this [TableDefinition]
@@ -202,6 +219,7 @@ class _TableDefinitionImpl extends TableDefinition {
     List<_i4.IndexDefinition>? indexes,
     Object? managed = _Undefined,
     Object? partitionBy = _Undefined,
+    Object? partitionMethod = _Undefined,
   }) {
     return TableDefinition(
       name: name ?? this.name,
@@ -217,6 +235,9 @@ class _TableDefinitionImpl extends TableDefinition {
       partitionBy: partitionBy is List<String>?
           ? partitionBy
           : this.partitionBy?.map((e0) => e0).toList(),
+      partitionMethod: partitionMethod is _i5.PartitionMethod?
+          ? partitionMethod
+          : this.partitionMethod,
     );
   }
 }

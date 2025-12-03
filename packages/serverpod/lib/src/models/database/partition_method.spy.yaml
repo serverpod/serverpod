@@ -1,0 +1,10 @@
+### Describes the partition method used for table partitioning.
+enum: PartitionMethod
+serialized: byName
+values:
+  ### LIST partitioning - the table is partitioned by specifying a list of key values.
+  - list
+  ### RANGE partitioning - the table is partitioned by specifying a range of key values.
+  - range
+  ### HASH partitioning - the table is partitioned by specifying a modulus and remainder.
+  - hash

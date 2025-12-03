@@ -295,7 +295,8 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
     // Partition By clause
     if (partitionBy != null && partitionBy!.isNotEmpty) {
       var partitionColumns = partitionBy!.map((e) => '"$e"').join(', ');
-      out += ' PARTITION BY LIST ($partitionColumns)';
+      var method = (partitionMethod?.name ?? 'list').toUpperCase();
+      out += ' PARTITION BY $method ($partitionColumns)';
     }
 
     out += ';\n';

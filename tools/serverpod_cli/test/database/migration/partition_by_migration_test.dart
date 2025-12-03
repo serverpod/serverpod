@@ -247,6 +247,120 @@ void main() {
           expect(migration.actions, isEmpty);
         },
       );
+
+      test(
+        'with same fields and same method then no migration is generated.',
+        () {
+          var srcDatabase = DatabaseDefinitionBuilder()
+              .withTable(
+                TableDefinitionBuilder()
+                    .withName('example')
+                    .withPartitionBy(['name'])
+                    .withPartitionMethod(PartitionMethod.list)
+                    .build(),
+              )
+              .build();
+
+          var dstDatabase = DatabaseDefinitionBuilder()
+              .withTable(
+                TableDefinitionBuilder()
+                    .withName('example')
+                    .withPartitionBy(['name'])
+                    .withPartitionMethod(PartitionMethod.list)
+                    .build(),
+              )
+              .build();
+
+          var migration = generateDatabaseMigration(
+            databaseSource: srcDatabase,
+            databaseTarget: dstDatabase,
+          );
+
+          expect(migration.actions, isEmpty);
+        },
+      );
+    });
+
+    group('when partition method is changed', () {
+      test(
+        'from list to range then the table is dropped and recreated.',
+        () {
+          var srcDatabase = DatabaseDefinitionBuilder()
+              .withTable(
+                TableDefinitionBuilder()
+                    .withName('example')
+                    .withPartitionBy(['name'])
+                    .withPartitionMethod(PartitionMethod.list)
+                    .build(),
+              )
+              .build();
+
+          var dstDatabase = DatabaseDefinitionBuilder()
+              .withTable(
+                TableDefinitionBuilder()
+                    .withName('example')
+                    .withPartitionBy(['name'])
+                    .withPartitionMethod(PartitionMethod.range)
+                    .build(),
+              )
+              .build();
+
+          var migration = generateDatabaseMigration(
+            databaseSource: srcDatabase,
+            databaseTarget: dstDatabase,
+          );
+
+          expect(migration.actions, hasLength(2));
+          expect(
+            migration.actions[0].type,
+            DatabaseMigrationActionType.deleteTable,
+          );
+          expect(
+            migration.actions[1].type,
+            DatabaseMigrationActionType.createTable,
+          );
+        },
+      );
+
+      test(
+        'from list to hash then the table is dropped and recreated.',
+        () {
+          var srcDatabase = DatabaseDefinitionBuilder()
+              .withTable(
+                TableDefinitionBuilder()
+                    .withName('example')
+                    .withPartitionBy(['name'])
+                    .withPartitionMethod(PartitionMethod.list)
+                    .build(),
+              )
+              .build();
+
+          var dstDatabase = DatabaseDefinitionBuilder()
+              .withTable(
+                TableDefinitionBuilder()
+                    .withName('example')
+                    .withPartitionBy(['name'])
+                    .withPartitionMethod(PartitionMethod.hash)
+                    .build(),
+              )
+              .build();
+
+          var migration = generateDatabaseMigration(
+            databaseSource: srcDatabase,
+            databaseTarget: dstDatabase,
+          );
+
+          expect(migration.actions, hasLength(2));
+          expect(
+            migration.actions[0].type,
+            DatabaseMigrationActionType.deleteTable,
+          );
+          expect(
+            migration.actions[1].type,
+            DatabaseMigrationActionType.createTable,
+          );
+        },
+      );
     });
   });
 }

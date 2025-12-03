@@ -48,7 +48,7 @@ class ModelParser {
             required List<String>? classDocumentation,
           }) {
             var indexes = _parseIndexes(documentContents, fields);
-            var partitionBy = _parsePartitionBy(documentContents);
+            var partitionConfig = _parsePartitionBy(documentContents);
 
             return ModelClassDefinition(
               className: className,
@@ -61,7 +61,8 @@ class ModelParser {
               fileName: outFileName,
               fields: fields,
               indexes: indexes,
-              partitionBy: partitionBy,
+              partitionBy: partitionConfig.fields,
+              partitionMethod: partitionConfig.method,
               subDirParts: protocolSource.subDirPathParts,
               documentation: classDocumentation,
               serverOnly: serverOnly,
@@ -255,14 +256,38 @@ class ModelParser {
     return tableName;
   }
 
-  static List<String> _parsePartitionBy(YamlMap documentContents) {
+  static ({List<String> fields, String? method}) _parsePartitionBy(
+    YamlMap documentContents,
+  ) {
     var partitionByNode = documentContents.nodes[Keyword.partitionBy];
-    if (partitionByNode is! YamlNode) return [];
+    if (partitionByNode is! YamlNode) return (fields: [], method: null);
 
     var partitionByValue = partitionByNode.value;
-    if (partitionByValue is! String) return [];
 
-    return convertIndexList(partitionByValue);
+    // Support legacy string format: partitionBy: field1, field2
+    if (partitionByValue is String) {
+      return (fields: convertIndexList(partitionByValue), method: null);
+    }
+
+    // Support new nested format:
+    // partitionBy:
+    //   method: list
+    //   fields: field1, field2
+    if (partitionByValue is! YamlMap) return (fields: [], method: null);
+
+    var fieldsNode = partitionByValue[Keyword.fields];
+    var fields = <String>[];
+    if (fieldsNode is String) {
+      fields = convertIndexList(fieldsNode);
+    }
+
+    var methodNode = partitionByValue[Keyword.method];
+    String? method;
+    if (methodNode is String) {
+      method = methodNode;
+    }
+
+    return (fields: fields, method: method);
   }
 
   static List<SerializableModelFieldDefinition> _parseClassFields(

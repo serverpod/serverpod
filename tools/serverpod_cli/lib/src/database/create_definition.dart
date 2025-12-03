@@ -91,6 +91,9 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
           partitionBy: classDefinition.partitionBy.isNotEmpty
               ? classDefinition.partitionBy
               : null,
+          partitionMethod: classDefinition.partitionBy.isNotEmpty
+              ? _parsePartitionMethod(classDefinition.partitionMethod)
+              : null,
         ),
   ];
 
@@ -235,5 +238,15 @@ String _escapeSqlString(String value) {
   /// but it's included as a safeguard to handle any unexpected input.
   throw FormatException(
     'The string contains invalid quoting or escape sequences: $value',
+  );
+}
+
+/// Parses the partition method string to the PartitionMethod enum.
+/// Returns PartitionMethod.list if the method is null or invalid.
+PartitionMethod _parsePartitionMethod(String? method) {
+  if (method == null) return PartitionMethod.list;
+  return PartitionMethod.values.firstWhere(
+    (m) => m.name == method.toLowerCase(),
+    orElse: () => PartitionMethod.list,
   );
 }

@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/database/extensions.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
 import '../../test_util/builders/database/table_definition_builder.dart';
@@ -6,7 +7,7 @@ import '../../test_util/builders/database/table_definition_builder.dart';
 void main() {
   group('Given a table definition with partitionBy when generating SQL', () {
     test(
-      'then the CREATE TABLE statement includes PARTITION BY clause.',
+      'then the CREATE TABLE statement includes PARTITION BY LIST clause by default.',
       () {
         var table = TableDefinitionBuilder()
             .withName('example')
@@ -56,6 +57,51 @@ void main() {
 
         expect(sql, contains('CREATE TABLE IF NOT EXISTS "example"'));
         expect(sql, contains('PARTITION BY LIST ("source")'));
+      },
+    );
+
+    test(
+      'with method list then PARTITION BY LIST is generated.',
+      () {
+        var table = TableDefinitionBuilder()
+            .withName('example')
+            .withPartitionBy(['source'])
+            .withPartitionMethod(PartitionMethod.list)
+            .build();
+
+        var sql = table.tableCreationToPgsql();
+
+        expect(sql, contains('PARTITION BY LIST ("source")'));
+      },
+    );
+
+    test(
+      'with method range then PARTITION BY RANGE is generated.',
+      () {
+        var table = TableDefinitionBuilder()
+            .withName('example')
+            .withPartitionBy(['created'])
+            .withPartitionMethod(PartitionMethod.range)
+            .build();
+
+        var sql = table.tableCreationToPgsql();
+
+        expect(sql, contains('PARTITION BY RANGE ("created")'));
+      },
+    );
+
+    test(
+      'with method hash then PARTITION BY HASH is generated.',
+      () {
+        var table = TableDefinitionBuilder()
+            .withName('example')
+            .withPartitionBy(['userId'])
+            .withPartitionMethod(PartitionMethod.hash)
+            .build();
+
+        var sql = table.tableCreationToPgsql();
+
+        expect(sql, contains('PARTITION BY HASH ("userId")'));
       },
     );
   });

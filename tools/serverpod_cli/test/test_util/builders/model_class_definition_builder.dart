@@ -27,6 +27,7 @@ class ModelClassDefinitionBuilder {
   List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
   List<String> _partitionBy;
+  String? _partitionMethod;
 
   ModelClassDefinitionBuilder()
     : _fileName = 'example',
@@ -42,7 +43,8 @@ class ModelClassDefinitionBuilder {
       _childClasses = [],
       _isSealed = false,
       _isImmutable = false,
-      _partitionBy = [];
+      _partitionBy = [],
+      _partitionMethod = null;
 
   ModelClassDefinition build() {
     if (_tableName != null) {
@@ -71,6 +73,7 @@ class ModelClassDefinitionBuilder {
       manageMigration: _managedMigration,
       indexes: _indexes,
       partitionBy: _partitionBy,
+      partitionMethod: _partitionMethod,
       documentation: _documentation,
       childClasses: _childClasses,
       extendsClass: _extendsClass,
@@ -442,6 +445,11 @@ class ModelClassDefinitionBuilder {
 
   ModelClassDefinitionBuilder withPartitionBy(List<String> partitionBy) {
     _partitionBy = partitionBy;
+    return this;
+  }
+
+  ModelClassDefinitionBuilder withPartitionMethod(String? partitionMethod) {
+    _partitionMethod = partitionMethod;
     return this;
   }
 }

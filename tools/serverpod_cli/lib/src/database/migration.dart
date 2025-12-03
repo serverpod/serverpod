@@ -164,7 +164,7 @@ TableMigration? generateTableMigration(
   List<DatabaseMigrationWarning> warnings,
 ) {
   // Check for partition changes - partitioning cannot be changed via ALTER TABLE
-  if (!_partitionByEquals(srcTable.partitionBy, dstTable.partitionBy)) {
+  if (!_partitionConfigEquals(srcTable, dstTable)) {
     warnings.add(
       DatabaseMigrationWarning(
         type: DatabaseMigrationWarningType.tableDropped,
@@ -380,6 +380,26 @@ TableMigration? generateTableMigration(
     addForeignKeys: addForeignKeys,
     warnings: warnings,
   );
+}
+
+/// Compares two tables' partition configuration for equality.
+/// Checks both partition fields and partition method.
+bool _partitionConfigEquals(TableDefinition a, TableDefinition b) {
+  // Check partition fields
+  if (!_partitionByEquals(a.partitionBy, b.partitionBy)) {
+    return false;
+  }
+
+  // Check partition method - only relevant if partition fields are defined
+  if (a.partitionBy != null && a.partitionBy!.isNotEmpty) {
+    var methodA = a.partitionMethod ?? PartitionMethod.list;
+    var methodB = b.partitionMethod ?? PartitionMethod.list;
+    if (methodA != methodB) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 /// Compares two partition lists for equality.
