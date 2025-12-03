@@ -15,6 +15,7 @@ This release candidate is **not yet production-ready**. It is still under active
 - fix: Improves string representation for serializable exceptions.
 - fix: Allows disabling features in the `generator.yaml` configuration file.
 - fix: Fixes an issue on the deserialization engine that would prevent compilation on web in release mode.
+- fix: Prevents the usage of non-constant defaults on immutable models.
 
 ## 3.0.0-rc.3
 
