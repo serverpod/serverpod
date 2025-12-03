@@ -252,15 +252,15 @@ abstract class Route extends HandlerObject {
   @override
   void injectIn(RelicRouter router) => router.anyOf(methods, path, asHandler);
 
-  /// Handles a call to this route, by extracting [Session] from context and
+  /// Handles a call to this route, by extracting [Session] from request and
   /// forwarding to [handleCall].
   @override
-  FutureOr<Result> call(Request context) {
-    return handleCall(context.session, context);
+  FutureOr<Result> call(Request request) {
+    return handleCall(request.session, request);
   }
 
   /// Handles a call to this route.
-  FutureOr<Result> handleCall(Session session, Request context);
+  FutureOr<Result> handleCall(Session session, Request request);
 }
 
 /// A [WidgetRoute] is the most convenient way to create routes in your server.
