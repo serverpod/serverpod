@@ -14,14 +14,15 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i3;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i4;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i4;
-import 'dart:typed_data' as _i5;
+    as _i5;
+import 'dart:typed_data' as _i6;
 import 'package:serverpod_auth_bridge_client/serverpod_auth_bridge_client.dart'
-    as _i6;
-import 'package:serverpod_auth_migration_client/serverpod_auth_migration_client.dart'
     as _i7;
-import 'protocol.dart' as _i8;
+import 'package:serverpod_auth_migration_client/serverpod_auth_migration_client.dart'
+    as _i8;
+import 'protocol.dart' as _i9;
 
 /// Endpoint for testing authentication.
 /// {@category Endpoint}
@@ -103,9 +104,94 @@ class EndpointAuthenticatedStreamingTest extends _i1.EndpointRef {
       );
 }
 
+/// {@category Endpoint}
+class EndpointEmailAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
+  EndpointEmailAccountBackwardsCompatibilityTest(_i1.EndpointCaller caller)
+    : super(caller);
+
+  @override
+  String get name => 'emailAccountBackwardsCompatibilityTest';
+
+  _i2.Future<int> createLegacyUser({
+    required String email,
+    required String password,
+  }) => caller.callServerEndpoint<int>(
+    'emailAccountBackwardsCompatibilityTest',
+    'createLegacyUser',
+    {
+      'email': email,
+      'password': password,
+    },
+  );
+
+  _i2.Future<_i4.AuthKey> createLegacySession({
+    required int userId,
+    required Set<String> scopes,
+  }) => caller.callServerEndpoint<_i4.AuthKey>(
+    'emailAccountBackwardsCompatibilityTest',
+    'createLegacySession',
+    {
+      'userId': userId,
+      'scopes': scopes,
+    },
+  );
+
+  _i2.Future<void> migrateUser({
+    required int legacyUserId,
+    String? password,
+  }) => caller.callServerEndpoint<void>(
+    'emailAccountBackwardsCompatibilityTest',
+    'migrateUser',
+    {
+      'legacyUserId': legacyUserId,
+      'password': password,
+    },
+  );
+
+  /// Returns the new auth user ID.
+  _i2.Future<_i1.UuidValue?> getNewAuthUserId({required int userId}) =>
+      caller.callServerEndpoint<_i1.UuidValue?>(
+        'emailAccountBackwardsCompatibilityTest',
+        'getNewAuthUserId',
+        {'userId': userId},
+      );
+
+  /// Delete `UserInfo`, `AuthKey` and `EmailAuth` entities for the user
+  _i2.Future<void> deleteLegacyAuthData({required int userId}) =>
+      caller.callServerEndpoint<void>(
+        'emailAccountBackwardsCompatibilityTest',
+        'deleteLegacyAuthData',
+        {'userId': userId},
+      );
+
+  /// Returns the user identifier associated with the session.
+  ///
+  /// Since the server runs with the backwards compatible auth handler, both
+  /// old session keys will work post migration.
+  _i2.Future<String?> sessionUserIdentifier() =>
+      caller.callServerEndpoint<String?>(
+        'emailAccountBackwardsCompatibilityTest',
+        'sessionUserIdentifier',
+        {},
+      );
+
+  /// Returns the user ID of associated with the session derived from the session key
+  _i2.Future<bool> checkLegacyPassword({
+    required String email,
+    required String password,
+  }) => caller.callServerEndpoint<bool>(
+    'emailAccountBackwardsCompatibilityTest',
+    'checkLegacyPassword',
+    {
+      'email': email,
+      'password': password,
+    },
+  );
+}
+
 /// Endpoint for email-based authentication.
 /// {@category Endpoint}
-class EndpointEmailAccount extends _i4.EndpointEmailIdpBase {
+class EndpointEmailAccount extends _i5.EndpointEmailIdpBase {
   EndpointEmailAccount(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -281,7 +367,7 @@ class EndpointEmailAccount extends _i4.EndpointEmailIdpBase {
 /// accounts.
 /// {@category Endpoint}
 class EndpointGoogleAccountBackwardsCompatibilityTest
-    extends _i4.EndpointGoogleIdpBase {
+    extends _i5.EndpointGoogleIdpBase {
   EndpointGoogleAccountBackwardsCompatibilityTest(_i1.EndpointCaller caller)
     : super(caller);
 
@@ -304,7 +390,7 @@ class EndpointGoogleAccountBackwardsCompatibilityTest
 
 /// Endpoint for Google-based authentication.
 /// {@category Endpoint}
-class EndpointGoogleAccount extends _i4.EndpointGoogleIdpBase {
+class EndpointGoogleAccount extends _i5.EndpointGoogleIdpBase {
   EndpointGoogleAccount(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -366,7 +452,7 @@ class EndpointJwtRefresh extends _i3.EndpointRefreshJwtTokens {
 
 /// Endpoint for email-based authentication which imports the legacy passwords.
 /// {@category Endpoint}
-class EndpointPasswordImportingEmailAccount extends _i4.EndpointEmailIdpBase {
+class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIdpBase {
   EndpointPasswordImportingEmailAccount(_i1.EndpointCaller caller)
     : super(caller);
 
@@ -554,7 +640,7 @@ class EndpointUserProfile extends _i3.EndpointUserProfileEditBase {
 
   /// Sets a new user image for the signed in user.
   @override
-  _i2.Future<_i3.UserProfileModel> setUserImage(_i5.ByteData image) =>
+  _i2.Future<_i3.UserProfileModel> setUserImage(_i6.ByteData image) =>
       caller.callServerEndpoint<_i3.UserProfileModel>(
         'userProfile',
         'setUserImage',
@@ -591,19 +677,22 @@ class EndpointUserProfile extends _i3.EndpointUserProfileEditBase {
 
 class Modules {
   Modules(Client client) {
-    serverpod_auth_bridge = _i6.Caller(client);
+    serverpod_auth_bridge = _i7.Caller(client);
     serverpod_auth_core = _i3.Caller(client);
-    serverpod_auth_idp = _i4.Caller(client);
-    serverpod_auth_migration = _i7.Caller(client);
+    serverpod_auth_idp = _i5.Caller(client);
+    serverpod_auth_migration = _i8.Caller(client);
+    auth = _i4.Caller(client);
   }
 
-  late final _i6.Caller serverpod_auth_bridge;
+  late final _i7.Caller serverpod_auth_bridge;
 
   late final _i3.Caller serverpod_auth_core;
 
-  late final _i4.Caller serverpod_auth_idp;
+  late final _i5.Caller serverpod_auth_idp;
 
-  late final _i7.Caller serverpod_auth_migration;
+  late final _i8.Caller serverpod_auth_migration;
+
+  late final _i4.Caller auth;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -623,7 +712,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i8.Protocol(),
+         _i9.Protocol(),
          securityContext: securityContext,
          authenticationKeyManager: authenticationKeyManager,
          streamingConnectionTimeout: streamingConnectionTimeout,
@@ -635,6 +724,8 @@ class Client extends _i1.ServerpodClientShared {
        ) {
     authTest = EndpointAuthTest(this);
     authenticatedStreamingTest = EndpointAuthenticatedStreamingTest(this);
+    emailAccountBackwardsCompatibilityTest =
+        EndpointEmailAccountBackwardsCompatibilityTest(this);
     emailAccount = EndpointEmailAccount(this);
     googleAccountBackwardsCompatibilityTest =
         EndpointGoogleAccountBackwardsCompatibilityTest(this);
@@ -648,6 +739,9 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointAuthTest authTest;
 
   late final EndpointAuthenticatedStreamingTest authenticatedStreamingTest;
+
+  late final EndpointEmailAccountBackwardsCompatibilityTest
+  emailAccountBackwardsCompatibilityTest;
 
   late final EndpointEmailAccount emailAccount;
 
@@ -669,6 +763,8 @@ class Client extends _i1.ServerpodClientShared {
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
     'authTest': authTest,
     'authenticatedStreamingTest': authenticatedStreamingTest,
+    'emailAccountBackwardsCompatibilityTest':
+        emailAccountBackwardsCompatibilityTest,
     'emailAccount': emailAccount,
     'googleAccountBackwardsCompatibilityTest':
         googleAccountBackwardsCompatibilityTest,
@@ -684,5 +780,6 @@ class Client extends _i1.ServerpodClientShared {
     'serverpod_auth_core': modules.serverpod_auth_core,
     'serverpod_auth_idp': modules.serverpod_auth_idp,
     'serverpod_auth_migration': modules.serverpod_auth_migration,
+    'auth': modules.auth,
   };
 }

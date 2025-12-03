@@ -20,6 +20,7 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i5;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
     as _i6;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i7;
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -33,6 +34,7 @@ class Protocol extends _i1.SerializationManagerServer {
     ..._i4.Protocol.targetTableDefinitions,
     ..._i5.Protocol.targetTableDefinitions,
     ..._i6.Protocol.targetTableDefinitions,
+    ..._i7.Protocol.targetTableDefinitions,
     ..._i2.Protocol.targetTableDefinitions,
   ];
 
@@ -63,6 +65,9 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
 
+    if (t == Set<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
+    }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
@@ -74,6 +79,9 @@ class Protocol extends _i1.SerializationManagerServer {
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i6.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _i7.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i2.Protocol().deserialize<T>(data, t);
@@ -121,6 +129,10 @@ class Protocol extends _i1.SerializationManagerServer {
     if (className != null) {
       return 'serverpod_auth_migration.$className';
     }
+    className = _i7.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth.$className';
+    }
     return null;
   }
 
@@ -150,6 +162,10 @@ class Protocol extends _i1.SerializationManagerServer {
       data['className'] = dataClassName.substring(25);
       return _i6.Protocol().deserializeByClassName(data);
     }
+    if (dataClassName.startsWith('serverpod_auth.')) {
+      data['className'] = dataClassName.substring(15);
+      return _i7.Protocol().deserializeByClassName(data);
+    }
     return super.deserializeByClassName(data);
   }
 
@@ -175,6 +191,12 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     {
       var table = _i6.Protocol().getTableForType(t);
+      if (table != null) {
+        return table;
+      }
+    }
+    {
+      var table = _i7.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
