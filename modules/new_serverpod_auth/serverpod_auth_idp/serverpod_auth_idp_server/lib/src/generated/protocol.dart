@@ -1072,7 +1072,7 @@ class Protocol extends _i1.SerializationManagerServer {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -1295,6 +1295,48 @@ class Protocol extends _i1.SerializationManagerServer {
       return _i2.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
+  }
+
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i4.SecretChallenge => 'SecretChallenge',
+      _i5.AppleAccount => 'AppleAccount',
+      _i6.EmailAccountFailedLoginAttempt => 'EmailAccountFailedLoginAttempt',
+      _i7.EmailAccountRequest => 'EmailAccountRequest',
+      _i8.EmailAccountRequestCompletionAttempt =>
+        'EmailAccountRequestCompletionAttempt',
+      _i9.EmailAccount => 'EmailAccount',
+      _i10.EmailAccountLoginException => 'EmailAccountLoginException',
+      _i11.EmailAccountLoginExceptionReason =>
+        'EmailAccountLoginExceptionReason',
+      _i12.EmailAccountPasswordResetException =>
+        'EmailAccountPasswordResetException',
+      _i13.EmailAccountPasswordResetExceptionReason =>
+        'EmailAccountPasswordResetExceptionReason',
+      _i14.EmailAccountRequestException => 'EmailAccountRequestException',
+      _i15.EmailAccountRequestExceptionReason =>
+        'EmailAccountRequestExceptionReason',
+      _i16.EmailAccountPasswordResetCompleteAttempt =>
+        'EmailAccountPasswordResetCompleteAttempt',
+      _i17.EmailAccountPasswordResetRequest =>
+        'EmailAccountPasswordResetRequest',
+      _i18.EmailAccountPasswordResetRequestAttempt =>
+        'EmailAccountPasswordResetRequestAttempt',
+      _i19.GoogleAccount => 'GoogleAccount',
+      _i20.GoogleIdTokenVerificationException =>
+        'GoogleIdTokenVerificationException',
+      _i21.PasskeyAccount => 'PasskeyAccount',
+      _i22.PasskeyChallenge => 'PasskeyChallenge',
+      _i23.PasskeyChallengeExpiredException =>
+        'PasskeyChallengeExpiredException',
+      _i24.PasskeyChallengeNotFoundException =>
+        'PasskeyChallengeNotFoundException',
+      _i25.PasskeyLoginRequest => 'PasskeyLoginRequest',
+      _i26.PasskeyPublicKeyNotFoundException =>
+        'PasskeyPublicKeyNotFoundException',
+      _i27.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
+      _ => null,
+    };
   }
 
   @override
