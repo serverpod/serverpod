@@ -58,6 +58,21 @@ sealed class ClassDefinition extends SerializableModelDefinition {
   }
 }
 
+/// Defines table partitioning configuration for PostgreSQL.
+/// Used for tables that might have high traffic.
+class TablePartitioningDefinition {
+  /// The fields to partition the table by.
+  final List<String> columns;
+
+  /// The partition method to use (list, range, or hash).
+  final PartitionMethod method;
+
+  const TablePartitioningDefinition({
+    required this.columns,
+    required this.method,
+  });
+}
+
 /// A [ClassDefinition] specialization that represents a model class.
 final class ModelClassDefinition extends ClassDefinition {
   /// If set, the name of the table, this class should be stored in, in the
@@ -70,13 +85,9 @@ final class ModelClassDefinition extends ClassDefinition {
   /// The index over the primary key `id` is not part of this list.
   final List<SerializableModelIndexDefinition> indexes;
 
-  /// The fields to partition the table by using PostgreSQL partitioning.
-  /// This is used for tables that might have high traffic.
-  final List<String> partitionBy;
-
-  /// The partition method to use (list, range, or hash).
-  /// Defaults to 'list' if not specified but partitionBy is set.
-  final String? partitionMethod;
+  /// Table partitioning configuration for PostgreSQL.
+  /// Only set if the `partitionBy` key is present in the YAML.
+  final TablePartitioningDefinition? partitioning;
 
   final bool manageMigration;
 
@@ -109,8 +120,7 @@ final class ModelClassDefinition extends ClassDefinition {
     this.extendsClass,
     this.tableName,
     this.indexes = const [],
-    this.partitionBy = const [],
-    this.partitionMethod,
+    this.partitioning,
     super.subDirParts,
     super.documentation,
   }) : childClasses = childClasses ?? <InheritanceDefinition>[];

@@ -26,8 +26,7 @@ class ModelClassDefinitionBuilder {
   bool _isImmutable;
   List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
-  List<String> _partitionBy;
-  String? _partitionMethod;
+  TablePartitioningDefinition? _partitioning;
 
   ModelClassDefinitionBuilder()
     : _fileName = 'example',
@@ -43,8 +42,7 @@ class ModelClassDefinitionBuilder {
       _childClasses = [],
       _isSealed = false,
       _isImmutable = false,
-      _partitionBy = [],
-      _partitionMethod = null;
+      _partitioning = null;
 
   ModelClassDefinition build() {
     if (_tableName != null) {
@@ -72,8 +70,7 @@ class ModelClassDefinitionBuilder {
       tableName: _tableName,
       manageMigration: _managedMigration,
       indexes: _indexes,
-      partitionBy: _partitionBy,
-      partitionMethod: _partitionMethod,
+      partitioning: _partitioning,
       documentation: _documentation,
       childClasses: _childClasses,
       extendsClass: _extendsClass,
@@ -443,13 +440,10 @@ class ModelClassDefinitionBuilder {
     return this;
   }
 
-  ModelClassDefinitionBuilder withPartitionBy(List<String> partitionBy) {
-    _partitionBy = partitionBy;
-    return this;
-  }
-
-  ModelClassDefinitionBuilder withPartitionMethod(String? partitionMethod) {
-    _partitionMethod = partitionMethod;
+  ModelClassDefinitionBuilder withPartitioning(
+    TablePartitioningDefinition? partitioning,
+  ) {
+    _partitioning = partitioning;
     return this;
   }
 }

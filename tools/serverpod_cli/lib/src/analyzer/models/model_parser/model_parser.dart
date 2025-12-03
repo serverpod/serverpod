@@ -48,7 +48,7 @@ class ModelParser {
             required List<String>? classDocumentation,
           }) {
             var indexes = _parseIndexes(documentContents, fields);
-            var partitionConfig = _parsePartitionBy(documentContents);
+            var partitioning = _parsePartitionBy(documentContents);
 
             return ModelClassDefinition(
               className: className,
@@ -61,8 +61,7 @@ class ModelParser {
               fileName: outFileName,
               fields: fields,
               indexes: indexes,
-              partitionBy: partitionConfig.fields,
-              partitionMethod: partitionConfig.method,
+              partitioning: partitioning,
               subDirParts: protocolSource.subDirPathParts,
               documentation: classDocumentation,
               serverOnly: serverOnly,
@@ -256,38 +255,48 @@ class ModelParser {
     return tableName;
   }
 
-  static ({List<String> fields, String? method}) _parsePartitionBy(
+  static TablePartitioningDefinition? _parsePartitionBy(
     YamlMap documentContents,
   ) {
     var partitionByNode = documentContents.nodes[Keyword.partitionBy];
-    if (partitionByNode is! YamlNode) return (fields: [], method: null);
+    if (partitionByNode is! YamlNode) return null;
 
     var partitionByValue = partitionByNode.value;
 
-    // Support legacy string format: partitionBy: field1, field2
+    // Simple string format: partitionBy: field1, field2
     if (partitionByValue is String) {
-      return (fields: convertIndexList(partitionByValue), method: null);
+      var columns = convertIndexList(partitionByValue);
+      if (columns.isEmpty) return null;
+      return TablePartitioningDefinition(
+        columns: columns,
+        method: PartitionMethod.list, // Default to list
+      );
     }
 
-    // Support new nested format:
+    // Nested format:
     // partitionBy:
     //   method: list
     //   fields: field1, field2
-    if (partitionByValue is! YamlMap) return (fields: [], method: null);
+    if (partitionByValue is! YamlMap) return null;
 
     var fieldsNode = partitionByValue[Keyword.fields];
-    var fields = <String>[];
+    var columns = <String>[];
     if (fieldsNode is String) {
-      fields = convertIndexList(fieldsNode);
+      columns = convertIndexList(fieldsNode);
     }
 
-    var methodNode = partitionByValue[Keyword.method];
-    String? method;
-    if (methodNode is String) {
-      method = methodNode;
-    }
+    if (columns.isEmpty) return null;
 
-    return (fields: fields, method: method);
+    var method = convertToEnum(
+      value: partitionByValue[Keyword.method],
+      enumDefault: PartitionMethod.list,
+      enumValues: PartitionMethod.values,
+    );
+
+    return TablePartitioningDefinition(
+      columns: columns,
+      method: method,
+    );
   }
 
   static List<SerializableModelFieldDefinition> _parseClassFields(
