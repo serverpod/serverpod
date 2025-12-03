@@ -238,6 +238,11 @@ class ClassYamlDefinition {
           ),
         },
       ),
+      ValidateNode(
+        Keyword.partitionBy,
+        keyRestriction: restrictions.validatePartitionByKey,
+        valueRestriction: restrictions.validatePartitionByValue,
+      ),
     };
   }
 }

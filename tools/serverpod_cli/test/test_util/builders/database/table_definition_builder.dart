@@ -14,6 +14,7 @@ class TableDefinitionBuilder {
   List<ForeignKeyDefinition> _foreignKeys;
   List<IndexDefinition> _indexes;
   bool? _managed;
+  List<String>? _partitionBy;
 
   TableDefinitionBuilder()
     : _name = 'example',
@@ -28,7 +29,8 @@ class TableDefinitionBuilder {
       _indexes = [
         IndexDefinitionBuilder().withIdIndex('example').build(),
       ],
-      _managed = true;
+      _managed = true,
+      _partitionBy = null;
 
   TableDefinition build() {
     return TableDefinition(
@@ -40,6 +42,7 @@ class TableDefinitionBuilder {
       foreignKeys: _foreignKeys,
       indexes: _indexes,
       managed: _managed,
+      partitionBy: _partitionBy,
     );
   }
 
@@ -115,6 +118,11 @@ class TableDefinitionBuilder {
 
   TableDefinitionBuilder withManaged(bool? managed) {
     _managed = managed;
+    return this;
+  }
+
+  TableDefinitionBuilder withPartitionBy(List<String>? partitionBy) {
+    _partitionBy = partitionBy;
     return this;
   }
 }

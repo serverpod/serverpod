@@ -290,7 +290,15 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
     }
     out += columnsPgSql.join(',\n');
 
-    out += '\n);\n';
+    out += '\n)';
+
+    // Partition By clause
+    if (partitionBy != null && partitionBy!.isNotEmpty) {
+      var partitionColumns = partitionBy!.map((e) => '"$e"').join(', ');
+      out += ' PARTITION BY LIST ($partitionColumns)';
+    }
+
+    out += ';\n';
 
     // Indexes
     var indexesExceptId = <IndexDefinition>[];

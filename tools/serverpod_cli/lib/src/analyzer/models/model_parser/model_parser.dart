@@ -48,6 +48,7 @@ class ModelParser {
             required List<String>? classDocumentation,
           }) {
             var indexes = _parseIndexes(documentContents, fields);
+            var partitionBy = _parsePartitionBy(documentContents);
 
             return ModelClassDefinition(
               className: className,
@@ -60,6 +61,7 @@ class ModelParser {
               fileName: outFileName,
               fields: fields,
               indexes: indexes,
+              partitionBy: partitionBy,
               subDirParts: protocolSource.subDirPathParts,
               documentation: classDocumentation,
               serverOnly: serverOnly,
@@ -251,6 +253,16 @@ class ModelParser {
     if (tableName is! String) return null;
 
     return tableName;
+  }
+
+  static List<String> _parsePartitionBy(YamlMap documentContents) {
+    var partitionByNode = documentContents.nodes[Keyword.partitionBy];
+    if (partitionByNode is! YamlNode) return [];
+
+    var partitionByValue = partitionByNode.value;
+    if (partitionByValue is! String) return [];
+
+    return convertIndexList(partitionByValue);
   }
 
   static List<SerializableModelFieldDefinition> _parseClassFields(

@@ -88,6 +88,9 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
               ),
           ],
           managed: classDefinition.manageMigration,
+          partitionBy: classDefinition.partitionBy.isNotEmpty
+              ? classDefinition.partitionBy
+              : null,
         ),
   ];
 

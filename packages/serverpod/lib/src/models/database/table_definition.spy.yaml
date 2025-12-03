@@ -21,3 +21,6 @@ fields:
   ### Indicates if the table should be managed by Serverpod.
   ### Null, if this is unknown.
   managed: bool?
+  ### The fields to partition the table by, if any.
+  ### Uses PostgreSQL's LIST partitioning for tables with high traffic.
+  partitionBy: List<String>?

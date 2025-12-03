@@ -29,6 +29,7 @@ abstract class TableDefinition
     required this.foreignKeys,
     required this.indexes,
     this.managed,
+    this.partitionBy,
   });
 
   factory TableDefinition({
@@ -41,6 +42,7 @@ abstract class TableDefinition
     required List<_i3.ForeignKeyDefinition> foreignKeys,
     required List<_i4.IndexDefinition> indexes,
     bool? managed,
+    List<String>? partitionBy,
   }) = _TableDefinitionImpl;
 
   factory TableDefinition.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -60,6 +62,11 @@ abstract class TableDefinition
         jsonSerialization['indexes'],
       ),
       managed: jsonSerialization['managed'] as bool?,
+      partitionBy: jsonSerialization['partitionBy'] == null
+          ? null
+          : _i5.Protocol().deserialize<List<String>>(
+              jsonSerialization['partitionBy'],
+            ),
     );
   }
 
@@ -92,6 +99,10 @@ abstract class TableDefinition
   /// Null, if this is unknown.
   bool? managed;
 
+  /// The fields to partition the table by, if any.
+  /// Uses PostgreSQL's LIST partitioning for tables with high traffic.
+  List<String>? partitionBy;
+
   /// Returns a shallow copy of this [TableDefinition]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -105,6 +116,7 @@ abstract class TableDefinition
     List<_i3.ForeignKeyDefinition>? foreignKeys,
     List<_i4.IndexDefinition>? indexes,
     bool? managed,
+    List<String>? partitionBy,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -119,6 +131,7 @@ abstract class TableDefinition
       'foreignKeys': foreignKeys.toJson(valueToJson: (v) => v.toJson()),
       'indexes': indexes.toJson(valueToJson: (v) => v.toJson()),
       if (managed != null) 'managed': managed,
+      if (partitionBy != null) 'partitionBy': partitionBy?.toJson(),
     };
   }
 
@@ -137,6 +150,7 @@ abstract class TableDefinition
       ),
       'indexes': indexes.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       if (managed != null) 'managed': managed,
+      if (partitionBy != null) 'partitionBy': partitionBy?.toJson(),
     };
   }
 
@@ -159,6 +173,7 @@ class _TableDefinitionImpl extends TableDefinition {
     required List<_i3.ForeignKeyDefinition> foreignKeys,
     required List<_i4.IndexDefinition> indexes,
     bool? managed,
+    List<String>? partitionBy,
   }) : super._(
          name: name,
          dartName: dartName,
@@ -169,6 +184,7 @@ class _TableDefinitionImpl extends TableDefinition {
          foreignKeys: foreignKeys,
          indexes: indexes,
          managed: managed,
+         partitionBy: partitionBy,
        );
 
   /// Returns a shallow copy of this [TableDefinition]
@@ -185,6 +201,7 @@ class _TableDefinitionImpl extends TableDefinition {
     List<_i3.ForeignKeyDefinition>? foreignKeys,
     List<_i4.IndexDefinition>? indexes,
     Object? managed = _Undefined,
+    Object? partitionBy = _Undefined,
   }) {
     return TableDefinition(
       name: name ?? this.name,
@@ -197,6 +214,9 @@ class _TableDefinitionImpl extends TableDefinition {
           foreignKeys ?? this.foreignKeys.map((e0) => e0.copyWith()).toList(),
       indexes: indexes ?? this.indexes.map((e0) => e0.copyWith()).toList(),
       managed: managed is bool? ? managed : this.managed,
+      partitionBy: partitionBy is List<String>?
+          ? partitionBy
+          : this.partitionBy?.map((e0) => e0).toList(),
     );
   }
 }

@@ -26,6 +26,7 @@ class ModelClassDefinitionBuilder {
   bool _isImmutable;
   List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
+  List<String> _partitionBy;
 
   ModelClassDefinitionBuilder()
     : _fileName = 'example',
@@ -40,7 +41,8 @@ class ModelClassDefinitionBuilder {
       _indexes = [],
       _childClasses = [],
       _isSealed = false,
-      _isImmutable = false;
+      _isImmutable = false,
+      _partitionBy = [];
 
   ModelClassDefinition build() {
     if (_tableName != null) {
@@ -68,6 +70,7 @@ class ModelClassDefinitionBuilder {
       tableName: _tableName,
       manageMigration: _managedMigration,
       indexes: _indexes,
+      partitionBy: _partitionBy,
       documentation: _documentation,
       childClasses: _childClasses,
       extendsClass: _extendsClass,
@@ -434,6 +437,11 @@ class ModelClassDefinitionBuilder {
 
   ModelClassDefinitionBuilder withIsImmutable(bool isImmutable) {
     _isImmutable = isImmutable;
+    return this;
+  }
+
+  ModelClassDefinitionBuilder withPartitionBy(List<String> partitionBy) {
+    _partitionBy = partitionBy;
     return this;
   }
 }
