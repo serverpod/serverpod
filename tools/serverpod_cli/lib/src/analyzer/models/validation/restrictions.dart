@@ -7,7 +7,6 @@ import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
-import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -1845,15 +1844,6 @@ class Restrictions {
       );
     }
 
-    errors.addAll(
-      _validateImmutableNonConstantDefault(
-        definition,
-        field,
-        Keyword.defaultKey,
-        span,
-      ),
-    );
-
     return errors;
   }
 
@@ -1879,49 +1869,7 @@ class Restrictions {
       );
     }
 
-    errors.addAll(
-      _validateImmutableNonConstantDefault(
-        definition,
-        field,
-        Keyword.defaultModelKey,
-        span,
-      ),
-    );
-
     return errors;
-  }
-
-  /// Validates that immutable classes do not use non-constant default values.
-  ///
-  /// Returns an error if the class (or any of its ancestors) is immutable and
-  /// the field has a non-constant default value like `now` or `random`.
-  List<SourceSpanSeverityException> _validateImmutableNonConstantDefault(
-    ClassDefinition definition,
-    SerializableModelFieldDefinition field,
-    String keyword,
-    SourceSpan? span,
-  ) {
-    if (definition is! ModelClassDefinition) return [];
-
-    if (!_isImmutableOrHasImmutableAncestor(definition)) return [];
-
-    var isNonConstant = _isNonConstantDefaultValue(
-      field.type.defaultValueType,
-      field.defaultModelValue,
-    );
-    if (!isNonConstant) return [];
-
-    var suggestion = _hasTableOrTableDescendant(definition)
-        ? ' If the model is persisted to the database, use the "${Keyword.defaultPersistKey}" key instead.'
-        : '';
-
-    return [
-      SourceSpanSeverityException(
-        'The "$keyword" value "${field.defaultModelValue}" is not allowed '
-        'for immutable classes because it is not a constant value.$suggestion',
-        span,
-      ),
-    ];
   }
 
   List<SourceSpanSeverityException> validateDefaultPersistKey(
@@ -2161,49 +2109,5 @@ class Restrictions {
             .firstOrNull;
       },
     );
-  }
-
-  /// Returns true if the given model or any of its ancestor classes is
-  /// immutable.
-  bool _isImmutableOrHasImmutableAncestor(ModelClassDefinition model) {
-    if (model.isImmutable) return true;
-
-    return _findInParentHierarchy(
-          model,
-          (ModelClassDefinition ancestor) =>
-              ancestor.isImmutable ? ancestor : null,
-        ) !=
-        null;
-  }
-
-  /// Returns true if the given model or any of its descendant classes has a
-  /// table defined.
-  bool _hasTableOrTableDescendant(ModelClassDefinition model) {
-    if (model.tableName != null) return true;
-
-    return model.descendantClasses.any((child) => child.tableName != null);
-  }
-
-  /// Returns whether a default value for a given type is a non-constant value
-  /// that cannot be used in const constructors.
-  ///
-  /// Non-constant defaults include:
-  /// - `now` for DateTime
-  /// - `random` and `random_v7` for UuidValue
-  static bool _isNonConstantDefaultValue(
-    DefaultValueAllowedType? defaultValueType,
-    dynamic defaultValue,
-  ) {
-    if (defaultValueType == null || defaultValue == null) return false;
-
-    switch (defaultValueType) {
-      case DefaultValueAllowedType.dateTime:
-        return defaultValue == defaultDateTimeValueNow;
-      case DefaultValueAllowedType.uuidValue:
-        return defaultValue == defaultUuidValueRandom ||
-            defaultValue == defaultUuidValueRandomV7;
-      default:
-        return false;
-    }
   }
 }
