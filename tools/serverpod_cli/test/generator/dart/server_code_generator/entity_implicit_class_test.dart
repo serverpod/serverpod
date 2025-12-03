@@ -279,4 +279,102 @@ void main() {
       },
     );
   });
+
+  group(
+    'Given a child class with table that extends parent class with field and has hidden serializable field',
+    () {
+      // This test reproduces the issue where implicit class constructor
+      // fails to include inherited fields from parent class.
+      var baseClassName = 'BaseEntity';
+      var baseClassFileName = 'base_entity';
+
+      var childClassName = 'ChildEntity';
+      var childClassFileName = 'child_entity';
+
+      var childFilePath = path.join(
+        'lib',
+        'src',
+        'generated',
+        '$childClassFileName.dart',
+      );
+
+      // Create base class with a shared field
+      var baseClass = ModelClassDefinitionBuilder()
+          .withClassName(baseClassName)
+          .withFileName(baseClassFileName)
+          .withSimpleField('sharedField', 'String')
+          .build();
+
+      // Create child class with table that extends base class
+      // and has a hidden serializable field (scope: none, shouldPersist: true)
+      var childClass = ModelClassDefinitionBuilder()
+          .withClassName(childClassName)
+          .withFileName(childClassFileName)
+          .withTableName('child_entity')
+          .withSimpleField('localField', 'String')
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('_parentId')
+                .withType(TypeDefinition(className: 'int', nullable: true))
+                .withShouldPersist(true)
+                .withScope(ModelFieldScopeDefinition.none)
+                .build(),
+          )
+          .withExtendsClass(baseClass)
+          .build();
+
+      var models = [baseClass, childClass];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var compilationUnit = parseCode(codeMap[childFilePath]!);
+
+      var implicitClassName = '${childClassName}Implicit';
+
+      test('then implicit class is generated', () {
+        expect(compilationUnit, containsClass(implicitClassName));
+      });
+
+      test(
+        'then implicit class private constructor has parameter for inherited field',
+        () {
+          expect(
+            compilationUnit,
+            containsClass(implicitClassName)
+                .withNamedConstructor('_')
+                .withTypedParameter('sharedField', 'String', isRequired: true),
+          );
+        },
+      );
+
+      test(
+        'then implicit class private constructor has super initializer with inherited field',
+        () {
+          expect(
+            compilationUnit,
+            containsClass(implicitClassName)
+                .withNamedConstructor('_')
+                .withSuperInitializer()
+                .withNamedArgument('sharedField', 'sharedField'),
+          );
+        },
+      );
+
+      test(
+        'then implicit class private constructor has super initializer with local field',
+        () {
+          expect(
+            compilationUnit,
+            containsClass(implicitClassName)
+                .withNamedConstructor('_')
+                .withSuperInitializer()
+                .withNamedArgument('localField', 'localField'),
+          );
+        },
+      );
+    },
+  );
 }
