@@ -1,3 +1,22 @@
+## 3.0.0-rc.4
+
+Release candidate for Serverpod 3.
+
+Serverpod 3 is a major overhaul of the authentication system and the web server.
+This release candidate is **not yet production-ready**. It is still under active development and may contain bugs or breaking changes.
+
+#### New features
+- feat: Adds support for resolving Dart doc template macros in client code generation.
+- feat: BREAKING. Replaces `remoteInfo` parameter on `Session` class with `Request` object.
+- refactor: Eagerly encodes hash peppers on the new authentication module to improve performance.
+
+#### Fixes
+- fix: Improves error message when there is a database mismatch on server startup.
+- fix: Disables future call execution when none are registered.
+- fix: Improves string representation for serializable exceptions.
+- fix: Allows disabling features in the `generator.yaml` configuration file.
+- fix: Fixes an issue on the deserialization engine that would prevent compilation on web in release mode.
+
 ## 3.0.0-rc.3
 
 Release candidate for Serverpod 3.
