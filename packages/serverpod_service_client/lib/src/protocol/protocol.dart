@@ -150,7 +150,7 @@ class Protocol extends _i1.SerializationManager {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -687,6 +687,68 @@ class Protocol extends _i1.SerializationManager {
     return super.deserialize<T>(data, t);
   }
 
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i2.CacheInfo => 'CacheInfo',
+      _i3.CachesInfo => 'CachesInfo',
+      _i4.CloudStorageEntry => 'CloudStorageEntry',
+      _i5.CloudStorageDirectUploadEntry => 'CloudStorageDirectUploadEntry',
+      _i6.ClusterInfo => 'ClusterInfo',
+      _i7.ClusterServerInfo => 'ClusterServerInfo',
+      _i8.BulkData => 'BulkData',
+      _i9.BulkDataException => 'BulkDataException',
+      _i10.BulkQueryColumnDescription => 'BulkQueryColumnDescription',
+      _i11.BulkQueryResult => 'BulkQueryResult',
+      _i12.ColumnDefinition => 'ColumnDefinition',
+      _i13.ColumnMigration => 'ColumnMigration',
+      _i14.ColumnType => 'ColumnType',
+      _i15.DatabaseDefinition => 'DatabaseDefinition',
+      _i16.DatabaseDefinitions => 'DatabaseDefinitions',
+      _i17.DatabaseMigration => 'DatabaseMigration',
+      _i18.DatabaseMigrationAction => 'DatabaseMigrationAction',
+      _i19.DatabaseMigrationActionType => 'DatabaseMigrationActionType',
+      _i20.DatabaseMigrationVersion => 'DatabaseMigrationVersion',
+      _i21.DatabaseMigrationWarning => 'DatabaseMigrationWarning',
+      _i22.DatabaseMigrationWarningType => 'DatabaseMigrationWarningType',
+      _i23.EnumSerialization => 'EnumSerialization',
+      _i24.Filter => 'Filter',
+      _i25.FilterConstraint => 'FilterConstraint',
+      _i26.FilterConstraintType => 'FilterConstraintType',
+      _i27.ForeignKeyAction => 'ForeignKeyAction',
+      _i28.ForeignKeyDefinition => 'ForeignKeyDefinition',
+      _i29.ForeignKeyMatchType => 'ForeignKeyMatchType',
+      _i30.IndexDefinition => 'IndexDefinition',
+      _i31.IndexElementDefinition => 'IndexElementDefinition',
+      _i32.IndexElementDefinitionType => 'IndexElementDefinitionType',
+      _i33.TableDefinition => 'TableDefinition',
+      _i34.TableMigration => 'TableMigration',
+      _i35.VectorDistanceFunction => 'VectorDistanceFunction',
+      _i36.DistributedCacheEntry => 'DistributedCacheEntry',
+      _i37.AccessDeniedException => 'AccessDeniedException',
+      _i38.FileNotFoundException => 'FileNotFoundException',
+      _i39.FutureCallEntry => 'FutureCallEntry',
+      _i40.LogEntry => 'LogEntry',
+      _i41.LogLevel => 'LogLevel',
+      _i42.LogResult => 'LogResult',
+      _i43.LogSettings => 'LogSettings',
+      _i44.LogSettingsOverride => 'LogSettingsOverride',
+      _i45.MessageLogEntry => 'MessageLogEntry',
+      _i46.MethodInfo => 'MethodInfo',
+      _i47.QueryLogEntry => 'QueryLogEntry',
+      _i48.ReadWriteTestEntry => 'ReadWriteTestEntry',
+      _i49.RuntimeSettings => 'RuntimeSettings',
+      _i50.ServerHealthConnectionInfo => 'ServerHealthConnectionInfo',
+      _i51.ServerHealthMetric => 'ServerHealthMetric',
+      _i52.ServerHealthResult => 'ServerHealthResult',
+      _i53.ServerpodSqlException => 'ServerpodSqlException',
+      _i54.SessionLogEntry => 'SessionLogEntry',
+      _i55.SessionLogFilter => 'SessionLogFilter',
+      _i56.SessionLogInfo => 'SessionLogInfo',
+      _i57.SessionLogResult => 'SessionLogResult',
+      _ => null,
+    };
+  }
+
   @override
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
@@ -696,120 +758,8 @@ class Protocol extends _i1.SerializationManager {
       return (data['__className__'] as String).replaceFirst('serverpod.', '');
     }
 
-    switch (data) {
-      case _i2.CacheInfo():
-        return 'CacheInfo';
-      case _i3.CachesInfo():
-        return 'CachesInfo';
-      case _i4.CloudStorageEntry():
-        return 'CloudStorageEntry';
-      case _i5.CloudStorageDirectUploadEntry():
-        return 'CloudStorageDirectUploadEntry';
-      case _i6.ClusterInfo():
-        return 'ClusterInfo';
-      case _i7.ClusterServerInfo():
-        return 'ClusterServerInfo';
-      case _i8.BulkData():
-        return 'BulkData';
-      case _i9.BulkDataException():
-        return 'BulkDataException';
-      case _i10.BulkQueryColumnDescription():
-        return 'BulkQueryColumnDescription';
-      case _i11.BulkQueryResult():
-        return 'BulkQueryResult';
-      case _i12.ColumnDefinition():
-        return 'ColumnDefinition';
-      case _i13.ColumnMigration():
-        return 'ColumnMigration';
-      case _i14.ColumnType():
-        return 'ColumnType';
-      case _i15.DatabaseDefinition():
-        return 'DatabaseDefinition';
-      case _i16.DatabaseDefinitions():
-        return 'DatabaseDefinitions';
-      case _i17.DatabaseMigration():
-        return 'DatabaseMigration';
-      case _i18.DatabaseMigrationAction():
-        return 'DatabaseMigrationAction';
-      case _i19.DatabaseMigrationActionType():
-        return 'DatabaseMigrationActionType';
-      case _i20.DatabaseMigrationVersion():
-        return 'DatabaseMigrationVersion';
-      case _i21.DatabaseMigrationWarning():
-        return 'DatabaseMigrationWarning';
-      case _i22.DatabaseMigrationWarningType():
-        return 'DatabaseMigrationWarningType';
-      case _i23.EnumSerialization():
-        return 'EnumSerialization';
-      case _i24.Filter():
-        return 'Filter';
-      case _i25.FilterConstraint():
-        return 'FilterConstraint';
-      case _i26.FilterConstraintType():
-        return 'FilterConstraintType';
-      case _i27.ForeignKeyAction():
-        return 'ForeignKeyAction';
-      case _i28.ForeignKeyDefinition():
-        return 'ForeignKeyDefinition';
-      case _i29.ForeignKeyMatchType():
-        return 'ForeignKeyMatchType';
-      case _i30.IndexDefinition():
-        return 'IndexDefinition';
-      case _i31.IndexElementDefinition():
-        return 'IndexElementDefinition';
-      case _i32.IndexElementDefinitionType():
-        return 'IndexElementDefinitionType';
-      case _i33.TableDefinition():
-        return 'TableDefinition';
-      case _i34.TableMigration():
-        return 'TableMigration';
-      case _i35.VectorDistanceFunction():
-        return 'VectorDistanceFunction';
-      case _i36.DistributedCacheEntry():
-        return 'DistributedCacheEntry';
-      case _i37.AccessDeniedException():
-        return 'AccessDeniedException';
-      case _i38.FileNotFoundException():
-        return 'FileNotFoundException';
-      case _i39.FutureCallEntry():
-        return 'FutureCallEntry';
-      case _i40.LogEntry():
-        return 'LogEntry';
-      case _i41.LogLevel():
-        return 'LogLevel';
-      case _i42.LogResult():
-        return 'LogResult';
-      case _i43.LogSettings():
-        return 'LogSettings';
-      case _i44.LogSettingsOverride():
-        return 'LogSettingsOverride';
-      case _i45.MessageLogEntry():
-        return 'MessageLogEntry';
-      case _i46.MethodInfo():
-        return 'MethodInfo';
-      case _i47.QueryLogEntry():
-        return 'QueryLogEntry';
-      case _i48.ReadWriteTestEntry():
-        return 'ReadWriteTestEntry';
-      case _i49.RuntimeSettings():
-        return 'RuntimeSettings';
-      case _i50.ServerHealthConnectionInfo():
-        return 'ServerHealthConnectionInfo';
-      case _i51.ServerHealthMetric():
-        return 'ServerHealthMetric';
-      case _i52.ServerHealthResult():
-        return 'ServerHealthResult';
-      case _i53.ServerpodSqlException():
-        return 'ServerpodSqlException';
-      case _i54.SessionLogEntry():
-        return 'SessionLogEntry';
-      case _i55.SessionLogFilter():
-        return 'SessionLogFilter';
-      case _i56.SessionLogInfo():
-        return 'SessionLogInfo';
-      case _i57.SessionLogResult():
-        return 'SessionLogResult';
-    }
+    className = getClassNameForType(data.runtimeType);
+    if (className != null) return className;
     return null;
   }
 

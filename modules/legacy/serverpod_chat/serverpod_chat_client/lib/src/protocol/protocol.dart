@@ -59,7 +59,7 @@ class Protocol extends _i1.SerializationManager {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -168,6 +168,24 @@ class Protocol extends _i1.SerializationManager {
     return super.deserialize<T>(data, t);
   }
 
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i2.ChatJoinChannel => 'ChatJoinChannel',
+      _i3.ChatJoinChannelFailed => 'ChatJoinChannelFailed',
+      _i4.ChatJoinedChannel => 'ChatJoinedChannel',
+      _i5.ChatLeaveChannel => 'ChatLeaveChannel',
+      _i6.ChatMessage => 'ChatMessage',
+      _i7.ChatMessageAttachment => 'ChatMessageAttachment',
+      _i8.ChatMessageAttachmentUploadDescription =>
+        'ChatMessageAttachmentUploadDescription',
+      _i9.ChatMessageChunk => 'ChatMessageChunk',
+      _i10.ChatMessagePost => 'ChatMessagePost',
+      _i11.ChatReadMessage => 'ChatReadMessage',
+      _i12.ChatRequestMessageChunk => 'ChatRequestMessageChunk',
+      _ => null,
+    };
+  }
+
   @override
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
@@ -180,30 +198,8 @@ class Protocol extends _i1.SerializationManager {
       );
     }
 
-    switch (data) {
-      case _i2.ChatJoinChannel():
-        return 'ChatJoinChannel';
-      case _i3.ChatJoinChannelFailed():
-        return 'ChatJoinChannelFailed';
-      case _i4.ChatJoinedChannel():
-        return 'ChatJoinedChannel';
-      case _i5.ChatLeaveChannel():
-        return 'ChatLeaveChannel';
-      case _i6.ChatMessage():
-        return 'ChatMessage';
-      case _i7.ChatMessageAttachment():
-        return 'ChatMessageAttachment';
-      case _i8.ChatMessageAttachmentUploadDescription():
-        return 'ChatMessageAttachmentUploadDescription';
-      case _i9.ChatMessageChunk():
-        return 'ChatMessageChunk';
-      case _i10.ChatMessagePost():
-        return 'ChatMessagePost';
-      case _i11.ChatReadMessage():
-        return 'ChatReadMessage';
-      case _i12.ChatRequestMessageChunk():
-        return 'ChatRequestMessageChunk';
-    }
+    className = getClassNameForType(data.runtimeType);
+    if (className != null) return className;
     className = _i13.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';

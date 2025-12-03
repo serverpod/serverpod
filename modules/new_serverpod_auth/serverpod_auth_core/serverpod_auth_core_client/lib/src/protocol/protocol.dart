@@ -70,7 +70,7 @@ class Protocol extends _i1.SerializationManager {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -208,6 +208,30 @@ class Protocol extends _i1.SerializationManager {
     return super.deserialize<T>(data, t);
   }
 
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i2.AuthUser => 'AuthUser',
+      _i3.AuthUserBlockedException => 'AuthUserBlockedException',
+      _i4.AuthUserModel => 'AuthUserModel',
+      _i5.AuthUserNotFoundException => 'AuthUserNotFoundException',
+      _i6.AuthStrategy => 'AuthStrategy',
+      _i7.AuthSuccess => 'AuthSuccess',
+      _i8.JwtTokenInfo => 'JwtTokenInfo',
+      _i9.RefreshTokenExpiredException => 'RefreshTokenExpiredException',
+      _i10.RefreshTokenInvalidSecretException =>
+        'RefreshTokenInvalidSecretException',
+      _i11.RefreshTokenMalformedException => 'RefreshTokenMalformedException',
+      _i12.RefreshTokenNotFoundException => 'RefreshTokenNotFoundException',
+      _i13.TokenPair => 'TokenPair',
+      _i14.UserProfile => 'UserProfile',
+      _i15.UserProfileData => 'UserProfileData',
+      _i16.UserProfileImage => 'UserProfileImage',
+      _i17.UserProfileModel => 'UserProfileModel',
+      _i18.ServerSideSessionInfo => 'ServerSideSessionInfo',
+      _ => null,
+    };
+  }
+
   @override
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
@@ -220,42 +244,8 @@ class Protocol extends _i1.SerializationManager {
       );
     }
 
-    switch (data) {
-      case _i2.AuthUser():
-        return 'AuthUser';
-      case _i3.AuthUserBlockedException():
-        return 'AuthUserBlockedException';
-      case _i4.AuthUserModel():
-        return 'AuthUserModel';
-      case _i5.AuthUserNotFoundException():
-        return 'AuthUserNotFoundException';
-      case _i6.AuthStrategy():
-        return 'AuthStrategy';
-      case _i7.AuthSuccess():
-        return 'AuthSuccess';
-      case _i8.JwtTokenInfo():
-        return 'JwtTokenInfo';
-      case _i9.RefreshTokenExpiredException():
-        return 'RefreshTokenExpiredException';
-      case _i10.RefreshTokenInvalidSecretException():
-        return 'RefreshTokenInvalidSecretException';
-      case _i11.RefreshTokenMalformedException():
-        return 'RefreshTokenMalformedException';
-      case _i12.RefreshTokenNotFoundException():
-        return 'RefreshTokenNotFoundException';
-      case _i13.TokenPair():
-        return 'TokenPair';
-      case _i14.UserProfile():
-        return 'UserProfile';
-      case _i15.UserProfileData():
-        return 'UserProfileData';
-      case _i16.UserProfileImage():
-        return 'UserProfileImage';
-      case _i17.UserProfileModel():
-        return 'UserProfileModel';
-      case _i18.ServerSideSessionInfo():
-        return 'ServerSideSessionInfo';
-    }
+    className = getClassNameForType(data.runtimeType);
+    if (className != null) return className;
     return null;
   }
 

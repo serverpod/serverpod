@@ -640,7 +640,7 @@ class Protocol extends _i1.SerializationManagerServer {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -754,6 +754,26 @@ class Protocol extends _i1.SerializationManagerServer {
     return super.deserialize<T>(data, t);
   }
 
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i3.AppleAuthInfo => 'AppleAuthInfo',
+      _i4.AuthKey => 'AuthKey',
+      _i5.AuthenticationFailReason => 'AuthenticationFailReason',
+      _i6.AuthenticationResponse => 'AuthenticationResponse',
+      _i7.EmailAuth => 'EmailAuth',
+      _i8.EmailCreateAccountRequest => 'EmailCreateAccountRequest',
+      _i9.EmailFailedSignIn => 'EmailFailedSignIn',
+      _i10.EmailPasswordReset => 'EmailPasswordReset',
+      _i11.EmailReset => 'EmailReset',
+      _i12.GoogleRefreshToken => 'GoogleRefreshToken',
+      _i13.UserImage => 'UserImage',
+      _i14.UserInfo => 'UserInfo',
+      _i15.UserInfoPublic => 'UserInfoPublic',
+      _i16.UserSettingsConfig => 'UserSettingsConfig',
+      _ => null,
+    };
+  }
+
   @override
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
@@ -766,36 +786,8 @@ class Protocol extends _i1.SerializationManagerServer {
       );
     }
 
-    switch (data) {
-      case _i3.AppleAuthInfo():
-        return 'AppleAuthInfo';
-      case _i4.AuthKey():
-        return 'AuthKey';
-      case _i5.AuthenticationFailReason():
-        return 'AuthenticationFailReason';
-      case _i6.AuthenticationResponse():
-        return 'AuthenticationResponse';
-      case _i7.EmailAuth():
-        return 'EmailAuth';
-      case _i8.EmailCreateAccountRequest():
-        return 'EmailCreateAccountRequest';
-      case _i9.EmailFailedSignIn():
-        return 'EmailFailedSignIn';
-      case _i10.EmailPasswordReset():
-        return 'EmailPasswordReset';
-      case _i11.EmailReset():
-        return 'EmailReset';
-      case _i12.GoogleRefreshToken():
-        return 'GoogleRefreshToken';
-      case _i13.UserImage():
-        return 'UserImage';
-      case _i14.UserInfo():
-        return 'UserInfo';
-      case _i15.UserInfoPublic():
-        return 'UserInfoPublic';
-      case _i16.UserSettingsConfig():
-        return 'UserSettingsConfig';
-    }
+    className = getClassNameForType(data.runtimeType);
+    if (className != null) return className;
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';

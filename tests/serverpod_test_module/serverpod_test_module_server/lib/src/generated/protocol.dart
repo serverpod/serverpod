@@ -48,7 +48,7 @@ class Protocol extends _i1.SerializationManagerServer {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -113,6 +113,17 @@ class Protocol extends _i1.SerializationManagerServer {
     return super.deserialize<T>(data, t);
   }
 
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i3.ModulePolymorphicGrandChild => 'ModulePolymorphicGrandChild',
+      _i4.ModulePolymorphicChild => 'ModulePolymorphicChild',
+      _i5.ModulePolymorphicParent => 'ModulePolymorphicParent',
+      _i6.ModuleClass => 'ModuleClass',
+      _i7.MyModuleFeatureModel => 'MyModuleFeatureModel',
+      _ => null,
+    };
+  }
+
   @override
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
@@ -125,18 +136,8 @@ class Protocol extends _i1.SerializationManagerServer {
       );
     }
 
-    switch (data) {
-      case _i3.ModulePolymorphicGrandChild():
-        return 'ModulePolymorphicGrandChild';
-      case _i4.ModulePolymorphicChild():
-        return 'ModulePolymorphicChild';
-      case _i5.ModulePolymorphicParent():
-        return 'ModulePolymorphicParent';
-      case _i6.ModuleClass():
-        return 'ModuleClass';
-      case _i7.MyModuleFeatureModel():
-        return 'MyModuleFeatureModel';
-    }
+    className = getClassNameForType(data.runtimeType);
+    if (className != null) return className;
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';

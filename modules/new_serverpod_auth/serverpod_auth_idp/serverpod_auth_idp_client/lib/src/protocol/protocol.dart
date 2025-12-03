@@ -73,7 +73,7 @@ class Protocol extends _i1.SerializationManager {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -207,6 +207,32 @@ class Protocol extends _i1.SerializationManager {
     return super.deserialize<T>(data, t);
   }
 
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i2.EmailAccountLoginException => 'EmailAccountLoginException',
+      _i3.EmailAccountLoginExceptionReason =>
+        'EmailAccountLoginExceptionReason',
+      _i4.EmailAccountPasswordResetException =>
+        'EmailAccountPasswordResetException',
+      _i5.EmailAccountPasswordResetExceptionReason =>
+        'EmailAccountPasswordResetExceptionReason',
+      _i6.EmailAccountRequestException => 'EmailAccountRequestException',
+      _i7.EmailAccountRequestExceptionReason =>
+        'EmailAccountRequestExceptionReason',
+      _i8.GoogleIdTokenVerificationException =>
+        'GoogleIdTokenVerificationException',
+      _i9.PasskeyChallengeExpiredException =>
+        'PasskeyChallengeExpiredException',
+      _i10.PasskeyChallengeNotFoundException =>
+        'PasskeyChallengeNotFoundException',
+      _i11.PasskeyLoginRequest => 'PasskeyLoginRequest',
+      _i12.PasskeyPublicKeyNotFoundException =>
+        'PasskeyPublicKeyNotFoundException',
+      _i13.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
+      _ => null,
+    };
+  }
+
   @override
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
@@ -219,32 +245,8 @@ class Protocol extends _i1.SerializationManager {
       );
     }
 
-    switch (data) {
-      case _i2.EmailAccountLoginException():
-        return 'EmailAccountLoginException';
-      case _i3.EmailAccountLoginExceptionReason():
-        return 'EmailAccountLoginExceptionReason';
-      case _i4.EmailAccountPasswordResetException():
-        return 'EmailAccountPasswordResetException';
-      case _i5.EmailAccountPasswordResetExceptionReason():
-        return 'EmailAccountPasswordResetExceptionReason';
-      case _i6.EmailAccountRequestException():
-        return 'EmailAccountRequestException';
-      case _i7.EmailAccountRequestExceptionReason():
-        return 'EmailAccountRequestExceptionReason';
-      case _i8.GoogleIdTokenVerificationException():
-        return 'GoogleIdTokenVerificationException';
-      case _i9.PasskeyChallengeExpiredException():
-        return 'PasskeyChallengeExpiredException';
-      case _i10.PasskeyChallengeNotFoundException():
-        return 'PasskeyChallengeNotFoundException';
-      case _i11.PasskeyLoginRequest():
-        return 'PasskeyLoginRequest';
-      case _i12.PasskeyPublicKeyNotFoundException():
-        return 'PasskeyPublicKeyNotFoundException';
-      case _i13.PasskeyRegistrationRequest():
-        return 'PasskeyRegistrationRequest';
-    }
+    className = getClassNameForType(data.runtimeType);
+    if (className != null) return className;
     className = _i15.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';

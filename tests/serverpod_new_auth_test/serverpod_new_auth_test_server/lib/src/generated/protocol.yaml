@@ -8,14 +8,6 @@ authTest:
   - checkSession:
 authenticatedStreamingTest:
   - openAuthenticatedStream:
-emailAccountBackwardsCompatibilityTest:
-  - createLegacyUser:
-  - createLegacySession:
-  - migrateUser:
-  - getNewAuthUserId:
-  - deleteLegacyAuthData:
-  - sessionUserIdentifier:
-  - checkLegacyPassword:
 emailAccount:
   - login:
   - startRegistration:

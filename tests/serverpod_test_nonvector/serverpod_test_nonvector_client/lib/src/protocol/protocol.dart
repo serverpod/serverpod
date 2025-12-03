@@ -36,7 +36,7 @@ class Protocol extends _i1.SerializationManager {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -58,6 +58,13 @@ class Protocol extends _i1.SerializationManager {
     return super.deserialize<T>(data, t);
   }
 
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i2.Greeting => 'Greeting',
+      _ => null,
+    };
+  }
+
   @override
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
@@ -70,10 +77,8 @@ class Protocol extends _i1.SerializationManager {
       );
     }
 
-    switch (data) {
-      case _i2.Greeting():
-        return 'Greeting';
-    }
+    className = getClassNameForType(data.runtimeType);
+    if (className != null) return className;
     return null;
   }
 

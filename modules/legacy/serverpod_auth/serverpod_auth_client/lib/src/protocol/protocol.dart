@@ -64,7 +64,7 @@ class Protocol extends _i1.SerializationManager {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -174,6 +174,26 @@ class Protocol extends _i1.SerializationManager {
     return super.deserialize<T>(data, t);
   }
 
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i2.AppleAuthInfo => 'AppleAuthInfo',
+      _i3.AuthKey => 'AuthKey',
+      _i4.AuthenticationFailReason => 'AuthenticationFailReason',
+      _i5.AuthenticationResponse => 'AuthenticationResponse',
+      _i6.EmailAuth => 'EmailAuth',
+      _i7.EmailCreateAccountRequest => 'EmailCreateAccountRequest',
+      _i8.EmailFailedSignIn => 'EmailFailedSignIn',
+      _i9.EmailPasswordReset => 'EmailPasswordReset',
+      _i10.EmailReset => 'EmailReset',
+      _i11.GoogleRefreshToken => 'GoogleRefreshToken',
+      _i12.UserImage => 'UserImage',
+      _i13.UserInfo => 'UserInfo',
+      _i14.UserInfoPublic => 'UserInfoPublic',
+      _i15.UserSettingsConfig => 'UserSettingsConfig',
+      _ => null,
+    };
+  }
+
   @override
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
@@ -186,36 +206,8 @@ class Protocol extends _i1.SerializationManager {
       );
     }
 
-    switch (data) {
-      case _i2.AppleAuthInfo():
-        return 'AppleAuthInfo';
-      case _i3.AuthKey():
-        return 'AuthKey';
-      case _i4.AuthenticationFailReason():
-        return 'AuthenticationFailReason';
-      case _i5.AuthenticationResponse():
-        return 'AuthenticationResponse';
-      case _i6.EmailAuth():
-        return 'EmailAuth';
-      case _i7.EmailCreateAccountRequest():
-        return 'EmailCreateAccountRequest';
-      case _i8.EmailFailedSignIn():
-        return 'EmailFailedSignIn';
-      case _i9.EmailPasswordReset():
-        return 'EmailPasswordReset';
-      case _i10.EmailReset():
-        return 'EmailReset';
-      case _i11.GoogleRefreshToken():
-        return 'GoogleRefreshToken';
-      case _i12.UserImage():
-        return 'UserImage';
-      case _i13.UserInfo():
-        return 'UserInfo';
-      case _i14.UserInfoPublic():
-        return 'UserInfoPublic';
-      case _i15.UserSettingsConfig():
-        return 'UserSettingsConfig';
-    }
+    className = getClassNameForType(data.runtimeType);
+    if (className != null) return className;
     return null;
   }
 

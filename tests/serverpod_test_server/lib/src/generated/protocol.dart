@@ -7035,7 +7035,7 @@ class Protocol extends _i1.SerializationManagerServer {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -12116,6 +12116,216 @@ class Protocol extends _i1.SerializationManagerServer {
     return super.deserialize<T>(data, t);
   }
 
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i193.CustomClass => 'CustomClass',
+      _i193.CustomClass2 => 'CustomClass2',
+      _i193.CustomClassWithoutProtocolSerialization =>
+        'CustomClassWithoutProtocolSerialization',
+      _i193.CustomClassWithProtocolSerialization =>
+        'CustomClassWithProtocolSerialization',
+      _i193.CustomClassWithProtocolSerializationMethod =>
+        'CustomClassWithProtocolSerializationMethod',
+      _i193.ProtocolCustomClass => 'ProtocolCustomClass',
+      _i193.ExternalCustomClass => 'ExternalCustomClass',
+      _i193.FreezedCustomClass => 'FreezedCustomClass',
+      _i5.ByIndexEnumWithNameValue => 'ByIndexEnumWithNameValue',
+      _i6.ByNameEnumWithNameValue => 'ByNameEnumWithNameValue',
+      _i7.CourseUuid => 'CourseUuid',
+      _i8.EnrollmentInt => 'EnrollmentInt',
+      _i9.StudentUuid => 'StudentUuid',
+      _i10.ArenaUuid => 'ArenaUuid',
+      _i11.PlayerUuid => 'PlayerUuid',
+      _i12.TeamInt => 'TeamInt',
+      _i13.CommentInt => 'CommentInt',
+      _i14.CustomerInt => 'CustomerInt',
+      _i15.OrderUuid => 'OrderUuid',
+      _i16.AddressUuid => 'AddressUuid',
+      _i17.CitizenInt => 'CitizenInt',
+      _i18.CompanyUuid => 'CompanyUuid',
+      _i19.TownInt => 'TownInt',
+      _i20.ChangedIdTypeSelf => 'ChangedIdTypeSelf',
+      _i21.ServerOnlyChangedIdFieldClass => 'ServerOnlyChangedIdFieldClass',
+      _i22.BigIntDefault => 'BigIntDefault',
+      _i23.BigIntDefaultMix => 'BigIntDefaultMix',
+      _i24.BigIntDefaultModel => 'BigIntDefaultModel',
+      _i25.BigIntDefaultPersist => 'BigIntDefaultPersist',
+      _i26.BoolDefault => 'BoolDefault',
+      _i27.BoolDefaultMix => 'BoolDefaultMix',
+      _i28.BoolDefaultModel => 'BoolDefaultModel',
+      _i29.BoolDefaultPersist => 'BoolDefaultPersist',
+      _i30.DateTimeDefault => 'DateTimeDefault',
+      _i31.DateTimeDefaultMix => 'DateTimeDefaultMix',
+      _i32.DateTimeDefaultModel => 'DateTimeDefaultModel',
+      _i33.DateTimeDefaultPersist => 'DateTimeDefaultPersist',
+      _i34.DoubleDefault => 'DoubleDefault',
+      _i35.DoubleDefaultMix => 'DoubleDefaultMix',
+      _i36.DoubleDefaultModel => 'DoubleDefaultModel',
+      _i37.DoubleDefaultPersist => 'DoubleDefaultPersist',
+      _i38.DurationDefault => 'DurationDefault',
+      _i39.DurationDefaultMix => 'DurationDefaultMix',
+      _i40.DurationDefaultModel => 'DurationDefaultModel',
+      _i41.DurationDefaultPersist => 'DurationDefaultPersist',
+      _i42.EnumDefault => 'EnumDefault',
+      _i43.EnumDefaultMix => 'EnumDefaultMix',
+      _i44.EnumDefaultModel => 'EnumDefaultModel',
+      _i45.EnumDefaultPersist => 'EnumDefaultPersist',
+      _i46.ByIndexEnum => 'ByIndexEnum',
+      _i47.ByNameEnum => 'ByNameEnum',
+      _i48.DefaultValueEnum => 'DefaultValueEnum',
+      _i49.DefaultException => 'DefaultException',
+      _i50.IntDefault => 'IntDefault',
+      _i51.IntDefaultMix => 'IntDefaultMix',
+      _i52.IntDefaultModel => 'IntDefaultModel',
+      _i53.IntDefaultPersist => 'IntDefaultPersist',
+      _i54.StringDefault => 'StringDefault',
+      _i55.StringDefaultMix => 'StringDefaultMix',
+      _i56.StringDefaultModel => 'StringDefaultModel',
+      _i57.StringDefaultPersist => 'StringDefaultPersist',
+      _i58.UriDefault => 'UriDefault',
+      _i59.UriDefaultMix => 'UriDefaultMix',
+      _i60.UriDefaultModel => 'UriDefaultModel',
+      _i61.UriDefaultPersist => 'UriDefaultPersist',
+      _i62.UuidDefault => 'UuidDefault',
+      _i63.UuidDefaultMix => 'UuidDefaultMix',
+      _i64.UuidDefaultModel => 'UuidDefaultModel',
+      _i65.UuidDefaultPersist => 'UuidDefaultPersist',
+      _i66.EmptyModel => 'EmptyModel',
+      _i67.EmptyModelRelationItem => 'EmptyModelRelationItem',
+      _i68.EmptyModelWithTable => 'EmptyModelWithTable',
+      _i69.RelationEmptyModel => 'RelationEmptyModel',
+      _i70.ExceptionWithData => 'ExceptionWithData',
+      _i71.ImmutableChildObject => 'ImmutableChildObject',
+      _i72.ImmutableChildObjectWithNoAdditionalFields =>
+        'ImmutableChildObjectWithNoAdditionalFields',
+      _i73.ImmutableObject => 'ImmutableObject',
+      _i74.ImmutableObjectWithImmutableObject =>
+        'ImmutableObjectWithImmutableObject',
+      _i75.ImmutableObjectWithList => 'ImmutableObjectWithList',
+      _i76.ImmutableObjectWithMap => 'ImmutableObjectWithMap',
+      _i77.ImmutableObjectWithMultipleFields =>
+        'ImmutableObjectWithMultipleFields',
+      _i78.ImmutableObjectWithNoFields => 'ImmutableObjectWithNoFields',
+      _i79.ImmutableObjectWithRecord => 'ImmutableObjectWithRecord',
+      _i80.ImmutableObjectWithTable => 'ImmutableObjectWithTable',
+      _i81.ImmutableObjectWithTwentyFields => 'ImmutableObjectWithTwentyFields',
+      _i82.ChildClass => 'ChildClass',
+      _i83.ServerOnlyChildClass => 'ServerOnlyChildClass',
+      _i84.ChildWithDefault => 'ChildWithDefault',
+      _i85.ChildWithInheritedId => 'ChildWithInheritedId',
+      _i86.ChildClassWithoutId => 'ChildClassWithoutId',
+      _i87.ServerOnlyChildClassWithoutId => 'ServerOnlyChildClassWithoutId',
+      _i88.ParentClass => 'ParentClass',
+      _i89.GrandparentClass => 'GrandparentClass',
+      _i90.ParentClassWithoutId => 'ParentClassWithoutId',
+      _i91.GrandparentClassWithId => 'GrandparentClassWithId',
+      _i92.NonServerOnlyParentClass => 'NonServerOnlyParentClass',
+      _i93.ParentWithChangedId => 'ParentWithChangedId',
+      _i94.ParentWithDefault => 'ParentWithDefault',
+      _i95.PolymorphicGrandChild => 'PolymorphicGrandChild',
+      _i96.PolymorphicChild => 'PolymorphicChild',
+      _i97.PolymorphicChildContainer => 'PolymorphicChildContainer',
+      _i98.ModulePolymorphicChildContainer => 'ModulePolymorphicChildContainer',
+      _i99.SimilarButNotParent => 'SimilarButNotParent',
+      _i100.PolymorphicParent => 'PolymorphicParent',
+      _i101.UnrelatedToPolymorphism => 'UnrelatedToPolymorphism',
+      _i102.SealedGrandChild => 'SealedGrandChild',
+      _i102.SealedChild => 'SealedChild',
+      _i102.SealedOtherChild => 'SealedOtherChild',
+      _i103.CityWithLongTableName => 'CityWithLongTableName',
+      _i104.OrganizationWithLongTableName => 'OrganizationWithLongTableName',
+      _i105.PersonWithLongTableName => 'PersonWithLongTableName',
+      _i106.MaxFieldName => 'MaxFieldName',
+      _i107.LongImplicitIdField => 'LongImplicitIdField',
+      _i108.LongImplicitIdFieldCollection => 'LongImplicitIdFieldCollection',
+      _i109.RelationToMultipleMaxFieldName => 'RelationToMultipleMaxFieldName',
+      _i110.UserNote => 'UserNote',
+      _i111.UserNoteCollection => 'UserNoteCollection',
+      _i112.UserNoteCollectionWithALongName =>
+        'UserNoteCollectionWithALongName',
+      _i113.UserNoteWithALongName => 'UserNoteWithALongName',
+      _i114.MultipleMaxFieldName => 'MultipleMaxFieldName',
+      _i115.City => 'City',
+      _i116.Organization => 'Organization',
+      _i117.Person => 'Person',
+      _i118.Course => 'Course',
+      _i119.Enrollment => 'Enrollment',
+      _i120.Student => 'Student',
+      _i121.ObjectUser => 'ObjectUser',
+      _i122.ParentUser => 'ParentUser',
+      _i123.Arena => 'Arena',
+      _i124.Player => 'Player',
+      _i125.Team => 'Team',
+      _i126.Comment => 'Comment',
+      _i127.Customer => 'Customer',
+      _i128.Book => 'Book',
+      _i129.Chapter => 'Chapter',
+      _i130.Order => 'Order',
+      _i131.Address => 'Address',
+      _i132.Citizen => 'Citizen',
+      _i133.Company => 'Company',
+      _i134.Town => 'Town',
+      _i135.Blocking => 'Blocking',
+      _i136.Member => 'Member',
+      _i137.Cat => 'Cat',
+      _i138.Post => 'Post',
+      _i139.ModuleDatatype => 'ModuleDatatype',
+      _i140.MyFeatureModel => 'MyFeatureModel',
+      _i141.Nullability => 'Nullability',
+      _i142.ObjectFieldPersist => 'ObjectFieldPersist',
+      _i143.ObjectFieldScopes => 'ObjectFieldScopes',
+      _i144.ObjectWithBit => 'ObjectWithBit',
+      _i145.ObjectWithByteData => 'ObjectWithByteData',
+      _i146.ObjectWithCustomClass => 'ObjectWithCustomClass',
+      _i147.ObjectWithDuration => 'ObjectWithDuration',
+      _i148.ObjectWithEnum => 'ObjectWithEnum',
+      _i149.ObjectWithHalfVector => 'ObjectWithHalfVector',
+      _i150.ObjectWithIndex => 'ObjectWithIndex',
+      _i151.ObjectWithMaps => 'ObjectWithMaps',
+      _i152.ObjectWithNullableCustomClass => 'ObjectWithNullableCustomClass',
+      _i153.ObjectWithObject => 'ObjectWithObject',
+      _i154.ObjectWithParent => 'ObjectWithParent',
+      _i155.ObjectWithSealedClass => 'ObjectWithSealedClass',
+      _i156.ObjectWithSelfParent => 'ObjectWithSelfParent',
+      _i157.ObjectWithSparseVector => 'ObjectWithSparseVector',
+      _i158.ObjectWithUuid => 'ObjectWithUuid',
+      _i159.ObjectWithVector => 'ObjectWithVector',
+      _i160.Record => 'Record',
+      _i161.RelatedUniqueData => 'RelatedUniqueData',
+      _i162.ExceptionWithRequiredField => 'ExceptionWithRequiredField',
+      _i163.ModelWithRequiredField => 'ModelWithRequiredField',
+      _i164.ScopeNoneFields => 'ScopeNoneFields',
+      _i165.ScopeServerOnlyFieldChild => 'ScopeServerOnlyFieldChild',
+      _i166.ScopeServerOnlyField => 'ScopeServerOnlyField',
+      _i167.DefaultServerOnlyClass => 'DefaultServerOnlyClass',
+      _i168.DefaultServerOnlyEnum => 'DefaultServerOnlyEnum',
+      _i169.NotServerOnlyClass => 'NotServerOnlyClass',
+      _i170.NotServerOnlyEnum => 'NotServerOnlyEnum',
+      _i171.ServerOnlyClass => 'ServerOnlyClass',
+      _i172.ServerOnlyEnum => 'ServerOnlyEnum',
+      _i173.ServerOnlyClassField => 'ServerOnlyClassField',
+      _i174.ServerOnlyDefault => 'ServerOnlyDefault',
+      _i175.SessionAuthInfo => 'SessionAuthInfo',
+      _i176.SimpleData => 'SimpleData',
+      _i177.SimpleDataList => 'SimpleDataList',
+      _i178.SimpleDataMap => 'SimpleDataMap',
+      _i179.SimpleDataObject => 'SimpleDataObject',
+      _i180.SimpleDateTime => 'SimpleDateTime',
+      _i181.ModelInSubfolder => 'ModelInSubfolder',
+      _i182.TestEnum => 'TestEnum',
+      _i183.TestEnumDefaultSerialization => 'TestEnumDefaultSerialization',
+      _i184.TestEnumStringified => 'TestEnumStringified',
+      _i185.Types => 'Types',
+      _i186.TypesList => 'TypesList',
+      _i187.TypesMap => 'TypesMap',
+      _i188.TypesRecord => 'TypesRecord',
+      _i189.TypesSet => 'TypesSet',
+      _i190.TypesSetRequired => 'TypesSetRequired',
+      _i191.UniqueData => 'UniqueData',
+      _ => null,
+    };
+  }
+
   @override
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
@@ -12128,402 +12338,8 @@ class Protocol extends _i1.SerializationManagerServer {
       );
     }
 
-    switch (data) {
-      case _i193.CustomClass():
-        return 'CustomClass';
-      case _i193.CustomClass2():
-        return 'CustomClass2';
-      case _i193.CustomClassWithoutProtocolSerialization():
-        return 'CustomClassWithoutProtocolSerialization';
-      case _i193.CustomClassWithProtocolSerialization():
-        return 'CustomClassWithProtocolSerialization';
-      case _i193.CustomClassWithProtocolSerializationMethod():
-        return 'CustomClassWithProtocolSerializationMethod';
-      case _i193.ProtocolCustomClass():
-        return 'ProtocolCustomClass';
-      case _i193.ExternalCustomClass():
-        return 'ExternalCustomClass';
-      case _i193.FreezedCustomClass():
-        return 'FreezedCustomClass';
-      case _i5.ByIndexEnumWithNameValue():
-        return 'ByIndexEnumWithNameValue';
-      case _i6.ByNameEnumWithNameValue():
-        return 'ByNameEnumWithNameValue';
-      case _i7.CourseUuid():
-        return 'CourseUuid';
-      case _i8.EnrollmentInt():
-        return 'EnrollmentInt';
-      case _i9.StudentUuid():
-        return 'StudentUuid';
-      case _i10.ArenaUuid():
-        return 'ArenaUuid';
-      case _i11.PlayerUuid():
-        return 'PlayerUuid';
-      case _i12.TeamInt():
-        return 'TeamInt';
-      case _i13.CommentInt():
-        return 'CommentInt';
-      case _i14.CustomerInt():
-        return 'CustomerInt';
-      case _i15.OrderUuid():
-        return 'OrderUuid';
-      case _i16.AddressUuid():
-        return 'AddressUuid';
-      case _i17.CitizenInt():
-        return 'CitizenInt';
-      case _i18.CompanyUuid():
-        return 'CompanyUuid';
-      case _i19.TownInt():
-        return 'TownInt';
-      case _i20.ChangedIdTypeSelf():
-        return 'ChangedIdTypeSelf';
-      case _i21.ServerOnlyChangedIdFieldClass():
-        return 'ServerOnlyChangedIdFieldClass';
-      case _i22.BigIntDefault():
-        return 'BigIntDefault';
-      case _i23.BigIntDefaultMix():
-        return 'BigIntDefaultMix';
-      case _i24.BigIntDefaultModel():
-        return 'BigIntDefaultModel';
-      case _i25.BigIntDefaultPersist():
-        return 'BigIntDefaultPersist';
-      case _i26.BoolDefault():
-        return 'BoolDefault';
-      case _i27.BoolDefaultMix():
-        return 'BoolDefaultMix';
-      case _i28.BoolDefaultModel():
-        return 'BoolDefaultModel';
-      case _i29.BoolDefaultPersist():
-        return 'BoolDefaultPersist';
-      case _i30.DateTimeDefault():
-        return 'DateTimeDefault';
-      case _i31.DateTimeDefaultMix():
-        return 'DateTimeDefaultMix';
-      case _i32.DateTimeDefaultModel():
-        return 'DateTimeDefaultModel';
-      case _i33.DateTimeDefaultPersist():
-        return 'DateTimeDefaultPersist';
-      case _i34.DoubleDefault():
-        return 'DoubleDefault';
-      case _i35.DoubleDefaultMix():
-        return 'DoubleDefaultMix';
-      case _i36.DoubleDefaultModel():
-        return 'DoubleDefaultModel';
-      case _i37.DoubleDefaultPersist():
-        return 'DoubleDefaultPersist';
-      case _i38.DurationDefault():
-        return 'DurationDefault';
-      case _i39.DurationDefaultMix():
-        return 'DurationDefaultMix';
-      case _i40.DurationDefaultModel():
-        return 'DurationDefaultModel';
-      case _i41.DurationDefaultPersist():
-        return 'DurationDefaultPersist';
-      case _i42.EnumDefault():
-        return 'EnumDefault';
-      case _i43.EnumDefaultMix():
-        return 'EnumDefaultMix';
-      case _i44.EnumDefaultModel():
-        return 'EnumDefaultModel';
-      case _i45.EnumDefaultPersist():
-        return 'EnumDefaultPersist';
-      case _i46.ByIndexEnum():
-        return 'ByIndexEnum';
-      case _i47.ByNameEnum():
-        return 'ByNameEnum';
-      case _i48.DefaultValueEnum():
-        return 'DefaultValueEnum';
-      case _i49.DefaultException():
-        return 'DefaultException';
-      case _i50.IntDefault():
-        return 'IntDefault';
-      case _i51.IntDefaultMix():
-        return 'IntDefaultMix';
-      case _i52.IntDefaultModel():
-        return 'IntDefaultModel';
-      case _i53.IntDefaultPersist():
-        return 'IntDefaultPersist';
-      case _i54.StringDefault():
-        return 'StringDefault';
-      case _i55.StringDefaultMix():
-        return 'StringDefaultMix';
-      case _i56.StringDefaultModel():
-        return 'StringDefaultModel';
-      case _i57.StringDefaultPersist():
-        return 'StringDefaultPersist';
-      case _i58.UriDefault():
-        return 'UriDefault';
-      case _i59.UriDefaultMix():
-        return 'UriDefaultMix';
-      case _i60.UriDefaultModel():
-        return 'UriDefaultModel';
-      case _i61.UriDefaultPersist():
-        return 'UriDefaultPersist';
-      case _i62.UuidDefault():
-        return 'UuidDefault';
-      case _i63.UuidDefaultMix():
-        return 'UuidDefaultMix';
-      case _i64.UuidDefaultModel():
-        return 'UuidDefaultModel';
-      case _i65.UuidDefaultPersist():
-        return 'UuidDefaultPersist';
-      case _i66.EmptyModel():
-        return 'EmptyModel';
-      case _i67.EmptyModelRelationItem():
-        return 'EmptyModelRelationItem';
-      case _i68.EmptyModelWithTable():
-        return 'EmptyModelWithTable';
-      case _i69.RelationEmptyModel():
-        return 'RelationEmptyModel';
-      case _i70.ExceptionWithData():
-        return 'ExceptionWithData';
-      case _i71.ImmutableChildObject():
-        return 'ImmutableChildObject';
-      case _i72.ImmutableChildObjectWithNoAdditionalFields():
-        return 'ImmutableChildObjectWithNoAdditionalFields';
-      case _i73.ImmutableObject():
-        return 'ImmutableObject';
-      case _i74.ImmutableObjectWithImmutableObject():
-        return 'ImmutableObjectWithImmutableObject';
-      case _i75.ImmutableObjectWithList():
-        return 'ImmutableObjectWithList';
-      case _i76.ImmutableObjectWithMap():
-        return 'ImmutableObjectWithMap';
-      case _i77.ImmutableObjectWithMultipleFields():
-        return 'ImmutableObjectWithMultipleFields';
-      case _i78.ImmutableObjectWithNoFields():
-        return 'ImmutableObjectWithNoFields';
-      case _i79.ImmutableObjectWithRecord():
-        return 'ImmutableObjectWithRecord';
-      case _i80.ImmutableObjectWithTable():
-        return 'ImmutableObjectWithTable';
-      case _i81.ImmutableObjectWithTwentyFields():
-        return 'ImmutableObjectWithTwentyFields';
-      case _i82.ChildClass():
-        return 'ChildClass';
-      case _i83.ServerOnlyChildClass():
-        return 'ServerOnlyChildClass';
-      case _i84.ChildWithDefault():
-        return 'ChildWithDefault';
-      case _i85.ChildWithInheritedId():
-        return 'ChildWithInheritedId';
-      case _i86.ChildClassWithoutId():
-        return 'ChildClassWithoutId';
-      case _i87.ServerOnlyChildClassWithoutId():
-        return 'ServerOnlyChildClassWithoutId';
-      case _i88.ParentClass():
-        return 'ParentClass';
-      case _i89.GrandparentClass():
-        return 'GrandparentClass';
-      case _i90.ParentClassWithoutId():
-        return 'ParentClassWithoutId';
-      case _i91.GrandparentClassWithId():
-        return 'GrandparentClassWithId';
-      case _i92.NonServerOnlyParentClass():
-        return 'NonServerOnlyParentClass';
-      case _i93.ParentWithChangedId():
-        return 'ParentWithChangedId';
-      case _i94.ParentWithDefault():
-        return 'ParentWithDefault';
-      case _i95.PolymorphicGrandChild():
-        return 'PolymorphicGrandChild';
-      case _i96.PolymorphicChild():
-        return 'PolymorphicChild';
-      case _i97.PolymorphicChildContainer():
-        return 'PolymorphicChildContainer';
-      case _i98.ModulePolymorphicChildContainer():
-        return 'ModulePolymorphicChildContainer';
-      case _i99.SimilarButNotParent():
-        return 'SimilarButNotParent';
-      case _i100.PolymorphicParent():
-        return 'PolymorphicParent';
-      case _i101.UnrelatedToPolymorphism():
-        return 'UnrelatedToPolymorphism';
-      case _i102.SealedGrandChild():
-        return 'SealedGrandChild';
-      case _i102.SealedChild():
-        return 'SealedChild';
-      case _i102.SealedOtherChild():
-        return 'SealedOtherChild';
-      case _i103.CityWithLongTableName():
-        return 'CityWithLongTableName';
-      case _i104.OrganizationWithLongTableName():
-        return 'OrganizationWithLongTableName';
-      case _i105.PersonWithLongTableName():
-        return 'PersonWithLongTableName';
-      case _i106.MaxFieldName():
-        return 'MaxFieldName';
-      case _i107.LongImplicitIdField():
-        return 'LongImplicitIdField';
-      case _i108.LongImplicitIdFieldCollection():
-        return 'LongImplicitIdFieldCollection';
-      case _i109.RelationToMultipleMaxFieldName():
-        return 'RelationToMultipleMaxFieldName';
-      case _i110.UserNote():
-        return 'UserNote';
-      case _i111.UserNoteCollection():
-        return 'UserNoteCollection';
-      case _i112.UserNoteCollectionWithALongName():
-        return 'UserNoteCollectionWithALongName';
-      case _i113.UserNoteWithALongName():
-        return 'UserNoteWithALongName';
-      case _i114.MultipleMaxFieldName():
-        return 'MultipleMaxFieldName';
-      case _i115.City():
-        return 'City';
-      case _i116.Organization():
-        return 'Organization';
-      case _i117.Person():
-        return 'Person';
-      case _i118.Course():
-        return 'Course';
-      case _i119.Enrollment():
-        return 'Enrollment';
-      case _i120.Student():
-        return 'Student';
-      case _i121.ObjectUser():
-        return 'ObjectUser';
-      case _i122.ParentUser():
-        return 'ParentUser';
-      case _i123.Arena():
-        return 'Arena';
-      case _i124.Player():
-        return 'Player';
-      case _i125.Team():
-        return 'Team';
-      case _i126.Comment():
-        return 'Comment';
-      case _i127.Customer():
-        return 'Customer';
-      case _i128.Book():
-        return 'Book';
-      case _i129.Chapter():
-        return 'Chapter';
-      case _i130.Order():
-        return 'Order';
-      case _i131.Address():
-        return 'Address';
-      case _i132.Citizen():
-        return 'Citizen';
-      case _i133.Company():
-        return 'Company';
-      case _i134.Town():
-        return 'Town';
-      case _i135.Blocking():
-        return 'Blocking';
-      case _i136.Member():
-        return 'Member';
-      case _i137.Cat():
-        return 'Cat';
-      case _i138.Post():
-        return 'Post';
-      case _i139.ModuleDatatype():
-        return 'ModuleDatatype';
-      case _i140.MyFeatureModel():
-        return 'MyFeatureModel';
-      case _i141.Nullability():
-        return 'Nullability';
-      case _i142.ObjectFieldPersist():
-        return 'ObjectFieldPersist';
-      case _i143.ObjectFieldScopes():
-        return 'ObjectFieldScopes';
-      case _i144.ObjectWithBit():
-        return 'ObjectWithBit';
-      case _i145.ObjectWithByteData():
-        return 'ObjectWithByteData';
-      case _i146.ObjectWithCustomClass():
-        return 'ObjectWithCustomClass';
-      case _i147.ObjectWithDuration():
-        return 'ObjectWithDuration';
-      case _i148.ObjectWithEnum():
-        return 'ObjectWithEnum';
-      case _i149.ObjectWithHalfVector():
-        return 'ObjectWithHalfVector';
-      case _i150.ObjectWithIndex():
-        return 'ObjectWithIndex';
-      case _i151.ObjectWithMaps():
-        return 'ObjectWithMaps';
-      case _i152.ObjectWithNullableCustomClass():
-        return 'ObjectWithNullableCustomClass';
-      case _i153.ObjectWithObject():
-        return 'ObjectWithObject';
-      case _i154.ObjectWithParent():
-        return 'ObjectWithParent';
-      case _i155.ObjectWithSealedClass():
-        return 'ObjectWithSealedClass';
-      case _i156.ObjectWithSelfParent():
-        return 'ObjectWithSelfParent';
-      case _i157.ObjectWithSparseVector():
-        return 'ObjectWithSparseVector';
-      case _i158.ObjectWithUuid():
-        return 'ObjectWithUuid';
-      case _i159.ObjectWithVector():
-        return 'ObjectWithVector';
-      case _i160.Record():
-        return 'Record';
-      case _i161.RelatedUniqueData():
-        return 'RelatedUniqueData';
-      case _i162.ExceptionWithRequiredField():
-        return 'ExceptionWithRequiredField';
-      case _i163.ModelWithRequiredField():
-        return 'ModelWithRequiredField';
-      case _i164.ScopeNoneFields():
-        return 'ScopeNoneFields';
-      case _i165.ScopeServerOnlyFieldChild():
-        return 'ScopeServerOnlyFieldChild';
-      case _i166.ScopeServerOnlyField():
-        return 'ScopeServerOnlyField';
-      case _i167.DefaultServerOnlyClass():
-        return 'DefaultServerOnlyClass';
-      case _i168.DefaultServerOnlyEnum():
-        return 'DefaultServerOnlyEnum';
-      case _i169.NotServerOnlyClass():
-        return 'NotServerOnlyClass';
-      case _i170.NotServerOnlyEnum():
-        return 'NotServerOnlyEnum';
-      case _i171.ServerOnlyClass():
-        return 'ServerOnlyClass';
-      case _i172.ServerOnlyEnum():
-        return 'ServerOnlyEnum';
-      case _i173.ServerOnlyClassField():
-        return 'ServerOnlyClassField';
-      case _i174.ServerOnlyDefault():
-        return 'ServerOnlyDefault';
-      case _i175.SessionAuthInfo():
-        return 'SessionAuthInfo';
-      case _i176.SimpleData():
-        return 'SimpleData';
-      case _i177.SimpleDataList():
-        return 'SimpleDataList';
-      case _i178.SimpleDataMap():
-        return 'SimpleDataMap';
-      case _i179.SimpleDataObject():
-        return 'SimpleDataObject';
-      case _i180.SimpleDateTime():
-        return 'SimpleDateTime';
-      case _i181.ModelInSubfolder():
-        return 'ModelInSubfolder';
-      case _i182.TestEnum():
-        return 'TestEnum';
-      case _i183.TestEnumDefaultSerialization():
-        return 'TestEnumDefaultSerialization';
-      case _i184.TestEnumStringified():
-        return 'TestEnumStringified';
-      case _i185.Types():
-        return 'Types';
-      case _i186.TypesList():
-        return 'TypesList';
-      case _i187.TypesMap():
-        return 'TypesMap';
-      case _i188.TypesRecord():
-        return 'TypesRecord';
-      case _i189.TypesSet():
-        return 'TypesSet';
-      case _i190.TypesSetRequired():
-        return 'TypesSetRequired';
-      case _i191.UniqueData():
-        return 'UniqueData';
-    }
+    className = getClassNameForType(data.runtimeType);
+    if (className != null) return className;
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';
