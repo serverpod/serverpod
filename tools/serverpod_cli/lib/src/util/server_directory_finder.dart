@@ -328,17 +328,60 @@ class ServerDirectoryFinder {
 
       // Stop at first level within top-level directories to prevent
       // cross-contamination between concurrent or leftover of previous tests
-      final topLevelDirectories = [
-        p.canonicalize('/'),
+      final topLevelDirectories = {
+        // Root directory, that can be another drive on Windows (like "D:\")
+        p.rootPrefix(p.canonicalize('/')),
+        // Root directory of the current directory, in case it's in another drive
+        p.rootPrefix(p.canonicalize(dir.path)),
+        // System temp directory, that can contain legacy DOS Windows paths
         p.canonicalize(Directory.systemTemp.path),
-      ];
-      if (topLevelDirectories.contains(p.canonicalize(dir.parent.path))) {
+      };
+      final canonicalizedParent = p.canonicalize(dir.parent.path);
+      if (topLevelDirectories.contains(canonicalizedParent)) {
         return true;
+      }
+
+      // Handle Legacy DOS Windows paths like `c:\users\runner~1\appdata\local\temp`
+      // This prevents cross-contamination between tests on the CI for Windows.
+      if (Platform.isWindows) {
+        for (final topLevelDir in topLevelDirectories) {
+          if (canonicalizedParent.matchesLegacyDOSWindowsPath(topLevelDir)) {
+            return true;
+          }
+        }
       }
 
       return false;
     } on FileSystemException catch (_) {
       return true;
     }
+  }
+}
+
+extension on String {
+  /// This is a best effort that will try to partially match legacy DOS Windows
+  /// paths to prevent going up further to top-level directories. It can hit
+  /// false positives, but this would only lead to the user having to manually
+  /// specify the directory to generate. So the goal is to ensure safety over
+  /// accuracy on Windows with legacy DOS paths.
+  bool matchesLegacyDOSWindowsPath(String maybeParent) {
+    if (this == maybeParent) return true;
+    if (!maybeParent.contains('~')) return false;
+
+    // Extract prefix before ~ and suffix after ~ and next \
+    final tildeIndex = maybeParent.indexOf('~');
+    final afterTilde = maybeParent.substring(tildeIndex);
+    final nextSlashIndex = afterTilde.indexOf('\\');
+    if (nextSlashIndex == -1) return false;
+
+    final prefix = maybeParent.substring(0, tildeIndex);
+    final suffix = afterTilde.substring(nextSlashIndex);
+
+    // Check if this matches: starts with prefix and ends with suffix
+    final pattern = RegExp(
+      '^${RegExp.escape(prefix)}.*${RegExp.escape(suffix)}\$',
+      caseSensitive: false,
+    );
+    return pattern.hasMatch(this);
   }
 }
