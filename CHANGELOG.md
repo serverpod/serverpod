@@ -6,9 +6,8 @@ Serverpod 3 is a major overhaul of the authentication system and the web server.
 This release candidate is **not yet production-ready**. It is still under active development and may contain bugs or breaking changes.
 
 #### New features
-- feat: Adds support for resolving Dart doc template macros in client code generation.
 - feat: BREAKING. Replaces `remoteInfo` parameter on `Session` class with `Request` object.
-- refactor: Eagerly encodes hash peppers on the new authentication module to improve performance.
+- feat: Adds support for resolving Dart doc template macros in client code generation.
 
 #### Fixes
 - fix: Improves error message when there is a database mismatch on server startup.
