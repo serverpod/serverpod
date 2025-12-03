@@ -99,8 +99,9 @@ void main() async {
           path.join(tempPath, serverDir, 'lib', 'server.dart'),
         );
         final content = serverFile.readAsStringSync();
-        expect(content, contains('AuthServices'));
-        expect(content, contains('EmailIdentityProviderFactory'));
+        expect(content, contains('initializeAuthServices'));
+        expect(content, contains('EmailIdpConfigFromPasswords'));
+        expect(content, contains('ServerSideSessionsConfigFromPasswords'));
       });
 
       test('then the flutter main.dart contains auth imports', () {
