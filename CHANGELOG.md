@@ -9,14 +9,14 @@ This release candidate is **not yet production-ready**. It is still under active
 
 To further improve the extensibility of the identity providers, this version introduces an abstraction of the engine that handles request rate limiting and verification code challenges, both of which are now exposed as reusable atoms for integration with any provider. This will drastically simplify future implementation of passwordless login, SMS login, etc.
 
-- refactor: BREAKING. Replaces rate limiting and verification code challenge handling on `EmailIdp` with new atoms. All `*Attempt` tables will be dropped and replaced by a single rate limiting table.
 - feat: Introduces `SecretChallengeUtil` and `RateLimitedRequestAttemptUtilP` on the new IDP package.
+- refactor: BREAKING. Replaces rate limiting and verification code challenge handling on `EmailIdp` with new atoms. All `*Attempt` tables will be dropped and replaced by a single rate limiting table.
 
 ### Web server improvements from last rc
+- feat: Adds parameter `values` to the `TemplateWidget` class.
+- fix: BREAKING. Fixes fallback routes not being able to access the `Session`.
 - refactor: BREAKING. Replaces `remoteInfo` parameter on `Session` class with `Request` object.
 - refactor: BREAKING. Renames `context` parameter to `request` in `Route.call` and `Route.handleCall` methods.
-- fix: BREAKING. Fixes fallback routes not being able to access the `Session`.
-- feat: Adds parameter `values` to the `TemplateWidget` class.
 
 ### Additional changes
 
