@@ -13,8 +13,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../../../providers/email/models/email_account.dart' as _i2;
-import '../../../../common/models/secret_challenge.dart' as _i3;
+import '../../../providers/email/models/email_account.dart' as _i2;
+import '../../../common/secret_challenge/models/secret_challenge.dart' as _i3;
 import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i4;
 
 abstract class EmailAccountPasswordResetRequest
