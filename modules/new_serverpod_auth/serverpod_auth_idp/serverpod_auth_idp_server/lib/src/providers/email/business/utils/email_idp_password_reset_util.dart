@@ -332,7 +332,7 @@ class EmailIdpPasswordResetUtil {
   _getCompletionConfig() {
     return SecretChallengeCompletionConfig<EmailAccountPasswordResetRequest>(
       getRequest: _getPasswordResetRequest,
-      getCompletionChallenge: (final request) => request.setPasswordChallenge!,
+      getCompletionChallenge: (final request) => request.setPasswordChallenge,
       isExpired: _isRequestExpired,
       onExpired: EmailAccountPasswordResetRequest.db.deleteRow,
     );
