@@ -1617,7 +1617,6 @@ typedef _InvokeFutureCall =
             Method.returnsVoid(
               (m) => m
                 ..name = 'initialize'
-                ..annotations.add(refer('override'))
                 ..requiredParameters.addAll([
                   Parameter(
                     ((p) => p
