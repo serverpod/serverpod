@@ -46,7 +46,7 @@ class Protocol extends _i1.SerializationManager {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -106,6 +106,17 @@ class Protocol extends _i1.SerializationManager {
           : (deserialize<bool>(((data as Map)['p'] as List)[0]),) as T;
     }
     return super.deserialize<T>(data, t);
+  }
+
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i2.ModulePolymorphicGrandChild => 'ModulePolymorphicGrandChild',
+      _i3.ModulePolymorphicChild => 'ModulePolymorphicChild',
+      _i4.ModulePolymorphicParent => 'ModulePolymorphicParent',
+      _i5.ModuleClass => 'ModuleClass',
+      _i6.MyModuleFeatureModel => 'MyModuleFeatureModel',
+      _ => null,
+    };
   }
 
   @override

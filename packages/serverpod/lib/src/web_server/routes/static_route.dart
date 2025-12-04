@@ -71,6 +71,6 @@ class StaticRoute extends Route {
   }
 
   @override
-  FutureOr<Result> handleCall(Session session, Request context) =>
-      _handler(context);
+  FutureOr<Result> handleCall(Session session, Request request) =>
+      _handler(request);
 }

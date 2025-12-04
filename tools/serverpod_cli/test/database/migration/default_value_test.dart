@@ -372,7 +372,7 @@ void main() {
         expect(warnings, hasLength(1));
         expect(
           warnings.first.message,
-          'Column id of table example_table is modified in a way that it '
+          'Column "id" of table "example_table" is modified in a way that it '
           'must be deleted and recreated.',
         );
       });

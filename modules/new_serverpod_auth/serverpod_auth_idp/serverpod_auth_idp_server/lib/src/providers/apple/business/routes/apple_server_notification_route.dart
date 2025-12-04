@@ -61,7 +61,7 @@ final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
     : super(utils, methods: {Method.get});
 
   @override
-  FutureOr<Result> handleCall(final Session session, final Request context) {
+  FutureOr<Result> handleCall(final Session session, final Request request) {
     return Response.internalServerError();
   }
 }

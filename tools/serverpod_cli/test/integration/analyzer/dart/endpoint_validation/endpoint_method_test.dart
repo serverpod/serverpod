@@ -1036,6 +1036,128 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
+    'Given a valid endpoint method with {@macro} reference and template defined in same class',
+    () {
+      var collector = CodeGenerationCollector();
+      var testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+
+      late List<EndpointDefinition> endpointDefinitions;
+      late EndpointsAnalyzer analyzer;
+      setUpAll(() async {
+        var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+        endpointFile.createSync(recursive: true);
+        endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class BaseEndpoint extends Endpoint {
+  /// {@template example.method.hello}
+  /// This is the template documentation.
+  /// It spans multiple lines.
+  /// {@endtemplate}
+  Future<String> templateMethod(Session session) async {
+    return 'Template';
+  }
+}
+
+class ExampleEndpoint extends Endpoint {
+  /// {@macro example.method.hello}
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+        analyzer = EndpointsAnalyzer(testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector);
+      });
+
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then endpoint definitions are created.', () {
+        expect(endpointDefinitions, hasLength(2));
+      });
+
+      test('then macro reference is resolved to template content.', () {
+        var exampleEndpoint = endpointDefinitions.firstWhere(
+          (e) => e.className == 'ExampleEndpoint',
+        );
+        var documentation =
+            exampleEndpoint.methods.firstOrNull?.documentationComment;
+        expect(
+          documentation,
+          '''/// This is the template documentation.
+/// It spans multiple lines.''',
+        );
+      });
+
+      test(
+        'then template markers are stripped from template method documentation.',
+        () {
+          var baseEndpoint = endpointDefinitions.firstWhere(
+            (e) => e.className == 'BaseEndpoint',
+          );
+          var documentation =
+              baseEndpoint.methods.firstOrNull?.documentationComment;
+          expect(
+            documentation,
+            '''/// This is the template documentation.
+/// It spans multiple lines.''',
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a valid endpoint method with {@macro} reference but no matching template',
+    () {
+      var collector = CodeGenerationCollector();
+      var testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+
+      late List<EndpointDefinition> endpointDefinitions;
+      late EndpointsAnalyzer analyzer;
+      setUpAll(() async {
+        var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+        endpointFile.createSync(recursive: true);
+        endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  /// {@macro nonexistent.template}
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+        analyzer = EndpointsAnalyzer(testDirectory);
+        endpointDefinitions = await analyzer.analyze(collector: collector);
+      });
+
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then endpoint definition is created.', () {
+        expect(endpointDefinitions, hasLength(1));
+      });
+
+      test('then macro reference is kept as-is when not found.', () {
+        var documentation = endpointDefinitions
+            .firstOrNull
+            ?.methods
+            .firstOrNull
+            ?.documentationComment;
+        expect(documentation, '/// {@macro nonexistent.template}');
+      });
+    },
+  );
+
+  group(
     'Given a valid endpoint method with "@Deprecated(<string literal>)" annotation',
     () {
       var collector = CodeGenerationCollector();
