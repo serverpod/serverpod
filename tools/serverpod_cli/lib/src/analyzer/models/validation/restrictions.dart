@@ -446,28 +446,6 @@ class Restrictions {
         ),
       ];
     }
-    if (!parsedModels.isIndexNameUnique(documentDefinition, indexName)) {
-      var collision = parsedModels.findByIndexName(
-        indexName,
-        ignore: documentDefinition,
-      );
-
-      return [
-        SourceSpanSeverityException(
-          'The index name "$indexName" is already used by the model class "${collision?.className}".',
-          span,
-        ),
-      ];
-    }
-
-    if (indexName.length > DatabaseConstants.pgsqlMaxNameLimitation) {
-      return [
-        SourceSpanSeverityException(
-          'The index name "$indexName" exceeds the ${DatabaseConstants.pgsqlMaxNameLimitation} character index name limitation.',
-          span,
-        ),
-      ];
-    }
 
     var definition = documentDefinition;
     if (definition is ModelClassDefinition && definition.tableName != null) {
@@ -479,6 +457,29 @@ class Restrictions {
           ),
         ];
       }
+
+      if (!parsedModels.isIndexNameUnique(documentDefinition, indexName)) {
+        var collision = parsedModels.findByIndexName(
+          indexName,
+          ignore: documentDefinition,
+        );
+
+        return [
+          SourceSpanSeverityException(
+            'The index name "$indexName" is already used by the model class "${collision?.className}".',
+            span,
+          ),
+        ];
+      }
+    }
+
+    if (indexName.length > DatabaseConstants.pgsqlMaxNameLimitation) {
+      return [
+        SourceSpanSeverityException(
+          'The index name "$indexName" exceeds the ${DatabaseConstants.pgsqlMaxNameLimitation} character index name limitation.',
+          span,
+        ),
+      ];
     }
 
     return [];
