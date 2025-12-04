@@ -15,6 +15,7 @@ import '../email_idp_server_exceptions.dart';
 class EmailIdpAuthenticationUtil {
   final Argon2HashUtil _hashUtil;
   final DatabaseRateLimitedRequestAttemptUtil<String> _rateLimitUtil;
+  final int _maxAttempts;
 
   /// Creates a new instance of [EmailIdpAuthenticationUtil].
   EmailIdpAuthenticationUtil({
@@ -28,7 +29,8 @@ class EmailIdpAuthenticationUtil {
            maxAttempts: failedLoginRateLimit.maxAttempts,
            timeframe: failedLoginRateLimit.timeframe,
          ),
-       );
+       ),
+       _maxAttempts = failedLoginRateLimit.maxAttempts;
 
   /// Returns the [AuthUser]'s ID upon successful email/password verification.
   ///
@@ -50,10 +52,12 @@ class EmailIdpAuthenticationUtil {
   }) async {
     email = email.normalizedEmail;
 
-    if (await _rateLimitUtil.hasTooManyAttempts(
+    final attemptCount = await _rateLimitUtil.countAttempts(
       session,
       nonce: email,
-    )) {
+      transaction: transaction,
+    );
+    if (attemptCount >= _maxAttempts) {
       throw EmailAuthenticationTooManyAttemptsException();
     }
 
@@ -64,6 +68,10 @@ class EmailIdpAuthenticationUtil {
     );
 
     if (account == null) {
+      await _rateLimitUtil.recordAttempt(
+        session,
+        nonce: email,
+      );
       throw EmailAccountNotFoundException();
     }
 
@@ -71,6 +79,10 @@ class EmailIdpAuthenticationUtil {
       secret: password,
       hashString: account.passwordHash,
     )) {
+      await _rateLimitUtil.recordAttempt(
+        session,
+        nonce: email,
+      );
       throw EmailAuthenticationInvalidCredentialsException();
     }
 

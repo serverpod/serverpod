@@ -20,10 +20,19 @@ void main() {
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
       late EmailIdpAuthenticationUtil authenticationUtil;
+      const failedLoginRateLimit = RateLimit(
+        maxAttempts: 4,
+        timeframe: Duration(hours: 1),
+      );
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIdpTestFixture();
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
+            secretHashPepper: 'test-pepper',
+            failedLoginRateLimit: failedLoginRateLimit,
+          ),
+        );
         final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
         await fixture.createEmailAccount(
@@ -53,6 +62,27 @@ void main() {
           );
 
           await expectLater(result, completion(authUserId));
+        },
+      );
+
+      test(
+        'when authenticating with correct credentials past failed login threshold then it succeeds with the auth user id',
+        () async {
+          final loginAttempts = List.generate(
+            failedLoginRateLimit.maxAttempts,
+            (final index) async {
+              return session.db.transaction(
+                (final transaction) => authenticationUtil.authenticate(
+                  session,
+                  email: email,
+                  password: password,
+                  transaction: transaction,
+                ),
+              );
+            },
+          ).wait;
+
+          await expectLater(loginAttempts, completion(isA<List<UuidValue>>()));
         },
       );
 
