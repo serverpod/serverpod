@@ -600,7 +600,6 @@ class SerializableModelLibraryGenerator {
     var hiddenFields = classDefinition.fields.where(
       (field) => field.hiddenSerializableField(serverCode),
     );
-    // Use fieldsIncludingInherited to include inherited fields from parent class
     var visibleFields = classDefinition.fieldsIncludingInherited.where(
       (field) => field.shouldIncludeField(serverCode),
     );

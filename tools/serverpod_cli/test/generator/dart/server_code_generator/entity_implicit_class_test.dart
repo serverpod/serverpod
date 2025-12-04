@@ -283,8 +283,6 @@ void main() {
   group(
     'Given a child class with table that extends parent class with field and has hidden serializable field',
     () {
-      // This test reproduces the issue where implicit class constructor
-      // fails to include inherited fields from parent class.
       var baseClassName = 'BaseEntity';
       var baseClassFileName = 'base_entity';
 
