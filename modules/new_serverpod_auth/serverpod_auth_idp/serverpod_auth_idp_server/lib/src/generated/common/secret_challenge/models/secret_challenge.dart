@@ -42,7 +42,7 @@ abstract class SecretChallenge
 
   /// The hash of the challenge code sent to the user.
   ///
-  /// Stored in PHC format: $argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}$${base64Hash}
+  /// Stored in PHC format: $argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}${base64Hash}
   String challengeCodeHash;
 
   @override
@@ -149,7 +149,7 @@ class SecretChallengeTable extends _i1.Table<_i1.UuidValue?> {
 
   /// The hash of the challenge code sent to the user.
   ///
-  /// Stored in PHC format: $argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}$${base64Hash}
+  /// Stored in PHC format: $argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}${base64Hash}
   late final _i1.ColumnString challengeCodeHash;
 
   @override
