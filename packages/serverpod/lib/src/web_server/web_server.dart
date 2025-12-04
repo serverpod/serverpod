@@ -193,7 +193,7 @@ class _SessionMiddleware extends MiddlewareObject {
       try {
         return await next(req);
       } finally {
-        await deferredSession.value?.close(); // only close if actually resolved
+        await deferredSession.ifInitiatedRun((s) => s.close());
       }
     };
   }
@@ -225,14 +225,23 @@ class _ReportExceptionMiddleware extends MiddlewareObject {
 
 class _Deferred<T> {
   final Future<T> Function() _futureFactory;
-  T? value;
-  Future<T>? _cachedFuture;
 
   _Deferred(this._futureFactory);
 
+  Future<T>? _cachedFuture;
   Future<T> get future async {
-    _cachedFuture ??= _futureFactory().then((v) => value = v);
+    _cachedFuture ??= _futureFactory();
     return _cachedFuture!;
+  }
+
+  bool get initiated => _cachedFuture != null;
+
+  Future<R?> ifInitiatedRun<R>(FutureOr<R> Function(T) action) async {
+    final future = _cachedFuture;
+    if (future != null) {
+      return action(await future);
+    }
+    return null;
   }
 }
 
