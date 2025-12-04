@@ -1573,8 +1573,7 @@ class LibraryGenerator {
     ];
   }
 
-  /// Generates the FutureCallDispatch, callers
-  /// and future calls for the server side.
+  /// Generates the interface for accessing future calls for the server side.
   Library generateServerFutureCalls() {
     var library = LibraryBuilder();
 
