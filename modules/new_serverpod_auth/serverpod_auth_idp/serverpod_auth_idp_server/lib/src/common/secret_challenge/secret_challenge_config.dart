@@ -9,15 +9,18 @@ import '../../../core.dart';
 typedef GetRequestCallback<T> =
     Future<T?> Function(
       Session session,
-      UuidValue requestId,
-      Transaction transaction,
-    );
+      UuidValue requestId, {
+      required Transaction? transaction,
+    });
 
 /// Callback called when a request has expired.
 ///
 /// Should delete the request outside of the transaction so it's not rolled back.
 typedef OnExpiredCallback<T> =
-    Future<void> Function(Session session, T request);
+    Future<void> Function(
+      Session session,
+      T request,
+    );
 
 /// Callback called when a request is linked to a completion challenge.
 ///
@@ -28,9 +31,9 @@ typedef LinkCompletionTokenCallback<T> =
     Future<void> Function(
       Session session,
       T request,
-      SecretChallenge completionChallenge,
-      Transaction transaction,
-    );
+      SecretChallenge completionChallenge, {
+      required Transaction? transaction,
+    });
 
 /// Configuration for challenge verification with all protection mechanisms.
 ///

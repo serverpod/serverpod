@@ -88,7 +88,11 @@ class SecretChallengeUtil<T> {
       throw ChallengeRateLimitExceededException();
     }
 
-    final request = await config.getRequest(session, requestId, transaction);
+    final request = await config.getRequest(
+      session,
+      requestId,
+      transaction: transaction,
+    );
     if (request == null) {
       throw ChallengeRequestNotFoundException();
     }
@@ -121,7 +125,7 @@ class SecretChallengeUtil<T> {
       session,
       request,
       completionTokenResult.challenge,
-      transaction,
+      transaction: transaction,
     );
 
     return completionTokenResult.encodedToken;
@@ -163,7 +167,7 @@ class SecretChallengeUtil<T> {
     final request = await config.getRequest(
       session,
       credentials.requestId,
-      transaction,
+      transaction: transaction,
     );
     if (request == null) {
       throw ChallengeRequestNotFoundException();

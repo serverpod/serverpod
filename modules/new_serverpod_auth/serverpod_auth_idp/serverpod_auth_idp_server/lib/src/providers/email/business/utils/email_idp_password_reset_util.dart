@@ -355,9 +355,9 @@ class EmailIdpPasswordResetUtil {
 
   Future<EmailAccountPasswordResetRequest?> _getPasswordResetRequest(
     final Session session,
-    final UuidValue requestId,
-    final Transaction transaction,
-  ) async {
+    final UuidValue requestId, {
+    required final Transaction? transaction,
+  }) async {
     return await EmailAccountPasswordResetRequest.db.findById(
       session,
       requestId,
@@ -383,9 +383,9 @@ class EmailIdpPasswordResetUtil {
   Future<void> _linkSetPasswordChallenge(
     final Session session,
     final EmailAccountPasswordResetRequest request,
-    final SecretChallenge setPasswordChallenge,
-    final Transaction transaction,
-  ) async {
+    final SecretChallenge setPasswordChallenge, {
+    required final Transaction? transaction,
+  }) async {
     final updated = await EmailAccountPasswordResetRequest.db.updateWhere(
       session,
       columnValues: (final t) => [

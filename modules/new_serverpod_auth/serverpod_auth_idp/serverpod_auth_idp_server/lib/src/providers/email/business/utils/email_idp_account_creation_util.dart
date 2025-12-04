@@ -398,9 +398,9 @@ class EmailIdpAccountCreationUtil {
 
   Future<EmailAccountRequest?> _getAccountRequest(
     final Session session,
-    final UuidValue accountRequestId,
-    final Transaction transaction,
-  ) async {
+    final UuidValue accountRequestId, {
+    required final Transaction? transaction,
+  }) async {
     return await EmailAccountRequest.db.findById(
       session,
       accountRequestId,
@@ -426,9 +426,9 @@ class EmailIdpAccountCreationUtil {
   Future<void> _linkCreateAccountChallenge(
     final Session session,
     final EmailAccountRequest request,
-    final SecretChallenge createAccountChallenge,
-    final Transaction transaction,
-  ) async {
+    final SecretChallenge createAccountChallenge, {
+    required final Transaction? transaction,
+  }) async {
     final updated = await EmailAccountRequest.db.updateWhere(
       session,
       columnValues: (final t) => [
