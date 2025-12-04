@@ -1,0 +1,10 @@
+### Model with partitionBy using explicit LIST method.
+class: PartitionedListMethod
+table: partitioned_list_method
+fields:
+  category: String
+  name: String
+  value: int
+partitionBy:
+  method: list
+  fields: category

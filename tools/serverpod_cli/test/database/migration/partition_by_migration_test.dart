@@ -6,10 +6,11 @@ import '../../test_util/builders/database/database_definition_builder.dart';
 import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
-  group('Given source and target database definitions', () {
-    group('when partition configuration is added to a table', () {
+  group(
+    'Given a table without partition configuration',
+    () {
       test(
-        'then the table is dropped and recreated.',
+        'when partition configuration is added then the table is dropped and recreated.',
         () {
           var srcDatabase = DatabaseDefinitionBuilder()
               .withTable(
@@ -45,7 +46,7 @@ void main() {
       );
 
       test(
-        'then a warning about table being dropped is generated.',
+        'when partition configuration is added then a warning about table being dropped is generated.',
         () {
           var srcDatabase = DatabaseDefinitionBuilder()
               .withTable(
@@ -71,16 +72,21 @@ void main() {
           var warning = migration.warnings.first;
           expect(
             warning.message,
-            contains('Partition configuration'),
+            'Partition configuration of table "example" has changed. '
+            'The table will be dropped and recreated as PostgreSQL does not '
+            'support altering partition configuration.',
           );
           expect(warning.destrucive, isTrue);
         },
       );
-    });
+    },
+  );
 
-    group('when partition configuration is removed from a table', () {
+  group(
+    'Given a table with partition configuration',
+    () {
       test(
-        'then the table is dropped and recreated.',
+        'when partition configuration is removed then the table is dropped and recreated.',
         () {
           var srcDatabase = DatabaseDefinitionBuilder()
               .withTable(
@@ -113,11 +119,9 @@ void main() {
           );
         },
       );
-    });
 
-    group('when partition configuration is changed', () {
       test(
-        'with different columns then the table is dropped and recreated.',
+        'when partition columns are changed then the table is dropped and recreated.',
         () {
           var srcDatabase = DatabaseDefinitionBuilder()
               .withTable(
@@ -155,7 +159,7 @@ void main() {
       );
 
       test(
-        'with different number of columns then the table is dropped and recreated.',
+        'when partition column count is changed then the table is dropped and recreated.',
         () {
           var srcDatabase = DatabaseDefinitionBuilder()
               .withTable(
@@ -191,11 +195,9 @@ void main() {
           );
         },
       );
-    });
 
-    group('when partition configuration is unchanged', () {
       test(
-        'with same columns then no migration action is generated.',
+        'when partition configuration is unchanged then no migration action is generated.',
         () {
           var srcDatabase = DatabaseDefinitionBuilder()
               .withTable(
@@ -225,65 +227,7 @@ void main() {
       );
 
       test(
-        'with no partition on both then no migration action is generated.',
-        () {
-          var srcDatabase = DatabaseDefinitionBuilder()
-              .withTable(
-                TableDefinitionBuilder().withName('example').build(),
-              )
-              .build();
-
-          var dstDatabase = DatabaseDefinitionBuilder()
-              .withTable(
-                TableDefinitionBuilder().withName('example').build(),
-              )
-              .build();
-
-          var migration = generateDatabaseMigration(
-            databaseSource: srcDatabase,
-            databaseTarget: dstDatabase,
-          );
-
-          expect(migration.actions, isEmpty);
-        },
-      );
-
-      test(
-        'with same fields and same method then no migration is generated.',
-        () {
-          var srcDatabase = DatabaseDefinitionBuilder()
-              .withTable(
-                TableDefinitionBuilder()
-                    .withName('example')
-                    .withPartitionBy(['name'])
-                    .withPartitionMethod(PartitionMethod.list)
-                    .build(),
-              )
-              .build();
-
-          var dstDatabase = DatabaseDefinitionBuilder()
-              .withTable(
-                TableDefinitionBuilder()
-                    .withName('example')
-                    .withPartitionBy(['name'])
-                    .withPartitionMethod(PartitionMethod.list)
-                    .build(),
-              )
-              .build();
-
-          var migration = generateDatabaseMigration(
-            databaseSource: srcDatabase,
-            databaseTarget: dstDatabase,
-          );
-
-          expect(migration.actions, isEmpty);
-        },
-      );
-    });
-
-    group('when partition method is changed', () {
-      test(
-        'from list to range then the table is dropped and recreated.',
+        'when partition method is changed from list to range then the table is dropped and recreated.',
         () {
           var srcDatabase = DatabaseDefinitionBuilder()
               .withTable(
@@ -323,7 +267,7 @@ void main() {
       );
 
       test(
-        'from list to hash then the table is dropped and recreated.',
+        'when partition method is changed from list to hash then the table is dropped and recreated.',
         () {
           var srcDatabase = DatabaseDefinitionBuilder()
               .withTable(
@@ -361,6 +305,67 @@ void main() {
           );
         },
       );
-    });
-  });
+
+      test(
+        'when partition configuration is unchanged with same method then no migration is generated.',
+        () {
+          var srcDatabase = DatabaseDefinitionBuilder()
+              .withTable(
+                TableDefinitionBuilder()
+                    .withName('example')
+                    .withPartitionBy(['name'])
+                    .withPartitionMethod(PartitionMethod.list)
+                    .build(),
+              )
+              .build();
+
+          var dstDatabase = DatabaseDefinitionBuilder()
+              .withTable(
+                TableDefinitionBuilder()
+                    .withName('example')
+                    .withPartitionBy(['name'])
+                    .withPartitionMethod(PartitionMethod.list)
+                    .build(),
+              )
+              .build();
+
+          var migration = generateDatabaseMigration(
+            databaseSource: srcDatabase,
+            databaseTarget: dstDatabase,
+          );
+
+          expect(migration.actions, isEmpty);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given two tables without partition configuration',
+    () {
+      test(
+        'when neither has partition then no migration action is generated.',
+        () {
+          var srcDatabase = DatabaseDefinitionBuilder()
+              .withTable(
+                TableDefinitionBuilder().withName('example').build(),
+              )
+              .build();
+
+          var dstDatabase = DatabaseDefinitionBuilder()
+              .withTable(
+                TableDefinitionBuilder().withName('example').build(),
+              )
+              .build();
+
+          var migration = generateDatabaseMigration(
+            databaseSource: srcDatabase,
+            databaseTarget: dstDatabase,
+          );
+
+          expect(migration.actions, isEmpty);
+        },
+      );
+    },
+  );
 }

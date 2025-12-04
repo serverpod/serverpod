@@ -1,0 +1,9 @@
+### Model with partitionBy using HASH method.
+class: PartitionedHashMethod
+table: partitioned_hash_method
+fields:
+  userId: int
+  data: String
+partitionBy:
+  method: hash
+  fields: userId

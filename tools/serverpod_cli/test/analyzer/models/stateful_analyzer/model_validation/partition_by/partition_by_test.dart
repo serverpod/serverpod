@@ -549,9 +549,10 @@ void main() {
         var error = collector.errors.first;
         expect(
           error.message,
-          contains('Unique index "example_unique_idx" includes partition column(s) but not all'),
+          'Unique index "example_unique_idx" includes partition column(s) but not all. '
+          'When a unique index includes any partition column, it must include all partition columns. '
+          'Missing: category.',
         );
-        expect(error.message, contains('category'));
       },
     );
 
