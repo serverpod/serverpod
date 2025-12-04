@@ -14,7 +14,7 @@ class ConfigInfo {
   }
 
   Client createServiceClient() {
-    var keyManager = ServiceKeyManager('CLI', config);
+    var keyManager = ServiceAuthKeyProvider('CLI', config);
 
     var insightsServer = config.insightsServer;
     if (insightsServer == null) {
@@ -24,7 +24,6 @@ class ConfigInfo {
     return Client(
       '${insightsServer.publicScheme}://'
       '${insightsServer.publicHost}:${insightsServer.port}/',
-      authKeyProvider: keyManager,
-    );
+    )..authKeyProvider = keyManager;
   }
 }

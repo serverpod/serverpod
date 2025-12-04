@@ -1,5 +1,4 @@
 // Same tests as in out_stream_test.dart but for a future return and check what happens when it never returns.
-// ignore_for_file: deprecated_member_use
 
 import 'dart:async';
 
@@ -11,6 +10,7 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(
     serverUrl,
+    // ignore: deprecated_member_use
     authenticationKeyManager: TestAuthKeyManager(),
   );
 

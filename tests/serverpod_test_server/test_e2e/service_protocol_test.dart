@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:serverpod_service_client/serverpod_service_client.dart'
     as service;
 import 'package:serverpod_test_client/serverpod_test_client.dart';
@@ -11,6 +9,7 @@ void main() {
   var client = Client(serverUrl);
   var serviceClient = service.Client(
     serviceServerUrl,
+    // ignore: deprecated_member_use
     authenticationKeyManager: TestServiceKeyManager(
       '0',
       'super_SECRET_password',
@@ -285,6 +284,7 @@ void main() {
       );
       await serviceClient.insights.setRuntimeSettings(settings);
 
+      // ignore: deprecated_member_use
       await client.openStreamingConnection(
         disconnectOnLostInternetConnection: false,
       );

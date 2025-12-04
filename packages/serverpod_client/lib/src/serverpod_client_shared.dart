@@ -221,7 +221,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.host,
     this.serializationManager, {
     dynamic securityContext,
-    ClientAuthKeyProvider? authKeyProvider,
     @Deprecated(
       'Use authKeyProvider instead. This will be removed in future releases.',
     )
@@ -255,7 +254,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
     // Use authKeyProvider if provided, otherwise fall back to deprecated
     // authenticationKeyManager for backwards compatibility.
-    this.authKeyProvider = authKeyProvider ?? authenticationKeyManager;
+    authKeyProvider ??= authenticationKeyManager;
   }
 
   /// Handles a message received from the WebSocket stream. Typically, this

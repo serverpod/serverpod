@@ -1,6 +1,6 @@
 import 'package:serverpod_new_auth_test_client/serverpod_new_auth_test_client.dart';
 
-class TestAuthKeyManager implements ClientAuthKeyProvider {
+class TestAuthKeyProvider implements ClientAuthKeyProvider {
   String? _key;
 
   @override

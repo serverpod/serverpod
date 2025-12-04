@@ -1,5 +1,4 @@
 // Add tests for when passing an input parameter to the stream.
-// ignore_for_file: deprecated_member_use
 import 'dart:async';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
@@ -10,6 +9,7 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(
     serverUrl,
+    // ignore: deprecated_member_use
     authenticationKeyManager: TestAuthKeyManager(),
   );
 
