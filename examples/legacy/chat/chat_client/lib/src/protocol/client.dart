@@ -47,7 +47,6 @@ class Client extends _i1.ServerpodClientShared {
   Client(
     String host, {
     dynamic securityContext,
-    _i1.ClientAuthKeyProvider? authKeyProvider,
     @Deprecated(
       'Use authKeyProvider instead. This will be removed in future releases.',
     )
@@ -66,7 +65,6 @@ class Client extends _i1.ServerpodClientShared {
          host,
          _i6.Protocol(),
          securityContext: securityContext,
-         authKeyProvider: authKeyProvider,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
          onFailedCall: onFailedCall,
