@@ -91,6 +91,10 @@ class Server implements RouterInjectable {
   /// This counter is incremented for each endpoint call, websocket connection,
   /// and cloud storage request. It can be used to detect if the server has
   /// been active (i.e., handling requests) since a previous point in time.
+  ///
+  /// Note: Health check endpoint requests (`GET /`) are intentionally not
+  /// counted, as these are typically from load balancer probes and should not
+  /// prevent the server from being considered idle.
   int get requestCount => _requestCount;
 
   RelicServer? _relicServer;
