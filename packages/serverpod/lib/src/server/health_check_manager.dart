@@ -25,6 +25,10 @@ class HealthCheckManager {
   Timer? _timer;
   Completer<void>? _pendingHealthCheck;
 
+  /// Tracks the request count from the last health check.
+  /// Used to determine if the server was active since the last check.
+  int _lastRequestCount = 0;
+
   /// Creates a new [HealthCheckManager].
   HealthCheckManager(this._pod, this.onCompleted);
 
@@ -84,28 +88,41 @@ class HealthCheckManager {
     var session = _pod.internalSession;
     var numHealthChecks = 0;
 
-    try {
-      var result = await performHealthChecks(_pod);
-      numHealthChecks = result.metrics.length;
+    // Check if the server has been active since the last health check.
+    // If the server is idle (no requests handled), we skip database operations
+    // to allow the database to sleep and reduce resource usage.
+    var currentRequestCount = _pod.server.requestCount;
+    var serverWasActive = currentRequestCount != _lastRequestCount;
+    _lastRequestCount = currentRequestCount;
 
-      for (var metric in result.metrics) {
-        await ServerHealthMetric.db.insertRow(session, metric);
+    // In maintenance mode, always perform health checks regardless of activity.
+    var skipDatabaseOperations =
+        !serverWasActive && _pod.config.role != ServerpodRole.maintenance;
+
+    if (!skipDatabaseOperations) {
+      try {
+        var result = await performHealthChecks(_pod);
+        numHealthChecks = result.metrics.length;
+
+        for (var metric in result.metrics) {
+          await ServerHealthMetric.db.insertRow(session, metric);
+        }
+
+        for (var connectionInfo in result.connectionInfos) {
+          await ServerHealthConnectionInfo.db.insertRow(session, connectionInfo);
+        }
+      } catch (e) {
+        // ISSUE(https://github.com/serverpod/serverpod/issues/4123):
+        // Sometimes serverpod attempts to write duplicate health checks for the
+        // same time.
       }
 
-      for (var connectionInfo in result.connectionInfos) {
-        await ServerHealthConnectionInfo.db.insertRow(session, connectionInfo);
-      }
-    } catch (e) {
-      // ISSUE(https://github.com/serverpod/serverpod/issues/4123):
-      // Sometimes serverpod attempts to write duplicate health checks for the
-      // same time.
+      await _pod.reloadRuntimeSettings();
+
+      await _cleanUpClosedSessions();
+
+      await _optimizeHealthCheckData(numHealthChecks);
     }
-
-    await _pod.reloadRuntimeSettings();
-
-    await _cleanUpClosedSessions();
-
-    await _optimizeHealthCheckData(numHealthChecks);
 
     // If we are running in maintenance mode, we don't want to schedule the next
     // health check, as it should only be run once.

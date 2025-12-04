@@ -85,6 +85,14 @@ class Server implements RouterInjectable {
   /// True if the server is currently running.
   bool get running => _running;
 
+  int _requestCount = 0;
+
+  /// The total number of requests handled by this server.
+  /// This counter is incremented for each endpoint call, websocket connection,
+  /// and cloud storage request. It can be used to detect if the server has
+  /// been active (i.e., handling requests) since a previous point in time.
+  int get requestCount => _requestCount;
+
   RelicServer? _relicServer;
 
   /// Currently not in use.
@@ -319,6 +327,7 @@ class Server implements RouterInjectable {
     requestHandler,
   ) {
     return (req) async {
+      _requestCount++;
       return WebSocketUpgrade((webSocket) async {
         try {
           webSocket.pingInterval = const Duration(seconds: 30);
@@ -372,6 +381,7 @@ class Server implements RouterInjectable {
     String body,
     Request request,
   ) async {
+    _requestCount++;
     var path = uri.pathSegments.join('/');
     var endpointComponents = path.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2) {
