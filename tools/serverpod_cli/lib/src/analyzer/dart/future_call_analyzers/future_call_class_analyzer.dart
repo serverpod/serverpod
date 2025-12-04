@@ -120,15 +120,7 @@ abstract class FutureCallClassAnalyzer {
   /// Returns true if the [ClassElement] is an active future call class that should
   /// be validated and parsed.
   static bool isFutureCallClass(ClassElement element) {
-    /// TODO: Just for my attention. I commented this out because
-    /// I don't see the benefit in allowing users write
-    /// FutureClass definitions that won't be generated.
-    /// It makes sense to do for endpoints. But I can't rationalize
-    /// a good reason to allow this for future calls.
-
-    // if (element.markedAsIgnored) return false;
-
-    // Allow abstract classes to be included in analysis for client generation.
+    // Allow abstract classes to be included in analysis for generation.
     if (!element.isConstructable && !element.isAbstract) return false;
 
     return isFutureCallInterface(element);
@@ -137,7 +129,7 @@ abstract class FutureCallClassAnalyzer {
   /// Returns `true` if the class extends the Serverpod `FutureCall` base class.
   ///
   /// The class itself might still need to be ignored as a future call, because
-  /// it could be marked `abstract` or `@doNotGenerate`.
+  /// it could be marked `abstract`.
   ///
   /// To check whether and future call class should actually be implemented
   /// by the server use [isFutureCallClass].
