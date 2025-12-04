@@ -10,9 +10,13 @@ class ProtocolDefinition {
 
   final List<SerializableModelDefinition> models;
 
+  /// The future calls that are a part of this protocol.
+  final List<FutureCallDefinition> futureCalls;
+
   /// Create a new [ProtocolDefinition].
   const ProtocolDefinition({
     required this.endpoints,
     required this.models,
+    this.futureCalls = const [],
   });
 }
