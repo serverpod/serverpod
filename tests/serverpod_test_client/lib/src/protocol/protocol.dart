@@ -95,19 +95,19 @@ import 'inheritance/parent_class.dart' as _i81;
 import 'inheritance/grandparent_class.dart' as _i82;
 import 'inheritance/parent_without_id.dart' as _i83;
 import 'inheritance/grandparent_with_id.dart' as _i84;
-import 'inheritance/parent_non_server_only.dart' as _i85;
-import 'inheritance/parent_with_default.dart' as _i86;
-import 'inheritance/polymorphism/grandchild.dart' as _i87;
-import 'inheritance/polymorphism/child.dart' as _i88;
-import 'inheritance/polymorphism/container.dart' as _i89;
-import 'inheritance/polymorphism/container_module.dart' as _i90;
-import 'inheritance/polymorphism/other.dart' as _i91;
-import 'inheritance/polymorphism/parent.dart' as _i92;
-import 'inheritance/polymorphism/unrelated.dart' as _i93;
-import 'inheritance/sealed_parent.dart' as _i94;
-import 'inheritance_with_list_relation/child_entity.dart' as _i95;
-import 'inheritance_with_list_relation/base_entity.dart' as _i96;
-import 'inheritance_with_list_relation/parent_entity.dart' as _i97;
+import 'inheritance/list_relation_of_child/child_entity.dart' as _i85;
+import 'inheritance/list_relation_of_child/base_entity.dart' as _i86;
+import 'inheritance/list_relation_of_child/parent_entity.dart' as _i87;
+import 'inheritance/parent_non_server_only.dart' as _i88;
+import 'inheritance/parent_with_default.dart' as _i89;
+import 'inheritance/polymorphism/grandchild.dart' as _i90;
+import 'inheritance/polymorphism/child.dart' as _i91;
+import 'inheritance/polymorphism/container.dart' as _i92;
+import 'inheritance/polymorphism/container_module.dart' as _i93;
+import 'inheritance/polymorphism/other.dart' as _i94;
+import 'inheritance/polymorphism/parent.dart' as _i95;
+import 'inheritance/polymorphism/unrelated.dart' as _i96;
+import 'inheritance/sealed_parent.dart' as _i97;
 import 'long_identifiers/deep_includes/city_with_long_table_name.dart' as _i98;
 import 'long_identifiers/deep_includes/organization_with_long_table_name.dart'
     as _i99;
@@ -297,6 +297,9 @@ export 'inheritance/parent_class.dart';
 export 'inheritance/grandparent_class.dart';
 export 'inheritance/parent_without_id.dart';
 export 'inheritance/grandparent_with_id.dart';
+export 'inheritance/list_relation_of_child/child_entity.dart';
+export 'inheritance/list_relation_of_child/base_entity.dart';
+export 'inheritance/list_relation_of_child/parent_entity.dart';
 export 'inheritance/parent_non_server_only.dart';
 export 'inheritance/parent_with_default.dart';
 export 'inheritance/polymorphism/grandchild.dart';
@@ -308,9 +311,6 @@ export 'inheritance/polymorphism/parent.dart';
 export 'inheritance/polymorphism/unrelated.dart';
 export 'inheritance/sealed_no_child.dart';
 export 'inheritance/sealed_parent.dart';
-export 'inheritance_with_list_relation/child_entity.dart';
-export 'inheritance_with_list_relation/base_entity.dart';
-export 'inheritance_with_list_relation/parent_entity.dart';
 export 'long_identifiers/deep_includes/city_with_long_table_name.dart';
 export 'long_identifiers/deep_includes/organization_with_long_table_name.dart';
 export 'long_identifiers/deep_includes/person_with_long_table_name.dart';
@@ -684,50 +684,50 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i84.GrandparentClassWithId) {
       return _i84.GrandparentClassWithId.fromJson(data) as T;
     }
-    if (t == _i85.NonServerOnlyParentClass) {
-      return _i85.NonServerOnlyParentClass.fromJson(data) as T;
+    if (t == _i85.ChildEntity) {
+      return _i85.ChildEntity.fromJson(data) as T;
     }
-    if (t == _i86.ParentWithDefault) {
-      return _i86.ParentWithDefault.fromJson(data) as T;
+    if (t == _i86.BaseEntity) {
+      return _i86.BaseEntity.fromJson(data) as T;
     }
-    if (t == _i87.PolymorphicGrandChild) {
-      return _i87.PolymorphicGrandChild.fromJson(data) as T;
+    if (t == _i87.ParentEntity) {
+      return _i87.ParentEntity.fromJson(data) as T;
     }
-    if (t == _i88.PolymorphicChild) {
-      return _i88.PolymorphicChild.fromJson(data) as T;
+    if (t == _i88.NonServerOnlyParentClass) {
+      return _i88.NonServerOnlyParentClass.fromJson(data) as T;
     }
-    if (t == _i89.PolymorphicChildContainer) {
-      return _i89.PolymorphicChildContainer.fromJson(data) as T;
+    if (t == _i89.ParentWithDefault) {
+      return _i89.ParentWithDefault.fromJson(data) as T;
     }
-    if (t == _i90.ModulePolymorphicChildContainer) {
-      return _i90.ModulePolymorphicChildContainer.fromJson(data) as T;
+    if (t == _i90.PolymorphicGrandChild) {
+      return _i90.PolymorphicGrandChild.fromJson(data) as T;
     }
-    if (t == _i91.SimilarButNotParent) {
-      return _i91.SimilarButNotParent.fromJson(data) as T;
+    if (t == _i91.PolymorphicChild) {
+      return _i91.PolymorphicChild.fromJson(data) as T;
     }
-    if (t == _i92.PolymorphicParent) {
-      return _i92.PolymorphicParent.fromJson(data) as T;
+    if (t == _i92.PolymorphicChildContainer) {
+      return _i92.PolymorphicChildContainer.fromJson(data) as T;
     }
-    if (t == _i93.UnrelatedToPolymorphism) {
-      return _i93.UnrelatedToPolymorphism.fromJson(data) as T;
+    if (t == _i93.ModulePolymorphicChildContainer) {
+      return _i93.ModulePolymorphicChildContainer.fromJson(data) as T;
     }
-    if (t == _i94.SealedGrandChild) {
-      return _i94.SealedGrandChild.fromJson(data) as T;
+    if (t == _i94.SimilarButNotParent) {
+      return _i94.SimilarButNotParent.fromJson(data) as T;
     }
-    if (t == _i94.SealedChild) {
-      return _i94.SealedChild.fromJson(data) as T;
+    if (t == _i95.PolymorphicParent) {
+      return _i95.PolymorphicParent.fromJson(data) as T;
     }
-    if (t == _i94.SealedOtherChild) {
-      return _i94.SealedOtherChild.fromJson(data) as T;
+    if (t == _i96.UnrelatedToPolymorphism) {
+      return _i96.UnrelatedToPolymorphism.fromJson(data) as T;
     }
-    if (t == _i95.ChildEntity) {
-      return _i95.ChildEntity.fromJson(data) as T;
+    if (t == _i97.SealedGrandChild) {
+      return _i97.SealedGrandChild.fromJson(data) as T;
     }
-    if (t == _i96.BaseEntity) {
-      return _i96.BaseEntity.fromJson(data) as T;
+    if (t == _i97.SealedChild) {
+      return _i97.SealedChild.fromJson(data) as T;
     }
-    if (t == _i97.ParentEntity) {
-      return _i97.ParentEntity.fromJson(data) as T;
+    if (t == _i97.SealedOtherChild) {
+      return _i97.SealedOtherChild.fromJson(data) as T;
     }
     if (t == _i98.CityWithLongTableName) {
       return _i98.CityWithLongTableName.fromJson(data) as T;
@@ -1286,62 +1286,62 @@ class Protocol extends _i1.SerializationManager {
       return (data != null ? _i84.GrandparentClassWithId.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i85.NonServerOnlyParentClass?>()) {
+    if (t == _i1.getType<_i85.ChildEntity?>()) {
+      return (data != null ? _i85.ChildEntity.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i86.BaseEntity?>()) {
+      return (data != null ? _i86.BaseEntity.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i87.ParentEntity?>()) {
+      return (data != null ? _i87.ParentEntity.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i88.NonServerOnlyParentClass?>()) {
       return (data != null
-              ? _i85.NonServerOnlyParentClass.fromJson(data)
+              ? _i88.NonServerOnlyParentClass.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i86.ParentWithDefault?>()) {
-      return (data != null ? _i86.ParentWithDefault.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i89.ParentWithDefault?>()) {
+      return (data != null ? _i89.ParentWithDefault.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i87.PolymorphicGrandChild?>()) {
-      return (data != null ? _i87.PolymorphicGrandChild.fromJson(data) : null)
+    if (t == _i1.getType<_i90.PolymorphicGrandChild?>()) {
+      return (data != null ? _i90.PolymorphicGrandChild.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i88.PolymorphicChild?>()) {
-      return (data != null ? _i88.PolymorphicChild.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i91.PolymorphicChild?>()) {
+      return (data != null ? _i91.PolymorphicChild.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i89.PolymorphicChildContainer?>()) {
+    if (t == _i1.getType<_i92.PolymorphicChildContainer?>()) {
       return (data != null
-              ? _i89.PolymorphicChildContainer.fromJson(data)
+              ? _i92.PolymorphicChildContainer.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i90.ModulePolymorphicChildContainer?>()) {
+    if (t == _i1.getType<_i93.ModulePolymorphicChildContainer?>()) {
       return (data != null
-              ? _i90.ModulePolymorphicChildContainer.fromJson(data)
+              ? _i93.ModulePolymorphicChildContainer.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i91.SimilarButNotParent?>()) {
-      return (data != null ? _i91.SimilarButNotParent.fromJson(data) : null)
+    if (t == _i1.getType<_i94.SimilarButNotParent?>()) {
+      return (data != null ? _i94.SimilarButNotParent.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i92.PolymorphicParent?>()) {
-      return (data != null ? _i92.PolymorphicParent.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i95.PolymorphicParent?>()) {
+      return (data != null ? _i95.PolymorphicParent.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i93.UnrelatedToPolymorphism?>()) {
-      return (data != null ? _i93.UnrelatedToPolymorphism.fromJson(data) : null)
+    if (t == _i1.getType<_i96.UnrelatedToPolymorphism?>()) {
+      return (data != null ? _i96.UnrelatedToPolymorphism.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i94.SealedGrandChild?>()) {
-      return (data != null ? _i94.SealedGrandChild.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i97.SealedGrandChild?>()) {
+      return (data != null ? _i97.SealedGrandChild.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i94.SealedChild?>()) {
-      return (data != null ? _i94.SealedChild.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i97.SealedChild?>()) {
+      return (data != null ? _i97.SealedChild.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i94.SealedOtherChild?>()) {
-      return (data != null ? _i94.SealedOtherChild.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i95.ChildEntity?>()) {
-      return (data != null ? _i95.ChildEntity.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i96.BaseEntity?>()) {
-      return (data != null ? _i96.BaseEntity.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i97.ParentEntity?>()) {
-      return (data != null ? _i97.ParentEntity.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i97.SealedOtherChild?>()) {
+      return (data != null ? _i97.SealedOtherChild.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i98.CityWithLongTableName?>()) {
       return (data != null ? _i98.CityWithLongTableName.fromJson(data) : null)
@@ -1749,32 +1749,46 @@ class Protocol extends _i1.SerializationManager {
           )
           as T;
     }
-    if (t == List<_i88.PolymorphicChild>) {
+    if (t == List<_i85.ChildEntity>) {
       return (data as List)
-              .map((e) => deserialize<_i88.PolymorphicChild>(e))
+              .map((e) => deserialize<_i85.ChildEntity>(e))
               .toList()
           as T;
     }
-    if (t == List<_i88.PolymorphicChild?>) {
+    if (t == _i1.getType<List<_i85.ChildEntity>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_i85.ChildEntity>(e))
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == List<_i91.PolymorphicChild>) {
       return (data as List)
-              .map((e) => deserialize<_i88.PolymorphicChild?>(e))
+              .map((e) => deserialize<_i91.PolymorphicChild>(e))
               .toList()
           as T;
     }
-    if (t == Map<String, _i88.PolymorphicChild>) {
+    if (t == List<_i91.PolymorphicChild?>) {
+      return (data as List)
+              .map((e) => deserialize<_i91.PolymorphicChild?>(e))
+              .toList()
+          as T;
+    }
+    if (t == Map<String, _i91.PolymorphicChild>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i88.PolymorphicChild>(v),
+              deserialize<_i91.PolymorphicChild>(v),
             ),
           )
           as T;
     }
-    if (t == Map<String, _i88.PolymorphicChild?>) {
+    if (t == Map<String, _i91.PolymorphicChild?>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i88.PolymorphicChild?>(v),
+              deserialize<_i91.PolymorphicChild?>(v),
             ),
           )
           as T;
@@ -1792,20 +1806,6 @@ class Protocol extends _i1.SerializationManager {
               deserialize<_i185.ModulePolymorphicChild>(v),
             ),
           )
-          as T;
-    }
-    if (t == List<_i95.ChildEntity>) {
-      return (data as List)
-              .map((e) => deserialize<_i95.ChildEntity>(e))
-              .toList()
-          as T;
-    }
-    if (t == _i1.getType<List<_i95.ChildEntity>?>()) {
-      return (data != null
-              ? (data as List)
-                    .map((e) => deserialize<_i95.ChildEntity>(e))
-                    .toList()
-              : null)
           as T;
     }
     if (t == List<_i100.PersonWithLongTableName>) {
@@ -2407,9 +2407,9 @@ class Protocol extends _i1.SerializationManager {
               : null)
           as T;
     }
-    if (t == List<_i94.SealedParent>) {
+    if (t == List<_i97.SealedParent>) {
       return (data as List)
-              .map((e) => deserialize<_i94.SealedParent>(e))
+              .map((e) => deserialize<_i97.SealedParent>(e))
               .toList()
           as T;
     }
@@ -5577,21 +5577,21 @@ class Protocol extends _i1.SerializationManager {
       _i82.GrandparentClass => 'GrandparentClass',
       _i83.ParentClassWithoutId => 'ParentClassWithoutId',
       _i84.GrandparentClassWithId => 'GrandparentClassWithId',
-      _i85.NonServerOnlyParentClass => 'NonServerOnlyParentClass',
-      _i86.ParentWithDefault => 'ParentWithDefault',
-      _i87.PolymorphicGrandChild => 'PolymorphicGrandChild',
-      _i88.PolymorphicChild => 'PolymorphicChild',
-      _i89.PolymorphicChildContainer => 'PolymorphicChildContainer',
-      _i90.ModulePolymorphicChildContainer => 'ModulePolymorphicChildContainer',
-      _i91.SimilarButNotParent => 'SimilarButNotParent',
-      _i92.PolymorphicParent => 'PolymorphicParent',
-      _i93.UnrelatedToPolymorphism => 'UnrelatedToPolymorphism',
-      _i94.SealedGrandChild => 'SealedGrandChild',
-      _i94.SealedChild => 'SealedChild',
-      _i94.SealedOtherChild => 'SealedOtherChild',
-      _i95.ChildEntity => 'ChildEntity',
-      _i96.BaseEntity => 'BaseEntity',
-      _i97.ParentEntity => 'ParentEntity',
+      _i85.ChildEntity => 'ChildEntity',
+      _i86.BaseEntity => 'BaseEntity',
+      _i87.ParentEntity => 'ParentEntity',
+      _i88.NonServerOnlyParentClass => 'NonServerOnlyParentClass',
+      _i89.ParentWithDefault => 'ParentWithDefault',
+      _i90.PolymorphicGrandChild => 'PolymorphicGrandChild',
+      _i91.PolymorphicChild => 'PolymorphicChild',
+      _i92.PolymorphicChildContainer => 'PolymorphicChildContainer',
+      _i93.ModulePolymorphicChildContainer => 'ModulePolymorphicChildContainer',
+      _i94.SimilarButNotParent => 'SimilarButNotParent',
+      _i95.PolymorphicParent => 'PolymorphicParent',
+      _i96.UnrelatedToPolymorphism => 'UnrelatedToPolymorphism',
+      _i97.SealedGrandChild => 'SealedGrandChild',
+      _i97.SealedChild => 'SealedChild',
+      _i97.SealedOtherChild => 'SealedOtherChild',
       _i98.CityWithLongTableName => 'CityWithLongTableName',
       _i99.OrganizationWithLongTableName => 'OrganizationWithLongTableName',
       _i100.PersonWithLongTableName => 'PersonWithLongTableName',
@@ -5879,36 +5879,36 @@ class Protocol extends _i1.SerializationManager {
         return 'ParentClassWithoutId';
       case _i84.GrandparentClassWithId():
         return 'GrandparentClassWithId';
-      case _i85.NonServerOnlyParentClass():
-        return 'NonServerOnlyParentClass';
-      case _i86.ParentWithDefault():
-        return 'ParentWithDefault';
-      case _i87.PolymorphicGrandChild():
-        return 'PolymorphicGrandChild';
-      case _i88.PolymorphicChild():
-        return 'PolymorphicChild';
-      case _i89.PolymorphicChildContainer():
-        return 'PolymorphicChildContainer';
-      case _i90.ModulePolymorphicChildContainer():
-        return 'ModulePolymorphicChildContainer';
-      case _i91.SimilarButNotParent():
-        return 'SimilarButNotParent';
-      case _i92.PolymorphicParent():
-        return 'PolymorphicParent';
-      case _i93.UnrelatedToPolymorphism():
-        return 'UnrelatedToPolymorphism';
-      case _i94.SealedGrandChild():
-        return 'SealedGrandChild';
-      case _i94.SealedChild():
-        return 'SealedChild';
-      case _i94.SealedOtherChild():
-        return 'SealedOtherChild';
-      case _i95.ChildEntity():
+      case _i85.ChildEntity():
         return 'ChildEntity';
-      case _i96.BaseEntity():
+      case _i86.BaseEntity():
         return 'BaseEntity';
-      case _i97.ParentEntity():
+      case _i87.ParentEntity():
         return 'ParentEntity';
+      case _i88.NonServerOnlyParentClass():
+        return 'NonServerOnlyParentClass';
+      case _i89.ParentWithDefault():
+        return 'ParentWithDefault';
+      case _i90.PolymorphicGrandChild():
+        return 'PolymorphicGrandChild';
+      case _i91.PolymorphicChild():
+        return 'PolymorphicChild';
+      case _i92.PolymorphicChildContainer():
+        return 'PolymorphicChildContainer';
+      case _i93.ModulePolymorphicChildContainer():
+        return 'ModulePolymorphicChildContainer';
+      case _i94.SimilarButNotParent():
+        return 'SimilarButNotParent';
+      case _i95.PolymorphicParent():
+        return 'PolymorphicParent';
+      case _i96.UnrelatedToPolymorphism():
+        return 'UnrelatedToPolymorphism';
+      case _i97.SealedGrandChild():
+        return 'SealedGrandChild';
+      case _i97.SealedChild():
+        return 'SealedChild';
+      case _i97.SealedOtherChild():
+        return 'SealedOtherChild';
       case _i98.CityWithLongTableName():
         return 'CityWithLongTableName';
       case _i99.OrganizationWithLongTableName():
@@ -6438,50 +6438,50 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'GrandparentClassWithId') {
       return deserialize<_i84.GrandparentClassWithId>(data['data']);
     }
-    if (dataClassName == 'NonServerOnlyParentClass') {
-      return deserialize<_i85.NonServerOnlyParentClass>(data['data']);
-    }
-    if (dataClassName == 'ParentWithDefault') {
-      return deserialize<_i86.ParentWithDefault>(data['data']);
-    }
-    if (dataClassName == 'PolymorphicGrandChild') {
-      return deserialize<_i87.PolymorphicGrandChild>(data['data']);
-    }
-    if (dataClassName == 'PolymorphicChild') {
-      return deserialize<_i88.PolymorphicChild>(data['data']);
-    }
-    if (dataClassName == 'PolymorphicChildContainer') {
-      return deserialize<_i89.PolymorphicChildContainer>(data['data']);
-    }
-    if (dataClassName == 'ModulePolymorphicChildContainer') {
-      return deserialize<_i90.ModulePolymorphicChildContainer>(data['data']);
-    }
-    if (dataClassName == 'SimilarButNotParent') {
-      return deserialize<_i91.SimilarButNotParent>(data['data']);
-    }
-    if (dataClassName == 'PolymorphicParent') {
-      return deserialize<_i92.PolymorphicParent>(data['data']);
-    }
-    if (dataClassName == 'UnrelatedToPolymorphism') {
-      return deserialize<_i93.UnrelatedToPolymorphism>(data['data']);
-    }
-    if (dataClassName == 'SealedGrandChild') {
-      return deserialize<_i94.SealedGrandChild>(data['data']);
-    }
-    if (dataClassName == 'SealedChild') {
-      return deserialize<_i94.SealedChild>(data['data']);
-    }
-    if (dataClassName == 'SealedOtherChild') {
-      return deserialize<_i94.SealedOtherChild>(data['data']);
-    }
     if (dataClassName == 'ChildEntity') {
-      return deserialize<_i95.ChildEntity>(data['data']);
+      return deserialize<_i85.ChildEntity>(data['data']);
     }
     if (dataClassName == 'BaseEntity') {
-      return deserialize<_i96.BaseEntity>(data['data']);
+      return deserialize<_i86.BaseEntity>(data['data']);
     }
     if (dataClassName == 'ParentEntity') {
-      return deserialize<_i97.ParentEntity>(data['data']);
+      return deserialize<_i87.ParentEntity>(data['data']);
+    }
+    if (dataClassName == 'NonServerOnlyParentClass') {
+      return deserialize<_i88.NonServerOnlyParentClass>(data['data']);
+    }
+    if (dataClassName == 'ParentWithDefault') {
+      return deserialize<_i89.ParentWithDefault>(data['data']);
+    }
+    if (dataClassName == 'PolymorphicGrandChild') {
+      return deserialize<_i90.PolymorphicGrandChild>(data['data']);
+    }
+    if (dataClassName == 'PolymorphicChild') {
+      return deserialize<_i91.PolymorphicChild>(data['data']);
+    }
+    if (dataClassName == 'PolymorphicChildContainer') {
+      return deserialize<_i92.PolymorphicChildContainer>(data['data']);
+    }
+    if (dataClassName == 'ModulePolymorphicChildContainer') {
+      return deserialize<_i93.ModulePolymorphicChildContainer>(data['data']);
+    }
+    if (dataClassName == 'SimilarButNotParent') {
+      return deserialize<_i94.SimilarButNotParent>(data['data']);
+    }
+    if (dataClassName == 'PolymorphicParent') {
+      return deserialize<_i95.PolymorphicParent>(data['data']);
+    }
+    if (dataClassName == 'UnrelatedToPolymorphism') {
+      return deserialize<_i96.UnrelatedToPolymorphism>(data['data']);
+    }
+    if (dataClassName == 'SealedGrandChild') {
+      return deserialize<_i97.SealedGrandChild>(data['data']);
+    }
+    if (dataClassName == 'SealedChild') {
+      return deserialize<_i97.SealedChild>(data['data']);
+    }
+    if (dataClassName == 'SealedOtherChild') {
+      return deserialize<_i97.SealedOtherChild>(data['data']);
     }
     if (dataClassName == 'CityWithLongTableName') {
       return deserialize<_i98.CityWithLongTableName>(data['data']);

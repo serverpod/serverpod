@@ -13,7 +13,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../inheritance_with_list_relation/child_entity.dart' as _i2;
+import '../../inheritance/list_relation_of_child/child_entity.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class ParentEntity

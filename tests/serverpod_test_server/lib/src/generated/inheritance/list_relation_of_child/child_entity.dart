@@ -10,7 +10,7 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import '../protocol.dart' as _i1;
+import '../../protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 
 abstract class ChildEntity extends _i1.BaseEntity
