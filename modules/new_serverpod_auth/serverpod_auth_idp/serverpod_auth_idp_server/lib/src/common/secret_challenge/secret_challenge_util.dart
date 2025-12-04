@@ -62,83 +62,14 @@ class SecretChallengeUtil<T> {
     );
   }
 
-  /// Validates a verification code against a [SecretChallenge].
-  ///
-  /// Returns `true` if the code matches the challenge hash, `false` otherwise.
-  ///
-  /// This method only validates the hash - it does not check expiration, rate
-  /// limits, or other protection mechanisms. Those should be handled by the
-  /// caller before invoking this method.
-  Future<bool> validateVerificationCode({
-    required final String verificationCode,
-    required final SecretChallenge challenge,
-  }) async {
-    return _hashUtil.validateHashFromString(
-      secret: verificationCode,
-      hashString: challenge.challengeCodeHash,
-    );
-  }
-
-  /// Creates a completion token after successful challenge verification.
-  ///
-  /// The returned [CompletionTokenResult] contains:
-  /// - [CompletionTokenResult.challenge]: The created [SecretChallenge] that
-  ///   should be linked to the request original.
-  /// - [CompletionTokenResult.encodedToken]: A base64-encoded token containing
-  ///   the request ID and the raw token, which should be returned to the client.
-  ///
-  /// The caller is responsible for linking the challenge to their request
-  /// record (e.g., setting `createAccountChallengeId` or `setPasswordChallengeId`).
-  Future<CompletionTokenResult> createCompletionToken(
-    final Session session, {
-    required final UuidValue requestId,
-    required final Transaction transaction,
-  }) async {
-    final token = const Uuid().v4();
-    final tokenHash = await _hashUtil.createHashFromString(secret: token);
-
-    final challenge = await SecretChallenge.db.insertRow(
-      session,
-      SecretChallenge(challengeCodeHash: tokenHash),
-      transaction: transaction,
-    );
-
-    return CompletionTokenResult(
-      challenge: challenge,
-      encodedToken: _encodeCompletionToken(requestId, token),
-    );
-  }
-
-  /// Decodes and returns the credentials from a completion token.
-  ///
-  /// This method only decodes the token - validation against the stored
-  /// challenge should be done by calling [validateVerificationCode] with the
-  /// extracted verification code.
-  ///
-  /// Throws [ChallengeInvalidCompletionTokenException] if the token format is
-  /// malformed or invalid.
-  ///
-  /// The returned [CompletionTokenCredentials] contains:
-  /// - [CompletionTokenCredentials.requestId]: The ID of the request that this
-  ///   token belongs to.
-  /// - [CompletionTokenCredentials.verificationCode]: The raw verification code
-  ///   to validate against the challenge.
-  CompletionTokenCredentials decodeCompletionToken(final String token) {
-    final credentials = _decodeCompletionToken(token);
-    if (credentials == null) {
-      throw ChallengeInvalidCompletionTokenException();
-    }
-    return credentials;
-  }
-
   /// Verifies a verification code against a [SecretChallenge].
   ///
   /// Throws:
-  /// - [RateLimitedRequestAttemptException] if rate limit is exceeded.
   /// - [ChallengeRequestNotFoundException] if the request is not found.
   /// - [ChallengeAlreadyUsedException] if the challenge has already been used.
   /// - [ChallengeInvalidVerificationCodeException] if the verification code is invalid.
   /// - [ChallengeExpiredException] if the request has expired.
+  /// - [ChallengeRateLimitExceededException] if the rate limit is exceeded.
   ///
   /// Returns the encoded completion token that can be used to complete the
   /// operation.
@@ -150,10 +81,14 @@ class SecretChallengeUtil<T> {
   }) async {
     final config = _verificationConfig;
 
-    await config.rateLimiter?.abortIfTooManyAttempts(
-      session,
-      nonce: requestId,
-    );
+    try {
+      await config.rateLimiter?.abortIfTooManyAttempts(
+        session,
+        nonce: requestId,
+      );
+    } on RateLimitedRequestAttemptException catch (_) {
+      throw ChallengeRateLimitExceededException();
+    }
 
     final request = await config.getRequest(session, requestId, transaction);
     if (request == null) {
@@ -166,7 +101,7 @@ class SecretChallengeUtil<T> {
 
     final challenge = config.getChallenge(request);
 
-    if (!await validateVerificationCode(
+    if (!await _validateVerificationCode(
       verificationCode: verificationCode,
       challenge: challenge,
     )) {
@@ -178,7 +113,7 @@ class SecretChallengeUtil<T> {
       throw ChallengeExpiredException();
     }
 
-    final completionTokenResult = await createCompletionToken(
+    final completionTokenResult = await _createCompletionToken(
       session,
       requestId: requestId,
       transaction: transaction,
@@ -218,12 +153,16 @@ class SecretChallengeUtil<T> {
   }) async {
     final config = _completionConfig;
 
-    final credentials = decodeCompletionToken(completionToken);
+    final credentials = _decodeCompletionToken(completionToken);
 
-    await config.rateLimiter?.abortIfTooManyAttempts(
-      session,
-      nonce: credentials.requestId,
-    );
+    try {
+      await config.rateLimiter?.abortIfTooManyAttempts(
+        session,
+        nonce: credentials.requestId,
+      );
+    } on RateLimitedRequestAttemptException catch (_) {
+      throw ChallengeRateLimitExceededException();
+    }
 
     final request = await config.getRequest(
       session,
@@ -239,7 +178,7 @@ class SecretChallengeUtil<T> {
       throw ChallengeNotVerifiedException();
     }
 
-    if (!await validateVerificationCode(
+    if (!await _validateVerificationCode(
       verificationCode: credentials.verificationCode,
       challenge: completionChallenge,
     )) {
@@ -254,29 +193,94 @@ class SecretChallengeUtil<T> {
     return request;
   }
 
+  /// Creates a completion token after successful challenge verification.
+  ///
+  /// The returned [CompletionTokenResult] contains:
+  /// - [CompletionTokenResult.challenge]: The created [SecretChallenge] that
+  ///   should be linked to the request original.
+  /// - [CompletionTokenResult.encodedToken]: A base64-encoded token containing
+  ///   the request ID and the raw token, which should be returned to the client.
+  ///
+  /// The caller is responsible for linking the challenge to their request
+  /// record (e.g., setting `createAccountChallengeId` or `setPasswordChallengeId`).
+  Future<CompletionTokenResult> _createCompletionToken(
+    final Session session, {
+    required final UuidValue requestId,
+    required final Transaction transaction,
+  }) async {
+    final token = const Uuid().v4();
+    final tokenHash = await _hashUtil.createHashFromString(secret: token);
+
+    final challenge = await SecretChallenge.db.insertRow(
+      session,
+      SecretChallenge(challengeCodeHash: tokenHash),
+      transaction: transaction,
+    );
+
+    return CompletionTokenResult(
+      challenge: challenge,
+      encodedToken: _encodeCompletionToken(requestId, token),
+    );
+  }
+
+  /// Validates a verification code against a [SecretChallenge].
+  ///
+  /// Returns `true` if the code matches the challenge hash, `false` otherwise.
+  ///
+  /// This method only validates the hash - it does not check expiration, rate
+  /// limits, or other protection mechanisms. Those should be handled by the
+  /// caller before invoking this method.
+  Future<bool> _validateVerificationCode({
+    required final String verificationCode,
+    required final SecretChallenge challenge,
+  }) async {
+    return _hashUtil.validateHashFromString(
+      secret: verificationCode,
+      hashString: challenge.challengeCodeHash,
+    );
+  }
+
   String _encodeCompletionToken(final UuidValue requestId, final String token) {
     return base64Encode(utf8.encode('$requestId:$token'));
   }
 
-  CompletionTokenCredentials? _decodeCompletionToken(final String token) {
+  /// Decodes and returns the credentials from a completion token.
+  ///
+  /// This method only decodes the token - validation against the stored
+  /// challenge should be done by calling [_validateVerificationCode] with the
+  /// extracted verification code.
+  ///
+  /// Throws [ChallengeInvalidCompletionTokenException] if the token format is
+  /// malformed or invalid.
+  ///
+  /// The returned [CompletionTokenCredentials] contains:
+  /// - [CompletionTokenCredentials.requestId]: The ID of the request that this
+  ///   token belongs to.
+  /// - [CompletionTokenCredentials.verificationCode]: The raw verification code
+  ///   to validate against the challenge.
+  CompletionTokenCredentials _decodeCompletionToken(final String token) {
     final String decoded;
     try {
       decoded = utf8.decode(base64Decode(token));
     } catch (e) {
-      return null;
+      throw ChallengeInvalidCompletionTokenException();
     }
 
     final parts = decoded.split(':');
-    if (parts.length != 2) return null;
+    if (parts.length != 2) throw ChallengeInvalidCompletionTokenException();
+    final verificationCode = parts[1];
 
+    final UuidValue requestId;
     try {
-      return CompletionTokenCredentials(
-        requestId: UuidValue.withValidation(parts[0]),
-        verificationCode: parts[1],
-      );
+      requestId = UuidValue.withValidation(parts[0]);
     } catch (e) {
-      return null;
+      throw ChallengeInvalidCompletionTokenException();
     }
+
+    return CompletionTokenCredentials(
+      requestId: requestId,
+      verificationCode: verificationCode,
+    );
   }
 }
 

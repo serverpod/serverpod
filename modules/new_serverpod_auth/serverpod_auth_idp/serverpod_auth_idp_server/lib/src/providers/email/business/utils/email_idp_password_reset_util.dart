@@ -421,9 +421,9 @@ class EmailIdpPasswordResetUtil {
           EmailPasswordResetNotVerifiedException(),
         ChallengeInvalidCompletionTokenException() =>
           EmailPasswordResetInvalidVerificationCodeException(),
+        ChallengeRateLimitExceededException() =>
+          EmailPasswordResetTooManyVerificationAttemptsException(),
       };
-    } on RateLimitedRequestAttemptException catch (_) {
-      throw EmailPasswordResetTooManyVerificationAttemptsException();
     }
   }
 }

@@ -464,9 +464,9 @@ class EmailIdpAccountCreationUtil {
           EmailAccountRequestNotVerifiedException(),
         ChallengeInvalidCompletionTokenException() =>
           EmailAccountRequestInvalidVerificationCodeException(),
+        ChallengeRateLimitExceededException() =>
+          EmailAccountRequestVerificationTooManyAttemptsException(),
       };
-    } on RateLimitedRequestAttemptException catch (_) {
-      throw EmailAccountRequestVerificationTooManyAttemptsException();
     }
   }
 }

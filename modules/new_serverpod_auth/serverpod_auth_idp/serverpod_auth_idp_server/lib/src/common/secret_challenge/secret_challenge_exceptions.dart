@@ -30,3 +30,7 @@ final class ChallengeNotVerifiedException extends SecretChallengeException {}
 /// Exception thrown when the completion token is malformed or invalid.
 final class ChallengeInvalidCompletionTokenException
     extends SecretChallengeException {}
+
+/// Exception thrown when the rate limit is exceeded.
+final class ChallengeRateLimitExceededException
+    extends SecretChallengeException {}
