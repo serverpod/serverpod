@@ -82,19 +82,7 @@ final class EmailIdpTestFixture {
       session,
       where: (final _) => Constant.bool(true),
     );
-    await EmailAccountFailedLoginAttempt.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
     await EmailAccountPasswordResetRequest.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-    await EmailAccountPasswordResetCompleteAttempt.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-    await EmailAccountPasswordResetRequestAttempt.db.deleteWhere(
       session,
       where: (final _) => Constant.bool(true),
     );
@@ -102,9 +90,9 @@ final class EmailIdpTestFixture {
       session,
       where: (final _) => Constant.bool(true),
     );
-    await EmailAccountRequestCompletionAttempt.db.deleteWhere(
+    await RateLimitedRequestAttempt.db.deleteWhere(
       session,
-      where: (final _) => Constant.bool(true),
+      where: (final t) => t.domain.equals('email'),
     );
 
     await AuthUser.db.deleteWhere(

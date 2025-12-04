@@ -11,16 +11,19 @@ import '../test_utils/email_idp_test_fixture.dart';
 void main() {
   withServerpod(
     'Given existing email account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
-      late UuidValue authUserId;
       late Session session;
+      late UuidValue authUserId;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
       late EmailIdpAuthenticationUtil authenticationUtil;
 
       setUp(() async {
         session = sessionBuilder.build();
-        final fixture = EmailIdpTestFixture();
+        fixture = EmailIdpTestFixture();
         final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
         await fixture.createEmailAccount(
@@ -31,6 +34,10 @@ void main() {
         );
 
         authenticationUtil = fixture.authenticationUtil;
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
       });
 
       test(
@@ -86,39 +93,46 @@ void main() {
     },
   );
 
-  withServerpod('Given non-existing email account', (
-    final sessionBuilder,
-    final endpoints,
-  ) {
-    late Session session;
-    late EmailIdpAuthenticationUtil emailIdpAuthenticationUtil;
+  withServerpod(
+    'Given non-existing email account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      late EmailIdpAuthenticationUtil emailIdpAuthenticationUtil;
 
-    setUp(() async {
-      session = sessionBuilder.build();
-      final fixture = EmailIdpTestFixture();
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture();
 
-      emailIdpAuthenticationUtil = fixture.authenticationUtil;
-    });
+        emailIdpAuthenticationUtil = fixture.authenticationUtil;
+      });
 
-    test(
-      'when authenticating then it throws an error with email account not found exception',
-      () async {
-        final result = session.db.transaction(
-          (final transaction) => emailIdpAuthenticationUtil.authenticate(
-            session,
-            email: 'invalid@serverpod.dev',
-            password: 'invalid-password',
-            transaction: transaction,
-          ),
-        );
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountNotFoundException>()),
-        );
-      },
-    );
-  });
+      test(
+        'when authenticating then it throws an error with email account not found exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) => emailIdpAuthenticationUtil.authenticate(
+              session,
+              email: 'invalid@serverpod.dev',
+              password: 'invalid-password',
+              transaction: transaction,
+            ),
+          );
+
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountNotFoundException>()),
+          );
+        },
+      );
+    },
+  );
 
   withServerpod(
     'Given email account that has failed to sign in past the rate limit',
@@ -174,8 +188,10 @@ void main() {
           // This is expected.
         }
 
-        final failedLoginAttempts = await EmailAccountFailedLoginAttempt.db
-            .find(session, where: (final t) => t.email.equals(email));
+        final failedLoginAttempts = await _getFailedLoginAttempts(
+          session,
+          email,
+        );
 
         assert(
           failedLoginAttempts.length == failedLoginRateLimit.maxAttempts,
@@ -209,7 +225,9 @@ void main() {
       test(
         'when deleting all failed login attempts then account can authenticate again',
         () async {
-          final result = session.db.transaction((final transaction) async {
+          // Removal must happen in a separate transaction since the count of
+          // failed login attempts is checked outside of the transaction.
+          await session.db.transaction((final transaction) async {
             await authenticationUtil.deleteFailedLoginAttempts(
               session,
               transaction: transaction,
@@ -217,7 +235,11 @@ void main() {
               /// Removes all failed login Attempts
               olderThan: const Duration(microseconds: 0),
             );
+          });
 
+          final result = session.db.transaction((
+            final transaction,
+          ) async {
             return await authenticationUtil.authenticate(
               session,
               email: email,
@@ -303,8 +325,10 @@ void main() {
           // This is expected.
         }
 
-        final failedLoginAttempts = await EmailAccountFailedLoginAttempt.db
-            .find(session, where: (final t) => t.email.equals(email));
+        final failedLoginAttempts = await _getFailedLoginAttempts(
+          session,
+          email,
+        );
 
         assert(
           failedLoginAttempts.length == failedLoginRateLimit.maxAttempts,
@@ -381,8 +405,10 @@ void main() {
           }
         }
 
-        final failedLoginAttempts = await EmailAccountFailedLoginAttempt.db
-            .find(session, where: (final t) => t.email.equals(email));
+        final failedLoginAttempts = await _getFailedLoginAttempts(
+          session,
+          email,
+        );
 
         assert(
           failedLoginAttempts.length == failedLoginRateLimit.maxAttempts,
@@ -468,8 +494,10 @@ void main() {
           // This is expected.
         }
 
-        final failedLoginAttempts = await EmailAccountFailedLoginAttempt.db
-            .find(session, where: (final t) => t.email.equals(email));
+        final failedLoginAttempts = await _getFailedLoginAttempts(
+          session,
+          email,
+        );
 
         assert(
           failedLoginAttempts.length == failedLoginRateLimit.maxAttempts,
@@ -505,18 +533,21 @@ void main() {
         },
       );
 
-      // when deleting all failed login attempts specifying email then authentication succeeds
       test(
         'when deleting all failed login attempts specifying email then authentication succeeds',
         () async {
-          final result = session.db.transaction((final transaction) async {
+          // Removal must happen in a separate transaction since the count of
+          // failed login attempts is checked outside of the transaction.
+          await session.db.transaction((final transaction) async {
             await authenticationUtil.deleteFailedLoginAttempts(
               session,
               email: email,
               transaction: transaction,
               olderThan: const Duration(microseconds: 0),
             );
+          });
 
+          final result = session.db.transaction((final transaction) async {
             return await authenticationUtil.authenticate(
               session,
               email: email,
@@ -531,7 +562,7 @@ void main() {
           );
         },
       );
-      // when deleting all failed login attempts specifying different email then authentication within timeframe still fails
+
       test(
         'when deleting all failed login attempts specifying different email then authentication within timeframe still fails',
         () async {
@@ -558,5 +589,18 @@ void main() {
         },
       );
     },
+  );
+}
+
+Future<List<RateLimitedRequestAttempt>> _getFailedLoginAttempts(
+  final Session session,
+  final String email,
+) async {
+  return await RateLimitedRequestAttempt.db.find(
+    session,
+    where: (final t) =>
+        t.domain.equals('email') &
+        t.source.equals('failed_login') &
+        t.nonce.equals(email),
   );
 }

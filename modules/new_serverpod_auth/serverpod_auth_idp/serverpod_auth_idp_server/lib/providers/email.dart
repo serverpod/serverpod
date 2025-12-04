@@ -9,12 +9,8 @@ export 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
 export '../src/generated/protocol.dart'
     show
         EmailAccount,
-        EmailAccountFailedLoginAttempt,
-        EmailAccountPasswordResetCompleteAttempt,
         EmailAccountPasswordResetRequest,
-        EmailAccountPasswordResetRequestAttempt,
         EmailAccountRequest,
-        EmailAccountRequestCompletionAttempt,
         EmailAccountLoginException,
         EmailAccountLoginExceptionReason,
         EmailAccountPasswordResetException,
