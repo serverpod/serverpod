@@ -2,11 +2,37 @@ import 'package:code_builder/code_builder.dart';
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/config/generator_config_options.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
 
 class BuildRepositoryClass {
   final bool serverCode;
   final GeneratorConfig config;
+
+  /// Returns true if the transaction parameter should be required.
+  bool get _requireTransactionParameter =>
+      config.generatorOptions.database.transactionParameterMode ==
+      TransactionParameterMode.required;
+
+  /// Builds the transaction parameter for repository methods.
+  ///
+  /// If [_requireTransactionParameter] is true, the parameter is required
+  /// but still nullable, forcing developers to explicitly pass null or a
+  /// transaction object.
+  Parameter _buildTransactionParameter() {
+    return Parameter(
+      (p) => p
+        ..type = TypeReference(
+          (b) => b
+            ..isNullable = true
+            ..symbol = 'Transaction'
+            ..url = 'package:serverpod/serverpod.dart',
+        )
+        ..name = 'transaction'
+        ..named = true
+        ..required = _requireTransactionParameter,
+    );
+  }
 
   BuildRepositoryClass({
     required this.serverCode,
@@ -333,17 +359,7 @@ class BuildRepositoryClass {
               ..name = 'orderByList'
               ..named = true,
           ),
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
           if (objectRelationFields.isNotEmpty)
             Parameter(
               (p) => p
@@ -470,17 +486,7 @@ class BuildRepositoryClass {
               ..name = 'orderByList'
               ..named = true,
           ),
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
           if (objectRelationFields.isNotEmpty)
             Parameter(
               (p) => p
@@ -559,17 +565,7 @@ class BuildRepositoryClass {
           ),
         ])
         ..optionalParameters.addAll([
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
           if (objectRelationFields.isNotEmpty)
             Parameter(
               (p) => p
@@ -629,17 +625,7 @@ class BuildRepositoryClass {
           ),
         ])
         ..optionalParameters.addAll([
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -683,17 +669,7 @@ class BuildRepositoryClass {
           ),
         ])
         ..optionalParameters.addAll([
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -750,17 +726,7 @@ class BuildRepositoryClass {
               ..name = 'columns'
               ..named = true,
           ),
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -818,17 +784,7 @@ class BuildRepositoryClass {
               ..name = 'columns'
               ..named = true,
           ),
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -894,17 +850,7 @@ class BuildRepositoryClass {
               ..named = true
               ..required = true,
           ),
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -1016,17 +962,7 @@ class BuildRepositoryClass {
               ..named = true
               ..defaultTo = const Code('false'),
           ),
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -1095,17 +1031,7 @@ class BuildRepositoryClass {
           ),
         ])
         ..optionalParameters.addAll([
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -1150,17 +1076,7 @@ class BuildRepositoryClass {
           ),
         ])
         ..optionalParameters.addAll([
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -1217,17 +1133,7 @@ class BuildRepositoryClass {
               ..name = 'where'
               ..named = true,
           ),
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -1285,17 +1191,7 @@ class BuildRepositoryClass {
               ..name = 'limit'
               ..named = true,
           ),
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -1411,17 +1307,7 @@ class BuildRepositoryClass {
           }),
         ])
         ..optionalParameters.add(
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         )
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
@@ -1488,17 +1374,7 @@ class BuildRepositoryClass {
           }),
         ])
         ..optionalParameters.add(
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         )
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
@@ -1563,17 +1439,7 @@ class BuildRepositoryClass {
           }),
         ])
         ..optionalParameters.add(
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         )
         ..modifier = MethodModifier.async
         ..body = relation.isForeignKeyOrigin
@@ -1792,17 +1658,7 @@ class BuildRepositoryClass {
           }),
         ])
         ..optionalParameters.add(
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         )
         ..returns = refer('Future<void>')
         ..modifier = MethodModifier.async
@@ -1869,17 +1725,7 @@ class BuildRepositoryClass {
           }),
         ])
         ..optionalParameters.add(
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         )
         ..returns = refer('Future<void>')
         ..modifier = MethodModifier.async
@@ -1934,17 +1780,7 @@ class BuildRepositoryClass {
           }),
         ])
         ..optionalParameters.add(
-          Parameter(
-            (p) => p
-              ..type = TypeReference(
-                (b) => b
-                  ..isNullable = true
-                  ..symbol = 'Transaction'
-                  ..url = 'package:serverpod/serverpod.dart',
-              )
-              ..name = 'transaction'
-              ..named = true,
-          ),
+          _buildTransactionParameter(),
         )
         ..returns = refer('Future<void>')
         ..modifier = MethodModifier.async
