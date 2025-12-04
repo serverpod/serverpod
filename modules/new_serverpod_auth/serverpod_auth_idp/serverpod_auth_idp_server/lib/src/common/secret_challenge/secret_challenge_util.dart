@@ -81,12 +81,10 @@ class SecretChallengeUtil<T> {
   }) async {
     final config = _verificationConfig;
 
-    try {
-      await config.rateLimiter?.abortIfTooManyAttempts(
-        session,
-        nonce: requestId,
-      );
-    } on RateLimitedRequestAttemptException catch (_) {
+    if (await config.hasTooManyAttempts(
+      session,
+      nonce: requestId,
+    )) {
       throw ChallengeRateLimitExceededException();
     }
 
@@ -155,12 +153,10 @@ class SecretChallengeUtil<T> {
 
     final credentials = _decodeCompletionToken(completionToken);
 
-    try {
-      await config.rateLimiter?.abortIfTooManyAttempts(
-        session,
-        nonce: credentials.requestId,
-      );
-    } on RateLimitedRequestAttemptException catch (_) {
+    if (await config.hasTooManyAttempts(
+      session,
+      nonce: credentials.requestId,
+    )) {
       throw ChallengeRateLimitExceededException();
     }
 

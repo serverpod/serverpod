@@ -130,3 +130,45 @@ class SecretChallengeCompletionConfig<T> {
     this.rateLimiter,
   });
 }
+
+/// Extension methods for [SecretChallengeVerificationConfig].
+extension SecretChallengeVerificationConfigExtension<T>
+    on SecretChallengeVerificationConfig<T> {
+  /// Records an attempts and checks if the request has too many attempts.
+  ///
+  /// Returns `true` if the request has too many attempts, `false` otherwise.
+  /// If no rate limiter is provided, returns `false`.
+  Future<bool> hasTooManyAttempts(
+    final Session session, {
+    required final UuidValue nonce,
+    final Map<String, String>? extraData,
+  }) async {
+    return await rateLimiter?.hasTooManyAttempts(
+          session,
+          nonce: nonce,
+          extraData: extraData,
+        ) ??
+        false;
+  }
+}
+
+/// Extension methods for [SecretChallengeCompletionConfig].
+extension SecretChallengeCompletionConfigExtension<T>
+    on SecretChallengeCompletionConfig<T> {
+  /// Records an attempts and checks if the request has too many attempts.
+  ///
+  /// Returns `true` if the request has too many attempts, `false` otherwise.
+  /// If no rate limiter is provided, returns `false`.
+  Future<bool> hasTooManyAttempts(
+    final Session session, {
+    required final UuidValue nonce,
+    final Map<String, String>? extraData,
+  }) async {
+    return await rateLimiter?.hasTooManyAttempts(
+          session,
+          nonce: nonce,
+          extraData: extraData,
+        ) ??
+        false;
+  }
+}

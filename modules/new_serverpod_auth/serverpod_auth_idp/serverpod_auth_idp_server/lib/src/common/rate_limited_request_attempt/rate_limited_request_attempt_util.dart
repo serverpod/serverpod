@@ -24,30 +24,11 @@ abstract class RateLimitedRequestAttemptUtil<T> {
   /// [config] specifies the domain, source, and rate limiting parameters.
   RateLimitedRequestAttemptUtil(this.config);
 
-  /// Checks if the attempt is rate limited.
+  /// Records and attempts and checks if there have been too many attempts for
+  /// the given nonce.
   ///
-  /// If the attempt is rate limited, an [RateLimitedRequestAttemptException]
-  /// is thrown.
-  ///
-  /// [nonce] is the unique identifier for the request (e.g., email, request ID, token).
-  /// [extraData] is optional additional data to log with the attempt.
-  Future<void> abortIfTooManyAttempts(
-    final Session session, {
-    required final T nonce,
-    final Map<String, String>? extraData,
-  }) async {
-    final isRateLimited = await hasTooManyAttempts(
-      session,
-      nonce: nonce,
-      extraData: extraData,
-    );
-    if (isRateLimited) {
-      await config.onRateLimitExceeded?.call(session, nonce);
-      throw RateLimitedRequestAttemptException();
-    }
-  }
-
-  /// Checks if there have been too many attempts for the given nonce.
+  /// If the attempt is rate limited, the [config.onRateLimitExceeded] callback
+  /// will be called.
   ///
   /// [nonce] is the unique identifier for the request (e.g., email, request ID, token).
   /// [extraData] is optional additional data to log with the attempt.
@@ -111,7 +92,9 @@ class DatabaseRateLimitedRequestAttemptUtil<T>
   }) async {
     // NOTE: The attempt counting runs in a separate transaction, so that it is
     // never rolled back with the parent transaction.
-    return session.db.transaction((final transaction) async {
+    final rateLimitExceeded = await session.db.transaction((
+      final transaction,
+    ) async {
       final savePoint = await transaction.createSavepoint();
       await recordAttempt(
         session,
@@ -137,6 +120,12 @@ class DatabaseRateLimitedRequestAttemptUtil<T>
       await savePoint.release();
       return false;
     });
+
+    if (rateLimitExceeded) {
+      await config.onRateLimitExceeded?.call(session, nonce);
+    }
+
+    return rateLimitExceeded;
   }
 
   @override
