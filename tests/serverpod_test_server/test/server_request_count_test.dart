@@ -70,12 +70,16 @@ void main() {
     );
 
     test(
-      'when no requests are made then requestCount remains unchanged.',
+      'when health check endpoint is called then requestCount is not incremented.',
       () async {
         final initialCount = pod.server.requestCount;
 
-        // No requests made
+        // Make a request to the health check endpoint (GET /)
+        await http.get(Uri.http('localhost:$port', '/'));
 
+        // Health check requests should not increment the counter as they are
+        // typically from load balancer probes and should not prevent the
+        // server from being considered idle.
         expect(pod.server.requestCount, equals(initialCount));
       },
     );
