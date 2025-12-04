@@ -42,6 +42,7 @@ dependencies:
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
   test: ^1.25.5
+  test_descriptor: ^2.0.2
 
 dependency_overrides:
   serverpod_lints:
