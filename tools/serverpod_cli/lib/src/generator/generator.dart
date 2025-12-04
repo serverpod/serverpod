@@ -9,6 +9,7 @@ Future<bool> performGenerate({
   bool dartFormat = true,
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
+  required FutureCallsAnalyzer futureCallsAnalyzer,
   required StatefulAnalyzer modelAnalyzer,
 }) async {
   bool success = true;
@@ -37,11 +38,21 @@ Future<bool> performGenerate({
   success &= !endpointAnalyzerCollector.hasSevereErrors;
   endpointAnalyzerCollector.printErrors();
 
+  var futureCallsAnalyzerCollector = CodeGenerationCollector();
+  var futureCalls = await futureCallsAnalyzer.analyze(
+    collector: futureCallsAnalyzerCollector,
+    changedFiles: generatedModelFiles.toSet(),
+  );
+
+  success &= !futureCallsAnalyzerCollector.hasSevereErrors;
+  futureCallsAnalyzerCollector.printErrors();
+
   log.debug('Generating the protocol.');
 
   var protocolDefinition = ProtocolDefinition(
     endpoints: endpoints,
     models: models,
+    futureCalls: futureCalls,
   );
 
   var generatedProtocolFiles =

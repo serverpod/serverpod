@@ -1604,6 +1604,480 @@ class LibraryGenerator {
       ),
     ];
   }
+
+  /// Generates the FutureCallDispatch, callers
+  /// and future calls for the server side.
+  Library generateServerFutureCalls() {
+    var library = LibraryBuilder();
+
+    library.body.add(
+      Code.scope((allocate) {
+        final type = allocate(
+          refer('SerializableModel', serverpodUrl(true)),
+        );
+
+        return '''
+/// Invokes a future call.
+typedef _InvokeFutureCall =
+    Future<void> Function(String name, $type? object);
+
+    /// Global variable for accessing future calls via a typed interface.
+    final futureCalls = FutureCalls();
+''';
+      }),
+    );
+
+    // FutureCalls class
+    library.body.add(
+      Class(
+        (c) => c
+          ..name = 'FutureCalls'
+          ..fields.addAll([
+            Field(
+              (f) => f
+                ..name = '_futureCallManager'
+                ..type = refer('FutureCallManager?', serverpodUrl(true)),
+            ),
+            Field(
+              (f) => f
+                ..name = '_serverId'
+                ..type = refer('String?'),
+            ),
+          ])
+          // Init method
+          ..methods.add(
+            Method.returnsVoid(
+              (m) => m
+                ..name = 'initialize'
+                ..annotations.add(refer('override'))
+                ..requiredParameters.addAll([
+                  Parameter(
+                    ((p) => p
+                      ..name = 'futureCallManager'
+                      ..type = refer('FutureCallManager?', serverpodUrl(true))),
+                  ),
+                  Parameter(
+                    ((p) => p
+                      ..name = 'serverId'
+                      ..type = refer('String')),
+                  ),
+                ])
+                ..body = Block.of([
+                  if (protocolDefinition.futureCalls.isNotEmpty &&
+                      !protocolDefinition.futureCalls.every(
+                        (futureCall) => futureCall.isAbstract,
+                      )) ...[
+                    _buildFutureCallLookupMap(protocolDefinition.futureCalls),
+                    _buildFutureCallDispatchInitializer(),
+                  ],
+                ]),
+            ),
+          )
+          ..methods.add(
+            Method((m) {
+              m
+                ..annotations.add(refer('override'))
+                ..name = 'callAtTime'
+                ..returns = refer('FutureCallRef')
+                ..requiredParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'time'
+                      ..type = refer('DateTime'),
+                  ),
+                )
+                ..optionalParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'identifier'
+                      ..named = true
+                      ..type = refer('String?'),
+                  ),
+                )
+                ..body = const Code('''
+      if (_serverId == null) {
+        throw StateError('FutureCalls is not initialized.');
+      }
+      if (_futureCallManager == null) {
+        throw StateError('Future calls are disabled.');
+      }
+      return FutureCallRef(
+        (name, object) {
+          return _futureCallManager!.scheduleFutureCall(
+            name,
+            object,
+            time,
+            _serverId!,
+            identifier,
+          );
+        },
+      );
+    ''');
+            }),
+          )
+          ..methods.add(
+            Method((m) {
+              m
+                ..annotations.add(refer('override'))
+                ..name = 'callWithDelay'
+                ..returns = refer('FutureCallRef')
+                ..requiredParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'delay'
+                      ..type = refer('Duration'),
+                  ),
+                )
+                ..optionalParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'identifier'
+                      ..named = true
+                      ..type = refer('String?'),
+                  ),
+                )
+                ..body = const Code('''
+      if (_serverId == null) {
+        throw StateError('FutureCalls is not initialized.');
+      }
+      if (_futureCallManager == null) {
+        throw StateError('Future calls are disabled.');
+      }
+      return FutureCallRef(
+        (name, object) {
+        return _futureCallManager!.scheduleFutureCall(
+          name,
+          object,
+          DateTime.now().toUtc().add(delay),
+          _serverId!,
+          identifier,
+        );
+      },
+      );
+    ''');
+            }),
+          ),
+      ),
+    );
+
+    _generateFutureCallRef(library);
+    _generateFutureCallCallers(library);
+    _generateServerFutureCalls(library);
+
+    return library.build();
+  }
+
+  Code _buildFutureCallDispatchInitializer() {
+    return Block.of([
+      const Code('''
+        _futureCallManager = futureCallManager;
+        _serverId = serverId;
+        if (_futureCallManager == null) return;
+        for (final entry in futureCalls.entries) {
+          _futureCallManager?.registerFutureCall(entry.value, entry.key);
+        }
+'''),
+    ]);
+  }
+
+  Code _buildFutureCallLookupMap(List<FutureCallDefinition> futureCalls) {
+    return refer('var futureCalls')
+        .assign(
+          literalMap(
+            {
+              for (var futureCall in futureCalls)
+                for (var method in futureCall.methods)
+                  if (!futureCall.isAbstract)
+                    getFutureCallClassName(futureCall.name, method.name): refer(
+                      getFutureCallClassName(futureCall.name, method.name),
+                    ).call([]),
+            },
+            refer('String'),
+            refer('FutureCall', serverpodUrl(true)),
+          ),
+        )
+        .statement;
+  }
+
+  /// Generates FutureCallRef for server side.
+  void _generateFutureCallRef(LibraryBuilder libraryBuilder) {
+    // FutureCallRef class
+    libraryBuilder.body.add(
+      Class(
+        (c) => c
+          ..name = 'FutureCallRef'
+          ..fields.add(
+            Field(
+              (f) => f
+                ..modifier = FieldModifier.final$
+                ..name = '_invokeFutureCall'
+                ..type = refer('_InvokeFutureCall'),
+            ),
+          )
+          ..constructors.add(
+            Constructor(
+              (c) => c
+                ..requiredParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..toThis = true
+                      ..name = '_invokeFutureCall',
+                  ),
+                ),
+            ),
+          )
+          // Getters for future call callers
+          ..methods.addAll([
+            for (var definition in protocolDefinition.futureCalls)
+              Method(
+                (m) => m
+                  ..name = definition.name
+                  ..type = MethodType.getter
+                  ..returns = refer(
+                    '${ReCase(definition.name).pascalCase}FutureCallCaller',
+                  )
+                  ..body = Block.of([
+                    refer(
+                      '${ReCase(definition.name).pascalCase}FutureCallCaller',
+                    ).call([refer('_invokeFutureCall')]).returned.statement,
+                  ]),
+              ),
+          ]),
+      ),
+    );
+  }
+
+  /// Generates callers for each future call class for server side.
+  void _generateFutureCallCallers(LibraryBuilder libraryBuilder) {
+    for (final definition in protocolDefinition.futureCalls) {
+      // FutureCallCaller class
+      libraryBuilder.body.add(
+        Class(
+          (c) => c
+            ..name = '${ReCase(definition.name).pascalCase}FutureCallCaller'
+            ..fields.add(
+              Field(
+                (f) => f
+                  ..modifier = FieldModifier.final$
+                  ..name = '_invokeFutureCall'
+                  ..type = refer('_InvokeFutureCall'),
+              ),
+            )
+            ..constructors.add(
+              Constructor(
+                (c) => c
+                  ..requiredParameters.add(
+                    Parameter(
+                      (p) => p
+                        ..toThis = true
+                        ..name = '_invokeFutureCall',
+                    ),
+                  ),
+              ),
+            )
+            ..methods.addAll([
+              for (var method in definition.methods)
+                _buildFutureCallCallerMethod(definition.name, method),
+            ]),
+        ),
+      );
+    }
+  }
+
+  Method _buildFutureCallCallerMethod(
+    String futureClassName,
+    MethodDefinition method,
+  ) {
+    final requiredParameters = method.parameters;
+    final optionalParameters = method.parametersPositional;
+    final namedParameters = method.parametersNamed;
+
+    return Method(
+      (m) => m
+        ..name = method.name
+        ..returns = TypeReference(
+          (t) => t
+            ..symbol = 'Future'
+            ..types.add(refer('void')),
+        )
+        ..requiredParameters.addAll([
+          for (var param in requiredParameters)
+            Parameter(
+              (p) => p
+                ..name = param.name
+                ..type = param.type.reference(
+                  true,
+                  config: config,
+                ),
+            ),
+        ])
+        ..optionalParameters.addAll([
+          for (var param in optionalParameters)
+            Parameter(
+              (p) => p
+                ..named = false
+                ..name = param.name
+                ..type = param.type.reference(
+                  true,
+                  config: config,
+                ),
+            ),
+          for (var param in namedParameters)
+            Parameter(
+              (p) => p
+                ..named = true
+                ..required = param.required
+                ..name = param.name
+                ..type = param.type.reference(
+                  true,
+                  config: config,
+                ),
+            ),
+        ])
+        ..body = Block.of([
+          refer('_invokeFutureCall')
+              .call([
+                literalString(
+                  getFutureCallClassName(futureClassName, method.name),
+                ),
+                for (final parameter in method.parameters)
+                  refer(parameter.name),
+              ])
+              .returned
+              .statement,
+        ]),
+    );
+  }
+
+  String _futureCallPath(FutureCallDefinition futureCall) {
+    // For endpoints defined in other packages, the filePath is the library uri.
+    if (futureCall.filePath.startsWith('package:')) return futureCall.filePath;
+
+    var relativePath = p.relative(
+      futureCall.filePath,
+      from: _buildGeneratedDirectoryPath(),
+    );
+
+    // Replace backslashes with forward slashes to make it work on Windows.
+    return p.split(relativePath).join('/');
+  }
+
+  String getFutureCallClassName(String futureCallName, [String? methodName]) {
+    final buffer = StringBuffer()
+      ..write('FutureCall${ReCase(futureCallName).pascalCase}')
+      ..write(methodName == null ? '' : ReCase(methodName).pascalCase);
+
+    return buffer.toString();
+  }
+
+  /// Generates future calls for the server.
+  void _generateServerFutureCalls(LibraryBuilder libraryBuilder) {
+    for (var definition in protocolDefinition.futureCalls) {
+      // Generate a future call class for each method in the definition
+      for (var method in definition.methods) {
+        var futureCallClassName = getFutureCallClassName(
+          definition.name,
+          method.name,
+        );
+
+        libraryBuilder.body.add(
+          Class((c) {
+            var requiredParams = method.parameters;
+            var optionalParams = method.parametersPositional;
+            var namedParameters = method.parametersNamed;
+
+            c
+              ..docs.add(method.documentationComment ?? '')
+              ..name = futureCallClassName
+              ..extend = TypeReference(
+                (t) => t
+                  ..symbol = 'FutureCall'
+                  ..url = serverpodUrl(true)
+                  ..types.add(
+                    requiredParams.first.type.asNonNullable.reference(
+                      true,
+                      config: config,
+                    ),
+                  ),
+              )
+              ..abstract = definition.isAbstract;
+
+            c.methods.add(
+              Method(
+                (m) => m
+                  ..annotations.add(refer('override'))
+                  ..returns = method.returnType.reference(
+                    true,
+                    config: config,
+                  )
+                  ..name = 'invoke'
+                  ..requiredParameters.addAll([
+                    Parameter(
+                      (p) => p
+                        ..name = 'session'
+                        ..type = refer('Session', serverpodUrl(true)),
+                    ),
+                    for (var param in requiredParams)
+                      Parameter(
+                        (p) => p
+                          ..name = param.name
+                          ..type = param.type.reference(
+                            true,
+                            config: config,
+                          ),
+                      ),
+                  ])
+                  ..optionalParameters.addAll([
+                    for (var param in optionalParams)
+                      Parameter(
+                        (p) => p
+                          ..named = false
+                          ..name = param.name
+                          ..type = param.type.reference(
+                            true,
+                            config: config,
+                          ),
+                      ),
+                    for (var param in namedParameters)
+                      Parameter(
+                        (p) => p
+                          ..named = true
+                          ..required = param.required
+                          ..name = param.name
+                          ..type = param.type.reference(
+                            true,
+                            config: config,
+                          ),
+                      ),
+                  ])
+                  ..body = definition.isAbstract
+                      ? null
+                      : refer(definition.className, _futureCallPath(definition))
+                            .call([])
+                            .property(method.name)
+                            .call(
+                              [
+                                refer('session'),
+                                for (var param in requiredParams)
+                                  refer(param.name),
+                              ],
+                              {
+                                for (var param in optionalParams)
+                                  param.name: refer(param.name),
+
+                                for (var param in namedParameters)
+                                  param.name: refer(param.name),
+                              },
+                            )
+                            .returned
+                            .statement,
+              ),
+            );
+          }),
+        );
+      }
+    }
+  }
 }
 
 extension TypeDefinitionReturnsRecordInContainer on TypeDefinition {

@@ -17,6 +17,7 @@ Future<bool> performGenerateContinuously({
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
   required StatefulAnalyzer modelAnalyzer,
+  required FutureCallsAnalyzer futureCallsAnalyzer,
 }) async {
   log.debug('Starting up continuous generator');
 
@@ -26,6 +27,7 @@ Future<bool> performGenerateContinuously({
     config: config,
     endpointsAnalyzer: endpointsAnalyzer,
     modelAnalyzer: modelAnalyzer,
+    futureCallsAnalyzer: futureCallsAnalyzer,
     completionMessage:
         'Initial code generation complete. Listening for changes.',
   );
@@ -75,6 +77,7 @@ Future<bool> performGenerateContinuously({
         config: config,
         endpointsAnalyzer: endpointsAnalyzer,
         modelAnalyzer: modelAnalyzer,
+        futureCallsAnalyzer: futureCallsAnalyzer,
         completionMessage: 'Incremental code generation complete.',
       );
     });
@@ -115,6 +118,7 @@ Future<bool> _performSafeGenerate({
   required EndpointsAnalyzer endpointsAnalyzer,
   required StatefulAnalyzer modelAnalyzer,
   required String completionMessage,
+  required FutureCallsAnalyzer futureCallsAnalyzer,
 }) async {
   var success = false;
   try {
@@ -124,6 +128,7 @@ Future<bool> _performSafeGenerate({
         config: config,
         endpointsAnalyzer: endpointsAnalyzer,
         modelAnalyzer: modelAnalyzer,
+        futureCallsAnalyzer: futureCallsAnalyzer,
       ),
     );
     log.info(completionMessage);

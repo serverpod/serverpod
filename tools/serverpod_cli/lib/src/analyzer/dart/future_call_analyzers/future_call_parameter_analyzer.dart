@@ -1,6 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
@@ -9,9 +8,9 @@ import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
 
 import 'package:serverpod_cli/src/generator/types.dart';
 
-abstract class EndpointParameterAnalyzer {
-  /// Parses a [ParameterElement] into a [ParameterDefinition].
-  /// Assumes that the [ParameterElement] is a valid endpoint parameter.
+abstract class FutureCallParameterAnalyzer {
+  /// Parses a list of [FormalParameterElement] into a [Parameters].
+  /// Assumes that the list of [FormalParameterElement] contains valid future call parameters.
   static Parameters parse(
     List<FormalParameterElement> parameters,
   ) {
@@ -43,7 +42,7 @@ abstract class EndpointParameterAnalyzer {
     );
   }
 
-  /// Validates a list of [ParameterElement] and returns a list of errors.
+  /// Validates a list of [FormalParameterElement] and returns a list of errors.
   static List<SourceSpanSeverityException> validate(
     List<FormalParameterElement> parameters,
   ) {
@@ -52,7 +51,7 @@ abstract class EndpointParameterAnalyzer {
     if (!parameters.isFirstRequiredParameterSession) {
       exceptions.add(
         SourceSpanSeverityException(
-          'The first parameter of an endpoint method must be a required positional parameter of type "Session".',
+          'The first parameter of a future call method must be a required positional parameter of type "Session".',
           parameters.first.span,
           severity: SourceSpanSeverity.error,
         ),
@@ -63,7 +62,7 @@ abstract class EndpointParameterAnalyzer {
     if (parameters.isSessionParameterNullable) {
       exceptions.add(
         SourceSpanSeverityException(
-          'The "Session" argument in an endpoint method does not have to be nullable, consider making it non-nullable.',
+          'The "Session" argument in a future call method does not have to be nullable, consider making it non-nullable.',
           parameters.first.span,
           severity: SourceSpanSeverity.hint,
         ),
@@ -75,41 +74,23 @@ abstract class EndpointParameterAnalyzer {
         var type = parameter.type;
         if (type.isDartAsyncFuture) {
           return SourceSpanSeverityException(
-            'The type "Future" is not a supported endpoint parameter type.',
+            'The type "Future" is not a supported future call parameter type.',
             parameter.span,
           );
         }
 
-        if (type.isDartAsyncStream && type is ParameterizedType) {
-          if (type.nullabilitySuffix != NullabilitySuffix.none) {
-            return SourceSpanSeverityException(
-              'Nullable parameters of the type "Stream" are not supported.',
-              parameter.span,
-            );
-          }
-
-          var typeArguments = type.typeArguments;
-          if (typeArguments.length != 1) {
-            // Streams only allow a single generic so this case is only here for safety.
-            return SourceSpanSeverityException(
-              'The type "Stream" must have exactly one type argument. E.g. Stream<String>.',
-              parameter.span,
-            );
-          }
-          var innerType = typeArguments[0];
-          if (innerType is VoidType) {
-            return SourceSpanSeverityException(
-              'The type "Stream" does not support void generic type.',
-              parameter.span,
-            );
-          }
+        if (type.isDartAsyncStream) {
+          return SourceSpanSeverityException(
+            'The type "Stream" is not a supported future call parameter type.',
+            parameter.span,
+          );
         }
 
         try {
           TypeDefinition.fromDartType(parameter.type);
         } on FromDartTypeClassNameException catch (e) {
           return SourceSpanSeverityException(
-            'The type "${e.type}" is not a supported endpoint parameter type.',
+            'The type "${e.type}" is not a supported future call parameter type.',
             parameter.span,
           );
         }

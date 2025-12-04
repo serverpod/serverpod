@@ -8,6 +8,7 @@ import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
 import 'src/web/routes/app_config_route.dart';
 import 'src/web/routes/root.dart';
+import 'src/generated/future_calls.dart';
 
 /// The starting point of the Serverpod server.
 void run(List<String> args) async {
