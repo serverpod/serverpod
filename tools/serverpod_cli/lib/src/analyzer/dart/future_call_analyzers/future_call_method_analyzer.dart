@@ -11,9 +11,6 @@ import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
-// TODO: Is it necessary to exclude any method in FutureCall?
-const _excludedMethodNameSet = {''};
-
 abstract class FutureCallMethodAnalyzer {
   /// Parses an [MethodElement] into a [MethodDefinition].
   /// Assumes that the [MethodElement] is a valid future call method.
@@ -52,11 +49,8 @@ abstract class FutureCallMethodAnalyzer {
   /// Returns true if the [MethodElement] is a future call method that should
   /// be validated and parsed.
   static bool isFutureCallMethod(MethodElement method) {
-    print(method);
     if (method.isPrivate) return false;
     if (method.markedAsIgnored) return false;
-
-    if (_excludedMethodNameSet.contains(method.name)) return false;
 
     return method.formalParameters.isFirstRequiredParameterSession;
   }
@@ -110,8 +104,6 @@ abstract class FutureCallMethodAnalyzer {
     if (innerType is VoidType && dartType.isDartAsyncFuture) {
       return null;
     }
-
-    //TODO: Is it really necessary to enforce a return type for future calls
 
     if (innerType is DynamicType) {
       return SourceSpanSeverityException(
