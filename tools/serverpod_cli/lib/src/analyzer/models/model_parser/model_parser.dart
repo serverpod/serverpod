@@ -782,7 +782,9 @@ class ModelParser {
     } else if (type == 'double' || type == 'double?') {
       return double.tryParse(unquotedValue);
     } else if (type == 'bool' || type == 'bool?') {
-      return unquotedValue.toLowerCase() == 'true';
+      if (unquotedValue.toLowerCase() == 'true') return true;
+      if (unquotedValue.toLowerCase() == 'false') return false;
+      return null;
     } else if (type == 'String' || type == 'String?') {
       // Escape single quotes and wrap in quotes for code generation
       final escaped = unquotedValue.replaceAll("'", r"\'");
