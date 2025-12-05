@@ -166,7 +166,7 @@ void main() {
         expect(
           query,
           'INSERT INTO "user" ("id", "user_name", "age") '
-          'VALUES (33, \'Alex\', 33) RETURNING *',
+          'VALUES (33, \'Alex\', 33) RETURNING "user"."id" AS "id", "user"."user_name" AS "userName", "user"."age" AS "age"',
         );
       },
     );
