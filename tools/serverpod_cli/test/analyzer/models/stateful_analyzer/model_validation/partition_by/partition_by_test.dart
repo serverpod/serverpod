@@ -551,7 +551,7 @@ void main() {
             error.message,
             'Unique index "example_unique_idx" includes partition column(s) but not all. '
             'When a unique index includes any partition column, it must include all partition columns. '
-            'Missing: category.',
+            'Missing columns: "category".',
           );
         },
       );

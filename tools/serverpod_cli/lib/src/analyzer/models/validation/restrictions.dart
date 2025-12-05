@@ -2285,7 +2285,7 @@ class Restrictions {
           SourceSpanSeverityException(
             'Unique index "${index.name}" includes partition column(s) but not all. '
             'When a unique index includes any partition column, it must include all partition columns. '
-            'Missing: ${missingPartitionColumns.join(", ")}.',
+            'Missing columns: "${missingPartitionColumns.join('", "')}".',
             span,
           ),
         );
