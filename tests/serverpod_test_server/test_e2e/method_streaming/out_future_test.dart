@@ -10,6 +10,7 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(
     serverUrl,
+    // ignore: deprecated_member_use
     authenticationKeyManager: TestAuthKeyManager(),
   );
 

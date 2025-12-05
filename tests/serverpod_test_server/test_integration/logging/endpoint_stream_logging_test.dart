@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/builders/log_settings_builder.dart';
@@ -23,6 +21,7 @@ void main() async {
     });
 
     tearDown(() async {
+      // ignore: deprecated_member_use
       await client.closeStreamingConnection();
       client.close();
       await session.close();
@@ -40,6 +39,7 @@ void main() async {
             )
             .build();
         await server.updateRuntimeSettings(settings);
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
@@ -67,12 +67,14 @@ void main() async {
             )
             .build();
         await server.updateRuntimeSettings(settings);
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
 
         await client.logging.sendStreamMessage(Types());
 
+        // ignore: deprecated_member_use
         await client.closeStreamingConnection();
 
         // Wait for the log to be written
@@ -96,6 +98,7 @@ void main() async {
             )
             .build();
         await server.updateRuntimeSettings(settings);
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
@@ -103,6 +106,7 @@ void main() async {
         await client.logging.sendStreamMessage(Types());
         await client.logging.sendStreamMessage(Types());
 
+        // ignore: deprecated_member_use
         await client.closeStreamingConnection();
 
         // Wait for the log to be written
@@ -126,6 +130,7 @@ void main() async {
             )
             .build();
         await server.updateRuntimeSettings(settings);
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
@@ -157,6 +162,7 @@ void main() async {
             )
             .build();
         await server.updateRuntimeSettings(settings);
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
@@ -189,6 +195,7 @@ void main() async {
             )
             .build();
         await server.updateRuntimeSettings(settings);
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
@@ -217,6 +224,7 @@ void main() async {
             )
             .build();
         await server.updateRuntimeSettings(settings);
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
@@ -250,6 +258,7 @@ void main() async {
             .build();
         await server.updateRuntimeSettings(settings);
 
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
@@ -277,11 +286,13 @@ void main() async {
             .build();
 
         await server.updateRuntimeSettings(settings);
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
 
         await client.logging.sendStreamMessage(Types());
+        // ignore: deprecated_member_use
         await client.closeStreamingConnection();
 
         // Wait for the log to be written
@@ -304,11 +315,13 @@ void main() async {
             .build();
 
         await server.updateRuntimeSettings(settings);
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
 
         await client.logging.sendStreamMessage(Types());
+        // ignore: deprecated_member_use
         await client.closeStreamingConnection();
 
         // Wait for the log to potentially be written
@@ -334,11 +347,13 @@ void main() async {
             .build();
 
         await server.updateRuntimeSettings(settings);
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
 
         await client.logging.sendStreamMessage(Types());
+        // ignore: deprecated_member_use
         await client.closeStreamingConnection();
 
         // Wait for the log to be written
@@ -365,11 +380,13 @@ void main() async {
             .build();
 
         await server.updateRuntimeSettings(settings);
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
 
         await client.logging.sendStreamMessage(Types());
+        // ignore: deprecated_member_use
         await client.closeStreamingConnection();
 
         // Wait for the log to be written

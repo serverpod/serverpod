@@ -18,6 +18,7 @@ void main() {
       var testConnectivityMonitor = TestConnectivityMonitor();
       var client = Client(
         serverUrl,
+        // ignore: deprecated_member_use
         authenticationKeyManager: TestAuthKeyManager(),
         disconnectStreamsOnLostInternetConnection: true,
       );
@@ -58,6 +59,7 @@ void main() {
       var testConnectivityMonitor = TestConnectivityMonitor();
       var client = Client(
         serverUrl,
+        // ignore: deprecated_member_use
         authenticationKeyManager: TestAuthKeyManager(),
         disconnectStreamsOnLostInternetConnection: false,
       );

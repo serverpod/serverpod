@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
@@ -50,6 +48,7 @@ void main() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
             'http://localhost:8080/',
+            // ignore: deprecated_member_use
             authenticationKeyManager: authKeyManager,
           );
           authKeyManager.put(validTestToken);
@@ -100,6 +99,7 @@ void main() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
             'http://localhost:8080/',
+            // ignore: deprecated_member_use
             authenticationKeyManager: authKeyManager,
           );
           authKeyManager.put(invalidTestToken);
@@ -144,6 +144,7 @@ void main() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
             'http://localhost:8080/',
+            // ignore: deprecated_member_use
             authenticationKeyManager: authKeyManager,
           );
           authKeyManager.put(validTestToken);
@@ -185,6 +186,7 @@ void main() {
           final authKeyManager = TestAuthKeyManager();
           client = Client(
             'http://localhost:8080/',
+            // ignore: deprecated_member_use
             authenticationKeyManager: authKeyManager,
           );
           authKeyManager.put(invalidTestToken);
@@ -269,10 +271,12 @@ void main() {
         final authKeyManager = TestAuthKeyManager();
         final client = Client(
           'http://localhost:8080/',
+          // ignore: deprecated_member_use
           authenticationKeyManager: authKeyManager,
         );
         authKeyManager.put(validTestToken);
 
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
@@ -284,6 +288,7 @@ void main() {
 
           expect(message.num, equals(1));
         } finally {
+          // ignore: deprecated_member_use
           await client.closeStreamingConnection();
           client.close();
         }
@@ -296,10 +301,12 @@ void main() {
         final authKeyManager = TestAuthKeyManager();
         final client = Client(
           'http://localhost:8080/',
+          // ignore: deprecated_member_use
           authenticationKeyManager: authKeyManager,
         );
         authKeyManager.put(invalidTestToken);
 
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
@@ -311,6 +318,7 @@ void main() {
 
           expect(message.num, equals(0));
         } finally {
+          // ignore: deprecated_member_use
           await client.closeStreamingConnection();
           client.close();
         }
@@ -324,10 +332,12 @@ void main() {
         final authKeyManager = TestAuthKeyManager();
         final client = Client(
           'http://localhost:8080/',
+          // ignore: deprecated_member_use
           authenticationKeyManager: authKeyManager,
         );
         authKeyManager.put(validTestToken);
 
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
@@ -344,6 +354,7 @@ void main() {
 
           expect(message.num, equals(1));
         } finally {
+          // ignore: deprecated_member_use
           await client.closeStreamingConnection();
           client.close();
         }
@@ -357,10 +368,12 @@ void main() {
         final authKeyManager = TestAuthKeyManager();
         final client = Client(
           'http://localhost:8080/',
+          // ignore: deprecated_member_use
           authenticationKeyManager: authKeyManager,
         );
         authKeyManager.put(invalidTestToken);
 
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
@@ -377,6 +390,7 @@ void main() {
 
           expect(message.num, equals(0));
         } finally {
+          // ignore: deprecated_member_use
           await client.closeStreamingConnection();
           client.close();
         }
@@ -483,6 +497,7 @@ void main() {
       () async {
         final client = Client('http://localhost:8080/');
 
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
@@ -494,6 +509,7 @@ void main() {
 
           expect(message.num, equals(0));
         } finally {
+          // ignore: deprecated_member_use
           await client.closeStreamingConnection();
           client.close();
         }

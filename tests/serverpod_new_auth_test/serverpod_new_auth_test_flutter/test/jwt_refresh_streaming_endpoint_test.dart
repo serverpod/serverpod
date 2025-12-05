@@ -7,14 +7,13 @@ import 'utils/test_auth_key_manager.dart';
 
 void main() {
   late Client client;
-  late TestAuthKeyManager authKeyManager;
+  late TestAuthKeyProvider authKeyManager;
 
   setUp(() {
-    authKeyManager = TestAuthKeyManager();
+    authKeyManager = TestAuthKeyProvider();
     client = Client(
       'http://localhost:8080/',
-      authenticationKeyManager: authKeyManager,
-    );
+    )..authKeyProvider = authKeyManager;
   });
 
   tearDown(() {

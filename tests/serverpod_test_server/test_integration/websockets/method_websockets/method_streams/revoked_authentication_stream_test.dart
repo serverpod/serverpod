@@ -33,6 +33,7 @@ void main() {
     authKeyManager = TestAuthKeyManager();
     client = c.Client(
       serverUrl,
+      // ignore: deprecated_member_use
       authenticationKeyManager: authKeyManager,
     );
   });

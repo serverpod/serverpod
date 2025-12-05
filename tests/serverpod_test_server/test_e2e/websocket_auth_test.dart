@@ -13,6 +13,7 @@ void main() {
     setUp(() async {
       client = Client(
         serverUrl,
+        // ignore: deprecated_member_use
         authenticationKeyManager: authKeyManager,
       );
     });
