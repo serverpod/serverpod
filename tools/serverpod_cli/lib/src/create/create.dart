@@ -15,6 +15,7 @@ import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:yaml_edit/yaml_edit.dart';
 
 import 'copier.dart';
 
@@ -118,9 +119,15 @@ Future<bool> performCreate(
     success &= await log.progress(
       'Writing additional project files.',
       () async {
-        _copyServerUpgrade(
+        await _copyServerUpgrade(
           serverpodDirs,
           name: name,
+          customServerpodPath: productionMode ? null : serverpodHome,
+        );
+        await _copyFlutterUpgrade(
+          serverpodDirs,
+          name: name,
+          customServerpodPath: productionMode ? null : serverpodHome,
         );
         return true;
       },
@@ -221,10 +228,12 @@ Future<bool> _performUpgrade(
   success &= await log.progress(
     'Upgrading project.',
     () async {
-      _copyServerUpgrade(
+      await _copyServerUpgrade(
         serverpodDir,
         name: name,
         skipMain: true,
+        skipAuthDependencies: true,
+        customServerpodPath: productionMode ? null : serverpodHome,
       );
       return true;
     },
@@ -372,18 +381,77 @@ void _createDirectory(Directory dir) {
   dir.createSync();
 }
 
-void _copyServerUpgrade(
+Future<void> _copyFlutterUpgrade(
+  ServerpodDirectories serverpodDirs, {
+  required String name,
+  String? customServerpodPath,
+}) async {
+  log.debug('Copying Flutter upgrade files.', newParagraph: true);
+  var copier = Copier(
+    srcDir: Directory(
+      p.join(
+        resourceManager.templateDirectory.path,
+        'projectname_flutter_upgrade',
+      ),
+    ),
+    dstDir: serverpodDirs.flutterDir,
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+    ],
+    fileNameReplacements: const [],
+    ignoreFileNames: const [],
+  );
+  copier.copyFiles();
+
+  log.debug('Adding auth dependencies to Flutter pubspec', newParagraph: true);
+  await _addAuthDependenciesToPubspec(
+    pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
+    dependency: 'serverpod_auth_idp_flutter',
+    version: templateVersion,
+    customServerpodPath: customServerpodPath,
+    overridePath:
+        'modules/new_serverpod_auth/serverpod_auth_idp/'
+        'serverpod_auth_idp_flutter',
+    transitiveDeps: [
+      (
+        name: 'serverpod_auth_core_client',
+        path:
+            'modules/new_serverpod_auth/serverpod_auth_core/'
+            'serverpod_auth_core_client',
+      ),
+      (
+        name: 'serverpod_auth_core_flutter',
+        path:
+            'modules/new_serverpod_auth/serverpod_auth_core/'
+            'serverpod_auth_core_flutter',
+      ),
+      (
+        name: 'serverpod_auth_idp_client',
+        path:
+            'modules/new_serverpod_auth/serverpod_auth_idp/'
+            'serverpod_auth_idp_client',
+      ),
+    ],
+  );
+}
+
+Future<void> _copyServerUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
   bool skipMain = false,
-}) {
+  bool skipAuthDependencies = false,
+  String? customServerpodPath,
+}) async {
   var awsName = name.replaceAll('_', '-');
   var randomAwsId = math.Random.secure().nextInt(10000000).toString();
 
   var dbTestPassword = generateRandomString();
   var redisTestPassword = generateRandomString();
 
-  log.debug('Copying upgrade files.', newParagraph: true);
+  log.debug('Copying server upgrade files.', newParagraph: true);
   var copier = Copier(
     srcDir: Directory(
       p.join(
@@ -445,6 +513,14 @@ void _copyServerUpgrade(
         slotName: 'REDIS_TEST_PASSWORD',
         replacement: redisTestPassword,
       ),
+      Replacement(
+        slotName: 'SERVER_SIDE_SESSION_KEY_HASH_PEPPER',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'EMAIL_SECRET_HASH_PEPPER',
+        replacement: generateRandomString(),
+      ),
     ],
     fileNameReplacements: const [],
     ignoreFileNames: [if (skipMain) 'server.dart'],
@@ -484,6 +560,90 @@ void _copyServerUpgrade(
     fileNameReplacements: [],
   );
   copier.copyFiles();
+
+  if (!skipAuthDependencies) {
+    log.debug(
+      'Adding auth dependencies to server and client pubspecs',
+      newParagraph: true,
+    );
+    await _addAuthDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.serverDir.path, 'pubspec.yaml')),
+      dependency: 'serverpod_auth_idp_server',
+      version: templateVersion,
+      customServerpodPath: customServerpodPath,
+      overridePath:
+          'modules/new_serverpod_auth/serverpod_auth_idp/'
+          'serverpod_auth_idp_server',
+      transitiveDeps: [
+        (
+          name: 'serverpod_auth_core_server',
+          path:
+              'modules/new_serverpod_auth/serverpod_auth_core/'
+              'serverpod_auth_core_server',
+        ),
+      ],
+    );
+    await _addAuthDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
+      dependency: 'serverpod_auth_idp_client',
+      version: templateVersion,
+      customServerpodPath: customServerpodPath,
+      overridePath:
+          'modules/new_serverpod_auth/serverpod_auth_idp/'
+          'serverpod_auth_idp_client',
+      transitiveDeps: [
+        (
+          name: 'serverpod_auth_core_client',
+          path:
+              'modules/new_serverpod_auth/serverpod_auth_core/'
+              'serverpod_auth_core_client',
+        ),
+      ],
+    );
+  }
+}
+
+Future<void> _addAuthDependenciesToPubspec({
+  required File pubspecFile,
+  required String dependency,
+  required String version,
+  required String? customServerpodPath,
+  required String overridePath,
+  List<({String name, String path})> transitiveDeps = const [],
+}) async {
+  if (!pubspecFile.existsSync()) {
+    log.debug('Pubspec file not found: ${pubspecFile.path}');
+    return;
+  }
+
+  final pubspecDir = pubspecFile.parent;
+  final success = await CommandLineTools.dartPubAdd(
+    pubspecDir,
+    dependency,
+    version,
+  );
+
+  if (!success) {
+    return;
+  }
+
+  if (customServerpodPath != null) {
+    var contents = pubspecFile.readAsStringSync();
+    final editor = YamlEditor(contents);
+
+    editor.update(
+      ['dependency_overrides', dependency],
+      {'path': '$customServerpodPath/$overridePath'},
+    );
+    for (final dep in transitiveDeps) {
+      editor.update(
+        ['dependency_overrides', dep.name],
+        {'path': '$customServerpodPath/${dep.path}'},
+      );
+    }
+
+    pubspecFile.writeAsStringSync(editor.toString());
+  }
 }
 
 void _copyServerTemplates(
