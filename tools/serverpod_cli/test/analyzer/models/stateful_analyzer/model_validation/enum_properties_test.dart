@@ -214,7 +214,7 @@ void main() {
     test(
       'when enum value has property values, they are parsed correctly.',
       () {
-        var modelSources = [
+        final modelSources = [
           ModelSourceBuilder().withYaml(
             '''
             enum: ExampleEnum
@@ -229,20 +229,57 @@ void main() {
           ).build(),
         ];
 
-        var collector = CodeGenerationCollector();
-        var analyzer = StatefulAnalyzer(
+        final collector = CodeGenerationCollector();
+        final analyzer = StatefulAnalyzer(
           config,
           modelSources,
           onErrorsCollector(collector),
         );
 
-        var definitions = analyzer.validateAll();
+        final definitions = analyzer.validateAll();
 
-        var definition = definitions.first as EnumDefinition;
-        var firstValue = definition.values.first;
+        final definition = definitions.first as EnumDefinition;
+        final firstValue = definition.values.first;
         expect(firstValue.name, 'first');
         expect(firstValue.propertyValues['id'], 1);
         expect(firstValue.propertyValues['name'], "'First Value'");
+      },
+    );
+
+    test(
+      'when enum value is missing a required property, then an error is collected.',
+      () {
+        final modelSources = [
+          ModelSourceBuilder().withYaml(
+            '''
+            enum: ExampleEnum
+            properties:
+              id: int
+              name: String
+            values:
+              - first:
+                  id: 1
+            ''',
+          ).build(),
+        ];
+
+        final collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          modelSources,
+          onErrorsCollector(collector),
+        ).validateAll();
+
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error for missing required property.',
+        );
+
+        final error = collector.errors.first;
+        expect(error.message, contains('Required property'));
+        expect(error.message, contains('name'));
+        expect(error.message, contains('missing'));
       },
     );
   });
