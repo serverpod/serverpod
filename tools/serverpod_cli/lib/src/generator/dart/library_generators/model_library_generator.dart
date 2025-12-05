@@ -3167,8 +3167,13 @@ class SerializableModelLibraryGenerator {
     return library;
   }
 
-  /// Formats a property value as an Expression for code generation
+  /// Formats a property value as an Expression for code generation.
   Expression _formatPropertyValueForExpression(dynamic value, String type) {
+    // Handle null values for nullable types
+    if (value == null) {
+      return literalNull;
+    }
+
     if (type == 'int' || type == 'int?') {
       return literalNum(value);
     } else if (type == 'double' || type == 'double?') {
