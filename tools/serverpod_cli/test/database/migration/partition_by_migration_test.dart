@@ -20,10 +20,9 @@ void main() {
 
           var dstDatabase = DatabaseDefinitionBuilder()
               .withTable(
-                TableDefinitionBuilder()
-                    .withName('example')
-                    .withPartitionBy(['name'])
-                    .build(),
+                TableDefinitionBuilder().withName('example').withPartitionBy([
+                  'name',
+                ]).build(),
               )
               .build();
 
@@ -56,10 +55,9 @@ void main() {
 
           var dstDatabase = DatabaseDefinitionBuilder()
               .withTable(
-                TableDefinitionBuilder()
-                    .withName('example')
-                    .withPartitionBy(['name'])
-                    .build(),
+                TableDefinitionBuilder().withName('example').withPartitionBy([
+                  'name',
+                ]).build(),
               )
               .build();
 
@@ -90,10 +88,9 @@ void main() {
         () {
           var srcDatabase = DatabaseDefinitionBuilder()
               .withTable(
-                TableDefinitionBuilder()
-                    .withName('example')
-                    .withPartitionBy(['name'])
-                    .build(),
+                TableDefinitionBuilder().withName('example').withPartitionBy([
+                  'name',
+                ]).build(),
               )
               .build();
 
@@ -125,19 +122,17 @@ void main() {
         () {
           var srcDatabase = DatabaseDefinitionBuilder()
               .withTable(
-                TableDefinitionBuilder()
-                    .withName('example')
-                    .withPartitionBy(['name'])
-                    .build(),
+                TableDefinitionBuilder().withName('example').withPartitionBy([
+                  'name',
+                ]).build(),
               )
               .build();
 
           var dstDatabase = DatabaseDefinitionBuilder()
               .withTable(
-                TableDefinitionBuilder()
-                    .withName('example')
-                    .withPartitionBy(['category'])
-                    .build(),
+                TableDefinitionBuilder().withName('example').withPartitionBy([
+                  'category',
+                ]).build(),
               )
               .build();
 
@@ -163,19 +158,18 @@ void main() {
         () {
           var srcDatabase = DatabaseDefinitionBuilder()
               .withTable(
-                TableDefinitionBuilder()
-                    .withName('example')
-                    .withPartitionBy(['name'])
-                    .build(),
+                TableDefinitionBuilder().withName('example').withPartitionBy([
+                  'name',
+                ]).build(),
               )
               .build();
 
           var dstDatabase = DatabaseDefinitionBuilder()
               .withTable(
-                TableDefinitionBuilder()
-                    .withName('example')
-                    .withPartitionBy(['name', 'category'])
-                    .build(),
+                TableDefinitionBuilder().withName('example').withPartitionBy([
+                  'name',
+                  'category',
+                ]).build(),
               )
               .build();
 
@@ -201,19 +195,17 @@ void main() {
         () {
           var srcDatabase = DatabaseDefinitionBuilder()
               .withTable(
-                TableDefinitionBuilder()
-                    .withName('example')
-                    .withPartitionBy(['name'])
-                    .build(),
+                TableDefinitionBuilder().withName('example').withPartitionBy([
+                  'name',
+                ]).build(),
               )
               .build();
 
           var dstDatabase = DatabaseDefinitionBuilder()
               .withTable(
-                TableDefinitionBuilder()
-                    .withName('example')
-                    .withPartitionBy(['name'])
-                    .build(),
+                TableDefinitionBuilder().withName('example').withPartitionBy([
+                  'name',
+                ]).build(),
               )
               .build();
 

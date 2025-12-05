@@ -473,14 +473,14 @@ void main() {
   });
 
   group(
-      'Given a class with a partitioned table and a unique index that includes a partition column',
-      () {
-    test(
-      'when the unique index includes all partition columns then no error is generated.',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+    'Given a class with a partitioned table and a unique index that includes a partition column',
+    () {
+      test(
+        'when the unique index includes all partition columns then no error is generated.',
+        () {
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
             class: Example
             table: example
             fields:
@@ -492,31 +492,31 @@ void main() {
                 fields: name, source
                 unique: true
             ''',
-          ).build(),
-        ];
+            ).build(),
+          ];
 
-        var collector = CodeGenerationCollector();
-        var analyzer = StatefulAnalyzer(
-          config,
-          models,
-          onErrorsCollector(collector),
-        );
-        analyzer.validateAll();
+          var collector = CodeGenerationCollector();
+          var analyzer = StatefulAnalyzer(
+            config,
+            models,
+            onErrorsCollector(collector),
+          );
+          analyzer.validateAll();
 
-        expect(
-          collector.errors,
-          isEmpty,
-          reason: 'Expected no errors but found: ${collector.errors}',
-        );
-      },
-    );
+          expect(
+            collector.errors,
+            isEmpty,
+            reason: 'Expected no errors but found: ${collector.errors}',
+          );
+        },
+      );
 
-    test(
-      'when the unique index is missing some partition columns then collect an error.',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+      test(
+        'when the unique index is missing some partition columns then collect an error.',
+        () {
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
             class: Example
             table: example
             fields:
@@ -529,39 +529,39 @@ void main() {
                 fields: name, source
                 unique: true
             ''',
-          ).build(),
-        ];
+            ).build(),
+          ];
 
-        var collector = CodeGenerationCollector();
-        var analyzer = StatefulAnalyzer(
-          config,
-          models,
-          onErrorsCollector(collector),
-        );
-        analyzer.validateAll();
+          var collector = CodeGenerationCollector();
+          var analyzer = StatefulAnalyzer(
+            config,
+            models,
+            onErrorsCollector(collector),
+          );
+          analyzer.validateAll();
 
-        expect(
-          collector.errors,
-          isNotEmpty,
-          reason: 'Expected an error but none was generated.',
-        );
+          expect(
+            collector.errors,
+            isNotEmpty,
+            reason: 'Expected an error but none was generated.',
+          );
 
-        var error = collector.errors.first;
-        expect(
-          error.message,
-          'Unique index "example_unique_idx" includes partition column(s) but not all. '
-          'When a unique index includes any partition column, it must include all partition columns. '
-          'Missing: category.',
-        );
-      },
-    );
+          var error = collector.errors.first;
+          expect(
+            error.message,
+            'Unique index "example_unique_idx" includes partition column(s) but not all. '
+            'When a unique index includes any partition column, it must include all partition columns. '
+            'Missing: category.',
+          );
+        },
+      );
 
-    test(
-      'when the unique index does not include any partition columns then no error is generated.',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+      test(
+        'when the unique index does not include any partition columns then no error is generated.',
+        () {
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
             class: Example
             table: example
             fields:
@@ -573,31 +573,31 @@ void main() {
                 fields: name
                 unique: true
             ''',
-          ).build(),
-        ];
+            ).build(),
+          ];
 
-        var collector = CodeGenerationCollector();
-        var analyzer = StatefulAnalyzer(
-          config,
-          models,
-          onErrorsCollector(collector),
-        );
-        analyzer.validateAll();
+          var collector = CodeGenerationCollector();
+          var analyzer = StatefulAnalyzer(
+            config,
+            models,
+            onErrorsCollector(collector),
+          );
+          analyzer.validateAll();
 
-        expect(
-          collector.errors,
-          isEmpty,
-          reason: 'Expected no errors but found: ${collector.errors}',
-        );
-      },
-    );
+          expect(
+            collector.errors,
+            isEmpty,
+            reason: 'Expected no errors but found: ${collector.errors}',
+          );
+        },
+      );
 
-    test(
-      'when a non-unique index includes some partition columns then no error is generated.',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
+      test(
+        'when a non-unique index includes some partition columns then no error is generated.',
+        () {
+          var models = [
+            ModelSourceBuilder().withYaml(
+              '''
             class: Example
             table: example
             fields:
@@ -609,23 +609,24 @@ void main() {
               example_idx:
                 fields: name, source
             ''',
-          ).build(),
-        ];
+            ).build(),
+          ];
 
-        var collector = CodeGenerationCollector();
-        var analyzer = StatefulAnalyzer(
-          config,
-          models,
-          onErrorsCollector(collector),
-        );
-        analyzer.validateAll();
+          var collector = CodeGenerationCollector();
+          var analyzer = StatefulAnalyzer(
+            config,
+            models,
+            onErrorsCollector(collector),
+          );
+          analyzer.validateAll();
 
-        expect(
-          collector.errors,
-          isEmpty,
-          reason: 'Expected no errors but found: ${collector.errors}',
-        );
-      },
-    );
-  });
+          expect(
+            collector.errors,
+            isEmpty,
+            reason: 'Expected no errors but found: ${collector.errors}',
+          );
+        },
+      );
+    },
+  );
 }

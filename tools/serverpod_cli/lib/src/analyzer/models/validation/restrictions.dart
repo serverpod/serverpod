@@ -2218,8 +2218,9 @@ class Restrictions {
     var errors = <SourceSpanSeverityException>[];
 
     // Check for missing fields
-    var missingFields = partitionFields
-        .where((field) => !validDatabaseFieldNames.contains(field));
+    var missingFields = partitionFields.where(
+      (field) => !validDatabaseFieldNames.contains(field),
+    );
     for (var field in missingFields) {
       errors.add(
         SourceSpanSeverityException(
@@ -2246,11 +2247,13 @@ class Restrictions {
     }
 
     // Check if unique index constraint is violated
-    errors.addAll(_validateUniqueIndexOnPartitionedTable(
-      definition,
-      partitionFields,
-      span,
-    ));
+    errors.addAll(
+      _validateUniqueIndexOnPartitionedTable(
+        definition,
+        partitionFields,
+        span,
+      ),
+    );
 
     return errors;
   }
