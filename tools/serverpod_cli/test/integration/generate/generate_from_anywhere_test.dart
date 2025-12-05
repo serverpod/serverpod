@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:test/test.dart';
@@ -10,66 +9,6 @@ void main() {
   setUpAll(() {
     CommandLineExperimentalFeatures.initialize([]);
   });
-
-  Future<Directory> createMockServerpodProject({
-    required String projectName,
-  }) async {
-    var serverDir = Directory(path.join(d.sandbox, '${projectName}_server'));
-    await serverDir.create(recursive: true);
-
-    var protocolDir = Directory(
-      path.join(serverDir.path, 'lib', 'src', 'protocol'),
-    );
-    await protocolDir.create(recursive: true);
-
-    var configDir = Directory(path.join(serverDir.path, 'config'));
-    await configDir.create(recursive: true);
-
-    var dartToolDir = Directory(path.join(serverDir.path, '.dart_tool'));
-    await dartToolDir.create(recursive: true);
-    var packageConfigFile = File(
-      path.join(dartToolDir.path, 'package_config.json'),
-    );
-    await packageConfigFile.writeAsString('''
-{
-  "configVersion": 2,
-  "packages": [
-    {
-      "name": "${projectName}_server",
-      "rootUri": "../",
-      "packageUri": "lib/"
-    },
-    {
-      "name": "serverpod",
-      "rootUri": "../.pub-cache/hosted/pub.dev/serverpod-2.0.0",
-      "packageUri": "lib/"
-    }
-  ]
-}
-''');
-
-    var serverPubspecFile = File(path.join(serverDir.path, 'pubspec.yaml'));
-    await serverPubspecFile.writeAsString('''
-name: ${projectName}_server
-dependencies:
-  serverpod: ^2.0.0
-''');
-
-    var clientDir = Directory(path.join(d.sandbox, '${projectName}_client'));
-    await clientDir.create(recursive: true);
-    var clientLibDir = Directory(
-      path.join(clientDir.path, 'lib', 'src', 'protocol'),
-    );
-    await clientLibDir.create(recursive: true);
-    var clientPubspecFile = File(path.join(clientDir.path, 'pubspec.yaml'));
-    await clientPubspecFile.writeAsString('''
-name: ${projectName}_client
-dependencies:
-  serverpod_client: ^2.0.0
-''');
-
-    return serverDir;
-  }
 
   group('GeneratorConfig.load with auto-detection', () {
     test(
@@ -103,10 +42,10 @@ dependencies:
           projectName: 'myapp',
         );
 
-        var clientDir = Directory(path.join(d.sandbox, 'myapp_client'));
+        var clientDir = d.dir('myapp_client');
 
         var originalDir = Directory.current;
-        Directory.current = clientDir;
+        Directory.current = clientDir.io;
 
         try {
           var config = await GeneratorConfig.load(interactive: false);
@@ -127,12 +66,16 @@ dependencies:
           projectName: 'myapp',
         );
 
-        var protocolDir = Directory(
-          path.join(d.sandbox, 'myapp_server', 'lib', 'src', 'protocol'),
-        );
+        var protocolDir = d.dir('myapp_server', [
+          d.dir('lib', [
+            d.dir('src', [
+              d.dir('protocol'),
+            ]),
+          ]),
+        ]);
 
         var originalDir = Directory.current;
-        Directory.current = protocolDir;
+        Directory.current = protocolDir.io;
 
         try {
           var config = await GeneratorConfig.load(interactive: false);
@@ -168,11 +111,11 @@ dependencies:
       'when GeneratorConfig.load is called without directory parameter, '
       'then it throws ServerpodProjectNotFoundException',
       () async {
-        var emptyDir = Directory(path.join(d.sandbox, 'empty'));
-        await emptyDir.create(recursive: true);
+        var emptyDir = d.dir('empty');
+        await emptyDir.create();
 
         var originalDir = Directory.current;
-        Directory.current = emptyDir;
+        Directory.current = emptyDir.io;
 
         try {
           await expectLater(
@@ -185,4 +128,65 @@ dependencies:
       },
     );
   });
+}
+
+Future<Directory> createMockServerpodProject({
+  required String projectName,
+}) async {
+  final packageConfigContent =
+      '''
+{
+  "configVersion": 2,
+  "packages": [
+    {
+      "name": "${projectName}_server",
+      "rootUri": "../",
+      "packageUri": "lib/"
+    },
+    {
+      "name": "serverpod",
+      "rootUri": "../.pub-cache/hosted/pub.dev/serverpod-2.0.0",
+      "packageUri": "lib/"
+    }
+  ]
+}
+''';
+
+  final serverPubspecContent =
+      '''
+name: ${projectName}_server
+dependencies:
+  serverpod: ^2.0.0
+''';
+
+  var serverDir = d.dir('${projectName}_server', [
+    d.dir('.dart_tool', [
+      d.file('package_config.json', packageConfigContent),
+    ]),
+    d.dir('config'),
+    d.dir('lib', [
+      d.dir('src', [
+        d.dir('protocol'),
+      ]),
+    ]),
+    d.file('pubspec.yaml', serverPubspecContent),
+  ]);
+  await serverDir.create();
+
+  final clientPubspecContent =
+      '''
+name: ${projectName}_client
+dependencies:
+  serverpod_client: ^2.0.0
+''';
+
+  var clientDir = d.dir('${projectName}_client', [
+    d.file('pubspec.yaml', clientPubspecContent),
+    d.dir('lib', [
+      d.dir('src', [d.dir('protocol')]),
+    ]),
+  ]);
+  await clientDir.create();
+
+  return serverDir.io;
 }
