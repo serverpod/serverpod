@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
@@ -22,6 +20,7 @@ void main() async {
     var authKeyManager = TestBasicAuthenticationKeyManager();
     var client = Client(
       'http://localhost:8080/',
+      // ignore: deprecated_member_use
       authenticationKeyManager: authKeyManager,
     );
     late Serverpod server;
@@ -111,6 +110,7 @@ void main() async {
     var incorrectAuthKeyManager = TestIncorrectAuthKeyManager();
     var client = Client(
       'http://localhost:8080/',
+      // ignore: deprecated_member_use
       authenticationKeyManager: incorrectAuthKeyManager,
     );
     late Serverpod server;
@@ -157,6 +157,7 @@ void main() async {
     var authKeyManager = TestAuthKeyManager();
     var client = Client(
       'http://localhost:8080/',
+      // ignore: deprecated_member_use
       authenticationKeyManager: authKeyManager,
     );
     late Serverpod server;
@@ -266,6 +267,7 @@ void main() async {
 }
 
 /// A test implementation that yields backwards compatible Basic auth header values.
+// ignore: deprecated_member_use
 class TestBasicAuthenticationKeyManager extends AuthenticationKeyManager {
   String? _key;
 

@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
@@ -10,6 +8,7 @@ import 'package:test/test.dart';
 void main() {
   late Serverpod server;
   late Client client;
+  // ignore: deprecated_member_use
   late AuthenticationKeyManager authKeyManager;
 
   setUpAll(() async {
@@ -19,6 +18,7 @@ void main() {
     authKeyManager = TestAuthKeyManager();
     client = Client(
       serverUrl,
+      // ignore: deprecated_member_use
       authenticationKeyManager: authKeyManager,
     );
 

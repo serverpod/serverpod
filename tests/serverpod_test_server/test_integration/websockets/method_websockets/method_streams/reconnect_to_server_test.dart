@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
@@ -19,6 +17,7 @@ void main() {
 
     client = c.Client(
       serverUrl,
+      // ignore: deprecated_member_use
       authenticationKeyManager: TestAuthKeyManager(),
     );
   });
