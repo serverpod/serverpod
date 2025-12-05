@@ -1,5 +1,46 @@
 import '../../generator/types.dart';
 
+/// Describes a single future call.
+class FutureCallDefinition {
+  /// Create a new [FutureCallDefinition].
+  const FutureCallDefinition({
+    required this.name,
+    required this.documentationComment,
+    required this.methods,
+    required this.className,
+    required this.filePath,
+    required this.annotations,
+    required this.isAbstract,
+  });
+
+  /// The name of the future call.
+  final String name;
+
+  /// The documentation of the future call.
+  final String? documentationComment;
+
+  /// The actual class name of the future call.
+  final String className;
+
+  /// The file path, the future call is stored in.
+  final String filePath;
+
+  /// The methods this future call defines.
+  final List<MethodDefinition> methods;
+
+  /// The annotations of this future call.
+  final List<AnnotationDefinition> annotations;
+
+  /// Whether this future call is abstract.
+  final bool isAbstract;
+
+  /// The name of the external package where this future call is defined. Will
+  /// return null if the future call comes from the project under generation.
+  String? get packageName => filePath.startsWith('package:')
+      ? filePath.split('/').first.split(':').last
+      : null;
+}
+
 /// Describes a single endpoint.
 ///
 /// See also:
