@@ -1941,6 +1941,30 @@ class Restrictions {
           );
         }
 
+        // Validate required properties have values
+        final enumDef = documentDefinition;
+        if (enumDef is EnumDefinition) {
+          final valueNode = firstEntry.value;
+          final providedProperties = <String>{};
+          if (valueNode is YamlMap) {
+            for (final key in valueNode.keys) {
+              if (key is String) {
+                providedProperties.add(key);
+              }
+            }
+          }
+
+          for (final property in enumDef.properties) {
+            if (property.required &&
+                !providedProperties.contains(property.name)) {
+              return SourceSpanSeverityException(
+                'Required property "${property.name}" is missing for enum value "$enumValueName".',
+                keyNode.span,
+              );
+            }
+          }
+        }
+
         return null;
       }
 
