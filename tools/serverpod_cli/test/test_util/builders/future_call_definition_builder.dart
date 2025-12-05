@@ -7,7 +7,6 @@ class FutureCallDefinitionBuilder {
   String _filePath = 'example.dart';
   List<MethodDefinition> _methods = [];
   List<AnnotationDefinition> _annotations = [];
-  FutureCallDefinition? _extendsClass;
   bool _isAbstract = false;
 
   FutureCallDefinitionBuilder();
@@ -51,11 +50,6 @@ class FutureCallDefinitionBuilder {
     return this;
   }
 
-  FutureCallDefinitionBuilder withExtends(FutureCallDefinition parentClass) {
-    _extendsClass = parentClass;
-    return this;
-  }
-
   FutureCallDefinitionBuilder withIsAbstract([bool isAbstract = true]) {
     _isAbstract = isAbstract;
     return this;
@@ -70,7 +64,6 @@ class FutureCallDefinitionBuilder {
       methods: _methods,
       annotations: _annotations,
       isAbstract: _isAbstract,
-      extendsClass: _extendsClass,
     );
   }
 }
