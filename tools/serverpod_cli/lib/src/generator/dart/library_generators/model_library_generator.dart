@@ -3013,35 +3013,33 @@ class SerializableModelLibraryGenerator {
           if (enumDefinition.isEnhanced) {
             // Add enum values with property assignments
             e.values.addAll([
-              for (var value in enumDefinition.values)
+              for (final value in enumDefinition.values)
                 EnumValue((v) {
                   v
                     ..name = value.name
                     ..docs.addAll(value.documentation ?? []);
 
-                  // Add property arguments
-                  if (value.propertyValues.isNotEmpty) {
-                    var args = <Expression>[];
-                    for (var property in enumDefinition.properties) {
-                      var propertyValue = value.propertyValues[property.name];
-                      if (propertyValue != null) {
-                        args.add(
-                          _formatPropertyValueForExpression(
-                            propertyValue,
-                            property.type,
-                          ),
-                        );
-                      } else if (property.defaultValue != null) {
-                        args.add(
-                          _formatPropertyValueForExpression(
-                            property.defaultValue,
-                            property.type,
-                          ),
-                        );
-                      }
+                  // Add property arguments for all properties
+                  final args = <Expression>[];
+                  for (final property in enumDefinition.properties) {
+                    final propertyValue = value.propertyValues[property.name];
+                    if (propertyValue != null) {
+                      args.add(
+                        _formatPropertyValueForExpression(
+                          propertyValue,
+                          property.type,
+                        ),
+                      );
+                    } else if (property.defaultValue != null) {
+                      args.add(
+                        _formatPropertyValueForExpression(
+                          property.defaultValue,
+                          property.type,
+                        ),
+                      );
                     }
-                    v.arguments.addAll(args);
                   }
+                  v.arguments.addAll(args);
                 }),
             ]);
 
@@ -3049,7 +3047,7 @@ class SerializableModelLibraryGenerator {
             e.constructors.add(
               Constructor((c) {
                 c.constant = true;
-                for (var property in enumDefinition.properties) {
+                for (final property in enumDefinition.properties) {
                   c.requiredParameters.add(
                     Parameter(
                       (p) => p
@@ -3062,7 +3060,7 @@ class SerializableModelLibraryGenerator {
             );
 
             // Add property fields
-            for (var property in enumDefinition.properties) {
+            for (final property in enumDefinition.properties) {
               e.fields.add(
                 Field((f) {
                   f
@@ -3076,7 +3074,7 @@ class SerializableModelLibraryGenerator {
           } else {
             // Simple enum values (no properties)
             e.values.addAll([
-              for (var value in enumDefinition.values)
+              for (final value in enumDefinition.values)
                 EnumValue((v) {
                   v
                     ..name = value.name
