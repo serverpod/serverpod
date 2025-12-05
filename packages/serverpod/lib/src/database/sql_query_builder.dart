@@ -340,7 +340,7 @@ class InsertQueryBuilder {
     if (filteredValues.isEmpty) return null;
 
     var values = filteredValues
-        .map((row) => row.toJson() as Map<String, dynamic>)
+        .map((row) => row.toJsonForDatabase() as Map<String, dynamic>)
         .map((row) {
           var values = selectedColumns
               .map((column) {
@@ -355,9 +355,11 @@ class InsertQueryBuilder {
         })
         .join(', ');
 
+    var returning = buildReturningClause(_table);
+
     return columnNames.isEmpty
-        ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES RETURNING *'
-        : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values RETURNING *';
+        ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES RETURNING $returning'
+        : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values RETURNING $returning';
   }
 
   /// Builds the insert SQL query.
@@ -537,10 +539,28 @@ String _buildColumnAliases(List<Column> columns) {
       .map(
         (column) =>
             '$column AS "${truncateIdentifier(
-              column.queryAlias,
+              column.fieldQueryAlias,
               DatabaseConstants.pgsqlMaxNameLimitation,
             )}"',
       )
+      .join(', ');
+}
+
+/// Builds the returning clause for a query.
+String buildReturningClause(Table table, {String? tableAlias}) {
+  if (!table.hasColumnMapping) return '*';
+
+  return table.columns
+      .map((column) {
+        final queryColumnName =
+            '"${tableAlias ?? table.queryPrefix}"."${column.columnName}"';
+        final queryFieldName = truncateIdentifier(
+          column.fieldName,
+          DatabaseConstants.pgsqlMaxNameLimitation,
+        );
+
+        return '$queryColumnName AS "$queryFieldName"';
+      })
       .join(', ');
 }
 

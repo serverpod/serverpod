@@ -1,0 +1,5 @@
+class: Service
+table: service
+fields:
+  name: String
+  description: String?

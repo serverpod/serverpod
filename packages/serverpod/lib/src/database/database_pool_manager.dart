@@ -1,9 +1,8 @@
 import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod/src/database/concepts/runtime_parameters.dart';
 import 'package:serverpod/src/serialization/serialization_manager.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import 'adapters/postgres/pgvector_encoder.dart';
 import 'adapters/postgres/value_encoder.dart';
@@ -14,10 +13,10 @@ class DatabasePoolManager {
   /// Database configuration.
   final DatabaseConfig config;
 
-  late SerializationManager _serializationManager;
+  late SerializationManagerServer _serializationManager;
 
   /// Access to the serialization manager.
-  SerializationManager get serializationManager => _serializationManager;
+  SerializationManagerServer get serializationManager => _serializationManager;
 
   pg.Pool? _pgPool;
 

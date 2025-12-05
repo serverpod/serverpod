@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 
@@ -168,6 +169,67 @@ void main() {
   );
 
   group(
+    'Given a class with an index with a defined field '
+    'that has an explicit column name',
+    () {
+      const columnOverride = 'example_name';
+      const indexName = 'example_override_index';
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            name: String, column=$columnOverride
+          indexes:
+            $indexName:
+              fields: name
+          ''',
+        ).build(),
+      ];
+      final columnOverrideConfig = GeneratorConfigBuilder()
+          .withEnabledExperimentalFeatures([
+            ExperimentalFeature.columnOverride,
+          ])
+          .build();
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        columnOverrideConfig,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      var errors = collector.errors;
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
+      });
+
+      var definition = definitions.firstOrNull as ModelClassDefinition?;
+      test(
+        'then the index definition contains the explicit column name of '
+        'the field of the index.',
+        () {
+          var index = definition?.indexes.first;
+          var field = index?.fields.first;
+          expect(field, columnOverride);
+        },
+        skip: errors.isNotEmpty,
+      );
+
+      test('then the field definition contains index.', () {
+        var field = definition?.fields.firstWhere(
+          (field) => field.name == 'name',
+        );
+        var index = field?.indexes.firstOrNull;
+
+        expect(index?.name, indexName);
+      }, skip: errors.isNotEmpty);
+    },
+  );
+
+  group(
     'Given a class with an index with two defined fields',
     () {
       var models = [
@@ -229,6 +291,88 @@ void main() {
         var index = field?.indexes.firstOrNull;
 
         expect(index?.name, 'example_index');
+      });
+    },
+  );
+
+  group(
+    'Given a class with an index with two defined fields'
+    'and both have explicit column names',
+    () {
+      const nameOverride = 'example_name';
+      const fooOverride = 'example_foo';
+      const indexName = 'example_override_index';
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            name: String, column=$nameOverride
+            foo: String, column=$fooOverride
+          indexes:
+            $indexName:
+              fields: name, foo
+          ''',
+        ).build(),
+      ];
+
+      final columnOverrideConfig = GeneratorConfigBuilder()
+          .withEnabledExperimentalFeatures([
+            ExperimentalFeature.columnOverride,
+          ])
+          .build();
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        columnOverrideConfig,
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      var errors = collector.errors;
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
+      });
+
+      var definition = definitions.firstOrNull as ModelClassDefinition?;
+      test(
+        'then index definition contains the first field explicit column name.',
+        () {
+          var index = definition?.indexes.first;
+          var indexFields = index?.fields;
+
+          expect(indexFields, contains(nameOverride));
+        },
+      );
+
+      test(
+        'then index definition contains the second field explicit column name.',
+        () {
+          var index = definition?.indexes.first;
+          var indexFields = index?.fields;
+
+          expect(indexFields, contains(fooOverride));
+        },
+      );
+
+      test('then first field definition contains index.', () {
+        var field = definition?.fields.firstWhere(
+          (field) => field.name == 'name',
+        );
+        var index = field?.indexes.firstOrNull;
+
+        expect(index?.name, indexName);
+      });
+
+      test('then second field definition contains index.', () {
+        var field = definition?.fields.firstWhere(
+          (field) => field.name == 'foo',
+        );
+        var index = field?.indexes.firstOrNull;
+
+        expect(index?.name, indexName);
       });
     },
   );
