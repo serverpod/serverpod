@@ -209,6 +209,25 @@ CREATE TABLE "chapter" (
 );
 
 --
+-- Class ChildEntity as table child_entity
+--
+CREATE TABLE "child_entity" (
+    "id" bigserial PRIMARY KEY,
+    "sharedField" text NOT NULL,
+    "localField" text NOT NULL,
+    "_parentEntityChildrenParentEntityId" bigint
+);
+
+--
+-- Class ChildClassExplicitColumn as table child_table_explicit_column
+--
+CREATE TABLE "child_table_explicit_column" (
+    "id" bigserial PRIMARY KEY,
+    "non_table_parent_field" text NOT NULL,
+    "child_field" text NOT NULL
+);
+
+--
 -- Class ChildClassWithoutId as table child_table_with_inherited_id
 --
 CREATE TABLE "child_table_with_inherited_id" (
@@ -300,6 +319,18 @@ CREATE TABLE "company_uuid" (
 );
 
 --
+-- Class Contractor as table contractor
+--
+CREATE TABLE "contractor" (
+    "id" bigserial PRIMARY KEY,
+    "name" text NOT NULL,
+    "fk_contractor_service_id" bigint
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "contractor_service_unique_idx" ON "contractor" USING btree ("fk_contractor_service_id");
+
+--
 -- Class Course as table course
 --
 CREATE TABLE "course" (
@@ -368,6 +399,14 @@ CREATE TABLE "datetime_default_persist" (
     "id" bigserial PRIMARY KEY,
     "dateTimeDefaultPersistNow" timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     "dateTimeDefaultPersistStr" timestamp without time zone DEFAULT '2024-05-10 22:00:00'::timestamp without time zone
+);
+
+--
+-- Class Department as table department
+--
+CREATE TABLE "department" (
+    "id" bigserial PRIMARY KEY,
+    "name" text NOT NULL
 );
 
 --
@@ -440,6 +479,15 @@ CREATE TABLE "duration_default_model" (
 CREATE TABLE "duration_default_persist" (
     "id" bigserial PRIMARY KEY,
     "durationDefaultPersist" bigint DEFAULT 94230100
+);
+
+--
+-- Class Employee as table employee
+--
+CREATE TABLE "employee" (
+    "id" bigserial PRIMARY KEY,
+    "name" text NOT NULL,
+    "fk_employee_department_id" bigint NOT NULL
 );
 
 --
@@ -608,6 +656,15 @@ CREATE TABLE "model_with_required_field" (
     "name" text NOT NULL,
     "email" text,
     "phone" text
+);
+
+--
+-- Class ModifiedColumnName as table modified_column_name
+--
+CREATE TABLE "modified_column_name" (
+    "id" bigserial PRIMARY KEY,
+    "originalColumn" text NOT NULL,
+    "modified_column" text NOT NULL
 );
 
 --
@@ -849,6 +906,13 @@ CREATE TABLE "parent_class_table" (
 );
 
 --
+-- Class ParentEntity as table parent_entity
+--
+CREATE TABLE "parent_entity" (
+    "id" bigserial PRIMARY KEY
+);
+
+--
 -- Class ParentUser as table parent_user
 --
 CREATE TABLE "parent_user" (
@@ -945,6 +1009,15 @@ CREATE TABLE "scope_none_fields" (
 --
 CREATE TABLE "server_only_changed_id_field_class" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid()
+);
+
+--
+-- Class Service as table service
+--
+CREATE TABLE "service" (
+    "id" bigserial PRIMARY KEY,
+    "name" text NOT NULL,
+    "description" text
 );
 
 --
@@ -1619,6 +1692,16 @@ ALTER TABLE ONLY "chapter"
     ON UPDATE NO ACTION;
 
 --
+-- Foreign relations for "child_entity" table
+--
+ALTER TABLE ONLY "child_entity"
+    ADD CONSTRAINT "child_entity_fk_0"
+    FOREIGN KEY("_parentEntityChildrenParentEntityId")
+    REFERENCES "parent_entity"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+
+--
 -- Foreign relations for "child_with_inherited_id" table
 --
 ALTER TABLE ONLY "child_with_inherited_id"
@@ -1697,6 +1780,26 @@ ALTER TABLE ONLY "company_uuid"
     ADD CONSTRAINT "company_uuid_fk_0"
     FOREIGN KEY("townId")
     REFERENCES "town_int"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+
+--
+-- Foreign relations for "contractor" table
+--
+ALTER TABLE ONLY "contractor"
+    ADD CONSTRAINT "contractor_fk_0"
+    FOREIGN KEY("fk_contractor_service_id")
+    REFERENCES "service"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+
+--
+-- Foreign relations for "employee" table
+--
+ALTER TABLE ONLY "employee"
+    ADD CONSTRAINT "employee_fk_0"
+    FOREIGN KEY("fk_employee_department_id")
+    REFERENCES "department"("id")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 
@@ -2009,9 +2112,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20251117192620601', now())
+    VALUES ('serverpod_test', '20251205141846374', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20251117192620601', "timestamp" = now();
+    DO UPDATE SET "version" = '20251205141846374', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
