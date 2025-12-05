@@ -24,7 +24,7 @@ import 'package:serverpod/serverpod.dart';
 /// You can also apply it manually to any route:
 ///
 /// ```dart
-/// pod.webServer.addMiddleware(wasmHeadersMiddleware(), '/app/**');
+/// pod.webServer.addMiddleware(WasmHeadersMiddleware(), '/app/**');
 /// ```
 ///
 /// ## How It Works
@@ -32,10 +32,14 @@ import 'package:serverpod/serverpod.dart';
 /// The middleware intercepts all Response objects and adds COOP/COEP headers.
 /// Other Result types (Hijack, WebSocketUpgrade) pass through unchanged.
 /// Existing headers are preserved.
-Middleware wasmHeadersMiddleware() {
-  return (Handler innerHandler) {
+class WasmHeadersMiddleware extends MiddlewareObject {
+  /// Creates a new WasmHeadersMiddleware
+  const WasmHeadersMiddleware();
+
+  @override
+  Handler call(Handler next) {
     return (Request req) async {
-      final result = await innerHandler(req);
+      final result = await next(req);
 
       // Only modify Response objects
       if (result is Response) {
@@ -49,5 +53,5 @@ Middleware wasmHeadersMiddleware() {
 
       return result;
     };
-  };
+  }
 }

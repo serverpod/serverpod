@@ -14,7 +14,7 @@ import 'package:serverpod/serverpod.dart';
 /// final indexFile = File('web/index.html');
 ///
 /// pod.webServer.addMiddleware(
-///   fallbackMiddleware(
+///   FallbackMiddleware(
 ///     fallback: StaticRoute.file(indexFile),
 ///     on: (response) => response.statusCode == 404,
 ///   ),
@@ -27,7 +27,7 @@ import 'package:serverpod/serverpod.dart';
 ///
 /// ```dart
 /// pod.webServer.addMiddleware(
-///   fallbackMiddleware(
+///   FallbackMiddleware(
 ///     fallback: errorPageRoute,
 ///     on: (response) => response.statusCode >= 500,
 ///   ),
@@ -44,14 +44,24 @@ import 'package:serverpod/serverpod.dart';
 ///
 /// The fallback route automatically has access to the session because all
 /// routes in the WebServer are wrapped with session middleware.
-Middleware fallbackMiddleware({
-  required Route fallback,
-  required bool Function(Response) on,
-}) {
-  return (Handler innerHandler) {
+class FallbackMiddleware extends MiddlewareObject {
+  /// The fallback route to use when the condition matches
+  final Route fallback;
+
+  /// The condition function that determines when to use the fallback
+  final bool Function(Response) on;
+
+  /// Creates a new FallbackMiddleware
+  const FallbackMiddleware({
+    required this.fallback,
+    required this.on,
+  });
+
+  @override
+  Handler call(Handler next) {
     return (Request req) async {
       // Call the primary handler
-      final result = await innerHandler(req);
+      final result = await next(req);
 
       // Check if it's a Response and matches the condition
       if (result is Response && on(result)) {
@@ -62,5 +72,5 @@ Middleware fallbackMiddleware({
       // Return original result
       return result;
     };
-  };
+  }
 }

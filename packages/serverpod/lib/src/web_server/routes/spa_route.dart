@@ -61,10 +61,10 @@ class SpaRoute extends Route {
 
     subRouter.use(
       '/',
-      fallbackMiddleware(
+      FallbackMiddleware(
         fallback: StaticRoute.file(fallback),
         on: (response) => response.statusCode == 404,
-      ),
+      ).call,
     );
 
     StaticRoute.directory(

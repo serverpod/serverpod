@@ -40,7 +40,7 @@ void main() {
         ),
       );
 
-      pod.webServer.addMiddleware(wasmHeadersMiddleware(), '/test');
+      pod.webServer.addMiddleware(const WasmHeadersMiddleware(), '/test');
       pod.webServer.addRoute(_TestRoute('test response'), '/test/route');
 
       await pod.start();
@@ -100,7 +100,7 @@ void main() {
         ),
       );
 
-      pod.webServer.addMiddleware(wasmHeadersMiddleware(), '/');
+      pod.webServer.addMiddleware(const WasmHeadersMiddleware(), '/');
       pod.webServer.addRoute(_TestRoute('route1'), '/route1');
       pod.webServer.addRoute(_TestRoute('route2'), '/route2');
 

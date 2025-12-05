@@ -60,7 +60,7 @@ void main() {
 
         // Add fallback middleware and static route
         pod.webServer.addMiddleware(
-          fallbackMiddleware(
+          FallbackMiddleware(
             fallback: StaticRoute.file(indexFile),
             on: (response) => response.statusCode == 404,
           ),
@@ -140,7 +140,7 @@ void main() {
 
       // Use a custom route that returns 404 as the fallback
       pod.webServer.addMiddleware(
-        fallbackMiddleware(
+        FallbackMiddleware(
           fallback: _NotFoundRoute(),
           on: (response) => response.statusCode == 404,
         ),
@@ -198,7 +198,7 @@ void main() {
 
       // Admin SPA
       pod.webServer.addMiddleware(
-        fallbackMiddleware(
+        FallbackMiddleware(
           fallback: StaticRoute.file(adminIndexFile),
           on: (response) => response.statusCode == 404,
         ),
@@ -211,7 +211,7 @@ void main() {
 
       // Public SPA
       pod.webServer.addMiddleware(
-        fallbackMiddleware(
+        FallbackMiddleware(
           fallback: StaticRoute.file(indexFile),
           on: (response) => response.statusCode == 404,
         ),

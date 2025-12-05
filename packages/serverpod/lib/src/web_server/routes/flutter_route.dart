@@ -81,16 +81,16 @@ class FlutterRoute extends Route {
   void injectIn(RelicRouter router) {
     final subRouter = Router<Handler>();
 
-    subRouter.use('/', wasmHeadersMiddleware());
+    subRouter.use('/', const WasmHeadersMiddleware().call);
 
     final index = indexFile ?? File(path.join(directory.path, 'index.html'));
 
     subRouter.use(
       '/',
-      fallbackMiddleware(
+      FallbackMiddleware(
         fallback: StaticRoute.file(index),
         on: (response) => response.statusCode == 404,
-      ),
+      ).call,
     );
 
     StaticRoute.directory(
