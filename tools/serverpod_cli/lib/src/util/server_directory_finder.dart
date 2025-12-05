@@ -133,7 +133,7 @@ Directory? _returnCandidates(List<Directory> candidates) {
   // Remove duplicates by normalized path
   var uniquePaths = <String>{};
   candidates = candidates.where((dir) {
-    var canonicalized = p.canonicalize(dir.path);
+    var canonicalized = p.canonicalize(dir.resolveSymbolicLinksSync());
     if (uniquePaths.contains(canonicalized)) {
       return false;
     }
