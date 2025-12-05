@@ -72,6 +72,10 @@ class ServerpodConfig {
   /// True if future call execution should be disabled.
   final bool futureCallExecutionEnabled;
 
+  /// Custom migrations directory path relative to the server root.
+  /// If null, the default 'migrations' directory is used.
+  final String? migrationsPath;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -91,6 +95,7 @@ class ServerpodConfig {
     this.experimentalDiagnosticHandlerTimeout = const Duration(seconds: 30),
     this.futureCall = const FutureCallConfig(),
     this.futureCallExecutionEnabled = true,
+    this.migrationsPath,
   }) : sessionLogs =
            sessionLogs ??
            SessionLogConfig.buildDefault(
@@ -220,6 +225,8 @@ class ServerpodConfig {
       environment,
     );
 
+    var migrationsPath = _readMigrationsPath(configMap, environment);
+
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
@@ -237,6 +244,7 @@ class ServerpodConfig {
       sessionLogs: sessionLogsConfig,
       futureCall: futureCallConfig,
       futureCallExecutionEnabled: futureCallExecutionEnabled,
+      migrationsPath: migrationsPath,
     );
   }
 
@@ -289,6 +297,7 @@ class ServerpodConfig {
     Duration? experimentalDiagnosticHandlerTimeout,
     FutureCallConfig? futureCall,
     bool? futureCallExecutionEnabled,
+    String? migrationsPath,
   }) {
     return ServerpodConfig(
       apiServer: apiServer ?? this.apiServer,
@@ -311,6 +320,7 @@ class ServerpodConfig {
       futureCall: futureCall ?? this.futureCall,
       futureCallExecutionEnabled:
           futureCallExecutionEnabled ?? this.futureCallExecutionEnabled,
+      migrationsPath: migrationsPath ?? this.migrationsPath,
     );
   }
 
@@ -1108,6 +1118,21 @@ bool _readIsFutureCallExecutionEnabled(
 
   futureCallsExecutionEnabled ??= true;
   return futureCallsExecutionEnabled;
+}
+
+String? _readMigrationsPath(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  var migrationsPath = configMap[ServerpodEnv.migrationsPath.configKey];
+  migrationsPath =
+      environment[ServerpodEnv.migrationsPath.envVariable] ?? migrationsPath;
+
+  if (migrationsPath is String) {
+    return migrationsPath;
+  }
+
+  return null;
 }
 
 /// Validates that a JSON configuration contains all required keys, and that
