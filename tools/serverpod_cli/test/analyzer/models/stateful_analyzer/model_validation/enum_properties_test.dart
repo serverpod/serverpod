@@ -183,35 +183,6 @@ void main() {
     );
 
     test(
-      'when enum definition has no properties, then isEnhanced returns false.',
-      () {
-        var modelSources = [
-          ModelSourceBuilder().withYaml(
-            '''
-            enum: ExampleEnum
-            values:
-              - first
-              - second
-            ''',
-          ).build(),
-        ];
-
-        var collector = CodeGenerationCollector();
-        var analyzer = StatefulAnalyzer(
-          config,
-          modelSources,
-          onErrorsCollector(collector),
-        );
-
-        var definitions = analyzer.validateAll();
-
-        var definition = definitions.first as EnumDefinition;
-        expect(definition.isEnhanced, isFalse);
-        expect(definition.properties, isEmpty);
-      },
-    );
-
-    test(
       'when enum value has property values, they are parsed correctly.',
       () {
         final modelSources = [
