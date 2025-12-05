@@ -766,28 +766,34 @@ class ModelParser {
 
   /// Parse default value based on type
   static dynamic _parseEnumPropertyDefaultValue(String valueStr, String type) {
+    var unquotedValue = valueStr;
+
     // Remove quotes if present
-    if (valueStr.startsWith("'") && valueStr.endsWith("'")) {
-      valueStr = valueStr.substring(1, valueStr.length - 1);
+    if (unquotedValue.startsWith("'") && unquotedValue.endsWith("'")) {
+      unquotedValue = unquotedValue.substring(1, unquotedValue.length - 1);
     }
-    if (valueStr.startsWith('"') && valueStr.endsWith('"')) {
-      valueStr = valueStr.substring(1, valueStr.length - 1);
+    if (unquotedValue.startsWith('"') && unquotedValue.endsWith('"')) {
+      unquotedValue = unquotedValue.substring(1, unquotedValue.length - 1);
     }
 
     // Parse based on type
     if (type == 'int' || type == 'int?') {
-      return int.tryParse(valueStr);
+      return int.tryParse(unquotedValue);
     } else if (type == 'double' || type == 'double?') {
-      return double.tryParse(valueStr);
+      return double.tryParse(unquotedValue);
     } else if (type == 'bool' || type == 'bool?') {
-      return valueStr.toLowerCase() == 'true';
+      return unquotedValue.toLowerCase() == 'true';
     } else if (type == 'String' || type == 'String?') {
-      return "'$valueStr'"; // Add quotes for code generation
-    } else if (valueStr == 'null') {
+      // Escape single quotes and wrap in quotes for code generation
+      final escaped = unquotedValue.replaceAll("'", r"\'");
+      return "'$escaped'";
+    } else if (unquotedValue == 'null') {
       return null;
     }
 
-    return "'$valueStr'"; // Default: treat as string with quotes
+    // Default: treat as string with quotes (escape single quotes)
+    final escaped = unquotedValue.replaceAll("'", r"\'");
+    return "'$escaped'";
   }
 
   static List<ProtocolEnumValueDefinition> _parseEnumValues(
@@ -865,7 +871,7 @@ class ModelParser {
   static dynamic _parseEnumPropertyValue(dynamic value, String type) {
     if (value == null) return null;
 
-    var valueStr = value.toString();
+    final valueStr = value.toString();
 
     // Parse based on type
     if (type == 'int' || type == 'int?') {
@@ -877,11 +883,13 @@ class ModelParser {
       if (valueStr.toLowerCase() == 'false') return false;
       return null;
     } else if (type == 'String' || type == 'String?') {
-      // Add quotes for code generation
-      return "'$valueStr'";
+      // Escape single quotes and wrap in quotes for code generation
+      final escaped = valueStr.replaceAll("'", r"\'");
+      return "'$escaped'";
     }
 
-    // Default: treat as string with quotes
-    return "'$valueStr'";
+    // Default: treat as string with quotes (escape single quotes)
+    final escaped = valueStr.replaceAll("'", r"\'");
+    return "'$escaped'";
   }
 }
