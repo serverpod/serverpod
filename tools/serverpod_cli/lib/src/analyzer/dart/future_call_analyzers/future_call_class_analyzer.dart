@@ -36,31 +36,6 @@ abstract class FutureCallClassAnalyzer {
     var classDocumentationComment = element.documentationComment;
     var annotations = AnnotationAnalyzer.parseAnnotations(element);
 
-    var parentClass = element.supertype?.element;
-    var parentClassName = parentClass?.name;
-    FutureCallDefinition? parentFutureCallDefinition;
-
-    if (parentClass is ClassElement &&
-        !parentClass.markedAsIgnored &&
-        parentClassName != null &&
-        parentClassName != 'FutureCall') {
-      var parentFilePath = parentClass.library == element.library
-          ? filePath
-          : parentClass.library.identifier;
-
-      parse(
-        parentClass,
-        validationErrors,
-        parentFilePath,
-        futureCallDefinitions,
-        templateRegistry: templateRegistry,
-      );
-
-      parentFutureCallDefinition = futureCallDefinitions.firstWhere(
-        (e) => e.filePath == parentFilePath && e.className == parentClassName,
-      );
-    }
-
     futureCallDefinitions.add(
       FutureCallDefinition(
         name: futureCallName,
@@ -78,7 +53,6 @@ abstract class FutureCallClassAnalyzer {
         filePath: filePath,
         annotations: annotations,
         isAbstract: element.isAbstract,
-        extendsClass: parentFutureCallDefinition,
       ),
     );
   }
@@ -120,9 +94,7 @@ abstract class FutureCallClassAnalyzer {
   /// Returns true if the [ClassElement] is an active future call class that should
   /// be validated and parsed.
   static bool isFutureCallClass(ClassElement element) {
-    // Allow abstract classes to be included in analysis for generation.
     if (!element.isConstructable && !element.isAbstract) return false;
-
     return isFutureCallInterface(element);
   }
 
@@ -175,9 +147,10 @@ abstract class FutureCallClassAnalyzer {
 }
 
 extension on ClassElement {
-  /// Returns all future call methods from the class.
-  ///
-  /// Those defined directly on the class, as well as those inherited from the base classes.
+  /// Returns all the methods from the class which are callabe as FutureCall.
+  /// This means only methods with first parameter of type Session
+  /// and a return type of Future will be returned.
+  /// Only returns methods that are defined directly on the class and not inherited ones.
   List<MethodElement> collectFutureCallMethods({
     required Map<String, List<SourceSpanSeverityException>> validationErrors,
     required String filePath,
@@ -190,24 +163,6 @@ extension on ClassElement {
           !validationErrors.containsKey(
             FutureCallMethodAnalyzer.elementNamespace(this, method, filePath),
           )) {
-        futureCallMethods.add(method);
-      }
-
-      handledMethods.add(method.name!);
-    }
-
-    var inheritedMethods = allSupertypes
-        .map((s) => s.element)
-        .whereType<ClassElement>()
-        .where(FutureCallClassAnalyzer.isFutureCallInterface)
-        .expand((s) => s.methods);
-
-    for (var method in inheritedMethods) {
-      if (handledMethods.contains(method.name)) {
-        continue;
-      }
-
-      if (FutureCallMethodAnalyzer.isFutureCallMethod(method)) {
         futureCallMethods.add(method);
       }
 

@@ -11,7 +11,6 @@ class FutureCallDefinition {
     required this.filePath,
     required this.annotations,
     required this.isAbstract,
-    required this.extendsClass,
   });
 
   /// The name of the future call.
@@ -34,9 +33,6 @@ class FutureCallDefinition {
 
   /// Whether this future call is abstract.
   final bool isAbstract;
-
-  /// The parent of this future call if it exists.
-  final FutureCallDefinition? extendsClass;
 
   /// The name of the external package where this future call is defined. Will
   /// return null if the future call comes from the project under generation.
