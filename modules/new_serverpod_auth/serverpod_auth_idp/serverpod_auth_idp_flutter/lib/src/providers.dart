@@ -23,8 +23,12 @@ class AvailableIdps {
   /// Whether any identity providers are available.
   bool get hasAny => count > 0;
 
+  // TODO: Does it make sense to include hasAnonymous in this count?
   /// The number of available identity providers.
   int get count => [hasEmail, hasGoogle, hasApple].where((e) => e).length;
+
+  /// Whether the anonymous authentication provider is available.
+  bool get hasAnonymous => _isProviderAvailable<EndpointAnonymousIdpBase>();
 
   /// Whether the email authentication provider is available.
   bool get hasEmail => _isProviderAvailable<EndpointEmailIdpBase>();

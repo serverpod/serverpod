@@ -20,6 +20,17 @@ import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/
 import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/passkey_login_request.dart'
     as _i6;
 
+/// Base endpoint for anonymous authentication.
+///
+/// Subclass this in your own application to expose an endpoint for anonymous sign-in.
+/// {@category Endpoint}
+abstract class EndpointAnonymousIdpBase extends _i1.EndpointRef {
+  EndpointAnonymousIdpBase(_i1.EndpointCaller caller) : super(caller);
+
+  /// Signs in a user anonymously and returns a new session.
+  _i2.Future<_i3.AuthSuccess> signIn();
+}
+
 /// Endpoint for handling Sign in with Apple.
 ///
 /// To expose these endpoint methods on your server, extend this class in a

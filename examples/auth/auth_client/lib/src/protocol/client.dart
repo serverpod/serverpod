@@ -21,6 +21,23 @@ import 'package:auth_client/src/protocol/greeting.dart' as _i6;
 import 'protocol.dart' as _i7;
 
 /// {@category Endpoint}
+class EndpointAnonymousIdp extends _i1.EndpointAnonymousIdpBase {
+  EndpointAnonymousIdp(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'anonymousIdp';
+
+  /// Signs in a user anonymously and returns a new session.
+  @override
+  _i3.Future<_i4.AuthSuccess> signIn() =>
+      caller.callServerEndpoint<_i4.AuthSuccess>(
+        'anonymousIdp',
+        'signIn',
+        {},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointAppleIdp extends _i1.EndpointAppleIdpBase {
   EndpointAppleIdp(_i2.EndpointCaller caller) : super(caller);
 
@@ -348,6 +365,7 @@ class Client extends _i2.ServerpodClientShared {
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
        ) {
+    anonymousIdp = EndpointAnonymousIdp(this);
     appleIdp = EndpointAppleIdp(this);
     emailIdp = EndpointEmailIdp(this);
     googleIdp = EndpointGoogleIdp(this);
@@ -355,6 +373,8 @@ class Client extends _i2.ServerpodClientShared {
     greeting = EndpointGreeting(this);
     modules = Modules(this);
   }
+
+  late final EndpointAnonymousIdp anonymousIdp;
 
   late final EndpointAppleIdp appleIdp;
 
@@ -370,6 +390,7 @@ class Client extends _i2.ServerpodClientShared {
 
   @override
   Map<String, _i2.EndpointRef> get endpointRefLookup => {
+    'anonymousIdp': anonymousIdp,
     'appleIdp': appleIdp,
     'emailIdp': emailIdp,
     'googleIdp': googleIdp,
