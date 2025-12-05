@@ -322,18 +322,18 @@ class ServerDirectoryFinder {
       var homeDir =
           Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
 
+      final parentPath = p.canonicalize(dir.parent.resolveSymbolicLinksSync());
+
       // Stop at first level within top-level directories to prevent
       // cross-contamination between concurrent or leftover of previous tests
       // Paths must be resolved first to avoid legacy DOS Windows paths.
       final topLevelDirectories = {
-        p.rootPrefix(p.canonicalize(dir.resolveSymbolicLinksSync())),
-        p.canonicalize(Directory.systemTemp.resolveSymbolicLinksSync()),
+        p.rootPrefix(parentPath),
+        p.canonicalize(Directory.systemTemp.path),
         if (homeDir != null)
           p.canonicalize(Directory(homeDir).resolveSymbolicLinksSync()),
       };
-      final resolvedParent = dir.parent.resolveSymbolicLinksSync();
-      final canonicalizedParent = p.canonicalize(resolvedParent);
-      if (topLevelDirectories.any((d) => p.equals(d, canonicalizedParent))) {
+      if (topLevelDirectories.any((d) => d == parentPath)) {
         return true;
       }
 

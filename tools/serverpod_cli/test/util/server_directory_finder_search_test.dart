@@ -287,7 +287,8 @@ dependencies:
             'src',
             'protocol',
           ),
-        );
+        )..createSync(recursive: true);
+
         var result = ServerDirectoryFinder.search(deepDir);
 
         expect(result, isNotNull);
@@ -325,7 +326,8 @@ dependencies:
             'src',
             'protocol',
           ),
-        );
+        )..createSync(recursive: true);
+
         var result = ServerDirectoryFinder.search(deepDir);
 
         expect(result, isNotNull);
@@ -355,8 +357,15 @@ dependencies:
         await serverDir(otherServerTempDir.path).create();
 
         var deepDir = Directory(
-          path.join(serverTempDir.path, 'app_server', 'lib', 'src', 'protocol'),
-        );
+          path.join(
+            serverTempDir.path,
+            'app_server',
+            'lib',
+            'src',
+            'protocol',
+          ),
+        )..createSync(recursive: true);
+
         var result = ServerDirectoryFinder.search(deepDir);
 
         expect(result, isNotNull);
