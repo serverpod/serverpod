@@ -412,19 +412,19 @@ class SerializableModelIndexDefinition {
 
 /// Represents a single property on an enhanced enum.
 class EnumPropertyDefinition {
-  /// The name of the property
+  /// The name of the property.
   final String name;
 
-  /// The type of the property (e.g., 'int', 'String', 'bool')
+  /// The type of the property (e.g., 'int', 'String', 'bool').
   final String type;
 
-  /// Whether this property is required (no default value)
+  /// Whether this property is required (no default value).
   final bool required;
 
-  /// Default value if property is optional
+  /// Default value if property is optional.
   final dynamic defaultValue;
 
-  /// Documentation for this property
+  /// Documentation for this property.
   final List<String>? documentation;
 
   EnumPropertyDefinition({
