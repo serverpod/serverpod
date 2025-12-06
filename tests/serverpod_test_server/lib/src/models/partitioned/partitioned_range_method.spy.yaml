@@ -1,0 +1,9 @@
+### Model with partitionBy using RANGE method.
+class: PartitionedRangeMethod
+table: partitioned_range_method
+fields:
+  createdAt: DateTime
+  value: int
+partitionBy:
+  method: range
+  fields: createdAt

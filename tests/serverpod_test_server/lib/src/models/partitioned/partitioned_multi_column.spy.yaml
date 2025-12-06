@@ -1,0 +1,10 @@
+### Model with partitionBy using multiple columns.
+class: PartitionedMultiColumn
+table: partitioned_multi_column
+fields:
+  source: String
+  category: String
+  value: int
+partitionBy:
+  method: list
+  fields: source, category

@@ -8,6 +8,9 @@
       "include": "#indexes"
     },
     {
+      "include": "#partitionBy"
+    },
+    {
       "include": "#comments"
     },
     {
@@ -167,6 +170,49 @@
         {
           "name": "string.unquoted.yaml",
           "match": "\\b(?<=:\\s*|,\\s*)([a-zA-Z0-9_-]+)\\b"
+        }
+      ]
+    },
+    "partitionBy": {
+      "begin": "(partitionBy)(:)(\\s*$)",
+      "beginCaptures": {
+        "1": {
+          "name": "entity.name.tag.yaml"
+        },
+        "2": {
+          "name": "punctuation.separator.mapping.key-value.yaml"
+        }
+      },
+      "end": "(?=^\\S)",
+      "patterns": [
+        {
+          "include": "#params"
+        },
+        {
+          "include": "#comments"
+        },
+        {
+          "include": "#basic_value_types"
+        },
+        {
+          "name": "entity.name.tag.yaml",
+          "match": "\\b(method|fields)(?=\\s*:)"
+        },
+        {
+          "name": "string.unquoted.yaml",
+          "match": "\\b(?<=method:\\s*)(list|range|hash)\\b"
+        },
+        {
+          "name": "punctuation.separator.comma.yaml",
+          "match": ","
+        },
+        {
+          "name": "string.unquoted.yaml",
+          "match": "\\b(?<=fields:\\s*|,\\s*)([a-zA-Z0-9_-]+)\\b"
+        },
+        {
+          "name": "string.unquoted.yaml",
+          "match": "\\b(?<=:\\s*)([a-zA-Z0-9_-]+)\\b"
         }
       ]
     },

@@ -48,6 +48,7 @@ class ModelParser {
             required List<String>? classDocumentation,
           }) {
             var indexes = _parseIndexes(documentContents, fields);
+            var partitioning = _parsePartitionBy(documentContents);
 
             return ModelClassDefinition(
               className: className,
@@ -60,6 +61,7 @@ class ModelParser {
               fileName: outFileName,
               fields: fields,
               indexes: indexes,
+              partitioning: partitioning,
               subDirParts: protocolSource.subDirPathParts,
               documentation: classDocumentation,
               serverOnly: serverOnly,
@@ -251,6 +253,50 @@ class ModelParser {
     if (tableName is! String) return null;
 
     return tableName;
+  }
+
+  static TablePartitioningDefinition? _parsePartitionBy(
+    YamlMap documentContents,
+  ) {
+    var partitionByNode = documentContents.nodes[Keyword.partitionBy];
+    if (partitionByNode is! YamlNode) return null;
+
+    var partitionByValue = partitionByNode.value;
+
+    // Simple string format: partitionBy: field1, field2
+    if (partitionByValue is String) {
+      var columns = convertIndexList(partitionByValue);
+      if (columns.isEmpty) return null;
+      return TablePartitioningDefinition(
+        columns: columns,
+        method: PartitionMethod.list, // Default to list
+      );
+    }
+
+    // Nested format:
+    // partitionBy:
+    //   method: list
+    //   fields: field1, field2
+    if (partitionByValue is! YamlMap) return null;
+
+    var fieldsNode = partitionByValue[Keyword.fields];
+    var columns = <String>[];
+    if (fieldsNode is String) {
+      columns = convertIndexList(fieldsNode);
+    }
+
+    if (columns.isEmpty) return null;
+
+    var method = convertToEnum(
+      value: partitionByValue[Keyword.method],
+      enumDefault: PartitionMethod.list,
+      enumValues: PartitionMethod.values,
+    );
+
+    return TablePartitioningDefinition(
+      columns: columns,
+      method: method,
+    );
   }
 
   static List<SerializableModelFieldDefinition> _parseClassFields(

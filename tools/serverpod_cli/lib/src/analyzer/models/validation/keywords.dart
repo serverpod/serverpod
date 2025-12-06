@@ -36,6 +36,8 @@ class Keyword {
   static const String defaultKey = 'default';
   static const String defaultModelKey = 'defaultModel';
   static const String defaultPersistKey = 'defaultPersist';
+  static const String partitionBy = 'partitionBy';
+  static const String method = 'method';
 
   /// Special keyword to allow keys to be any string.
   static const String any = '#any';

@@ -2110,4 +2110,188 @@ class Restrictions {
       },
     );
   }
+
+  List<SourceSpanSeverityException> validatePartitionByKey(
+    String parentNodeName,
+    String _,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    if (definition.tableName == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "partitionBy" property requires a table to be set on the class.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validatePartitionByValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    // Support legacy string format: partitionBy: field1, field2
+    if (content is String) {
+      return _validatePartitionByFields(content, span);
+    }
+
+    // Support new nested format - validation is handled by nested validators
+    if (content is YamlMap) {
+      return [];
+    }
+
+    return [
+      SourceSpanSeverityException(
+        'The "partitionBy" property must have at least one field (e.g. partitionBy: fieldName or partitionBy: {fields: fieldName}).',
+        span,
+      ),
+    ];
+  }
+
+  List<SourceSpanSeverityException> validatePartitionMethodValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    if (content == null) return [];
+
+    if (content is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "method" property must be a string (list, range, or hash).',
+          span,
+        ),
+      ];
+    }
+
+    // These values must match PartitionMethod enum in serverpod_service_client
+    const validMethods = ['list', 'range', 'hash'];
+    if (!validMethods.contains(content)) {
+      return [
+        SourceSpanSeverityException(
+          'Invalid partition method "$content". Valid values are: ${validMethods.join(', ')}.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validatePartitionByFieldsValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    if (content is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "fields" property must have at least one field (e.g. fields: fieldName).',
+          span,
+        ),
+      ];
+    }
+
+    return _validatePartitionByFields(content, span);
+  }
+
+  List<SourceSpanSeverityException> _validatePartitionByFields(
+    String content,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var fields = definition.fieldsIncludingInherited;
+    var partitionFields = convertIndexList(content);
+
+    var validDatabaseFieldNames = fields
+        .where((field) => field.shouldPersist)
+        .fold(<String>{}, (output, field) => output..add(field.name));
+
+    var errors = <SourceSpanSeverityException>[];
+
+    // Check for missing fields
+    var missingFields = partitionFields.where(
+      (field) => !validDatabaseFieldNames.contains(field),
+    );
+    for (var field in missingFields) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The field name "$field" is not added to the class or has a !persist scope.',
+          span,
+        ),
+      );
+    }
+
+    // Check for duplicates
+    var duplicatesCount = <String, int>{};
+    for (var field in partitionFields) {
+      duplicatesCount.update(field, (value) => value + 1, ifAbsent: () => 1);
+    }
+    for (var entry in duplicatesCount.entries) {
+      if (entry.value > 1) {
+        errors.add(
+          SourceSpanSeverityException(
+            'Duplicated field name "${entry.key}", can only reference a field once in partitionBy.',
+            span,
+          ),
+        );
+      }
+    }
+
+    // Check if unique index constraint is violated
+    errors.addAll(
+      _validateUniqueIndexOnPartitionedTable(
+        definition,
+        partitionFields,
+        span,
+      ),
+    );
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> _validateUniqueIndexOnPartitionedTable(
+    ModelClassDefinition definition,
+    List<String> partitionFields,
+    SourceSpan? span,
+  ) {
+    var errors = <SourceSpanSeverityException>[];
+
+    for (var index in definition.indexes) {
+      if (!index.unique) continue;
+
+      // Check if the index includes any partition column
+      var indexHasPartitionColumn = index.fields.any(
+        (field) => partitionFields.contains(field),
+      );
+
+      if (!indexHasPartitionColumn) continue;
+
+      // If it includes any partition column, it must include all of them
+      var missingPartitionColumns = partitionFields.where(
+        (field) => !index.fields.contains(field),
+      );
+
+      if (missingPartitionColumns.isNotEmpty) {
+        errors.add(
+          SourceSpanSeverityException(
+            'Unique index "${index.name}" includes partition column(s) but not all. '
+            'When a unique index includes any partition column, it must include all partition columns. '
+            'Missing columns: "${missingPartitionColumns.join('", "')}".',
+            span,
+          ),
+        );
+      }
+    }
+
+    return errors;
+  }
 }
