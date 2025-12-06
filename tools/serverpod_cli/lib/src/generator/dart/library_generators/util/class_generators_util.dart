@@ -143,6 +143,10 @@ Expression _buildFromJson(
     case ValueType.halfVector:
     case ValueType.sparseVector:
     case ValueType.bit:
+    case ValueType.geographyPoint:
+    case ValueType.geographyPolygon:
+    case ValueType.geographyMultiPolygon:
+    case ValueType.geographyLineString:
       return _buildComplexTypeFromJson(
         type,
         valueExpression,

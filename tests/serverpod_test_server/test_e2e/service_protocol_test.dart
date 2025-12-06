@@ -517,13 +517,23 @@ void main() {
 
 extension on service.DatabaseDefinition {
   void matchesTarget(List<service.TableDefinition> targetTables) {
-    expect(tables, hasLength(targetTables.length));
+    // Filter out PostGIS system tables
+    var filteredTables = tables
+        .where(
+          (table) =>
+              table.name != 'spatial_ref_sys' &&
+              table.name != 'geography_columns' &&
+              table.name != 'geometry_columns',
+        )
+        .toList();
+
+    expect(filteredTables, hasLength(targetTables.length));
     expect(
-      tables.map((e) => e.name),
+      filteredTables.map((e) => e.name),
       containsAll(targetTables.map((e) => e.name)),
     );
 
-    for (var table in tables) {
+    for (var table in filteredTables) {
       table.matchesDefinition(
         targetTables.firstWhere((e) => e.name == table.name),
       );

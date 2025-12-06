@@ -1,7 +1,9 @@
 services:
   # Test services
   postgres_test:
-    image: pgvector/pgvector:pg16
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
     ports:
       - '9090:5432'
     environment:
