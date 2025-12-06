@@ -9773,7 +9773,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod_test",
-      "version": "20251205130009452"
+      "version": "20251206010204692"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",

@@ -878,47 +878,52 @@ CREATE TABLE "parent_user" (
 -- Class PartitionedHashMethod as table partitioned_hash_method
 --
 CREATE TABLE "partitioned_hash_method" (
-    "id" bigserial PRIMARY KEY,
+    "id" bigserial,
     "userId" bigint NOT NULL,
-    "data" text NOT NULL
+    "data" text NOT NULL,
+    PRIMARY KEY ("id", "userId")
 ) PARTITION BY HASH ("userId");
 
 --
 -- Class PartitionedListMethod as table partitioned_list_method
 --
 CREATE TABLE "partitioned_list_method" (
-    "id" bigserial PRIMARY KEY,
+    "id" bigserial,
     "category" text NOT NULL,
     "name" text NOT NULL,
-    "value" bigint NOT NULL
+    "value" bigint NOT NULL,
+    PRIMARY KEY ("id", "category")
 ) PARTITION BY LIST ("category");
 
 --
 -- Class PartitionedMultiColumn as table partitioned_multi_column
 --
 CREATE TABLE "partitioned_multi_column" (
-    "id" bigserial PRIMARY KEY,
+    "id" bigserial,
     "source" text NOT NULL,
     "category" text NOT NULL,
-    "value" bigint NOT NULL
+    "value" bigint NOT NULL,
+    PRIMARY KEY ("id", "source", "category")
 ) PARTITION BY LIST ("source", "category");
 
 --
 -- Class PartitionedRangeMethod as table partitioned_range_method
 --
 CREATE TABLE "partitioned_range_method" (
-    "id" bigserial PRIMARY KEY,
+    "id" bigserial,
     "createdAt" timestamp without time zone NOT NULL,
-    "value" bigint NOT NULL
+    "value" bigint NOT NULL,
+    PRIMARY KEY ("id", "createdAt")
 ) PARTITION BY RANGE ("createdAt");
 
 --
 -- Class PartitionedSimple as table partitioned_simple
 --
 CREATE TABLE "partitioned_simple" (
-    "id" bigserial PRIMARY KEY,
+    "id" bigserial,
     "source" text NOT NULL,
-    "value" bigint NOT NULL
+    "value" bigint NOT NULL,
+    PRIMARY KEY ("id", "source")
 ) PARTITION BY LIST ("source");
 
 --
@@ -2074,9 +2079,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20251205130009452', now())
+    VALUES ('serverpod_test', '20251206010204692', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20251205130009452', "timestamp" = now();
+    DO UPDATE SET "version" = '20251206010204692', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

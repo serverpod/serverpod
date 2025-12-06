@@ -118,4 +118,39 @@ void main() {
       );
     },
   );
+
+  group(
+    'Given a table definition with partitionBy',
+    () {
+      test(
+        'when generating SQL then PRIMARY KEY includes partitioning columns.',
+        () {
+          var table = TableDefinitionBuilder()
+              .withName('example')
+              .withPartitionBy(['source'])
+              .build();
+
+          var sql = table.tableCreationToPgsql();
+
+          expect(sql, contains('PRIMARY KEY ("id", "source")'));
+          expect(sql, isNot(contains('"id" bigserial PRIMARY KEY')));
+        },
+      );
+
+      test(
+        'when generating SQL with multiple partition columns then PRIMARY KEY includes all partitioning columns.',
+        () {
+          var table = TableDefinitionBuilder()
+              .withName('example')
+              .withPartitionBy(['source', 'category'])
+              .build();
+
+          var sql = table.tableCreationToPgsql();
+
+          expect(sql, contains('PRIMARY KEY ("id", "source", "category")'));
+          expect(sql, isNot(contains('"id" bigserial PRIMARY KEY')));
+        },
+      );
+    },
+  );
 }

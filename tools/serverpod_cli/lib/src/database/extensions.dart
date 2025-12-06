@@ -284,16 +284,30 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
       out += 'CREATE TABLE "$name" (\n';
     }
 
+    var isPartitioned = partitionBy != null && partitionBy!.isNotEmpty;
+
     var columnsPgSql = <String>[];
     for (var column in columns) {
-      columnsPgSql.add('    ${column.toPgSqlFragment()}');
+      columnsPgSql.add(
+        '    ${column.toPgSqlFragment(isPartitioned: isPartitioned)}',
+      );
     }
     out += columnsPgSql.join(',\n');
+
+    // For partitioned tables, PRIMARY KEY constraint must includes all
+    // partitioning columns
+    if (isPartitioned) {
+      var primaryKeyColumns = [
+        '"id"',
+        for (var partitionColumn in partitionBy!) '"$partitionColumn"',
+      ];
+      out += ',\n    PRIMARY KEY (${primaryKeyColumns.join(', ')})';
+    }
 
     out += '\n)';
 
     // Partition By clause
-    if (partitionBy != null && partitionBy!.isNotEmpty) {
+    if (isPartitioned) {
       var partitionColumns = partitionBy!.map((e) => '"$e"').join(', ');
       var method = (partitionMethod?.name ?? 'list').toUpperCase();
       out += ' PARTITION BY $method ($partitionColumns)';
@@ -357,7 +371,7 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
       columnType == ColumnType.sparsevec ||
       columnType == ColumnType.bit;
 
-  String toPgSqlFragment() {
+  String toPgSqlFragment({bool isPartitioned = false}) {
     String type;
     switch (columnType) {
       case ColumnType.bigint:
@@ -417,7 +431,11 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
         defaultValue = '';
       }
 
-      type = '$type PRIMARY KEY';
+      // For partitioned tables, PRIMARY KEY is added separately to include
+      // partitioning columns
+      if (!isPartitioned) {
+        type = '$type PRIMARY KEY';
+      }
       nullable = '';
     }
 
