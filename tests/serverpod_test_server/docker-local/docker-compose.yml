@@ -1,6 +1,8 @@
 services:
   postgres:
-    image: pgvector/pgvector:pg16
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
     ports:
       - '8090:5432'
       - '5432:5432'

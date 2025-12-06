@@ -5,8 +5,16 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 extension ExtendedColumnType on ColumnType {
   /// Get a [ColumnType] from a type used in SQL.
   /// If [type] is not known, returns [ColumnType.unknown].
-  static ColumnType fromSqlType(String type) {
-    var target = databaseTypeToLowerCamelCase(type);
+  static ColumnType fromSqlType(String type, String postGisType) {
+    String target;
+    if (type == 'geography') {
+      if (postGisType.isEmpty) {
+        return ColumnType.unknown;
+      }
+      target = databaseTypeToLowerCamelCase(postGisType);
+    } else {
+      target = databaseTypeToLowerCamelCase(type);
+    }
     for (var value in ColumnType.values) {
       if (value.name == target) {
         return value;

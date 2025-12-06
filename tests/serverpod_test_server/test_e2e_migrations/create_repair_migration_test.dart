@@ -224,8 +224,11 @@ indexes:
           var previousMigrationName =
               migrationRegistry.versions[previousMigrationIndex];
 
+          // Force flag is required to create repair migrations targeting older versions,
+          // even for non-destructive changes like adding indexes.
           var exitCode = await MigrationTestUtils.runCreateRepairMigration(
             targetVersion: previousMigrationName,
+            force: true,
           );
           expect(
             exitCode,
@@ -279,7 +282,9 @@ fields:
       test(
         'when creating repair migration then a migration is created.',
         () async {
-          var exitCode = await MigrationTestUtils.runCreateRepairMigration();
+          var exitCode = await MigrationTestUtils.runCreateRepairMigration(
+            force: true,
+          );
           expect(
             exitCode,
             0,
@@ -346,7 +351,9 @@ fields:
     test(
       'when creating repair migration then repair migration is created.',
       () async {
-        var exitCode = await MigrationTestUtils.runCreateRepairMigration();
+        var exitCode = await MigrationTestUtils.runCreateRepairMigration(
+          force: true,
+        );
         expect(
           exitCode,
           0,

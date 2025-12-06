@@ -56,7 +56,19 @@ enum ColumnType implements _i1.SerializableModel {
   sparsevec,
 
   /// Dart type: [Bit]
-  bit;
+  bit,
+
+  /// Dart type: [GeographyPoint]
+  geographypoint,
+
+  /// Dart type: [GeographyPolygon]
+  geographypolygon,
+
+  /// Dart type: [GeographyMultiPolygon]
+  geographymultipolygon,
+
+  /// Dart type: [GeographyLineString]
+  geographylinestring;
 
   static ColumnType fromJson(int index) {
     switch (index) {
@@ -88,6 +100,14 @@ enum ColumnType implements _i1.SerializableModel {
         return ColumnType.sparsevec;
       case 13:
         return ColumnType.bit;
+      case 14:
+        return ColumnType.geographypoint;
+      case 15:
+        return ColumnType.geographypolygon;
+      case 16:
+        return ColumnType.geographymultipolygon;
+      case 17:
+        return ColumnType.geographylinestring;
       default:
         throw ArgumentError(
           'Value "$index" cannot be converted to "ColumnType"',

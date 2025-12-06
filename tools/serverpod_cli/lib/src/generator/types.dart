@@ -145,7 +145,16 @@ class TypeDefinition {
     'Bit',
   ];
 
+  static List<String> get geographyClassNames => [
+    'GeographyPoint',
+    'GeographyPolygon',
+    'GeographyMultiPolygon',
+    'GeographyLineString',
+  ];
+
   bool get isVectorType => vectorClassNames.contains(className);
+
+  bool get isGeographyType => geographyClassNames.contains(className);
 
   bool get isRecordType => className == recordTypeClassName;
 
@@ -340,7 +349,8 @@ class TypeDefinition {
                   'package:uuid/uuid.dart',
                 ].contains(url)) ||
             (url == null &&
-                (['UuidValue', ...vectorClassNames]).contains(className))) {
+                (['UuidValue', ...vectorClassNames]).contains(className)) ||
+            (url == null && geographyClassNames.contains(className))) {
           // serverpod: reference
           t.url = serverpodUrl(serverCode);
         } else if (url?.startsWith('project:') ?? false) {
@@ -436,6 +446,13 @@ class TypeDefinition {
     if (className == 'SparseVector') return 'sparsevec';
     if (className == 'Bit') return 'bit';
 
+    // PostGIS geometry types - map to specific database type keys so the
+    // generator emits the corresponding ColumnType (postgisPoint/postgisPolygon/postgisMultiPolygon).
+    if (className == 'GeographyPoint') return 'geographypoint';
+    if (className == 'GeographyPolygon') return 'geographypolygon';
+    if (className == 'GeographyMultiPolygon') return 'geographymultipolygon';
+    if (className == 'GeographyLineString') return 'geographylinestring';
+
     return 'json';
   }
 
@@ -462,6 +479,13 @@ class TypeDefinition {
     if (className == 'HalfVector') return 'ColumnHalfVector';
     if (className == 'SparseVector') return 'ColumnSparseVector';
     if (className == 'Bit') return 'ColumnBit';
+    // PostGIS column types
+    if (className == 'GeographyPoint') return 'ColumnGeographyPoint';
+    if (className == 'GeographyPolygon') return 'ColumnGeographyPolygon';
+    if (className == 'GeographyMultiPolygon') {
+      return 'ColumnGeographyMultiPolygon';
+    }
+    if (className == 'GeographyLineString') return 'ColumnGeographyLineString';
 
     return 'ColumnSerializable';
   }
@@ -749,6 +773,14 @@ class TypeDefinition {
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
     if (className == '_Record') return ValueType.record;
+    if (className == 'GeographyPoint') return ValueType.geographyPoint;
+    if (className == 'GeographyPolygon') return ValueType.geographyPolygon;
+    if (className == 'GeographyMultiPolygon') {
+      return ValueType.geographyMultiPolygon;
+    }
+    if (className == 'GeographyLineString') {
+      return ValueType.geographyLineString;
+    }
     if (isEnumType) return ValueType.isEnum;
     return ValueType.classType;
   }
@@ -975,6 +1007,11 @@ enum ValueType {
   sparseVector,
   bit,
   uri,
+  // PostGIS types
+  geographyPoint,
+  geographyPolygon,
+  geographyMultiPolygon,
+  geographyLineString,
 }
 
 enum DefaultValueAllowedType {

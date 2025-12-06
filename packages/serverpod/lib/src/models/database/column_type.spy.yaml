@@ -32,3 +32,11 @@ values:
   - sparsevec
   ### Dart type: [Bit]
   - bit
+  ### Dart type: [GeographyPoint]
+  - geographypoint
+  ### Dart type: [GeographyPolygon]
+  - geographypolygon
+  ### Dart type: [GeographyMultiPolygon]
+  - geographymultipolygon
+  ### Dart type: [GeographyLineString]
+  - geographylinestring
