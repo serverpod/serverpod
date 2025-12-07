@@ -1,9 +1,10 @@
+import 'package:auth_flutter/screens/connected_screen.dart';
+import 'package:auth_flutter/screens/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:auth_client/auth_client.dart';
+import 'package:provider/provider.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
-
-import 'widgets/profile_info.dart';
 
 /// Sets up a global client object that can be used to talk to the server from
 /// anywhere in our app. The client is generated from your server code
@@ -41,16 +42,19 @@ class ExampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-        colorScheme: const ColorScheme.light(
-          surface: Colors.white,
-          primary: Colors.black,
+    return Provider.value(
+      value: client,
+      child: MaterialApp(
+        theme: ThemeData(
+          scaffoldBackgroundColor: Colors.white,
+          colorScheme: const ColorScheme.light(
+            surface: Colors.white,
+            primary: Colors.black,
+          ),
         ),
+        debugShowCheckedModeBanner: false,
+        home: const MainPage(),
       ),
-      debugShowCheckedModeBanner: false,
-      home: const MainPage(),
     );
   }
 }
@@ -68,9 +72,6 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-
-    // NOTE: This is the only required setState to ensure that the  UI gets
-    // updated when the auth state changes.
     client.auth.authInfoListenable.addListener(_updateSignedInState);
   }
 
@@ -81,6 +82,8 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _updateSignedInState() {
+    // NOTE: This is the only required setState to ensure that the UI gets
+    // updated when the auth state changes.
     setState(() {
       _isSignedIn = client.auth.isAuthenticated;
     });
@@ -89,104 +92,5 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return _isSignedIn ? const ConnectedScreen() : const SignInScreen();
-  }
-}
-
-class SignInScreen extends StatelessWidget {
-  const SignInScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: <Widget>[
-          SignInWidget(
-            client: client,
-            // NOTE: No need to call navigation here if it gets done on the
-            // client.auth.authInfo listener.
-            onAuthenticated: () => onAuthenticated(context),
-            onError: (error) => onError(context, error),
-
-            // NOTE: To customize widgets, pass the desired widget here.
-            // googleSignInWidget: GoogleSignInWidget(
-            //   client: client,
-            //   onAuthenticated: () => onAuthenticated(context),
-            //   onError: (error) => onError(context, error),
-            //   scopes: const [],
-            // ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: AnonymousSignInWidget(
-              client: client,
-              onAuthenticated: () => onAuthenticated(context),
-              onError: (error) => onError(context, error),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void onAuthenticated(BuildContext context) {
-    context.showSnackBar(
-      message: 'User authenticated.',
-      backgroundColor: Colors.green,
-    );
-  }
-
-  void onError(BuildContext context, Object error) {
-    context.showSnackBar(
-      message: 'Authentication failed: $error',
-      backgroundColor: Colors.red,
-    );
-  }
-}
-
-class ConnectedScreen extends StatelessWidget {
-  const ConnectedScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          spacing: 16,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ProfileWidget(client: client),
-            const Text('You are connected'),
-            FilledButton(
-              onPressed: () async {
-                await client.auth.signOutDevice();
-              },
-              child: const Text('Sign out'),
-            ),
-            if (client.auth.idp.hasGoogle)
-              FilledButton(
-                onPressed: () async {
-                  await client.auth.disconnectGoogleAccount();
-                },
-                child: const Text('Disconnect Google'),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-extension on BuildContext {
-  void showSnackBar({
-    required String message,
-    Color? backgroundColor,
-  }) {
-    ScaffoldMessenger.of(this).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: backgroundColor,
-        duration: const Duration(seconds: 5),
-      ),
-    );
   }
 }
