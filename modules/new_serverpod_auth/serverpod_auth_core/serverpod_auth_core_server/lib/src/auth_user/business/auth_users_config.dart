@@ -10,6 +10,7 @@ class AuthUsersConfig {
   const AuthUsersConfig({
     this.onBeforeAuthUserCreated,
     this.onAfterAuthUserCreated,
+    this.onUserMerged,
   });
 
   /// Called when an auth user is about to be created.
@@ -17,6 +18,9 @@ class AuthUsersConfig {
 
   /// Called when an auth user has been created.
   final AfterAuthUserCreatedHandler? onAfterAuthUserCreated;
+
+  /// Called when two auth users are merged.
+  final UserMergedHandler? onUserMerged;
 }
 
 /// Data to be created for an auth user.
@@ -36,5 +40,14 @@ typedef AfterAuthUserCreatedHandler =
     FutureOr<void> Function(
       Session session,
       AuthUserModel authUser, {
+      required Transaction transaction,
+    });
+
+/// Callback to be invoked when two auth users are merged.
+typedef UserMergedHandler =
+    FutureOr<void> Function(
+      Session session,
+      UuidValue sourceUserId,
+      UuidValue targetUserId, {
       required Transaction transaction,
     });

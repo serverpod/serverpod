@@ -101,7 +101,7 @@ class _AnonymousSignInWidgetState extends State<AnonymousSignInWidget> {
           // to force users into anonymous, authenticated states for testing
           // purposes.
           OutlinedButton(
-            onPressed: _controller.signIn,
+            onPressed: _controller.login,
             child: const Text('Sign in anonymously'),
           ),
         ],

@@ -205,6 +205,7 @@ class AppleIdpUtils {
           scopes: authUser.scopes,
         );
       } else {
+        // This should lead to the merge flow.
         throw IdentityAlreadyLinkedException(
           message: 'Identity is already linked to another user.',
         );
