@@ -20,11 +20,11 @@ class AnonymousIdp {
        _userProfiles = userProfiles,
        _tokenManager = tokenManager;
 
-  /// Signs in a user anonymously.
+  /// Creates a new anonymous account and logs the user into that account.
   ///
-  /// Creates new [AuthUser] and [UserProfile] records, and issues a new
+  /// Creates new [AuthUser] and [UserProfile] records and issues a new
   /// session.
-  Future<AuthSuccess> signIn(
+  Future<AuthSuccess> login(
     final Session session, {
     final Transaction? transaction,
   }) async {

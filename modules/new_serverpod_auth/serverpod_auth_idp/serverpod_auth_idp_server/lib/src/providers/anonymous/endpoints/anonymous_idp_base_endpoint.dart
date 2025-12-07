@@ -15,6 +15,6 @@ abstract class AnonymousIdpBaseEndpoint extends Endpoint {
   AnonymousIdp get anonymousIdp => AuthServices.instance.anonymousIdp;
 
   /// Signs in a user anonymously and returns a new session.
-  Future<AuthSuccess> signIn(final Session session) =>
-      anonymousIdp.signIn(session);
+  Future<AuthSuccess> login(final Session session) =>
+      anonymousIdp.login(session);
 }

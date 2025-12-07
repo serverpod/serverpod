@@ -230,6 +230,82 @@ class GoogleIdpUtils {
       transaction: transaction,
     );
   }
+
+  /// Attaches a Google authentication to the given [authUserId].
+  ///
+  /// If the Google account is already linked to another user, throws
+  /// [IdentityAlreadyLinkedException].
+  ///
+  /// [authUserId] is the ID of the user to link the Google account to.
+  /// [idToken] is the ID token from Google.
+  /// [accessToken] is the access token from Google (optional).
+  /// [transaction] is the transaction to use for the database operations.
+  Future<GoogleAuthSuccess> link(
+    final Session session, {
+    required final UuidValue authUserId,
+    required final String idToken,
+    required final String? accessToken,
+    required final Transaction? transaction,
+  }) async {
+    final accountDetails = await fetchAccountDetails(
+      session,
+      idToken: idToken,
+      accessToken: accessToken,
+    );
+
+    final existingAccount = await GoogleAccount.db.findFirstRow(
+      session,
+      where: (final t) => t.userIdentifier.equals(
+        accountDetails.userIdentifier,
+      ),
+      transaction: transaction,
+    );
+
+    if (existingAccount != null) {
+      if (existingAccount.authUserId == authUserId) {
+        // Already linked to this user.
+        final authUser = await _authUsers.get(
+          session,
+          authUserId: authUserId,
+          transaction: transaction,
+        );
+
+        return (
+          googleAccountId: existingAccount.id!,
+          authUserId: authUserId,
+          details: accountDetails,
+          newAccount: false,
+          scopes: authUser.scopes,
+        );
+      } else {
+        // This should lead to the merge flow.
+        throw IdentityAlreadyLinkedException(
+          message: 'Identity is already linked to another user.',
+        );
+      }
+    }
+
+    final googleAccount = await linkGoogleAuthentication(
+      session,
+      authUserId: authUserId,
+      accountDetails: accountDetails,
+      transaction: transaction,
+    );
+
+    final authUser = await _authUsers.get(
+      session,
+      authUserId: authUserId,
+      transaction: transaction,
+    );
+
+    return (
+      googleAccountId: googleAccount.id!,
+      authUserId: authUserId,
+      details: accountDetails,
+      newAccount: false,
+      scopes: authUser.scopes,
+    );
+  }
 }
 
 extension on Session {

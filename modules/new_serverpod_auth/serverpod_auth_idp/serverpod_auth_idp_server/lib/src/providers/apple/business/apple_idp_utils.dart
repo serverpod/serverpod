@@ -140,6 +140,121 @@ class AppleIdpUtils {
     );
   }
 
+  /// Attaches an Apple authentication to the given [authUserId].
+  ///
+  /// If the Apple account is already linked to another user, throws
+  /// [IdentityAlreadyLinkedException].
+  ///
+  /// [authUserId] is the ID of the user to link the Apple account to.
+  /// [identityToken] is the identity token from Apple.
+  /// [authorizationCode] is the authorization code from Apple.
+  /// [isNativeApplePlatformSignIn] indicates if the sign-in was triggered from a native Apple platform app.
+  /// [firstName] is the user's first name (optional).
+  /// [lastName] is the user's last name (optional).
+  /// [transaction] is the transaction to use for the database operations.
+  Future<AppleAuthSuccess> link(
+    final Session session, {
+    required final UuidValue authUserId,
+    required final String identityToken,
+    required final String authorizationCode,
+
+    /// Whether the sign-in was triggered from a native Apple platform app.
+    ///
+    /// Pass `false` for web sign-ins or 3rd party platforms like Android.
+    required final bool isNativeApplePlatformSignIn,
+    final String? firstName,
+    final String? lastName,
+    required final Transaction? transaction,
+  }) async {
+    final verifiedIdentityToken = await _signInWithApple.verifyIdentityToken(
+      identityToken,
+      useBundleIdentifier: isNativeApplePlatformSignIn,
+      nonce: null,
+    );
+
+    final existingAccount = await AppleAccount.db.findFirstRow(
+      session,
+      where: (final t) => t.userIdentifier.equals(
+        verifiedIdentityToken.userId,
+      ),
+      transaction: transaction,
+    );
+
+    if (existingAccount != null) {
+      if (existingAccount.authUserId == authUserId) {
+        // Already linked to this user.
+        final authUser = await _authUsers.get(
+          session,
+          authUserId: authUserId,
+        );
+
+        final AppleAccountDetails details = (
+          userIdentifier: existingAccount.userIdentifier,
+          email: existingAccount.email,
+          isVerifiedEmail: existingAccount.isEmailVerified,
+          isPrivateEmail: existingAccount.isPrivateEmail,
+          firstName: existingAccount.firstName,
+          lastName: existingAccount.lastName,
+        );
+
+        return (
+          appleAccountId: existingAccount.id!,
+          authUserId: authUserId,
+          details: details,
+          newAccount: false,
+          scopes: authUser.scopes,
+        );
+      } else {
+        throw IdentityAlreadyLinkedException(
+          message: 'Identity is already linked to another user.',
+        );
+      }
+    }
+
+    final refreshToken = await _signInWithApple.exchangeAuthorizationCode(
+      authorizationCode,
+      useBundleIdentifier: isNativeApplePlatformSignIn,
+    );
+
+    final appleAccount = await AppleAccount.db.insertRow(
+      session,
+      AppleAccount(
+        userIdentifier: verifiedIdentityToken.userId,
+        refreshToken: refreshToken.refreshToken,
+        refreshTokenRequestedWithBundleIdentifier: isNativeApplePlatformSignIn,
+        email: verifiedIdentityToken.email?.toLowerCase(),
+        isEmailVerified: verifiedIdentityToken.emailVerified,
+        isPrivateEmail: verifiedIdentityToken.isPrivateEmail,
+        authUserId: authUserId,
+        firstName: firstName,
+        lastName: lastName,
+      ),
+      transaction: transaction,
+    );
+
+    final authUser = await _authUsers.get(
+      session,
+      authUserId: authUserId,
+    );
+
+    final AppleAccountDetails details = (
+      userIdentifier: appleAccount.userIdentifier,
+      email: appleAccount.email,
+      isVerifiedEmail: appleAccount.isEmailVerified,
+      isPrivateEmail: appleAccount.isPrivateEmail,
+      firstName: appleAccount.firstName,
+      lastName: appleAccount.lastName,
+    );
+
+    return (
+      appleAccountId: appleAccount.id!,
+      authUserId: authUserId,
+      details: details,
+      newAccount: false,
+      scopes: authUser.scopes,
+    );
+  }
+
   /// Refreshes the Apple [appleAccount]'s refresh token to ensure it is still
   /// valid.
   ///

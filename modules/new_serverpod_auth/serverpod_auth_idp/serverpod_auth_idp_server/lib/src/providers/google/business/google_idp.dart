@@ -139,6 +139,84 @@ class GoogleIdp {
       },
     );
   }
+
+  /// {@macro google_idp_base_endpoint.has_google_account}
+  Future<bool> hasGoogleAccount(final Session session) async {
+    if (session.authenticated == null) {
+      return false;
+    }
+
+    final count = await GoogleAccount.db.count(
+      session,
+      where: (final t) => t.authUserId.equals(
+        session.authenticated!.authUserId,
+      ),
+    );
+
+    return count > 0;
+  }
+
+  /// {@macro google_idp_base_endpoint.link}
+  Future<AuthSuccess> link(
+    final Session session, {
+    required final String idToken,
+    required final String? accessToken,
+    final Transaction? transaction,
+  }) async {
+    final authInfo = session.authenticated;
+    final authUserId = authInfo?.authUserId;
+    if (authUserId == null) {
+      throw Exception('User must be logged in to link account');
+    }
+
+    return await DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final account = await utils.link(
+          session,
+          authUserId: authUserId,
+          idToken: idToken,
+          accessToken: accessToken,
+          transaction: transaction,
+        );
+
+        final image = account.details.image;
+        if (image != null) {
+          try {
+            final profile = await UserProfile.db.findFirstRow(
+              session,
+              where: (final t) => t.authUserId.equals(account.authUserId),
+              transaction: transaction,
+            );
+            if (profile != null && profile.image == null) {
+              await _userProfiles.setUserImageFromUrl(
+                session,
+                account.authUserId,
+                image,
+                transaction: transaction,
+              );
+            }
+          } catch (e, stackTrace) {
+            session.log(
+              'Failed to update user profile image for existing Google user.',
+              level: LogLevel.error,
+              exception: e,
+              stackTrace: stackTrace,
+            );
+          }
+        }
+
+        return _tokenIssuer.issueToken(
+          session,
+          authUserId: account.authUserId,
+          transaction: transaction,
+          method: method,
+          scopes: account.scopes,
+        );
+      },
+    );
+  }
 }
 
 /// Extension to get the GoogleIdp instance from the AuthServices.

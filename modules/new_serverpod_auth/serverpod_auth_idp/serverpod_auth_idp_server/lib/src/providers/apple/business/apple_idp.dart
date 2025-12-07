@@ -128,6 +128,97 @@ class AppleIdp {
     );
   }
 
+  /// {@macro apple_idp_base_endpoint.has_apple_account}
+  Future<bool> hasAppleAccount(final Session session) async {
+    if (session.authenticated == null) {
+      return false;
+    }
+
+    final count = await AppleAccount.db.count(
+      session,
+      where: (final t) => t.authUserId.equals(
+        session.authenticated!.authUserId,
+      ),
+    );
+
+    return count > 0;
+  }
+
+  /// {@macro apple_idp_base_endpoint.link}
+  Future<AuthSuccess> link(
+    final Session session, {
+    required final String identityToken,
+    required final String authorizationCode,
+    required final bool isNativeApplePlatformSignIn,
+    final String? firstName,
+    final String? lastName,
+    final Transaction? transaction,
+  }) async {
+    final authInfo = session.authenticated;
+    final authUserId = authInfo?.authUserId;
+    if (authUserId == null) {
+      throw Exception('User must be logged in to link account');
+    }
+
+    return await DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        final account = await utils.link(
+          session,
+          authUserId: authUserId,
+          identityToken: identityToken,
+          authorizationCode: authorizationCode,
+          isNativeApplePlatformSignIn: isNativeApplePlatformSignIn,
+          firstName: firstName,
+          lastName: lastName,
+          transaction: transaction,
+        );
+
+        if (firstName != null || lastName != null) {
+          try {
+            final profile = await UserProfile.db.findFirstRow(
+              session,
+              where: (final t) => t.authUserId.equals(account.authUserId),
+              transaction: transaction,
+            );
+            if (profile != null &&
+                (profile.fullName == null || profile.fullName!.isEmpty)) {
+              final fullName = [firstName, lastName].nonNulls
+                  .map((final n) => n.trim())
+                  .where((final n) => n.isNotEmpty)
+                  .join(' ');
+
+              if (fullName.isNotEmpty) {
+                profile.fullName = fullName;
+                await UserProfile.db.updateRow(
+                  session,
+                  profile,
+                  transaction: transaction,
+                );
+              }
+            }
+          } catch (e, stackTrace) {
+            session.log(
+              'Failed to update user profile name for existing Apple user.',
+              level: LogLevel.error,
+              exception: e,
+              stackTrace: stackTrace,
+            );
+          }
+        }
+
+        return _tokenIssuer.issueToken(
+          session,
+          authUserId: account.authUserId,
+          method: method,
+          transaction: transaction,
+          scopes: account.scopes,
+        );
+      },
+    );
+  }
+
   /// {@macro apple_idp.revokedNotificationRoute}
   Route revokedNotificationRoute() =>
       AppleRevokedNotificationRoute(utils: utils);
