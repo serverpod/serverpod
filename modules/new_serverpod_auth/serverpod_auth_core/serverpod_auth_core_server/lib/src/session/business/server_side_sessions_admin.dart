@@ -5,7 +5,7 @@ import 'package:serverpod/serverpod.dart';
 import '../../generated/protocol.dart';
 
 /// Collection of admin functions for managing sessions.
-final class ServerSideSessionsAdmin {
+class ServerSideSessionsAdmin {
   /// Creates a new admin helper class instance.
   @internal
   ServerSideSessionsAdmin();

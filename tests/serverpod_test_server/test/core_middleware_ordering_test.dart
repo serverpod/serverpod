@@ -196,7 +196,7 @@ void main() {
       // First middleware that returns early
       final firstMiddleware = (Handler innerHandler) {
         return (Request req) async {
-          if (req.requestedUri.path == '/first') {
+          if (req.url.path == '/first') {
             return Response.ok(body: Body.fromString('first'));
           }
           return innerHandler(req);
@@ -206,7 +206,7 @@ void main() {
       // Second middleware that returns early
       final secondMiddleware = (Handler innerHandler) {
         return (Request req) async {
-          if (req.requestedUri.path == '/second') {
+          if (req.url.path == '/second') {
             return Response.ok(body: Body.fromString('second'));
           }
           return innerHandler(req);

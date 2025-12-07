@@ -1,11 +1,10 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
-import 'package:serverpod_auth_idp_server/src/utils/uint8list_extension.dart';
 
 sealed class EmailAccountPassword {
   static EmailAccountPasswordHash fromPasswordHash(
-    final HashResult passwordHash,
+    final String passwordHash,
   ) {
     return EmailAccountPasswordHash(passwordHash);
   }
@@ -16,7 +15,7 @@ sealed class EmailAccountPassword {
 }
 
 final class EmailAccountPasswordHash extends EmailAccountPassword {
-  final HashResult passwordHash;
+  final String passwordHash;
 
   EmailAccountPasswordHash(this.passwordHash);
 }
@@ -42,10 +41,10 @@ final class EmailIdpTestFixture {
     tokenManager ??= AuthServices(
       authUsers: authUsers,
       userProfiles: userProfiles,
-      primaryTokenManager: ServerSideSessionsTokenManagerFactory(
-        ServerSideSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+      primaryTokenManagerBuilder: ServerSideSessionsConfig(
+        sessionKeyHashPepper: 'test-pepper',
       ),
-      identityProviders: [],
+      identityProviderBuilders: [],
     ).tokenManager;
 
     // Analyzer incorrectly suggests this should be initialized in the
@@ -65,7 +64,7 @@ final class EmailIdpTestFixture {
       final EmailAccountPasswordHash password => password.passwordHash,
       final EmailAccountPasswordString password =>
         await passwordHashUtil.createHashFromString(secret: password.password),
-      null => HashResult.empty(),
+      null => '',
     };
 
     return await EmailAccount.db.insertRow(
@@ -73,46 +72,38 @@ final class EmailIdpTestFixture {
       EmailAccount(
         authUserId: authUserId,
         email: email.toLowerCase().trim(),
-        passwordHash: passwordHash.hash.asByteData,
-        passwordSalt: passwordHash.salt.asByteData,
+        passwordHash: passwordHash,
       ),
     );
   }
 
   Future<void> tearDown(final Session session) async {
-    await EmailAccount.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-    await EmailAccountFailedLoginAttempt.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-    await EmailAccountPasswordResetRequest.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-    await EmailAccountPasswordResetCompleteAttempt.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-    await EmailAccountPasswordResetRequestAttempt.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-    await EmailAccountRequest.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-    await EmailAccountRequestCompletionAttempt.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-
-    await AuthUser.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
+    await Future.wait([
+      EmailAccount.db.deleteWhere(
+        session,
+        where: (final _) => Constant.bool(true),
+      ),
+      EmailAccountPasswordResetRequest.db.deleteWhere(
+        session,
+        where: (final _) => Constant.bool(true),
+      ),
+      EmailAccountRequest.db.deleteWhere(
+        session,
+        where: (final _) => Constant.bool(true),
+      ),
+      RateLimitedRequestAttempt.db.deleteWhere(
+        session,
+        where: (final t) => t.domain.equals('email'),
+      ),
+      SecretChallenge.db.deleteWhere(
+        session,
+        where: (final _) => Constant.bool(true),
+      ),
+      AuthUser.db.deleteWhere(
+        session,
+        where: (final _) => Constant.bool(true),
+      ),
+    ]);
   }
 
   Argon2HashUtil get passwordHashUtil => emailIdp.utils.hashUtil;

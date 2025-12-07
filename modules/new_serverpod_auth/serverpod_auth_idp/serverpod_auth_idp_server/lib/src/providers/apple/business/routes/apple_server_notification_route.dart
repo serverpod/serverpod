@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/src/providers/apple/business/apple_idp_utils.dart';
+
+import '../apple_idp_utils.dart';
 
 sealed class _SignInWithAppleRoute extends Route {
   final AppleIdpUtils _utils;
@@ -60,7 +61,7 @@ final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
     : super(utils, methods: {Method.get});
 
   @override
-  FutureOr<Result> handleCall(final Session session, final Request context) {
+  FutureOr<Result> handleCall(final Session session, final Request request) {
     return Response.internalServerError();
   }
 }

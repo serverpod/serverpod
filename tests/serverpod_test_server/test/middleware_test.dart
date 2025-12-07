@@ -112,16 +112,17 @@ class TestRoute extends Route {
 final _authInfoProperty = ContextProperty<AuthenticationInfo>('authInfo');
 
 extension on Request {
-  AuthenticationInfo get authInfo => _authInfoProperty[this];
+  AuthenticationInfo get authInfo => _authInfoProperty.get(this);
 }
 
 class _AuthMiddleware {
   Handler call(Handler next) {
-    return (ctx) async {
-      final info = await ctx.session.authenticated;
+    return (req) async {
+      final session = await req.session;
+      final info = session.authenticated;
       if (info == null) return Response.unauthorized();
-      _authInfoProperty[ctx] = info;
-      return next(ctx);
+      _authInfoProperty[req] = info;
+      return next(req);
     };
   }
 }

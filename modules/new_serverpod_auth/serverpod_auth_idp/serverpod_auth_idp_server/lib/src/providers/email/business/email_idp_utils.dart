@@ -1,7 +1,4 @@
-import 'package:serverpod_auth_core_server/auth_user.dart';
-import 'package:serverpod_auth_core_server/common.dart';
-
-import '../../../generated/protocol.dart';
+import '../../../../core.dart';
 import 'email_idp_config.dart';
 import 'email_idp_server_exceptions.dart';
 import 'utils/email_idp_account_creation_util.dart';
@@ -49,7 +46,7 @@ class EmailIdpUtils {
          fallbackHashPeppers: config.fallbackSecretHashPeppers,
          hashSaltLength: config.secretHashSaltLength,
          // 19MiB memory cost as recommended by OWASP: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
-         memory: 19456,
+         parameters: Argon2HashParameters(memory: 19456),
        ),
        account = EmailIdpAccountUtils() {
     accountCreation = EmailIdpAccountCreationUtil(

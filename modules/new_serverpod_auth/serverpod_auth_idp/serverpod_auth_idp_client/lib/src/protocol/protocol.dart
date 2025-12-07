@@ -73,7 +73,7 @@ class Protocol extends _i1.SerializationManager {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -205,6 +205,32 @@ class Protocol extends _i1.SerializationManager {
       return _i15.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
+  }
+
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i2.EmailAccountLoginException => 'EmailAccountLoginException',
+      _i3.EmailAccountLoginExceptionReason =>
+        'EmailAccountLoginExceptionReason',
+      _i4.EmailAccountPasswordResetException =>
+        'EmailAccountPasswordResetException',
+      _i5.EmailAccountPasswordResetExceptionReason =>
+        'EmailAccountPasswordResetExceptionReason',
+      _i6.EmailAccountRequestException => 'EmailAccountRequestException',
+      _i7.EmailAccountRequestExceptionReason =>
+        'EmailAccountRequestExceptionReason',
+      _i8.GoogleIdTokenVerificationException =>
+        'GoogleIdTokenVerificationException',
+      _i9.PasskeyChallengeExpiredException =>
+        'PasskeyChallengeExpiredException',
+      _i10.PasskeyChallengeNotFoundException =>
+        'PasskeyChallengeNotFoundException',
+      _i11.PasskeyLoginRequest => 'PasskeyLoginRequest',
+      _i12.PasskeyPublicKeyNotFoundException =>
+        'PasskeyPublicKeyNotFoundException',
+      _i13.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
+      _ => null,
+    };
   }
 
   @override

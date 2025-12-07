@@ -64,11 +64,23 @@ class WebServer {
   void addMiddleware(Middleware middleware, String path) =>
       _app.use(path, middleware);
 
-  /// Sets a fallback [route] to use if no other registered [Route] matches
-  /// a request.
+  /// Sets a fallback [route] to use if no other registered [Route] matches a
+  /// request.
   ///
   /// If not set, default behavior is to return "404 Not Found".
-  set fallbackRoute(Route route) => _app.fallback = route.asHandler;
+  ///
+  /// Note that if a [Route] **is** matched, but the handler returns 404, then
+  /// the fallback [route] is **not** called. To rewrite 404s you should use
+  /// middleware.
+  set fallbackRoute(Route route) =>
+      _app.fallback = _ReportExceptionMiddleware(this)(
+        _SessionMiddleware(
+          serverpod.server,
+        )(route.asHandler),
+      );
+
+  /// Get access to the full [RelicRouter] for advanced use-cases.
+  RelicRouter get router => _app;
 
   /// Returns true if the webserver has any routes registered.
   bool get hasRoutes => !_app.isEmpty;
@@ -113,7 +125,7 @@ class WebServer {
     StackTrace stackTrace, {
     OriginSpace space = OriginSpace.framework,
     String? message,
-    Session? session,
+    Future<Session>? session,
     Request? request,
   }) async {
     logError(
@@ -122,7 +134,7 @@ class WebServer {
     );
 
     var context = session != null
-        ? contextFromSession(session, request: request)
+        ? contextFromSession(await session, request: request)
         : request != null
         ? contextFromRequest(serverpod.server, request, OperationType.web)
         : contextFromServer(serverpod.server);
@@ -177,17 +189,18 @@ class _SessionMiddleware extends MiddlewareObject {
       final authenticationKey = unwrapAuthHeaderValue(
         req.headers.authorization?.headerValue,
       );
-      final session = await SessionInternalMethods.createWebCallSession(
-        server: _server,
-        endpoint: req.requestedUri.path,
-        authenticationKey: authenticationKey,
-        remoteInfo: req.remoteInfo,
+      final deferredSession = _Deferred(
+        () => SessionInternalMethods.createWebCallSession(
+          server: _server,
+          endpoint: req.url.path,
+          authenticationKey: authenticationKey,
+        ),
       );
-      _sessionProperty[req] = session;
+      _sessionProperty[req] = deferredSession;
       try {
         return await next(req);
       } finally {
-        await session.close();
+        await deferredSession.ifInitiatedRun((s) => s.close());
       }
     };
   }
@@ -217,19 +230,41 @@ class _ReportExceptionMiddleware extends MiddlewareObject {
   }
 }
 
-final _sessionProperty = ContextProperty<Session>();
+class _Deferred<T> {
+  final Future<T> Function() _futureFactory;
 
-/// [Session] related extension methods for [Context].
+  _Deferred(this._futureFactory);
+
+  Future<T>? _cachedFuture;
+  Future<T> get future async {
+    _cachedFuture ??= _futureFactory();
+    return _cachedFuture!;
+  }
+
+  bool get initiated => _cachedFuture != null;
+
+  Future<R?> ifInitiatedRun<R>(FutureOr<R> Function(T) action) async {
+    final future = _cachedFuture;
+    if (future != null) {
+      return action(await future);
+    }
+    return null;
+  }
+}
+
+final _sessionProperty = ContextProperty<_Deferred<Session>>();
+
+/// [Session] related extension methods for [Request].
 extension SessionEx on Request {
-  /// The session associated with this request context.
+  /// The session associated with this request.
   ///
   /// Throws, if no session has been initiated.
-  Session get session => _sessionProperty[this];
+  Future<Session> get session => _sessionProperty.get(this).future;
 
-  /// The session associated with this request context, if any.
+  /// The session associated with this request, if any.
   ///
   /// Safe to use, even before session is initiated.
-  Session? get sessionOrNull => _sessionProperty.getOrNull(this);
+  Future<Session>? get sessionOrNull => _sessionProperty[this]?.future;
 }
 
 /// A [Route] defines a destination in Serverpod's web server. It will handle
@@ -252,15 +287,15 @@ abstract class Route extends HandlerObject {
   @override
   void injectIn(RelicRouter router) => router.anyOf(methods, path, asHandler);
 
-  /// Handles a call to this route, by extracting [Session] from context and
+  /// Handles a call to this route, by extracting [Session] from request and
   /// forwarding to [handleCall].
   @override
-  FutureOr<Result> call(Request context) {
-    return handleCall(context.session, context);
+  Future<Result> call(Request req) async {
+    return handleCall(await req.session, req);
   }
 
   /// Handles a call to this route.
-  FutureOr<Result> handleCall(Session session, Request context);
+  FutureOr<Result> handleCall(Session session, Request request);
 }
 
 /// A [WidgetRoute] is the most convenient way to create routes in your server.

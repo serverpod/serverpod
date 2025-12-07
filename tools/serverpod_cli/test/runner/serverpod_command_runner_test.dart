@@ -164,7 +164,13 @@ TestFixture createTestFixture(MockLogger testLogger, Version version) {
 void main() {
   final version = Version(1, 1, 0);
   var testLogger = MockLogger();
-  initializeLoggerWith(testLogger);
+  setUpAll(() {
+    initializeLoggerWith(testLogger);
+  });
+
+  tearDownAll(() {
+    resetLogger();
+  });
 
   late TestFixture fixture;
   setUp(() {

@@ -1,9 +1,8 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
-import 'package:serverpod_auth_core_server/auth_user.dart' as new_auth_user;
-import 'package:serverpod_auth_core_server/profile.dart' as new_auth_profile;
 import 'package:serverpod_auth_idp_server/core.dart' as new_auth_core;
-import 'package:serverpod_auth_idp_server/providers/email.dart' as new_auth_idp;
+import 'package:serverpod_auth_idp_server/providers/email.dart'
+    as new_auth_email;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
     as legacy_auth;
@@ -12,24 +11,19 @@ import 'package:test/test.dart';
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManagerFactory =
-      new_auth_core.ServerSideSessionsTokenManagerFactory(
-        new_auth_core.ServerSideSessionsConfig(
-          sessionKeyHashPepper: 'test-pepper',
-        ),
-      );
+  final tokenManagerConfig = new_auth_core.ServerSideSessionsConfig(
+    sessionKeyHashPepper: 'test-pepper',
+  );
 
-  const newEmailIdpConfig = new_auth_idp.EmailIdpConfig(
+  const newEmailIdpConfig = new_auth_email.EmailIdpConfig(
     secretHashPepper: 'test',
   );
-  late final new_auth_idp.EmailIdp newEmailIdp;
+  late final new_auth_email.EmailIdp newEmailIdp;
 
   setUpAll(() async {
     new_auth_core.AuthServices.set(
-      identityProviders: [
-        new_auth_idp.EmailIdentityProviderFactory(newEmailIdpConfig),
-      ],
-      primaryTokenManager: tokenManagerFactory,
+      tokenManagerBuilders: [tokenManagerConfig],
+      identityProviderBuilders: [newEmailIdpConfig],
     );
     newEmailIdp = new_auth_core.AuthServices.instance.emailIdp;
     AuthMigrations.config = AuthMigrationConfig(emailIdp: newEmailIdp);
@@ -37,8 +31,8 @@ void main() {
 
   tearDownAll(() async {
     new_auth_core.AuthServices.set(
-      identityProviders: [],
-      primaryTokenManager: tokenManagerFactory,
+      tokenManagerBuilders: [tokenManagerConfig],
+      identityProviderBuilders: [],
     );
   });
 
@@ -156,10 +150,10 @@ void main() {
 
       test('when checking the password, then it is not empty', () async {
         expect(
-          (await new_auth_idp.EmailAccount.db.find(
+          (await new_auth_email.EmailAccount.db.find(
             session,
-          )).single.passwordHash.lengthInBytes,
-          greaterThan(0),
+          )).single.passwordHash,
+          isNotEmpty,
         );
       });
     },
@@ -198,7 +192,7 @@ void main() {
             throwsUnimplementedError,
           );
 
-          expect(await new_auth_user.AuthUser.db.find(session), isEmpty);
+          expect(await new_auth_core.AuthUser.db.find(session), isEmpty);
         },
       );
     },
@@ -297,7 +291,7 @@ void main() {
       test(
         'when reading the profile, then it matches the original user info.',
         () async {
-          const userProfiles = new_auth_profile.UserProfiles();
+          const userProfiles = new_auth_core.UserProfiles();
           final profile = await userProfiles.findUserProfileByUserId(
             session,
             authUserId,
@@ -346,13 +340,13 @@ void main() {
       test(
         'when reading the profile, then it throws because none has been created.',
         () async {
-          const userProfiles = new_auth_profile.UserProfiles();
+          const userProfiles = new_auth_core.UserProfiles();
           await expectLater(
             () => userProfiles.findUserProfileByUserId(
               session,
               authUserId,
             ),
-            throwsA(isA<new_auth_profile.UserProfileNotFoundException>()),
+            throwsA(isA<new_auth_core.UserProfileNotFoundException>()),
           );
         },
       );
@@ -496,7 +490,7 @@ void main() {
             ),
             throwsA(
               isA<
-                new_auth_idp.EmailAuthenticationInvalidCredentialsException
+                new_auth_email.EmailAuthenticationInvalidCredentialsException
               >(),
             ),
           );
@@ -517,7 +511,7 @@ void main() {
             ),
             throwsA(
               isA<
-                new_auth_idp.EmailAuthenticationInvalidCredentialsException
+                new_auth_email.EmailAuthenticationInvalidCredentialsException
               >(),
             ),
           );
@@ -527,7 +521,7 @@ void main() {
       test(
         'when reading the profile, then it matches the original user info.',
         () async {
-          const userProfiles = new_auth_profile.UserProfiles();
+          const userProfiles = new_auth_core.UserProfiles();
           final profile = await userProfiles.findUserProfileByUserId(
             session,
             authUserId,

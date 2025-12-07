@@ -7,14 +7,14 @@ import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManagerFactory = ServerSideSessionsTokenManagerFactory(
-    ServerSideSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+  final tokenManagerConfig = ServerSideSessionsConfig(
+    sessionKeyHashPepper: 'test-pepper',
   );
 
   tearDown(() {
     AuthServices.set(
-      primaryTokenManager: tokenManagerFactory,
-      identityProviders: [],
+      tokenManagerBuilders: [tokenManagerConfig],
+      identityProviderBuilders: [],
     );
   });
 
@@ -64,10 +64,8 @@ void main() {
               },
         );
         AuthServices.set(
-          identityProviders: [
-            EmailIdentityProviderFactory(config),
-          ],
-          primaryTokenManager: tokenManagerFactory,
+          identityProviderBuilders: [config],
+          tokenManagerBuilders: [tokenManagerConfig],
         );
       });
 
@@ -180,10 +178,8 @@ void main() {
               AuthBackwardsCompatibility.clearLegacyPassword,
         );
         AuthServices.set(
-          identityProviders: [
-            EmailIdentityProviderFactory(config),
-          ],
-          primaryTokenManager: tokenManagerFactory,
+          identityProviderBuilders: [config],
+          tokenManagerBuilders: [tokenManagerConfig],
         );
       });
 
@@ -384,18 +380,8 @@ Future<void> _cleanUpDatabase(final Session session) async {
     where: (final _) => Constant.bool(true),
   );
 
-  await EmailAccountPasswordResetCompleteAttempt.db.deleteWhere(
+  await RateLimitedRequestAttempt.db.deleteWhere(
     session,
-    where: (final _) => Constant.bool(true),
-  );
-
-  await EmailAccountPasswordResetRequestAttempt.db.deleteWhere(
-    session,
-    where: (final _) => Constant.bool(true),
-  );
-
-  await EmailAccountFailedLoginAttempt.db.deleteWhere(
-    session,
-    where: (final _) => Constant.bool(true),
+    where: (final t) => t.domain.equals('email'),
   );
 }

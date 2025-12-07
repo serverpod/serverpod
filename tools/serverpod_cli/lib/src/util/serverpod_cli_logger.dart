@@ -117,3 +117,8 @@ abstract class _SeveritySpanHelpers {
     }
   }
 }
+
+/// Resets the logger singleton to its initial state.
+void resetLogger() {
+  _logger = null;
+}

@@ -1,0 +1,3 @@
+class: BaseEntity
+fields:
+  sharedField: String

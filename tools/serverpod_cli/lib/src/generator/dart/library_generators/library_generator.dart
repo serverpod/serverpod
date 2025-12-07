@@ -193,7 +193,7 @@ class LibraryGenerator {
             t ??= T;
 
             final dataClassName = getClassNameFromObjectJson(data);
-            if (dataClassName != null && dataClassName != t.toString()) {
+            if (dataClassName != null && dataClassName != getClassNameForType(t)) {
               try {
                 return deserializeByClassName({
                   'className': dataClassName,
@@ -282,6 +282,38 @@ class LibraryGenerator {
                     'on ${a(refer('DeserializationTypeNotFoundException', serverpodUrl(serverCode)))} catch(_){}',
               ),
             const Code('return super.deserialize<T>(data,t);'),
+          ]),
+      ),
+      Method(
+        (m) => m
+          ..static = true
+          ..name = 'getClassNameForType'
+          ..returns = refer('String?')
+          ..requiredParameters.add(
+            Parameter(
+              (p) => p
+                ..name = 'type'
+                ..type = refer('Type'),
+            ),
+          )
+          ..body = Block.of([
+            const Code('return switch (type) {'),
+            if (unsealedModels.isNotEmpty ||
+                config.extraClasses.isNotEmpty) ...[
+              for (var extraClass in config.extraClasses)
+                Code.scope(
+                  (a) =>
+                      '${a(extraClass.reference(serverCode, config: config))} => '
+                      '\'${extraClass.className}\',',
+                ),
+              for (var classInfo in unsealedModels)
+                Code.scope(
+                  (a) =>
+                      '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))} => '
+                      '\'${classInfo.className}\',',
+                ),
+            ],
+            const Code('_ => null };'),
           ]),
       ),
       Method(
@@ -512,9 +544,10 @@ class LibraryGenerator {
 
     library.body.add(protocol.build());
 
-    if (recordTypesToDeserialize.isNotEmpty) {
+    if (recordTypesToDeserialize.isNotEmpty ||
+        allTypesToDeserialize.any((type) => type.containsNonStringKeyedMap)) {
       library.body.addAll(
-        _deserializationMethodsForRecordTypes(recordTypesToDeserialize),
+        _containerDeserializationMethods(recordTypesToDeserialize),
       );
     }
 
@@ -1477,7 +1510,7 @@ class LibraryGenerator {
     }
   }
 
-  Iterable<Method> _deserializationMethodsForRecordTypes(
+  Iterable<Method> _containerDeserializationMethods(
     List<TypeDefinition> recordTypesToDeserialize,
   ) {
     return [

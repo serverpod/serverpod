@@ -1,12 +1,12 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_extension.dart';
 
-import '../../../generated/protocol.dart';
+import '../../../../../core.dart';
+import '../util/email_string_extension.dart';
 import 'email_idp_server_exceptions.dart';
 import 'email_idp_utils.dart';
 
 /// Collection of email-account admin methods.
-final class EmailIdpAdmin {
+class EmailIdpAdmin {
   final EmailIdpUtils _utils;
 
   /// Creates a new instance of [EmailIdpAdmin].
@@ -265,5 +265,5 @@ final class EmailIdpAdmin {
 /// Extension methods for [EmailAccount].
 extension EmailAccountExtension on EmailAccount {
   /// Checks whether the email account has a password set.
-  bool get hasPassword => passwordHash.lengthInBytes > 0;
+  bool get hasPassword => passwordHash.isNotEmpty;
 }

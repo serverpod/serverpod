@@ -3,8 +3,12 @@
 
 library;
 
-export 'package:serverpod_auth_core_server/auth_services.dart';
-export 'package:serverpod_auth_core_server/auth_user.dart';
-export 'package:serverpod_auth_core_server/jwt.dart';
-export 'package:serverpod_auth_core_server/profile.dart';
-export 'package:serverpod_auth_core_server/session.dart';
+export 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    hide Endpoints, Protocol;
+
+export 'src/common/rate_limited_request_attempt/rate_limited_request_attempt_config.dart';
+export 'src/common/rate_limited_request_attempt/rate_limited_request_attempt_util.dart';
+export 'src/common/secret_challenge/secret_challenge_config.dart';
+export 'src/common/secret_challenge/secret_challenge_exceptions.dart';
+export 'src/common/secret_challenge/secret_challenge_util.dart';
+export 'src/generated/protocol.dart' hide Protocol;

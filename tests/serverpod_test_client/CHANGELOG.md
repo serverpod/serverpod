@@ -1,3 +1,76 @@
+## 3.0.0-rc.4
+
+Release candidate for Serverpod 3.
+
+Serverpod 3 is a major overhaul of the authentication system and the web server.
+This release candidate is **not yet production-ready**. It is still under active development and may contain bugs or breaking changes.
+
+### New auth improvements from last rc
+
+To further improve the extensibility of the identity providers, this version introduces an abstraction of the engine that handles request rate limiting and verification code challenges, both of which are now exposed as reusable atoms for integration with any provider. This will drastically simplify future implementation of passwordless login, SMS login, etc.
+
+- feat: Introduces `SecretChallengeUtil` and `RateLimitedRequestAttemptUtilP` on the new IDP package.
+- refactor: BREAKING. Replaces rate limiting and verification code challenge handling on `EmailIdp` with new atoms. All `*Attempt` tables will be dropped and replaced by a single rate limiting table.
+
+### Web server improvements from last rc
+- feat: Adds parameter `values` to the `TemplateWidget` class.
+- fix: BREAKING. Fixes fallback routes not being able to access the `Session`.
+- refactor: BREAKING. Replaces `remoteInfo` parameter on `Session` class with `Request` object.
+- refactor: BREAKING. Renames `context` parameter to `request` in `Route.call` and `Route.handleCall` methods.
+
+### Additional changes
+
+#### New features
+- feat: Adds support for resolving Dart doc template macros in client code generation.
+
+#### Fixes
+- fix: Improves error message when there is a database mismatch on server startup.
+- fix: Disables future call execution when none are registered.
+- fix: Improves string representation for serializable exceptions.
+- fix: Allows disabling features in the `generator.yaml` configuration file.
+- fix: Fixes an issue on the deserialization engine that would prevent compilation on web in release mode.
+- fix: Prevents the usage of non-constant defaults on immutable models.
+- fix: Fixes missing inherited fields class constructor for table models with relation to inherited models.
+
+## 3.0.0-rc.3
+
+Release candidate for Serverpod 3.
+
+Serverpod 3 is a major overhaul of the authentication system and the web server.
+This release candidate is **not yet production-ready**. It is still under active development and may contain bugs or breaking changes.
+
+### New auth improvements from last rc
+
+This version comes packed with several improvements to the user experience when interacting with the authentication module on the server. Changes are listed below, but we also recommend checking the [server.dart](https://github.com/serverpod/serverpod/blob/main/examples/auth/auth_server/lib/server.dart) and [server_from_passwords.dart](https://github.com/serverpod/serverpod/blob/main/examples/auth/auth_server/lib/server_from_passwords.dart) files in the examples for a complete overview of the new API.
+
+There is also one major breaking change regarding the storage of Argon2 hashes instead of raw bytes. This change greatly improves compatibility with future changes to hash parameters, but will also lead to a drop of the table that stores emails and passwords. Manually editing the generated migration SQL file might be necessary to prevent losing registered emails.
+
+- feat: Introduces new `*FromPasswords` classes to simplify the configuration of auth services from passwords file or environment variables.
+- feat: Introduces a new `pod.initializeAuthServices` preferred method to configure auth services on the server.
+- feat: Exposes a convenience `configureAppleIdpRoutes` method on the `Serverpod` class to configure the Apple identity provider routes.
+- feat: Removes `final` from all public atom classes to allow easier extension.
+- feat: Removes `serverOnly` keyword from auth core models to allow easier extension.
+- feat: BREAKING. Stores Argon2 hashes as PHC compliant strings.
+- refactor: BREAKING. Consolidates Argon2id hashing utilities into single reusable implementation.
+- refactor: BREAKING. Reorganizes exports from `serverpod_auth_core_server` and `serverpod_auth_idp_server` modules.
+- refactor: BREAKING. Changes return and parameters of the `AuthServices.set` method.
+- refactor: BREAKING. Replaces the factory pattern for building identity providers and token managers with a builder pattern.
+- refactor: BREAKING. Removes explicit factory classes and make all identity providers and token managers config classes implement the new builder pattern.
+- refactor: BREAKING. Renames `ClientAuthInfoStorage` to `ClientAuthSuccessStorage`.
+
+### Additional changes
+
+#### New features
+- feat: Adds support for RPC middlewares. ([@gitrema](https://github.com/gitrema))
+- feat: Adds `maxConnectionCount` config option for database pool.
+- feat: The `Request.remoteInfo` now falls back to `connectionInfo.remote.address` instead of `'unknown'` when the information is missing in the headers.
+
+#### Fixes
+- fix: Filters implicit foreign key fields from hashCode/operator== in client code.
+- fix: Generates `mapContainerToJson` for non-String-keyed Maps in endpoints.
+- fix: Filters warnings to table scope in migration alterTable actions.
+- fix: Fixes `Vector` dimension changes not triggering column recreation in migrations.
+
 ## 3.0.0-rc.2
 
 Release candidate for Serverpod 3.

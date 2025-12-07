@@ -28,7 +28,7 @@ ClientCallOpContext contextFromRequest(
     sessionId: null,
     userAuthInfo: null,
     remoteInfo: request.remoteInfo,
-    uri: request.requestedUri,
+    uri: request.url,
   );
 }
 
@@ -48,7 +48,6 @@ OperationEventContext contextFromSession(
     ),
     MethodStreamSession methodStream => _fromMethodStream(
       methodStream,
-      request: request,
     ),
     StreamingSession streaming => _fromStreaming(
       streaming,
@@ -86,7 +85,7 @@ WebCallOpContext _fromWebCall(
   userAuthInfo: session.authInfoOrNull,
   sessionId: session.sessionId,
   remoteInfo: request?.remoteInfo,
-  uri: request?.requestedUri ?? Uri.http('', session.endpoint),
+  uri: request?.url ?? Uri.http('', session.endpoint),
 );
 
 MethodCallOpContext _fromMethodCall(
@@ -97,23 +96,22 @@ MethodCallOpContext _fromMethodCall(
   serverRunMode: session.server.runMode,
   userAuthInfo: session.authInfoOrNull,
   sessionId: session.sessionId,
-  remoteInfo: session.remoteInfo,
+  remoteInfo: session.request.remoteInfo,
   uri: session.uri,
   endpoint: session.endpoint,
   methodName: session.method,
 );
 
 StreamOpContext _fromMethodStream(
-  MethodStreamSession session, {
-  Request? request,
-}) => StreamOpContext(
+  MethodStreamSession session,
+) => StreamOpContext(
   serverName: session.server.name,
   serverId: session.server.serverId,
   serverRunMode: session.server.runMode,
   userAuthInfo: session.authInfoOrNull,
   sessionId: session.sessionId,
-  remoteInfo: request?.remoteInfo,
-  uri: request?.requestedUri ?? Uri.http('localhost'),
+  remoteInfo: session.request.remoteInfo,
+  uri: session.request.url,
   endpoint: session.endpoint,
   methodName: session.method,
   streamConnectionId: session.connectionId,
@@ -127,8 +125,8 @@ StreamOpContext _fromStreaming(
   serverRunMode: session.server.runMode,
   userAuthInfo: session.authInfoOrNull,
   sessionId: session.sessionId,
-  remoteInfo: session.remoteInfo,
-  uri: session.request.requestedUri,
+  remoteInfo: session.request.remoteInfo,
+  uri: session.request.url,
   endpoint: session.endpoint,
   methodName: '-',
   streamConnectionId: null,

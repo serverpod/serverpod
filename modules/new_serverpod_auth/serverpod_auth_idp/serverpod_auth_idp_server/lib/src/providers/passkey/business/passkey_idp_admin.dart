@@ -1,11 +1,11 @@
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/src/generated/protocol.dart';
 
+import '../../../../../core.dart';
 import 'passkey_idp_utils.dart';
 
 /// Collection of Passkey account admin methods.
-final class PasskeyIdpAdmin {
+class PasskeyIdpAdmin {
   final Duration _challengeLifetime;
   final PasskeyIdpUtils _utils;
 

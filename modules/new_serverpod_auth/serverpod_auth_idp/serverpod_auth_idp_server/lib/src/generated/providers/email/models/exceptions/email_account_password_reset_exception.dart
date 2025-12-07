@@ -65,7 +65,7 @@ abstract class EmailAccountPasswordResetException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'EmailAccountPasswordResetException(reason: $reason)';
   }
 }
 

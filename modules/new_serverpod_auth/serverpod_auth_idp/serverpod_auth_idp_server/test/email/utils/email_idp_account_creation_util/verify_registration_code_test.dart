@@ -77,7 +77,7 @@ void main() {
             () async {
               final verificationToken = await verifyAccountRequestFuture;
 
-              final finalizeAccountRequestFuture = session.db.transaction(
+              final completeAccountRequestFuture = session.db.transaction(
                 (final transaction) =>
                     fixture.accountCreationUtil.completeAccountCreation(
                       session,
@@ -86,7 +86,7 @@ void main() {
                       transaction: transaction,
                     ),
               );
-              await expectLater(finalizeAccountRequestFuture, completes);
+              await expectLater(completeAccountRequestFuture, completes);
             },
           );
         },
@@ -311,7 +311,7 @@ void main() {
           ),
         );
 
-        // Verify and finalize the request
+        // Verify and complete the request
         final verificationToken = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.verifyRegistrationCode(

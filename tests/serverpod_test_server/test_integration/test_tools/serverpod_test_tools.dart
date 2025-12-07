@@ -6934,6 +6934,142 @@ class _MapParametersEndpoint {
       }
     });
   }
+
+  _i3.Future<Map<DateTime, bool>> returnDateTimeBoolMap(
+    _i1.TestSessionBuilder sessionBuilder,
+    Map<DateTime, bool> map,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnDateTimeBoolMap',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnDateTimeBoolMap',
+          parameters: _i1.testObjectToJson({
+            'map': _i17.mapContainerToJson(map),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (map) => _i17.Protocol().deserialize<Map<DateTime, bool>>(map),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<Map<DateTime, bool>?> returnDateTimeBoolMapNullable(
+    _i1.TestSessionBuilder sessionBuilder,
+    Map<DateTime, bool>? map,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnDateTimeBoolMapNullable',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnDateTimeBoolMapNullable',
+          parameters: _i1.testObjectToJson({
+            'map': map == null ? null : _i17.mapContainerToJson(map),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then(
+              (map) => _i17.Protocol().deserialize<Map<DateTime, bool>?>(map),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<Map<int, String>> returnIntStringMap(
+    _i1.TestSessionBuilder sessionBuilder,
+    Map<int, String> map,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnIntStringMap',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnIntStringMap',
+          parameters: _i1.testObjectToJson({
+            'map': _i17.mapContainerToJson(map),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((map) => _i17.Protocol().deserialize<Map<int, String>>(map));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<Map<int, String>?> returnIntStringMapNullable(
+    _i1.TestSessionBuilder sessionBuilder,
+    Map<int, String>? map,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'mapParameters',
+            method: 'returnIntStringMapNullable',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'mapParameters',
+          methodName: 'returnIntStringMapNullable',
+          parameters: _i1.testObjectToJson({
+            'map': map == null ? null : _i17.mapContainerToJson(map),
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(
+              _localUniqueSession,
+              _localCallContext.arguments,
+            )
+            .then((map) => _i17.Protocol().deserialize<Map<int, String>?>(map));
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 }
 
 class _MethodSignaturePermutationsEndpoint {
