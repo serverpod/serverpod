@@ -49,9 +49,11 @@ class FileUploader {
             'Accept': '*/*',
           });
           request.contentLength = length;
-          unawaited(stream.pipe(request.sink));
-
-          var response = await request.send();
+          final (_, response) = await (
+            stream.pipe(request.sink),
+            request.send(),
+          ).wait;
+          await response.stream.drain();
 
           return response.statusCode == 200;
 

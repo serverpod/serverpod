@@ -203,10 +203,12 @@ class Server implements RouterInjectable {
     return (req) async {
       try {
         return await next(req);
-      } on _RequestTooLargeException catch (e) {
+      } on MaxBodySizeExceeded catch (e) {
         return Response(
           io.HttpStatus.requestEntityTooLarge,
-          body: Body.fromString(e.errorDescription),
+          body: Body.fromString(
+            'Request size exceeds the maximum allowed size of ${e.maxLength} bytes.',
+          ),
         );
       } on EndpointDispatchException catch (e) {
         return switch (e) {
@@ -305,7 +307,8 @@ class Server implements RouterInjectable {
   }
 
   Future<Response> _endpoints(Request req) async {
-    final body = await _readBody(req);
+    var maxRequestSize = serverpod.config.maxRequestSize;
+    final body = await req.readAsString(maxLength: maxRequestSize);
     return await _handleEndpointCall(req.url, body, req);
   }
 
@@ -343,28 +346,6 @@ class Server implements RouterInjectable {
         }
       });
     };
-  }
-
-  Future<String> _readBody(Request request) async {
-    var builder = BytesBuilder(copy: false);
-    var len = 0;
-    var maxRequestSize = serverpod.config.maxRequestSize;
-    var tooLargeForSure = (request.body.contentLength ?? -1) > maxRequestSize;
-    if (!tooLargeForSure) {
-      await for (var segment in request.read()) {
-        if (tooLargeForSure) continue; // always drain request, if reading begun
-        len += segment.length;
-        tooLargeForSure = len > maxRequestSize;
-        builder.add(segment);
-      }
-    }
-    if (tooLargeForSure) {
-      // We defer raising the exception until we have drained the request stream
-      // This is a workaround for https://github.com/dart-lang/sdk/issues/60271
-      // and fixes: https://github.com/serverpod/serverpod/issues/3213 for us.
-      throw _RequestTooLargeException(maxRequestSize);
-    }
-    return const Utf8Decoder().convert(builder.takeBytes());
   }
 
   Future<Response> _handleEndpointCall(
@@ -544,33 +525,6 @@ class Server implements RouterInjectable {
   /// Returns information about the current connections to the server.
   Future<ConnectionsInfo> connectionsInfo() async =>
       await _relicServer?.connectionsInfo() ?? (active: 0, closing: 0, idle: 0);
-}
-
-/// The result of a failed request to the server where the request size
-/// exceeds the maximum allowed limit.
-///
-/// This error provides details about the maximum allowed size, allowing the
-/// client to adjust their request accordingly.
-class _RequestTooLargeException implements Exception {
-  /// Maximum allowed request size in bytes.
-  final int maxSize;
-
-  /// Description of the error.
-  ///
-  /// Contains a human-readable explanation of the error, including the maximum
-  /// allowed size and the actual size of the request.
-  String get errorDescription =>
-      'Request size exceeds the maximum allowed size of $maxSize bytes.';
-
-  /// Creates a new [ResultRequestTooLarge] object.
-  ///
-  /// - [maxSize]: The maximum allowed size for the request in bytes.
-  const _RequestTooLargeException(this.maxSize);
-
-  @override
-  String toString() {
-    return errorDescription;
-  }
 }
 
 /// Extension providing testing utilities for [Server] authentication.
