@@ -3,10 +3,10 @@ import 'dart:typed_data';
 import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/common.dart';
 import 'package:serverpod_auth_core_server/src/jwt/business/refresh_token_exceptions.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+import '../../common/utils/argon2_hash_util.dart';
 import '../../generated/protocol.dart';
 import 'jwt_util.dart';
 import 'refresh_token_string.dart';
