@@ -122,6 +122,7 @@ Future<bool> performCreate(
         await _copyServerUpgrade(
           serverpodDirs,
           name: name,
+          isUpgrade: false,
           customServerpodPath: productionMode ? null : serverpodHome,
         );
         await _copyFlutterUpgrade(
@@ -231,8 +232,7 @@ Future<bool> _performUpgrade(
       await _copyServerUpgrade(
         serverpodDir,
         name: name,
-        skipMain: true,
-        skipAuthDependencies: true,
+        isUpgrade: true,
         customServerpodPath: productionMode ? null : serverpodHome,
       );
       return true;
@@ -441,8 +441,7 @@ Future<void> _copyFlutterUpgrade(
 Future<void> _copyServerUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
-  bool skipMain = false,
-  bool skipAuthDependencies = false,
+  required bool isUpgrade,
   String? customServerpodPath,
 }) async {
   var awsName = name.replaceAll('_', '-');
@@ -514,24 +513,72 @@ Future<void> _copyServerUpgrade(
         replacement: redisTestPassword,
       ),
       Replacement(
-        slotName: 'SERVER_SIDE_SESSION_KEY_HASH_PEPPER',
+        slotName: 'SERVER_SIDE_SESSION_KEY_HASH_PEPPER_DEVELOPMENT',
         replacement: generateRandomString(),
       ),
       Replacement(
-        slotName: 'EMAIL_SECRET_HASH_PEPPER',
+        slotName: 'SERVER_SIDE_SESSION_KEY_HASH_PEPPER_TEST',
         replacement: generateRandomString(),
       ),
       Replacement(
-        slotName: 'JWT_PRIVATE_KEY',
+        slotName: 'SERVER_SIDE_SESSION_KEY_HASH_PEPPER_STAGING',
         replacement: generateRandomString(),
       ),
       Replacement(
-        slotName: 'JWT_REFRESH_TOKEN_HASH_PEPPER',
+        slotName: 'SERVER_SIDE_SESSION_KEY_HASH_PEPPER_PRODUCTION',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'EMAIL_SECRET_HASH_PEPPER_DEVELOPMENT',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_PRIVATE_KEY_DEVELOPMENT',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_REFRESH_TOKEN_HASH_PEPPER_DEVELOPMENT',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'EMAIL_SECRET_HASH_PEPPER_TEST',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_PRIVATE_KEY_TEST',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_REFRESH_TOKEN_HASH_PEPPER_TEST',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'EMAIL_SECRET_HASH_PEPPER_STAGING',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_PRIVATE_KEY_STAGING',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_REFRESH_TOKEN_HASH_PEPPER_STAGING',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'EMAIL_SECRET_HASH_PEPPER_PRODUCTION',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_PRIVATE_KEY_PRODUCTION',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_REFRESH_TOKEN_HASH_PEPPER_PRODUCTION',
         replacement: generateRandomString(),
       ),
     ],
     fileNameReplacements: const [],
-    ignoreFileNames: [if (skipMain) 'server.dart'],
+    ignoreFileNames: [if (isUpgrade) 'server.dart'],
   );
   copier.copyFiles();
 
@@ -569,7 +616,7 @@ Future<void> _copyServerUpgrade(
   );
   copier.copyFiles();
 
-  if (!skipAuthDependencies) {
+  if (!isUpgrade) {
     log.debug(
       'Adding auth dependencies to server and client pubspecs',
       newParagraph: true,

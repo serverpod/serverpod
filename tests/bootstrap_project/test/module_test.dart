@@ -37,7 +37,7 @@ void main() {
 
     group('when creating a new project', () {
       setUpAll(() async {
-        var process = await startServerPodCli(
+        var process = await startServerpodCli(
           [
             'create',
             '--template',
@@ -298,7 +298,7 @@ void main() {
       late Process createProcess;
 
       setUp(() async {
-        createProcess = await startServerPodCli(
+        createProcess = await startServerpodCli(
           [
             'create',
             '--template',

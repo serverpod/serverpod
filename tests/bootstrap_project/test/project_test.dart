@@ -50,7 +50,7 @@ void main() async {
     test(
       'when creating a new project then the project is created successfully and can be booted',
       () async {
-        createProcess = await startServerPodCli(
+        createProcess = await startServerpodCli(
           [
             'create',
             projectName,
@@ -124,7 +124,7 @@ void main() async {
     test(
       'when creating a new project then the project can be booted without applying migrations',
       () async {
-        createProcess = await startServerPodCli(
+        createProcess = await startServerpodCli(
           [
             'create',
             projectName,
@@ -210,7 +210,7 @@ void main() async {
 
     group('when creating a new project', () {
       setUpAll(() async {
-        var process = await startServerPodCli(
+        var process = await startServerpodCli(
           [
             'create',
             projectName,
@@ -619,7 +619,7 @@ void main() async {
     test(
       'when removing generated files from a new project and running generate then the files are recreated successfully',
       () async {
-        createProcess = await startServerPodCli(
+        createProcess = await startServerpodCli(
           [
             'create',
             projectName,
@@ -651,7 +651,7 @@ void main() async {
         );
         generatedClientDir.deleteSync(recursive: true);
 
-        var generateProcess = await runServerPodCli(
+        var generateProcess = await runServerpodCli(
           [
             'generate',
           ],
@@ -736,7 +736,7 @@ void main() async {
     late Process createProcess;
 
     setUp(() async {
-      createProcess = await startServerPodCli(
+      createProcess = await startServerpodCli(
         [
           'create',
           projectName,

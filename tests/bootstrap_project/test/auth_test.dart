@@ -36,7 +36,7 @@ void main() async {
 
     group('when creating a new project', () {
       setUpAll(() async {
-        var process = await startServerPodCli(
+        var process = await startServerpodCli(
           [
             'create',
             projectName,
@@ -101,7 +101,7 @@ void main() async {
         final content = serverFile.readAsStringSync();
         expect(content, contains('initializeAuthServices'));
         expect(content, contains('EmailIdpConfigFromPasswords'));
-        expect(content, contains('ServerSideSessionsConfigFromPasswords'));
+        expect(content, contains('JwtConfigFromPasswords'));
       });
 
       test('then the flutter main.dart contains auth imports', () {

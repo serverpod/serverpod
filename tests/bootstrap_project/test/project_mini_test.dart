@@ -36,7 +36,7 @@ void main() async {
     test(
       'when creating a new project with the mini template then the project is created successfully and can be booted in maintenance mode.',
       () async {
-        createProcess = await startServerPodCli(
+        createProcess = await startServerpodCli(
           [
             'create',
             '--template',
@@ -79,7 +79,7 @@ void main() async {
     test(
       'when creating a new project with the mini template then the project is created successfully without the full configuration of a full project.',
       () async {
-        createProcess = await startServerPodCli(
+        createProcess = await startServerpodCli(
           [
             'create',
             '--template',
@@ -160,7 +160,7 @@ void main() async {
 
     group('when creating a new project with the mini template', () {
       setUpAll(() async {
-        var createProcess = await startServerPodCli(
+        var createProcess = await startServerpodCli(
           [
             'create',
             '--template',
@@ -238,7 +238,7 @@ void main() async {
     late Process createProcess;
 
     setUpAll(() async {
-      createProcess = await startServerPodCli(
+      createProcess = await startServerpodCli(
         [
           'create',
           '--template',
@@ -274,7 +274,7 @@ void main() async {
       'when upgrading the project to a full project '
       'then the project is created successfully and can be booted in maintenance mode with the apply-migrations flag.',
       () async {
-        var upgradeProcess = await startServerPodCli(
+        var upgradeProcess = await startServerpodCli(
           [
             'create',
             '--template',
@@ -332,7 +332,7 @@ void main() async {
     final serverDir = createServerFolderPath(projectName);
     late Process createProcess;
     setUpAll(() async {
-      createProcess = await startServerPodCli(
+      createProcess = await startServerpodCli(
         [
           'create',
           '--template',
@@ -364,7 +364,7 @@ void main() async {
       () {
         late Process upgradeProcess;
         setUpAll(() async {
-          upgradeProcess = await startServerPodCli(
+          upgradeProcess = await startServerpodCli(
             [
               'create',
               '--template',
@@ -546,7 +546,7 @@ void main() async {
     test(
       'when creating a new project with the mini template and upgrading it to a full project then the tests are passing.',
       () async {
-        createProcess = await startServerPodCli(
+        createProcess = await startServerpodCli(
           [
             'create',
             '--template',
@@ -569,7 +569,7 @@ void main() async {
           reason: 'Failed to create the serverpod project.',
         );
 
-        var upgradeProcess = await startServerPodCli(
+        var upgradeProcess = await startServerpodCli(
           [
             'create',
             '--template',
@@ -643,7 +643,7 @@ void main() async {
     final (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
 
     setUp(() async {
-      var createProcess = await runServerPodCli(
+      var createProcess = await runServerpodCli(
         [
           'create',
           '--template',

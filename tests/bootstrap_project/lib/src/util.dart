@@ -80,7 +80,7 @@ Future<Process> startProcess(
   return process;
 }
 
-Future<Process> startServerPodCli(
+Future<Process> startServerpodCli(
   List<String> arguments, {
   required String rootPath,
   String? workingDirectory,
@@ -97,7 +97,7 @@ Future<Process> startServerPodCli(
   );
 }
 
-Future<ProcessResult> runServerPodCli(
+Future<ProcessResult> runServerpodCli(
   List<String> arguments, {
   required String rootPath,
   String? workingDirectory,
