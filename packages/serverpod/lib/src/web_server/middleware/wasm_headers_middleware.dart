@@ -45,8 +45,10 @@ class WasmHeadersMiddleware extends MiddlewareObject {
       if (result is Response) {
         return result.copyWith(
           headers: result.headers.transform((mh) {
-            mh['Cross-Origin-Opener-Policy'] = ['same-origin'];
-            mh['Cross-Origin-Embedder-Policy'] = ['require-corp'];
+            mh.crossOriginOpenerPolicy =
+                CrossOriginOpenerPolicyHeader.sameOrigin;
+            mh.crossOriginEmbedderPolicy =
+                CrossOriginEmbedderPolicyHeader.requireCorp;
           }),
         );
       }
