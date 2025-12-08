@@ -163,6 +163,23 @@ TableMigration? generateTableMigration(
   TableDefinition dstTable,
   List<DatabaseMigrationWarning> warnings,
 ) {
+  // Check for partition changes - partitioning cannot be changed via ALTER TABLE
+  if (!_partitionConfigEquals(srcTable, dstTable)) {
+    warnings.add(
+      DatabaseMigrationWarning(
+        type: DatabaseMigrationWarningType.tableDropped,
+        table: srcTable.name,
+        columns: [],
+        message:
+            'Partition configuration of table "${srcTable.name}" has changed. '
+            'The table will be dropped and recreated as PostgreSQL does not '
+            'support altering partition configuration.',
+        destrucive: true,
+      ),
+    );
+    return null;
+  }
+
   // Find added columns
   var addColumns = <ColumnDefinition>[];
   for (var dstColumn in dstTable.columns) {
@@ -363,4 +380,37 @@ TableMigration? generateTableMigration(
     addForeignKeys: addForeignKeys,
     warnings: warnings,
   );
+}
+
+/// Compares two tables' partition configuration for equality.
+/// Checks both partition fields and partition method.
+bool _partitionConfigEquals(TableDefinition a, TableDefinition b) {
+  // Check partition fields
+  if (!_partitionByEquals(a.partitionBy, b.partitionBy)) {
+    return false;
+  }
+
+  // Check partition method - only relevant if partition fields are defined
+  if (a.partitionBy != null && a.partitionBy!.isNotEmpty) {
+    var methodA = a.partitionMethod ?? PartitionMethod.list;
+    var methodB = b.partitionMethod ?? PartitionMethod.list;
+    if (methodA != methodB) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/// Compares two partition lists for equality.
+/// Handles null values and list comparisons.
+bool _partitionByEquals(List<String>? a, List<String>? b) {
+  if (a == null && b == null) return true;
+  if (a == null || b == null) return false;
+  if (a.length != b.length) return false;
+
+  for (int i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
 }

@@ -1,0 +1,7 @@
+### Model with simple partitionBy using default LIST method.
+class: PartitionedSimple
+table: partitioned_simple
+fields:
+  source: String
+  value: int
+partitionBy: source
