@@ -407,7 +407,7 @@ Future<void> _copyFlutterUpgrade(
   copier.copyFiles();
 
   log.debug('Adding auth dependencies to Flutter pubspec', newParagraph: true);
-  await _addAuthDependenciesToPubspec(
+  await _addDependenciesToPubspec(
     pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
     dependency: 'serverpod_auth_idp_flutter',
     version: templateVersion,
@@ -574,7 +574,7 @@ Future<void> _copyServerUpgrade(
       'Adding auth dependencies to server and client pubspecs',
       newParagraph: true,
     );
-    await _addAuthDependenciesToPubspec(
+    await _addDependenciesToPubspec(
       pubspecFile: File(p.join(serverpodDirs.serverDir.path, 'pubspec.yaml')),
       dependency: 'serverpod_auth_idp_server',
       version: templateVersion,
@@ -591,7 +591,7 @@ Future<void> _copyServerUpgrade(
         ),
       ],
     );
-    await _addAuthDependenciesToPubspec(
+    await _addDependenciesToPubspec(
       pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
       dependency: 'serverpod_auth_idp_client',
       version: templateVersion,
@@ -611,7 +611,7 @@ Future<void> _copyServerUpgrade(
   }
 }
 
-Future<void> _addAuthDependenciesToPubspec({
+Future<void> _addDependenciesToPubspec({
   required File pubspecFile,
   required String dependency,
   required String version,
