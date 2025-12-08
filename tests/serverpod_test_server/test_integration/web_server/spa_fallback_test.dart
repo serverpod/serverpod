@@ -14,6 +14,13 @@ void main() {
   late File appJsFile;
   late http.Client client;
 
+  final portZeroConfig = ServerConfig(
+    port: 0,
+    publicScheme: 'http',
+    publicHost: 'localhost',
+    publicPort: 0,
+  );
+
   setUpAll(() async {
     client = http.Client();
     webDir = Directory(path.join(Directory.current.path, 'web', 'spa_test'));
@@ -39,13 +46,6 @@ void main() {
     () {
       late Serverpod pod;
       late int port;
-
-      final portZeroConfig = ServerConfig(
-        port: 0,
-        publicScheme: 'http',
-        publicHost: 'localhost',
-        publicPort: 0,
-      );
 
       setUp(() async {
         pod = Serverpod(
@@ -120,13 +120,6 @@ void main() {
     late Serverpod pod;
     late int port;
 
-    final portZeroConfig = ServerConfig(
-      port: 0,
-      publicScheme: 'http',
-      publicHost: 'localhost',
-      publicPort: 0,
-    );
-
     setUp(() async {
       pod = Serverpod(
         [],
@@ -169,13 +162,6 @@ void main() {
     late int port;
     late Directory adminDir;
     late File adminIndexFile;
-
-    final portZeroConfig = ServerConfig(
-      port: 0,
-      publicScheme: 'http',
-      publicHost: 'localhost',
-      publicPort: 0,
-    );
 
     setUp(() async {
       pod = Serverpod(

@@ -10,6 +10,13 @@ import 'package:serverpod_test_server/src/generated/endpoints.dart';
 void main() {
   late http.Client client;
 
+  final portZeroConfig = ServerConfig(
+    port: 0,
+    publicScheme: 'http',
+    publicHost: 'localhost',
+    publicPort: 0,
+  );
+
   setUpAll(() {
     client = http.Client();
   });
@@ -21,13 +28,6 @@ void main() {
   group('Given wasmHeadersMiddleware', () {
     late Serverpod pod;
     late int port;
-
-    final portZeroConfig = ServerConfig(
-      port: 0,
-      publicScheme: 'http',
-      publicHost: 'localhost',
-      publicPort: 0,
-    );
 
     setUp(() async {
       pod = Serverpod(
@@ -81,13 +81,6 @@ void main() {
   group('Given wasmHeadersMiddleware applied to multiple routes', () {
     late Serverpod pod;
     late int port;
-
-    final portZeroConfig = ServerConfig(
-      port: 0,
-      publicScheme: 'http',
-      publicHost: 'localhost',
-      publicPort: 0,
-    );
 
     setUp(() async {
       pod = Serverpod(

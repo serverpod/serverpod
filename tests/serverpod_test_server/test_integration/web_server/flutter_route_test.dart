@@ -14,6 +14,13 @@ void main() {
   late File appJsFile;
   late http.Client client;
 
+  final portZeroConfig = ServerConfig(
+    port: 0,
+    publicScheme: 'http',
+    publicHost: 'localhost',
+    publicPort: 0,
+  );
+
   setUpAll(() async {
     client = http.Client();
     webDir = Directory(
@@ -39,13 +46,6 @@ void main() {
   group('Given a web server with FlutterRoute', () {
     late Serverpod pod;
     late int port;
-
-    final portZeroConfig = ServerConfig(
-      port: 0,
-      publicScheme: 'http',
-      publicHost: 'localhost',
-      publicPort: 0,
-    );
 
     setUp(() async {
       pod = Serverpod(
@@ -123,13 +123,6 @@ void main() {
     late int port;
     late File customIndex;
 
-    final portZeroConfig = ServerConfig(
-      port: 0,
-      publicScheme: 'http',
-      publicHost: 'localhost',
-      publicPort: 0,
-    );
-
     setUp(() async {
       pod = Serverpod(
         [],
@@ -182,13 +175,6 @@ void main() {
   group('Given a FlutterRoute with cache control', () {
     late Serverpod pod;
     late int port;
-
-    final portZeroConfig = ServerConfig(
-      port: 0,
-      publicScheme: 'http',
-      publicHost: 'localhost',
-      publicPort: 0,
-    );
 
     setUp(() async {
       pod = Serverpod(
