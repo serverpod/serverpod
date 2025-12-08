@@ -12,8 +12,8 @@ void run(List<String> args) async {
 
   pod.initializeAuthServices(
     tokenManagerBuilders: [
-      // Use server-side sessions for token management.
-      ServerSideSessionsConfigFromPasswords(),
+      // Use JWT for token management.
+      JwtConfigFromPasswords(),
     ],
     identityProviderBuilders: [
       // Email identity provider for email/password authentication.
