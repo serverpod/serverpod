@@ -11,10 +11,12 @@ void main() {
     setUp(() async {
       primaryClient = Client(
         serverUrl,
+        // ignore: deprecated_member_use
         authenticationKeyManager: TestAuthKeyManager(),
       );
       secondaryClient = Client(
         serverUrl,
+        // ignore: deprecated_member_use
         authenticationKeyManager: TestAuthKeyManager(),
       );
 

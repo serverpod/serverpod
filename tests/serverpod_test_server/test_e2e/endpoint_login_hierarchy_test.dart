@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:serverpod/src/authentication/scope.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
@@ -9,6 +7,7 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(
     serverUrl,
+    // ignore: deprecated_member_use
     authenticationKeyManager: TestAuthKeyManager(),
   );
 
@@ -19,6 +18,7 @@ void main() {
   });
 
   tearDown(() async {
+    // ignore: deprecated_member_use
     await client.authenticationKeyManager?.remove();
     await client.authentication.removeAllUsers();
     await client.authentication.signOut();
@@ -56,6 +56,7 @@ void main() {
             'test@foo.bar',
             'password',
           );
+          // ignore: deprecated_member_use
           await client.authenticationKeyManager!.put(
             '${loginResponse.keyId}:${loginResponse.key}',
           );
@@ -96,6 +97,7 @@ void main() {
             'test@foo.bar',
             'password',
           );
+          // ignore: deprecated_member_use
           await client.authenticationKeyManager!.put(
             '${loginResponse.keyId}:${loginResponse.key}',
           );
@@ -119,6 +121,7 @@ void main() {
             'password',
             [Scope.admin.name!],
           );
+          // ignore: deprecated_member_use
           await client.authenticationKeyManager!.put(
             '${loginResponse.keyId}:${loginResponse.key}',
           );
@@ -159,6 +162,7 @@ void main() {
             'test@foo.bar',
             'password',
           );
+          // ignore: deprecated_member_use
           await client.authenticationKeyManager!.put(
             '${loginResponse.keyId}:${loginResponse.key}',
           );
@@ -182,6 +186,7 @@ void main() {
             'password',
             [Scope.admin.name!],
           );
+          // ignore: deprecated_member_use
           await client.authenticationKeyManager!.put(
             '${loginResponse.keyId}:${loginResponse.key}',
           );

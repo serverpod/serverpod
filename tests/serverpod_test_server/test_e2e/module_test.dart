@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:async';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
@@ -55,12 +53,14 @@ void main() {
             .asBroadcastStream();
       });
       setUp(() async {
+        // ignore: deprecated_member_use
         await client.openStreamingConnection(
           disconnectOnLostInternetConnection: false,
         );
       });
 
       tearDown(() async {
+        // ignore: deprecated_member_use
         await client.closeStreamingConnection();
       });
 
@@ -90,6 +90,7 @@ void main() {
       });
 
       test('then stream closed should have been called', () async {
+        // ignore: deprecated_member_use
         await client.closeStreamingConnection();
 
         await expectLater(
