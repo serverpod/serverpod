@@ -6,10 +6,7 @@ import 'package:serverpod/serverpod.dart';
 /// Route for serving Single Page Applications (SPAs) with fallback support.
 ///
 /// Combines static file serving with automatic fallback to a specified file
-/// (typically index.html) when requested files don't exist. This enables
-/// client-side routing in SPAs.
-///
-/// ## Basic Usage
+/// when requested files don't exist, enabling client-side routing.
 ///
 /// ```dart
 /// pod.webServer.addRoute(
@@ -20,15 +17,6 @@ import 'package:serverpod/serverpod.dart';
 ///   '/**',
 /// );
 /// ```
-///
-/// ## How It Works
-///
-/// 1. Creates a sub-router for the route path
-/// 2. Applies fallbackMiddleware to intercept 404 responses
-/// 3. Injects the static route into the sub-router
-/// 4. Attaches the sub-router to the main router
-///
-/// This ensures all 404s from the static route fall back to the specified file.
 class SpaRoute extends Route {
   /// The directory containing static files
   final Directory directory;
@@ -44,10 +32,12 @@ class SpaRoute extends Route {
 
   /// Creates a new SpaRoute.
   ///
-  /// - [directory] is the root directory containing static files
-  /// - [fallback] is the file to serve when requested files don't exist
-  /// - [cacheControlFactory] customizes cache headers for static assets
-  /// - [cacheBustingConfig] enables cache busting for assets
+  /// The [directory] parameter specifies the root directory containing static
+  /// files. The [fallback] parameter is the file served when requested files
+  /// don't exist, enabling client-side routing.
+  ///
+  /// Cache behavior can be customized using [cacheControlFactory] for static
+  /// asset headers and [cacheBustingConfig] for cache busting support.
   SpaRoute(
     this.directory, {
     required this.fallback,
