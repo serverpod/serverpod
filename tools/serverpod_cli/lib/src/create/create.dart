@@ -521,6 +521,14 @@ Future<void> _copyServerUpgrade(
         slotName: 'EMAIL_SECRET_HASH_PEPPER',
         replacement: generateRandomString(),
       ),
+      Replacement(
+        slotName: 'JWT_PRIVATE_KEY',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_REFRESH_TOKEN_HASH_PEPPER',
+        replacement: generateRandomString(),
+      ),
     ],
     fileNameReplacements: const [],
     ignoreFileNames: [if (skipMain) 'server.dart'],
