@@ -305,7 +305,8 @@ class Server implements RouterInjectable {
   }
 
   Future<Response> _endpoints(Request req) async {
-    final body = await _readBody(req);
+    var maxRequestSize = serverpod.config.maxRequestSize;
+    final body = await req.readAsString(maxLength: maxRequestSize);
     return await _handleEndpointCall(req.url, body, req);
   }
 
@@ -343,28 +344,6 @@ class Server implements RouterInjectable {
         }
       });
     };
-  }
-
-  Future<String> _readBody(Request request) async {
-    var builder = BytesBuilder(copy: false);
-    var len = 0;
-    var maxRequestSize = serverpod.config.maxRequestSize;
-    var tooLargeForSure = (request.body.contentLength ?? -1) > maxRequestSize;
-    if (!tooLargeForSure) {
-      await for (var segment in request.read()) {
-        if (tooLargeForSure) continue; // always drain request, if reading begun
-        len += segment.length;
-        tooLargeForSure = len > maxRequestSize;
-        builder.add(segment);
-      }
-    }
-    if (tooLargeForSure) {
-      // We defer raising the exception until we have drained the request stream
-      // This is a workaround for https://github.com/dart-lang/sdk/issues/60271
-      // and fixes: https://github.com/serverpod/serverpod/issues/3213 for us.
-      throw _RequestTooLargeException(maxRequestSize);
-    }
-    return const Utf8Decoder().convert(builder.takeBytes());
   }
 
   Future<Response> _handleEndpointCall(
