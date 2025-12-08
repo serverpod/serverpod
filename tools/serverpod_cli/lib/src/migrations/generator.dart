@@ -110,7 +110,7 @@ class MigrationGenerator {
       return null;
     }
 
-    if (migration.isEmpty) {
+    if (migration.isEmpty && !force) {
       log.info(
         'No changes detected. Use --force to create an empty migration.',
       );
