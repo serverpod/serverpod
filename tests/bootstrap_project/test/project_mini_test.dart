@@ -522,6 +522,20 @@ void main() async {
           final content = mainFile.readAsStringSync();
           expect(content, isNot(contains('serverpod_auth_idp_flutter')));
         });
+
+        test('then the email_idp_endpoint.dart does not exist', () {
+          final endpointFile = File(
+            path.join(
+              tempPath,
+              serverDir,
+              'lib',
+              'src',
+              'endpoints',
+              'email_idp_endpoint.dart',
+            ),
+          );
+          expect(endpointFile.existsSync(), isFalse);
+        });
       },
     );
   });

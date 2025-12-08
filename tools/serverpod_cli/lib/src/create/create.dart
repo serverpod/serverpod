@@ -578,7 +578,10 @@ Future<void> _copyServerUpgrade(
       ),
     ],
     fileNameReplacements: const [],
-    ignoreFileNames: [if (isUpgrade) 'server.dart'],
+    ignoreFileNames: [
+      if (isUpgrade) 'server.dart',
+      if (isUpgrade) 'email_idp_endpoint.dart',
+    ],
   );
   copier.copyFiles();
 
