@@ -12,9 +12,11 @@ void run(List<String> args) async {
 
   pod.initializeAuthServices(
     tokenManagerBuilders: [
+      // Use server-side sessions for token management.
       ServerSideSessionsConfigFromPasswords(),
     ],
     identityProviderBuilders: [
+      // Email identity provider for email/password authentication.
       EmailIdpConfigFromPasswords(
         sendRegistrationVerificationCode: _sendRegistrationCode,
         sendPasswordResetVerificationCode: _sendPasswordResetCode,
