@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as core;
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 
 import 'storage/secure_client_auth_success_storage.dart';
 
@@ -10,17 +9,17 @@ import 'storage/secure_client_auth_success_storage.dart';
 /// see supported methods. Session information is stored in the secure shared
 /// preferences of the app and persists between restarts of the app.
 ///
-/// This class extends [core.ClientAuthSessionManager] and adds Flutter-specific
+/// This class extends [ClientAuthSessionManager] and adds Flutter-specific
 /// reactive primitives ([ValueNotifier] and [ValueListenable]) for state
 /// management.
-class FlutterAuthSessionManager extends core.ClientAuthSessionManager {
-  final ValueNotifier<core.AuthSuccess?> _authInfoNotifier;
+class FlutterAuthSessionManager extends ClientAuthSessionManager {
+  final ValueNotifier<AuthSuccess?> _authInfoNotifier;
 
   /// Creates a new [FlutterAuthSessionManager].
   FlutterAuthSessionManager._internal({
-    required ValueNotifier<core.AuthSuccess?> authInfoNotifier,
+    required ValueNotifier<AuthSuccess?> authInfoNotifier,
     required super.storage,
-    required void Function(core.AuthSuccess?) onAuthInfoChanged,
+    required void Function(AuthSuccess?) onAuthInfoChanged,
     super.caller,
     super.authKeyProviderDelegates,
   }) : _authInfoNotifier = authInfoNotifier,
@@ -30,17 +29,17 @@ class FlutterAuthSessionManager extends core.ClientAuthSessionManager {
   factory FlutterAuthSessionManager({
     /// Optionally override the caller. If not provided directly, the caller
     /// must be set before usage by calling [setCaller].
-    core.Caller? caller,
+    Caller? caller,
 
     /// The authentication key provider to use for each auth strategy. If not
     /// provided, a default one will be created as needed.
-    Map<String, core.ClientAuthKeyProvider>? authKeyProviderDelegates,
+    Map<String, ClientAuthKeyProvider>? authKeyProviderDelegates,
 
     /// The storage to keep user authentication info. If missing, the
     /// session manager will create a [SecureClientAuthSuccessStorage].
-    core.ClientAuthSuccessStorage? storage,
+    ClientAuthSuccessStorage? storage,
   }) {
-    final authInfoNotifier = ValueNotifier<core.AuthSuccess?>(null);
+    final authInfoNotifier = ValueNotifier<AuthSuccess?>(null);
 
     return FlutterAuthSessionManager._internal(
       caller: caller,
@@ -66,12 +65,11 @@ class FlutterAuthSessionManager extends core.ClientAuthSessionManager {
   /// ```
   ///
   /// To get the current auth info value directly, use the [authInfo] property.
-  ValueListenable<core.AuthSuccess?> get authInfoListenable =>
-      _authInfoNotifier;
+  ValueListenable<AuthSuccess?> get authInfoListenable => _authInfoNotifier;
 }
 
 /// Extension for ServerpodClientShared to provide auth session management.
-extension FlutterAuthSessionManagerExtension on core.ServerpodClientShared {
+extension FlutterAuthSessionManagerExtension on ServerpodClientShared {
   /// The authentication session manager to sign in and manage user sessions.
   FlutterAuthSessionManager get authSessionManager {
     final currentProvider = authKeyProvider;
@@ -101,9 +99,9 @@ extension FlutterAuthSessionManagerExtension on core.ServerpodClientShared {
   }
 }
 
-extension on core.ServerpodClientShared {
-  core.Caller getCaller() {
-    var caller = moduleLookup.values.whereType<core.Caller>().firstOrNull;
+extension on ServerpodClientShared {
+  Caller getCaller() {
+    var caller = moduleLookup.values.whereType<Caller>().firstOrNull;
     if (caller != null) return caller;
     throw StateError('No authentication module found.');
   }
