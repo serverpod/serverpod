@@ -14,7 +14,9 @@ import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 
 enum CreateMigrationOption<V> implements OptionDefinition<V> {
   force(CreateMigrationCommand.forceOption),
-  tag(CreateMigrationCommand.tagOption);
+  tag(CreateMigrationCommand.tagOption),
+  check(CreateMigrationCommand.checkOption),
+  empty(CreateMigrationCommand.emptyOption);
 
   const CreateMigrationOption(this.option);
 
@@ -40,6 +42,27 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     customValidator: _validateTag,
   );
 
+  static const checkOption = FlagOption(
+    argName: 'check',
+    argAbbrev: 'c',
+    negatable: false,
+    defaultsTo: false,
+    helpText: 'Check if there are changes without creating a migration. '
+        'Returns exit code 0 if no changes detected, 1 if changes exist. '
+        'Cannot be used with --empty flag.',
+  );
+
+  static const emptyOption = FlagOption(
+    argName: 'empty',
+    argAbbrev: 'e',
+    negatable: false,
+    defaultsTo: false,
+    helpText:
+        'Creates an empty migration without evaluating the state of the project. '
+        'Advanced use case for manual migration creation. '
+        'Cannot be used with --check flag.',
+  );
+
   static void _validateTag(String tag) {
     if (!StringValidators.isValidTagName(tag)) {
       throw const FormatException(
@@ -63,6 +86,15 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
   ) async {
     bool force = commandConfig.value(CreateMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
+    bool check = commandConfig.value(CreateMigrationOption.check);
+    bool empty = commandConfig.value(CreateMigrationOption.empty);
+
+    if (check && empty) {
+      log.error(
+        'Cannot use both --check and --empty flags together.',
+      );
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+    }
 
     // Get interactive flag from global configuration
     final interactive = serverpodRunner.globalConfiguration.optionalValue(
@@ -95,12 +127,24 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     );
 
     MigrationVersion? migration;
-    await log.progress('Creating migration', () async {
+
+    String progressMessage;
+    if (check) {
+      progressMessage = 'Checking for changes';
+    } else if (empty) {
+      progressMessage = 'Creating empty migration';
+    } else {
+      progressMessage = 'Creating migration';
+    }
+
+    await log.progress(progressMessage, () async {
       try {
         migration = await generator.createMigration(
           tag: tag,
           force: force,
           config: config,
+          write: !check,
+          empty: empty,
         );
       } on MigrationVersionLoadException catch (e) {
         log.error(
@@ -118,16 +162,26 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
         );
       }
 
-      return migration != null;
+      return migration == null;
     });
 
-    var projectDirectory = migration?.projectDirectory;
-    var migrationName = migration?.versionName;
-    if (migration == null ||
-        projectDirectory == null ||
-        migrationName == null) {
-      throw ExitException.error();
+    if (check) {
+      if (migration == null) {
+        log.info('No changes detected.', type: TextLogType.success);
+        return;
+      } else {
+        log.info('Changes detected.', type: TextLogType.bullet);
+        throw ExitException.error();
+      }
     }
+
+    if (migration == null) {
+      log.info('No changes detected.', type: TextLogType.success);
+      return;
+    }
+
+    var projectDirectory = migration!.projectDirectory;
+    var migrationName = migration!.versionName;
 
     log.info(
       'Migration created: ${path.relative(
@@ -140,5 +194,6 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
       type: TextLogType.bullet,
     );
     log.info('Done.', type: TextLogType.success);
+    return;
   }
 }
