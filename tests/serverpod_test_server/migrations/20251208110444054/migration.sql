@@ -119,9 +119,9 @@ ALTER TABLE ONLY "child_with_inherited_id"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20251208110444054-v3-0-0', now())
+    VALUES ('serverpod_test', '20251208110444054', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20251208110444054-v3-0-0', "timestamp" = now();
+    DO UPDATE SET "version" = '20251208110444054', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
