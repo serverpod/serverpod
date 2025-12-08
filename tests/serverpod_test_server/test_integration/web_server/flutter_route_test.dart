@@ -4,14 +4,13 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 
 void main() {
   late Directory webDir;
-  late File indexFile;
-  late File appJsFile;
   late http.Client client;
 
   final portZeroConfig = ServerConfig(
@@ -23,24 +22,17 @@ void main() {
 
   setUpAll(() async {
     client = http.Client();
-    webDir = Directory(
-      path.join(Directory.current.path, 'web', 'flutter_route_test'),
-    );
-    await webDir.create(recursive: true);
 
-    // Create test files
-    indexFile = File(path.join(webDir.path, 'index.html'));
-    await indexFile.writeAsString('<html><body>Flutter App</body></html>');
+    await d.dir('web', [
+      d.file('index.html', '<html><body>Flutter App</body></html>'),
+      d.file('main.dart.js', '// Flutter web JS'),
+    ]).create();
 
-    appJsFile = File(path.join(webDir.path, 'main.dart.js'));
-    await appJsFile.writeAsString('// Flutter web JS');
+    webDir = Directory(path.join(d.sandbox, 'web'));
   });
 
   tearDownAll(() async {
     client.close();
-    if (await webDir.exists()) {
-      await webDir.delete(recursive: true);
-    }
   });
 
   group('Given a web server with FlutterRoute', () {
@@ -134,10 +126,10 @@ void main() {
         ),
       );
 
+      await d
+          .file('web/custom.html', '<html><body>Custom Flutter</body></html>')
+          .create();
       customIndex = File(path.join(webDir.path, 'custom.html'));
-      await customIndex.writeAsString(
-        '<html><body>Custom Flutter</body></html>',
-      );
 
       pod.webServer.addRoute(
         FlutterRoute(webDir, indexFile: customIndex),

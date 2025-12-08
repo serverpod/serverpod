@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
@@ -11,7 +12,6 @@ import 'package:serverpod_test_server/src/generated/endpoints.dart';
 void main() {
   late Directory webDir;
   late File indexFile;
-  late File appJsFile;
   late http.Client client;
 
   final portZeroConfig = ServerConfig(
@@ -23,22 +23,18 @@ void main() {
 
   setUpAll(() async {
     client = http.Client();
-    webDir = Directory(path.join(Directory.current.path, 'web', 'spa_test'));
-    await webDir.create(recursive: true);
 
-    // Create test files
+    await d.dir('web', [
+      d.file('index.html', '<html><body>SPA Index</body></html>'),
+      d.file('app.js', 'console.log("app");'),
+    ]).create();
+
+    webDir = Directory(path.join(d.sandbox, 'web'));
     indexFile = File(path.join(webDir.path, 'index.html'));
-    await indexFile.writeAsString('<html><body>SPA Index</body></html>');
-
-    appJsFile = File(path.join(webDir.path, 'app.js'));
-    await appJsFile.writeAsString('console.log("app");');
   });
 
   tearDownAll(() async {
     client.close();
-    if (await webDir.exists()) {
-      await webDir.delete(recursive: true);
-    }
   });
 
   group(
@@ -58,7 +54,6 @@ void main() {
           ),
         );
 
-        // Add fallback middleware and static route
         pod.webServer.addMiddleware(
           FallbackMiddleware(
             fallback: StaticRoute.file(indexFile),
@@ -131,7 +126,6 @@ void main() {
         ),
       );
 
-      // Use a custom route that returns 404 as the fallback
       pod.webServer.addMiddleware(
         FallbackMiddleware(
           fallback: _NotFoundRoute(),
@@ -174,15 +168,13 @@ void main() {
         ),
       );
 
-      // Create admin SPA directory
-      adminDir = Directory(
-        path.join(Directory.current.path, 'web', 'admin_test'),
-      );
-      await adminDir.create(recursive: true);
-      adminIndexFile = File(path.join(adminDir.path, 'index.html'));
-      await adminIndexFile.writeAsString('<html><body>Admin SPA</body></html>');
+      await d.dir('admin', [
+        d.file('index.html', '<html><body>Admin SPA</body></html>'),
+      ]).create();
 
-      // Admin SPA
+      adminDir = Directory(path.join(d.sandbox, 'admin'));
+      adminIndexFile = File(path.join(adminDir.path, 'index.html'));
+
       pod.webServer.addMiddleware(
         FallbackMiddleware(
           fallback: StaticRoute.file(adminIndexFile),
@@ -195,7 +187,6 @@ void main() {
         '/admin/**',
       );
 
-      // Public SPA
       pod.webServer.addMiddleware(
         FallbackMiddleware(
           fallback: StaticRoute.file(indexFile),
@@ -211,9 +202,6 @@ void main() {
 
     tearDown(() async {
       await pod.shutdown(exitProcess: false);
-      if (await adminDir.exists()) {
-        await adminDir.delete(recursive: true);
-      }
     });
 
     test('when requesting admin path then admin index is served', () async {
