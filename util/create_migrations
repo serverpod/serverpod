@@ -30,5 +30,5 @@ for path in "${SERVERPOD_SERVER_PATHS[@]}"; do
     echo "### $path"
     cd "$BASE/$path"
 
-    dart $CLI create-migration --no-analytics $TAG_ARG
+    dart $CLI create-migration --force --no-analytics $TAG_ARG
 done
