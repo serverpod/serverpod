@@ -111,7 +111,7 @@ New packages:
 - docs(legacy auth): Fixes a documentation error where Google was referenced in the Email identity provider. ([@emilakerman](https://github.com/emilakerman))
 - chore: Marks legacy streaming endpoints and associated code as deprecated. Streaming methods are now the preferred way to handle streaming between the server and client.
 - chore: Marks `AuthenticationKeyManager` as deprecated in favour of the new `ClientAuthKeyProvider` interface.
-- chore: Bumps minimum Dart version to 3.2.0.
+- chore: Bumps minimum Dart version to 3.8.0.
 
 ## 2.9.2
 - fix: Fixes a crash when persistent logging is disabled but database is enabled.
