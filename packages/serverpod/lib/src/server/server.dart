@@ -204,8 +204,7 @@ class Server implements RouterInjectable {
       try {
         return await next(req);
       } on MaxBodySizeExceeded catch (e) {
-        return Response(
-          io.HttpStatus.requestEntityTooLarge,
+        return Response.contentTooLarge(
           body: Body.fromString(
             'Request size exceeds the maximum allowed size of ${e.maxLength} bytes.',
           ),
