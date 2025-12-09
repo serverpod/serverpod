@@ -1154,7 +1154,7 @@ This is not a valid protocol file, in yaml format
         expect(
           createMigrationExitCode,
           isNot(0),
-          reason: 'Should fail to create migration but exit code 0.',
+          reason: 'Should fail to create migration but exit code was 0.',
         );
 
         var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
@@ -1171,7 +1171,7 @@ This is not a valid protocol file, in yaml format
     });
 
     test(
-      'when creating migration then create migration exits with error and migration is not created.',
+      'when creating migration then create migration exits successfully and migration is not created.',
       () async {
         var tag = 'managed-false';
         var targetStateProtocols = {
@@ -1191,8 +1191,8 @@ fields:
             );
         expect(
           createMigrationExitCode,
-          isNot(0),
-          reason: 'Should fail to create migration but exit code 0.',
+          equals(0),
+          reason: 'No managed changes should exit with code 0.',
         );
 
         var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();

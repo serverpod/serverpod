@@ -96,6 +96,7 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
 
     MigrationVersion? migration;
     bool migrationAborted = false;
+    bool migrationFailed = false;
     await log.progress('Creating migration', () async {
       try {
         migration = await generator.createMigration(
@@ -110,19 +111,26 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
           'again. Migration version: "${e.versionName}".',
         );
         log.error(e.exception);
+        migrationFailed = true;
       } on GenerateMigrationDatabaseDefinitionException {
         log.error('Unable to generate database definition for project.');
+        migrationFailed = true;
       } on MigrationVersionAlreadyExistsException catch (e) {
         log.error(
           'Unable to create migration. A directory with the same name already '
           'exists: "${e.directoryPath}".',
         );
+        migrationFailed = true;
       } on MigrationAbortedException {
         migrationAborted = true;
       }
 
       return migration != null;
     });
+
+    if (migrationFailed) {
+      throw ExitException.error();
+    }
 
     // Migration was aborted due to warnings.
     if (migrationAborted) {
