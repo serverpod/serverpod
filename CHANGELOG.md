@@ -67,7 +67,6 @@ New packages:
 - feat(EXPERIMENTAL): Adds support for inheritance on `id` field for table models for `serverOnly` models.
 
 #### Fixes
-- fix: Marks `AuthenticationKeyManager` as deprecated in favour of the new `ClientAuthKeyProvider` interface.
 - fix: Improves error message when there is a database mismatch on server startup.
 - fix: Disables future call execution when none are registered.
 - fix: Improves string representation for serializable exceptions.
@@ -84,7 +83,6 @@ New packages:
 - fix: Always resolves the authenticated user for all requests, making `session.authenticated` synchronous.
 - fix: Sets default log level to `debug` in development mode.
 - fix: Fixes an issue where the `@deprecated` annotation was not propagated to test framework endpoints.
-- fix: Marks legacy streaming endpoints and associated code as deprecated. Streaming methods are now the preferred way to handle streaming between the server and client.
 - fix: Fixes an issue where `{@template}` markers were not removed from generated endpoint documentation.
 - fix: Fixes an issue where a failing database health check would fail the health check.
 - fix: Fixes an issue where request-specific information was included in error responses.
@@ -111,6 +109,8 @@ New packages:
 
 #### Misc
 - docs(legacy auth): Fixes a documentation error where Google was referenced in the Email identity provider. ([@emilakerman](https://github.com/emilakerman))
+- chore: Marks legacy streaming endpoints and associated code as deprecated. Streaming methods are now the preferred way to handle streaming between the server and client.
+- chore: Marks `AuthenticationKeyManager` as deprecated in favour of the new `ClientAuthKeyProvider` interface.
 - chore: Bumps minimum Dart version to 3.2.0.
 
 ## 2.9.2
