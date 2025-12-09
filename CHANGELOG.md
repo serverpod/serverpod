@@ -40,6 +40,8 @@ Serverpod now supports polymorphism on models and endpoints. This allows you to 
 ### Additional changes
 
 #### Breaking changes
+- feat: BREAKING. Removes support for creating empty migrations using the `--force` flag.
+- feat: BREAKING. Use exit code `0` when no migrations are needed.
 - feat: BREAKING. Changes default enum serialization from `byIndex` to `byName`.
 - feat: BREAKING. Authenticated user id is now logged using a String to support multiple formats.
 - fix: BREAKING. Uses the Relic `Headers` class for configuring headers in the Serverpod server.
