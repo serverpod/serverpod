@@ -27,6 +27,14 @@ New packages:
 - **`serverpod_auth_idp`** — Identity provider integrations (Email, Google, Apple, Passkey)
 - **`serverpod_auth_bridge`** — Migration bridge for legacy auth (Email currently supported)
 - **`serverpod_auth_migration`** — Tools and helpers for migrating auth data (Email currently supported)
+- 
+### Polymorphism support
+Serverpod now supports polymorphism on models and endpoints. This allows you to define a base class that can be extended by other classes using the `extends` keyword. The server will automatically handle the serialization and deserialization both to the database and in client server communication.
+
+- feat: Adds support for receiving and returning polymorphic models on endpoints.
+- feat: Removes the experimental flag on inheritance. Huge shoutout to [@BenAuerDev](https://github.com/BenAuerDev) for all the work on this feature!
+- feat: Generates abstract copyWith method to allow polymorphism on sealed models.
+- fix: Handles unknown class names in polymorphic deserialization.
 
 
 ### Additional changes
@@ -47,9 +55,6 @@ New packages:
 - feat: Adds parameter `values` to the `TemplateWidget` class.
 - feat: Adds support for fetching `Request` from all session `Session` object through the `request` getter.
 - feat: Adds support for resolving Dart doc template macros in client code generation.
-- feat: Adds support for receiving and returning polymorphic models on endpoints.
-- feat: Removes the experimental flag on inheritance. Huge shoutout to [@BenAuerDev](https://github.com/BenAuerDev) for all the work on this feature!
-- feat: Generates abstract copyWith method to allow polymorphism on sealed models.
 - feat: Enable CLI commands to run from anywhere in a project directory. ([@FXschwartz](https://github.com/FXschwartz))
 - feat: Adds `-d` / `--directory` flag to the `serverpod generate` command.
 - feat: Adds support for configuring server output modes in the test framework, defaults to logging only errors.
@@ -74,7 +79,6 @@ New packages:
 - fix: Fixes an issue on the deserialization engine that would prevent compilation on web in release mode.
 - fix: Prevents the usage of non-constant defaults on immutable models.
 - fix: Fixes missing inherited fields class constructor for table models with relation to inherited models.
-- fix: Handles unknown class names in polymorphic deserialization.
 - fix: Improves database migration "version not found" error message.
 - fix: `SessionLogEntry.time` field now uses session start time.
 - fix: Prevents null check error when relation defined without table.
