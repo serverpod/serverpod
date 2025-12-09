@@ -4,10 +4,10 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:uuid/uuid.dart';
 
 void main() async {
-  late Directory tempDir;
   var rootPath = path.join(Directory.current.path, '..', '..');
   var cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
   var cliBinPath = path.join(cliPath, 'bin', 'serverpod_cli.dart');
@@ -19,16 +19,6 @@ void main() async {
       ['pub', 'get'],
       workingDirectory: cliPath,
     );
-  });
-
-  setUp(() async {
-    tempDir = await Directory.systemTemp.createTemp();
-  });
-
-  tearDown(() async {
-    if (tempDir.existsSync()) {
-      tempDir.deleteSync(recursive: true);
-    }
   });
 
   group(
@@ -45,7 +35,7 @@ void main() async {
         createProcess = await Process.start(
           'dart',
           ['run', cliBinPath, 'create', projectName, '-v', '--no-analytics'],
-          workingDirectory: tempDir.path,
+          workingDirectory: d.sandbox,
           environment: {'SERVERPOD_HOME': rootPath},
         );
 
@@ -59,7 +49,7 @@ void main() async {
         );
 
         serverDir = path.join(
-          tempDir.path,
+          d.sandbox,
           projectName,
           '${projectName}_server',
         );
@@ -131,7 +121,7 @@ void main() async {
         createProcess = await Process.start(
           'dart',
           ['run', cliBinPath, 'create', projectName, '-v', '--no-analytics'],
-          workingDirectory: tempDir.path,
+          workingDirectory: d.sandbox,
           environment: {'SERVERPOD_HOME': rootPath},
         );
 
@@ -145,7 +135,7 @@ void main() async {
         );
 
         serverDir = path.join(
-          tempDir.path,
+          d.sandbox,
           projectName,
           '${projectName}_server',
         );
