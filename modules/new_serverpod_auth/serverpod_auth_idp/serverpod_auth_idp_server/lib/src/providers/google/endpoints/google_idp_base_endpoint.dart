@@ -33,4 +33,33 @@ abstract class GoogleIdpBaseEndpoint extends Endpoint {
       accessToken: accessToken,
     );
   }
+
+  /// {@template google_idp_base_endpoint.link}
+  /// Links a Google authentication to the current user.
+  ///
+  /// [idToken] is the ID token from Google.
+  /// [accessToken] is the access token from Google (optional).
+  /// [transaction] is the transaction to use for the database operations.
+  /// {@endtemplate}
+  Future<AuthSuccess> link(
+    final Session session, {
+    required final String idToken,
+    required final String? accessToken,
+    final Transaction? transaction,
+  }) async {
+    return googleIdp.link(
+      session,
+      idToken: idToken,
+      accessToken: accessToken,
+      transaction: transaction,
+    );
+  }
+
+  /// {@template google_idp_base_endpoint.has_google_account}
+  /// Returns `true` if the user has already linked their Google account to
+  /// their application account.
+  /// {@endtemplate}
+  Future<bool> hasGoogleAccount(final Session session) async {
+    return googleIdp.hasGoogleAccount(session);
+  }
 }

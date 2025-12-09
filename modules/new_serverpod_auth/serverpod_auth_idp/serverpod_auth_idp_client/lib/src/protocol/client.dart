@@ -20,6 +20,17 @@ import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/
 import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/passkey_login_request.dart'
     as _i6;
 
+/// Base endpoint for anonymous authentication.
+///
+/// Subclass this in your own application to expose an endpoint for anonymous sign-in.
+/// {@category Endpoint}
+abstract class EndpointAnonymousIdpBase extends _i1.EndpointRef {
+  EndpointAnonymousIdpBase(_i1.EndpointCaller caller) : super(caller);
+
+  /// Signs in a user anonymously and returns a new session.
+  _i2.Future<_i3.AuthSuccess> login();
+}
+
 /// Endpoint for handling Sign in with Apple.
 ///
 /// To expose these endpoint methods on your server, extend this class in a
@@ -44,6 +55,9 @@ abstract class EndpointAppleIdpBase extends _i1.EndpointRef {
     String? firstName,
     String? lastName,
   });
+
+  /// {@macro apple_idp_base_endpoint.has_apple_account}
+  _i2.Future<bool> hasAppleAccount();
 }
 
 /// Base endpoint for email-based accounts.
@@ -173,6 +187,9 @@ abstract class EndpointEmailIdpBase extends _i1.EndpointRef {
     required String finishPasswordResetToken,
     required String newPassword,
   });
+
+  /// Returns `true` if the user has an email IDP linked to their account.
+  _i2.Future<bool> hasEmailAccount();
 }
 
 /// Base endpoint for Google Account-based authentication.
@@ -192,6 +209,10 @@ abstract class EndpointGoogleIdpBase extends _i1.EndpointRef {
     required String idToken,
     required String? accessToken,
   });
+
+  /// Returns `true` if the user has already linked their Google account to
+  /// their application account.
+  _i2.Future<bool> hasGoogleAccount();
 }
 
 /// Base endpoint for Passkey-based authentication.

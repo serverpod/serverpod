@@ -113,6 +113,10 @@ class EndpointAuthEmail extends EndpointEmailIdpBase {
     _mockData.passwordResetToken = null;
     return _mockData.authSuccess;
   }
+
+  @override
+  // Always returns false for mock data.
+  Future<bool> hasEmailAccount() => Future.value(false);
 }
 
 class GoogleIdpEndpoint extends EndpointGoogleIdpBase {
@@ -128,6 +132,10 @@ class GoogleIdpEndpoint extends EndpointGoogleIdpBase {
     required String idToken,
     required String? accessToken,
   }) => Future.value(_mockData.authSuccess);
+
+  @override
+  // Always returns false for mock data.
+  Future<bool> hasGoogleAccount() => Future.value(false);
 }
 
 class AppleIdpEndpoint extends EndpointAppleIdpBase {
@@ -146,6 +154,10 @@ class AppleIdpEndpoint extends EndpointAppleIdpBase {
     String? firstName,
     String? lastName,
   }) => Future.value(_mockData.authSuccess);
+
+  @override
+  // Always returns false for mock data.
+  Future<bool> hasAppleAccount() => Future.value(false);
 }
 
 class Modules {

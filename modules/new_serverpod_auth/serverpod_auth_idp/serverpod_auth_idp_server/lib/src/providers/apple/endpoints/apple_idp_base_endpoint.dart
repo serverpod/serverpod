@@ -47,4 +47,39 @@ abstract class AppleIdpBaseEndpoint extends Endpoint {
       lastName: lastName,
     );
   }
+
+  /// {@template apple_idp_base_endpoint.link}
+  /// Attaches an Apple authentication to the current user.
+  ///
+  /// [identityToken] is the identity token from Apple.
+  /// [authorizationCode] is the authorization code from Apple.
+  /// [isNativeApplePlatformSignIn] indicates if the sign-in was triggered from a native Apple platform app.
+  /// [firstName] is the user's first name (optional).
+  /// [lastName] is the user's last name (optional).
+  /// [transaction] is the transaction to use for the database operations.
+  /// {@endtemplate}
+  Future<AuthSuccess> link(
+    final Session session, {
+    required final String identityToken,
+    required final String authorizationCode,
+    required final bool isNativeApplePlatformSignIn,
+    final String? firstName,
+    final String? lastName,
+    final Transaction? transaction,
+  }) async {
+    return appleIdp.link(
+      session,
+      identityToken: identityToken,
+      authorizationCode: authorizationCode,
+      isNativeApplePlatformSignIn: isNativeApplePlatformSignIn,
+      firstName: firstName,
+      lastName: lastName,
+      transaction: transaction,
+    );
+  }
+
+  /// {@macro apple_idp_base_endpoint.has_apple_account}
+  Future<bool> hasAppleAccount(final Session session) async {
+    return appleIdp.hasAppleAccount(session);
+  }
 }
