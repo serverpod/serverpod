@@ -533,7 +533,7 @@ Future<void> _copyServerUpgrade(
         replacement: generateRandomString(),
       ),
       Replacement(
-        slotName: 'JWT_PRIVATE_KEY_DEVELOPMENT',
+        slotName: 'JWT_HMAC_SHA512_PRIVATE_KEY_DEVELOPMENT',
         replacement: generateRandomString(),
       ),
       Replacement(
@@ -545,7 +545,7 @@ Future<void> _copyServerUpgrade(
         replacement: generateRandomString(),
       ),
       Replacement(
-        slotName: 'JWT_PRIVATE_KEY_TEST',
+        slotName: 'JWT_HMAC_SHA512_PRIVATE_KEY_TEST',
         replacement: generateRandomString(),
       ),
       Replacement(
@@ -557,7 +557,7 @@ Future<void> _copyServerUpgrade(
         replacement: generateRandomString(),
       ),
       Replacement(
-        slotName: 'JWT_PRIVATE_KEY_STAGING',
+        slotName: 'JWT_HMAC_SHA512_PRIVATE_KEY_STAGING',
         replacement: generateRandomString(),
       ),
       Replacement(
@@ -569,7 +569,7 @@ Future<void> _copyServerUpgrade(
         replacement: generateRandomString(),
       ),
       Replacement(
-        slotName: 'JWT_PRIVATE_KEY_PRODUCTION',
+        slotName: 'JWT_HMAC_SHA512_PRIVATE_KEY_PRODUCTION',
         replacement: generateRandomString(),
       ),
       Replacement(

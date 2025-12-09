@@ -201,7 +201,9 @@ class JwtConfigFromPasswords extends JwtConfig {
            'jwtRefreshTokenHashPepper',
          )!,
          algorithm: JwtAlgorithm.hmacSha512(
-           SecretKey(Serverpod.instance.getPassword('jwtPrivateKey')!),
+           SecretKey(
+             Serverpod.instance.getPassword('jwtHmacSha512PrivateKey')!,
+           ),
          ),
        );
 }
