@@ -97,6 +97,9 @@ class EmailSignInWidget extends StatefulWidget {
   ///
   /// Defaults to 1 minute.
   final Duration resendCountdownDuration;
+   
+  // default padding 10 
+  final double? padding;
 
   /// Creates an email sign-in widget.
   const EmailSignInWidget({
@@ -110,6 +113,7 @@ class EmailSignInWidget extends StatefulWidget {
     this.onTermsAndConditionsPressed,
     this.onPrivacyPolicyPressed,
     this.resendCountdownDuration = const Duration(minutes: 1),
+    this.padding,
     super.key,
   }) : assert(
          (controller == null || client == null),
@@ -171,7 +175,10 @@ class _EmailSignInWidgetState extends State<EmailSignInWidget> {
           child: child,
         );
       },
-      child: _buildScreen(),
+      child: Padding(
+        padding: EdgeInsets.all(widget.padding ?? 10),
+        child: _buildScreen(),
+      ),
     );
   }
 
