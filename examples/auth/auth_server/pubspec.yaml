@@ -18,18 +18,18 @@ dev_dependencies:
   serverpod_test: 3.0.0
   test: ^1.25.5
 
-dependency_overrides: 
+dependency_overrides:
   serverpod:
     path: ../../../packages/serverpod
-  serverpod_auth_idp_server:
-    path: ../../../modules/new_serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
   serverpod_auth_core_server:
-    path: ../../../modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
+    path: ../../../modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
+  serverpod_auth_idp_server:
+    path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization
   serverpod_shared:
     path: ../../../packages/serverpod_shared
-  serverpod_test: 
+  serverpod_test:
     path: ../../../packages/serverpod_test
-  serverpod_lints: 
-    path: ../../../packages/serverpod_lints

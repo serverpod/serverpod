@@ -292,7 +292,7 @@ void main() {
     'Given a token issued with issuer configured when decoding token then issuer is present',
     () {
       const issuer =
-          'https://github.com/serverpod/serverpod/tree/main/modules/new_serverpod_auth/serverpod_auth_jwt_server';
+          'https://github.com/serverpod/serverpod/tree/main/modules/serverpod_auth/serverpod_auth_jwt_server';
 
       final jwt = Jwt(
         config: JwtConfig(
