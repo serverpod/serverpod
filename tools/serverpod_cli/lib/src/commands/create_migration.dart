@@ -131,7 +131,7 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
 
     // No changes detected.
     if (migration == null) {
-      throw ExitException.ok();
+      return;
     }
 
     // Dart does not infer the type of `migration` to be non-nullable here,
