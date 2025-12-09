@@ -5,10 +5,10 @@ import '../../../common/widgets/buttons/text_button.dart';
 /// Widget to display terms and privacy text with a checkbox.
 class TermsAndPrivacyText extends StatelessWidget {
   /// Callback to call when the terms and conditions button is pressed.
-  final VoidCallback onTermsAndConditionsPressed;
+  final VoidCallback? onTermsAndConditionsPressed;
 
   /// Callback to call when the privacy policy button is pressed.
-  final VoidCallback onPrivacyPolicyPressed;
+  final VoidCallback? onPrivacyPolicyPressed;
 
   /// Callback to call when the checkbox is changed.
   final void Function(bool?) onCheckboxChanged;
@@ -23,10 +23,17 @@ class TermsAndPrivacyText extends StatelessWidget {
     required this.onPrivacyPolicyPressed,
     required this.onCheckboxChanged,
     required this.isChecked,
-  });
+  }) : assert(
+         ((onTermsAndConditionsPressed ?? onPrivacyPolicyPressed) != null),
+         'At least one of "onTermsAndConditionsPressed" or '
+         '"onPrivacyPolicyPressed" must be provided.',
+       );
 
   @override
   Widget build(BuildContext context) {
+    final onTermsAndConditionsPressed = this.onTermsAndConditionsPressed;
+    final onPrivacyPolicyPressed = this.onPrivacyPolicyPressed;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
@@ -58,18 +65,22 @@ class TermsAndPrivacyText extends StatelessWidget {
                     padding: EdgeInsets.only(bottom: 4),
                     child: Text("I have read and accept the "),
                   ),
-                  HyperlinkTextButton(
-                    onPressed: onTermsAndConditionsPressed,
-                    label: 'Terms and Conditions',
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 4),
-                    child: Text(" and "),
-                  ),
-                  HyperlinkTextButton(
-                    onPressed: onPrivacyPolicyPressed,
-                    label: 'Privacy Policy',
-                  ),
+                  if (onTermsAndConditionsPressed != null)
+                    HyperlinkTextButton(
+                      onPressed: onTermsAndConditionsPressed,
+                      label: 'Terms and Conditions',
+                    ),
+                  if (onTermsAndConditionsPressed != null &&
+                      onPrivacyPolicyPressed != null)
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 4),
+                      child: Text(" and "),
+                    ),
+                  if (onPrivacyPolicyPressed != null)
+                    HyperlinkTextButton(
+                      onPressed: onPrivacyPolicyPressed,
+                      label: 'Privacy Policy',
+                    ),
                   const Padding(
                     padding: EdgeInsets.only(bottom: 4),
                     child: Text("."),

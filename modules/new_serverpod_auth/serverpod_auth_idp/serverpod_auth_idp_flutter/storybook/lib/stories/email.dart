@@ -85,8 +85,13 @@ Widget _buildEmailStory(BuildContext context, EmailFlowScreen screen) {
     max: 400,
   );
 
-  final showTermsAndPrivacyPolicy = context.knobs.boolean(
-    label: 'Show "Terms and Conditions" and "Privacy Policy" checkbox notice.',
+  final showTermsAndConditions = context.knobs.boolean(
+    label: 'Show "Terms and Conditions" on checkbox notice.',
+    initial: true,
+  );
+
+  final showPrivacyPolicy = context.knobs.boolean(
+    label: 'Show "Privacy Policy" on checkbox notice.',
     initial: true,
   );
 
@@ -102,8 +107,8 @@ Widget _buildEmailStory(BuildContext context, EmailFlowScreen screen) {
         onAuthenticated: () {
           context.showSuccessSnackBar('Authenticated with email!');
         },
-        onTermsAndConditionsPressed: showTermsAndPrivacyPolicy ? () {} : null,
-        onPrivacyPolicyPressed: showTermsAndPrivacyPolicy ? () {} : null,
+        onTermsAndConditionsPressed: showTermsAndConditions ? () {} : null,
+        onPrivacyPolicyPressed: showPrivacyPolicy ? () {} : null,
       ),
     ),
   ], width: width.toDouble());
