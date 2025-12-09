@@ -27,17 +27,18 @@ New packages:
 - **`serverpod_auth_idp`** — Identity provider integrations (Email, Google, Apple, Passkey)
 - **`serverpod_auth_bridge`** — Migration bridge for legacy auth (Email currently supported)
 - **`serverpod_auth_migration`** — Tools and helpers for migrating auth data (Email currently supported)
-- 
+
 ### Polymorphism support
 Serverpod now supports polymorphism on models and endpoints. This allows you to define a base class that can be extended by other classes using the `extends` keyword. The server will automatically handle the serialization and deserialization both to the database and in client server communication.
 
 - feat: Adds support for receiving and returning polymorphic models on endpoints.
 - feat: Removes the experimental flag on inheritance. Huge shoutout to [@BenAuerDev](https://github.com/BenAuerDev) for all the work on this feature!
 - feat: Generates abstract copyWith method to allow polymorphism on sealed models.
+- feat: Adds support for inheritance on `id` field for table models for `serverOnly` models.
 - fix: Handles unknown class names in polymorphic deserialization.
 
-
 ### Additional changes
+
 #### Breaking changes
 - feat: BREAKING. Changes default enum serialization from `byIndex` to `byName`.
 - feat: BREAKING. Authenticated user id is now logged using a String to support multiple formats.
@@ -48,7 +49,6 @@ Serverpod now supports polymorphism on models and endpoints. This allows you to 
 - refactor: BREAKING. Renames `context` parameter to `request` in `Route.call` and `Route.handleCall` methods.
 - refactor(legacy auth): BREAKING. Replaces callbacks with exceptions and return object when validating password hash. ([@yashas-hm](https://github.com/yashas-hm))
 
-
 #### New features
 - feat: Adds `FlutterRoute` and `SpaRoute` to simplify routing in single page applications.
 - feat: Update template to include the new authentication module.
@@ -58,7 +58,6 @@ Serverpod now supports polymorphism on models and endpoints. This allows you to 
 - feat: Enable CLI commands to run from anywhere in a project directory. ([@FXschwartz](https://github.com/FXschwartz))
 - feat: Adds `-d` / `--directory` flag to the `serverpod generate` command.
 - feat: Adds support for configuring server output modes in the test framework, defaults to logging only errors.
-- feat: Adds support for clearing storage cache on `ClientAuthSessionManager`.
 - feat: Adds support for endpoint inheritance in generated client code.
 - feat: Adds support for generating abstract endpoint classes in client code.
 - feat: Adds support for `immutable` keyword in models to generate immutable models. ([obiwanzenobi](https://github.com/obiwanzenobi), [@kamil-matula](https://github.com/kamil-matula))
@@ -69,7 +68,6 @@ Serverpod now supports polymorphism on models and endpoints. This allows you to 
 - feat: Adds a `~` operator on expressions to perform `NOT` expression.
 - feat: Server now stops automatically if the integrity check fails in `development` mode.
 - feat: Introduces a new `authKeyProvider` interface to support multiple authentication key formats.
-- feat(EXPERIMENTAL): Adds support for inheritance on `id` field for table models for `serverOnly` models.
 
 #### Fixes
 - fix: Improves error message when there is a database mismatch on server startup.
