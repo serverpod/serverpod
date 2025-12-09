@@ -674,21 +674,15 @@ Future<void> _addDependenciesToPubspec({
     return;
   }
 
-  final pubspecDir = pubspecFile.parent;
-  final success = await CommandLineTools.dartPubAdd(
-    pubspecDir,
-    dependency,
+  var contents = pubspecFile.readAsStringSync();
+  final editor = YamlEditor(contents);
+
+  editor.update(
+    ['dependencies', dependency],
     version,
   );
 
-  if (!success) {
-    return;
-  }
-
   if (customServerpodPath != null) {
-    var contents = pubspecFile.readAsStringSync();
-    final editor = YamlEditor(contents);
-
     editor.update(
       ['dependency_overrides', dependency],
       {'path': '$customServerpodPath/$overridePath'},
@@ -699,9 +693,9 @@ Future<void> _addDependenciesToPubspec({
         {'path': '$customServerpodPath/${dep.path}'},
       );
     }
-
-    pubspecFile.writeAsStringSync(editor.toString());
   }
+
+  pubspecFile.writeAsStringSync(editor.toString());
 }
 
 void _copyServerTemplates(

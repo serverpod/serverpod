@@ -22,33 +22,6 @@ class CommandLineTools {
     return true;
   }
 
-  static Future<bool> dartPubAdd(
-    Directory dir,
-    String package, [
-    String? version,
-  ]) async {
-    final packageSpec = version != null ? '$package:$version' : package;
-    log.debug(
-      'Running `dart pub add $packageSpec` in ${dir.path}',
-      newParagraph: true,
-    );
-
-    var exitCode = await _runProcessWithDefaultLogger(
-      executable: 'dart',
-      arguments: ['pub', 'add', packageSpec],
-      workingDirectory: dir.path,
-    );
-
-    if (exitCode != 0) {
-      log.error(
-        'Failed to run `dart pub add $packageSpec` in ${dir.path}',
-      );
-      return false;
-    }
-
-    return true;
-  }
-
   static Future<bool> flutterCreate(Directory dir) async {
     log.debug('Running `flutter create .` in ${dir.path}', newParagraph: true);
 
