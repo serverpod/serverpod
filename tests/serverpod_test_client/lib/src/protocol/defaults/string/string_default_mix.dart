@@ -67,6 +67,7 @@ abstract class StringDefaultMix implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'StringDefaultMix',
       if (id != null) 'id': id,
       'stringDefaultAndDefaultModel': stringDefaultAndDefaultModel,
       'stringDefaultAndDefaultPersist': stringDefaultAndDefaultPersist,

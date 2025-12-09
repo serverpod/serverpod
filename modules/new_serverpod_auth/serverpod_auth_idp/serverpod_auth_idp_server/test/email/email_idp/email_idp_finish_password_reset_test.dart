@@ -1,6 +1,6 @@
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/session.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
@@ -15,7 +15,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue passwordResetRequestId;
       late UuidValue authUserId;
       const email = 'test@serverpod.dev';
@@ -28,8 +28,8 @@ void main() {
         session = sessionBuilder.build();
 
         final verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
             passwordResetVerificationCodeLifetime:
@@ -49,13 +49,13 @@ void main() {
           password: EmailAccountPassword.fromString(password),
         );
 
-        passwordResetRequestId = await fixture.emailIDP.startPasswordReset(
+        passwordResetRequestId = await fixture.emailIdp.startPasswordReset(
           session,
           email: email,
         );
 
         // Verify the password reset code to get the set password token
-        finishPasswordResetToken = await fixture.emailIDP
+        finishPasswordResetToken = await fixture.emailIdp
             .verifyPasswordResetCode(
               session,
               passwordResetRequestId: passwordResetRequestId,
@@ -68,22 +68,22 @@ void main() {
       });
 
       test(
-        'when finishPasswordReset is called with valid password reset token and password then it succeeds',
+        'when finishPasswordReset is called with valid password reset token and password then it succeeds and returns auth user id',
         () async {
-          final result = fixture.emailIDP.finishPasswordReset(
+          final result = fixture.emailIdp.finishPasswordReset(
             session,
             finishPasswordResetToken: finishPasswordResetToken,
             newPassword: allowedNewPassword,
           );
 
-          await expectLater(result, completes);
+          await expectLater(result, completion(authUserId));
         },
       );
 
       test(
         'when finishPasswordReset is called with invalid password reset token then it throws EmailAccountPasswordResetException with reason "invalid"',
         () async {
-          final result = fixture.emailIDP.finishPasswordReset(
+          final result = fixture.emailIdp.finishPasswordReset(
             session,
             finishPasswordResetToken: '$finishPasswordResetToken-invalid',
             newPassword: allowedNewPassword,
@@ -105,7 +105,7 @@ void main() {
       test(
         'when finishPasswordReset is called with password that violates policy then it throws EmailAccountPasswordResetException with reason "policyViolation"',
         () async {
-          final result = fixture.emailIDP.finishPasswordReset(
+          final result = fixture.emailIdp.finishPasswordReset(
             session,
             finishPasswordResetToken: finishPasswordResetToken,
             newPassword: '$allowedNewPassword-invalid',
@@ -132,7 +132,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue passwordResetRequestId;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
@@ -143,8 +143,8 @@ void main() {
         session = sessionBuilder.build();
 
         final verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
             passwordResetVerificationCodeLifetime:
@@ -168,14 +168,14 @@ void main() {
             ),
           ),
           () async {
-            passwordResetRequestId = await fixture.emailIDP.startPasswordReset(
+            passwordResetRequestId = await fixture.emailIdp.startPasswordReset(
               session,
               email: email,
             );
 
             // Verify the password reset code to get the set password token
             // This happens before expiration check in completePasswordReset
-            finishPasswordResetToken = await fixture.emailIDP
+            finishPasswordResetToken = await fixture.emailIdp
                 .verifyPasswordResetCode(
                   session,
                   passwordResetRequestId: passwordResetRequestId,
@@ -192,7 +192,7 @@ void main() {
       test(
         'when finishPasswordReset is called with valid parameters then it throws EmailAccountPasswordResetException with reason "expired"',
         () async {
-          final result = fixture.emailIDP.finishPasswordReset(
+          final result = fixture.emailIdp.finishPasswordReset(
             session,
             finishPasswordResetToken: finishPasswordResetToken,
             newPassword: 'NewPassword123!',
@@ -214,7 +214,7 @@ void main() {
       test(
         'when finishPasswordReset is called with invalid password reset token then it throws EmailAccountPasswordResetException with reason "expired"',
         () async {
-          final result = fixture.emailIDP.finishPasswordReset(
+          final result = fixture.emailIdp.finishPasswordReset(
             session,
             finishPasswordResetToken: '$finishPasswordResetToken-invalid',
             newPassword: 'NewPassword123!',
@@ -241,11 +241,11 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
       });
 
       tearDown(() async {
@@ -255,7 +255,7 @@ void main() {
       test(
         'when finishPasswordReset is called with invalid password reset token then it throws EmailAccountPasswordResetException with reason "invalid"',
         () async {
-          final result = fixture.emailIDP.finishPasswordReset(
+          final result = fixture.emailIdp.finishPasswordReset(
             session,
             finishPasswordResetToken: const Uuid().v4(),
             newPassword: 'NewPassword123!',
@@ -282,7 +282,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue passwordResetRequestId;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
@@ -292,8 +292,8 @@ void main() {
         session = sessionBuilder.build();
 
         final verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
           ),
@@ -308,13 +308,13 @@ void main() {
           password: EmailAccountPassword.fromString(password),
         );
 
-        passwordResetRequestId = await fixture.emailIDP.startPasswordReset(
+        passwordResetRequestId = await fixture.emailIdp.startPasswordReset(
           session,
           email: email,
         );
 
         // Verify the password reset code to get the set password token
-        finishPasswordResetToken = await fixture.emailIDP
+        finishPasswordResetToken = await fixture.emailIdp
             .verifyPasswordResetCode(
               session,
               passwordResetRequestId: passwordResetRequestId,
@@ -334,7 +334,7 @@ void main() {
       });
 
       test('when finishPasswordReset is called then completes', () async {
-        final result = fixture.emailIDP.finishPasswordReset(
+        final result = fixture.emailIdp.finishPasswordReset(
           session,
           finishPasswordResetToken: finishPasswordResetToken,
           newPassword: 'NewPassword123!',
@@ -351,7 +351,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue passwordResetRequestId;
       late UuidValue authUserId;
       const email = 'test@serverpod.dev';
@@ -362,8 +362,8 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
         final verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
           ),
@@ -375,7 +375,7 @@ void main() {
         await fixture.tokenManager.issueToken(
           session,
           authUserId: authUserId,
-          method: EmailIDP.method,
+          method: EmailIdp.method,
           scopes: {},
         );
 
@@ -386,13 +386,13 @@ void main() {
           password: EmailAccountPassword.fromString(password),
         );
 
-        passwordResetRequestId = await fixture.emailIDP.startPasswordReset(
+        passwordResetRequestId = await fixture.emailIdp.startPasswordReset(
           session,
           email: email,
         );
 
         // Verify the password reset code to get the set password token
-        finishPasswordResetToken = await fixture.emailIDP
+        finishPasswordResetToken = await fixture.emailIdp
             .verifyPasswordResetCode(
               session,
               passwordResetRequestId: passwordResetRequestId,
@@ -408,7 +408,7 @@ void main() {
         'when finishPasswordReset is called with valid parameters then it destroys all existing sessions',
         () async {
           // Complete password reset
-          await fixture.emailIDP.finishPasswordReset(
+          await fixture.emailIdp.finishPasswordReset(
             session,
             finishPasswordResetToken: finishPasswordResetToken,
             newPassword: newPassword,
@@ -432,7 +432,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue passwordResetRequestId;
       const email = 'test@serverpod.dev';
       const password = 'Password123!';
@@ -442,8 +442,8 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
           ),
@@ -455,20 +455,20 @@ void main() {
           email: email,
           password: EmailAccountPassword.fromString(password),
         );
-        passwordResetRequestId = await fixture.emailIDP.startPasswordReset(
+        passwordResetRequestId = await fixture.emailIdp.startPasswordReset(
           session,
           email: email,
         );
 
         // Verify the password reset code to get the set password token
-        finishPasswordResetToken = await fixture.emailIDP
+        finishPasswordResetToken = await fixture.emailIdp
             .verifyPasswordResetCode(
               session,
               passwordResetRequestId: passwordResetRequestId,
               verificationCode: verificationCode,
             );
 
-        await fixture.emailIDP.finishPasswordReset(
+        await fixture.emailIdp.finishPasswordReset(
           session,
           finishPasswordResetToken: finishPasswordResetToken,
           newPassword: 'NewPassword123!',
@@ -482,7 +482,7 @@ void main() {
       test(
         'when finishPasswordReset is called then it throws EmailAccountPasswordResetException with reason "invalid"',
         () async {
-          final result = fixture.emailIDP.finishPasswordReset(
+          final result = fixture.emailIdp.finishPasswordReset(
             session,
             finishPasswordResetToken: finishPasswordResetToken,
             newPassword: 'NewPassword123!',

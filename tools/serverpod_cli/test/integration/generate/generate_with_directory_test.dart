@@ -15,7 +15,10 @@ void main() {
       final nonExistentPath = path.join(tempDir.path, 'nonexistent');
 
       await expectLater(
-        GeneratorConfig.load(nonExistentPath),
+        GeneratorConfig.load(
+          serverRootDir: nonExistentPath,
+          interactive: false,
+        ),
         throwsA(
           isA<ServerpodProjectNotFoundException>().having(
             (e) => e.message,
@@ -53,7 +56,10 @@ dependencies:
 ''');
 
       await expectLater(
-        GeneratorConfig.load(serverDir.path),
+        GeneratorConfig.load(
+          serverRootDir: serverDir.path,
+          interactive: false,
+        ),
         throwsA(
           isA<ServerpodProjectNotFoundException>().having(
             (e) => e.message,

@@ -51,29 +51,29 @@ abstract class ModelInSubfolder
     return ModelInSubfolder(
       classField: jsonSerialization['classField'] == null
           ? null
-          : _i2.Nullability.fromJson(
-              (jsonSerialization['classField'] as Map<String, dynamic>),
+          : _i5.Protocol().deserialize<_i2.Nullability>(
+              jsonSerialization['classField'],
             ),
       enumField: jsonSerialization['enumField'] == null
           ? null
           : _i3.TestEnumStringified.fromJson(
               (jsonSerialization['enumField'] as String),
             ),
-      enumListField: (jsonSerialization['enumListField'] as List?)
-          ?.map((e) => _i3.TestEnumStringified.fromJson((e as String)))
-          .toList(),
+      enumListField: jsonSerialization['enumListField'] == null
+          ? null
+          : _i5.Protocol().deserialize<List<_i3.TestEnumStringified>>(
+              jsonSerialization['enumListField'],
+            ),
       enumRecordField: jsonSerialization['enumRecordField'] == null
           ? null
           : _i5.Protocol().deserialize<(_i3.TestEnumStringified,)?>(
               (jsonSerialization['enumRecordField'] as Map<String, dynamic>),
             ),
-      enumRecordListField: (jsonSerialization['enumRecordListField'] as List?)
-          ?.map(
-            (e) => _i5.Protocol().deserialize<(_i3.TestEnumStringified,)>(
-              (e as Map<String, dynamic>),
+      enumRecordListField: jsonSerialization['enumRecordListField'] == null
+          ? null
+          : _i5.Protocol().deserialize<List<(_i3.TestEnumStringified,)>>(
+              jsonSerialization['enumRecordListField'],
             ),
-          )
-          .toList(),
       moduleClassRecordField:
           jsonSerialization['moduleClassRecordField'] == null
           ? null
@@ -93,14 +93,11 @@ abstract class ModelInSubfolder
                   as Map<String, dynamic>),
             ),
       enumNamedRecordListField:
-          (jsonSerialization['enumNamedRecordListField'] as List?)
-              ?.map(
-                (e) => _i5.Protocol()
-                    .deserialize<({_i3.TestEnumStringified value})>(
-                      (e as Map<String, dynamic>),
-                    ),
-              )
-              .toList(),
+          jsonSerialization['enumNamedRecordListField'] == null
+          ? null
+          : _i5.Protocol().deserialize<List<({_i3.TestEnumStringified value})>>(
+              jsonSerialization['enumNamedRecordListField'],
+            ),
       moduleClassNamedRecordField:
           jsonSerialization['moduleClassNamedRecordField'] == null
           ? null
@@ -158,6 +155,7 @@ abstract class ModelInSubfolder
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ModelInSubfolder',
       if (classField != null) 'classField': classField?.toJson(),
       if (enumField != null) 'enumField': enumField?.toJson(),
       if (enumListField != null)
@@ -188,6 +186,7 @@ abstract class ModelInSubfolder
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ModelInSubfolder',
       if (classField != null) 'classField': classField?.toJsonForProtocol(),
       if (enumField != null) 'enumField': enumField?.toJson(),
       if (enumListField != null)

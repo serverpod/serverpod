@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'server_health_metric.dart' as _i2;
 import 'server_health_connection_info.dart' as _i3;
+import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i4;
 
 /// Information about health and connection metrics.
 abstract class ServerHealthResult implements _i1.SerializableModel {
@@ -28,18 +29,13 @@ abstract class ServerHealthResult implements _i1.SerializableModel {
 
   factory ServerHealthResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return ServerHealthResult(
-      metrics: (jsonSerialization['metrics'] as List)
-          .map(
-            (e) => _i2.ServerHealthMetric.fromJson((e as Map<String, dynamic>)),
-          )
-          .toList(),
-      connectionInfos: (jsonSerialization['connectionInfos'] as List)
-          .map(
-            (e) => _i3.ServerHealthConnectionInfo.fromJson(
-              (e as Map<String, dynamic>),
-            ),
-          )
-          .toList(),
+      metrics: _i4.Protocol().deserialize<List<_i2.ServerHealthMetric>>(
+        jsonSerialization['metrics'],
+      ),
+      connectionInfos: _i4.Protocol()
+          .deserialize<List<_i3.ServerHealthConnectionInfo>>(
+            jsonSerialization['connectionInfos'],
+          ),
     );
   }
 
@@ -59,6 +55,7 @@ abstract class ServerHealthResult implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ServerHealthResult',
       'metrics': metrics.toJson(valueToJson: (v) => v.toJson()),
       'connectionInfos': connectionInfos.toJson(valueToJson: (v) => v.toJson()),
     };

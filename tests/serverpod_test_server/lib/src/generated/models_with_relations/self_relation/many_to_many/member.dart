@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/self_relation/many_to_many/blocking.dart'
     as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class Member implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Member._({
@@ -35,12 +36,16 @@ abstract class Member implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     return Member(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      blocking: (jsonSerialization['blocking'] as List?)
-          ?.map((e) => _i2.Blocking.fromJson((e as Map<String, dynamic>)))
-          .toList(),
-      blockedBy: (jsonSerialization['blockedBy'] as List?)
-          ?.map((e) => _i2.Blocking.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      blocking: jsonSerialization['blocking'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.Blocking>>(
+              jsonSerialization['blocking'],
+            ),
+      blockedBy: jsonSerialization['blockedBy'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.Blocking>>(
+              jsonSerialization['blockedBy'],
+            ),
     );
   }
 
@@ -72,6 +77,7 @@ abstract class Member implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Member',
       if (id != null) 'id': id,
       'name': name,
       if (blocking != null)
@@ -84,6 +90,7 @@ abstract class Member implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'Member',
       if (id != null) 'id': id,
       'name': name,
       if (blocking != null)

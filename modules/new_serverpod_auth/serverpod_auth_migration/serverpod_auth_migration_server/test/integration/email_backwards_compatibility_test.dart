@@ -1,9 +1,8 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
-import 'package:serverpod_auth_core_server/auth_user.dart' as new_auth_user;
-import 'package:serverpod_auth_core_server/profile.dart' as new_auth_profile;
 import 'package:serverpod_auth_idp_server/core.dart' as new_auth_core;
-import 'package:serverpod_auth_idp_server/providers/email.dart' as new_auth_idp;
+import 'package:serverpod_auth_idp_server/providers/email.dart'
+    as new_auth_email;
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart'
     as legacy_auth;
@@ -12,30 +11,28 @@ import 'package:test/test.dart';
 import './test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManagerFactory = new_auth_core.AuthSessionsTokenManagerFactory(
-    new_auth_core.AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+  final tokenManagerConfig = new_auth_core.ServerSideSessionsConfig(
+    sessionKeyHashPepper: 'test-pepper',
   );
 
-  const newEmailIDPConfig = new_auth_idp.EmailIDPConfig(
+  const newEmailIdpConfig = new_auth_email.EmailIdpConfig(
     secretHashPepper: 'test',
   );
-  late final new_auth_idp.EmailIDP newEmailIDP;
+  late final new_auth_email.EmailIdp newEmailIdp;
 
   setUpAll(() async {
     new_auth_core.AuthServices.set(
-      identityProviders: [
-        new_auth_idp.EmailIdentityProviderFactory(newEmailIDPConfig),
-      ],
-      primaryTokenManager: tokenManagerFactory,
+      tokenManagerBuilders: [tokenManagerConfig],
+      identityProviderBuilders: [newEmailIdpConfig],
     );
-    newEmailIDP = new_auth_core.AuthServices.instance.emailIDP;
-    AuthMigrations.config = AuthMigrationConfig(emailIDP: newEmailIDP);
+    newEmailIdp = new_auth_core.AuthServices.instance.emailIdp;
+    AuthMigrations.config = AuthMigrationConfig(emailIdp: newEmailIdp);
   });
 
   tearDownAll(() async {
     new_auth_core.AuthServices.set(
-      identityProviders: [],
-      primaryTokenManager: tokenManagerFactory,
+      tokenManagerBuilders: [tokenManagerConfig],
+      identityProviderBuilders: [],
     );
   });
 
@@ -153,10 +150,10 @@ void main() {
 
       test('when checking the password, then it is not empty', () async {
         expect(
-          (await new_auth_idp.EmailAccount.db.find(
+          (await new_auth_email.EmailAccount.db.find(
             session,
-          )).single.passwordHash.lengthInBytes,
-          greaterThan(0),
+          )).single.passwordHash,
+          isNotEmpty,
         );
       });
     },
@@ -195,7 +192,7 @@ void main() {
             throwsUnimplementedError,
           );
 
-          expect(await new_auth_user.AuthUser.db.find(session), isEmpty);
+          expect(await new_auth_core.AuthUser.db.find(session), isEmpty);
         },
       );
     },
@@ -244,7 +241,7 @@ void main() {
           password: password,
         );
 
-        authUserId = (await newEmailIDP.admin.findAccount(
+        authUserId = (await newEmailIdp.admin.findAccount(
           session,
           email: email,
         ))!.authUserId;
@@ -280,7 +277,7 @@ void main() {
         'when attempting to authenticate against the new system with the credentials, then that succeeds.',
         () async {
           expect(
-            await newEmailIDP.utils.authentication.authenticate(
+            await newEmailIdp.utils.authentication.authenticate(
               session,
               email: email,
               password: password,
@@ -294,7 +291,7 @@ void main() {
       test(
         'when reading the profile, then it matches the original user info.',
         () async {
-          const userProfiles = new_auth_profile.UserProfiles();
+          const userProfiles = new_auth_core.UserProfiles();
           final profile = await userProfiles.findUserProfileByUserId(
             session,
             authUserId,
@@ -325,16 +322,16 @@ void main() {
 
         AuthMigrations.config = AuthMigrationConfig(
           importProfile: false,
-          emailIDP: newEmailIDP,
+          emailIdp: newEmailIdp,
         );
 
         await AuthMigrations.migrateUsers(session, userMigration: null);
 
         AuthMigrations.config = AuthMigrationConfig(
-          emailIDP: newEmailIDP,
+          emailIdp: newEmailIdp,
         );
 
-        authUserId = (await newEmailIDP.admin.findAccount(
+        authUserId = (await newEmailIdp.admin.findAccount(
           session,
           email: email,
         ))!.authUserId;
@@ -343,13 +340,13 @@ void main() {
       test(
         'when reading the profile, then it throws because none has been created.',
         () async {
-          const userProfiles = new_auth_profile.UserProfiles();
+          const userProfiles = new_auth_core.UserProfiles();
           await expectLater(
             () => userProfiles.findUserProfileByUserId(
               session,
               authUserId,
             ),
-            throwsA(isA<new_auth_profile.UserProfileNotFoundException>()),
+            throwsA(isA<new_auth_core.UserProfileNotFoundException>()),
           );
         },
       );
@@ -393,7 +390,7 @@ void main() {
               },
         );
 
-        authUserId = (await newEmailIDP.admin.findAccount(
+        authUserId = (await newEmailIdp.admin.findAccount(
           session,
           email: email,
         ))!.authUserId;
@@ -462,7 +459,7 @@ void main() {
           );
 
           expect(
-            await newEmailIDP.utils.authentication.authenticate(
+            await newEmailIdp.utils.authentication.authenticate(
               session,
               email: email,
               password: password,
@@ -485,7 +482,7 @@ void main() {
           );
 
           await expectLater(
-            () => newEmailIDP.utils.authentication.authenticate(
+            () => newEmailIdp.utils.authentication.authenticate(
               session,
               email: email,
               password: wrongPassword,
@@ -493,7 +490,7 @@ void main() {
             ),
             throwsA(
               isA<
-                new_auth_idp.EmailAuthenticationInvalidCredentialsException
+                new_auth_email.EmailAuthenticationInvalidCredentialsException
               >(),
             ),
           );
@@ -504,7 +501,7 @@ void main() {
         'when attempting to authenticate against the new system with the credentials, then that fails (because the password has not been set).',
         () async {
           await expectLater(
-            () => newEmailIDP.utils.authentication.authenticate(
+            () => newEmailIdp.utils.authentication.authenticate(
               session,
               email: email,
               // This is the user's password in the legacy system, but since it has not been set during the import,
@@ -514,7 +511,7 @@ void main() {
             ),
             throwsA(
               isA<
-                new_auth_idp.EmailAuthenticationInvalidCredentialsException
+                new_auth_email.EmailAuthenticationInvalidCredentialsException
               >(),
             ),
           );
@@ -524,7 +521,7 @@ void main() {
       test(
         'when reading the profile, then it matches the original user info.',
         () async {
-          const userProfiles = new_auth_profile.UserProfiles();
+          const userProfiles = new_auth_core.UserProfiles();
           final profile = await userProfiles.findUserProfileByUserId(
             session,
             authUserId,

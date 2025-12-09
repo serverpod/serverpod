@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:clock/clock.dart';
@@ -16,23 +17,43 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       late String verificationToken;
       const email = 'test@serverpod.dev';
       const allowedPassword = 'Foobar123!';
       late String verificationCode;
+      late Completer<CapturedAccountCreatedData>
+      capturedAccountCreatedDataCompleter;
 
       setUp(() async {
+        capturedAccountCreatedDataCompleter =
+            Completer<CapturedAccountCreatedData>();
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             passwordValidationFunction: (final password) =>
                 password == allowedPassword,
+            onAfterAccountCreated:
+                (
+                  final session, {
+                  required final String email,
+                  required final UuidValue authUserId,
+                  required final UuidValue emailAccountId,
+                  required final Transaction? transaction,
+                }) async {
+                  capturedAccountCreatedDataCompleter.complete(
+                    CapturedAccountCreatedData(
+                      email: email,
+                      authUserId: authUserId,
+                      emailAccountId: emailAccountId,
+                    ),
+                  );
+                },
           ),
         );
 
@@ -62,7 +83,7 @@ void main() {
       group(
         'when complete account creation is called with valid verification token',
         () {
-          late Future<EmailIDPCompleteAccountCreationResult>
+          late Future<EmailIdpCompleteAccountCreationResult>
           completeAccountCreationFuture;
           setUp(() async {
             completeAccountCreationFuture = session.db.transaction(
@@ -75,13 +96,14 @@ void main() {
                   ),
             );
           });
+
           test(
             'then it succeeds and returns result with auth user id, account request id and email',
             () async {
               await expectLater(
                 completeAccountCreationFuture,
                 completion(
-                  isA<EmailIDPCompleteAccountCreationResult>()
+                  isA<EmailIdpCompleteAccountCreationResult>()
                       .having(
                         (final result) => result.authUserId,
                         'authUserId',
@@ -98,6 +120,21 @@ void main() {
                         equals(email),
                       ),
                 ),
+              );
+            },
+          );
+
+          test(
+            'then the onAfterAccountCreated callback is called with the created account data',
+            () async {
+              final result = await completeAccountCreationFuture;
+              final capturedData =
+                  await capturedAccountCreatedDataCompleter.future;
+              expect(capturedData.email, equals(email));
+              expect(capturedData.authUserId, equals(result.authUserId));
+              expect(
+                capturedData.emailAccountId,
+                equals(isA<UuidValue>()),
               );
             },
           );
@@ -212,7 +249,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
       late String verificationCode;
@@ -220,8 +257,8 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
           ),
@@ -270,11 +307,11 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture();
       });
 
       tearDown(() async {
@@ -330,4 +367,16 @@ void main() {
       );
     },
   );
+}
+
+class CapturedAccountCreatedData {
+  CapturedAccountCreatedData({
+    required this.email,
+    required this.authUserId,
+    required this.emailAccountId,
+  });
+
+  final String email;
+  final UuidValue authUserId;
+  final UuidValue emailAccountId;
 }

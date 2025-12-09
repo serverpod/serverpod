@@ -35,17 +35,21 @@ abstract class PasskeyPublicKeyNotFoundException
   PasskeyPublicKeyNotFoundException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_idp.PasskeyPublicKeyNotFoundException',
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_idp.PasskeyPublicKeyNotFoundException',
+    };
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'PasskeyPublicKeyNotFoundException';
   }
 }
 

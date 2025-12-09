@@ -1,8 +1,7 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
-import 'package:serverpod_auth_idp_server/src/integrations/email_identity_provider_factory.dart';
 
-import '../email.dart';
+import '../../../../../core.dart';
+import '../business/email_idp.dart';
 
 /// Base endpoint for email-based accounts.
 ///
@@ -14,14 +13,14 @@ import '../email.dart';
 /// methods.
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 /// Alternatively you can build up your own endpoint on top of the same business
-/// logic by using [EmailIDP].
-abstract class EmailIDPBaseEndpoint extends Endpoint {
-  /// Accessor for the configured Email IDP instance.
+/// logic by using [EmailIdp].
+abstract class EmailIdpBaseEndpoint extends Endpoint {
+  /// Accessor for the configured Email Idp instance.
   /// By default this uses the global instance configured in
   /// [AuthServices].
   ///
   /// If you want to use a different instance, override this getter.
-  EmailIDP get emailIDP => AuthServices.instance.emailIDP;
+  EmailIdp get emailIdp => AuthServices.instance.emailIdp;
 
   /// {@template email_account_base_endpoint.login}
   /// Logs in the user and returns a new session.
@@ -39,7 +38,7 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
     required final String email,
     required final String password,
   }) async {
-    return emailIDP.login(
+    return emailIdp.login(
       session,
       email: email,
       password: password,
@@ -62,7 +61,7 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
     final Session session, {
     required final String email,
   }) async {
-    return emailIDP.startRegistration(
+    return emailIdp.startRegistration(
       session,
       email: email,
     );
@@ -85,7 +84,7 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
     required final UuidValue accountRequestId,
     required final String verificationCode,
   }) async {
-    return emailIDP.verifyRegistrationCode(
+    return emailIdp.verifyRegistrationCode(
       session,
       accountRequestId: accountRequestId,
       verificationCode: verificationCode,
@@ -101,9 +100,8 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
   ///   already expired.
   /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
   ///   does not comply with the password policy.
-  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
-  ///   for the given [accountRequestId], [verificationCode] is invalid, or
-  ///   the request has not been verified yet.
+  /// - [EmailAccountRequestExceptionReason.invalid] if the [registrationToken]
+  ///   is invalid.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
@@ -114,7 +112,7 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
     required final String registrationToken,
     required final String password,
   }) async {
-    return emailIDP.finishRegistration(
+    return emailIdp.finishRegistration(
       session,
       registrationToken: registrationToken,
       password: password,
@@ -140,7 +138,7 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
     final Session session, {
     required final String email,
   }) async {
-    return emailIDP.startPasswordReset(session, email: email);
+    return emailIdp.startPasswordReset(session, email: email);
   }
 
   /// {@template email_account_base_endpoint.verify_password_reset_code}
@@ -164,7 +162,7 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
     required final UuidValue passwordResetRequestId,
     required final String verificationCode,
   }) async {
-    return emailIDP.verifyPasswordResetCode(
+    return emailIdp.verifyPasswordResetCode(
       session,
       passwordResetRequestId: passwordResetRequestId,
       verificationCode: verificationCode,
@@ -192,7 +190,7 @@ abstract class EmailIDPBaseEndpoint extends Endpoint {
     required final String finishPasswordResetToken,
     required final String newPassword,
   }) async {
-    return emailIDP.finishPasswordReset(
+    await emailIdp.finishPasswordReset(
       session,
       finishPasswordResetToken: finishPasswordResetToken,
       newPassword: newPassword,

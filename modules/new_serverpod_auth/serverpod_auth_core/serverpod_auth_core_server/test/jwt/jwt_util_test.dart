@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_core_server/src/jwt/business/jwt_util.dart';
-import 'package:serverpod_auth_core_server/src/jwt/jwt.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -13,13 +12,13 @@ void main() {
     late JwtUtil jwtUtil;
 
     setUp(() {
-      final authenticationTokens = AuthenticationTokens(
-        config: AuthenticationTokenConfig(
+      final jwt = Jwt(
+        config: JwtConfig(
           algorithm: _hs512Algorithm(),
           refreshTokenHashPepper: 'test-pepper',
         ),
       );
-      jwtUtil = authenticationTokens.jwtUtil;
+      jwtUtil = jwt.jwtUtil;
     });
 
     group('a plain refresh token,', () {
@@ -120,7 +119,7 @@ void main() {
         'when the JWT is decoded, then it will contain the `authUserId` as `subject`.',
         () {
           expect(
-            JWT.decode(jwt).subject,
+            dart_jsonwebtoken.JWT.decode(jwt).subject,
             refreshToken.authUserId.toString(),
           );
         },
@@ -129,8 +128,11 @@ void main() {
       test(
         'when the JWT is decoded, then it contains an unique `jwtId` that is different from the refresh token ID.',
         () {
-          expect(JWT.decode(jwt).jwtId, isNotNull);
-          expect(JWT.decode(jwt).jwtId, isNot(refreshToken.id!.toString()));
+          expect(dart_jsonwebtoken.JWT.decode(jwt).jwtId, isNotNull);
+          expect(
+            dart_jsonwebtoken.JWT.decode(jwt).jwtId,
+            isNot(refreshToken.id!.toString()),
+          );
         },
       );
 
@@ -138,7 +140,8 @@ void main() {
         'when the JWT is decoded, then it contains the refresh token ID claim.',
         () {
           expect(
-            (JWT.decode(jwt).payload as Map)['dev.serverpod.refreshTokenId'],
+            (dart_jsonwebtoken.JWT.decode(jwt).payload
+                as Map)['dev.serverpod.refreshTokenId'],
             refreshToken.id!.toString(),
           );
         },
@@ -148,7 +151,7 @@ void main() {
         'when the JWT is decoded, then it will contain no issuer per the default configuration.',
         () {
           expect(
-            JWT.decode(jwt).issuer,
+            dart_jsonwebtoken.JWT.decode(jwt).issuer,
             isNull,
           );
         },
@@ -158,7 +161,7 @@ void main() {
         'when the JWT header is decoded, then it names the HS512 as its "alg".',
         () {
           expect(
-            JWT.decode(jwt).header,
+            dart_jsonwebtoken.JWT.decode(jwt).header,
             equals({'alg': 'HS512', 'typ': 'JWT'}),
           );
         },
@@ -168,7 +171,7 @@ void main() {
         'when the JWT without scopes is decoded, then it does not even contain they associated key.',
         () {
           expect(
-            (JWT.decode(jwt).payload as Map).containsKey(
+            (dart_jsonwebtoken.JWT.decode(jwt).payload as Map).containsKey(
               'dev.serverpod.scopeNames',
             ),
             isFalse,
@@ -211,7 +214,8 @@ void main() {
           'when the JWT with scopes is decoded, then it contains the scopes as a List as the claim "dev.serverpod.scopeNames".',
           () {
             expect(
-              (JWT.decode(jwt).payload as Map)['dev.serverpod.scopeNames'],
+              (dart_jsonwebtoken.JWT.decode(jwt).payload
+                  as Map)['dev.serverpod.scopeNames'],
               ['a', 'b', 'c'],
             );
           },
@@ -259,18 +263,18 @@ void main() {
   test(
     'Given a token issued with HMAC when validated by HMAC with different key then validation fails',
     () {
-      final jwt = AuthenticationTokens(
-        config: AuthenticationTokenConfig(
-          algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+      final jwt = Jwt(
+        config: JwtConfig(
+          algorithm: JwtAlgorithm.hmacSha512(
             SecretKey('First Key'),
           ),
           refreshTokenHashPepper: 'test-pepper',
         ),
       ).jwtUtil.createJwt(_createRefreshToken());
 
-      final differentKeyHS512Util = AuthenticationTokens(
-        config: AuthenticationTokenConfig(
-          algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+      final differentKeyHS512Util = Jwt(
+        config: JwtConfig(
+          algorithm: JwtAlgorithm.hmacSha512(
             SecretKey('Second Key'),
           ),
           refreshTokenHashPepper: 'test-pepper',
@@ -290,8 +294,8 @@ void main() {
       const issuer =
           'https://github.com/serverpod/serverpod/tree/main/modules/new_serverpod_auth/serverpod_auth_jwt_server';
 
-      final jwt = AuthenticationTokens(
-        config: AuthenticationTokenConfig(
+      final jwt = Jwt(
+        config: JwtConfig(
           algorithm: _hs512Algorithm(),
           refreshTokenHashPepper: 'test-pepper',
           issuer: issuer,
@@ -299,7 +303,7 @@ void main() {
       ).jwtUtil.createJwt(_createRefreshToken());
 
       expect(
-        JWT.decode(jwt).issuer,
+        dart_jsonwebtoken.JWT.decode(jwt).issuer,
         issuer,
       );
     },
@@ -308,8 +312,8 @@ void main() {
   test(
     'Given a HS512 token when validated by a HS512 JWTUtil with a different issuer then validation fails',
     () {
-      final initialHS512Util = AuthenticationTokens(
-        config: AuthenticationTokenConfig(
+      final initialHS512Util = Jwt(
+        config: JwtConfig(
           algorithm: _hs512Algorithm(),
           refreshTokenHashPepper: 'test-pepper',
           issuer: 'some issuer',
@@ -317,8 +321,8 @@ void main() {
       ).jwtUtil;
       final jwt = initialHS512Util.createJwt(_createRefreshToken());
 
-      final differentIssuerHS512Util = AuthenticationTokens(
-        config: AuthenticationTokenConfig(
+      final differentIssuerHS512Util = Jwt(
+        config: JwtConfig(
           algorithm: _hs512Algorithm(),
           refreshTokenHashPepper: 'test-pepper',
           issuer: 'different issuer',
@@ -337,27 +341,27 @@ void main() {
     () {
       late JwtUtil jwtUtil;
       late RefreshToken refreshToken;
-      late String jwt;
+      late String jwtToken;
 
       setUp(() {
-        final authenticationTokens = AuthenticationTokens(
-          config: AuthenticationTokenConfig(
+        final jwt = Jwt(
+          config: JwtConfig(
             algorithm: _es512Algorithm(),
             refreshTokenHashPepper: 'test-pepper',
           ),
         );
 
-        jwtUtil = authenticationTokens.jwtUtil;
+        jwtUtil = jwt.jwtUtil;
 
         refreshToken = _createRefreshToken();
-        jwt = jwtUtil.createJwt(refreshToken);
+        jwtToken = jwtUtil.createJwt(refreshToken);
       });
 
       test(
         'when a JWT is verified, then its data is returned.',
         () {
           expect(
-            jwtUtil.verifyJwt(jwt),
+            jwtUtil.verifyJwt(jwtToken),
             isNotNull,
           );
         },
@@ -367,23 +371,23 @@ void main() {
         'when the JWT is decoded, then it names HS512 as its `alg.',
         () {
           expect(
-            JWT.decode(jwt).header,
+            dart_jsonwebtoken.JWT.decode(jwtToken).header,
             equals({'alg': 'ES512', 'typ': 'JWT'}),
           );
         },
       );
 
       test('when validated by HMAC, then the validation fails.', () {
-        final authenticationTokens = AuthenticationTokens(
-          config: AuthenticationTokenConfig(
+        final jwt = Jwt(
+          config: JwtConfig(
             algorithm: _hs512Algorithm(),
             refreshTokenHashPepper: 'test-pepper',
           ),
         );
-        final hmacJwtUtil = authenticationTokens.jwtUtil;
+        final hmacJwtUtil = jwt.jwtUtil;
 
         expectLater(
-          () => hmacJwtUtil.verifyJwt(jwt),
+          () => hmacJwtUtil.verifyJwt(jwtToken),
           throwsA(isA<Error>()),
         );
       });
@@ -391,21 +395,173 @@ void main() {
       test(
         'when the configuration is changed to HMAC with the previous public key as a fallback, then the validation succeeds.',
         () {
-          final authenticationTokens = AuthenticationTokens(
-            config: AuthenticationTokenConfig(
+          final jwt = Jwt(
+            config: JwtConfig(
               algorithm: _hs512Algorithm(),
               refreshTokenHashPepper: 'test-pepper',
-              fallbackVerificationAlgorithm: _es512Algorithm(),
+              fallbackVerificationAlgorithms: [_es512Algorithm()],
             ),
           );
-          final es512JwtUtil = authenticationTokens.jwtUtil;
+          final es512JwtUtil = jwt.jwtUtil;
 
-          final result = es512JwtUtil.verifyJwt(jwt);
+          final result = es512JwtUtil.verifyJwt(jwtToken);
           expect(result.authUserId, refreshToken.authUserId);
         },
       );
     },
   );
+
+  group('Given multiple fallback verification algorithms,', () {
+    test(
+      'when a token is signed with the primary algorithm, then it verifies successfully.',
+      () {
+        final primaryAlgorithm = _hs512Algorithm();
+        final jwt = Jwt(
+          config: JwtConfig(
+            algorithm: primaryAlgorithm,
+            refreshTokenHashPepper: 'test-pepper',
+            fallbackVerificationAlgorithms: [
+              _es512Algorithm(),
+              JwtAlgorithm.hmacSha512(
+                SecretKey('fallback-key-2'),
+              ),
+            ],
+          ),
+        );
+
+        final jwtToken = jwt.jwtUtil.createJwt(
+          _createRefreshToken(),
+        );
+
+        expect(
+          jwt.jwtUtil.verifyJwt(jwtToken),
+          isNotNull,
+        );
+      },
+    );
+
+    test(
+      'when a token is signed with the first fallback algorithm, then it verifies successfully.',
+      () {
+        final firstFallbackAlgorithm = _es512Algorithm();
+        final jwtCreator = Jwt(
+          config: JwtConfig(
+            algorithm: firstFallbackAlgorithm,
+            refreshTokenHashPepper: 'test-pepper',
+          ),
+        );
+
+        final refreshToken = _createRefreshToken();
+        final jwt = jwtCreator.jwtUtil.createJwt(refreshToken);
+
+        final jwtVerifier = Jwt(
+          config: JwtConfig(
+            algorithm: _hs512Algorithm(),
+            refreshTokenHashPepper: 'test-pepper',
+            fallbackVerificationAlgorithms: [
+              firstFallbackAlgorithm,
+              JwtAlgorithm.hmacSha512(
+                SecretKey('fallback-key-2'),
+              ),
+            ],
+          ),
+        );
+
+        final result = jwtVerifier.jwtUtil.verifyJwt(jwt);
+        expect(result.authUserId, refreshToken.authUserId);
+      },
+    );
+
+    test(
+      'when a token is signed with the second fallback algorithm, then it verifies successfully.',
+      () {
+        final secondFallbackAlgorithm = JwtAlgorithm.hmacSha512(
+          SecretKey('fallback-key-2'),
+        );
+        final jwtCreator = Jwt(
+          config: JwtConfig(
+            algorithm: secondFallbackAlgorithm,
+            refreshTokenHashPepper: 'test-pepper',
+          ),
+        );
+
+        final refreshToken = _createRefreshToken();
+        final jwt = jwtCreator.jwtUtil.createJwt(refreshToken);
+
+        final jwtVerifier = Jwt(
+          config: JwtConfig(
+            algorithm: _hs512Algorithm(),
+            refreshTokenHashPepper: 'test-pepper',
+            fallbackVerificationAlgorithms: [
+              _es512Algorithm(),
+              secondFallbackAlgorithm,
+            ],
+          ),
+        );
+
+        final result = jwtVerifier.jwtUtil.verifyJwt(jwt);
+        expect(result.authUserId, refreshToken.authUserId);
+      },
+    );
+
+    test(
+      'when a token is signed with none of the configured algorithms, then verification fails.',
+      () {
+        final unknownAlgorithm = JwtAlgorithm.hmacSha512(
+          SecretKey('unknown-key'),
+        );
+        final jwtCreator = Jwt(
+          config: JwtConfig(
+            algorithm: unknownAlgorithm,
+            refreshTokenHashPepper: 'test-pepper',
+          ),
+        );
+
+        final jwt = jwtCreator.jwtUtil.createJwt(_createRefreshToken());
+
+        final jwtVerifier = Jwt(
+          config: JwtConfig(
+            algorithm: _hs512Algorithm(),
+            refreshTokenHashPepper: 'test-pepper',
+            fallbackVerificationAlgorithms: [
+              _es512Algorithm(),
+              JwtAlgorithm.hmacSha512(
+                SecretKey('fallback-key-2'),
+              ),
+            ],
+          ),
+        );
+
+        expect(
+          () => jwtVerifier.jwtUtil.verifyJwt(jwt),
+          throwsA(isA<Exception>()),
+        );
+      },
+    );
+
+    test(
+      'when configured with an empty fallback list, then only the primary algorithm is used.',
+      () {
+        final primaryAlgorithm = _hs512Algorithm();
+        final jwt = Jwt(
+          config: JwtConfig(
+            algorithm: primaryAlgorithm,
+            refreshTokenHashPepper: 'test-pepper',
+            fallbackVerificationAlgorithms: [],
+          ),
+        );
+
+        final jwtToken = jwt.jwtUtil.createJwt(
+          _createRefreshToken(),
+        );
+
+        expect(
+          jwt.jwtUtil.verifyJwt(jwtToken),
+          isNotNull,
+        );
+      },
+    );
+  });
 }
 
 /// Returns a basic refresh token, without scopes or extra claims
@@ -415,22 +571,21 @@ RefreshToken _createRefreshToken() {
     authUserId: const Uuid().v4obj(),
     scopeNames: {},
     fixedSecret: ByteData(0),
-    rotatingSecretHash: ByteData(0),
-    rotatingSecretSalt: ByteData(0),
+    rotatingSecretHash: '',
     method: 'test',
   );
 }
 
-HmacSha512AuthenticationTokenAlgorithmConfiguration _hs512Algorithm() {
-  return AuthenticationTokenAlgorithm.hmacSha512(
+HmacSha512JwtAlgorithmConfiguration _hs512Algorithm() {
+  return JwtAlgorithm.hmacSha512(
     SecretKey('test-private-key-for-HS512'),
   );
 }
 
-EcdsaSha512AuthenticationTokenAlgorithmConfiguration _es512Algorithm() {
-  return AuthenticationTokenAlgorithm.ecdsaSha512(
-    privateKey: ECPrivateKey(_testPrivateKey),
-    publicKey: ECPublicKey(_testPublicKey),
+EcdsaSha512JwtAlgorithmConfiguration _es512Algorithm() {
+  return JwtAlgorithm.ecdsaSha512(
+    privateKey: dart_jsonwebtoken.ECPrivateKey(_testPrivateKey),
+    publicKey: dart_jsonwebtoken.ECPublicKey(_testPublicKey),
   );
 }
 

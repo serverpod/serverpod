@@ -20,6 +20,9 @@ const String _toJsonMethodName = 'toJson';
 /// The name of the method used to convert a model to JSON for protocol serialization.
 const String _toJsonForProtocolMethodName = 'toJsonForProtocol';
 
+/// The hidden field name for the class name in the JSON serialization.
+const String _classNameHiddenField = '__className__';
+
 /// Generates the dart libraries for [SerializableModelDefinition]s.
 class SerializableModelLibraryGenerator {
   final bool serverCode;
@@ -295,7 +298,7 @@ class SerializableModelLibraryGenerator {
         ),
       );
 
-      classBuilder.methods.add(_buildModelClassToJsonMethod(fields));
+      classBuilder.methods.add(_buildModelClassToJsonMethod(fields, className));
 
       // Serialization for database and everything
       if (serverCode) {
@@ -303,11 +306,17 @@ class SerializableModelLibraryGenerator {
           _buildModelClassToJsonForProtocolMethod(
             fields,
             classDefinition.serverOnly,
+            className,
           ),
         );
       }
 
-      classBuilder.methods.add(_buildToStringMethod(serverCode));
+      classBuilder.methods.add(
+        _buildExceptionToStringMethod(
+          className,
+          classDefinition.fields,
+        ),
+      );
     });
   }
 
@@ -454,6 +463,18 @@ class SerializableModelLibraryGenerator {
             className: className,
             isParentClass: classDefinition.isParentClass,
             hasImplicitClass: hasImplicitClass,
+            classDefinition: classDefinition,
+          ),
+        );
+      } else if (classDefinition.isSealed && classDefinition.isParentClass) {
+        classBuilder.methods.add(
+          _buildAbstractCopyWithMethod(
+            className,
+            fields,
+            shouldOverrideAbstractCopyWith: () => false,
+            subDirParts: classDefinition.subDirParts,
+            inheritedFields: classDefinition.inheritedFields,
+            isIdInherited: classDefinition.isIdInherited,
           ),
         );
       }
@@ -470,7 +491,9 @@ class SerializableModelLibraryGenerator {
       // Serialization
 
       if (!classDefinition.isSealed) {
-        classBuilder.methods.add(_buildModelClassToJsonMethod(fields));
+        classBuilder.methods.add(
+          _buildModelClassToJsonMethod(fields, className),
+        );
       }
 
       // Serialization for database and everything
@@ -480,6 +503,7 @@ class SerializableModelLibraryGenerator {
             _buildModelClassToJsonForProtocolMethod(
               fields,
               classDefinition.serverOnly,
+              className,
             ),
           );
         }
@@ -576,7 +600,7 @@ class SerializableModelLibraryGenerator {
     var hiddenFields = classDefinition.fields.where(
       (field) => field.hiddenSerializableField(serverCode),
     );
-    var visibleFields = classDefinition.fields.where(
+    var visibleFields = classDefinition.fieldsIncludingInherited.where(
       (field) => field.shouldIncludeField(serverCode),
     );
     return Class((classBuilder) {
@@ -614,7 +638,7 @@ class SerializableModelLibraryGenerator {
               ..name = '_'
               ..optionalParameters.addAll(
                 _buildModelClassConstructorParameters(
-                  classDefinition.fields,
+                  classDefinition.fieldsIncludingInherited,
                   classDefinition.tableName,
                   setAsToThis: false,
                   subDirParts: classDefinition.subDirParts,
@@ -714,6 +738,10 @@ class SerializableModelLibraryGenerator {
       return false;
     }
 
+    if (parentClass.isSealed) {
+      return true;
+    }
+
     if (classDefinition.everyParentIsSealed) {
       return false;
     }
@@ -761,6 +789,7 @@ class SerializableModelLibraryGenerator {
     required String className,
     required bool isParentClass,
     required hasImplicitClass,
+    ModelClassDefinition? classDefinition,
   }) {
     return Method(
       (m) {
@@ -772,9 +801,21 @@ class SerializableModelLibraryGenerator {
         m.annotations.add(
           refer('useResult', serverpodUrl(serverCode)).expression,
         );
-        if (!isParentClass) {
+
+        var shouldOverride = !isParentClass;
+        if (classDefinition != null) {
+          var parentClass = classDefinition.parentClass;
+          if (parentClass != null && parentClass.isSealed) {
+            shouldOverride = true;
+          }
+        } else {
+          shouldOverride = true;
+        }
+
+        if (shouldOverride) {
           m.annotations.add(refer('override'));
         }
+
         m.optionalParameters.addAll(
           fields.where((field) => field.shouldIncludeField(serverCode)).map(
             (field) {
@@ -876,6 +917,10 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
+    var includedFields = fields.where(
+      (field) => field.shouldIncludeField(serverCode),
+    );
+
     return Method(
       (m) {
         m.name = 'operator ==';
@@ -892,7 +937,7 @@ class SerializableModelLibraryGenerator {
         var comparisons = [
           refer('other').property('runtimeType').equalTo(refer('runtimeType')),
           refer('other').isA(refer(classDefinition.className)),
-          ...fields.map((field) {
+          ...includedFields.map((field) {
             var name = field.name;
             var thisProperty = refer(name);
             var otherProperty = refer('other').property(name);
@@ -934,6 +979,10 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
   ) {
+    var includedFields = fields.where(
+      (field) => field.shouldIncludeField(serverCode),
+    );
+
     return Method(
       (m) {
         m.name = 'hashCode';
@@ -942,7 +991,7 @@ class SerializableModelLibraryGenerator {
 
         var expressions = [
           refer('runtimeType'),
-          ...fields.map((field) {
+          ...includedFields.map((field) {
             if (field.type.isCollectionType) {
               return refer(
                 'DeepCollectionEquality',
@@ -1350,6 +1399,7 @@ class SerializableModelLibraryGenerator {
 
   Method _buildModelClassToJsonMethod(
     Iterable<SerializableModelFieldDefinition> fields,
+    String className,
   ) {
     return Method(
       (m) {
@@ -1371,6 +1421,7 @@ class SerializableModelLibraryGenerator {
         m.body = _createToJsonBodyFromFields(
           filteredFields,
           _toJsonMethodName,
+          className,
         );
       },
     );
@@ -1379,6 +1430,7 @@ class SerializableModelLibraryGenerator {
   Method _buildModelClassToJsonForProtocolMethod(
     Iterable<SerializableModelFieldDefinition> fields,
     bool isServerOnlyClass,
+    String className,
   ) {
     return Method(
       (m) {
@@ -1394,6 +1446,7 @@ class SerializableModelLibraryGenerator {
         m.body = _createToJsonBodyFromFields(
           filteredFields,
           _toJsonForProtocolMethodName,
+          isServerOnlyClass ? null : className,
         );
       },
     );
@@ -1417,6 +1470,38 @@ class SerializableModelLibraryGenerator {
           ).code,
           const Code(';'),
         ]);
+      },
+    );
+  }
+
+  Method _buildExceptionToStringMethod(
+    String className,
+    List<SerializableModelFieldDefinition> fields,
+  ) {
+    return Method(
+      (m) {
+        m.returns = refer('String');
+        m.name = 'toString';
+        m.annotations.add(refer('override'));
+
+        var visibleFields = fields.where(
+          (field) => field.shouldIncludeField(serverCode),
+        );
+
+        if (visibleFields.isEmpty) {
+          // For exceptions with no fields, return just the class name
+          m.body = literalString(className).returned.statement;
+        } else {
+          // For exceptions with fields, return "ClassName(field1: $field1, field2: $field2)"
+          var fieldStrings = visibleFields
+              .map((field) {
+                return '${field.name}: \$${field.name}';
+              })
+              .join(', ');
+          m.body = literalString(
+            '$className($fieldStrings)',
+          ).returned.statement;
+        }
       },
     );
   }
@@ -1563,6 +1648,7 @@ class SerializableModelLibraryGenerator {
   Code _createToJsonBodyFromFields(
     Iterable<SerializableModelFieldDefinition> fields,
     String toJsonMethodName,
+    String? className,
   ) {
     var map = fields.fold<Map<Code, Expression>>({}, (map, field) {
       var fieldName = _createSerializableFieldNameReference(
@@ -1587,7 +1673,15 @@ class SerializableModelLibraryGenerator {
       };
     });
 
-    return literalMap(map).returned.statement;
+    const classNameCode = Code("'$_classNameHiddenField'");
+
+    return literalMap({
+      if (className != null)
+        classNameCode: config.type != PackageType.server
+            ? literalString('${config.name}.$className')
+            : literalString(className),
+      ...map,
+    }).returned.statement;
   }
 
   Constructor _buildModelClassFromJsonConstructor(

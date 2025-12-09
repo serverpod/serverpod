@@ -53,6 +53,7 @@ abstract class ExceptionWithRequiredField
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ExceptionWithRequiredField',
       'name': name,
       if (email != null) 'email': email,
       if (phone != null) 'phone': phone,
@@ -61,7 +62,7 @@ abstract class ExceptionWithRequiredField
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'ExceptionWithRequiredField(name: $name, email: $email, phone: $phone)';
   }
 }
 

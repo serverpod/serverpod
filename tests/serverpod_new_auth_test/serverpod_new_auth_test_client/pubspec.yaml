@@ -10,16 +10,16 @@ environment:
   sdk: '^3.8.0'
 
 dependencies:
-  serverpod_auth_client: 3.0.0-rc.1
-  serverpod_auth_idp_client: 3.0.0-rc.1
-  serverpod_auth_migration_client: 3.0.0-rc.1
-  serverpod_client: 3.0.0-rc.1
+  serverpod_auth_client: 3.0.0
+  serverpod_auth_idp_client: 3.0.0
+  serverpod_auth_migration_client: 3.0.0
+  serverpod_client: 3.0.0
 
 dependency_overrides:
   serverpod_auth_bridge_client:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_client
   serverpod_auth_client:
-    path: ../../../modules/serverpod_auth/serverpod_auth_client
+    path: ../../../modules/legacy/serverpod_auth/serverpod_auth_client
   serverpod_auth_core_client:
     path: ../../../modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
   serverpod_auth_idp_client:

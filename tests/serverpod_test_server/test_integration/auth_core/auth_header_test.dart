@@ -13,13 +13,14 @@ void main() async {
     String token,
   ) {
     tokenInspectionCompleter.complete(token);
-    return Future.value(AuthenticationInfo('1', {}));
+    return Future.value(AuthenticationInfo('1', {}, authId: '1'));
   }
 
   group('Given auth key in valid HTTP header format', () {
     var authKeyManager = TestBasicAuthenticationKeyManager();
     var client = Client(
       'http://localhost:8080/',
+      // ignore: deprecated_member_use
       authenticationKeyManager: authKeyManager,
     );
     late Serverpod server;
@@ -109,6 +110,7 @@ void main() async {
     var incorrectAuthKeyManager = TestIncorrectAuthKeyManager();
     var client = Client(
       'http://localhost:8080/',
+      // ignore: deprecated_member_use
       authenticationKeyManager: incorrectAuthKeyManager,
     );
     late Serverpod server;
@@ -155,6 +157,7 @@ void main() async {
     var authKeyManager = TestAuthKeyManager();
     var client = Client(
       'http://localhost:8080/',
+      // ignore: deprecated_member_use
       authenticationKeyManager: authKeyManager,
     );
     late Serverpod server;
@@ -264,7 +267,8 @@ void main() async {
 }
 
 /// A test implementation that yields backwards compatible Basic auth header values.
-class TestBasicAuthenticationKeyManager extends BasicAuthenticationKeyManager {
+// ignore: deprecated_member_use
+class TestBasicAuthenticationKeyManager extends AuthenticationKeyManager {
   String? _key;
 
   @override
@@ -278,6 +282,12 @@ class TestBasicAuthenticationKeyManager extends BasicAuthenticationKeyManager {
   @override
   Future<void> remove() async {
     _key = null;
+  }
+
+  @override
+  Future<String?> toHeaderValue(String? key) async {
+    if (key == null) return null;
+    return wrapAsBasicAuthHeaderValue(key);
   }
 }
 

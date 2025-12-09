@@ -36,7 +36,10 @@ class NonServerOnlyParentClass implements _i1.SerializableModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return {'parentField': parentField};
+    return {
+      '__className__': 'NonServerOnlyParentClass',
+      'parentField': parentField,
+    };
   }
 
   @override

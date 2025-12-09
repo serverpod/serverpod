@@ -5,7 +5,7 @@ import 'package:serverpod_auth_idp_server/providers/google.dart';
 /// Endpoint for Google-based authentication, which automatically imports legacy
 /// accounts.
 class GoogleAccountBackwardsCompatibilityTestEndpoint
-    extends GoogleIDPBaseEndpoint {
+    extends GoogleIdpBaseEndpoint {
   @override
   Future<AuthSuccess> login(
     final Session session, {

@@ -16,7 +16,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
@@ -27,8 +27,8 @@ void main() {
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             registrationVerificationCodeAllowedAttempts:
@@ -77,7 +77,7 @@ void main() {
             () async {
               final verificationToken = await verifyAccountRequestFuture;
 
-              final finalizeAccountRequestFuture = session.db.transaction(
+              final completeAccountRequestFuture = session.db.transaction(
                 (final transaction) =>
                     fixture.accountCreationUtil.completeAccountCreation(
                       session,
@@ -86,7 +86,7 @@ void main() {
                       transaction: transaction,
                     ),
               );
-              await expectLater(finalizeAccountRequestFuture, completes);
+              await expectLater(completeAccountRequestFuture, completes);
             },
           );
         },
@@ -216,7 +216,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
       late String verificationCode;
@@ -225,8 +225,8 @@ void main() {
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
           ),
@@ -286,7 +286,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
@@ -296,8 +296,8 @@ void main() {
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
           ),
@@ -311,7 +311,7 @@ void main() {
           ),
         );
 
-        // Verify and finalize the request
+        // Verify and complete the request
         final verificationToken = await session.db.transaction(
           (final transaction) =>
               fixture.accountCreationUtil.verifyRegistrationCode(
@@ -365,7 +365,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
       late String verificationCode;
@@ -374,8 +374,8 @@ void main() {
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             registrationVerificationCodeAllowedAttempts: 2,
@@ -435,7 +435,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
       late String verificationCode;
@@ -444,8 +444,8 @@ void main() {
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             registrationVerificationCodeAllowedAttempts: 1,
@@ -510,7 +510,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
       late String verificationCode;
@@ -519,8 +519,8 @@ void main() {
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             registrationVerificationCodeAllowedAttempts: 1,
@@ -600,7 +600,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
       const verificationCode = '12345678';
@@ -609,8 +609,8 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             registrationVerificationCodeGenerator: () => verificationCode,
             registrationVerificationCodeLifetime:

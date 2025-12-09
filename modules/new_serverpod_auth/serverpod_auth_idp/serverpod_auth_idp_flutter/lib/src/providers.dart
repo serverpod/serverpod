@@ -2,12 +2,12 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
 /// Exposes information about available identity providers.
-class AvailableIDPs {
+class AvailableIdps {
   /// The client instance.
   final ServerpodClientShared client;
 
-  /// Creates a new instance of [AvailableIDPs].
-  const AvailableIDPs(this.client);
+  /// Creates a new instance of [AvailableIdps].
+  const AvailableIdps(this.client);
 
   bool _isProviderAvailable<T extends EndpointRef>() {
     try {
@@ -27,17 +27,17 @@ class AvailableIDPs {
   int get count => [hasEmail, hasGoogle, hasApple].where((e) => e).length;
 
   /// Whether the email authentication provider is available.
-  bool get hasEmail => _isProviderAvailable<EndpointEmailIDPBase>();
+  bool get hasEmail => _isProviderAvailable<EndpointEmailIdpBase>();
 
   /// Whether the Google authentication provider is available.
-  bool get hasGoogle => _isProviderAvailable<EndpointGoogleIDPBase>();
+  bool get hasGoogle => _isProviderAvailable<EndpointGoogleIdpBase>();
 
   /// Whether the Apple authentication provider is available.
-  bool get hasApple => _isProviderAvailable<EndpointAppleIDPBase>();
+  bool get hasApple => _isProviderAvailable<EndpointAppleIdpBase>();
 }
 
 /// Extension to provide information about available identity providers.
-extension IDPExtension on ClientAuthSessionManager {
+extension IdpExtension on FlutterAuthSessionManager {
   /// Provides information about available identity providers.
   ///
   /// Use this getter to check which identity providers are available on the
@@ -49,5 +49,5 @@ extension IDPExtension on ClientAuthSessionManager {
   ///   // Show Google sign-in option.
   /// }
   /// ```
-  AvailableIDPs get idp => AvailableIDPs(caller.client);
+  AvailableIdps get idp => AvailableIdps(caller.client);
 }

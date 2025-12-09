@@ -8,8 +8,8 @@ import 'package:test/test.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManager = AuthSessionsTokenManager(
-    config: AuthSessionsConfig(
+  final tokenManager = ServerSideSessionsTokenManager(
+    config: ServerSideSessionsConfig(
       sessionKeyHashPepper: 'test-pepper',
     ),
   );
@@ -20,7 +20,7 @@ void main() {
       late Session session;
       late UuidValue activeUser;
       late UuidValue inactiveUser;
-      late AppleIDPAdmin admin;
+      late AppleIdpAdmin admin;
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -34,12 +34,12 @@ void main() {
             activeUser.uuid,
           },
         );
-        final utils = AppleIDPUtils(
+        final utils = AppleIdpUtils(
           tokenManager: tokenManager,
           signInWithApple: signInWithApple,
           authUsers: authUsers,
         );
-        admin = AppleIDPAdmin(
+        admin = AppleIdpAdmin(
           utils: utils,
         );
       });

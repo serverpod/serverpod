@@ -65,6 +65,7 @@ abstract class UriDefault
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UriDefault',
       if (id != null) 'id': id,
       'uriDefault': uriDefault.toJson(),
       if (uriDefaultNull != null) 'uriDefaultNull': uriDefaultNull?.toJson(),
@@ -74,6 +75,7 @@ abstract class UriDefault
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'UriDefault',
       if (id != null) 'id': id,
       'uriDefault': uriDefault.toJson(),
       if (uriDefaultNull != null) 'uriDefaultNull': uriDefaultNull?.toJson(),

@@ -1,10 +1,12 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:test/test.dart';
 
 import '../../../test_util/builders/generator_config_builder.dart';
 import '../../../test_util/builders/model_class_definition_builder.dart';
+import '../../../test_util/builders/serializable_entity_field_definition_builder.dart';
 import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
@@ -275,6 +277,122 @@ void main() {
               hasImmutable,
               isTrue,
               reason: 'No @immutable annotation found on $testClassName',
+            );
+          });
+        }, skip: baseClass == null);
+      });
+    },
+  );
+
+  group(
+    'Given an immutable class with an implicit foreign key field (scope none) when generating client code',
+    () {
+      var testClassName = 'MealToResource';
+      var testClassFileName = 'meal_to_resource';
+      var expectedFilePath = path.join(
+        '..',
+        'example_project_client',
+        'lib',
+        'src',
+        'protocol',
+        '$testClassFileName.dart',
+      );
+
+      // Create a model with an implicit foreign key field that has scope: none
+      // This simulates what happens when Serverpod generates a foreign key
+      // for an implicit one-to-many relationship
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(testClassName)
+            .withFileName(testClassFileName)
+            .withTableName('meal_to_resource')
+            .withIsImmutable(true)
+            .withSimpleField('quantity', 'int')
+            // Add an implicit foreign key field with scope: none
+            // This field should NOT appear in hashCode or == on the client side
+            .withField(
+              FieldDefinitionBuilder()
+                  .withName(r'$_mealResourceMealId')
+                  .withTypeDefinition('int', true)
+                  .withScope(ModelFieldScopeDefinition.none)
+                  .withShouldPersist(true)
+                  .build(),
+            )
+            .build(),
+      ];
+
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      var compilationUnit = parseString(
+        content: codeMap[expectedFilePath]!,
+      ).unit;
+
+      group('then the $testClassName', () {
+        var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
+
+        test('compiles without referencing private implicit fields.', () {
+          // Verify that the generated code does not reference the implicit
+          // foreign key field which is server-only (scope: none)
+          var generatedCode = codeMap[expectedFilePath]!;
+
+          // The implicit field should not appear in hashCode or == methods
+          // on the client side since it has scope: none
+          expect(
+            generatedCode.contains(r'$_mealResourceMealId'),
+            isFalse,
+            reason:
+                'Client code should not reference implicit foreign key fields '
+                'with scope: none',
+          );
+        });
+
+        group('has a hashCode method', () {
+          var hashCodeGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
+            baseClass!,
+            name: 'hashCode',
+          );
+
+          test('that does not reference implicit foreign key fields.', () {
+            expect(
+              hashCodeGetter,
+              isNotNull,
+              reason: 'No hashCode method found on $testClassName',
+            );
+
+            var hashCodeBody = hashCodeGetter!.body.toSource();
+            expect(
+              hashCodeBody.contains(r'$_mealResourceMealId'),
+              isFalse,
+              reason:
+                  'hashCode should not reference implicit foreign key fields',
+            );
+          });
+        }, skip: baseClass == null);
+
+        group('has a == operator', () {
+          var equalsOperator = CompilationUnitHelpers.tryFindMethodDeclaration(
+            baseClass!,
+            name: '==',
+          );
+
+          test('that does not reference implicit foreign key fields.', () {
+            expect(
+              equalsOperator,
+              isNotNull,
+              reason: 'No == operator found on $testClassName',
+            );
+
+            var equalsBody = equalsOperator!.body.toSource();
+            expect(
+              equalsBody.contains(r'$_mealResourceMealId'),
+              isFalse,
+              reason: '== should not reference implicit foreign key fields',
             );
           });
         }, skip: baseClass == null);

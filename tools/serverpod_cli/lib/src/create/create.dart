@@ -15,6 +15,7 @@ import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:yaml_edit/yaml_edit.dart';
 
 import 'copier.dart';
 
@@ -39,12 +40,13 @@ enum ServerpodTemplateType {
 Future<bool> performCreate(
   String name,
   ServerpodTemplateType template,
-  bool force,
-) async {
+  bool force, {
+  required bool? interactive,
+}) async {
   // If the name is a dot, we are upgrading an existing project
   // Instead of creating a new one, we try to upgrade the current directory.
   if (name == '.') {
-    return await _performUpgrade(template);
+    return await _performUpgrade(template, interactive: interactive);
   }
 
   // check if project name is valid
@@ -117,9 +119,16 @@ Future<bool> performCreate(
     success &= await log.progress(
       'Writing additional project files.',
       () async {
-        _copyServerUpgrade(
+        await _copyServerUpgrade(
           serverpodDirs,
           name: name,
+          isUpgrade: false,
+          customServerpodPath: productionMode ? null : serverpodHome,
+        );
+        await _copyFlutterUpgrade(
+          serverpodDirs,
+          name: name,
+          customServerpodPath: productionMode ? null : serverpodHome,
         );
         return true;
       },
@@ -150,7 +159,10 @@ Future<bool> performCreate(
   }
 
   success &= await log.progress('Running serverpod generator', () async {
-    return await GenerateFiles.generateFiles(serverpodDirs.serverDir);
+    return await GenerateFiles.generateFiles(
+      serverpodDirs.serverDir,
+      interactive: interactive,
+    );
   });
 
   if (template == ServerpodTemplateType.server ||
@@ -159,6 +171,7 @@ Future<bool> performCreate(
       return DatabaseSetup.createDefaultMigration(
         serverpodDirs.serverDir,
         name,
+        interactive: interactive,
       );
     });
   }
@@ -180,7 +193,10 @@ Future<bool> performCreate(
   return success;
 }
 
-Future<bool> _performUpgrade(ServerpodTemplateType template) async {
+Future<bool> _performUpgrade(
+  ServerpodTemplateType template, {
+  required bool? interactive,
+}) async {
   if (template != ServerpodTemplateType.server) {
     log.error(
       'The upgrade command can only be used with server templates.',
@@ -213,23 +229,28 @@ Future<bool> _performUpgrade(ServerpodTemplateType template) async {
   success &= await log.progress(
     'Upgrading project.',
     () async {
-      _copyServerUpgrade(
+      await _copyServerUpgrade(
         serverpodDir,
         name: name,
-        skipMain: true,
+        isUpgrade: true,
+        customServerpodPath: productionMode ? null : serverpodHome,
       );
       return true;
     },
   );
 
   success &= await log.progress('Running serverpod generator', () async {
-    return await GenerateFiles.generateFiles(serverpodDir.serverDir);
+    return await GenerateFiles.generateFiles(
+      serverpodDir.serverDir,
+      interactive: interactive,
+    );
   });
 
   success &= await log.progress('Creating default database migration.', () {
     return DatabaseSetup.createDefaultMigration(
       serverpodDir.serverDir,
       name,
+      interactive: interactive,
     );
   });
 
@@ -360,15 +381,76 @@ void _createDirectory(Directory dir) {
   dir.createSync();
 }
 
-void _copyServerUpgrade(
+Future<void> _copyFlutterUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
-  bool skipMain = false,
-}) {
+  String? customServerpodPath,
+}) async {
+  log.debug('Copying Flutter upgrade files.', newParagraph: true);
+  var copier = Copier(
+    srcDir: Directory(
+      p.join(
+        resourceManager.templateDirectory.path,
+        'projectname_flutter_upgrade',
+      ),
+    ),
+    dstDir: serverpodDirs.flutterDir,
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+    ],
+    fileNameReplacements: const [],
+    ignoreFileNames: const [],
+  );
+  copier.copyFiles();
+
+  log.debug('Adding auth dependencies to Flutter pubspec', newParagraph: true);
+  await _addDependenciesToPubspec(
+    pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
+    dependency: 'serverpod_auth_idp_flutter',
+    version: templateVersion,
+    customServerpodPath: customServerpodPath,
+    overridePath:
+        'modules/new_serverpod_auth/serverpod_auth_idp/'
+        'serverpod_auth_idp_flutter',
+    transitiveDeps: [
+      (
+        name: 'serverpod_auth_core_client',
+        path:
+            'modules/new_serverpod_auth/serverpod_auth_core/'
+            'serverpod_auth_core_client',
+      ),
+      (
+        name: 'serverpod_auth_core_flutter',
+        path:
+            'modules/new_serverpod_auth/serverpod_auth_core/'
+            'serverpod_auth_core_flutter',
+      ),
+      (
+        name: 'serverpod_auth_idp_client',
+        path:
+            'modules/new_serverpod_auth/serverpod_auth_idp/'
+            'serverpod_auth_idp_client',
+      ),
+    ],
+  );
+}
+
+Future<void> _copyServerUpgrade(
+  ServerpodDirectories serverpodDirs, {
+  required String name,
+  required bool isUpgrade,
+  String? customServerpodPath,
+}) async {
   var awsName = name.replaceAll('_', '-');
   var randomAwsId = math.Random.secure().nextInt(10000000).toString();
 
-  log.debug('Copying upgrade files.', newParagraph: true);
+  var dbTestPassword = generateRandomString();
+  var redisTestPassword = generateRandomString();
+
+  log.debug('Copying server upgrade files.', newParagraph: true);
   var copier = Copier(
     srcDir: Directory(
       p.join(
@@ -412,7 +494,7 @@ void _copyServerUpgrade(
       ),
       Replacement(
         slotName: 'DB_TEST_PASSWORD',
-        replacement: generateRandomString(),
+        replacement: dbTestPassword,
       ),
       Replacement(
         slotName: 'DB_PRODUCTION_PASSWORD',
@@ -428,16 +510,78 @@ void _copyServerUpgrade(
       ),
       Replacement(
         slotName: 'REDIS_TEST_PASSWORD',
+        replacement: redisTestPassword,
+      ),
+      Replacement(
+        slotName: 'SERVER_SIDE_SESSION_KEY_HASH_PEPPER_DEVELOPMENT',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'SERVER_SIDE_SESSION_KEY_HASH_PEPPER_TEST',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'SERVER_SIDE_SESSION_KEY_HASH_PEPPER_STAGING',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'SERVER_SIDE_SESSION_KEY_HASH_PEPPER_PRODUCTION',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'EMAIL_SECRET_HASH_PEPPER_DEVELOPMENT',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_HMAC_SHA512_PRIVATE_KEY_DEVELOPMENT',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_REFRESH_TOKEN_HASH_PEPPER_DEVELOPMENT',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'EMAIL_SECRET_HASH_PEPPER_TEST',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_HMAC_SHA512_PRIVATE_KEY_TEST',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_REFRESH_TOKEN_HASH_PEPPER_TEST',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'EMAIL_SECRET_HASH_PEPPER_STAGING',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_HMAC_SHA512_PRIVATE_KEY_STAGING',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_REFRESH_TOKEN_HASH_PEPPER_STAGING',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'EMAIL_SECRET_HASH_PEPPER_PRODUCTION',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_HMAC_SHA512_PRIVATE_KEY_PRODUCTION',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'JWT_REFRESH_TOKEN_HASH_PEPPER_PRODUCTION',
         replacement: generateRandomString(),
       ),
     ],
-    fileNameReplacements: [
-      Replacement(
-        slotName: 'gcloudignore',
-        replacement: '.gcloudignore',
-      ),
+    fileNameReplacements: const [],
+    ignoreFileNames: [
+      if (isUpgrade) 'server.dart',
+      if (isUpgrade) 'email_idp_endpoint.dart',
     ],
-    ignoreFileNames: [if (skipMain) 'server.dart'],
   );
   copier.copyFiles();
 
@@ -458,10 +602,100 @@ void _copyServerUpgrade(
         slotName: 'randomawsid',
         replacement: randomAwsId,
       ),
+      Replacement(
+        slotName: 'DB_TEST_PASSWORD',
+        replacement: dbTestPassword,
+      ),
+      Replacement(
+        slotName: 'REDIS_TEST_PASSWORD',
+        replacement: redisTestPassword,
+      ),
+      Replacement(
+        slotName: 'CLI_VERSION',
+        replacement: templateVersion,
+      ),
     ],
     fileNameReplacements: [],
   );
   copier.copyFiles();
+
+  if (!isUpgrade) {
+    log.debug(
+      'Adding auth dependencies to server and client pubspecs',
+      newParagraph: true,
+    );
+    await _addDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.serverDir.path, 'pubspec.yaml')),
+      dependency: 'serverpod_auth_idp_server',
+      version: templateVersion,
+      customServerpodPath: customServerpodPath,
+      overridePath:
+          'modules/new_serverpod_auth/serverpod_auth_idp/'
+          'serverpod_auth_idp_server',
+      transitiveDeps: [
+        (
+          name: 'serverpod_auth_core_server',
+          path:
+              'modules/new_serverpod_auth/serverpod_auth_core/'
+              'serverpod_auth_core_server',
+        ),
+      ],
+    );
+    await _addDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
+      dependency: 'serverpod_auth_idp_client',
+      version: templateVersion,
+      customServerpodPath: customServerpodPath,
+      overridePath:
+          'modules/new_serverpod_auth/serverpod_auth_idp/'
+          'serverpod_auth_idp_client',
+      transitiveDeps: [
+        (
+          name: 'serverpod_auth_core_client',
+          path:
+              'modules/new_serverpod_auth/serverpod_auth_core/'
+              'serverpod_auth_core_client',
+        ),
+      ],
+    );
+  }
+}
+
+Future<void> _addDependenciesToPubspec({
+  required File pubspecFile,
+  required String dependency,
+  required String version,
+  required String? customServerpodPath,
+  required String overridePath,
+  List<({String name, String path})> transitiveDeps = const [],
+}) async {
+  if (!pubspecFile.existsSync()) {
+    log.debug('Pubspec file not found: ${pubspecFile.path}');
+    return;
+  }
+
+  var contents = pubspecFile.readAsStringSync();
+  final editor = YamlEditor(contents);
+
+  editor.update(
+    ['dependencies', dependency],
+    version,
+  );
+
+  if (customServerpodPath != null) {
+    editor.update(
+      ['dependency_overrides', dependency],
+      {'path': '$customServerpodPath/$overridePath'},
+    );
+    for (final dep in transitiveDeps) {
+      editor.update(
+        ['dependency_overrides', dep.name],
+        {'path': '$customServerpodPath/${dep.path}'},
+      );
+    }
+  }
+
+  pubspecFile.writeAsStringSync(editor.toString());
 }
 
 void _copyServerTemplates(

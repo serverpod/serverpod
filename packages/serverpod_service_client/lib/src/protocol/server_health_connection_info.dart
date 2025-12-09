@@ -91,6 +91,7 @@ abstract class ServerHealthConnectionInfo implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ServerHealthConnectionInfo',
       if (id != null) 'id': id,
       'serverId': serverId,
       'timestamp': timestamp.toJson(),

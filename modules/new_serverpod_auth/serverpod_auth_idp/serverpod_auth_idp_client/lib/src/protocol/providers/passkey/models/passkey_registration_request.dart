@@ -70,6 +70,7 @@ abstract class PasskeyRegistrationRequest implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_idp.PasskeyRegistrationRequest',
       'challengeId': challengeId.toJson(),
       'keyId': keyId.toJson(),
       'clientDataJSON': clientDataJSON.toJson(),

@@ -225,6 +225,10 @@ mapParameters:
   - returnDurationMapNullableDurations:
   - returnNestedNonStringKeyedMapInsideRecordInsideMap:
   - returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap:
+  - returnDateTimeBoolMap:
+  - returnDateTimeBoolMapNullable:
+  - returnIntStringMap:
+  - returnIntStringMapNullable:
 methodSignaturePermutations:
   - echoPositionalArg:
   - echoNamedArg:
@@ -321,6 +325,11 @@ namedParameters:
   - namedParametersMethodEqualInts:
 optionalParameters:
   - returnOptionalInt:
+inheritancePolymorphismTest:
+  - polymorphicRoundtrip:
+  - polymorphicStreamingRoundtrip:
+  - polymorphicContainerRoundtrip:
+  - polymorphicModuleContainerRoundtrip:
 recordParameters:
   - returnRecordOfInt:
   - returnNullableRecordOfInt:
@@ -454,6 +463,7 @@ testTools:
   - streamModuleClass:
   - echoRecord:
   - echoRecords:
+  - returnRecordWithSerializableObject:
   - recordEchoStream:
   - listOfRecordEchoStream:
   - nullableRecordEchoStream:

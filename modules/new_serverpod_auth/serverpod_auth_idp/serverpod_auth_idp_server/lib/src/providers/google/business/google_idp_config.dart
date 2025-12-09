@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
 
+import '../../../../../core.dart';
+import 'google_idp.dart';
 import 'google_idp_utils.dart';
 
 /// Function to be called to check whether a Google account details match the
@@ -24,7 +26,7 @@ typedef GetExtraGoogleInfoCallback =
     });
 
 /// Configuration for the Google identity provider.
-class GoogleIDPConfig {
+class GoogleIdpConfig extends IdentityProviderBuilder<GoogleIdp> {
   /// The client secret used for the Google sign-in.
   final GoogleClientSecret clientSecret;
 
@@ -51,8 +53,8 @@ class GoogleIDPConfig {
   /// information from Google APIs.
   final GetExtraGoogleInfoCallback? getExtraGoogleInfoCallback;
 
-  /// Creates a new instance of [GoogleIDPConfig].
-  GoogleIDPConfig({
+  /// Creates a new instance of [GoogleIdpConfig].
+  const GoogleIdpConfig({
     required this.clientSecret,
     this.googleAccountDetailsValidation = validateGoogleAccountDetails,
     this.getExtraGoogleInfoCallback,
@@ -68,6 +70,33 @@ class GoogleIDPConfig {
       throw GoogleUserInfoMissingDataException();
     }
   }
+
+  @override
+  GoogleIdp build({
+    required final TokenManager tokenManager,
+    required final AuthUsers authUsers,
+    required final UserProfiles userProfiles,
+  }) {
+    return GoogleIdp(
+      this,
+      tokenIssuer: tokenManager,
+      authUsers: authUsers,
+      userProfiles: userProfiles,
+    );
+  }
+}
+
+/// Creates a new [GoogleIdpConfig] from keys on the `passwords.yaml` file.
+///
+/// This constructor requires that a [Serverpod] instance has already been initialized.
+class GoogleIdpConfigFromPasswords extends GoogleIdpConfig {
+  /// Creates a new [GoogleIdpConfigFromPasswords] instance.
+  GoogleIdpConfigFromPasswords()
+    : super(
+        clientSecret: GoogleClientSecret.fromJsonString(
+          Serverpod.instance.getPassword('googleClientSecret')!,
+        ),
+      );
 }
 
 /// Contains information about the credentials for the server to access Google's

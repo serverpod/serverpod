@@ -72,6 +72,7 @@ void main() {
     AuthenticationInfo? authenticatedUserWithNoScopes = AuthenticationInfo(
       '1',
       {},
+      authId: '1',
     );
 
     test(
@@ -139,6 +140,7 @@ void main() {
     AuthenticationInfo? authenticatedUserWithNoScopes = AuthenticationInfo(
       '1',
       {Scope.admin},
+      authId: '1',
     );
 
     test(

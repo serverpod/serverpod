@@ -93,6 +93,7 @@ abstract class ObjectWithHalfVector implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithHalfVector',
       if (id != null) 'id': id,
       'halfVector': halfVector.toJson(),
       if (halfVectorNullable != null)

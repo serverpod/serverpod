@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'cache_info.dart' as _i2;
+import 'package:serverpod/src/generated/protocol.dart' as _i3;
 
 /// High level information about the caches.
 abstract class CachesInfo
@@ -30,14 +31,14 @@ abstract class CachesInfo
 
   factory CachesInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return CachesInfo(
-      local: _i2.CacheInfo.fromJson(
-        (jsonSerialization['local'] as Map<String, dynamic>),
+      local: _i3.Protocol().deserialize<_i2.CacheInfo>(
+        jsonSerialization['local'],
       ),
-      localPrio: _i2.CacheInfo.fromJson(
-        (jsonSerialization['localPrio'] as Map<String, dynamic>),
+      localPrio: _i3.Protocol().deserialize<_i2.CacheInfo>(
+        jsonSerialization['localPrio'],
       ),
-      global: _i2.CacheInfo.fromJson(
-        (jsonSerialization['global'] as Map<String, dynamic>),
+      global: _i3.Protocol().deserialize<_i2.CacheInfo>(
+        jsonSerialization['global'],
       ),
     );
   }
@@ -62,6 +63,7 @@ abstract class CachesInfo
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.CachesInfo',
       'local': local.toJson(),
       'localPrio': localPrio.toJson(),
       'global': global.toJson(),
@@ -71,6 +73,7 @@ abstract class CachesInfo
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.CachesInfo',
       'local': local.toJsonForProtocol(),
       'localPrio': localPrio.toJsonForProtocol(),
       'global': global.toJsonForProtocol(),

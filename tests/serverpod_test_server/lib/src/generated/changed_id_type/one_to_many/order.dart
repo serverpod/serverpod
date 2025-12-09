@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/one_to_many/customer.dart' as _i2;
 import '../../changed_id_type/one_to_many/comment.dart' as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
 
 abstract class OrderUuid
     implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
@@ -41,12 +42,14 @@ abstract class OrderUuid
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization['customer'] == null
           ? null
-          : _i2.CustomerInt.fromJson(
-              (jsonSerialization['customer'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i2.CustomerInt>(
+              jsonSerialization['customer'],
             ),
-      comments: (jsonSerialization['comments'] as List?)
-          ?.map((e) => _i3.CommentInt.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      comments: jsonSerialization['comments'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i3.CommentInt>>(
+              jsonSerialization['comments'],
+            ),
     );
   }
 
@@ -81,6 +84,7 @@ abstract class OrderUuid
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'OrderUuid',
       'id': id.toJson(),
       'description': description,
       'customerId': customerId,
@@ -93,6 +97,7 @@ abstract class OrderUuid
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'OrderUuid',
       'id': id.toJson(),
       'description': description,
       'customerId': customerId,

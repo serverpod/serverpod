@@ -109,6 +109,7 @@ abstract class LogSettings
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.LogSettings',
       'logLevel': logLevel.toJson(),
       'logAllSessions': logAllSessions,
       'logAllQueries': logAllQueries,
@@ -125,6 +126,7 @@ abstract class LogSettings
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.LogSettings',
       'logLevel': logLevel.toJson(),
       'logAllSessions': logAllSessions,
       'logAllQueries': logAllQueries,

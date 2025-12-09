@@ -35,12 +35,15 @@ abstract class AccessDeniedException
   AccessDeniedException copyWith({String? message});
   @override
   Map<String, dynamic> toJson() {
-    return {'message': message};
+    return {
+      '__className__': 'serverpod.AccessDeniedException',
+      'message': message,
+    };
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'AccessDeniedException(message: $message)';
   }
 }
 

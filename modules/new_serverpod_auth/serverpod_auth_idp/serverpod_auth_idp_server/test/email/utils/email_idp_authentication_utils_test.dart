@@ -1,6 +1,6 @@
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/auth_user.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
@@ -11,16 +11,28 @@ import '../test_utils/email_idp_test_fixture.dart';
 void main() {
   withServerpod(
     'Given existing email account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
-      late UuidValue authUserId;
       late Session session;
+      late UuidValue authUserId;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
-      late EmailIDPAuthenticationUtil authenticationUtil;
+      late EmailIdpAuthenticationUtil authenticationUtil;
+      const failedLoginRateLimit = RateLimit(
+        maxAttempts: 4,
+        timeframe: Duration(hours: 1),
+      );
 
       setUp(() async {
         session = sessionBuilder.build();
-        final fixture = EmailIDPTestFixture();
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
+            secretHashPepper: 'test-pepper',
+            failedLoginRateLimit: failedLoginRateLimit,
+          ),
+        );
         final authUser = await fixture.authUsers.create(session);
         authUserId = authUser.id;
         await fixture.createEmailAccount(
@@ -31,6 +43,10 @@ void main() {
         );
 
         authenticationUtil = fixture.authenticationUtil;
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
       });
 
       test(
@@ -46,6 +62,27 @@ void main() {
           );
 
           await expectLater(result, completion(authUserId));
+        },
+      );
+
+      test(
+        'when authenticating with correct credentials past failed login threshold then it succeeds with the auth user id',
+        () async {
+          final loginAttempts = List.generate(
+            failedLoginRateLimit.maxAttempts,
+            (final index) async {
+              return session.db.transaction(
+                (final transaction) => authenticationUtil.authenticate(
+                  session,
+                  email: email,
+                  password: password,
+                  transaction: transaction,
+                ),
+              );
+            },
+          ).wait;
+
+          await expectLater(loginAttempts, completion(isA<List<UuidValue>>()));
         },
       );
 
@@ -86,39 +123,46 @@ void main() {
     },
   );
 
-  withServerpod('Given non-existing email account', (
-    final sessionBuilder,
-    final endpoints,
-  ) {
-    late Session session;
-    late EmailIDPAuthenticationUtil emailIDPAuthenticationUtil;
+  withServerpod(
+    'Given non-existing email account',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      late EmailIdpAuthenticationUtil emailIdpAuthenticationUtil;
 
-    setUp(() async {
-      session = sessionBuilder.build();
-      final fixture = EmailIDPTestFixture();
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture();
 
-      emailIDPAuthenticationUtil = fixture.authenticationUtil;
-    });
+        emailIdpAuthenticationUtil = fixture.authenticationUtil;
+      });
 
-    test(
-      'when authenticating then it throws an error with email account not found exception',
-      () async {
-        final result = session.db.transaction(
-          (final transaction) => emailIDPAuthenticationUtil.authenticate(
-            session,
-            email: 'invalid@serverpod.dev',
-            password: 'invalid-password',
-            transaction: transaction,
-          ),
-        );
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
 
-        await expectLater(
-          result,
-          throwsA(isA<EmailAccountNotFoundException>()),
-        );
-      },
-    );
-  });
+      test(
+        'when authenticating then it throws an error with email account not found exception',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) => emailIdpAuthenticationUtil.authenticate(
+              session,
+              email: 'invalid@serverpod.dev',
+              password: 'invalid-password',
+              transaction: transaction,
+            ),
+          );
+
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountNotFoundException>()),
+          );
+        },
+      );
+    },
+  );
 
   withServerpod(
     'Given email account that has failed to sign in past the rate limit',
@@ -136,13 +180,13 @@ void main() {
       );
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
-      late EmailIDPAuthenticationUtil authenticationUtil;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpAuthenticationUtil authenticationUtil;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'test-pepper',
             failedLoginRateLimit: failedLoginRateLimit,
           ),
@@ -174,8 +218,10 @@ void main() {
           // This is expected.
         }
 
-        final failedLoginAttempts = await EmailAccountFailedLoginAttempt.db
-            .find(session, where: (final t) => t.email.equals(email));
+        final failedLoginAttempts = await _getFailedLoginAttempts(
+          session,
+          email,
+        );
 
         assert(
           failedLoginAttempts.length == failedLoginRateLimit.maxAttempts,
@@ -209,7 +255,9 @@ void main() {
       test(
         'when deleting all failed login attempts then account can authenticate again',
         () async {
-          final result = session.db.transaction((final transaction) async {
+          // Removal must happen in a separate transaction since the count of
+          // failed login attempts is checked outside of the transaction.
+          await session.db.transaction((final transaction) async {
             await authenticationUtil.deleteFailedLoginAttempts(
               session,
               transaction: transaction,
@@ -217,7 +265,11 @@ void main() {
               /// Removes all failed login Attempts
               olderThan: const Duration(microseconds: 0),
             );
+          });
 
+          final result = session.db.transaction((
+            final transaction,
+          ) async {
             return await authenticationUtil.authenticate(
               session,
               email: email,
@@ -270,8 +322,8 @@ void main() {
       late Session session;
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
-      late EmailIDPAuthenticationUtil authenticationUtil;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpAuthenticationUtil authenticationUtil;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -279,8 +331,8 @@ void main() {
           maxAttempts: 1,
           timeframe: Duration(hours: 1),
         );
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'test-pepper',
             failedLoginRateLimit: failedLoginRateLimit,
           ),
@@ -303,8 +355,10 @@ void main() {
           // This is expected.
         }
 
-        final failedLoginAttempts = await EmailAccountFailedLoginAttempt.db
-            .find(session, where: (final t) => t.email.equals(email));
+        final failedLoginAttempts = await _getFailedLoginAttempts(
+          session,
+          email,
+        );
 
         assert(
           failedLoginAttempts.length == failedLoginRateLimit.maxAttempts,
@@ -348,8 +402,8 @@ void main() {
       late Session session;
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
-      late EmailIDPAuthenticationUtil authenticationUtil;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpAuthenticationUtil authenticationUtil;
+      late EmailIdpTestFixture fixture;
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -357,8 +411,8 @@ void main() {
           maxAttempts: 5,
           timeframe: Duration(hours: 1),
         );
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'test-pepper',
             failedLoginRateLimit: failedLoginRateLimit,
           ),
@@ -381,8 +435,10 @@ void main() {
           }
         }
 
-        final failedLoginAttempts = await EmailAccountFailedLoginAttempt.db
-            .find(session, where: (final t) => t.email.equals(email));
+        final failedLoginAttempts = await _getFailedLoginAttempts(
+          session,
+          email,
+        );
 
         assert(
           failedLoginAttempts.length == failedLoginRateLimit.maxAttempts,
@@ -425,8 +481,8 @@ void main() {
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;
-      late EmailIDPAuthenticationUtil authenticationUtil;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpAuthenticationUtil authenticationUtil;
+      late EmailIdpTestFixture fixture;
       const RateLimit failedLoginRateLimit = RateLimit(
         maxAttempts: 1,
         timeframe: Duration(hours: 1),
@@ -436,8 +492,8 @@ void main() {
 
       setUp(() async {
         session = sessionBuilder.build();
-        fixture = EmailIDPTestFixture(
-          config: const EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
             secretHashPepper: 'test-pepper',
             failedLoginRateLimit: failedLoginRateLimit,
           ),
@@ -468,8 +524,10 @@ void main() {
           // This is expected.
         }
 
-        final failedLoginAttempts = await EmailAccountFailedLoginAttempt.db
-            .find(session, where: (final t) => t.email.equals(email));
+        final failedLoginAttempts = await _getFailedLoginAttempts(
+          session,
+          email,
+        );
 
         assert(
           failedLoginAttempts.length == failedLoginRateLimit.maxAttempts,
@@ -505,18 +563,21 @@ void main() {
         },
       );
 
-      // when deleting all failed login attempts specifying email then authentication succeeds
       test(
         'when deleting all failed login attempts specifying email then authentication succeeds',
         () async {
-          final result = session.db.transaction((final transaction) async {
+          // Removal must happen in a separate transaction since the count of
+          // failed login attempts is checked outside of the transaction.
+          await session.db.transaction((final transaction) async {
             await authenticationUtil.deleteFailedLoginAttempts(
               session,
               email: email,
               transaction: transaction,
               olderThan: const Duration(microseconds: 0),
             );
+          });
 
+          final result = session.db.transaction((final transaction) async {
             return await authenticationUtil.authenticate(
               session,
               email: email,
@@ -531,7 +592,7 @@ void main() {
           );
         },
       );
-      // when deleting all failed login attempts specifying different email then authentication within timeframe still fails
+
       test(
         'when deleting all failed login attempts specifying different email then authentication within timeframe still fails',
         () async {
@@ -558,5 +619,18 @@ void main() {
         },
       );
     },
+  );
+}
+
+Future<List<RateLimitedRequestAttempt>> _getFailedLoginAttempts(
+  final Session session,
+  final String email,
+) async {
+  return await RateLimitedRequestAttempt.db.find(
+    session,
+    where: (final t) =>
+        t.domain.equals('email') &
+        t.source.equals('failed_login') &
+        t.nonce.equals(email),
   );
 }

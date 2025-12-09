@@ -33,17 +33,17 @@ abstract class AuthUserNotFoundException
   AuthUserNotFoundException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {'__className__': 'serverpod_auth_core.AuthUserNotFoundException'};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {'__className__': 'serverpod_auth_core.AuthUserNotFoundException'};
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'AuthUserNotFoundException';
   }
 }
 

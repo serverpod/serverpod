@@ -16,6 +16,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i3;
+import 'package:serverpod_auth_migration_server/src/generated/protocol.dart'
+    as _i4;
 
 abstract class MigratedUser
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -41,16 +43,16 @@ abstract class MigratedUser
       oldUserId: jsonSerialization['oldUserId'] as int,
       oldUser: jsonSerialization['oldUser'] == null
           ? null
-          : _i2.UserInfo.fromJson(
-              (jsonSerialization['oldUser'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i2.UserInfo>(
+              jsonSerialization['oldUser'],
             ),
       newAuthUserId: _i1.UuidValueJsonExtension.fromJson(
         jsonSerialization['newAuthUserId'],
       ),
       newAuthUser: jsonSerialization['newAuthUser'] == null
           ? null
-          : _i3.AuthUser.fromJson(
-              (jsonSerialization['newAuthUser'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i3.AuthUser>(
+              jsonSerialization['newAuthUser'],
             ),
     );
   }
@@ -88,6 +90,7 @@ abstract class MigratedUser
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_migration.MigratedUser',
       if (id != null) 'id': id,
       'oldUserId': oldUserId,
       if (oldUser != null) 'oldUser': oldUser?.toJson(),

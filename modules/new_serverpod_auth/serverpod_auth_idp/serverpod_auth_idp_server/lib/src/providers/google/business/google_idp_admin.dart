@@ -4,12 +4,12 @@ import '../../../generated/protocol.dart';
 import 'google_idp_utils.dart';
 
 /// Collection of Google-account admin methods.
-final class GoogleIDPAdmin {
+class GoogleIdpAdmin {
   /// Utility functions for the Google identity provider.
-  final GoogleIDPUtils utils;
+  final GoogleIdpUtils utils;
 
-  /// Creates a new instance of [GoogleIDPAdmin].
-  GoogleIDPAdmin({required this.utils});
+  /// Creates a new instance of [GoogleIdpAdmin].
+  GoogleIdpAdmin({required this.utils});
 
   /// Returns the account details for the given [idToken] and [accessToken].
   Future<GoogleAccountDetails> fetchAccountDetails(

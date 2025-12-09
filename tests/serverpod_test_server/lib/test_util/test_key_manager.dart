@@ -1,6 +1,7 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 
-class TestAuthKeyManager extends BearerAuthenticationKeyManager {
+// ignore: deprecated_member_use
+class TestAuthKeyManager extends AuthenticationKeyManager {
   String? _key;
 
   @override
@@ -14,5 +15,11 @@ class TestAuthKeyManager extends BearerAuthenticationKeyManager {
   @override
   Future<void> remove() async {
     _key = null;
+  }
+
+  @override
+  Future<String?> toHeaderValue(String? key) async {
+    if (key == null) return null;
+    return wrapAsBearerAuthHeaderValue(key);
   }
 }

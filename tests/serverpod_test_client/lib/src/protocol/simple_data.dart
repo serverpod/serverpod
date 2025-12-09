@@ -51,6 +51,7 @@ abstract class SimpleData implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'SimpleData',
       if (id != null) 'id': id,
       'num': num,
     };

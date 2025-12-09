@@ -1,5 +1,4 @@
 class: UserProfileData
-serverOnly: true
 fields:
   ### The first name of the user or the user's nickname.
   userName: String?

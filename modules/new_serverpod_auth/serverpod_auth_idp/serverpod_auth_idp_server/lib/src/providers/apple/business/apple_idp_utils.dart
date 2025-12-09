@@ -3,11 +3,9 @@ import 'dart:convert';
 
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
-import 'package:serverpod_auth_core_server/session.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
-import '../../../generated/protocol.dart';
+import '../../../../core.dart';
 import 'apple_idp.dart';
 
 /// Details of the Apple account.
@@ -35,15 +33,15 @@ typedef AppleAuthSuccess = ({
 /// These functions can be used to compose custom authentication and
 /// administration flows if needed.
 ///
-/// But for most cases, the methods exposed by [AppleIDP] and [AppleIDPAdmin] should
+/// But for most cases, the methods exposed by [AppleIdp] and [AppleIdpAdmin] should
 /// be sufficient.
-class AppleIDPUtils {
+class AppleIdpUtils {
   final TokenManager _tokenManager;
   final SignInWithApple _signInWithApple;
   final AuthUsers _authUsers;
 
-  /// Creates a new instance of [AppleIDPUtils].
-  AppleIDPUtils({
+  /// Creates a new instance of [AppleIdpUtils].
+  AppleIdpUtils({
     required final TokenManager tokenManager,
     required final SignInWithApple signInWithApple,
     required final AuthUsers authUsers,
@@ -218,7 +216,7 @@ class AppleIDPUtils {
         await _tokenManager.revokeAllTokens(
           session,
           authUserId: appleAccount.authUserId,
-          method: AppleIDP.method,
+          method: AppleIdp.method,
         );
 
         if (notification is AppleServerNotificationAccountDelete) {

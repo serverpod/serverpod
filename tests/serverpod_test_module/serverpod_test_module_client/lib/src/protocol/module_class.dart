@@ -55,6 +55,7 @@ abstract class ModuleClass implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_test_module.ModuleClass',
       'name': name,
       'data': data,
       if (record != null) 'record': _i2.mapRecordToJson(record),

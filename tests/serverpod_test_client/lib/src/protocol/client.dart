@@ -36,16 +36,22 @@ import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i17;
 import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i18;
 import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
     as _i19;
-import 'package:serverpod_test_client/src/protocol/types_record.dart' as _i20;
-import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field.dart'
+import 'package:serverpod_test_client/src/protocol/inheritance/polymorphism/parent.dart'
+    as _i20;
+import 'package:serverpod_test_client/src/protocol/inheritance/polymorphism/container.dart'
     as _i21;
-import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
+import 'package:serverpod_test_client/src/protocol/inheritance/polymorphism/container_module.dart'
     as _i22;
-import 'package:serverpod_test_client/src/protocol/session_auth_info.dart'
-    as _i23;
-import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
+import 'package:serverpod_test_client/src/protocol/types_record.dart' as _i23;
+import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field.dart'
     as _i24;
-import 'protocol.dart' as _i25;
+import 'package:serverpod_test_client/src/protocol/scopes/scope_server_only_field_child.dart'
+    as _i25;
+import 'package:serverpod_test_client/src/protocol/session_auth_info.dart'
+    as _i26;
+import 'package:serverpod_test_client/src/protocol/my_feature/models/my_feature_model.dart'
+    as _i27;
+import 'protocol.dart' as _i28;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -1897,6 +1903,37 @@ class EndpointMapParameters extends _i1.EndpointRef {
     'returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap',
     {'map': _i17.mapContainerToJson(map)},
   );
+
+  _i2.Future<Map<DateTime, bool>> returnDateTimeBoolMap(
+    Map<DateTime, bool> map,
+  ) => caller.callServerEndpoint<Map<DateTime, bool>>(
+    'mapParameters',
+    'returnDateTimeBoolMap',
+    {'map': _i17.mapContainerToJson(map)},
+  );
+
+  _i2.Future<Map<DateTime, bool>?> returnDateTimeBoolMapNullable(
+    Map<DateTime, bool>? map,
+  ) => caller.callServerEndpoint<Map<DateTime, bool>?>(
+    'mapParameters',
+    'returnDateTimeBoolMapNullable',
+    {'map': map == null ? null : _i17.mapContainerToJson(map)},
+  );
+
+  _i2.Future<Map<int, String>> returnIntStringMap(Map<int, String> map) =>
+      caller.callServerEndpoint<Map<int, String>>(
+        'mapParameters',
+        'returnIntStringMap',
+        {'map': _i17.mapContainerToJson(map)},
+      );
+
+  _i2.Future<Map<int, String>?> returnIntStringMapNullable(
+    Map<int, String>? map,
+  ) => caller.callServerEndpoint<Map<int, String>?>(
+    'mapParameters',
+    'returnIntStringMapNullable',
+    {'map': map == null ? null : _i17.mapContainerToJson(map)},
+  );
 }
 
 /// {@category Endpoint}
@@ -2717,6 +2754,70 @@ class EndpointOptionalParameters extends _i1.EndpointRef {
       );
 }
 
+/// Endpoint for testing polymorphism functionality.
+/// {@category Endpoint}
+class EndpointInheritancePolymorphismTest extends _i1.EndpointRef {
+  EndpointInheritancePolymorphismTest(_i1.EndpointCaller caller)
+    : super(caller);
+
+  @override
+  String get name => 'inheritancePolymorphismTest';
+
+  /// Receives a PolymorphicParent object for testing serialization.
+  ///
+  /// Returns the runtime type and the object itself. The object must retain
+  /// its class when received by the client.
+  _i2.Future<(String, _i20.PolymorphicParent)> polymorphicRoundtrip(
+    _i20.PolymorphicParent parent,
+  ) => caller.callServerEndpoint<(String, _i20.PolymorphicParent)>(
+    'inheritancePolymorphismTest',
+    'polymorphicRoundtrip',
+    {'parent': parent},
+  );
+
+  /// Receives a PolymorphicParent object through streaming for testing.
+  ///
+  /// Yields the runtime type and the object itself. The object must retain its
+  /// class when received by the client.
+  _i2.Stream<(String, _i20.PolymorphicParent)> polymorphicStreamingRoundtrip(
+    _i2.Stream<_i20.PolymorphicParent> stream,
+  ) =>
+      caller.callStreamingServerEndpoint<
+        _i2.Stream<(String, _i20.PolymorphicParent)>,
+        (String, _i20.PolymorphicParent)
+      >(
+        'inheritancePolymorphismTest',
+        'polymorphicStreamingRoundtrip',
+        {},
+        {'stream': stream},
+      );
+
+  /// Receives a PolymorphicChildContainer object for testing serialization.
+  ///
+  /// Returns the container object itself. All nested polymorphic objects must
+  /// retain their runtime types when received by the client.
+  _i2.Future<_i21.PolymorphicChildContainer> polymorphicContainerRoundtrip(
+    _i21.PolymorphicChildContainer container,
+  ) => caller.callServerEndpoint<_i21.PolymorphicChildContainer>(
+    'inheritancePolymorphismTest',
+    'polymorphicContainerRoundtrip',
+    {'container': container},
+  );
+
+  /// Receives a ModulePolymorphicChildContainer object for testing serialization.
+  ///
+  /// Returns the container object itself. All nested polymorphic objects must
+  /// retain their runtime types when received by the client.
+  _i2.Future<_i22.ModulePolymorphicChildContainer>
+  polymorphicModuleContainerRoundtrip(
+    _i22.ModulePolymorphicChildContainer container,
+  ) => caller.callServerEndpoint<_i22.ModulePolymorphicChildContainer>(
+    'inheritancePolymorphismTest',
+    'polymorphicModuleContainerRoundtrip',
+    {'container': container},
+  );
+}
+
 /// {@category Endpoint}
 class EndpointRecordParameters extends _i1.EndpointRef {
   EndpointRecordParameters(_i1.EndpointCaller caller) : super(caller);
@@ -3043,17 +3144,17 @@ class EndpointRecordParameters extends _i1.EndpointRef {
         {'values': values},
       );
 
-  _i2.Future<_i20.TypesRecord> echoModelClassWithRecordField(
-    _i20.TypesRecord value,
-  ) => caller.callServerEndpoint<_i20.TypesRecord>(
+  _i2.Future<_i23.TypesRecord> echoModelClassWithRecordField(
+    _i23.TypesRecord value,
+  ) => caller.callServerEndpoint<_i23.TypesRecord>(
     'recordParameters',
     'echoModelClassWithRecordField',
     {'value': value},
   );
 
-  _i2.Future<_i20.TypesRecord?> echoNullableModelClassWithRecordField(
-    _i20.TypesRecord? value,
-  ) => caller.callServerEndpoint<_i20.TypesRecord?>(
+  _i2.Future<_i23.TypesRecord?> echoNullableModelClassWithRecordField(
+    _i23.TypesRecord? value,
+  ) => caller.callServerEndpoint<_i23.TypesRecord?>(
     'recordParameters',
     'echoNullableModelClassWithRecordField',
     {'value': value},
@@ -3068,13 +3169,13 @@ class EndpointRecordParameters extends _i1.EndpointRef {
     {'value': value},
   );
 
-  _i2.Stream<_i20.TypesRecord> streamOfModelClassWithRecordField(
-    _i20.TypesRecord initialValue,
-    _i2.Stream<_i20.TypesRecord> values,
+  _i2.Stream<_i23.TypesRecord> streamOfModelClassWithRecordField(
+    _i23.TypesRecord initialValue,
+    _i2.Stream<_i23.TypesRecord> values,
   ) =>
       caller.callStreamingServerEndpoint<
-        _i2.Stream<_i20.TypesRecord>,
-        _i20.TypesRecord
+        _i2.Stream<_i23.TypesRecord>,
+        _i23.TypesRecord
       >(
         'recordParameters',
         'streamOfModelClassWithRecordField',
@@ -3082,13 +3183,13 @@ class EndpointRecordParameters extends _i1.EndpointRef {
         {'values': values},
       );
 
-  _i2.Stream<_i20.TypesRecord?> streamOfNullableModelClassWithRecordField(
-    _i20.TypesRecord? initialValue,
-    _i2.Stream<_i20.TypesRecord?> values,
+  _i2.Stream<_i23.TypesRecord?> streamOfNullableModelClassWithRecordField(
+    _i23.TypesRecord? initialValue,
+    _i2.Stream<_i23.TypesRecord?> values,
   ) =>
       caller.callStreamingServerEndpoint<
-        _i2.Stream<_i20.TypesRecord?>,
-        _i20.TypesRecord?
+        _i2.Stream<_i23.TypesRecord?>,
+        _i23.TypesRecord?
       >(
         'recordParameters',
         'streamOfNullableModelClassWithRecordField',
@@ -3208,8 +3309,8 @@ class EndpointServerOnlyScopedFieldModel extends _i1.EndpointRef {
   @override
   String get name => 'serverOnlyScopedFieldModel';
 
-  _i2.Future<_i21.ScopeServerOnlyField> getScopeServerOnlyField() =>
-      caller.callServerEndpoint<_i21.ScopeServerOnlyField>(
+  _i2.Future<_i24.ScopeServerOnlyField> getScopeServerOnlyField() =>
+      caller.callServerEndpoint<_i24.ScopeServerOnlyField>(
         'serverOnlyScopedFieldModel',
         'getScopeServerOnlyField',
         {},
@@ -3224,8 +3325,8 @@ class EndpointServerOnlyScopedFieldChildModel extends _i1.EndpointRef {
   @override
   String get name => 'serverOnlyScopedFieldChildModel';
 
-  _i2.Future<_i22.ScopeServerOnlyFieldChild> getProtocolField() =>
-      caller.callServerEndpoint<_i22.ScopeServerOnlyFieldChild>(
+  _i2.Future<_i25.ScopeServerOnlyFieldChild> getProtocolField() =>
+      caller.callServerEndpoint<_i25.ScopeServerOnlyFieldChild>(
         'serverOnlyScopedFieldChildModel',
         'getProtocolField',
         {},
@@ -3264,8 +3365,8 @@ class EndpointSessionAuthentication extends _i1.EndpointRef {
       );
 
   /// Returns full authentication info
-  _i2.Future<_i23.SessionAuthInfo> getAuthenticationInfo() =>
-      caller.callServerEndpoint<_i23.SessionAuthInfo>(
+  _i2.Future<_i26.SessionAuthInfo> getAuthenticationInfo() =>
+      caller.callServerEndpoint<_i26.SessionAuthInfo>(
         'sessionAuthentication',
         'getAuthenticationInfo',
         {},
@@ -3828,6 +3929,18 @@ class EndpointTestTools extends _i1.EndpointRef {
     {'records': _i17.mapContainerToJson(records)},
   );
 
+  _i2.Future<(int, _i9.SimpleData)> returnRecordWithSerializableObject(
+    int number,
+    _i9.SimpleData data,
+  ) => caller.callServerEndpoint<(int, _i9.SimpleData)>(
+    'testTools',
+    'returnRecordWithSerializableObject',
+    {
+      'number': number,
+      'data': data,
+    },
+  );
+
   _i2.Stream<
     (String, (Map<String, int>, {bool flag, _i9.SimpleData simpleData}))
   >
@@ -3902,13 +4015,13 @@ class EndpointTestTools extends _i1.EndpointRef {
         {'stream': stream},
       );
 
-  _i2.Stream<_i20.TypesRecord?> modelWithRecordsEchoStream(
-    _i20.TypesRecord? initialValue,
-    _i2.Stream<_i20.TypesRecord?> stream,
+  _i2.Stream<_i23.TypesRecord?> modelWithRecordsEchoStream(
+    _i23.TypesRecord? initialValue,
+    _i2.Stream<_i23.TypesRecord?> stream,
   ) =>
       caller.callStreamingServerEndpoint<
-        _i2.Stream<_i20.TypesRecord?>,
-        _i20.TypesRecord?
+        _i2.Stream<_i23.TypesRecord?>,
+        _i23.TypesRecord?
       >(
         'testTools',
         'modelWithRecordsEchoStream',
@@ -4201,8 +4314,8 @@ class EndpointMyFeature extends _i1.EndpointRef {
     {},
   );
 
-  _i2.Future<_i24.MyFeatureModel> myFeatureModel() =>
-      caller.callServerEndpoint<_i24.MyFeatureModel>(
+  _i2.Future<_i27.MyFeatureModel> myFeatureModel() =>
+      caller.callServerEndpoint<_i27.MyFeatureModel>(
         'myFeature',
         'myFeatureModel',
         {},
@@ -4224,7 +4337,10 @@ class Client extends _i1.ServerpodClientShared {
   Client(
     String host, {
     dynamic securityContext,
-    _i1.AuthenticationKeyManager? authenticationKeyManager,
+    @Deprecated(
+      'Use authKeyProvider instead. This will be removed in future releases.',
+    )
+    super.authenticationKeyManager,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
     Function(
@@ -4237,9 +4353,8 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i25.Protocol(),
+         _i28.Protocol(),
          securityContext: securityContext,
-         authenticationKeyManager: authenticationKeyManager,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
          onFailedCall: onFailedCall,
@@ -4294,6 +4409,7 @@ class Client extends _i1.ServerpodClientShared {
     moduleSerialization = EndpointModuleSerialization(this);
     namedParameters = EndpointNamedParameters(this);
     optionalParameters = EndpointOptionalParameters(this);
+    inheritancePolymorphismTest = EndpointInheritancePolymorphismTest(this);
     recordParameters = EndpointRecordParameters(this);
     redis = EndpointRedis(this);
     serverOnlyScopedFieldModel = EndpointServerOnlyScopedFieldModel(this);
@@ -4414,6 +4530,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointOptionalParameters optionalParameters;
 
+  late final EndpointInheritancePolymorphismTest inheritancePolymorphismTest;
+
   late final EndpointRecordParameters recordParameters;
 
   late final EndpointRedis redis;
@@ -4509,6 +4627,7 @@ class Client extends _i1.ServerpodClientShared {
     'moduleSerialization': moduleSerialization,
     'namedParameters': namedParameters,
     'optionalParameters': optionalParameters,
+    'inheritancePolymorphismTest': inheritancePolymorphismTest,
     'recordParameters': recordParameters,
     'redis': redis,
     'serverOnlyScopedFieldModel': serverOnlyScopedFieldModel,

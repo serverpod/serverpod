@@ -133,7 +133,41 @@ class LibraryGenerator {
                 ),
         ),
     ]);
+
+    final allFieldsToGenerateSerialization = unsealedModels
+        .whereType<ModelClassDefinition>()
+        .expand((m) => m.fields)
+        .where((f) => f.shouldSerializeField(serverCode))
+        .distinct();
+
     protocol.methods.addAll([
+      Method(
+        (m) => m
+          ..static = true
+          ..name = 'getClassNameFromObjectJson'
+          ..returns = refer('String?')
+          ..lambda = false
+          ..requiredParameters.add(
+            Parameter(
+              (p) => p
+                ..name = 'data'
+                ..type = refer('dynamic'),
+            ),
+          )
+          ..body = Block.of([
+            const Code(
+              'if (data is! Map) return null;'
+              "final className = data['__className__'] as String?;",
+            ),
+            (config.type != PackageType.server)
+                ? Code(
+                    'if (className == null) return null;'
+                    "if (!className.startsWith('${config.name}.')) return className;"
+                    'return className.substring(${config.name.length + 1});',
+                  )
+                : const Code('return className;'),
+          ]),
+      ),
       Method(
         (m) => m
           ..annotations.add(refer('override'))
@@ -155,7 +189,23 @@ class LibraryGenerator {
             ),
           )
           ..body = Block.of([
-            const Code('t ??= T;'),
+            const Code('''
+            t ??= T;
+
+            final dataClassName = getClassNameFromObjectJson(data);
+            if (dataClassName != null && dataClassName != getClassNameForType(t)) {
+              try {
+                return deserializeByClassName({
+                  'className': dataClassName,
+                  'data': data,
+                });
+              } on FormatException catch (_) {
+                // If the className is not recognized (e.g., older client receiving
+                // data with a new subtype), fall back to deserializing without the
+                // className, using the expected type T.
+              }
+            }
+          '''),
             ...(<Expression, Code>{
                   for (var classInfo in unsealedModels)
                     refer(
@@ -181,16 +231,12 @@ class LibraryGenerator {
                           '.fromJson(data) :null) as T',
                     ),
                 }..addEntries([
-                  for (var classInfo in unsealedModels)
-                    // Generate deserialization for fields of models.
-                    if (classInfo is ClassDefinition)
-                      for (var field in classInfo.fields.where(
-                        (field) => field.shouldIncludeField(serverCode),
-                      ))
-                        ...field.type.generateDeserialization(
-                          serverCode,
-                          config: config,
-                        ),
+                  // Generate deserialization for fields of models.
+                  for (var field in allFieldsToGenerateSerialization)
+                    ...field.type.generateDeserialization(
+                      serverCode,
+                      config: config,
+                    ),
                   for (var type in allTypesToDeserialize)
                     ...type.generateDeserialization(
                       serverCode,
@@ -240,6 +286,38 @@ class LibraryGenerator {
       ),
       Method(
         (m) => m
+          ..static = true
+          ..name = 'getClassNameForType'
+          ..returns = refer('String?')
+          ..requiredParameters.add(
+            Parameter(
+              (p) => p
+                ..name = 'type'
+                ..type = refer('Type'),
+            ),
+          )
+          ..body = Block.of([
+            const Code('return switch (type) {'),
+            if (unsealedModels.isNotEmpty ||
+                config.extraClasses.isNotEmpty) ...[
+              for (var extraClass in config.extraClasses)
+                Code.scope(
+                  (a) =>
+                      '${a(extraClass.reference(serverCode, config: config))} => '
+                      '\'${extraClass.className}\',',
+                ),
+              for (var classInfo in unsealedModels)
+                Code.scope(
+                  (a) =>
+                      '${a(refer(classInfo.className, TypeDefinition.getRef(classInfo)))} => '
+                      '\'${classInfo.className}\',',
+                ),
+            ],
+            const Code('_ => null };'),
+          ]),
+      ),
+      Method(
+        (m) => m
           ..annotations.add(refer('override'))
           ..name = 'getClassNameForObject'
           ..returns = refer('String?')
@@ -255,6 +333,12 @@ class LibraryGenerator {
               'String? className = super.getClassNameForObject(data);'
               'if(className != null) return className;',
             ),
+            Code('''
+
+            if (data is Map<String, dynamic> && data['__className__'] is String) {
+              return (data['__className__'] as String).replaceFirst('${config.name}.', '');
+            }
+          '''),
             if (unsealedModels.isNotEmpty ||
                 config.extraClasses.isNotEmpty) ...[
               const Code('switch (data) {'),
@@ -460,9 +544,10 @@ class LibraryGenerator {
 
     library.body.add(protocol.build());
 
-    if (recordTypesToDeserialize.isNotEmpty) {
+    if (recordTypesToDeserialize.isNotEmpty ||
+        allTypesToDeserialize.any((type) => type.containsNonStringKeyedMap)) {
       library.body.addAll(
-        _deserializationMethodsForRecordTypes(recordTypesToDeserialize),
+        _containerDeserializationMethods(recordTypesToDeserialize),
       );
     }
 
@@ -804,14 +889,17 @@ class LibraryGenerator {
                     ),
                     Parameter(
                       (p) => p
+                        ..annotations.add(
+                          refer('Deprecated', 'dart:core').call([
+                            literalString(
+                              'Use authKeyProvider instead. '
+                              'This will be removed in future releases.',
+                            ),
+                          ]),
+                        )
                         ..name = 'authenticationKeyManager'
                         ..named = true
-                        ..type = TypeReference(
-                          (t) => t
-                            ..symbol = 'AuthenticationKeyManager'
-                            ..url = serverpodUrl(false)
-                            ..isNullable = true,
-                        ),
+                        ..toSuper = true,
                     ),
                     Parameter(
                       (p) => p
@@ -902,9 +990,6 @@ class LibraryGenerator {
                           ],
                           {
                             'securityContext': refer('securityContext'),
-                            'authenticationKeyManager': refer(
-                              'authenticationKeyManager',
-                            ),
                             'streamingConnectionTimeout': refer(
                               'streamingConnectionTimeout',
                             ),
@@ -1425,7 +1510,7 @@ class LibraryGenerator {
     }
   }
 
-  Iterable<Method> _deserializationMethodsForRecordTypes(
+  Iterable<Method> _containerDeserializationMethods(
     List<TypeDefinition> recordTypesToDeserialize,
   ) {
     return [
@@ -1812,7 +1897,13 @@ extension on TypeDefinition {
               '$mapContainerToJsonFunctionName($name.\$${index + 1})',
             )
           else
-            Code('$name.\$${index + 1}'),
+            Code(
+              positionalField.isSerializedValue
+                  ? '$name.\$${index + 1}'
+                  : positionalField.nullable
+                  ? '$name.\$${index + 1}?.toJson()'
+                  : '$name.\$${index + 1}.toJson()',
+            ),
           const Code(','),
         ],
         const Code('],'),
@@ -2070,4 +2161,16 @@ bool _isMethodInherited(EndpointDefinition? parent, MethodDefinition method) {
     }
   }
   return _isMethodInherited(parent.extendsClass, method);
+}
+
+extension on Iterable<SerializableModelFieldDefinition> {
+  Iterable<SerializableModelFieldDefinition> distinct() sync* {
+    final visited = <String>{};
+    for (final element in this) {
+      final elementType = element.type.toString();
+      if (visited.contains(elementType)) continue;
+      yield element;
+      visited.add(elementType);
+    }
+  }
 }

@@ -17,7 +17,7 @@ void main() {
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
       const allowedNewPassword = 'NewPassword123!';
@@ -28,8 +28,8 @@ void main() {
         session = sessionBuilder.build();
 
         final verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
             passwordValidationFunction: (final password) =>
@@ -193,7 +193,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       const email = 'test@serverpod.dev';
       const password = 'Foobar123!';
       const allowedNewPassword = 'NewPassword123!';
@@ -203,8 +203,8 @@ void main() {
         session = sessionBuilder.build();
 
         verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
             passwordValidationFunction: (final password) =>
@@ -263,15 +263,15 @@ void main() {
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue emailAccountId;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late UuidValue onPasswordResetCompletedEmailAccountId;
 
       setUp(() async {
         session = sessionBuilder.build();
 
         final verificationCode = const Uuid().v4().toString();
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
             onPasswordResetCompleted:
@@ -349,14 +349,14 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late String completePasswordResetToken;
       setUp(() async {
         session = sessionBuilder.build();
 
         const verificationCode = '12345678';
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
           ),
@@ -436,7 +436,7 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late EmailIDPTestFixture fixture;
+      late EmailIdpTestFixture fixture;
       late String completePasswordResetToken;
 
       setUp(() async {
@@ -444,8 +444,8 @@ void main() {
 
         const verificationCode = '12345678';
         const passwordResetVerificationCodeLifetime = Duration(hours: 1);
-        fixture = EmailIDPTestFixture(
-          config: EmailIDPConfig(
+        fixture = EmailIdpTestFixture(
+          config: EmailIdpConfig(
             secretHashPepper: 'pepper',
             passwordResetVerificationCodeGenerator: () => verificationCode,
             passwordResetVerificationCodeLifetime:

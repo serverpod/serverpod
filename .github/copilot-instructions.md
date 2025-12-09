@@ -15,14 +15,23 @@ When working with pull requests in this repository, **ALWAYS**:
 5. **Document breaking changes**: Always fill in the breaking changes section if applicable
 
 ### PR Template Enforcement
+
 - **Never create** a PR description without using the standard template
 - **Always preserve** the checklist structure and format
 - **Ensure consistency** across all PRs for documentation quality
 - **Reference the template file** directly when generating descriptions
 
+### Documentation and Release Files
+
+- **Never update** CHANGELOG files unless explicitly instructed by the user
+- **Never update** README files unless explicitly instructed by the user
+- CHANGELOG files are manually updated during release process
+- Only make documentation changes when specifically requested
+
 ## Command Validation Status
 
 **FULLY VALIDATED** (confirmed working in test environment):
+
 - ✅ `docker compose config` - All Docker configurations are valid
 - ✅ `docker compose up -d postgres redis` - Services start and are accessible
 - ✅ `tests/docker/tests_integration/wait-for-it.sh` - Service readiness checker works
@@ -32,6 +41,7 @@ When working with pull requests in this repository, **ALWAYS**:
 - ✅ Example project Docker infrastructure verified
 
 **REQUIRES DART/FLUTTER** (cannot validate without network access):
+
 - ⚠️ `util/run_tests_unit` - Requires Dart SDK
 - ⚠️ `util/run_tests_analyze` - Requires Dart SDK
 - ⚠️ `melos` commands - Requires Dart SDK and Melos package
@@ -44,8 +54,8 @@ When working with pull requests in this repository, **ALWAYS**:
 **CRITICAL**: Install these exact versions to ensure compatibility:
 
 ### Required Tools
-1. **Dart SDK**: `^3.8.0` (required)
-2. **Flutter SDK**: `^3.32.0` (required for Flutter components)
+1. **Dart SDK**: `^3.10.3` (required)
+2. **Flutter SDK**: `^3.38.4` (required for Flutter components)
 3. **Git**: Any recent version
 4. **Docker & Docker Compose**: Required for integration tests and local development
 5. **Melos**: For monorepo management (`dart pub global activate melos`)
@@ -57,8 +67,8 @@ When working with pull requests in this repository, **ALWAYS**:
 # Install Flutter (choose one method)
 # Method 1: Using FVM (Recommended if you have Dart already)
 dart pub global activate fvm
-fvm install 3.32.0
-fvm use 3.32.0
+fvm install 3.38.4
+fvm use 3.38.4
 
 # Method 2: Manual Flutter installation
 cd /opt
@@ -72,13 +82,14 @@ sudo snap install flutter --classic
 dart pub global activate melos
 
 # Verify installations
-dart --version     # Should be ^3.8.0
-flutter --version  # Should be ^3.32.0
+dart --version     # Should be ^3.10.0
+flutter --version  # Should be ^3.38.4
 docker --version   # Should work
 git --version      # Should work
 ```
 
 **TROUBLESHOOTING**:
+
 - If Dart SDK download fails during Flutter setup, try again or use a different network
 - On CI/restricted networks, pre-install tools or use cached versions
 - Ensure Docker daemon is running before running tests
@@ -88,6 +99,7 @@ git --version      # Should work
 **NEVER CANCEL BUILDS OR LONG-RUNNING COMMANDS** - Builds may take 30-45 minutes, tests may take 15-60 minutes depending on scope.
 
 ### Initial Setup (Run from repository root)
+
 ```bash
 # Alternative: melos bootstrap
 dart pub global activate melos
@@ -108,6 +120,7 @@ export SERVERPOD_HOME=$(pwd)
 **TIMING**: `melos bootstrap` takes 10-15 minutes. Set timeout to 30+ minutes.
 
 ### Build Commands
+
 ```bash
 # Generate all code (after model/endpoint changes)
 util/generate_all
@@ -122,14 +135,16 @@ melos bootstrap
 ## Testing Infrastructure
 
 **VERIFIED DOCKER TIMING**:
-- **PostgreSQL container**: 5-10 seconds (first run with image download)  
+
+- **PostgreSQL container**: 5-10 seconds (first run with image download)
 - **Redis container**: 2-5 seconds (first run with image download)
 - **Subsequent starts**: 1-2 seconds per service
 - **Service readiness**: Additional 1-2 seconds for network accessibility
 
 **CRITICAL TIMING NOTES** (Based on CI Analysis):
+
 - **Repository setup**: `melos bootstrap` - 10-15 minutes - Set timeout to 30+ minutes
-- **Unit tests**: `util/run_tests_unit` - 5-15 minutes - Set timeout to 30+ minutes  
+- **Unit tests**: `util/run_tests_unit` - 5-15 minutes - Set timeout to 30+ minutes
 - **Integration tests**: `util/run_tests_integration` - 15-30 minutes - Set timeout to 45+ minutes
 - **E2E tests**: `util/run_tests_e2e` - 20-45 minutes - Set timeout to 60+ minutes
 - **Bootstrap tests**: `util/run_tests_bootstrap` - 30-60 minutes - Set timeout to 90+ minutes
@@ -180,6 +195,7 @@ dart test --reporter=failures-only
 ### Docker Test Infrastructure
 
 Add these entries to `/etc/hosts` for tests:
+
 ```
 127.0.0.1 serverpod_test_server
 127.0.0.1 postgres
@@ -187,6 +203,7 @@ Add these entries to `/etc/hosts` for tests:
 ```
 
 Start test infrastructure:
+
 ```bash
 # For integration tests
 cd tests/docker/tests_integration
@@ -216,7 +233,7 @@ util/run_tests_analyze --allow-warnings  # Least strict
 
 # Alternative: Melos-based analysis
 melos lint_strict  # Matches CI strict mode
-melos lint         # Standard linting 
+melos lint         # Standard linting
 melos lint_loose   # For downgrade tests
 
 # Single package analysis
@@ -226,6 +243,7 @@ dart analyze --fatal-infos package_name/
 ## Creating and Running Projects
 
 ### Create New Project
+
 ```bash
 # Ensure SERVERPOD_HOME is set
 export SERVERPOD_HOME=/path/to/serverpod/repo
@@ -246,8 +264,9 @@ dart bin/main.dart --apply-migrations
 ### Example Projects
 
 Run the auth example:
+
 ```bash
-cd examples/auth_example/auth_example_server
+cd examples/legacy/auth_example/auth_example_server
 
 # Start services
 docker compose up -d
@@ -264,26 +283,32 @@ flutter run
 ## Repository Structure and Key Locations
 
 ### Core Packages (`/packages/`)
+
 - **`serverpod`**: Main server framework, ORM, authentication, caching
-- **`serverpod_client`**: Client-side generated code base classes  
+- **`serverpod_client`**: Client-side generated code base classes
 - **`serverpod_flutter`**: Flutter-specific client implementations
 - **`serverpod_serialization`**: Shared serialization code
 - **`serverpod_shared`**: Code shared between server and tooling
 - **`serverpod_test`**: Test framework utilities
 
 ### CLI Tools (`/tools/`)
+
 - **`serverpod_cli`**: Command-line interface, code generation, analyzer
 
 ### Modules (`/modules/`)
-- **`serverpod_auth`**: Authentication module (Google, Apple, Email, Firebase)
+
+- **`legacy/serverpod_auth`**: Legacy authentication module (Google, Apple, Email, Firebase)
 - **`new_serverpod_auth`**: New authentication system
-- **`serverpod_chat`**: Real-time chat module
+- **`legacy/serverpod_chat`**: Legacy real-time chat module
 
 ### Examples (`/examples/`)
-- **`auth_example`**: Demonstrates authentication flows
-- **`chat`**: Real-time chat application
+
+- **`auth`**: New authentication example
+- **`legacy/auth_example`**: Legacy authentication example demonstrating old auth flows
+- **`legacy/chat`**: Legacy real-time chat application
 
 ### Tests (`/tests/`)
+
 - **`serverpod_test_server`**: Main integration test server
 - **`bootstrap_project`**: Project creation tests
 - **`serverpod_cli_e2e_test`**: CLI end-to-end tests
@@ -292,6 +317,7 @@ flutter run
 ## Real-World Usage Scenarios
 
 ### Scenario 1: Setting up Development Environment from Scratch
+
 ```bash
 # 1. Clone and setup (15-20 minutes total)
 git clone https://github.com/serverpod/serverpod.git
@@ -314,6 +340,7 @@ serverpod --version
 ```
 
 ### Scenario 2: Creating and Testing a New Project
+
 ```bash
 # 1. Create project (30 seconds)
 serverpod create testproject
@@ -328,6 +355,7 @@ dart bin/main.dart --apply-migrations
 ```
 
 ### Scenario 3: Running Integration Tests on Core Framework
+
 ```bash
 # 1. Start test infrastructure (5-10 seconds)
 cd tests/docker/tests_integration
@@ -347,6 +375,7 @@ docker compose down -v
 ```
 
 ### Scenario 4: Validating Changes Before PR
+
 ```bash
 # 1. Format and analyze (1-2 minutes)
 dart format .
@@ -356,7 +385,7 @@ util/run_tests_analyze
 util/run_tests_unit
 
 # 3. Test example project still works
-cd examples/auth_example/auth_example_server
+cd examples/legacy/auth_example/auth_example_server
 docker compose up -d
 dart bin/main.dart --apply-migrations
 # Verify no errors in startup
@@ -365,6 +394,7 @@ dart bin/main.dart --apply-migrations
 ## Development Workflows
 
 ### Working on Core Framework
+
 ```bash
 # After changing core code
 cd packages/serverpod
@@ -378,6 +408,7 @@ util/run_tests_unit && util/run_tests_integration
 ```
 
 ### Working on CLI
+
 ```bash
 cd tools/serverpod_cli
 
@@ -393,8 +424,9 @@ dart test --concurrency=1
 ```
 
 ### Working on Modules
+
 ```bash
-cd modules/serverpod_auth/serverpod_auth_server
+cd modules/legacy/serverpod_auth/serverpod_auth_server
 
 # Start test infrastructure
 docker compose up -d
@@ -408,23 +440,26 @@ dart test -t integration --reporter=failures-only
 **ALWAYS** validate changes with these steps:
 
 1. **Format and lint**:
+
    ```bash
    dart format .
    melos lint_strict
    ```
 
 2. **Test affected components**:
+
    ```bash
    # For core changes
    util/run_tests_unit
-   
-   # For integration changes  
+
+   # For integration changes
    util/run_tests_integration
    ```
 
 3. **Test example projects**:
+
    ```bash
-   cd examples/auth_example/auth_example_server
+   cd examples/legacy/auth_example/auth_example_server
    docker compose up -d
    dart bin/main.dart --apply-migrations
    # Verify server starts successfully
@@ -444,13 +479,15 @@ dart test -t integration --reporter=failures-only
 **CRITICAL**: All PR titles must follow [Conventional Commits](https://www.conventionalcommits.org/) format to pass CI validation.
 
 ### PR Title Format
+
 ```
 <type>: <description>
 ```
 
 **Valid types** (enforced by GitHub Actions):
+
 - **`feat`**: New features
-- **`fix`**: Bug fixes  
+- **`fix`**: Bug fixes
 - **`docs`**: Documentation changes
 - **`style`**: Code style changes (formatting, missing semi-colons, etc)
 - **`refactor`**: Code refactoring without changing functionality
@@ -462,11 +499,13 @@ dart test -t integration --reporter=failures-only
 - **`revert`**: Reverting previous commits
 
 **Requirements**:
+
 - Description must start with an uppercase letter
 - Be descriptive and concise
 - Use imperative mood ("Add feature" not "Added feature")
 
 **Examples**:
+
 ```
 feat: Add authentication module for OAuth2 integration
 fix: Resolve database connection timeout issue
@@ -477,11 +516,12 @@ chore: Update dependencies to latest versions
 ```
 
 ### PR Submission Checklist
+
 Before submitting a PR, ensure:
 
 1. **Title follows conventional commits format**
 2. **Code is formatted**: `dart format .`
-3. **Linting passes**: `melos lint_strict` 
+3. **Linting passes**: `melos lint_strict`
 4. **Tests pass**: Run relevant test suites for your changes
 5. **Examples still work**: Verify at least one example project starts successfully
 6. **Documentation updated**: If adding features or changing APIs
@@ -498,7 +538,7 @@ Before submitting a PR, ensure:
 ## Performance Notes
 
 - **Initial setup**: 15-20 minutes
-- **Full test suite**: 2-3 hours 
+- **Full test suite**: 2-3 hours
 - **Unit tests only**: 10 minutes
 - **Single package test**: 1-5 minutes
 - **Docker startup**: 2-3 minutes
@@ -509,6 +549,7 @@ Before submitting a PR, ensure:
 ## Test Writing Guidelines
 
 ### Test Description Pattern
+
 Use the "Given, When, Then" pattern for test descriptions to maintain consistency:
 
 ```dart
@@ -520,12 +561,44 @@ test(
 );
 ```
 
+**CRITICAL**: When using `group()` with `test()`, ensure each statement ("Given", "When", "Then") appears **only once** in the combined description:
+
+```dart
+// CORRECT: "Given" in group, "when/then" in test
+group(
+  'Given a session with slow method call when logging is enabled',
+  () {
+    test(
+      'when session is logged then time field should be set to start time.',
+      () {
+        // Test implementation
+      }
+    );
+  }
+);
+
+// INCORRECT: "Given" repeated in both group and test
+group(
+  'Given a session with slow method call',
+  () {
+    test(
+      'Given a slow method when session is logged then time field is correct.',  // ❌ Duplicate "Given"
+      () {
+        // Test implementation
+      }
+    );
+  }
+);
+```
+
 ### Test Organization
+
 - Place passing/success test cases at the top of test files
 - Group related test cases using `group()` where appropriate
 - Follow success test cases with error test cases for the same functionality
 
 ## Code Style
+
 - Follow Dart formatting conventions
 - Remove unnecessary comments from production code
 - Use descriptive variable and function names

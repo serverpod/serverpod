@@ -69,6 +69,7 @@ abstract class PasskeyChallenge
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_idp.PasskeyChallenge',
       if (id != null) 'id': id?.toJson(),
       'createdAt': createdAt.toJson(),
       'challenge': challenge.toJson(),

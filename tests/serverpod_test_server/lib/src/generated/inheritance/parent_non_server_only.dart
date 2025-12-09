@@ -37,12 +37,18 @@ class NonServerOnlyParentClass
 
   @override
   Map<String, dynamic> toJson() {
-    return {'parentField': parentField};
+    return {
+      '__className__': 'NonServerOnlyParentClass',
+      'parentField': parentField,
+    };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {'parentField': parentField};
+    return {
+      '__className__': 'NonServerOnlyParentClass',
+      'parentField': parentField,
+    };
   }
 
   @override

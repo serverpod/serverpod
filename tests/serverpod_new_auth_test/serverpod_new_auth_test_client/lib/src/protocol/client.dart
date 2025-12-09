@@ -71,12 +71,36 @@ class EndpointAuthTest extends _i1.EndpointRef {
         {'authUserId': authUserId},
       );
 
+  /// Destroys a specific refresh token by ID.
+  _i2.Future<bool> destroySpecificRefreshToken(String token) =>
+      caller.callServerEndpoint<bool>(
+        'authTest',
+        'destroySpecificRefreshToken',
+        {'token': token},
+      );
+
   /// Checks if the session is authenticated for the test user.
   _i2.Future<bool> checkSession(_i1.UuidValue authUserId) =>
       caller.callServerEndpoint<bool>(
         'authTest',
         'checkSession',
         {'authUserId': authUserId},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointAuthenticatedStreamingTest extends _i1.EndpointRef {
+  EndpointAuthenticatedStreamingTest(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'authenticatedStreamingTest';
+
+  _i2.Stream<int> openAuthenticatedStream() =>
+      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+        'authenticatedStreamingTest',
+        'openAuthenticatedStream',
+        {},
+        {},
       );
 }
 
@@ -167,7 +191,7 @@ class EndpointEmailAccountBackwardsCompatibilityTest extends _i1.EndpointRef {
 
 /// Endpoint for email-based authentication.
 /// {@category Endpoint}
-class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
+class EndpointEmailAccount extends _i5.EndpointEmailIdpBase {
   EndpointEmailAccount(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -244,9 +268,8 @@ class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
   ///   already expired.
   /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
   ///   does not comply with the password policy.
-  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
-  ///   for the given [accountRequestId], [verificationCode] is invalid, or
-  ///   the request has not been verified yet.
+  /// - [EmailAccountRequestExceptionReason.invalid] if the [registrationToken]
+  ///   is invalid.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
@@ -344,7 +367,7 @@ class EndpointEmailAccount extends _i5.EndpointEmailIDPBase {
 /// accounts.
 /// {@category Endpoint}
 class EndpointGoogleAccountBackwardsCompatibilityTest
-    extends _i5.EndpointGoogleIDPBase {
+    extends _i5.EndpointGoogleIdpBase {
   EndpointGoogleAccountBackwardsCompatibilityTest(_i1.EndpointCaller caller)
     : super(caller);
 
@@ -367,7 +390,7 @@ class EndpointGoogleAccountBackwardsCompatibilityTest
 
 /// Endpoint for Google-based authentication.
 /// {@category Endpoint}
-class EndpointGoogleAccount extends _i5.EndpointGoogleIDPBase {
+class EndpointGoogleAccount extends _i5.EndpointGoogleIdpBase {
   EndpointGoogleAccount(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -429,7 +452,7 @@ class EndpointJwtRefresh extends _i3.EndpointRefreshJwtTokens {
 
 /// Endpoint for email-based authentication which imports the legacy passwords.
 /// {@category Endpoint}
-class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
+class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIdpBase {
   EndpointPasswordImportingEmailAccount(_i1.EndpointCaller caller)
     : super(caller);
 
@@ -501,9 +524,8 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIDPBase {
   ///   already expired.
   /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
   ///   does not comply with the password policy.
-  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
-  ///   for the given [accountRequestId], [verificationCode] is invalid, or
-  ///   the request has not been verified yet.
+  /// - [EmailAccountRequestExceptionReason.invalid] if the [registrationToken]
+  ///   is invalid.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
@@ -677,7 +699,10 @@ class Client extends _i1.ServerpodClientShared {
   Client(
     String host, {
     dynamic securityContext,
-    _i1.AuthenticationKeyManager? authenticationKeyManager,
+    @Deprecated(
+      'Use authKeyProvider instead. This will be removed in future releases.',
+    )
+    super.authenticationKeyManager,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
     Function(
@@ -692,7 +717,6 @@ class Client extends _i1.ServerpodClientShared {
          host,
          _i9.Protocol(),
          securityContext: securityContext,
-         authenticationKeyManager: authenticationKeyManager,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
          onFailedCall: onFailedCall,
@@ -701,6 +725,7 @@ class Client extends _i1.ServerpodClientShared {
              disconnectStreamsOnLostInternetConnection,
        ) {
     authTest = EndpointAuthTest(this);
+    authenticatedStreamingTest = EndpointAuthenticatedStreamingTest(this);
     emailAccountBackwardsCompatibilityTest =
         EndpointEmailAccountBackwardsCompatibilityTest(this);
     emailAccount = EndpointEmailAccount(this);
@@ -714,6 +739,8 @@ class Client extends _i1.ServerpodClientShared {
   }
 
   late final EndpointAuthTest authTest;
+
+  late final EndpointAuthenticatedStreamingTest authenticatedStreamingTest;
 
   late final EndpointEmailAccountBackwardsCompatibilityTest
   emailAccountBackwardsCompatibilityTest;
@@ -737,6 +764,7 @@ class Client extends _i1.ServerpodClientShared {
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
     'authTest': authTest,
+    'authenticatedStreamingTest': authenticatedStreamingTest,
     'emailAccountBackwardsCompatibilityTest':
         emailAccountBackwardsCompatibilityTest,
     'emailAccount': emailAccount,

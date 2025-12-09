@@ -1,4 +1,5 @@
-import '../../generated/protocol.dart';
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 /// Extensions method to convert a [UserProfile] to its model.
 extension UserProfileToUserProfileModel on UserProfile {
@@ -22,6 +23,17 @@ extension UserProfileToUserProfileData on UserProfile {
       userName: userName,
       fullName: fullName,
       email: email,
+    );
+  }
+}
+
+/// Extensions method on the AuthenticationInfo to get the user profile.
+extension AuthenticationInfoUserProfile on AuthenticationInfo {
+  /// Returns the user profile of the authenticated user.
+  Future<UserProfileModel?> userProfile(final Session session) async {
+    return await AuthServices.instance.userProfiles.findUserProfileByUserId(
+      session,
+      authUserId,
     );
   }
 }

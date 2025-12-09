@@ -31,7 +31,7 @@ abstract class RevokedAuthenticationUser
   RevokedAuthenticationUser copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {'__className__': 'serverpod.RevokedAuthenticationUser'};
   }
 
   @override

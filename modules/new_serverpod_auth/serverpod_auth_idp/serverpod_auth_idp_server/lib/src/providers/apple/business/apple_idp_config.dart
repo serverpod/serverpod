@@ -1,7 +1,11 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
+import '../../../../../core.dart';
+import 'apple_idp.dart';
+
 /// Configuration for the Apple identity provider.
-class AppleIDPConfig {
+class AppleIdpConfig extends IdentityProviderBuilder<AppleIdp> {
   /// The service identifier for the Sign in with Apple project.
   final String serviceIdentifier;
 
@@ -21,7 +25,7 @@ class AppleIDPConfig {
   final String key;
 
   /// Creates a new Sign in with Apple configuration.
-  AppleIDPConfig({
+  const AppleIdpConfig({
     required this.serviceIdentifier,
     required this.bundleIdentifier,
     required this.redirectUri,
@@ -29,11 +33,45 @@ class AppleIDPConfig {
     required this.keyId,
     required this.key,
   });
+
+  @override
+  AppleIdp build({
+    required final TokenManager tokenManager,
+    required final AuthUsers authUsers,
+    required final UserProfiles userProfiles,
+  }) {
+    return AppleIdp(
+      this,
+      tokenManager: tokenManager,
+      authUsers: authUsers,
+      userProfiles: userProfiles,
+    );
+  }
 }
 
-/// Extension methods for [AppleIDPConfig].
-extension AppleIDPConfigExtension on AppleIDPConfig {
-  /// Converts the [AppleIDPConfig] to a [SignInWithAppleConfiguration].
+/// Creates a new [AppleIdpConfig] from keys on the `passwords.yaml` file.
+///
+/// This constructor requires that a [Serverpod] instance has already been initialized.
+class AppleIdpConfigFromPasswords extends AppleIdpConfig {
+  /// Creates a new [AppleIdpConfigFromPasswords] instance.
+  AppleIdpConfigFromPasswords()
+    : super(
+        serviceIdentifier: Serverpod.instance.getPassword(
+          'appleServiceIdentifier',
+        )!,
+        bundleIdentifier: Serverpod.instance.getPassword(
+          'appleBundleIdentifier',
+        )!,
+        redirectUri: Serverpod.instance.getPassword('appleRedirectUri')!,
+        teamId: Serverpod.instance.getPassword('appleTeamId')!,
+        keyId: Serverpod.instance.getPassword('appleKeyId')!,
+        key: Serverpod.instance.getPassword('appleKey')!,
+      );
+}
+
+/// Extension methods for [AppleIdpConfig].
+extension AppleIdpConfigExtension on AppleIdpConfig {
+  /// Converts the [AppleIdpConfig] to a [SignInWithAppleConfiguration].
   SignInWithAppleConfiguration toSignInWithAppleConfiguration() {
     return SignInWithAppleConfiguration(
       serviceIdentifier: serviceIdentifier,

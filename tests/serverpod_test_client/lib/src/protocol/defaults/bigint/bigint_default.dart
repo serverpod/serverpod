@@ -62,6 +62,7 @@ abstract class BigIntDefault implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'BigIntDefault',
       if (id != null) 'id': id,
       'bigintDefaultStr': bigintDefaultStr.toJson(),
       if (bigintDefaultStrNull != null)

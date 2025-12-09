@@ -1,0 +1,33 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+name: serverpod_chat_server
+description: Serverpod chat server module.
+version: 3.0.0
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: '^3.8.0'
+
+dependencies:
+  http: '>=1.1.0 <2.0.0'
+  image: ^4.0.15
+  path: ^1.8.3
+  serverpod: 3.0.0
+  serverpod_auth_server: 3.0.0
+  serverpod_serialization: 3.0.0
+
+dev_dependencies:
+  serverpod_lints: 3.0.0
+
+dependency_overrides:
+  serverpod:
+    path: ../../../../packages/serverpod
+  serverpod_auth_server:
+    path: ../../serverpod_auth/serverpod_auth_server
+  serverpod_lints:
+    path: ../../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../../../packages/serverpod_shared

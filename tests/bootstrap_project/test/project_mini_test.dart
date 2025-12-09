@@ -10,30 +10,16 @@ const tempDirName = 'temp-mini';
 
 void main() async {
   final rootPath = path.join(Directory.current.path, '..', '..');
-  final cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
+  final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
   final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
-    await runProcess(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
-    // Run command and activate again to force cache pub dependencies.
-    await runProcess(
-      'serverpod',
-      ['version'],
-      workingDirectory: cliPath,
-    );
-
-    await runProcess(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
     await Directory(tempPath).create();
+    final pubGetProcess = await startProcess('dart', [
+      'pub',
+      'get',
+    ], workingDirectory: cliProjectPath);
+    assert(await pubGetProcess.exitCode == 0);
   });
 
   tearDownAll(() async {
@@ -50,9 +36,16 @@ void main() async {
     test(
       'when creating a new project with the mini template then the project is created successfully and can be booted in maintenance mode.',
       () async {
-        createProcess = await startProcess(
-          'serverpod',
-          ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+        createProcess = await startServerpodCli(
+          [
+            'create',
+            '--template',
+            'mini',
+            projectName,
+            '-v',
+            '--no-analytics',
+          ],
+          rootPath: rootPath,
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -86,9 +79,16 @@ void main() async {
     test(
       'when creating a new project with the mini template then the project is created successfully without the full configuration of a full project.',
       () async {
-        createProcess = await startProcess(
-          'serverpod',
-          ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+        createProcess = await startServerpodCli(
+          [
+            'create',
+            '--template',
+            'mini',
+            projectName,
+            '-v',
+            '--no-analytics',
+          ],
+          rootPath: rootPath,
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -152,15 +152,102 @@ void main() async {
     );
   });
 
+  group('Given a clean state', () {
+    final (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
+    final (:serverDir, :flutterDir, :clientDir) = createProjectFolderPaths(
+      projectName,
+    );
+
+    group('when creating a new project with the mini template', () {
+      setUpAll(() async {
+        var createProcess = await startServerpodCli(
+          [
+            'create',
+            '--template',
+            'mini',
+            projectName,
+            '-v',
+            '--no-analytics',
+          ],
+          rootPath: rootPath,
+          workingDirectory: tempPath,
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
+
+        var exitCode = await createProcess.exitCode;
+        assert(exitCode == 0);
+      });
+
+      test('then the server pubspec does not contain auth dependencies', () {
+        final pubspec = File(path.join(tempPath, serverDir, 'pubspec.yaml'));
+        final content = pubspec.readAsStringSync();
+        expect(content, isNot(contains('serverpod_auth_idp_server')));
+      });
+
+      test('then the server server.dart does not contain auth imports', () {
+        final serverFile = File(
+          path.join(tempPath, serverDir, 'lib', 'server.dart'),
+        );
+        final content = serverFile.readAsStringSync();
+        expect(content, isNot(contains('serverpod_auth_idp_server')));
+      });
+
+      test('then the email_idp_endpoint.dart does not exist', () {
+        final endpointFile = File(
+          path.join(
+            tempPath,
+            serverDir,
+            'lib',
+            'src',
+            'endpoints',
+            'email_idp_endpoint.dart',
+          ),
+        );
+        expect(endpointFile.existsSync(), isFalse);
+      });
+
+      test('then the flutter pubspec does not contain auth dependencies', () {
+        final pubspec = File(path.join(tempPath, flutterDir, 'pubspec.yaml'));
+        final content = pubspec.readAsStringSync();
+        expect(content, isNot(contains('serverpod_auth_idp_flutter')));
+      });
+
+      test('then the flutter main.dart does not contain auth imports', () {
+        final mainFile = File(
+          path.join(tempPath, flutterDir, 'lib', 'main.dart'),
+        );
+        final content = mainFile.readAsStringSync();
+        expect(content, isNot(contains('serverpod_auth_idp_flutter')));
+      });
+
+      test('then the flutter main.dart does not contain SignInWidget', () {
+        final mainFile = File(
+          path.join(tempPath, flutterDir, 'lib', 'main.dart'),
+        );
+        final content = mainFile.readAsStringSync();
+        expect(content, isNot(contains('SignInWidget')));
+      });
+    });
+  });
+
   group('Given a mini project', () {
     final (:projectName, :commandRoot) = createRandomProjectName(tempPath);
     final serverDir = createServerFolderPath(projectName);
     late Process createProcess;
 
     setUpAll(() async {
-      createProcess = await startProcess(
-        'serverpod',
-        ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+      createProcess = await startServerpodCli(
+        [
+          'create',
+          '--template',
+          'mini',
+          projectName,
+          '-v',
+          '--no-analytics',
+        ],
+        rootPath: rootPath,
         workingDirectory: tempPath,
         environment: {
           'SERVERPOD_HOME': rootPath,
@@ -187,9 +274,16 @@ void main() async {
       'when upgrading the project to a full project '
       'then the project is created successfully and can be booted in maintenance mode with the apply-migrations flag.',
       () async {
-        var upgradeProcess = await startProcess(
-          'serverpod',
-          ['create', '--template', 'server', '.', '-v', '--no-analytics'],
+        var upgradeProcess = await startServerpodCli(
+          [
+            'create',
+            '--template',
+            'server',
+            '.',
+            '-v',
+            '--no-analytics',
+          ],
+          rootPath: rootPath,
           workingDirectory: path.join(tempPath, serverDir),
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -238,9 +332,16 @@ void main() async {
     final serverDir = createServerFolderPath(projectName);
     late Process createProcess;
     setUpAll(() async {
-      createProcess = await startProcess(
-        'serverpod',
-        ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+      createProcess = await startServerpodCli(
+        [
+          'create',
+          '--template',
+          'mini',
+          projectName,
+          '-v',
+          '--no-analytics',
+        ],
+        rootPath: rootPath,
         workingDirectory: tempPath,
         environment: {
           'SERVERPOD_HOME': rootPath,
@@ -263,9 +364,16 @@ void main() async {
       () {
         late Process upgradeProcess;
         setUpAll(() async {
-          upgradeProcess = await startProcess(
-            'serverpod',
-            ['create', '--template', 'server', '.', '-v', '--no-analytics'],
+          upgradeProcess = await startServerpodCli(
+            [
+              'create',
+              '--template',
+              'server',
+              '.',
+              '-v',
+              '--no-analytics',
+            ],
+            rootPath: rootPath,
             workingDirectory: path.join(tempPath, serverDir),
             environment: {
               'SERVERPOD_HOME': rootPath,
@@ -292,17 +400,6 @@ void main() async {
             configDir,
             isTrue,
             reason: 'Config directory should exist but it was not found.',
-          );
-        });
-
-        test('then the project contains a deploy directory', () {
-          var deployDir = Directory(
-            path.join(tempPath, serverDir, 'deploy'),
-          ).existsSync();
-          expect(
-            deployDir,
-            isTrue,
-            reason: 'Deploy directory should exist but it was not found.',
           );
         });
 
@@ -339,15 +436,105 @@ void main() async {
           );
         });
 
-        test('then the project contains a .gcloudignore file', () {
-          var gcloudIgnoreFile = File(
-            path.join(tempPath, serverDir, '.gcloudignore'),
+        test('then the project contains GitHub workflow for tests', () {
+          var testsWorkflow = File(
+            path.join(
+              tempPath,
+              projectName,
+              '.github',
+              'workflows',
+              'tests.yml',
+            ),
           ).existsSync();
           expect(
-            gcloudIgnoreFile,
+            testsWorkflow,
             isTrue,
-            reason: '.gcloudignore should exist but it was not found.',
+            reason: 'tests.yml workflow should exist but it was not found.',
           );
+        });
+
+        test('then the project contains GitHub workflow for format', () {
+          var formatWorkflow = File(
+            path.join(
+              tempPath,
+              projectName,
+              '.github',
+              'workflows',
+              'format.yml',
+            ),
+          ).existsSync();
+          expect(
+            formatWorkflow,
+            isTrue,
+            reason: 'format.yml workflow should exist but it was not found.',
+          );
+        });
+
+        test('then the project contains GitHub workflow for analyze', () {
+          var analyzeWorkflow = File(
+            path.join(
+              tempPath,
+              projectName,
+              '.github',
+              'workflows',
+              'analyze.yml',
+            ),
+          ).existsSync();
+          expect(
+            analyzeWorkflow,
+            isTrue,
+            reason: 'analyze.yml workflow should exist but it was not found.',
+          );
+        });
+
+        test('then the server pubspec does not contain auth dependencies', () {
+          final pubspec = File(
+            path.join(tempPath, serverDir, 'pubspec.yaml'),
+          );
+          final content = pubspec.readAsStringSync();
+          expect(content, isNot(contains('serverpod_auth_idp_server')));
+        });
+
+        test('then the server server.dart does not contain auth imports', () {
+          final serverFile = File(
+            path.join(tempPath, serverDir, 'lib', 'server.dart'),
+          );
+          final content = serverFile.readAsStringSync();
+          expect(content, isNot(contains('serverpod_auth_idp_server')));
+        });
+
+        test('then the flutter pubspec does not contain auth dependencies', () {
+          final (:serverDir, :flutterDir, :clientDir) =
+              createProjectFolderPaths(projectName);
+          final pubspec = File(
+            path.join(tempPath, flutterDir, 'pubspec.yaml'),
+          );
+          final content = pubspec.readAsStringSync();
+          expect(content, isNot(contains('serverpod_auth_idp_flutter')));
+        });
+
+        test('then the flutter main.dart does not contain auth imports', () {
+          final (:serverDir, :flutterDir, :clientDir) =
+              createProjectFolderPaths(projectName);
+          final mainFile = File(
+            path.join(tempPath, flutterDir, 'lib', 'main.dart'),
+          );
+          final content = mainFile.readAsStringSync();
+          expect(content, isNot(contains('serverpod_auth_idp_flutter')));
+        });
+
+        test('then the email_idp_endpoint.dart does not exist', () {
+          final endpointFile = File(
+            path.join(
+              tempPath,
+              serverDir,
+              'lib',
+              'src',
+              'endpoints',
+              'email_idp_endpoint.dart',
+            ),
+          );
+          expect(endpointFile.existsSync(), isFalse);
         });
       },
     );
@@ -373,9 +560,16 @@ void main() async {
     test(
       'when creating a new project with the mini template and upgrading it to a full project then the tests are passing.',
       () async {
-        createProcess = await startProcess(
-          'serverpod',
-          ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+        createProcess = await startServerpodCli(
+          [
+            'create',
+            '--template',
+            'mini',
+            projectName,
+            '-v',
+            '--no-analytics',
+          ],
+          rootPath: rootPath,
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -389,9 +583,16 @@ void main() async {
           reason: 'Failed to create the serverpod project.',
         );
 
-        var upgradeProcess = await startProcess(
-          'serverpod',
-          ['create', '--template', 'server', '.', '-v', '--no-analytics'],
+        var upgradeProcess = await startServerpodCli(
+          [
+            'create',
+            '--template',
+            'server',
+            '.',
+            '-v',
+            '--no-analytics',
+          ],
+          rootPath: rootPath,
           workingDirectory: path.join(tempPath, serverDir),
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -456,15 +657,22 @@ void main() async {
     final (:projectName, commandRoot: _) = createRandomProjectName(tempPath);
 
     setUp(() async {
-      var createProcess = await runProcess(
-        'serverpod',
-        ['create', '--template', 'mini', projectName, '-v', '--no-analytics'],
+      var createProcess = await runServerpodCli(
+        [
+          'create',
+          '--template',
+          'mini',
+          projectName,
+          '-v',
+          '--no-analytics',
+        ],
+        rootPath: rootPath,
         workingDirectory: tempPath,
         environment: {
           'SERVERPOD_HOME': rootPath,
         },
       );
-      assert((await createProcess.exitCode) == 0);
+      assert(createProcess.exitCode == 0);
     });
 
     test(

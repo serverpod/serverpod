@@ -97,6 +97,7 @@ abstract class CloudStorageEntry
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.CloudStorageEntry',
       if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,
@@ -110,6 +111,7 @@ abstract class CloudStorageEntry
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.CloudStorageEntry',
       if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,

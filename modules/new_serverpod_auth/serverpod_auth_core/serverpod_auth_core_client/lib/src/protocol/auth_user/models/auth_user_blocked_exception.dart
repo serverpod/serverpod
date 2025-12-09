@@ -30,12 +30,12 @@ abstract class AuthUserBlockedException
   AuthUserBlockedException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {'__className__': 'serverpod_auth_core.AuthUserBlockedException'};
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'AuthUserBlockedException';
   }
 }
 

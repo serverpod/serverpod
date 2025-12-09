@@ -57,6 +57,7 @@ abstract class SimpleDateTime
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'SimpleDateTime',
       if (id != null) 'id': id,
       'dateTime': dateTime.toJson(),
     };
@@ -65,6 +66,7 @@ abstract class SimpleDateTime
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'SimpleDateTime',
       if (id != null) 'id': id,
       'dateTime': dateTime.toJson(),
     };

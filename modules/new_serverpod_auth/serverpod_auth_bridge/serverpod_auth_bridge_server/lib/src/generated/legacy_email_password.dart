@@ -15,6 +15,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i2;
+import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart'
+    as _i3;
 
 abstract class LegacyEmailPassword
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -42,8 +44,8 @@ abstract class LegacyEmailPassword
       ),
       emailAccount: jsonSerialization['emailAccount'] == null
           ? null
-          : _i2.EmailAccount.fromJson(
-              (jsonSerialization['emailAccount'] as Map<String, dynamic>),
+          : _i3.Protocol().deserialize<_i2.EmailAccount>(
+              jsonSerialization['emailAccount'],
             ),
       hash: jsonSerialization['hash'] as String,
     );
@@ -81,6 +83,7 @@ abstract class LegacyEmailPassword
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_bridge.LegacyEmailPassword',
       if (id != null) 'id': id?.toJson(),
       'emailAccountId': emailAccountId.toJson(),
       if (emailAccount != null) 'emailAccount': emailAccount?.toJson(),

@@ -78,6 +78,7 @@ abstract class PasskeyLoginRequest
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_idp.PasskeyLoginRequest',
       'challengeId': challengeId.toJson(),
       'keyId': keyId.toJson(),
       'authenticatorData': authenticatorData.toJson(),
@@ -89,6 +90,7 @@ abstract class PasskeyLoginRequest
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod_auth_idp.PasskeyLoginRequest',
       'challengeId': challengeId.toJson(),
       'keyId': keyId.toJson(),
       'authenticatorData': authenticatorData.toJson(),

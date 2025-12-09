@@ -114,6 +114,7 @@ abstract class MessageLogEntry implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.MessageLogEntry',
       if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
       'serverId': serverId,

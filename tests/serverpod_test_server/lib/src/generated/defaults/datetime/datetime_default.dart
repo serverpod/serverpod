@@ -78,6 +78,7 @@ abstract class DateTimeDefault
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DateTimeDefault',
       if (id != null) 'id': id,
       'dateTimeDefaultNow': dateTimeDefaultNow.toJson(),
       'dateTimeDefaultStr': dateTimeDefaultStr.toJson(),
@@ -89,6 +90,7 @@ abstract class DateTimeDefault
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'DateTimeDefault',
       if (id != null) 'id': id,
       'dateTimeDefaultNow': dateTimeDefaultNow.toJson(),
       'dateTimeDefaultStr': dateTimeDefaultStr.toJson(),

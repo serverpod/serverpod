@@ -65,6 +65,7 @@ abstract class ChildClassWithoutId extends _i1.ParentClassWithoutId
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ChildClassWithoutId',
       if (id != null) 'id': id?.toJson(),
       'grandParentField': grandParentField,
       'parentField': parentField,
@@ -75,6 +76,7 @@ abstract class ChildClassWithoutId extends _i1.ParentClassWithoutId
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ChildClassWithoutId',
       if (id != null) 'id': id?.toJson(),
       'grandParentField': grandParentField,
       'parentField': parentField,

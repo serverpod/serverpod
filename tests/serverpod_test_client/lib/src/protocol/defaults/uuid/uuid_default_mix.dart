@@ -73,6 +73,7 @@ abstract class UuidDefaultMix implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UuidDefaultMix',
       if (id != null) 'id': id,
       'uuidDefaultAndDefaultModel': uuidDefaultAndDefaultModel.toJson(),
       'uuidDefaultAndDefaultPersist': uuidDefaultAndDefaultPersist.toJson(),

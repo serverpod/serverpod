@@ -97,6 +97,7 @@ abstract class ServerHealthConnectionInfo
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ServerHealthConnectionInfo',
       if (id != null) 'id': id,
       'serverId': serverId,
       'timestamp': timestamp.toJson(),
@@ -110,6 +111,7 @@ abstract class ServerHealthConnectionInfo
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.ServerHealthConnectionInfo',
       if (id != null) 'id': id,
       'serverId': serverId,
       'timestamp': timestamp.toJson(),

@@ -65,6 +65,7 @@ abstract class Greeting implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'Greeting',
       if (id != null) 'id': id,
       'message': message,
       'author': author,

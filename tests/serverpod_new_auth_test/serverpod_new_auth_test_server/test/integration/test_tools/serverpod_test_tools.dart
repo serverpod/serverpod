@@ -128,6 +128,8 @@ void withServerpod(
 class TestEndpoints {
   late final _AuthTestEndpoint authTest;
 
+  late final _AuthenticatedStreamingTestEndpoint authenticatedStreamingTest;
+
   late final _EmailAccountBackwardsCompatibilityTestEndpoint
   emailAccountBackwardsCompatibilityTest;
 
@@ -154,6 +156,10 @@ class _InternalTestEndpoints extends TestEndpoints
     _i2.EndpointDispatch endpoints,
   ) {
     authTest = _AuthTestEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    authenticatedStreamingTest = _AuthenticatedStreamingTestEndpoint(
       endpoints,
       serializationManager,
     );
@@ -354,6 +360,37 @@ class _AuthTestEndpoint {
     });
   }
 
+  _i3.Future<bool> destroySpecificRefreshToken(
+    _i1.TestSessionBuilder sessionBuilder,
+    String token,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'authTest',
+            method: 'destroySpecificRefreshToken',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'authTest',
+          methodName: 'destroySpecificRefreshToken',
+          parameters: _i1.testObjectToJson({'token': token}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<bool>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _i3.Future<bool> checkSession(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue authUserId,
@@ -383,6 +420,48 @@ class _AuthTestEndpoint {
         await _localUniqueSession.close();
       }
     });
+  }
+}
+
+class _AuthenticatedStreamingTestEndpoint {
+  _AuthenticatedStreamingTestEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Stream<int> openAuthenticatedStream(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) {
+    var _localTestStreamManager = _i1.TestStreamManager<int>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+              endpoint: 'authenticatedStreamingTest',
+              method: 'openAuthenticatedStream',
+            );
+        var _localCallContext = await _endpointDispatch
+            .getMethodStreamCallContext(
+              createSessionCallback: (_) => _localUniqueSession,
+              endpointPath: 'authenticatedStreamingTest',
+              methodName: 'openAuthenticatedStream',
+              arguments: {},
+              requestedInputStreams: [],
+              serializationManager: _serializationManager,
+            );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
   }
 }
 

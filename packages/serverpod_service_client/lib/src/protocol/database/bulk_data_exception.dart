@@ -45,6 +45,7 @@ abstract class BulkDataException
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.BulkDataException',
       'message': message,
       if (query != null) 'query': query,
     };
@@ -52,7 +53,7 @@ abstract class BulkDataException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'BulkDataException(message: $message, query: $query)';
   }
 }
 

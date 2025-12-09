@@ -53,6 +53,7 @@ abstract class ObjectWithIndex implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithIndex',
       if (id != null) 'id': id,
       'indexed': indexed,
       'indexed2': indexed2,

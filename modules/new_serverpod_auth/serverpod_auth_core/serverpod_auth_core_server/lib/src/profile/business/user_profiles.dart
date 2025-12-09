@@ -13,7 +13,7 @@ import 'user_profile_config.dart';
 part 'user_profiles_admin.dart';
 
 /// Business logic for handling user profiles
-final class UserProfiles {
+class UserProfiles {
   /// Collection of admin-related functions.
   final UserProfilesAdmin admin = const UserProfilesAdmin._();
 

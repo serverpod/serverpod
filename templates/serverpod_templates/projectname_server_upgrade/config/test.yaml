@@ -34,6 +34,7 @@ database:
   port: 9090
   name: projectname_test
   user: postgres
+  #maxConnectionCount: 10 # Defaults to 10, a negative or null value removes the limit
 
 # This is the setup for your Redis test instance.
 redis:

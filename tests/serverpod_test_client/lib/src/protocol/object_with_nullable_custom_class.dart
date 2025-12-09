@@ -88,6 +88,7 @@ abstract class ObjectWithNullableCustomClass implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithNullableCustomClass',
       if (nullableCustomClassWithoutProtocolSerialization != null)
         'nullableCustomClassWithoutProtocolSerialization':
             nullableCustomClassWithoutProtocolSerialization?.toJson(),

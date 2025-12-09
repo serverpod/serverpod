@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../long_identifiers/models_with_relations/long_implicit_id_field.dart'
     as _i2;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 
 abstract class LongImplicitIdFieldCollection implements _i1.SerializableModel {
   LongImplicitIdFieldCollection._({
@@ -35,14 +36,12 @@ abstract class LongImplicitIdFieldCollection implements _i1.SerializableModel {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
-          (jsonSerialization['thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa']
-                  as List?)
-              ?.map(
-                (e) => _i2.LongImplicitIdField.fromJson(
-                  (e as Map<String, dynamic>),
-                ),
-              )
-              .toList(),
+          jsonSerialization['thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa'] ==
+              null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.LongImplicitIdField>>(
+              jsonSerialization['thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa'],
+            ),
     );
   }
 
@@ -68,6 +67,7 @@ abstract class LongImplicitIdFieldCollection implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'LongImplicitIdFieldCollection',
       if (id != null) 'id': id,
       'name': name,
       if (thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa != null)

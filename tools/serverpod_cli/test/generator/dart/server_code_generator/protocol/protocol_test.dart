@@ -850,4 +850,214 @@ void main() {
       );
     },
   );
+
+  group(
+    'Given a model that is referenced in list relations of multiple models when generating protocol files',
+    () {
+      var personModelName = 'Person';
+      var personModelFileName = 'person';
+      var cityModelName = 'City';
+      var cityModelFileName = 'city';
+      var organizationModelName = 'Organization';
+      var organizationModelFileName = 'organization';
+
+      var personModel = ModelClassDefinitionBuilder()
+          .withClassName(personModelName)
+          .withFileName(personModelFileName)
+          .withTableName('person')
+          .build();
+
+      var cityModel = ModelClassDefinitionBuilder()
+          .withClassName(cityModelName)
+          .withFileName(cityModelFileName)
+          .withTableName('city')
+          .withListRelationField(
+            'citizens',
+            personModelName,
+            'cityId',
+          )
+          .build();
+
+      var organizationModel = ModelClassDefinitionBuilder()
+          .withClassName(organizationModelName)
+          .withFileName(organizationModelFileName)
+          .withTableName('organization')
+          .withListRelationField(
+            'people',
+            personModelName,
+            'organizationId',
+            nullableRelation: true,
+          )
+          .build();
+
+      var models = [personModel, cityModel, organizationModel];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the deserialize method contains exactly one entry for the referenced model.',
+        () {
+          var protocolContent = codeMap[expectedFileName]!;
+
+          // Count occurrences of List<Person>? type check
+          // This should appear only once even though it's referenced in multiple models
+          // Pattern matches: getType<List<Person>?>() or similar variations
+          var listPersonPattern = RegExp(
+            r'if\s*\(\s*t\s*==\s*[^)]*List<[^>]*Person[^>]*>\?[^)]*\)',
+            multiLine: true,
+          );
+
+          var matches = listPersonPattern.allMatches(protocolContent);
+          var count = matches.length;
+
+          expect(count, equals(1));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint returning a Map with non-String key (e.g., DateTime) when generating protocol files',
+    () {
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('dateTimeMapMethod')
+              .withReturnType(
+                TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                  TypeDefinitionBuilder().withMapOf('DateTime', 'bool').build(),
+                ]).build(),
+              )
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart contains the mapContainerToJson function.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('mapContainerToJson'),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint with a Map<int, bool> parameter (non-String key) when generating protocol files',
+    () {
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder().withName('intMapMethod').withParameters([
+            ParameterDefinitionBuilder()
+                .withName('intBoolMap')
+                .withType(
+                  TypeDefinitionBuilder().withMapOf('int', 'bool').build(),
+                )
+                .build(),
+          ]).buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart contains the mapContainerToJson function.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('mapContainerToJson'),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given an endpoint returning a nested List containing a Map with non-String key when generating protocol files',
+    () {
+      var endpoints = [
+        EndpointDefinitionBuilder().withMethods([
+          MethodDefinitionBuilder()
+              .withName('nestedNonStringKeyMapMethod')
+              .withReturnType(
+                TypeDefinitionBuilder().withClassName('Future').withGenerics([
+                  TypeDefinitionBuilder().withClassName('List').withGenerics([
+                    TypeDefinitionBuilder().withMapOf('int', 'String').build(),
+                  ]).build(),
+                ]).build(),
+              )
+              .buildMethodCallDefinition(),
+        ]).build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: endpoints,
+        models: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart contains the mapContainerToJson function.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            contains('mapContainerToJson'),
+          );
+        },
+      );
+    },
+  );
 }

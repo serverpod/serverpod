@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../auth_user/models/auth_user.dart' as _i2;
 import 'dart:typed_data' as _i3;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i4;
 
 abstract class RefreshToken
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -27,7 +28,6 @@ abstract class RefreshToken
     required this.method,
     required this.fixedSecret,
     required this.rotatingSecretHash,
-    required this.rotatingSecretSalt,
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
   }) : lastUpdatedAt = lastUpdatedAt ?? DateTime.now(),
@@ -41,8 +41,7 @@ abstract class RefreshToken
     String? extraClaims,
     required String method,
     required _i3.ByteData fixedSecret,
-    required _i3.ByteData rotatingSecretHash,
-    required _i3.ByteData rotatingSecretSalt,
+    required String rotatingSecretHash,
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
   }) = _RefreshTokenImpl;
@@ -57,24 +56,18 @@ abstract class RefreshToken
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i2.AuthUser.fromJson(
-              (jsonSerialization['authUser'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i2.AuthUser>(
+              jsonSerialization['authUser'],
             ),
-      scopeNames: _i1.SetJsonExtension.fromJson(
-        (jsonSerialization['scopeNames'] as List),
-        itemFromJson: (e) => e as String,
-      )!,
+      scopeNames: _i4.Protocol().deserialize<Set<String>>(
+        jsonSerialization['scopeNames'],
+      ),
       extraClaims: jsonSerialization['extraClaims'] as String?,
       method: jsonSerialization['method'] as String,
       fixedSecret: _i1.ByteDataJsonExtension.fromJson(
         jsonSerialization['fixedSecret'],
       ),
-      rotatingSecretHash: _i1.ByteDataJsonExtension.fromJson(
-        jsonSerialization['rotatingSecretHash'],
-      ),
-      rotatingSecretSalt: _i1.ByteDataJsonExtension.fromJson(
-        jsonSerialization['rotatingSecretSalt'],
-      ),
+      rotatingSecretHash: jsonSerialization['rotatingSecretHash'] as String,
       lastUpdatedAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['lastUpdatedAt'],
       ),
@@ -106,7 +99,7 @@ abstract class RefreshToken
   /// This is a `Map<String, dynamic>` where each entry's key is used as a claim name.
   /// The values must be JSON-encodable.
   ///
-  /// Users must ensure that the claims don't conflict with [registerd claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
+  /// Users must ensure that the claims don't conflict with [registered claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
   /// or the above-mentioned claim for [scopeNames].
   ///
   /// This is only stored as a serialized String in the database due to schema limitations.
@@ -133,15 +126,11 @@ abstract class RefreshToken
   /// This is changed on every rotation of the refresh token,
   /// whenever a new access token is created.
   ///
-  /// Per default uses 64 bytes of random data, and its hash is stored peppered and salted.
-  _i3.ByteData rotatingSecretHash;
+  /// Per default uses 64 bytes of random data, and its hash is stored in PHC format:
+  /// $argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}$${base64Hash}
+  String rotatingSecretHash;
 
-  /// The salt used for computing the [rotatingSecretHash].
-  ///
-  /// Per default uses 16 bytes of random data.
-  _i3.ByteData rotatingSecretSalt;
-
-  /// The time when the [rotatingSecretHash] / [rotatingSecretSalt] pair was last updated.
+  /// The time when the [rotatingSecretHash] was last updated.
   DateTime lastUpdatedAt;
 
   /// The time when the first refresh token was created.
@@ -161,14 +150,14 @@ abstract class RefreshToken
     String? extraClaims,
     String? method,
     _i3.ByteData? fixedSecret,
-    _i3.ByteData? rotatingSecretHash,
-    _i3.ByteData? rotatingSecretSalt,
+    String? rotatingSecretHash,
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.RefreshToken',
       if (id != null) 'id': id?.toJson(),
       'authUserId': authUserId.toJson(),
       if (authUser != null) 'authUser': authUser?.toJson(),
@@ -176,8 +165,7 @@ abstract class RefreshToken
       if (extraClaims != null) 'extraClaims': extraClaims,
       'method': method,
       'fixedSecret': fixedSecret.toJson(),
-      'rotatingSecretHash': rotatingSecretHash.toJson(),
-      'rotatingSecretSalt': rotatingSecretSalt.toJson(),
+      'rotatingSecretHash': rotatingSecretHash,
       'lastUpdatedAt': lastUpdatedAt.toJson(),
       'createdAt': createdAt.toJson(),
     };
@@ -229,8 +217,7 @@ class _RefreshTokenImpl extends RefreshToken {
     String? extraClaims,
     required String method,
     required _i3.ByteData fixedSecret,
-    required _i3.ByteData rotatingSecretHash,
-    required _i3.ByteData rotatingSecretSalt,
+    required String rotatingSecretHash,
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
   }) : super._(
@@ -242,7 +229,6 @@ class _RefreshTokenImpl extends RefreshToken {
          method: method,
          fixedSecret: fixedSecret,
          rotatingSecretHash: rotatingSecretHash,
-         rotatingSecretSalt: rotatingSecretSalt,
          lastUpdatedAt: lastUpdatedAt,
          createdAt: createdAt,
        );
@@ -259,8 +245,7 @@ class _RefreshTokenImpl extends RefreshToken {
     Object? extraClaims = _Undefined,
     String? method,
     _i3.ByteData? fixedSecret,
-    _i3.ByteData? rotatingSecretHash,
-    _i3.ByteData? rotatingSecretSalt,
+    String? rotatingSecretHash,
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
   }) {
@@ -274,8 +259,7 @@ class _RefreshTokenImpl extends RefreshToken {
       extraClaims: extraClaims is String? ? extraClaims : this.extraClaims,
       method: method ?? this.method,
       fixedSecret: fixedSecret ?? this.fixedSecret.clone(),
-      rotatingSecretHash: rotatingSecretHash ?? this.rotatingSecretHash.clone(),
-      rotatingSecretSalt: rotatingSecretSalt ?? this.rotatingSecretSalt.clone(),
+      rotatingSecretHash: rotatingSecretHash ?? this.rotatingSecretHash,
       lastUpdatedAt: lastUpdatedAt ?? this.lastUpdatedAt,
       createdAt: createdAt ?? this.createdAt,
     );
@@ -314,19 +298,11 @@ class RefreshTokenUpdateTable extends _i1.UpdateTable<RefreshTokenTable> {
         value,
       );
 
-  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> rotatingSecretHash(
-    _i3.ByteData value,
-  ) => _i1.ColumnValue(
-    table.rotatingSecretHash,
-    value,
-  );
-
-  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> rotatingSecretSalt(
-    _i3.ByteData value,
-  ) => _i1.ColumnValue(
-    table.rotatingSecretSalt,
-    value,
-  );
+  _i1.ColumnValue<String, String> rotatingSecretHash(String value) =>
+      _i1.ColumnValue(
+        table.rotatingSecretHash,
+        value,
+      );
 
   _i1.ColumnValue<DateTime, DateTime> lastUpdatedAt(DateTime value) =>
       _i1.ColumnValue(
@@ -365,12 +341,8 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
       'fixedSecret',
       this,
     );
-    rotatingSecretHash = _i1.ColumnByteData(
+    rotatingSecretHash = _i1.ColumnString(
       'rotatingSecretHash',
-      this,
-    );
-    rotatingSecretSalt = _i1.ColumnByteData(
-      'rotatingSecretSalt',
       this,
     );
     lastUpdatedAt = _i1.ColumnDateTime(
@@ -402,7 +374,7 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   /// This is a `Map<String, dynamic>` where each entry's key is used as a claim name.
   /// The values must be JSON-encodable.
   ///
-  /// Users must ensure that the claims don't conflict with [registerd claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
+  /// Users must ensure that the claims don't conflict with [registered claims](https://datatracker.ietf.org/doc/html/rfc7519#section-4.1)
   /// or the above-mentioned claim for [scopeNames].
   ///
   /// This is only stored as a serialized String in the database due to schema limitations.
@@ -429,15 +401,11 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   /// This is changed on every rotation of the refresh token,
   /// whenever a new access token is created.
   ///
-  /// Per default uses 64 bytes of random data, and its hash is stored peppered and salted.
-  late final _i1.ColumnByteData rotatingSecretHash;
+  /// Per default uses 64 bytes of random data, and its hash is stored in PHC format:
+  /// $argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}$${base64Hash}
+  late final _i1.ColumnString rotatingSecretHash;
 
-  /// The salt used for computing the [rotatingSecretHash].
-  ///
-  /// Per default uses 16 bytes of random data.
-  late final _i1.ColumnByteData rotatingSecretSalt;
-
-  /// The time when the [rotatingSecretHash] / [rotatingSecretSalt] pair was last updated.
+  /// The time when the [rotatingSecretHash] was last updated.
   late final _i1.ColumnDateTime lastUpdatedAt;
 
   /// The time when the first refresh token was created.
@@ -465,7 +433,6 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
     method,
     fixedSecret,
     rotatingSecretHash,
-    rotatingSecretSalt,
     lastUpdatedAt,
     createdAt,
   ];

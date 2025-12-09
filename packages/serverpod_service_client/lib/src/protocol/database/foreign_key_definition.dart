@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../database/foreign_key_action.dart' as _i2;
 import '../database/foreign_key_match_type.dart' as _i3;
+import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i4;
 
 /// Represents a foreign key.
 abstract class ForeignKeyDefinition implements _i1.SerializableModel {
@@ -43,14 +44,14 @@ abstract class ForeignKeyDefinition implements _i1.SerializableModel {
   ) {
     return ForeignKeyDefinition(
       constraintName: jsonSerialization['constraintName'] as String,
-      columns: (jsonSerialization['columns'] as List)
-          .map((e) => e as String)
-          .toList(),
+      columns: _i4.Protocol().deserialize<List<String>>(
+        jsonSerialization['columns'],
+      ),
       referenceTable: jsonSerialization['referenceTable'] as String,
       referenceTableSchema: jsonSerialization['referenceTableSchema'] as String,
-      referenceColumns: (jsonSerialization['referenceColumns'] as List)
-          .map((e) => e as String)
-          .toList(),
+      referenceColumns: _i4.Protocol().deserialize<List<String>>(
+        jsonSerialization['referenceColumns'],
+      ),
       onUpdate: jsonSerialization['onUpdate'] == null
           ? null
           : _i2.ForeignKeyAction.fromJson(
@@ -109,6 +110,7 @@ abstract class ForeignKeyDefinition implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.ForeignKeyDefinition',
       'constraintName': constraintName,
       'columns': columns.toJson(),
       'referenceTable': referenceTable,

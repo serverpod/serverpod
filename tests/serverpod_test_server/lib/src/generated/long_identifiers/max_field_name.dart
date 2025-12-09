@@ -56,6 +56,7 @@ abstract class MaxFieldName
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'MaxFieldName',
       if (id != null) 'id': id,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
@@ -65,6 +66,7 @@ abstract class MaxFieldName
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'MaxFieldName',
       if (id != null) 'id': id,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,

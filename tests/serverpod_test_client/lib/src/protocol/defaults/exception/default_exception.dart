@@ -119,6 +119,7 @@ abstract class DefaultException
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DefaultException',
       'defaultBoolean': defaultBoolean,
       'defaultDateTime': defaultDateTime.toJson(),
       'defaultDouble': defaultDouble,
@@ -134,7 +135,7 @@ abstract class DefaultException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'DefaultException(defaultBoolean: $defaultBoolean, defaultDateTime: $defaultDateTime, defaultDouble: $defaultDouble, defaultDuration: $defaultDuration, defaultEnum: $defaultEnum, defaultInteger: $defaultInteger, defaultString: $defaultString, defaultUuid: $defaultUuid, defaultModelField: $defaultModelField, defaultMixField: $defaultMixField)';
   }
 }
 

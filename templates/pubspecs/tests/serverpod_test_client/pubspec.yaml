@@ -23,7 +23,7 @@ dev_dependencies:
 
 dependency_overrides:
   serverpod_auth_client:
-    path: ../../modules/serverpod_auth/serverpod_auth_client
+    path: ../../modules/legacy/serverpod_auth/serverpod_auth_client
   serverpod_client:
     path: ../../packages/serverpod_client
   serverpod_serialization:

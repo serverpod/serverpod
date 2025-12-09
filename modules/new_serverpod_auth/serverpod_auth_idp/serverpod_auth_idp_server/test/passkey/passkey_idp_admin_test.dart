@@ -1,15 +1,14 @@
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/session.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 import 'package:test/test.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final tokenManager = AuthSessionsTokenManager(
-    config: AuthSessionsConfig(
+  final tokenManager = ServerSideSessionsTokenManager(
+    config: ServerSideSessionsConfig(
       sessionKeyHashPepper: 'test-pepper',
     ),
   );
@@ -18,23 +17,23 @@ void main() {
     'Given a pending challenge,',
     (final sessionBuilder, final _) {
       late Session session;
-      final passKeyIDP = PasskeyIDP(
-        PasskeyIDPConfig(
+      final passKeyIdp = PasskeyIdp(
+        const PasskeyIdpConfig(
           hostname: 'localhost',
         ),
-        tokenIssuer: tokenManager,
+        tokenManager: tokenManager,
       );
 
       setUp(() async {
         session = sessionBuilder.build();
 
-        await passKeyIDP.createChallenge(session);
+        await passKeyIdp.createChallenge(session);
       });
 
       test(
         'when calling `PasskeyAccounts.admin.deleteExpiredChallenges` immediately, then the challenge is kept.',
         () async {
-          await passKeyIDP.admin.deleteExpiredChallenges(session);
+          await passKeyIdp.admin.deleteExpiredChallenges(session);
 
           expect(
             await PasskeyChallenge.db.find(session),
@@ -48,9 +47,9 @@ void main() {
         () async {
           await withClock(
             Clock.fixed(
-              DateTime.now().add(passKeyIDP.config.challengeLifetime),
+              DateTime.now().add(passKeyIdp.config.challengeLifetime),
             ),
-            () => passKeyIDP.admin.deleteExpiredChallenges(session),
+            () => passKeyIdp.admin.deleteExpiredChallenges(session),
           );
 
           expect(

@@ -32,7 +32,10 @@ abstract class MyModuleFeatureModel implements _i1.SerializableModel {
   MyModuleFeatureModel copyWith({String? name});
   @override
   Map<String, dynamic> toJson() {
-    return {'name': name};
+    return {
+      '__className__': 'serverpod_test_module.MyModuleFeatureModel',
+      'name': name,
+    };
   }
 
   @override

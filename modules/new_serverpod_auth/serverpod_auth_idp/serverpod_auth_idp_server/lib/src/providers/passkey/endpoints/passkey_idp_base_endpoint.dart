@@ -1,21 +1,21 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
-import 'package:serverpod_auth_idp_server/providers/passkey.dart';
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
+
+import '../../../../../core.dart';
+import '../business/passkey_idp.dart';
 
 /// Base endpoint for Passkey-based authentication.
-abstract class PasskeyIDPBaseEndpoint extends Endpoint {
-  /// Gets the [PasskeyIDP] instance from the [AuthServices] instance.
+abstract class PasskeyIdpBaseEndpoint extends Endpoint {
+  /// Gets the [PasskeyIdp] instance from the [AuthServices] instance.
   ///
   /// If you want to use a different instance, override this getter.
-  late final PasskeyIDP passkeyIDP =
-      AuthServices.getIdentityProvider<PasskeyIDP>();
+  late final PasskeyIdp passkeyIdp =
+      AuthServices.getIdentityProvider<PasskeyIdp>();
 
   /// Returns a new challenge to be used for a login or registration request.
   Future<PasskeyChallengeResponse> createChallenge(
     final Session session,
   ) async {
-    return await passkeyIDP.createChallenge(session);
+    return await passkeyIdp.createChallenge(session);
   }
 
   /// Registers a Passkey for the [session]'s current user.
@@ -25,7 +25,7 @@ abstract class PasskeyIDPBaseEndpoint extends Endpoint {
     final Session session, {
     required final PasskeyRegistrationRequest registrationRequest,
   }) async {
-    await passkeyIDP.register(
+    await passkeyIdp.register(
       session,
       authUserId: session.authenticated!.authUserId,
       request: registrationRequest,
@@ -37,6 +37,6 @@ abstract class PasskeyIDPBaseEndpoint extends Endpoint {
     final Session session, {
     required final PasskeyLoginRequest loginRequest,
   }) async {
-    return await passkeyIDP.login(session, request: loginRequest);
+    return await passkeyIdp.login(session, request: loginRequest);
   }
 }

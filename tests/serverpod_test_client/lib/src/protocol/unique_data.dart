@@ -53,6 +53,7 @@ abstract class UniqueData implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'UniqueData',
       if (id != null) 'id': id,
       'number': number,
       'email': email,

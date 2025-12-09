@@ -1310,12 +1310,35 @@ class Protocol extends _i1.SerializationManagerServer {
     ),
   ];
 
+  static String? getClassNameFromObjectJson(dynamic data) {
+    if (data is! Map) return null;
+    final className = data['__className__'] as String?;
+    if (className == null) return null;
+    if (!className.startsWith('serverpod.')) return className;
+    return className.substring(10);
+  }
+
   @override
   T deserialize<T>(
     dynamic data, [
     Type? t,
   ]) {
     t ??= T;
+
+    final dataClassName = getClassNameFromObjectJson(data);
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
+      try {
+        return deserializeByClassName({
+          'className': dataClassName,
+          'data': data,
+        });
+      } on FormatException catch (_) {
+        // If the className is not recognized (e.g., older client receiving
+        // data with a new subtype), fall back to deserializing without the
+        // className, using the expected type T.
+      }
+    }
+
     if (t == _i3.RevokedAuthenticationAuthId) {
       return _i3.RevokedAuthenticationAuthId.fromJson(data) as T;
     }
@@ -1776,6 +1799,12 @@ class Protocol extends _i1.SerializationManagerServer {
               .toList()
           as T;
     }
+    if (t == Map<String, String>) {
+      return (data as Map).map(
+            (k, v) => MapEntry(deserialize<String>(k), deserialize<String>(v)),
+          )
+          as T;
+    }
     if (t == _i1.getType<Map<String, String>?>()) {
       return (data != null
               ? (data as Map).map(
@@ -1861,10 +1890,80 @@ class Protocol extends _i1.SerializationManagerServer {
     return super.deserialize<T>(data, t);
   }
 
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i3.RevokedAuthenticationAuthId => 'RevokedAuthenticationAuthId',
+      _i4.RevokedAuthenticationScope => 'RevokedAuthenticationScope',
+      _i5.RevokedAuthenticationUser => 'RevokedAuthenticationUser',
+      _i6.CacheInfo => 'CacheInfo',
+      _i7.CachesInfo => 'CachesInfo',
+      _i8.CloudStorageEntry => 'CloudStorageEntry',
+      _i9.CloudStorageDirectUploadEntry => 'CloudStorageDirectUploadEntry',
+      _i10.ClusterInfo => 'ClusterInfo',
+      _i11.ClusterServerInfo => 'ClusterServerInfo',
+      _i12.BulkData => 'BulkData',
+      _i13.BulkDataException => 'BulkDataException',
+      _i14.BulkQueryColumnDescription => 'BulkQueryColumnDescription',
+      _i15.BulkQueryResult => 'BulkQueryResult',
+      _i16.ColumnDefinition => 'ColumnDefinition',
+      _i17.ColumnMigration => 'ColumnMigration',
+      _i18.ColumnType => 'ColumnType',
+      _i19.DatabaseDefinition => 'DatabaseDefinition',
+      _i20.DatabaseDefinitions => 'DatabaseDefinitions',
+      _i21.DatabaseMigration => 'DatabaseMigration',
+      _i22.DatabaseMigrationAction => 'DatabaseMigrationAction',
+      _i23.DatabaseMigrationActionType => 'DatabaseMigrationActionType',
+      _i24.DatabaseMigrationVersion => 'DatabaseMigrationVersion',
+      _i25.DatabaseMigrationWarning => 'DatabaseMigrationWarning',
+      _i26.DatabaseMigrationWarningType => 'DatabaseMigrationWarningType',
+      _i27.EnumSerialization => 'EnumSerialization',
+      _i28.Filter => 'Filter',
+      _i29.FilterConstraint => 'FilterConstraint',
+      _i30.FilterConstraintType => 'FilterConstraintType',
+      _i31.ForeignKeyAction => 'ForeignKeyAction',
+      _i32.ForeignKeyDefinition => 'ForeignKeyDefinition',
+      _i33.ForeignKeyMatchType => 'ForeignKeyMatchType',
+      _i34.IndexDefinition => 'IndexDefinition',
+      _i35.IndexElementDefinition => 'IndexElementDefinition',
+      _i36.IndexElementDefinitionType => 'IndexElementDefinitionType',
+      _i37.TableDefinition => 'TableDefinition',
+      _i38.TableMigration => 'TableMigration',
+      _i39.VectorDistanceFunction => 'VectorDistanceFunction',
+      _i40.DistributedCacheEntry => 'DistributedCacheEntry',
+      _i41.AccessDeniedException => 'AccessDeniedException',
+      _i42.FileNotFoundException => 'FileNotFoundException',
+      _i43.FutureCallEntry => 'FutureCallEntry',
+      _i44.LogEntry => 'LogEntry',
+      _i45.LogLevel => 'LogLevel',
+      _i46.LogResult => 'LogResult',
+      _i47.LogSettings => 'LogSettings',
+      _i48.LogSettingsOverride => 'LogSettingsOverride',
+      _i49.MessageLogEntry => 'MessageLogEntry',
+      _i50.MethodInfo => 'MethodInfo',
+      _i51.QueryLogEntry => 'QueryLogEntry',
+      _i52.ReadWriteTestEntry => 'ReadWriteTestEntry',
+      _i53.RuntimeSettings => 'RuntimeSettings',
+      _i54.ServerHealthConnectionInfo => 'ServerHealthConnectionInfo',
+      _i55.ServerHealthMetric => 'ServerHealthMetric',
+      _i56.ServerHealthResult => 'ServerHealthResult',
+      _i57.ServerpodSqlException => 'ServerpodSqlException',
+      _i58.SessionLogEntry => 'SessionLogEntry',
+      _i59.SessionLogFilter => 'SessionLogFilter',
+      _i60.SessionLogInfo => 'SessionLogInfo',
+      _i61.SessionLogResult => 'SessionLogResult',
+      _ => null,
+    };
+  }
+
   @override
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
+
+    if (data is Map<String, dynamic> && data['__className__'] is String) {
+      return (data['__className__'] as String).replaceFirst('serverpod.', '');
+    }
+
     switch (data) {
       case _i3.RevokedAuthenticationAuthId():
         return 'RevokedAuthenticationAuthId';

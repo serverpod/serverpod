@@ -73,6 +73,7 @@ abstract class DatabaseMigrationVersion
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.DatabaseMigrationVersion',
       if (id != null) 'id': id,
       'module': module,
       'version': version,
@@ -83,6 +84,7 @@ abstract class DatabaseMigrationVersion
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.DatabaseMigrationVersion',
       if (id != null) 'id': id,
       'module': module,
       'version': version,

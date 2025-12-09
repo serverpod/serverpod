@@ -31,12 +31,14 @@ abstract class RefreshTokenMalformedException
   RefreshTokenMalformedException copyWith();
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_core.RefreshTokenMalformedException',
+    };
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return 'RefreshTokenMalformedException';
   }
 }
 

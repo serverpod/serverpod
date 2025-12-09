@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ci/ci.dart' as ci;
 import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
@@ -8,6 +9,7 @@ import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
+import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/yaml_util.dart';
 import 'package:source_span/source_span.dart';
@@ -256,7 +258,29 @@ class GeneratorConfig implements ModelLoadConfig {
   List<ModuleConfig> get modulesAll => _modules;
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [serverRootDir].
-  static Future<GeneratorConfig> load([String serverRootDir = '']) async {
+  ///
+  /// If [serverRootDir] is empty, the server directory will be automatically
+  /// detected by searching the current directory and nearby locations.
+  ///
+  /// The [interactive] parameter controls whether interactive prompts are enabled.
+  /// Defaults to true unless running in a CI environment (detected via ci package).
+  /// Explicit flag value overrides CI detection.
+  static Future<GeneratorConfig> load({
+    String serverRootDir = '',
+    required bool? interactive,
+  }) async {
+    // Auto-detect server directory if not specified
+    if (serverRootDir.isEmpty) {
+      // Determine if we should use interactive mode
+      // Priority: explicit flag > CI detection > default (true)
+      final isInteractive = interactive ?? !ci.isCI;
+
+      var serverDir = await ServerDirectoryFinder.findOrPrompt(
+        interactive: isInteractive,
+      );
+      serverRootDir = serverDir.path;
+    }
+
     var serverPackageDirectoryPathParts = p.split(serverRootDir);
 
     Pubspec? pubspec;
@@ -416,21 +440,44 @@ class GeneratorConfig implements ModelLoadConfig {
     );
   }
 
-  static List<ServerpodFeature> _enabledFeatures(File file, Map config) {
-    var enabledFeatures = <ServerpodFeature>[];
-    if (!file.existsSync()) return enabledFeatures;
-
-    if (!config.containsKey('features')) {
-      enabledFeatures.add(ServerpodFeature.database);
+  static List<ServerpodFeature> _enabledFeatures(File file, YamlMap config) {
+    if (!file.existsSync()) {
+      return ServerpodFeature.values
+          .where((f) => f.missingFileDefault)
+          .toList();
     }
 
-    var features = config['features'];
+    var featuresNode = config.nodes['features'];
+    var featuresMap = featuresNode?.value as YamlMap?;
 
-    if (features is! Map) return enabledFeatures;
+    // If features is not specified or not a Map, use defaults
+    if (featuresMap == null) {
+      return ServerpodFeature.values.where((f) => f.defaultValue).toList();
+    }
 
-    return ServerpodFeature.values
-        .where((feature) => features[feature.name.toString()] == true)
-        .toList();
+    // Return all features based on their explicit value or default
+    return ServerpodFeature.values.where((feature) {
+      var featureName = feature.name;
+      var featureNode = featuresMap.nodes[featureName];
+      // If no value set, use default
+      if (featureNode == null) {
+        return feature.defaultValue;
+      }
+
+      var featureValue = featureNode.value;
+
+      // Valid values are true or false
+      if (featureValue is bool) return featureValue;
+
+      // Invalid value - warn and use default
+      var span = featureNode.span;
+      var message =
+          'Invalid value for feature \'$featureName\': \'${featureValue.toString()}\'. '
+          'Expected \'true\' or \'false\'. '
+          'Using default value: ${feature.defaultValue}.';
+      log.warning(span.message(message));
+      return feature.defaultValue;
+    }).toList();
   }
 
   static List<ExperimentalFeature> _enabledExperimentalFeatures(

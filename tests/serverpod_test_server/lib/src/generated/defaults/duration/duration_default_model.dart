@@ -85,6 +85,7 @@ abstract class DurationDefaultModel
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'DurationDefaultModel',
       if (id != null) 'id': id,
       'durationDefaultModel': durationDefaultModel.toJson(),
       if (durationDefaultModelNull != null)
@@ -95,6 +96,7 @@ abstract class DurationDefaultModel
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'DurationDefaultModel',
       if (id != null) 'id': id,
       'durationDefaultModel': durationDefaultModel.toJson(),
       if (durationDefaultModelNull != null)

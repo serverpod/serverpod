@@ -40,6 +40,7 @@ database:
   user: postgres
   requireSsl: true
   #isUnixSocket: true # defaults to false
+  #maxConnectionCount: 10 # Defaults to 10, a negative or null value removes the limit
 
 # This is the setup for Redis. The default for the Google Cloud Engine Terraform
 # configuration is to connect on a private IP address.

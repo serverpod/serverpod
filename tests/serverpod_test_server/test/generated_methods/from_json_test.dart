@@ -626,20 +626,13 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with duplicate values, then a TypeError is thrown',
+      'when deserializing from JSON with duplicate values, then duplicates are removed',
       () {
-        expect(
-          () => TypesSet.fromJson({
-            'aString': ['test', 'test'],
-          }),
-          throwsA(
-            isA<Exception>().having(
-              (e) => e.toString(),
-              'message',
-              contains('Input list for Set contained duplicate items'),
-            ),
-          ),
-        );
+        var typeSet = TypesSet.fromJson({
+          'aString': ['test', 'test'],
+        });
+        expect(typeSet.aString?.length, 1);
+        expect(typeSet.aString?.first, 'test');
       },
     );
 

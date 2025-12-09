@@ -536,6 +536,11 @@ class TypeDefinition {
             className == SetKeyword.className) &&
         generics.length == 1) {
       return [
+        if (nullable)
+          ...asNonNullable.generateDeserialization(
+            serverCode,
+            config: config,
+          ),
         MapEntry(
           nullable
               ? refer(
@@ -574,6 +579,11 @@ class TypeDefinition {
       ];
     } else if (className == MapKeyword.className && generics.length == 2) {
       return [
+        if (nullable)
+          ...asNonNullable.generateDeserialization(
+            serverCode,
+            config: config,
+          ),
         MapEntry(
           nullable
               ? refer(

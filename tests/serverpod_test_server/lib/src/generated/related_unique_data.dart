@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'unique_data.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class RelatedUniqueData
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -37,8 +38,8 @@ abstract class RelatedUniqueData
       uniqueDataId: jsonSerialization['uniqueDataId'] as int,
       uniqueData: jsonSerialization['uniqueData'] == null
           ? null
-          : _i2.UniqueData.fromJson(
-              (jsonSerialization['uniqueData'] as Map<String, dynamic>),
+          : _i3.Protocol().deserialize<_i2.UniqueData>(
+              jsonSerialization['uniqueData'],
             ),
       number: jsonSerialization['number'] as int,
     );
@@ -72,6 +73,7 @@ abstract class RelatedUniqueData
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'RelatedUniqueData',
       if (id != null) 'id': id,
       'uniqueDataId': uniqueDataId,
       if (uniqueData != null) 'uniqueData': uniqueData?.toJson(),
@@ -82,6 +84,7 @@ abstract class RelatedUniqueData
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'RelatedUniqueData',
       if (id != null) 'id': id,
       'uniqueDataId': uniqueDataId,
       if (uniqueData != null) 'uniqueData': uniqueData?.toJsonForProtocol(),

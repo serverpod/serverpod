@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../profile/models/user_profile.dart' as _i2;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i3;
 
 abstract class UserProfileImage
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -47,8 +48,8 @@ abstract class UserProfileImage
       ),
       userProfile: jsonSerialization['userProfile'] == null
           ? null
-          : _i2.UserProfile.fromJson(
-              (jsonSerialization['userProfile'] as Map<String, dynamic>),
+          : _i3.Protocol().deserialize<_i2.UserProfile>(
+              jsonSerialization['userProfile'],
             ),
       createdAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
@@ -101,6 +102,7 @@ abstract class UserProfileImage
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod_auth_core.UserProfileImage',
       if (id != null) 'id': id?.toJson(),
       'userProfileId': userProfileId.toJson(),
       if (userProfile != null) 'userProfile': userProfile?.toJson(),
@@ -113,7 +115,16 @@ abstract class UserProfileImage
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {
+      '__className__': 'serverpod_auth_core.UserProfileImage',
+      if (id != null) 'id': id?.toJson(),
+      'userProfileId': userProfileId.toJson(),
+      if (userProfile != null) 'userProfile': userProfile?.toJsonForProtocol(),
+      'createdAt': createdAt.toJson(),
+      'storageId': storageId,
+      'path': path,
+      'url': url.toJson(),
+    };
   }
 
   static UserProfileImageInclude include({

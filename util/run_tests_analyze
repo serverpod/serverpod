@@ -30,9 +30,9 @@ declare -a projectPaths=(
     "packages/serverpod_flutter"
     "packages/serverpod_test"
 
-    "examples/chat/chat_server"
-    "examples/chat/chat_client"
-    "examples/chat/chat_flutter"
+    "examples/legacy/chat/chat_server"
+    "examples/legacy/chat/chat_client"
+    "examples/legacy/chat/chat_flutter"
 
     "tests/serverpod_test_server"
     "tests/serverpod_test_client"
@@ -44,13 +44,13 @@ declare -a projectPaths=(
     "tests/serverpod_new_auth_test/serverpod_new_auth_test_server"
     "tests/serverpod_new_auth_test/serverpod_new_auth_test_client"
 
-    "modules/serverpod_auth/serverpod_auth_server"
-    "modules/serverpod_auth/serverpod_auth_client"
-    "modules/serverpod_auth/serverpod_auth_shared_flutter"
-    "modules/serverpod_auth/serverpod_auth_apple_flutter"
-    "modules/serverpod_auth/serverpod_auth_google_flutter"
-    "modules/serverpod_auth/serverpod_auth_email_flutter"
-    "modules/serverpod_auth/serverpod_auth_firebase_flutter"
+    "modules/legacy/serverpod_auth/serverpod_auth_server"
+    "modules/legacy/serverpod_auth/serverpod_auth_client"
+    "modules/legacy/serverpod_auth/serverpod_auth_shared_flutter"
+    "modules/legacy/serverpod_auth/serverpod_auth_apple_flutter"
+    "modules/legacy/serverpod_auth/serverpod_auth_google_flutter"
+    "modules/legacy/serverpod_auth/serverpod_auth_email_flutter"
+    "modules/legacy/serverpod_auth/serverpod_auth_firebase_flutter"
 
     "modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter"
     "modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_server"
@@ -63,9 +63,9 @@ declare -a projectPaths=(
     "modules/new_serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_flutter"
     "modules/new_serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_client"
 
-    "modules/serverpod_chat/serverpod_chat_server"
-    "modules/serverpod_chat/serverpod_chat_client"
-    "modules/serverpod_chat/serverpod_chat_flutter"
+    "modules/legacy/serverpod_chat/serverpod_chat_server"
+    "modules/legacy/serverpod_chat/serverpod_chat_client"
+    "modules/legacy/serverpod_chat/serverpod_chat_flutter"
 
     "templates/serverpod_templates/projectname_flutter"
     "templates/serverpod_templates/projectname_client"

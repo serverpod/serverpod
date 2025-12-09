@@ -6,7 +6,11 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
+  clock: ^1.1.1
   serverpod_client: SERVERPOD_VERSION
+
+dev_dependencies:
+  test: ^1.25.5
 
 dependency_overrides:
   serverpod_client:

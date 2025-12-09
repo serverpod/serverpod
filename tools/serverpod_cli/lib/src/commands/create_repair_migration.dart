@@ -6,6 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
@@ -63,6 +64,12 @@ class CreateRepairMigrationCommand
   ) async {
     bool force = commandConfig.value(CreateRepairMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateRepairMigrationOption.tag);
+
+    // Get interactive flag from global configuration
+    final interactive = serverpodRunner.globalConfiguration.optionalValue(
+      GlobalOption.interactive,
+    );
+
     String mode = commandConfig.value(CreateRepairMigrationOption.mode);
     String? targetVersion = commandConfig.optionalValue(
       CreateRepairMigrationOption.version,
@@ -70,7 +77,7 @@ class CreateRepairMigrationCommand
 
     GeneratorConfig config;
     try {
-      config = await GeneratorConfig.load();
+      config = await GeneratorConfig.load(interactive: interactive);
     } catch (_) {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }

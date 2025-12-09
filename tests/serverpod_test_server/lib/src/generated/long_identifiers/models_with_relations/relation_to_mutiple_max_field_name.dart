@@ -14,6 +14,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../long_identifiers/multiple_max_field_name.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
 
 abstract class RelationToMultipleMaxFieldName
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -35,14 +36,11 @@ abstract class RelationToMultipleMaxFieldName
     return RelationToMultipleMaxFieldName(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      multipleMaxFieldNames:
-          (jsonSerialization['multipleMaxFieldNames'] as List?)
-              ?.map(
-                (e) => _i2.MultipleMaxFieldName.fromJson(
-                  (e as Map<String, dynamic>),
-                ),
-              )
-              .toList(),
+      multipleMaxFieldNames: jsonSerialization['multipleMaxFieldNames'] == null
+          ? null
+          : _i3.Protocol().deserialize<List<_i2.MultipleMaxFieldName>>(
+              jsonSerialization['multipleMaxFieldNames'],
+            ),
     );
   }
 
@@ -71,6 +69,7 @@ abstract class RelationToMultipleMaxFieldName
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'RelationToMultipleMaxFieldName',
       if (id != null) 'id': id,
       'name': name,
       if (multipleMaxFieldNames != null)
@@ -83,6 +82,7 @@ abstract class RelationToMultipleMaxFieldName
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'RelationToMultipleMaxFieldName',
       if (id != null) 'id': id,
       'name': name,
       if (multipleMaxFieldNames != null)

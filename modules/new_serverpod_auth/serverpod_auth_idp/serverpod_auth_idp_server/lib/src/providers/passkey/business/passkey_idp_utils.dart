@@ -4,18 +4,17 @@ import 'dart:typed_data';
 import 'package:clock/clock.dart';
 import 'package:passkeys_server/passkeys_server.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/auth_user.dart';
 
-import '../../../generated/protocol.dart';
+import '../../../../../core.dart';
 import '../../../utils/byte_data_extension.dart';
 
 /// Utility functions for the Passkey identity provider.
-final class PasskeyIDPUtils {
+class PasskeyIdpUtils {
   final Duration _challengeLifetime;
   final Passkeys _passkeys;
 
-  /// Creates a new instance of [PasskeyIDPUtils].
-  PasskeyIDPUtils({
+  /// Creates a new instance of [PasskeyIdpUtils].
+  PasskeyIdpUtils({
     required final Duration challengeLifetime,
     required final Passkeys passkeys,
   }) : _challengeLifetime = challengeLifetime,

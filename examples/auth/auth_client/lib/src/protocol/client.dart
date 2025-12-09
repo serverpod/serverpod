@@ -21,11 +21,11 @@ import 'package:auth_client/src/protocol/greeting.dart' as _i6;
 import 'protocol.dart' as _i7;
 
 /// {@category Endpoint}
-class EndpointAppleIDP extends _i1.EndpointAppleIDPBase {
-  EndpointAppleIDP(_i2.EndpointCaller caller) : super(caller);
+class EndpointAppleIdp extends _i1.EndpointAppleIdpBase {
+  EndpointAppleIdp(_i2.EndpointCaller caller) : super(caller);
 
   @override
-  String get name => 'appleIDP';
+  String get name => 'appleIdp';
 
   /// Signs in a user with their Apple account.
   ///
@@ -43,7 +43,7 @@ class EndpointAppleIDP extends _i1.EndpointAppleIDPBase {
     String? firstName,
     String? lastName,
   }) => caller.callServerEndpoint<_i4.AuthSuccess>(
-    'appleIDP',
+    'appleIdp',
     'login',
     {
       'identityToken': identityToken,
@@ -56,11 +56,11 @@ class EndpointAppleIDP extends _i1.EndpointAppleIDPBase {
 }
 
 /// {@category Endpoint}
-class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
-  EndpointEmailIDP(_i2.EndpointCaller caller) : super(caller);
+class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
+  EndpointEmailIdp(_i2.EndpointCaller caller) : super(caller);
 
   @override
-  String get name => 'emailIDP';
+  String get name => 'emailIdp';
 
   /// Logs in the user and returns a new session.
   ///
@@ -76,7 +76,7 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
     required String email,
     required String password,
   }) => caller.callServerEndpoint<_i4.AuthSuccess>(
-    'emailIDP',
+    'emailIdp',
     'login',
     {
       'email': email,
@@ -97,7 +97,7 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   @override
   _i3.Future<_i2.UuidValue> startRegistration({required String email}) =>
       caller.callServerEndpoint<_i2.UuidValue>(
-        'emailIDP',
+        'emailIdp',
         'startRegistration',
         {'email': email},
       );
@@ -117,7 +117,7 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
     required _i2.UuidValue accountRequestId,
     required String verificationCode,
   }) => caller.callServerEndpoint<String>(
-    'emailIDP',
+    'emailIdp',
     'verifyRegistrationCode',
     {
       'accountRequestId': accountRequestId,
@@ -133,9 +133,8 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   ///   already expired.
   /// - [EmailAccountRequestExceptionReason.policyViolation] if the password
   ///   does not comply with the password policy.
-  /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
-  ///   for the given [accountRequestId], [verificationCode] is invalid, or
-  ///   the request has not been verified yet.
+  /// - [EmailAccountRequestExceptionReason.invalid] if the [registrationToken]
+  ///   is invalid.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   ///
@@ -145,7 +144,7 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
     required String registrationToken,
     required String password,
   }) => caller.callServerEndpoint<_i4.AuthSuccess>(
-    'emailIDP',
+    'emailIdp',
     'finishRegistration',
     {
       'registrationToken': registrationToken,
@@ -169,7 +168,7 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
   @override
   _i3.Future<_i2.UuidValue> startPasswordReset({required String email}) =>
       caller.callServerEndpoint<_i2.UuidValue>(
-        'emailIDP',
+        'emailIdp',
         'startPasswordReset',
         {'email': email},
       );
@@ -193,7 +192,7 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
     required _i2.UuidValue passwordResetRequestId,
     required String verificationCode,
   }) => caller.callServerEndpoint<String>(
-    'emailIDP',
+    'emailIdp',
     'verifyPasswordResetCode',
     {
       'passwordResetRequestId': passwordResetRequestId,
@@ -220,7 +219,7 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
     required String finishPasswordResetToken,
     required String newPassword,
   }) => caller.callServerEndpoint<void>(
-    'emailIDP',
+    'emailIdp',
     'finishPasswordReset',
     {
       'finishPasswordResetToken': finishPasswordResetToken,
@@ -230,11 +229,11 @@ class EndpointEmailIDP extends _i1.EndpointEmailIDPBase {
 }
 
 /// {@category Endpoint}
-class EndpointGoogleIDP extends _i1.EndpointGoogleIDPBase {
-  EndpointGoogleIDP(_i2.EndpointCaller caller) : super(caller);
+class EndpointGoogleIdp extends _i1.EndpointGoogleIdpBase {
+  EndpointGoogleIdp(_i2.EndpointCaller caller) : super(caller);
 
   @override
-  String get name => 'googleIDP';
+  String get name => 'googleIdp';
 
   /// Validates a Google ID token and either logs in the associated user or
   /// creates a new user account if the Google account ID is not yet known.
@@ -245,7 +244,7 @@ class EndpointGoogleIDP extends _i1.EndpointGoogleIDPBase {
     required String idToken,
     required String? accessToken,
   }) => caller.callServerEndpoint<_i4.AuthSuccess>(
-    'googleIDP',
+    'googleIdp',
     'login',
     {
       'idToken': idToken,
@@ -255,17 +254,17 @@ class EndpointGoogleIDP extends _i1.EndpointGoogleIDPBase {
 }
 
 /// {@category Endpoint}
-class EndpointPasskeyIDP extends _i1.EndpointPasskeyIDPBase {
-  EndpointPasskeyIDP(_i2.EndpointCaller caller) : super(caller);
+class EndpointPasskeyIdp extends _i1.EndpointPasskeyIdpBase {
+  EndpointPasskeyIdp(_i2.EndpointCaller caller) : super(caller);
 
   @override
-  String get name => 'passkeyIDP';
+  String get name => 'passkeyIdp';
 
   /// Returns a new challenge to be used for a login or registration request.
   @override
   _i3.Future<({_i5.ByteData challenge, _i2.UuidValue id})> createChallenge() =>
       caller.callServerEndpoint<({_i5.ByteData challenge, _i2.UuidValue id})>(
-        'passkeyIDP',
+        'passkeyIdp',
         'createChallenge',
         {},
       );
@@ -277,7 +276,7 @@ class EndpointPasskeyIDP extends _i1.EndpointPasskeyIDPBase {
   _i3.Future<void> register({
     required _i1.PasskeyRegistrationRequest registrationRequest,
   }) => caller.callServerEndpoint<void>(
-    'passkeyIDP',
+    'passkeyIdp',
     'register',
     {'registrationRequest': registrationRequest},
   );
@@ -287,7 +286,7 @@ class EndpointPasskeyIDP extends _i1.EndpointPasskeyIDPBase {
   _i3.Future<_i4.AuthSuccess> login({
     required _i1.PasskeyLoginRequest loginRequest,
   }) => caller.callServerEndpoint<_i4.AuthSuccess>(
-    'passkeyIDP',
+    'passkeyIdp',
     'login',
     {'loginRequest': loginRequest},
   );
@@ -326,7 +325,10 @@ class Client extends _i2.ServerpodClientShared {
   Client(
     String host, {
     dynamic securityContext,
-    _i2.AuthenticationKeyManager? authenticationKeyManager,
+    @Deprecated(
+      'Use authKeyProvider instead. This will be removed in future releases.',
+    )
+    super.authenticationKeyManager,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
     Function(
@@ -341,7 +343,6 @@ class Client extends _i2.ServerpodClientShared {
          host,
          _i7.Protocol(),
          securityContext: securityContext,
-         authenticationKeyManager: authenticationKeyManager,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
          onFailedCall: onFailedCall,
@@ -349,21 +350,21 @@ class Client extends _i2.ServerpodClientShared {
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
        ) {
-    appleIDP = EndpointAppleIDP(this);
-    emailIDP = EndpointEmailIDP(this);
-    googleIDP = EndpointGoogleIDP(this);
-    passkeyIDP = EndpointPasskeyIDP(this);
+    appleIdp = EndpointAppleIdp(this);
+    emailIdp = EndpointEmailIdp(this);
+    googleIdp = EndpointGoogleIdp(this);
+    passkeyIdp = EndpointPasskeyIdp(this);
     greeting = EndpointGreeting(this);
     modules = Modules(this);
   }
 
-  late final EndpointAppleIDP appleIDP;
+  late final EndpointAppleIdp appleIdp;
 
-  late final EndpointEmailIDP emailIDP;
+  late final EndpointEmailIdp emailIdp;
 
-  late final EndpointGoogleIDP googleIDP;
+  late final EndpointGoogleIdp googleIdp;
 
-  late final EndpointPasskeyIDP passkeyIDP;
+  late final EndpointPasskeyIdp passkeyIdp;
 
   late final EndpointGreeting greeting;
 
@@ -371,10 +372,10 @@ class Client extends _i2.ServerpodClientShared {
 
   @override
   Map<String, _i2.EndpointRef> get endpointRefLookup => {
-    'appleIDP': appleIDP,
-    'emailIDP': emailIDP,
-    'googleIDP': googleIDP,
-    'passkeyIDP': passkeyIDP,
+    'appleIdp': appleIdp,
+    'emailIdp': emailIdp,
+    'googleIdp': googleIdp,
+    'passkeyIdp': passkeyIdp,
     'greeting': greeting,
   };
 

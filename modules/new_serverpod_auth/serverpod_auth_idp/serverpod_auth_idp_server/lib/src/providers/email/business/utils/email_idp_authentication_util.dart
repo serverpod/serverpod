@@ -1,11 +1,7 @@
-import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/src/providers/email/util/email_string_extension.dart';
 
-import '../../../../generated/protocol.dart';
-import '../../../../utils/byte_data_extension.dart';
-import '../../../../utils/secret_hash_util.dart';
-import '../../util/session_extension.dart';
+import '../../../../../core.dart';
+import '../../util/email_string_extension.dart';
 import '../email_idp_config.dart';
 import '../email_idp_server_exceptions.dart';
 
@@ -16,16 +12,25 @@ import '../email_idp_server_exceptions.dart';
 ///
 /// This class also contains utility functions for administration tasks, such as deleting failed login attempts.
 /// {@endtemplate}
-class EmailIDPAuthenticationUtil {
-  final SecretHashUtil _hashUtil;
-  final RateLimit _failedLoginRateLimit;
+class EmailIdpAuthenticationUtil {
+  final Argon2HashUtil _hashUtil;
+  final DatabaseRateLimitedRequestAttemptUtil<String> _rateLimitUtil;
+  final int _maxAttempts;
 
-  /// Creates a new instance of [EmailIDPAuthenticationUtil].
-  EmailIDPAuthenticationUtil({
-    required final SecretHashUtil hashUtil,
+  /// Creates a new instance of [EmailIdpAuthenticationUtil].
+  EmailIdpAuthenticationUtil({
+    required final Argon2HashUtil hashUtil,
     required final RateLimit failedLoginRateLimit,
   }) : _hashUtil = hashUtil,
-       _failedLoginRateLimit = failedLoginRateLimit;
+       _rateLimitUtil = DatabaseRateLimitedRequestAttemptUtil(
+         RateLimitedRequestAttemptConfig(
+           domain: 'email',
+           source: 'failed_login',
+           maxAttempts: failedLoginRateLimit.maxAttempts,
+           timeframe: failedLoginRateLimit.timeframe,
+         ),
+       ),
+       _maxAttempts = failedLoginRateLimit.maxAttempts;
 
   /// Returns the [AuthUser]'s ID upon successful email/password verification.
   ///
@@ -47,11 +52,12 @@ class EmailIDPAuthenticationUtil {
   }) async {
     email = email.normalizedEmail;
 
-    if (await _hasTooManyFailedSignIns(
+    final attemptCount = await _rateLimitUtil.countAttempts(
       session,
-      email,
+      nonce: email,
       transaction: transaction,
-    )) {
+    );
+    if (attemptCount >= _maxAttempts) {
       throw EmailAuthenticationTooManyAttemptsException();
     }
 
@@ -62,16 +68,21 @@ class EmailIDPAuthenticationUtil {
     );
 
     if (account == null) {
-      await _logFailedSignIn(session, email);
+      await _rateLimitUtil.recordAttempt(
+        session,
+        nonce: email,
+      );
       throw EmailAccountNotFoundException();
     }
 
-    if (!await _hashUtil.validateHash(
-      value: password,
-      hash: account.passwordHash.asUint8List,
-      salt: account.passwordSalt.asUint8List,
+    if (!await _hashUtil.validateHashFromString(
+      secret: password,
+      hashString: account.passwordHash,
     )) {
-      await _logFailedSignIn(session, email);
+      await _rateLimitUtil.recordAttempt(
+        session,
+        nonce: email,
+      );
       throw EmailAuthenticationInvalidCredentialsException();
     }
 
@@ -83,69 +94,21 @@ class EmailIDPAuthenticationUtil {
   ///
   /// If [olderThan] is `null`, this will remove all attempts outside the time
   /// window that is checked upon login, as configured in
-  /// [EmailIDPConfig.emailSignInFailureResetTime].
+  /// [EmailIdpConfig.failedLoginRateLimit].
   ///
   /// If [email] is provided, only attempts for the given email will be deleted.
   /// {@endtemplate}
   Future<void> deleteFailedLoginAttempts(
     final Session session, {
-    Duration? olderThan,
+    final Duration? olderThan,
     final String? email,
     required final Transaction transaction,
   }) async {
-    olderThan ??= _failedLoginRateLimit.timeframe;
-
-    final removeBefore = clock.now().subtract(olderThan);
-
-    await EmailAccountFailedLoginAttempt.db.deleteWhere(
+    await _rateLimitUtil.deleteAttempts(
       session,
-      where: (final t) {
-        var expression = t.attemptedAt < removeBefore;
-        if (email != null) {
-          expression &= t.email.equals(email);
-        }
-
-        return expression;
-      },
+      olderThan: olderThan,
+      nonce: email,
       transaction: transaction,
     );
-  }
-
-  Future<bool> _hasTooManyFailedSignIns(
-    final Session session,
-    final String email, {
-    required final Transaction? transaction,
-  }) async {
-    final oldestRelevantAttempt = clock.now().subtract(
-      _failedLoginRateLimit.timeframe,
-    );
-
-    final failedLoginAttemptCount = await EmailAccountFailedLoginAttempt.db
-        .count(
-          session,
-          where: (final t) =>
-              t.email.equals(email) & (t.attemptedAt > oldestRelevantAttempt),
-          transaction: transaction,
-        );
-
-    return failedLoginAttemptCount >= _failedLoginRateLimit.maxAttempts;
-  }
-
-  Future<void> _logFailedSignIn(
-    final Session session,
-    final String email,
-  ) async {
-    // NOTE: The failed attempt logging runs in a separate transaction, so that
-    // it is never rolled back with the parent transaction.
-    await session.db.transaction((final transaction) async {
-      await EmailAccountFailedLoginAttempt.db.insertRow(
-        session,
-        EmailAccountFailedLoginAttempt(
-          email: email,
-          ipAddress: session.remoteIpAddress,
-        ),
-        transaction: transaction,
-      );
-    });
   }
 }

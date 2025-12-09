@@ -21,27 +21,29 @@ void run(List<String> args) async {
   );
 
   // Configure our token managers.
-  final authSessionsConfig = AuthSessionsConfig(
-    sessionKeyHashPepper: pod.getPassword('authSessionsSessionKeyHashPepper')!,
+  final serverSideSessionsConfig = ServerSideSessionsConfig(
+    sessionKeyHashPepper: pod.getPassword(
+      'serverSideSessionKeyHashPepper',
+    )!,
   );
 
-  final authenticationTokenConfig = AuthenticationTokenConfig(
+  final jwtTokenConfig = JwtConfig(
     refreshTokenHashPepper: pod.getPassword(
-      'authenticationTokenRefreshTokenHashPepper',
+      'jwtRefreshTokenHashPepper',
     )!,
-    algorithm: AuthenticationTokenAlgorithm.hmacSha512(
-      SecretKey(pod.getPassword('authenticationTokenPrivateKey')!),
+    algorithm: JwtAlgorithm.hmacSha512(
+      SecretKey(pod.getPassword('jwtHmacSha512PrivateKey')!),
     ),
   );
 
   // Configure our identity providers.
-  final googleIDPConfig = GoogleIDPConfig(
+  final googleIdpConfig = GoogleIdpConfig(
     clientSecret: GoogleClientSecret.fromJsonString(
       pod.getPassword('googleClientSecret')!,
     ),
   );
 
-  final appleIDPConfig = AppleIDPConfig(
+  final appleIdpConfig = AppleIdpConfig(
     serviceIdentifier: pod.getPassword('appleServiceIdentifier')!,
     bundleIdentifier: pod.getPassword('appleBundleIdentifier')!,
     redirectUri: pod.getPassword('appleRedirectUri')!,
@@ -50,70 +52,61 @@ void run(List<String> args) async {
     key: pod.getPassword('appleKey')!,
   );
 
-  final emailIDPConfig = EmailIDPConfig(
+  final emailIdpConfig = EmailIdpConfig(
     secretHashPepper: pod.getPassword('emailSecretHashPepper')!,
-    sendRegistrationVerificationCode:
-        (
-          session, {
-          required accountRequestId,
-          required email,
-          required verificationCode,
-          required transaction,
-        }) {
-          // NOTE: Here you call your mail service to send the verification code to
-          // the user. For testing, we will just log the verification code.
-          session.log(
-            '[EmailIDP] Registration code ($email): $verificationCode',
-          );
-        },
-    sendPasswordResetVerificationCode:
-        (
-          session, {
-          required email,
-          required passwordResetRequestId,
-          required verificationCode,
-          required transaction,
-        }) {
-          // NOTE: Here you call your mail service to send the verification code to
-          // the user. For testing, we will just log the verification code.
-          session.log(
-            '[EmailIDP] Password reset code ($email): $verificationCode',
-          );
-        },
+    sendRegistrationVerificationCode: _sendRegistrationCode,
+    sendPasswordResetVerificationCode: _sendPasswordResetCode,
   );
 
-  final passkeyIDPConfig = PasskeyIDPConfig(
+  final passkeyIdpConfig = PasskeyIdpConfig(
     challengeLifetime: Duration(seconds: 30),
     hostname: 'localhost',
   );
 
-  final authServices = AuthServices.set(
-    primaryTokenManager: AuthSessionsTokenManagerFactory(authSessionsConfig),
-    identityProviders: [
-      GoogleIdentityProviderFactory(googleIDPConfig),
-      AppleIdentityProviderFactory(appleIDPConfig),
-      EmailIdentityProviderFactory(emailIDPConfig),
-      PasskeyIdentityProviderFactory(passkeyIDPConfig),
+  pod.initializeAuthServices(
+    tokenManagerBuilders: [
+      serverSideSessionsConfig,
+      jwtTokenConfig,
     ],
-    additionalTokenManagers: [
-      AuthenticationTokensTokenManagerFactory(
-        authenticationTokenConfig,
-      ),
+    identityProviderBuilders: [
+      googleIdpConfig,
+      appleIdpConfig,
+      emailIdpConfig,
+      passkeyIdpConfig,
     ],
   );
 
-  pod.authenticationHandler = authServices.authenticationHandler;
-
-  pod.webServer
-    ..addRoute(
-      AuthServices.instance.appleIDP.revokedNotificationRoute(),
-      '/hooks/apple-notification', // must match path configured on apple
-    )
-    ..addRoute(
-      AuthServices.instance.appleIDP.webAuthenticationCallbackRoute(),
-      '/auth/callback', // must match path configured on apple
-    );
+  // Paths must match paths configured on Apple's developer portal. The values
+  // below are the defaults if not provided.
+  pod.configureAppleIdpRoutes(
+    revokedNotificationRoutePath: '/hooks/apple-notification',
+    webAuthenticationCallbackRoutePath: '/auth/callback',
+  );
 
   // Start the server.
   await pod.start();
+}
+
+void _sendRegistrationCode(
+  Session session, {
+  required String email,
+  required UuidValue accountRequestId,
+  required String verificationCode,
+  required Transaction? transaction,
+}) {
+  // NOTE: Here you call your mail service to send the verification code to
+  // the user. For testing, we will just log the verification code.
+  session.log('[EmailIDP] Registration code ($email): $verificationCode');
+}
+
+void _sendPasswordResetCode(
+  Session session, {
+  required String email,
+  required UuidValue passwordResetRequestId,
+  required String verificationCode,
+  required Transaction? transaction,
+}) {
+  // NOTE: Here you call your mail service to send the verification code to
+  // the user. For testing, we will just log the verification code.
+  session.log('[EmailIDP] Password reset code ($email): $verificationCode');
 }

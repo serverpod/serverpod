@@ -82,6 +82,7 @@ abstract class SessionLogFilter implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.SessionLogFilter',
       if (endpoint != null) 'endpoint': endpoint,
       if (method != null) 'method': method,
       if (futureCall != null) 'futureCall': futureCall,

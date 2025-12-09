@@ -150,6 +150,7 @@ abstract class SessionLogEntry
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'serverpod.SessionLogEntry',
       if (id != null) 'id': id,
       'serverId': serverId,
       'time': time.toJson(),
@@ -172,6 +173,7 @@ abstract class SessionLogEntry
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'serverpod.SessionLogEntry',
       if (id != null) 'id': id,
       'serverId': serverId,
       'time': time.toJson(),

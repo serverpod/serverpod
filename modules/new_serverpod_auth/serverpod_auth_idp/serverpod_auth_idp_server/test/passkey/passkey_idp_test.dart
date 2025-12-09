@@ -5,7 +5,6 @@ import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 import 'package:serverpod_auth_idp_server/src/utils/byte_data_extension.dart';
 import 'package:serverpod_auth_idp_server/src/utils/uint8list_extension.dart';
 import 'package:test/test.dart';
@@ -14,18 +13,18 @@ import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
   const authUsers = AuthUsers();
-  final tokenManager = AuthSessionsTokenManager(
-    config: AuthSessionsConfig(
+  final tokenManager = ServerSideSessionsTokenManager(
+    config: ServerSideSessionsConfig(
       sessionKeyHashPepper: 'test-pepper',
     ),
     authUsers: authUsers,
   );
 
-  final passKeyIDP = PasskeyIDP(
-    PasskeyIDPConfig(
+  final passKeyIdp = PasskeyIdp(
+    const PasskeyIdpConfig(
       hostname: 'localhost',
     ),
-    tokenIssuer: tokenManager,
+    tokenManager: tokenManager,
   );
 
   withServerpod(
@@ -60,7 +59,7 @@ void main() {
       test(
         "when calling `PasskeyAccounts.registerPasskey` before challenge expires, then the passkey is registered for the session's user.",
         () async {
-          await passKeyIDP.register(
+          await passKeyIdp.register(
             session,
             authUserId: user.id,
             request: PasskeyRegistrationRequest(
@@ -83,9 +82,9 @@ void main() {
           await expectLater(
             withClock(
               Clock.fixed(
-                DateTime.now().add(passKeyIDP.config.challengeLifetime),
+                DateTime.now().add(passKeyIdp.config.challengeLifetime),
               ),
-              () => passKeyIDP.register(
+              () => passKeyIdp.register(
                 session,
                 authUserId: user.id,
                 request: PasskeyRegistrationRequest(
@@ -130,7 +129,7 @@ void main() {
             ),
           );
 
-          await passKeyIDP.register(
+          await passKeyIdp.register(
             sessionBuilder
                 .copyWith(
                   authentication: AuthenticationOverride.authenticationInfo(
@@ -161,7 +160,7 @@ void main() {
       test(
         "when calling `PasskeyAccounts.login` with valid login request data, then the user's ID is returned.",
         () async {
-          final authSuccess = await passKeyIDP.login(
+          final authSuccess = await passKeyIdp.login(
             session,
             request: PasskeyLoginRequest(
               challengeId: loginChallengeId,
@@ -180,7 +179,7 @@ void main() {
         'when calling `PasskeyAccounts.login` with an invalid challenge ID, then a `PasskeyChallengeNotFoundException` is thrown.',
         () async {
           await expectLater(
-            () => passKeyIDP.login(
+            () => passKeyIdp.login(
               session,
               request: PasskeyLoginRequest(
                 challengeId: const Uuid().v4obj(),
@@ -199,7 +198,7 @@ void main() {
         'when calling `PasskeyAccounts.login` with an invalid key ID, then a `PasskeyPublicKeyNotFoundException` is thrown.',
         () async {
           await expectLater(
-            () => passKeyIDP.login(
+            () => passKeyIdp.login(
               session,
               request: PasskeyLoginRequest(
                 challengeId: loginChallengeId,
@@ -221,7 +220,7 @@ void main() {
           brokenAuthenticatorData.asUint8List[10] = 0; // breaks the rpID hash
 
           await expectLater(
-            () => passKeyIDP.login(
+            () => passKeyIdp.login(
               session,
               request: PasskeyLoginRequest(
                 challengeId: loginChallengeId,
@@ -251,7 +250,7 @@ void main() {
               '28GIVuuCS/5DG0LA1tNr+01+qWzMf8PfyBZNQPttXqY=';
 
           await expectLater(
-            () => passKeyIDP.login(
+            () => passKeyIdp.login(
               session,
               request: PasskeyLoginRequest(
                 challengeId: loginChallengeId,
@@ -281,7 +280,7 @@ void main() {
           brokenSignature.asUint8List[10] = 0;
 
           await expectLater(
-            () => passKeyIDP.login(
+            () => passKeyIdp.login(
               session,
               request: PasskeyLoginRequest(
                 challengeId: loginChallengeId,

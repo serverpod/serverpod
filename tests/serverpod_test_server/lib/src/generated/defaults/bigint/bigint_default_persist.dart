@@ -60,6 +60,7 @@ abstract class BigIntDefaultPersist
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'BigIntDefaultPersist',
       if (id != null) 'id': id,
       if (bigIntDefaultPersistStr != null)
         'bigIntDefaultPersistStr': bigIntDefaultPersistStr?.toJson(),
@@ -69,6 +70,7 @@ abstract class BigIntDefaultPersist
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'BigIntDefaultPersist',
       if (id != null) 'id': id,
       if (bigIntDefaultPersistStr != null)
         'bigIntDefaultPersistStr': bigIntDefaultPersistStr?.toJson(),

@@ -49,6 +49,7 @@ abstract class ObjectWithDuration implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithDuration',
       if (id != null) 'id': id,
       'duration': duration.toJson(),
     };

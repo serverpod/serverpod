@@ -57,12 +57,35 @@ class Protocol extends _i1.SerializationManager {
 
   static final Protocol _instance = Protocol._();
 
+  static String? getClassNameFromObjectJson(dynamic data) {
+    if (data is! Map) return null;
+    final className = data['__className__'] as String?;
+    if (className == null) return null;
+    if (!className.startsWith('serverpod_auth_idp.')) return className;
+    return className.substring(19);
+  }
+
   @override
   T deserialize<T>(
     dynamic data, [
     Type? t,
   ]) {
     t ??= T;
+
+    final dataClassName = getClassNameFromObjectJson(data);
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
+      try {
+        return deserializeByClassName({
+          'className': dataClassName,
+          'data': data,
+        });
+      } on FormatException catch (_) {
+        // If the className is not recognized (e.g., older client receiving
+        // data with a new subtype), fall back to deserializing without the
+        // className, using the expected type T.
+      }
+    }
+
     if (t == _i2.EmailAccountLoginException) {
       return _i2.EmailAccountLoginException.fromJson(data) as T;
     }
@@ -184,10 +207,44 @@ class Protocol extends _i1.SerializationManager {
     return super.deserialize<T>(data, t);
   }
 
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i2.EmailAccountLoginException => 'EmailAccountLoginException',
+      _i3.EmailAccountLoginExceptionReason =>
+        'EmailAccountLoginExceptionReason',
+      _i4.EmailAccountPasswordResetException =>
+        'EmailAccountPasswordResetException',
+      _i5.EmailAccountPasswordResetExceptionReason =>
+        'EmailAccountPasswordResetExceptionReason',
+      _i6.EmailAccountRequestException => 'EmailAccountRequestException',
+      _i7.EmailAccountRequestExceptionReason =>
+        'EmailAccountRequestExceptionReason',
+      _i8.GoogleIdTokenVerificationException =>
+        'GoogleIdTokenVerificationException',
+      _i9.PasskeyChallengeExpiredException =>
+        'PasskeyChallengeExpiredException',
+      _i10.PasskeyChallengeNotFoundException =>
+        'PasskeyChallengeNotFoundException',
+      _i11.PasskeyLoginRequest => 'PasskeyLoginRequest',
+      _i12.PasskeyPublicKeyNotFoundException =>
+        'PasskeyPublicKeyNotFoundException',
+      _i13.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
+      _ => null,
+    };
+  }
+
   @override
   String? getClassNameForObject(Object? data) {
     String? className = super.getClassNameForObject(data);
     if (className != null) return className;
+
+    if (data is Map<String, dynamic> && data['__className__'] is String) {
+      return (data['__className__'] as String).replaceFirst(
+        'serverpod_auth_idp.',
+        '',
+      );
+    }
+
     switch (data) {
       case _i2.EmailAccountLoginException():
         return 'EmailAccountLoginException';

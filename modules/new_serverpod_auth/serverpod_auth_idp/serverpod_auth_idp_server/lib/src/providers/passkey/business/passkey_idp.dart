@@ -2,32 +2,30 @@ import 'dart:typed_data';
 
 import 'package:passkeys_server/passkeys_server.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
-import 'package:serverpod_auth_idp_server/src/generated/protocol.dart';
 
+import '../../../../../core.dart';
 import 'passkey_idp_admin.dart';
 import 'passkey_idp_config.dart';
 import 'passkey_idp_utils.dart';
 
 /// Passkey account management functions.
-final class PasskeyIDP {
+class PasskeyIdp {
   /// The method used when authenticating with the Passkey identity provider.
   static const String method = 'passkey';
 
   /// Administrative methods for working with Passkey-backed accounts.
-  final PasskeyIDPAdmin admin;
+  final PasskeyIdpAdmin admin;
 
   /// The configuration for the Passkey identity provider.
-  final PasskeyIDPConfig config;
+  final PasskeyIdpConfig config;
 
   /// Utility functions for the Passkey identity provider.
-  final PasskeyIDPUtils utils;
+  final PasskeyIdpUtils utils;
 
   final AuthUsers _authUsers;
   final TokenIssuer _tokenIssuer;
 
-  PasskeyIDP._(
+  PasskeyIdp._(
     this.config,
     this._tokenIssuer,
     this.utils,
@@ -35,24 +33,24 @@ final class PasskeyIDP {
     this._authUsers,
   );
 
-  /// Creates a new instance of [PasskeyIDP].
-  factory PasskeyIDP(
-    final PasskeyIDPConfig config, {
-    required final TokenIssuer tokenIssuer,
+  /// Creates a new instance of [PasskeyIdp].
+  factory PasskeyIdp(
+    final PasskeyIdpConfig config, {
+    required final TokenIssuer tokenManager,
     final AuthUsers authUsers = const AuthUsers(),
   }) {
-    final utils = PasskeyIDPUtils(
+    final utils = PasskeyIdpUtils(
       challengeLifetime: config.challengeLifetime,
       passkeys: Passkeys(
         config: PasskeysConfig(relyingPartyId: config.hostname),
       ),
     );
 
-    return PasskeyIDP._(
+    return PasskeyIdp._(
       config,
-      tokenIssuer,
+      tokenManager,
       utils,
-      PasskeyIDPAdmin(
+      PasskeyIdpAdmin(
         challengeLifetime: config.challengeLifetime,
         utils: utils,
       ),
@@ -138,3 +136,9 @@ final class PasskeyIDP {
 
 /// A challenge to be used for a passkey registration or login.
 typedef PasskeyChallengeResponse = ({UuidValue id, ByteData challenge});
+
+/// Extension to get the PasskeyIdp instance from the AuthServices.
+extension PasskeyIdpGetter on AuthServices {
+  /// Returns the PasskeyIdp instance from the AuthServices.
+  PasskeyIdp get passkeyIdp => AuthServices.getIdentityProvider<PasskeyIdp>();
+}

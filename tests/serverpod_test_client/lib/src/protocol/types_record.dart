@@ -255,6 +255,7 @@ abstract class TypesRecord implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'TypesRecord',
       if (anInt != null) 'anInt': _i6.mapRecordToJson(anInt),
       if (aBool != null) 'aBool': _i6.mapRecordToJson(aBool),
       if (aDouble != null) 'aDouble': _i6.mapRecordToJson(aDouble),

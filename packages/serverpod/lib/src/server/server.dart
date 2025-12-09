@@ -132,6 +132,8 @@ class Server implements RouterInjectable {
     if (serverpod.config.loggingMode == ServerpodLoggingMode.verbose) {
       router.use('/', _verboseLogging);
     }
+
+    // Register core middleware first to ensure they wrap all user middleware
     router
       ..use('/', _headers)
       ..use('/', _reportException)
@@ -151,6 +153,9 @@ class Server implements RouterInjectable {
       )
       ..any('/**', _endpoints);
   }
+
+  /// Adds a [Middleware] to the server
+  void addMiddleware(Middleware middleware) => _app.use('/', middleware);
 
   /// Starts the server.
   /// Returns true if the server was started successfully.
@@ -188,7 +193,7 @@ class Server implements RouterInjectable {
 
   Handler _verboseLogging(Handler next) {
     return (req) async {
-      final path = req.requestedUri.path;
+      final path = req.url.path;
       serverpod.logVerbose('handleRequest: ${req.method} $path');
       return await next(req);
     };
@@ -198,10 +203,11 @@ class Server implements RouterInjectable {
     return (req) async {
       try {
         return await next(req);
-      } on _RequestTooLargeException catch (e) {
-        return Response(
-          io.HttpStatus.requestEntityTooLarge,
-          body: Body.fromString(e.errorDescription),
+      } on MaxBodySizeExceeded catch (e) {
+        return Response.contentTooLarge(
+          body: Body.fromString(
+            'Request size exceeds the maximum allowed size of ${e.maxLength} bytes.',
+          ),
         );
       } on EndpointDispatchException catch (e) {
         return switch (e) {
@@ -294,14 +300,15 @@ class Server implements RouterInjectable {
   }
 
   FutureOr<Result> _cloudStorage(Request req) async {
-    final uri = req.requestedUri;
+    final uri = req.url;
     assert(uri.path == '/serverpod_cloud_storage');
     return await _handleEndpointCall(uri, '', req);
   }
 
   Future<Response> _endpoints(Request req) async {
-    final body = await _readBody(req);
-    return await _handleEndpointCall(req.requestedUri, body, req);
+    var maxRequestSize = serverpod.config.maxRequestSize;
+    final body = await req.readAsString(maxLength: maxRequestSize);
+    return await _handleEndpointCall(req.url, body, req);
   }
 
   Handler _dispatchWebSocket(
@@ -338,28 +345,6 @@ class Server implements RouterInjectable {
         }
       });
     };
-  }
-
-  Future<String> _readBody(Request request) async {
-    var builder = BytesBuilder(copy: false);
-    var len = 0;
-    var maxRequestSize = serverpod.config.maxRequestSize;
-    var tooLargeForSure = (request.body.contentLength ?? -1) > maxRequestSize;
-    if (!tooLargeForSure) {
-      await for (var segment in request.read()) {
-        if (tooLargeForSure) continue; // always drain request, if reading begun
-        len += segment.length;
-        tooLargeForSure = len > maxRequestSize;
-        builder.add(segment);
-      }
-    }
-    if (tooLargeForSure) {
-      // We defer raising the exception until we have drained the request stream
-      // This is a workaround for https://github.com/dart-lang/sdk/issues/60271
-      // and fixes: https://github.com/serverpod/serverpod/issues/3213 for us.
-      throw _RequestTooLargeException(maxRequestSize);
-    }
-    return const Utf8Decoder().convert(builder.takeBytes());
   }
 
   Future<Response> _handleEndpointCall(
@@ -539,33 +524,6 @@ class Server implements RouterInjectable {
   /// Returns information about the current connections to the server.
   Future<ConnectionsInfo> connectionsInfo() async =>
       await _relicServer?.connectionsInfo() ?? (active: 0, closing: 0, idle: 0);
-}
-
-/// The result of a failed request to the server where the request size
-/// exceeds the maximum allowed limit.
-///
-/// This error provides details about the maximum allowed size, allowing the
-/// client to adjust their request accordingly.
-class _RequestTooLargeException implements Exception {
-  /// Maximum allowed request size in bytes.
-  final int maxSize;
-
-  /// Description of the error.
-  ///
-  /// Contains a human-readable explanation of the error, including the maximum
-  /// allowed size and the actual size of the request.
-  String get errorDescription =>
-      'Request size exceeds the maximum allowed size of $maxSize bytes.';
-
-  /// Creates a new [ResultRequestTooLarge] object.
-  ///
-  /// - [maxSize]: The maximum allowed size for the request in bytes.
-  const _RequestTooLargeException(this.maxSize);
-
-  @override
-  String toString() {
-    return errorDescription;
-  }
 }
 
 /// Extension providing testing utilities for [Server] authentication.

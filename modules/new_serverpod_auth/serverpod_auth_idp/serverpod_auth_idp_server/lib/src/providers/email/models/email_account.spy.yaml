@@ -18,11 +18,8 @@ fields:
 
   ### The hashed password of the user.
   ###
-  ### Obtained in conjunction with [passwordSalt].
-  passwordHash: ByteData
-
-  ### The salt used for creating the [passwordHash].
-  passwordSalt: ByteData
+  ### Stored in PHC format: $argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}$${base64Hash}
+  passwordHash: String
 
 indexes:
   serverpod_auth_idp_email_account_email:

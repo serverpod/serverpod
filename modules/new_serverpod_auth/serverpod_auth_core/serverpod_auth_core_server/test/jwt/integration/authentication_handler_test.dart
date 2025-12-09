@@ -1,14 +1,14 @@
 import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/jwt.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:test/test.dart';
 
 import '../../serverpod_test_tools.dart';
 
 void main() {
-  final authenticationTokens = AuthenticationTokens(
-    config: AuthenticationTokenConfig(
-      algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+  final jwt = Jwt(
+    config: JwtConfig(
+      algorithm: JwtAlgorithm.hmacSha512(
         SecretKey('test-private-key-for-HS512'),
       ),
       refreshTokenHashPepper: 'test-pepper',
@@ -27,7 +27,7 @@ void main() {
     test(
       'when calling the authentication handler with an non-JWT String, then it returns `null`.',
       () async {
-        final authInfo = await authenticationTokens.authenticationHandler(
+        final authInfo = await jwt.authenticationHandler(
           session,
           'yolo',
         );
@@ -39,7 +39,7 @@ void main() {
     test(
       'when calling the authentication handler with an invalid JWT String, then it returns `null`.',
       () async {
-        final authInfo = await authenticationTokens.authenticationHandler(
+        final authInfo = await jwt.authenticationHandler(
           session,
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
         );
@@ -63,10 +63,10 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        final authUser = await authenticationTokens.authUsers.create(session);
+        final authUser = await jwt.authUsers.create(session);
         authUserId = authUser.id;
 
-        authSuccess = await authenticationTokens.createTokens(
+        authSuccess = await jwt.createTokens(
           session,
           authUserId: authUserId,
           scopes: {const Scope(scopeName)},
@@ -78,7 +78,7 @@ void main() {
       test(
         'when calling the authentication handler, then it returns the user and scopes.',
         () async {
-          final authInfo = await authenticationTokens.authenticationHandler(
+          final authInfo = await jwt.authenticationHandler(
             session,
             authSuccess.token,
           );
@@ -92,7 +92,7 @@ void main() {
       test(
         'when calling the authentication handler, then the extra claims are available on the auth info.',
         () async {
-          final authInfo = await authenticationTokens.authenticationHandler(
+          final authInfo = await jwt.authenticationHandler(
             session,
             authSuccess.token,
           );
@@ -106,7 +106,7 @@ void main() {
         () async {
           final authInfo = await withClock(
             Clock.fixed(DateTime.now().add(const Duration(minutes: 11))),
-            () => authenticationTokens.authenticationHandler(
+            () => jwt.authenticationHandler(
               session,
               authSuccess.token,
             ),
@@ -119,19 +119,18 @@ void main() {
       test(
         'when calling the authentication handler after the secret key has been changed, then it returns `null`.',
         () async {
-          final differentAuthenticationTokens = AuthenticationTokens(
-            config: AuthenticationTokenConfig(
-              algorithm: AuthenticationTokenAlgorithm.hmacSha512(
+          final differentJwt = Jwt(
+            config: JwtConfig(
+              algorithm: JwtAlgorithm.hmacSha512(
                 SecretKey('test-private-key-for-HS512-different'),
               ),
               refreshTokenHashPepper: 'test-pepper',
             ),
           );
-          final authInfo = await differentAuthenticationTokens
-              .authenticationHandler(
-                session,
-                authSuccess.token,
-              );
+          final authInfo = await differentJwt.authenticationHandler(
+            session,
+            authSuccess.token,
+          );
 
           expect(authInfo, isNull);
         },
@@ -153,10 +152,10 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
 
-        final authUser = await authenticationTokens.authUsers.create(session);
+        final authUser = await jwt.authUsers.create(session);
         authUserId = authUser.id;
 
-        authSuccess = await authenticationTokens.createTokens(
+        authSuccess = await jwt.createTokens(
           session,
           authUserId: authUserId,
           scopes: {const Scope(scopeName)},
@@ -168,13 +167,13 @@ void main() {
       test(
         'when rotating the tokens, then both the old (non-expired) and new access token are valid.',
         () async {
-          final newTokenPair = await authenticationTokens.rotateRefreshToken(
+          final newTokenPair = await jwt.admin.rotateRefreshToken(
             session,
             refreshToken: authSuccess.refreshToken!,
           );
 
           expect(
-            await authenticationTokens.authenticationHandler(
+            await jwt.authenticationHandler(
               session,
               authSuccess.token,
             ),
@@ -182,7 +181,7 @@ void main() {
           );
 
           expect(
-            await authenticationTokens.authenticationHandler(
+            await jwt.authenticationHandler(
               session,
               newTokenPair.accessToken,
             ),
@@ -194,12 +193,12 @@ void main() {
       test(
         'when deleting all refresh tokens for the user, then the access token is still valid until it expires.',
         () async {
-          await authenticationTokens.destroyAllRefreshTokens(
+          await jwt.revokeAllRefreshTokens(
             session,
             authUserId: authUserId,
           );
 
-          final authInfo = await authenticationTokens.authenticationHandler(
+          final authInfo = await jwt.authenticationHandler(
             session,
             authSuccess.token,
           );

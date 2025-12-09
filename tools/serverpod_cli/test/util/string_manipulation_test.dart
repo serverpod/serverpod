@@ -381,7 +381,10 @@ void main() {
         var input = '''/// {@template example.method}
 /// This is a method
 /// {@endtemplate}''';
-        var result = stripDocumentationTemplateMarkers(input);
+        var result = stripDocumentationTemplateMarkers(
+          input,
+          templateRegistry: {},
+        );
         expect(result, '''/// This is a method''');
       },
     );
@@ -391,7 +394,10 @@ void main() {
       () {
         var input = '''/// {@template example.method}
 /// This is a method''';
-        var result = stripDocumentationTemplateMarkers(input);
+        var result = stripDocumentationTemplateMarkers(
+          input,
+          templateRegistry: {},
+        );
         expect(result, '''/// This is a method''');
       },
     );
@@ -401,7 +407,10 @@ void main() {
       () {
         var input = '''/// This is a method
 /// {@endtemplate}''';
-        var result = stripDocumentationTemplateMarkers(input);
+        var result = stripDocumentationTemplateMarkers(
+          input,
+          templateRegistry: {},
+        );
         expect(result, '''/// This is a method''');
       },
     );
@@ -422,7 +431,10 @@ void main() {
 /// registration. If the email is already registered, the returned ID will not
 /// be valid.
 /// {@endtemplate}''';
-        var result = stripDocumentationTemplateMarkers(input);
+        var result = stripDocumentationTemplateMarkers(
+          input,
+          templateRegistry: {},
+        );
         expect(
           result,
           '''/// Starts the registration for a new user account with an email-based login
@@ -440,12 +452,15 @@ void main() {
     );
 
     test('Given null documentation then returns null.', () {
-      var result = stripDocumentationTemplateMarkers(null);
+      var result = stripDocumentationTemplateMarkers(
+        null,
+        templateRegistry: {},
+      );
       expect(result, null);
     });
 
     test('Given empty documentation then returns empty.', () {
-      var result = stripDocumentationTemplateMarkers('');
+      var result = stripDocumentationTemplateMarkers('', templateRegistry: {});
       expect(result, '');
     });
 
@@ -454,7 +469,10 @@ void main() {
       () {
         var input = '''/// This is a method
 /// with multiple lines''';
-        var result = stripDocumentationTemplateMarkers(input);
+        var result = stripDocumentationTemplateMarkers(
+          input,
+          templateRegistry: {},
+        );
         expect(result, input);
       },
     );
@@ -464,8 +482,199 @@ void main() {
       () {
         var input = '''/// {@template example.method}
 /// {@endtemplate}''';
-        var result = stripDocumentationTemplateMarkers(input);
+        var result = stripDocumentationTemplateMarkers(
+          input,
+          templateRegistry: {},
+        );
         expect(result, null);
+      },
+    );
+
+    group('with template registry', () {
+      test(
+        'Given documentation with {@macro} reference and matching template then macro is resolved.',
+        () {
+          var input = '''/// {@macro example.method}''';
+          var templateRegistry = <String, String>{
+            'example.method': '/// This is the template content',
+          };
+          var result = stripDocumentationTemplateMarkers(
+            input,
+            templateRegistry: templateRegistry,
+          );
+          expect(result, '''/// This is the template content''');
+        },
+      );
+
+      test(
+        'Given documentation with {@macro} reference and no matching template then macro is kept.',
+        () {
+          var input = '''/// {@macro nonexistent.template}''';
+          var templateRegistry = <String, String>{
+            'example.method': '/// This is the template content',
+          };
+          var result = stripDocumentationTemplateMarkers(
+            input,
+            templateRegistry: templateRegistry,
+          );
+          expect(result, '''/// {@macro nonexistent.template}''');
+        },
+      );
+
+      test(
+        'Given documentation with {@macro} and additional content then macro is resolved while preserving other content.',
+        () {
+          var input = '''/// Some intro text
+/// {@macro example.method}
+/// Some outro text''';
+          var templateRegistry = <String, String>{
+            'example.method':
+                '/// Template content line 1\n/// Template content line 2',
+          };
+          var result = stripDocumentationTemplateMarkers(
+            input,
+            templateRegistry: templateRegistry,
+          );
+          expect(
+            result,
+            '''/// Some intro text
+/// Template content line 1
+/// Template content line 2
+/// Some outro text''',
+          );
+        },
+      );
+
+      test(
+        'Given documentation with multiple {@macro} references then all are resolved.',
+        () {
+          var input = '''/// {@macro first.template}
+/// {@macro second.template}''';
+          var templateRegistry = <String, String>{
+            'first.template': '/// First content',
+            'second.template': '/// Second content',
+          };
+          var result = stripDocumentationTemplateMarkers(
+            input,
+            templateRegistry: templateRegistry,
+          );
+          expect(
+            result,
+            '''/// First content
+/// Second content''',
+          );
+        },
+      );
+    });
+  });
+
+  group('extractDartDocTemplates', () {
+    test(
+      'Given documentation with template definition then template is extracted.',
+      () {
+        var input = '''/// {@template example.method}
+/// This is the content
+/// {@endtemplate}''';
+        var registry = extractDartDocTemplates(input);
+        expect(registry['example.method'], '/// This is the content');
+      },
+    );
+
+    test(
+      'Given documentation with multi-line template then content is extracted.',
+      () {
+        var input = '''/// {@template example.method}
+/// Line 1
+/// Line 2
+/// Line 3
+/// {@endtemplate}''';
+        var registry = extractDartDocTemplates(input);
+        expect(
+          registry['example.method'],
+          '''/// Line 1
+/// Line 2
+/// Line 3''',
+        );
+      },
+    );
+
+    test(
+      'Given documentation with multiple templates then all are extracted.',
+      () {
+        var input = '''/// {@template first.template}
+/// First content
+/// {@endtemplate}
+/// {@template second.template}
+/// Second content
+/// {@endtemplate}''';
+        var registry = extractDartDocTemplates(input);
+        expect(registry['first.template'], '/// First content');
+        expect(registry['second.template'], '/// Second content');
+      },
+    );
+
+    test(
+      'Given documentation without templates then registry is empty.',
+      () {
+        var input = '''/// Just regular documentation
+/// without any templates''';
+        var registry = extractDartDocTemplates(input);
+        expect(registry, isEmpty);
+      },
+    );
+
+    test(
+      'Given documentation with template with empty content then template is not added.',
+      () {
+        var input = '''/// {@template empty.template}
+/// {@endtemplate}''';
+        var registry = extractDartDocTemplates(input);
+        expect(registry, isEmpty);
+      },
+    );
+
+    test(
+      'Given documentation with a template containing a {@macro} reference then an error is thrown.',
+      () {
+        var input = '''/// {@template outer.template}
+/// {@macro inner.template}
+/// {@endtemplate}''';
+        expect(
+          () => extractDartDocTemplates(input),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.message,
+              'message',
+              'Nested or unresolved macro reference found in template: "outer.template". '
+                  'Please remove this incorrect reference.',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'Given documentation with a template containing a nested template then an error is thrown.',
+      () {
+        var input = '''/// {@template outer.template}
+/// Outer content line 1
+/// {@template inner.template}
+/// Inner content
+/// {@endtemplate}
+/// Outer content line 2
+/// {@endtemplate}''';
+
+        expect(
+          () => extractDartDocTemplates(input),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.message,
+              'message',
+              'Nested template found: "outer.template" in line: "/// {@template inner.template}". '
+                  'Please remove the nested template, as it is not supported.',
+            ),
+          ),
+        );
       },
     );
   });

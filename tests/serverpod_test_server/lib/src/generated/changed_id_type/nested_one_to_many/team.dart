@@ -15,6 +15,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/nested_one_to_many/arena.dart' as _i2;
 import '../../changed_id_type/nested_one_to_many/player.dart' as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
 
 abstract class TeamInt
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -43,12 +44,14 @@ abstract class TeamInt
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['arenaId']),
       arena: jsonSerialization['arena'] == null
           ? null
-          : _i2.ArenaUuid.fromJson(
-              (jsonSerialization['arena'] as Map<String, dynamic>),
+          : _i4.Protocol().deserialize<_i2.ArenaUuid>(
+              jsonSerialization['arena'],
             ),
-      players: (jsonSerialization['players'] as List?)
-          ?.map((e) => _i3.PlayerUuid.fromJson((e as Map<String, dynamic>)))
-          .toList(),
+      players: jsonSerialization['players'] == null
+          ? null
+          : _i4.Protocol().deserialize<List<_i3.PlayerUuid>>(
+              jsonSerialization['players'],
+            ),
     );
   }
 
@@ -83,6 +86,7 @@ abstract class TeamInt
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'TeamInt',
       if (id != null) 'id': id,
       'name': name,
       if (arenaId != null) 'arenaId': arenaId?.toJson(),
@@ -95,6 +99,7 @@ abstract class TeamInt
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'TeamInt',
       if (id != null) 'id': id,
       'name': name,
       if (arenaId != null) 'arenaId': arenaId?.toJson(),

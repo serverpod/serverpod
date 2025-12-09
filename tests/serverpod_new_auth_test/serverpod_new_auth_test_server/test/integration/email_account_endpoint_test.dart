@@ -7,19 +7,17 @@ import 'package:test/test.dart';
 import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
-final tokenManagerFactory = AuthSessionsTokenManagerFactory(
-  AuthSessionsConfig(sessionKeyHashPepper: 'test-pepper'),
+final tokenManagerConfig = ServerSideSessionsConfig(
+  sessionKeyHashPepper: 'test-pepper',
 );
 
 void main() {
   setUp(() async {
     AuthServices.set(
-      primaryTokenManager: tokenManagerFactory,
-      identityProviders: [
-        EmailIdentityProviderFactory(
-          const EmailIDPConfig(
-            secretHashPepper: 'test',
-          ),
+      tokenManagerBuilders: [tokenManagerConfig],
+      identityProviderBuilders: [
+        const EmailIdpConfig(
+          secretHashPepper: 'test',
         ),
       ],
     );
@@ -27,8 +25,8 @@ void main() {
 
   tearDown(() async {
     AuthServices.set(
-      primaryTokenManager: tokenManagerFactory,
-      identityProviders: [],
+      tokenManagerBuilders: [tokenManagerConfig],
+      identityProviderBuilders: [],
     );
   });
 
@@ -45,7 +43,7 @@ void main() {
         String? receivedVerificationCode;
 
         setUp(() async {
-          final config = EmailIDPConfig(
+          final config = EmailIdpConfig(
             secretHashPepper: 'test',
             sendRegistrationVerificationCode:
                 (
@@ -60,10 +58,8 @@ void main() {
                 },
           );
           AuthServices.set(
-            identityProviders: [
-              EmailIdentityProviderFactory(config),
-            ],
-            primaryTokenManager: tokenManagerFactory,
+            identityProviderBuilders: [config],
+            tokenManagerBuilders: [tokenManagerConfig],
           );
 
           clientReceivedRequestId = await endpoints.emailAccount
@@ -110,7 +106,7 @@ void main() {
         String? receivedVerificationCode;
 
         setUp(() async {
-          final config = EmailIDPConfig(
+          final config = EmailIdpConfig(
             secretHashPepper: 'test',
             maxPasswordResetAttempts: const RateLimit(
               timeframe: Duration(seconds: 1),
@@ -129,10 +125,8 @@ void main() {
                 },
           );
           AuthServices.set(
-            identityProviders: [
-              EmailIdentityProviderFactory(config),
-            ],
-            primaryTokenManager: tokenManagerFactory,
+            identityProviderBuilders: [config],
+            tokenManagerBuilders: [tokenManagerConfig],
           );
 
           clientReceivedRequestId = await endpoints.emailAccount
@@ -176,7 +170,7 @@ void main() {
       const verificationCodeLifetime = Duration(minutes: 15);
 
       setUp(() async {
-        final config = EmailIDPConfig(
+        final config = EmailIdpConfig(
           secretHashPepper: 'test',
           sendRegistrationVerificationCode:
               (
@@ -192,10 +186,8 @@ void main() {
           registrationVerificationCodeLifetime: verificationCodeLifetime,
         );
         AuthServices.set(
-          identityProviders: [
-            EmailIdentityProviderFactory(config),
-          ],
-          primaryTokenManager: tokenManagerFactory,
+          identityProviderBuilders: [config],
+          tokenManagerBuilders: [tokenManagerConfig],
         );
 
         await endpoints.emailAccount.startRegistration(
@@ -368,7 +360,7 @@ void main() {
           email: email,
           password: password,
         );
-        final config = EmailIDPConfig(
+        final config = EmailIdpConfig(
           secretHashPepper: 'test',
           sendRegistrationVerificationCode:
               (
@@ -392,10 +384,8 @@ void main() {
               },
         );
         AuthServices.set(
-          identityProviders: [
-            EmailIdentityProviderFactory(config),
-          ],
-          primaryTokenManager: tokenManagerFactory,
+          identityProviderBuilders: [config],
+          tokenManagerBuilders: [tokenManagerConfig],
         );
       });
 
@@ -544,14 +534,12 @@ void main() {
       const verificationCodeLifetime = Duration(minutes: 15);
 
       setUp(() async {
-        const config = EmailIDPConfig(
+        const config = EmailIdpConfig(
           secretHashPepper: 'test',
         );
         AuthServices.set(
-          identityProviders: [
-            EmailIdentityProviderFactory(config),
-          ],
-          primaryTokenManager: tokenManagerFactory,
+          identityProviderBuilders: [config],
+          tokenManagerBuilders: [tokenManagerConfig],
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -612,7 +600,7 @@ void main() {
       );
 
       test(
-        'when calling `verifyPasswordResetCode` the correct verification code after the email account being deleted, '
+        'when calling `verifyPasswordResetCode` with the correct verification code after the email account being deleted, '
         'then an error is thrown with reason `invalid`.',
         () async {
           await EmailAccount.db.deleteWhere(
@@ -718,14 +706,12 @@ void main() {
       const verificationCodeLifetime = Duration(minutes: 15);
 
       setUp(() async {
-        const config = EmailIDPConfig(
+        const config = EmailIdpConfig(
           secretHashPepper: 'test',
         );
         AuthServices.set(
-          identityProviders: [
-            EmailIdentityProviderFactory(config),
-          ],
-          primaryTokenManager: tokenManagerFactory,
+          identityProviderBuilders: [config],
+          tokenManagerBuilders: [tokenManagerConfig],
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -793,7 +779,7 @@ void main() {
       );
 
       test(
-        'when calling `finishPasswordReset` the correct finish password reset token after the email account being deleted, '
+        'when calling `finishPasswordReset` with the correct finish password reset token after the email account being deleted, '
         'then an error is thrown with reason `invalid`.',
         () async {
           await EmailAccount.db.deleteWhere(
@@ -951,15 +937,13 @@ void main() {
       late String loginSessionKey;
 
       setUp(() async {
-        const config = EmailIDPConfig(
+        const config = EmailIdpConfig(
           secretHashPepper: 'test',
         );
 
         AuthServices.set(
-          identityProviders: [
-            EmailIdentityProviderFactory(config),
-          ],
-          primaryTokenManager: tokenManagerFactory,
+          identityProviderBuilders: [config],
+          tokenManagerBuilders: [tokenManagerConfig],
         );
 
         final registrationResult = await endpoints._registerEmailAccount(
@@ -1045,7 +1029,7 @@ extension on TestEndpoints {
   }) async {
     late UuidValue receivedAccountRequestId;
     late String receivedVerificationCode;
-    final config = EmailIDPConfig(
+    final config = EmailIdpConfig(
       secretHashPepper: 'test',
       maxPasswordResetAttempts: const RateLimit(
         timeframe: Duration(seconds: 1),
@@ -1065,10 +1049,8 @@ extension on TestEndpoints {
     );
 
     AuthServices.set(
-      identityProviders: [
-        EmailIdentityProviderFactory(config),
-      ],
-      primaryTokenManager: tokenManagerFactory,
+      identityProviderBuilders: [config],
+      tokenManagerBuilders: [tokenManagerConfig],
     );
 
     await emailAccount.startRegistration(
@@ -1103,7 +1085,7 @@ extension on TestEndpoints {
   }) async {
     late UuidValue receivedPasswordResetRequestId;
     late String receivedVerificationCode;
-    final config = EmailIDPConfig(
+    final config = EmailIdpConfig(
       secretHashPepper: 'test',
       sendPasswordResetVerificationCode:
           (
@@ -1118,10 +1100,8 @@ extension on TestEndpoints {
           },
     );
     AuthServices.set(
-      identityProviders: [
-        EmailIdentityProviderFactory(config),
-      ],
-      primaryTokenManager: tokenManagerFactory,
+      identityProviderBuilders: [config],
+      tokenManagerBuilders: [tokenManagerConfig],
     );
 
     await emailAccount.startPasswordReset(
@@ -1171,18 +1151,8 @@ Future<void> _cleanUpDatabase(final Session session) async {
     where: (final _) => Constant.bool(true),
   );
 
-  await EmailAccountPasswordResetCompleteAttempt.db.deleteWhere(
+  await RateLimitedRequestAttempt.db.deleteWhere(
     session,
-    where: (final _) => Constant.bool(true),
-  );
-
-  await EmailAccountPasswordResetRequestAttempt.db.deleteWhere(
-    session,
-    where: (final _) => Constant.bool(true),
-  );
-
-  await EmailAccountFailedLoginAttempt.db.deleteWhere(
-    session,
-    where: (final _) => Constant.bool(true),
+    where: (final t) => t.domain.equals('email'),
   );
 }

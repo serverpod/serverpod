@@ -21,32 +21,29 @@ void run(final List<String> args) async {
   );
 
   const universalHashPepper = 'test-pepper';
-  final authConfig = AuthServices.set(
-    primaryTokenManager: AuthSessionsTokenManagerFactory(
-      AuthSessionsConfig(sessionKeyHashPepper: universalHashPepper),
-    ),
-    identityProviders: [
-      EmailIdentityProviderFactory(
-        EmailIDPConfig(
-          secretHashPepper: pod.getPassword(
-            'serverpod_auth_idp_email_secretHashPepper',
-          )!,
+
+  AuthServices.set(
+    tokenManagerBuilders: [
+      ServerSideSessionsConfig(
+        sessionKeyHashPepper: universalHashPepper,
+      ),
+      JwtConfig(
+        refreshTokenHashPepper: universalHashPepper,
+        algorithm: JwtAlgorithm.hmacSha512(
+          SecretKey('test-private-key-for-HS512'),
         ),
       ),
     ],
-    additionalTokenManagers: [
-      AuthenticationTokensTokenManagerFactory(
-        AuthenticationTokenConfig(
-          refreshTokenHashPepper: universalHashPepper,
-          algorithm: AuthenticationTokenAlgorithm.hmacSha512(
-            SecretKey('test-private-key-for-HS512'),
-          ),
-        ),
+    identityProviderBuilders: [
+      EmailIdpConfig(
+        secretHashPepper: pod.getPassword(
+          'serverpod_auth_idp_email_secretHashPepper',
+        )!,
       ),
     ],
   );
 
-  pod.authenticationHandler = authConfig.authenticationHandler;
+  pod.authenticationHandler = AuthServices.instance.authenticationHandler;
 
   // Setup a default page at the web root.
   pod.webServer.addRoute(RootRoute(), '/');

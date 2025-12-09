@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/jwt.dart';
 
 import '../../common/business/auth_services.dart';
+import '../jwt.dart';
 
 /// Endpoint for JWT tokens management.
 abstract class RefreshJwtTokensEndpoint extends Endpoint {
@@ -11,9 +11,7 @@ abstract class RefreshJwtTokensEndpoint extends Endpoint {
   /// [AuthServices.getTokenManager] method.
   ///
   /// If a different token manager should be used, override this property.
-  late final AuthenticationTokens authenticationTokens =
-      AuthServices.getTokenManager<AuthenticationTokensTokenManager>()
-          .authenticationTokens;
+  late final Jwt jwt = AuthServices.getTokenManager<JwtTokenManager>().jwt;
 
   /// Creates a new token pair for the given [refreshToken].
   ///
@@ -38,7 +36,7 @@ abstract class RefreshJwtTokensEndpoint extends Endpoint {
     final Session session, {
     required final String refreshToken,
   }) async {
-    return authenticationTokens.refreshAccessToken(
+    return jwt.refreshAccessToken(
       session,
       refreshToken: refreshToken,
     );

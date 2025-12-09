@@ -37,6 +37,7 @@ abstract class SealedOtherChild extends _i1.SealedParent
 
   /// Returns a shallow copy of this [SealedOtherChild]
   /// with some or all fields replaced by the given arguments.
+  @override
   @_i2.useResult
   SealedOtherChild copyWith({
     int? sealedInt,
@@ -46,6 +47,7 @@ abstract class SealedOtherChild extends _i1.SealedParent
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'SealedOtherChild',
       'sealedInt': sealedInt,
       'sealedString': sealedString,
       'sealedOtherChildField': sealedOtherChildField,

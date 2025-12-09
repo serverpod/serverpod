@@ -25,9 +25,9 @@ dependency_overrides:
   serverpod:
     path: ../../../packages/serverpod
   serverpod_auth_client:
-    path: ../../../modules/serverpod_auth/serverpod_auth_client
+    path: ../../../modules/legacy/serverpod_auth/serverpod_auth_client
   serverpod_auth_server:
-    path: ../../../modules/serverpod_auth/serverpod_auth_server
+    path: ../../../modules/legacy/serverpod_auth/serverpod_auth_server
   serverpod_cli:
     path: ../../../tools/serverpod_cli
   serverpod_client:

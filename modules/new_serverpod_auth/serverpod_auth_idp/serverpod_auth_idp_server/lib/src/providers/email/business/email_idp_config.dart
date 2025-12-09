@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 
+import '../../../../../core.dart';
 import '../util/default_code_generators.dart';
 import '../util/registration_password_policy.dart';
+import 'email_idp.dart';
 
 /// Function to be called after a password reset is successfully completed.
 typedef OnPasswordResetCompletedFunction =
@@ -41,12 +45,33 @@ typedef SendRegistrationVerificationCodeFunction =
       required Transaction? transaction,
     });
 
+/// Function to be called after a new email account has been created.
+typedef AfterAccountCreatedFunction =
+    FutureOr<void> Function(
+      Session session, {
+      required String email,
+      required UuidValue authUserId,
+      required UuidValue emailAccountId,
+      required Transaction? transaction,
+    });
+
 /// {@template email_idp_config}
 /// Configuration options for the email account module.
 /// {@endtemplate}
-class EmailIDPConfig {
+class EmailIdpConfig extends IdentityProviderBuilder<EmailIdp> {
   /// The pepper used for hashing passwords and verification codes.
+  ///
+  /// To rotate peppers without invalidating existing passwords, use [fallbackSecretHashPeppers].
   final String secretHashPepper;
+
+  /// Optional fallback peppers for validating passwords and verification codes created with previous peppers.
+  ///
+  /// When rotating peppers, add old peppers to this list to allow existing passwords
+  /// to continue working. The system will try [secretHashPepper] first, then
+  /// each fallback pepper in order until a match is found.
+  ///
+  /// This is optional and defaults to an empty list.
+  final List<String> fallbackSecretHashPeppers;
 
   /// The time for the registration email verification code to be valid.
   ///
@@ -100,6 +125,12 @@ class EmailIDPConfig {
   /// during migration scenarios.
   final OnPasswordResetCompletedFunction? onPasswordResetCompleted;
 
+  /// Callback to be invoked after a new email account has been created.
+  ///
+  /// This can be used to perform additional setup tasks, such as creating a
+  /// user profile or sending a welcome email.
+  final AfterAccountCreatedFunction? onAfterAccountCreated;
+
   /// Function to check passwords against a policy during registration and password change.
   ///
   /// If the rules are changed after a password has been set, subsequent logins with
@@ -119,10 +150,9 @@ class EmailIDPConfig {
   final int secretHashSaltLength;
 
   /// Create a new email account configuration.
-  ///
-  /// Set [current] to apply this configuration.
-  const EmailIDPConfig({
+  const EmailIdpConfig({
     required this.secretHashPepper,
+    this.fallbackSecretHashPeppers = const [],
     this.registrationVerificationCodeLifetime = const Duration(minutes: 15),
     this.registrationVerificationCodeAllowedAttempts = 3,
     this.registrationVerificationCodeGenerator =
@@ -145,7 +175,50 @@ class EmailIDPConfig {
       maxAttempts: 3,
     ),
     this.secretHashSaltLength = 16,
+    this.onAfterAccountCreated,
   });
+
+  @override
+  EmailIdp build({
+    required final TokenManager tokenManager,
+    required final AuthUsers authUsers,
+    required final UserProfiles userProfiles,
+  }) {
+    return EmailIdp(
+      this,
+      tokenManager: tokenManager,
+      authUsers: authUsers,
+      userProfiles: userProfiles,
+    );
+  }
+}
+
+/// Creates a new [EmailIdpConfig] instance from keys on the `passwords.yaml` file.
+///
+/// This constructor requires that a [Serverpod] instance has already been initialized.
+class EmailIdpConfigFromPasswords extends EmailIdpConfig {
+  /// Creates a new [EmailIdpConfigFromPasswords] instance.
+  EmailIdpConfigFromPasswords({
+    super.fallbackSecretHashPeppers,
+    super.registrationVerificationCodeLifetime,
+    super.registrationVerificationCodeAllowedAttempts,
+    super.registrationVerificationCodeGenerator,
+    super.passwordResetVerificationCodeLifetime,
+    super.passwordResetVerificationCodeAllowedAttempts,
+    super.passwordResetVerificationCodeGenerator,
+    super.sendRegistrationVerificationCode,
+    super.sendPasswordResetVerificationCode,
+    super.onPasswordResetCompleted,
+    super.failedLoginRateLimit,
+    super.passwordValidationFunction,
+    super.maxPasswordResetAttempts,
+    super.secretHashSaltLength,
+    super.onAfterAccountCreated,
+  }) : super(
+         secretHashPepper: Serverpod.instance.getPassword(
+           'emailSecretHashPepper',
+         )!,
+       );
 }
 
 /// A rolling rate limit which allows [maxAttempts] in the most recent [timeframe].

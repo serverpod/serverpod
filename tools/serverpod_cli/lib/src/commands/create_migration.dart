@@ -6,6 +6,7 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
@@ -63,9 +64,14 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     bool force = commandConfig.value(CreateMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
 
+    // Get interactive flag from global configuration
+    final interactive = serverpodRunner.globalConfiguration.optionalValue(
+      GlobalOption.interactive,
+    );
+
     GeneratorConfig config;
     try {
-      config = await GeneratorConfig.load();
+      config = await GeneratorConfig.load(interactive: interactive);
     } catch (_) {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
@@ -89,6 +95,8 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     );
 
     MigrationVersion? migration;
+    bool migrationAborted = false;
+    bool migrationFailed = false;
     await log.progress('Creating migration', () async {
       try {
         migration = await generator.createMigration(
@@ -103,25 +111,42 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
           'again. Migration version: "${e.versionName}".',
         );
         log.error(e.exception);
+        migrationFailed = true;
       } on GenerateMigrationDatabaseDefinitionException {
         log.error('Unable to generate database definition for project.');
+        migrationFailed = true;
       } on MigrationVersionAlreadyExistsException catch (e) {
         log.error(
           'Unable to create migration. A directory with the same name already '
           'exists: "${e.directoryPath}".',
         );
+        migrationFailed = true;
+      } on MigrationAbortedException {
+        migrationAborted = true;
       }
 
       return migration != null;
     });
 
-    var projectDirectory = migration?.projectDirectory;
-    var migrationName = migration?.versionName;
-    if (migration == null ||
-        projectDirectory == null ||
-        migrationName == null) {
+    if (migrationFailed) {
       throw ExitException.error();
     }
+
+    // Migration was aborted due to warnings.
+    if (migrationAborted) {
+      throw ExitException.error();
+    }
+
+    // No changes detected.
+    if (migration == null) {
+      return;
+    }
+
+    // Dart does not infer the type of `migration` to be non-nullable here,
+    // so we use the null-check operator to assert that it is not null.
+    var createdMigration = migration!;
+    var projectDirectory = createdMigration.projectDirectory;
+    var migrationName = createdMigration.versionName;
 
     log.info(
       'Migration created: ${path.relative(

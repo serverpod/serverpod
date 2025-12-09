@@ -95,6 +95,7 @@ abstract class ObjectWithVector
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectWithVector',
       if (id != null) 'id': id,
       'vector': vector.toJson(),
       if (vectorNullable != null) 'vectorNullable': vectorNullable?.toJson(),
@@ -108,6 +109,7 @@ abstract class ObjectWithVector
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
+      '__className__': 'ObjectWithVector',
       if (id != null) 'id': id,
       'vector': vector.toJson(),
       if (vectorNullable != null) 'vectorNullable': vectorNullable?.toJson(),

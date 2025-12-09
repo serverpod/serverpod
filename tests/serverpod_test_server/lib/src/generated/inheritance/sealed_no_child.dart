@@ -17,4 +17,9 @@ sealed class SealedNoChild
   SealedNoChild({required this.name});
 
   String name;
+
+  /// Returns a shallow copy of this [SealedNoChild]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
+  SealedNoChild copyWith({String? name});
 }

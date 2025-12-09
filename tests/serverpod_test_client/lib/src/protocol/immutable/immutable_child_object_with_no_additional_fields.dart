@@ -61,7 +61,10 @@ abstract class ImmutableChildObjectWithNoAdditionalFields
 
   @override
   Map<String, dynamic> toJson() {
-    return {'variable': variable};
+    return {
+      '__className__': 'ImmutableChildObjectWithNoAdditionalFields',
+      'variable': variable,
+    };
   }
 
   @override

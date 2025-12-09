@@ -47,12 +47,12 @@ abstract class ImmutableObjectWithNoFields
 
   @override
   Map<String, dynamic> toJson() {
-    return {};
+    return {'__className__': 'ImmutableObjectWithNoFields'};
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {};
+    return {'__className__': 'ImmutableObjectWithNoFields'};
   }
 
   @override

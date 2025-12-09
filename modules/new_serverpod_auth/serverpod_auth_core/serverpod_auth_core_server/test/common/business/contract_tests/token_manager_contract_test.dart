@@ -1,9 +1,8 @@
 import 'dart:async';
+
 import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/jwt.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
-import 'package:serverpod_auth_core_server/session.dart';
 import 'package:test/test.dart';
 
 import '../../../serverpod_test_tools.dart';
@@ -1020,27 +1019,27 @@ void main() {
   );
 
   testSuite(
-    'AuthSessionsTokenManager',
+    'ServerSideSessionsTokenManager',
     (final authUsers) {
-      return AuthSessionsTokenManager(
-        config: AuthSessionsConfig(
+      return ServerSideSessionsTokenManager(
+        config: ServerSideSessionsConfig(
           sessionKeyHashPepper: 'test-pepper',
         ),
         authUsers: authUsers,
       );
     },
-    tokenIssuer: AuthSessionsTokenManager.tokenIssuerName,
+    tokenIssuer: ServerSideSessionsTokenManager.tokenIssuerName,
     authUsers: authUsers,
     isDatabaseBackedManager: true,
     usesRefreshTokens: false,
   );
 
   testSuite(
-    'AuthenticationTokensTokenManager',
+    'JwtTokenManager',
     (final authUsers) {
-      return AuthenticationTokensTokenManager(
-        config: AuthenticationTokenConfig(
-          algorithm: HmacSha512AuthenticationTokenAlgorithmConfiguration(
+      return JwtTokenManager(
+        config: JwtConfig(
+          algorithm: HmacSha512JwtAlgorithmConfiguration(
             key: SecretKey('test-private-key-for-HS512'),
           ),
           refreshTokenHashPepper: 'test-pepper',
@@ -1048,7 +1047,7 @@ void main() {
         authUsers: authUsers,
       );
     },
-    tokenIssuer: AuthenticationTokensTokenManager.tokenIssuerName,
+    tokenIssuer: JwtTokenManager.tokenIssuerName,
     authUsers: authUsers,
     isDatabaseBackedManager: true,
     usesRefreshTokens: true,

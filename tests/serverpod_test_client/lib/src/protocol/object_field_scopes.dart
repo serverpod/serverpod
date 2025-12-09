@@ -53,6 +53,7 @@ abstract class ObjectFieldScopes implements _i1.SerializableModel {
   @override
   Map<String, dynamic> toJson() {
     return {
+      '__className__': 'ObjectFieldScopes',
       if (id != null) 'id': id,
       'normal': normal,
       if (api != null) 'api': api,

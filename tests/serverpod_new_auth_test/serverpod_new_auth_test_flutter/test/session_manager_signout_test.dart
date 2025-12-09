@@ -16,11 +16,11 @@ void main() {
 
       setUp(() async {
         jwtClient = Client('http://localhost:8080/')
-          ..authSessionManager = ClientAuthSessionManager(
+          ..authSessionManager = FlutterAuthSessionManager(
             storage: TestStorage(),
           );
         sasClient = Client('http://localhost:8080/')
-          ..authSessionManager = ClientAuthSessionManager(
+          ..authSessionManager = FlutterAuthSessionManager(
             storage: TestStorage(),
           );
 
@@ -224,7 +224,7 @@ void main() {
         client = Client(
           'http://unreachable-server/',
           connectionTimeout: const Duration(milliseconds: 100),
-        )..authSessionManager = ClientAuthSessionManager(storage: storage);
+        )..authSessionManager = FlutterAuthSessionManager(storage: storage);
 
         await client.auth.restore();
 
@@ -247,7 +247,7 @@ void main() {
         });
 
         test('then the auth info value is null.', () {
-          expect(client.auth.authInfo.value, isNull);
+          expect(client.auth.authInfo, isNull);
         });
 
         test('then the storage is cleared.', () async {
@@ -271,7 +271,7 @@ void main() {
         });
 
         test('then the auth info value is null.', () {
-          expect(client.auth.authInfo.value, isNull);
+          expect(client.auth.authInfo, isNull);
         });
 
         test('then the storage is cleared.', () async {
