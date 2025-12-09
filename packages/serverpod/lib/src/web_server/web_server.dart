@@ -64,16 +64,23 @@ class WebServer {
   void addMiddleware(Middleware middleware, String path) =>
       _app.use(path, middleware);
 
-  /// Sets a fallback [route] to use if no other registered [Route] matches
-  /// a request.
+  /// Sets a fallback [route] to use if no other registered [Route] matches a
+  /// request.
   ///
   /// If not set, default behavior is to return "404 Not Found".
+  ///
+  /// Note that if a [Route] **is** matched, but the handler returns 404, then
+  /// the fallback [route] is **not** called. To rewrite 404s you should use
+  /// middleware.
   set fallbackRoute(Route route) =>
       _app.fallback = _ReportExceptionMiddleware(this)(
         _SessionMiddleware(
           serverpod.server,
         )(route.asHandler),
       );
+
+  /// Get access to the full [RelicRouter] for advanced use-cases.
+  RelicRouter get router => _app;
 
   /// Returns true if the webserver has any routes registered.
   bool get hasRoutes => !_app.isEmpty;

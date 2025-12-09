@@ -42,7 +42,7 @@ class StartRegistrationForm extends StatelessWidget {
     final onPrivacyPolicyPressed = this.onPrivacyPolicyPressed;
 
     final hasTermsAndConditions =
-        onTermsAndConditionsPressed != null && onPrivacyPolicyPressed != null;
+        onTermsAndConditionsPressed != null || onPrivacyPolicyPressed != null;
 
     return FormStandardLayout(
       title: 'Sign Up with email',

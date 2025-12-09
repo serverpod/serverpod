@@ -1,3 +1,7 @@
+export 'src/web_server/middleware/fallback_middleware.dart';
+export 'src/web_server/middleware/wasm_headers_middleware.dart';
+export 'src/web_server/routes/flutter_route.dart';
+export 'src/web_server/routes/spa_route.dart';
 export 'src/web_server/routes/static_directory.dart';
 export 'src/web_server/routes/static_route.dart';
 export 'src/web_server/templates.dart';

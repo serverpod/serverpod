@@ -8,6 +8,7 @@ import 'package:test/test.dart';
 void main() {
   var serviceClient = Client(
     serviceServerUrl,
+    // ignore: deprecated_member_use
     authenticationKeyManager: TestServiceKeyManager(
       '0',
       'super_SECRET_password',
@@ -1153,7 +1154,7 @@ void main() {
         expect(
           createMigrationExitCode,
           isNot(0),
-          reason: 'Should fail to create migration but exit code 0.',
+          reason: 'Should fail to create migration but exit code was 0.',
         );
 
         var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
@@ -1170,7 +1171,7 @@ void main() {
     });
 
     test(
-      'when creating migration then create migration exits with error and migration is not created.',
+      'when creating migration then create migration exits successfully and migration is not created.',
       () async {
         var tag = 'managed-false';
         var targetStateProtocols = {
@@ -1190,8 +1191,8 @@ void main() {
             );
         expect(
           createMigrationExitCode,
-          isNot(0),
-          reason: 'Should fail to create migration but exit code 0.',
+          equals(0),
+          reason: 'No managed changes should exit with code 0.',
         );
 
         var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();

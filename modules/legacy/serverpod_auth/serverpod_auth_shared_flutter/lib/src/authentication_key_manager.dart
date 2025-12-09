@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -5,7 +7,7 @@ const _prefsKey = 'serverpod_authentication_key';
 
 /// Implementation of a Serverpod [AuthenticationKeyManager] specifically for
 /// Flutter. Authentication key is stored in the [SharedPreferences].
-class FlutterAuthenticationKeyManager extends BasicAuthenticationKeyManager {
+class FlutterAuthenticationKeyManager extends AuthenticationKeyManager {
   bool _initialized = false;
   String? _authenticationKey;
 
@@ -43,6 +45,12 @@ class FlutterAuthenticationKeyManager extends BasicAuthenticationKeyManager {
     _authenticationKey = null;
 
     await _storage.remove('${_prefsKey}_$runMode');
+  }
+
+  @override
+  Future<String?> toHeaderValue(String? key) async {
+    if (key == null) return null;
+    return wrapAsBasicAuthHeaderValue(key);
   }
 }
 

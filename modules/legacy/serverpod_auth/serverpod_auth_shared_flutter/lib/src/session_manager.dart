@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -35,10 +33,12 @@ class SessionManager with ChangeNotifier {
   }) : _storage = storage ?? SharedPreferenceStorage() {
     _instance = this;
     assert(
+      // ignore: deprecated_member_use
       caller.client.authenticationKeyManager != null,
       'The client needs an associated key manager',
     );
     keyManager =
+        // ignore: deprecated_member_use
         caller.client.authenticationKeyManager!
             as FlutterAuthenticationKeyManager;
   }
@@ -73,6 +73,7 @@ class SessionManager with ChangeNotifier {
     await _storeSharedPrefs();
 
     // Update streaming connection, if it's open.
+    // ignore: deprecated_member_use
     await caller.client.updateStreamingConnectionAuthenticationKey();
     notifyListeners();
   }
@@ -109,6 +110,7 @@ class SessionManager with ChangeNotifier {
 
       // Must be called after updating the `keyManager`, since it will recover
       // the auth key from it.
+      // ignore: deprecated_member_use
       await caller.client.updateStreamingConnectionAuthenticationKey();
 
       notifyListeners();

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
+export 'package:pinput/pinput.dart' show PinTheme;
+
 /// Theme for the authentication identity provider UI.
 @immutable
 class AuthIdpTheme extends ThemeExtension<AuthIdpTheme> {

@@ -80,6 +80,56 @@ Future<Process> startProcess(
   return process;
 }
 
+Future<Process> startServerpodCli(
+  List<String> arguments, {
+  required String rootPath,
+  String? workingDirectory,
+  Map<String, String>? environment,
+  bool ignorePlatform = false,
+}) async {
+  final cliDartEntrypoint = getServerpodCliEntrypointPath(rootPath: rootPath);
+  return startProcess(
+    'dart',
+    ['run', cliDartEntrypoint, ...arguments],
+    workingDirectory: workingDirectory,
+    environment: environment,
+    ignorePlatform: ignorePlatform,
+  );
+}
+
+Future<ProcessResult> runServerpodCli(
+  List<String> arguments, {
+  required String rootPath,
+  String? workingDirectory,
+  Map<String, String>? environment,
+  bool skipBatExtentionOnWindows = false,
+}) async {
+  final cliDartEntrypoint = getServerpodCliEntrypointPath(rootPath: rootPath);
+  return runProcess(
+    'dart',
+    ['run', cliDartEntrypoint, ...arguments],
+    workingDirectory: workingDirectory,
+    environment: environment,
+    skipBatExtentionOnWindows: skipBatExtentionOnWindows,
+  );
+}
+
+String getServerpodCliProjectPath({required final String rootPath}) {
+  return path.join(
+    rootPath,
+    'tools',
+    'serverpod_cli',
+  );
+}
+
+String getServerpodCliEntrypointPath({required final String rootPath}) {
+  return path.join(
+    getServerpodCliProjectPath(rootPath: rootPath),
+    'bin',
+    'serverpod_cli.dart',
+  );
+}
+
 String _getCommandToRun(String command, bool ignorePlatform) {
   if (ignorePlatform) {
     return command;

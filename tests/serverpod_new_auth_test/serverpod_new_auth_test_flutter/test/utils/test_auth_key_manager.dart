@@ -1,17 +1,18 @@
 import 'package:serverpod_new_auth_test_client/serverpod_new_auth_test_client.dart';
 
-class TestAuthKeyManager extends BearerAuthenticationKeyManager {
+class TestAuthKeyProvider implements ClientAuthKeyProvider {
   String? _key;
 
   @override
-  Future<String?> get() async => _key;
+  Future<String?> get authHeaderValue async {
+    if (_key == null) return null;
+    return wrapAsBearerAuthHeaderValue(_key!);
+  }
 
-  @override
   Future<void> put(final String key) async {
     _key = key;
   }
 
-  @override
   Future<void> remove() async {
     _key = null;
   }
