@@ -95,6 +95,7 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     );
 
     MigrationVersion? migration;
+    bool migrationAborted = false;
     await log.progress('Creating migration', () async {
       try {
         migration = await generator.createMigration(
@@ -116,18 +117,28 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
           'Unable to create migration. A directory with the same name already '
           'exists: "${e.directoryPath}".',
         );
+      } on MigrationAbortedException {
+        migrationAborted = true;
       }
 
       return migration != null;
     });
 
-    var projectDirectory = migration?.projectDirectory;
-    var migrationName = migration?.versionName;
-    if (migration == null ||
-        projectDirectory == null ||
-        migrationName == null) {
+    // Migration was aborted due to warnings.
+    if (migrationAborted) {
       throw ExitException.error();
     }
+
+    // No changes detected.
+    if (migration == null) {
+      throw ExitException.ok();
+    }
+
+    // Dart does not infer the type of `migration` to be non-nullable here,
+    // so we use the null-check operator to assert that it is not null.
+    var createdMigration = migration!;
+    var projectDirectory = createdMigration.projectDirectory;
+    var migrationName = createdMigration.versionName;
 
     log.info(
       'Migration created: ${path.relative(
