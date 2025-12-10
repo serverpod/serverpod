@@ -10,24 +10,13 @@ void main() async {
   late Directory tempDir;
   var rootPath = path.join(Directory.current.path, '..', '..');
   var cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
+  var cliEntrypoint = path.join(cliPath, 'bin', 'serverpod_cli.dart');
 
   setUpAll(() async {
+    // Run pub get to ensure dependencies are up to date
     await Process.run(
       'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
-    // Run command and activate again to force cache pub dependencies.
-    await Process.run(
-      'serverpod',
-      ['version'],
-      workingDirectory: cliPath,
-    );
-
-    await Process.run(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
+      ['pub', 'get'],
       workingDirectory: cliPath,
     );
   });
@@ -52,8 +41,16 @@ void main() async {
 
     setUp(() async {
       createProcess = await Process.start(
-        'serverpod',
-        ['create', projectName, '--mini', '-v', '--no-analytics'],
+        'dart',
+        [
+          'run',
+          cliEntrypoint,
+          'create',
+          projectName,
+          '--mini',
+          '-v',
+          '--no-analytics',
+        ],
         workingDirectory: tempDir.path,
         environment: {
           'SERVERPOD_HOME': rootPath,
@@ -78,8 +75,8 @@ void main() async {
       'then code generation succeeds when running from client directory.',
       () async {
         var generateProcess = await Process.start(
-          'serverpod',
-          ['generate', '--no-analytics'],
+          'dart',
+          ['run', cliEntrypoint, 'generate', '--no-analytics'],
           workingDirectory: path.join(tempDir.path, clientDir),
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -155,8 +152,8 @@ void main() async {
         var libSrcPath = path.join(tempDir.path, serverDir, 'lib', 'src');
 
         var generateProcess = await Process.start(
-          'serverpod',
-          ['generate', '--no-analytics'],
+          'dart',
+          ['run', cliEntrypoint, 'generate', '--no-analytics'],
           workingDirectory: libSrcPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -214,8 +211,8 @@ void main() async {
       'then code generation succeeds when running from project root.',
       () async {
         var generateProcess = await Process.start(
-          'serverpod',
-          ['generate', '--no-analytics'],
+          'dart',
+          ['run', cliEntrypoint, 'generate', '--no-analytics'],
           workingDirectory: path.join(tempDir.path, projectName),
           environment: {
             'SERVERPOD_HOME': rootPath,

@@ -135,18 +135,14 @@ Future<bool> performCreate(
     );
   }
 
-  success &= await log.progress('Getting server package dependencies.', () {
-    return CommandLineTools.dartPubGet(serverpodDirs.serverDir);
-  });
-
-  success &= await log.progress('Getting client package dependencies.', () {
-    return CommandLineTools.dartPubGet(serverpodDirs.clientDir);
+  success &= await log.progress('Getting workspace dependencies.', () {
+    return CommandLineTools.dartPubGet(serverpodDirs.projectDir);
   });
 
   if (template == ServerpodTemplateType.server ||
       template == ServerpodTemplateType.mini) {
     success &= await log.progress(
-      'Getting Flutter app package dependencies.',
+      'Creating Flutter app platform files.',
       () {
         return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
       },
@@ -409,6 +405,9 @@ Future<void> _copyFlutterUpgrade(
   log.debug('Adding auth dependencies to Flutter pubspec', newParagraph: true);
   await _addDependenciesToPubspec(
     pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
+    rootPubspecFile: File(
+      p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'),
+    ),
     dependency: 'serverpod_auth_idp_flutter',
     version: templateVersion,
     customServerpodPath: customServerpodPath,
@@ -629,6 +628,9 @@ Future<void> _copyServerUpgrade(
     );
     await _addDependenciesToPubspec(
       pubspecFile: File(p.join(serverpodDirs.serverDir.path, 'pubspec.yaml')),
+      rootPubspecFile: File(
+        p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'),
+      ),
       dependency: 'serverpod_auth_idp_server',
       version: templateVersion,
       customServerpodPath: customServerpodPath,
@@ -646,6 +648,9 @@ Future<void> _copyServerUpgrade(
     );
     await _addDependenciesToPubspec(
       pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
+      rootPubspecFile: File(
+        p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'),
+      ),
       dependency: 'serverpod_auth_idp_client',
       version: templateVersion,
       customServerpodPath: customServerpodPath,
@@ -664,8 +669,42 @@ Future<void> _copyServerUpgrade(
   }
 }
 
+void _enableWorkspaceInRootPubspec({
+  required File rootPubspecFile,
+  required List<String> workspaceMembers,
+}) {
+  var contents = rootPubspecFile.readAsStringSync();
+
+  // Uncomment the workspace section placeholder
+  contents = contents.replaceAll('#workspace:', 'workspace:');
+  for (final member in workspaceMembers) {
+    contents = contents.replaceAll('#  - $member', '  - $member');
+  }
+
+  // Use YamlEditor to set the actual values
+  final editor = YamlEditor(contents);
+  editor.update(['workspace'], workspaceMembers);
+
+  rootPubspecFile.writeAsStringSync(editor.toString());
+}
+
+void _enableResolutionWorkspaceInPubspec({
+  required File pubspecFile,
+}) {
+  var contents = pubspecFile.readAsStringSync();
+
+  // Uncomment the resolution placeholder
+  contents = contents.replaceAll(
+    '#resolution: workspace',
+    'resolution: workspace',
+  );
+
+  pubspecFile.writeAsStringSync(contents);
+}
+
 Future<void> _addDependenciesToPubspec({
   required File pubspecFile,
+  required File rootPubspecFile,
   required String dependency,
   required String version,
   required String? customServerpodPath,
@@ -685,20 +724,25 @@ Future<void> _addDependenciesToPubspec({
     version,
   );
 
-  if (customServerpodPath != null) {
-    editor.update(
+  pubspecFile.writeAsStringSync(editor.toString());
+
+  if (customServerpodPath != null && rootPubspecFile.existsSync()) {
+    var rootContents = rootPubspecFile.readAsStringSync();
+    final rootEditor = YamlEditor(rootContents);
+
+    rootEditor.update(
       ['dependency_overrides', dependency],
       {'path': '$customServerpodPath/$overridePath'},
     );
     for (final dep in transitiveDeps) {
-      editor.update(
+      rootEditor.update(
         ['dependency_overrides', dep.name],
         {'path': '$customServerpodPath/${dep.path}'},
       );
     }
-  }
 
-  pubspecFile.writeAsStringSync(editor.toString());
+    rootPubspecFile.writeAsStringSync(rootEditor.toString());
+  }
 }
 
 void _copyServerTemplates(
@@ -724,7 +768,7 @@ void _copyServerTemplates(
       ),
       if (customServerpodPath != null)
         Replacement(
-          slotName: 'path: ../../packages/',
+          slotName: 'path: ../../../packages/',
           replacement: 'path: $customServerpodPath/packages/',
         ),
     ],
@@ -760,7 +804,7 @@ void _copyServerTemplates(
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock'],
+    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
 
@@ -791,7 +835,7 @@ void _copyServerTemplates(
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock'],
+    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
 
@@ -824,6 +868,7 @@ void _copyServerTemplates(
     ],
     ignoreFileNames: [
       'pubspec.lock',
+      'pubspec_overrides.yaml',
       'ios',
       'android',
       'web',
@@ -832,6 +877,27 @@ void _copyServerTemplates(
     ],
   );
   copier.copyFiles();
+
+  log.debug('Enabling workspace configuration', newParagraph: true);
+  _enableWorkspaceInRootPubspec(
+    rootPubspecFile: File(
+      p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'),
+    ),
+    workspaceMembers: [
+      '${name}_client',
+      '${name}_server',
+      '${name}_flutter',
+    ],
+  );
+  _enableResolutionWorkspaceInPubspec(
+    pubspecFile: File(p.join(serverpodDirs.serverDir.path, 'pubspec.yaml')),
+  );
+  _enableResolutionWorkspaceInPubspec(
+    pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
+  );
+  _enableResolutionWorkspaceInPubspec(
+    pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
+  );
 }
 
 void _copyModuleTemplates(
@@ -857,7 +923,7 @@ void _copyModuleTemplates(
       ),
       if (customServerpodPath != null)
         Replacement(
-          slotName: 'path: ../../packages/',
+          slotName: 'path: ../../../packages/',
           replacement: 'path: $customServerpodPath/packages/',
         ),
     ],
@@ -893,7 +959,7 @@ void _copyModuleTemplates(
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock'],
+    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
 
@@ -924,7 +990,24 @@ void _copyModuleTemplates(
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock'],
+    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
+
+  log.debug('Enabling workspace configuration', newParagraph: true);
+  _enableWorkspaceInRootPubspec(
+    rootPubspecFile: File(
+      p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'),
+    ),
+    workspaceMembers: [
+      '${name}_client',
+      '${name}_server',
+    ],
+  );
+  _enableResolutionWorkspaceInPubspec(
+    pubspecFile: File(p.join(serverpodDirs.serverDir.path, 'pubspec.yaml')),
+  );
+  _enableResolutionWorkspaceInPubspec(
+    pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
+  );
 }
