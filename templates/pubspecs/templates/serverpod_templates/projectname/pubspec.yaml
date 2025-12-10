@@ -1,0 +1,26 @@
+name: projectname
+publish_to: none
+
+environment:
+  sdk: DART_VERSION
+
+#workspace:
+#  - projectname_client
+#  - projectname_server
+#  - projectname_flutter
+
+dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_shared: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_shared #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_test: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_test #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_flutter: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_flutter #--CONDITIONALLY_REMOVE_LINE--#

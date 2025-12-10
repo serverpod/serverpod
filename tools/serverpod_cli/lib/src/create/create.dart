@@ -706,6 +706,33 @@ void _copyServerTemplates(
   required String name,
   String? customServerpodPath,
 }) {
+  log.debug('Copying root workspace pubspec');
+  var rootCopier = Copier(
+    srcDir: Directory(
+      p.join(resourceManager.templateDirectory.path, 'projectname'),
+    ),
+    dstDir: serverpodDirs.projectDir,
+    replacements: [
+      // Replace 'name: projectname' with 'name: _' BEFORE general projectname replacement
+      Replacement(
+        slotName: 'name: projectname',
+        replacement: 'name: _',
+      ),
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      if (customServerpodPath != null)
+        Replacement(
+          slotName: 'path: ../../packages/',
+          replacement: 'path: $customServerpodPath/packages/',
+        ),
+    ],
+    fileNameReplacements: const [],
+    ignoreFileNames: const [],
+  );
+  rootCopier.copyFiles();
+
   log.debug('Copying server files');
   var copier = Copier(
     srcDir: Directory(
@@ -812,6 +839,33 @@ void _copyModuleTemplates(
   required String name,
   String? customServerpodPath,
 }) {
+  log.debug('Copying root workspace pubspec');
+  var rootCopier = Copier(
+    srcDir: Directory(
+      p.join(resourceManager.templateDirectory.path, 'modulename'),
+    ),
+    dstDir: serverpodDirs.projectDir,
+    replacements: [
+      // Replace 'name: modulename' with 'name: _' BEFORE general modulename replacement
+      Replacement(
+        slotName: 'name: modulename',
+        replacement: 'name: _',
+      ),
+      Replacement(
+        slotName: 'modulename',
+        replacement: name,
+      ),
+      if (customServerpodPath != null)
+        Replacement(
+          slotName: 'path: ../../packages/',
+          replacement: 'path: $customServerpodPath/packages/',
+        ),
+    ],
+    fileNameReplacements: const [],
+    ignoreFileNames: const [],
+  );
+  rootCopier.copyFiles();
+
   log.debug('Copying server files', newParagraph: true);
   var copier = Copier(
     srcDir: Directory(
