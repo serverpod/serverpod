@@ -103,7 +103,14 @@ class EmailSignInWidget extends StatefulWidget {
   /// Defaults to 1 minute.
   final Duration resendCountdownDuration;
    
-  // default padding 10 
+  /// Optional custom padding to apply around the widget's content.
+  ///
+  /// If null, the widget uses a default padding of 10.0 logical pixels
+  /// (see build: `EdgeInsets.all(widget.padding ?? 10)`).
+  ///
+  /// Use this to adjust spacing when embedding the widget in different
+  /// layouts (for example, to add extra horizontal padding in narrow
+  /// containers or to remove padding when the parent already provides it).
   final double? padding;
 
   /// Creates an email sign-in widget.
