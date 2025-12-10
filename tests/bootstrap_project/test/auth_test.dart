@@ -28,6 +28,9 @@ void main() async {
     );
 
     group('when creating a new project', () {
+      late File serverFile;
+      late File mainFile;
+
       setUpAll(() async {
         var process = await startServerpodCli(
           [
@@ -45,6 +48,13 @@ void main() async {
 
         var exitCode = await process.exitCode;
         assert(exitCode == 0);
+
+        serverFile = File(
+          path.join(d.sandbox, serverDir, 'lib', 'server.dart'),
+        );
+        mainFile = File(
+          path.join(d.sandbox, flutterDir, 'lib', 'main.dart'),
+        );
       });
 
       test('then the server pubspec contains auth dependencies', () {
@@ -94,17 +104,11 @@ void main() async {
       });
 
       test('then the server server.dart contains auth imports', () {
-        final serverFile = File(
-          path.join(d.sandbox, serverDir, 'lib', 'server.dart'),
-        );
         final content = serverFile.readAsStringSync();
         expect(content, contains('serverpod_auth_idp_server'));
       });
 
       test('then the server server.dart contains auth configuration', () {
-        final serverFile = File(
-          path.join(d.sandbox, serverDir, 'lib', 'server.dart'),
-        );
         final content = serverFile.readAsStringSync();
         expect(content, contains('initializeAuthServices'));
         expect(content, contains('EmailIdpConfigFromPasswords'));
@@ -112,25 +116,16 @@ void main() async {
       });
 
       test('then the flutter main.dart contains auth imports', () {
-        final mainFile = File(
-          path.join(d.sandbox, flutterDir, 'lib', 'main.dart'),
-        );
         final content = mainFile.readAsStringSync();
         expect(content, contains('serverpod_auth_idp_flutter'));
       });
 
       test('then the flutter main.dart contains SignInWidget', () {
-        final mainFile = File(
-          path.join(d.sandbox, flutterDir, 'lib', 'main.dart'),
-        );
         final content = mainFile.readAsStringSync();
         expect(content, contains('SignInWidget'));
       });
 
       test('then the flutter main.dart contains FlutterAuthSessionManager', () {
-        final mainFile = File(
-          path.join(d.sandbox, flutterDir, 'lib', 'main.dart'),
-        );
         final content = mainFile.readAsStringSync();
         expect(content, contains('FlutterAuthSessionManager'));
       });
