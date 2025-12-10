@@ -1,3 +1,8 @@
+## 3.0.1
+- fix: Allows the server address to be specified without trailing slash on the client.
+- fix: Fixes allowed `indexes` key on non-table base models to allow inheritance of indexes.
+- fix: Adds missing JWT refresh endpoint to the project template.
+
 ## 3.0.0
 
 Serverpod 3 is a major overhaul of the authentication system and the web server.
