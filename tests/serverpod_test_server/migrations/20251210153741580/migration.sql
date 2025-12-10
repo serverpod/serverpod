@@ -90,9 +90,9 @@ ALTER TABLE ONLY "employee"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20251209164552962', now())
+    VALUES ('serverpod_test', '20251210153741580', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20251209164552962', "timestamp" = now();
+    DO UPDATE SET "version" = '20251210153741580', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

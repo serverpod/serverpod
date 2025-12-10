@@ -208,6 +208,20 @@ void main() async {
         expect(endpointFile.existsSync(), isFalse);
       });
 
+      test('then the jwt_refresh_endpoint.dart does not exist', () {
+        final endpointFile = File(
+          path.join(
+            tempPath,
+            serverDir,
+            'lib',
+            'src',
+            'endpoints',
+            'jwt_refresh_endpoint.dart',
+          ),
+        );
+        expect(endpointFile.existsSync(), isFalse);
+      });
+
       test('then the flutter pubspec does not contain auth dependencies', () {
         final pubspec = File(path.join(tempPath, flutterDir, 'pubspec.yaml'));
         final content = pubspec.readAsStringSync();
@@ -532,6 +546,20 @@ void main() async {
               'src',
               'endpoints',
               'email_idp_endpoint.dart',
+            ),
+          );
+          expect(endpointFile.existsSync(), isFalse);
+        });
+
+        test('then the jwt_refresh_endpoint.dart does not exist', () {
+          final endpointFile = File(
+            path.join(
+              tempPath,
+              serverDir,
+              'lib',
+              'src',
+              'endpoints',
+              'jwt_refresh_endpoint.dart',
             ),
           );
           expect(endpointFile.existsSync(), isFalse);
