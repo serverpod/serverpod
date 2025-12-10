@@ -102,7 +102,7 @@ class EmailSignInWidget extends StatefulWidget {
   ///
   /// Defaults to 1 minute.
   final Duration resendCountdownDuration;
-   
+
   /// Optional custom padding to apply around the widget's content.
   ///
   /// If null, the widget uses a default padding of 10.0 logical pixels
@@ -197,9 +197,7 @@ class _EmailSignInWidgetState extends State<EmailSignInWidget> {
 
   Widget _buildScreen() {
     return switch (_controller.currentScreen) {
-      EmailFlowScreen.login => LoginForm(
-        controller: _controller,
-      ),
+      EmailFlowScreen.login => LoginForm(controller: _controller),
       EmailFlowScreen.startRegistration => StartRegistrationForm(
         controller: _controller,
         onTermsAndConditionsPressed: widget.onTermsAndConditionsPressed,
