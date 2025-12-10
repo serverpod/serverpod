@@ -126,4 +126,70 @@ void main() {
       expect(inheritedIndex.fields, ['indexed']);
     },
   );
+
+  group(
+    'Given an inherited index whose name combined with the table name exceeds the 63 character index name limitation, then collect an error that the index name is too long.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+class: ParentBase
+fields:
+  indexed: int
+indexes:
+  base_index_that_is_very_very_long:
+    fields: indexed
+          ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('child_table').withYaml(
+          '''
+class: ChildTable
+table: child_table_with_a_very_long_name
+extends: ParentBase
+fields:
+  ownField: String
+          ''',
+        ).build(),
+      ];
+
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+
+      setUpAll(() {
+        analyzer.validateAll();
+      });
+
+      test('then an error is collected.', () {
+        expect(collector.errors, isNotEmpty);
+      });
+
+      test(
+        'then the error message indicates that the combined index name is too long.',
+        () {
+          var error = collector.errors.first;
+          expect(
+            error.message,
+            'The index name "child_table_with_a_very_long_name_base_index_that_is_very_very_long" '
+            'exceeds the 63 character index name limitation. Consider shortening '
+            'either the base index name or the table name. Note that changing the '
+            'base index name may require dropping and recreating indexes for other '
+            'tables that already extend the model where it is defined.',
+          );
+        },
+      );
+
+      test('then the span points to the inherited table name.', () {
+        var error = collector.errors.first;
+        expect(error.span, isNotNull);
+        expect(error.span!.start.line, 1);
+        expect(error.span!.start.column, 7);
+        expect(error.span!.end.line, 1);
+        expect(error.span!.end.column, 40);
+      });
+    },
+  );
 }
