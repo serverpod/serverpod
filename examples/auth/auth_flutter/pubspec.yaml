@@ -30,8 +30,8 @@ dependencies:
   extended_image: ^10.0.1
   flutter:
     sdk: flutter
-  serverpod_auth_idp_flutter: 3.0.0-rc.3
-  serverpod_flutter: 3.0.0-rc.3
+  serverpod_auth_idp_flutter: 3.0.0
+  serverpod_flutter: 3.0.0
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'

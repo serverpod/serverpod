@@ -8,6 +8,7 @@ import 'package:test/test.dart';
 void main() {
   late Serverpod server;
   late Client client;
+  // ignore: deprecated_member_use
   late AuthenticationKeyManager authKeyManager;
 
   setUpAll(() async {
@@ -17,6 +18,7 @@ void main() {
     authKeyManager = TestAuthKeyManager();
     client = Client(
       serverUrl,
+      // ignore: deprecated_member_use
       authenticationKeyManager: authKeyManager,
     );
 

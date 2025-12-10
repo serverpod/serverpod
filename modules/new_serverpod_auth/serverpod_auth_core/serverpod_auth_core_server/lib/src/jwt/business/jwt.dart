@@ -4,11 +4,11 @@ import 'dart:typed_data';
 import 'package:clock/clock.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/common.dart';
 import 'package:serverpod_auth_core_server/src/jwt/business/refresh_token_exceptions.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../auth_user/auth_user.dart';
+import '../../common/utils/argon2_hash_util.dart';
 import '../../generated/protocol.dart';
 import 'authentication_info_from_jwt.dart';
 import 'jwt_admin.dart';

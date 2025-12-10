@@ -2,19 +2,14 @@
 /// Serverpod Idp module.
 library;
 
-export 'package:serverpod_auth_core_server/common.dart';
 export 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     show AuthSuccess;
 
 export '../src/generated/protocol.dart'
     show
         EmailAccount,
-        EmailAccountFailedLoginAttempt,
-        EmailAccountPasswordResetCompleteAttempt,
         EmailAccountPasswordResetRequest,
-        EmailAccountPasswordResetRequestAttempt,
         EmailAccountRequest,
-        EmailAccountRequestCompletionAttempt,
         EmailAccountLoginException,
         EmailAccountLoginExceptionReason,
         EmailAccountPasswordResetException,

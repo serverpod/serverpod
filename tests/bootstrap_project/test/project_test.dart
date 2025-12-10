@@ -11,30 +11,16 @@ const tempDirName = 'temp';
 
 void main() async {
   final rootPath = path.join(Directory.current.path, '..', '..');
-  final cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
+  final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
   final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
-    await runProcess(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
-    // Run command and activate again to force cache pub dependencies.
-    await runProcess(
-      'serverpod',
-      ['version'],
-      workingDirectory: cliPath,
-    );
-
-    await runProcess(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
     await Directory(tempPath).create();
+    final pubGetProcess = await startProcess('dart', [
+      'pub',
+      'get',
+    ], workingDirectory: cliProjectPath);
+    assert(await pubGetProcess.exitCode == 0);
   });
 
   tearDownAll(() async {
@@ -64,9 +50,14 @@ void main() async {
     test(
       'when creating a new project then the project is created successfully and can be booted',
       () async {
-        createProcess = await startProcess(
-          'serverpod',
-          ['create', projectName, '-v', '--no-analytics'],
+        createProcess = await startServerpodCli(
+          [
+            'create',
+            projectName,
+            '-v',
+            '--no-analytics',
+          ],
+          rootPath: rootPath,
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -133,9 +124,14 @@ void main() async {
     test(
       'when creating a new project then the project can be booted without applying migrations',
       () async {
-        createProcess = await startProcess(
-          'serverpod',
-          ['create', projectName, '-v', '--no-analytics'],
+        createProcess = await startServerpodCli(
+          [
+            'create',
+            projectName,
+            '-v',
+            '--no-analytics',
+          ],
+          rootPath: rootPath,
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -171,7 +167,7 @@ void main() async {
         );
 
         var serverStarted = false;
-        for (int retries = 0; retries < 10; retries++) {
+        for (int retries = 0; retries < 15; retries++) {
           try {
             var response = await http.get(Uri.parse('http://localhost:8080'));
             serverStarted = response.statusCode == HttpStatus.ok;
@@ -214,9 +210,14 @@ void main() async {
 
     group('when creating a new project', () {
       setUpAll(() async {
-        var process = await startProcess(
-          'serverpod',
-          ['create', projectName, '-v', '--no-analytics'],
+        var process = await startServerpodCli(
+          [
+            'create',
+            projectName,
+            '-v',
+            '--no-analytics',
+          ],
+          rootPath: rootPath,
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -618,9 +619,14 @@ void main() async {
     test(
       'when removing generated files from a new project and running generate then the files are recreated successfully',
       () async {
-        createProcess = await startProcess(
-          'serverpod',
-          ['create', projectName, '-v', '--no-analytics'],
+        createProcess = await startServerpodCli(
+          [
+            'create',
+            projectName,
+            '-v',
+            '--no-analytics',
+          ],
+          rootPath: rootPath,
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -645,9 +651,11 @@ void main() async {
         );
         generatedClientDir.deleteSync(recursive: true);
 
-        var generateProcess = await runProcess(
-          'serverpod',
-          ['generate'],
+        var generateProcess = await runServerpodCli(
+          [
+            'generate',
+          ],
+          rootPath: rootPath,
           workingDirectory: commandRoot,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -728,9 +736,14 @@ void main() async {
     late Process createProcess;
 
     setUp(() async {
-      createProcess = await startProcess(
-        'serverpod',
-        ['create', projectName, '-v', '--no-analytics'],
+      createProcess = await startServerpodCli(
+        [
+          'create',
+          projectName,
+          '-v',
+          '--no-analytics',
+        ],
+        rootPath: rootPath,
         workingDirectory: tempPath,
         environment: {
           'SERVERPOD_HOME': rootPath,

@@ -28,7 +28,7 @@ dependencies:
   path: ^1.8.3
   postgres: ^3.4.0
   redis: ^4.0.0
-  relic: ^0.11.0
+  relic: ^0.13.1
   retry: ^3.1.1
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
@@ -42,6 +42,7 @@ dependencies:
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
   test: ^1.25.5
+  test_descriptor: ^2.0.2
 
 dependency_overrides:
   serverpod_lints:

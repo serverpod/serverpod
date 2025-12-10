@@ -3,7 +3,7 @@
 
 name: serverpod_auth_idp_flutter
 description: Flutter package for the next version of the Serverpod authentication module.
-version: 3.0.0-rc.3
+version: 3.0.0
 repository: https://github.com/serverpod/serverpod
 
 environment:
@@ -23,15 +23,15 @@ dependencies:
   google_sign_in_web: ^1.1.0
   pinput: '>=5.0.2 <7.0.0'
   provider: ^6.1.5
-  serverpod_auth_core_client: 3.0.0-rc.3
-  serverpod_auth_core_flutter: 3.0.0-rc.3
-  serverpod_auth_idp_client: 3.0.0-rc.3
+  serverpod_auth_core_client: 3.0.0
+  serverpod_auth_core_flutter: 3.0.0
+  serverpod_auth_idp_client: 3.0.0
   sign_in_with_apple: ^7.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: 3.0.0-rc.3
+  serverpod_lints: 3.0.0
 
 dependency_overrides:
   serverpod_auth_core_client:

@@ -212,7 +212,7 @@ class Protocol extends _i1.SerializationManagerServer {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -322,6 +322,24 @@ class Protocol extends _i1.SerializationManagerServer {
       return _i2.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
+  }
+
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i4.ChatJoinChannel => 'ChatJoinChannel',
+      _i5.ChatJoinChannelFailed => 'ChatJoinChannelFailed',
+      _i6.ChatJoinedChannel => 'ChatJoinedChannel',
+      _i7.ChatLeaveChannel => 'ChatLeaveChannel',
+      _i8.ChatMessage => 'ChatMessage',
+      _i9.ChatMessageAttachment => 'ChatMessageAttachment',
+      _i10.ChatMessageAttachmentUploadDescription =>
+        'ChatMessageAttachmentUploadDescription',
+      _i11.ChatMessageChunk => 'ChatMessageChunk',
+      _i12.ChatMessagePost => 'ChatMessagePost',
+      _i13.ChatReadMessage => 'ChatReadMessage',
+      _i14.ChatRequestMessageChunk => 'ChatRequestMessageChunk',
+      _ => null,
+    };
   }
 
   @override

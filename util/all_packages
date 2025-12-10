@@ -74,6 +74,7 @@ declare -a SERVERPOD_SERVER_PATHS=(
     "packages/serverpod"
     "examples/legacy/chat/chat_server"
     "examples/auth/auth_server"
+    "examples/middleware/middleware_server"
     "examples/legacy/auth_example/auth_example_server"
     "modules/legacy/serverpod_auth/serverpod_auth_server"
     "modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_server"

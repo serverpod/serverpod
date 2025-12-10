@@ -1,6 +1,9 @@
 import 'package:serverpod_client/serverpod_client.dart';
 
 /// Manages keys for authentication with the server.
+@Deprecated(
+  'Use ClientAuthKeyProvider instead. This will be removed in future releases.',
+)
 abstract class AuthenticationKeyManager implements ClientAuthKeyProvider {
   /// Backwards compatible authentication header value getter.
   @override
@@ -32,28 +35,4 @@ abstract class AuthenticationKeyManager implements ClientAuthKeyProvider {
   /// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization
   /// https://httpwg.org/specs/rfc9110.html#field.authorization
   Future<String?> toHeaderValue(String? key);
-}
-
-/// Manages keys for authentication with the server using the Bearer auth scheme.
-abstract class BearerAuthenticationKeyManager extends AuthenticationKeyManager {
-  /// Converts an authentication key to a format that can be used in a transport
-  /// header using the 'Bearer' HTTP auth scheme. This will be automatically
-  /// unwrapped on the server before being handed to the authentication handler.
-  @override
-  Future<String?> toHeaderValue(String? key) async {
-    if (key == null) return null;
-    return wrapAsBearerAuthHeaderValue(key);
-  }
-}
-
-/// Manages keys for authentication with the server using the Basic auth scheme.
-abstract class BasicAuthenticationKeyManager extends AuthenticationKeyManager {
-  /// Converts an authentication key to a format that can be used in a transport
-  /// header using the 'Basic' HTTP auth scheme. This will be automatically
-  /// unwrapped on the server before being handed to the authentication handler.
-  @override
-  Future<String?> toHeaderValue(String? key) async {
-    if (key == null) return null;
-    return wrapAsBasicAuthHeaderValue(key);
-  }
 }

@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/test_key_manager.dart';
@@ -8,6 +6,7 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(
     serverUrl,
+    // ignore: deprecated_member_use
     authenticationKeyManager: TestAuthKeyManager(),
   );
   // ".bar" is the only valid top level domain for test email addresses
@@ -156,6 +155,7 @@ void main() {
         );
         assert(authResponse.success, 'Failed to authenticate user');
         assert(authResponse.key != null, 'Failed to retrieve auth key');
+        // ignore: deprecated_member_use
         await client.authenticationKeyManager?.put(
           '${authResponse.keyId}:${authResponse.key}',
         );
@@ -167,6 +167,7 @@ void main() {
       },
     );
 
+    // ignore: deprecated_member_use
     tearDown(() async => await client.authenticationKeyManager?.remove());
 
     test(

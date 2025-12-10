@@ -232,7 +232,7 @@ TableMigration? generateTableMigration(
               table: srcTable.name,
               columns: [srcColumn.name],
               message:
-                  'Column ${srcColumn.name} of table ${srcTable.name} is '
+                  'Column "${srcColumn.name}" of table "${srcTable.name}" is '
                   'modified to be not null. If there are existing rows with '
                   'null values, this migration will fail.',
               destrucive: false,
@@ -249,7 +249,7 @@ TableMigration? generateTableMigration(
             table: srcTable.name,
             columns: [srcColumn.name],
             message:
-                'Column ${srcColumn.name} of table ${srcTable.name} is '
+                'Column "${srcColumn.name}" of table "${srcTable.name}" is '
                 'modified in a way that it must be deleted and recreated.',
             destrucive: true,
           ),

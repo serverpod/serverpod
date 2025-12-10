@@ -40,6 +40,7 @@ void main() {
 
       final legacySessionClient = Client(
         'http://localhost:8080/',
+        // ignore: deprecated_member_use
         authenticationKeyManager: keyManager,
       );
 
