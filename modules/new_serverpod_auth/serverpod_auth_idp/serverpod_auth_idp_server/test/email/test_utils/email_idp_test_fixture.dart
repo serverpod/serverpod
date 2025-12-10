@@ -78,32 +78,40 @@ final class EmailIdpTestFixture {
   }
 
   Future<void> tearDown(final Session session) async {
-    await Future.wait([
-      EmailAccount.db.deleteWhere(
-        session,
-        where: (final _) => Constant.bool(true),
-      ),
-      EmailAccountPasswordResetRequest.db.deleteWhere(
-        session,
-        where: (final _) => Constant.bool(true),
-      ),
-      EmailAccountRequest.db.deleteWhere(
-        session,
-        where: (final _) => Constant.bool(true),
-      ),
-      RateLimitedRequestAttempt.db.deleteWhere(
-        session,
-        where: (final t) => t.domain.equals('email'),
-      ),
-      SecretChallenge.db.deleteWhere(
-        session,
-        where: (final _) => Constant.bool(true),
-      ),
-      AuthUser.db.deleteWhere(
-        session,
-        where: (final _) => Constant.bool(true),
-      ),
-    ]);
+    await session.db.transaction((final transaction) async {
+      await Future.wait([
+        EmailAccount.db.deleteWhere(
+          session,
+          where: (final _) => Constant.bool(true),
+          transaction: transaction,
+        ),
+        EmailAccountPasswordResetRequest.db.deleteWhere(
+          session,
+          where: (final _) => Constant.bool(true),
+          transaction: transaction,
+        ),
+        EmailAccountRequest.db.deleteWhere(
+          session,
+          where: (final _) => Constant.bool(true),
+          transaction: transaction,
+        ),
+        RateLimitedRequestAttempt.db.deleteWhere(
+          session,
+          where: (final t) => t.domain.equals('email'),
+          transaction: transaction,
+        ),
+        SecretChallenge.db.deleteWhere(
+          session,
+          where: (final _) => Constant.bool(true),
+          transaction: transaction,
+        ),
+        AuthUser.db.deleteWhere(
+          session,
+          where: (final _) => Constant.bool(true),
+          transaction: transaction,
+        ),
+      ]);
+    });
   }
 
   Argon2HashUtil get passwordHashUtil => emailIdp.utils.hashUtil;
