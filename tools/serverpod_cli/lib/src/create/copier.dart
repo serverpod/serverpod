@@ -5,6 +5,8 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class Copier {
+  static const _uncommentMarker = '#--UNCOMMENT_LINE--#';
+
   Directory srcDir;
   Directory dstDir;
 
@@ -15,6 +17,8 @@ class Copier {
 
   List<String> ignoreFileNames;
 
+  bool processUncommentMarker;
+
   Copier({
     required this.srcDir,
     required this.dstDir,
@@ -22,6 +26,7 @@ class Copier {
     required this.fileNameReplacements,
     this.removePatterns = const <String>[],
     this.ignoreFileNames = const <String>[],
+    this.processUncommentMarker = false,
   });
 
   void copyFiles() {
@@ -61,6 +66,9 @@ class Copier {
     var contents = srcFile.readAsStringSync();
     contents = _replace(contents, replacements);
     contents = _filterLines(contents, removePatterns);
+    if (processUncommentMarker) {
+      contents = _uncommentLines(contents);
+    }
     dstFile.createSync(recursive: true);
     dstFile.writeAsStringSync(contents);
   }
@@ -79,6 +87,28 @@ class Copier {
     for (var line in lines) {
       if (removePatterns.any((pattern) => line.contains(pattern))) continue;
       processedLines.add(line);
+    }
+
+    return processedLines.join('\n');
+  }
+
+  String _uncommentLines(String str) {
+    var lines = str.split('\n');
+    var processedLines = <String>[];
+
+    for (var line in lines) {
+      var processedLine = line;
+      if (line.contains(_uncommentMarker)) {
+        processedLine = processedLine
+            .replaceAll(_uncommentMarker, '')
+            .trimRight();
+        // Remove leading # while preserving indentation
+        final match = RegExp(r'^(\s*)#(.*)$').firstMatch(processedLine);
+        if (match != null) {
+          processedLine = '${match.group(1)}${match.group(2)}';
+        }
+      }
+      processedLines.add(processedLine);
     }
 
     return processedLines.join('\n');

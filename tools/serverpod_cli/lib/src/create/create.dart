@@ -399,6 +399,7 @@ Future<void> _copyFlutterUpgrade(
     ],
     fileNameReplacements: const [],
     ignoreFileNames: const [],
+    processUncommentMarker: true,
   );
   copier.copyFiles();
 
@@ -584,6 +585,7 @@ Future<void> _copyServerUpgrade(
         'jwt_refresh_endpoint.dart',
       ],
     ],
+    processUncommentMarker: true,
   );
   copier.copyFiles();
 
@@ -618,6 +620,7 @@ Future<void> _copyServerUpgrade(
       ),
     ],
     fileNameReplacements: [],
+    processUncommentMarker: true,
   );
   copier.copyFiles();
 
@@ -674,32 +677,9 @@ void _enableWorkspaceInRootPubspec({
   required List<String> workspaceMembers,
 }) {
   var contents = rootPubspecFile.readAsStringSync();
-
-  // Uncomment the workspace section placeholder
-  contents = contents.replaceAll('#workspace:', 'workspace:');
-  for (final member in workspaceMembers) {
-    contents = contents.replaceAll('#  - $member', '  - $member');
-  }
-
-  // Use YamlEditor to set the actual values
   final editor = YamlEditor(contents);
   editor.update(['workspace'], workspaceMembers);
-
   rootPubspecFile.writeAsStringSync(editor.toString());
-}
-
-void _enableResolutionWorkspaceInPubspec({
-  required File pubspecFile,
-}) {
-  var contents = pubspecFile.readAsStringSync();
-
-  // Uncomment the resolution placeholder
-  contents = contents.replaceAll(
-    '#resolution: workspace',
-    'resolution: workspace',
-  );
-
-  pubspecFile.writeAsStringSync(contents);
 }
 
 Future<void> _addDependenciesToPubspec({
@@ -774,6 +754,7 @@ void _copyServerTemplates(
     ],
     fileNameReplacements: const [],
     ignoreFileNames: const [],
+    processUncommentMarker: true,
   );
   rootCopier.copyFiles();
 
@@ -805,6 +786,7 @@ void _copyServerTemplates(
       ),
     ],
     ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
+    processUncommentMarker: true,
   );
   copier.copyFiles();
 
@@ -836,6 +818,7 @@ void _copyServerTemplates(
       ),
     ],
     ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
+    processUncommentMarker: true,
   );
   copier.copyFiles();
 
@@ -875,6 +858,7 @@ void _copyServerTemplates(
       'macos',
       'build',
     ],
+    processUncommentMarker: true,
   );
   copier.copyFiles();
 
@@ -888,15 +872,6 @@ void _copyServerTemplates(
       '${name}_server',
       '${name}_flutter',
     ],
-  );
-  _enableResolutionWorkspaceInPubspec(
-    pubspecFile: File(p.join(serverpodDirs.serverDir.path, 'pubspec.yaml')),
-  );
-  _enableResolutionWorkspaceInPubspec(
-    pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
-  );
-  _enableResolutionWorkspaceInPubspec(
-    pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
   );
 }
 
@@ -929,6 +904,7 @@ void _copyModuleTemplates(
     ],
     fileNameReplacements: const [],
     ignoreFileNames: const [],
+    processUncommentMarker: true,
   );
   rootCopier.copyFiles();
 
@@ -960,6 +936,7 @@ void _copyModuleTemplates(
       ),
     ],
     ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
+    processUncommentMarker: true,
   );
   copier.copyFiles();
 
@@ -991,6 +968,7 @@ void _copyModuleTemplates(
       ),
     ],
     ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
+    processUncommentMarker: true,
   );
   copier.copyFiles();
 
@@ -1003,11 +981,5 @@ void _copyModuleTemplates(
       '${name}_client',
       '${name}_server',
     ],
-  );
-  _enableResolutionWorkspaceInPubspec(
-    pubspecFile: File(p.join(serverpodDirs.serverDir.path, 'pubspec.yaml')),
-  );
-  _enableResolutionWorkspaceInPubspec(
-    pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
   );
 }
