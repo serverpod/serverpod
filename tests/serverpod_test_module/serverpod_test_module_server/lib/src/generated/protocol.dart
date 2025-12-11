@@ -48,7 +48,7 @@ class Protocol extends _i1.SerializationManagerServer {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -111,6 +111,17 @@ class Protocol extends _i1.SerializationManagerServer {
       return _i2.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
+  }
+
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i3.ModulePolymorphicGrandChild => 'ModulePolymorphicGrandChild',
+      _i4.ModulePolymorphicChild => 'ModulePolymorphicChild',
+      _i5.ModulePolymorphicParent => 'ModulePolymorphicParent',
+      _i6.ModuleClass => 'ModuleClass',
+      _i7.MyModuleFeatureModel => 'MyModuleFeatureModel',
+      _ => null,
+    };
   }
 
   @override

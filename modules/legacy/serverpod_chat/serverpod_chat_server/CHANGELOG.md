@@ -1,3 +1,37 @@
+## 3.0.0-rc.4
+
+Release candidate for Serverpod 3.
+
+Serverpod 3 is a major overhaul of the authentication system and the web server.
+This release candidate is **not yet production-ready**. It is still under active development and may contain bugs or breaking changes.
+
+### New auth improvements from last rc
+
+To further improve the extensibility of the identity providers, this version introduces an abstraction of the engine that handles request rate limiting and verification code challenges, both of which are now exposed as reusable atoms for integration with any provider. This will drastically simplify future implementation of passwordless login, SMS login, etc.
+
+- feat: Introduces `SecretChallengeUtil` and `RateLimitedRequestAttemptUtilP` on the new IDP package.
+- refactor: BREAKING. Replaces rate limiting and verification code challenge handling on `EmailIdp` with new atoms. All `*Attempt` tables will be dropped and replaced by a single rate limiting table.
+
+### Web server improvements from last rc
+- feat: Adds parameter `values` to the `TemplateWidget` class.
+- fix: BREAKING. Fixes fallback routes not being able to access the `Session`.
+- refactor: BREAKING. Replaces `remoteInfo` parameter on `Session` class with `Request` object.
+- refactor: BREAKING. Renames `context` parameter to `request` in `Route.call` and `Route.handleCall` methods.
+
+### Additional changes
+
+#### New features
+- feat: Adds support for resolving Dart doc template macros in client code generation.
+
+#### Fixes
+- fix: Improves error message when there is a database mismatch on server startup.
+- fix: Disables future call execution when none are registered.
+- fix: Improves string representation for serializable exceptions.
+- fix: Allows disabling features in the `generator.yaml` configuration file.
+- fix: Fixes an issue on the deserialization engine that would prevent compilation on web in release mode.
+- fix: Prevents the usage of non-constant defaults on immutable models.
+- fix: Fixes missing inherited fields class constructor for table models with relation to inherited models.
+
 ## 3.0.0-rc.3
 
 Release candidate for Serverpod 3.

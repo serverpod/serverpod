@@ -78,39 +78,32 @@ final class EmailIdpTestFixture {
   }
 
   Future<void> tearDown(final Session session) async {
-    await EmailAccount.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-    await EmailAccountFailedLoginAttempt.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-    await EmailAccountPasswordResetRequest.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-    await EmailAccountPasswordResetCompleteAttempt.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-    await EmailAccountPasswordResetRequestAttempt.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-    await EmailAccountRequest.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-    await EmailAccountRequestCompletionAttempt.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
-
-    await AuthUser.db.deleteWhere(
-      session,
-      where: (final _) => Constant.bool(true),
-    );
+    await Future.wait([
+      EmailAccount.db.deleteWhere(
+        session,
+        where: (final _) => Constant.bool(true),
+      ),
+      EmailAccountPasswordResetRequest.db.deleteWhere(
+        session,
+        where: (final _) => Constant.bool(true),
+      ),
+      EmailAccountRequest.db.deleteWhere(
+        session,
+        where: (final _) => Constant.bool(true),
+      ),
+      RateLimitedRequestAttempt.db.deleteWhere(
+        session,
+        where: (final t) => t.domain.equals('email'),
+      ),
+      SecretChallenge.db.deleteWhere(
+        session,
+        where: (final _) => Constant.bool(true),
+      ),
+      AuthUser.db.deleteWhere(
+        session,
+        where: (final _) => Constant.bool(true),
+      ),
+    ]);
   }
 
   Argon2HashUtil get passwordHashUtil => emailIdp.utils.hashUtil;

@@ -380,18 +380,8 @@ Future<void> _cleanUpDatabase(final Session session) async {
     where: (final _) => Constant.bool(true),
   );
 
-  await EmailAccountPasswordResetCompleteAttempt.db.deleteWhere(
+  await RateLimitedRequestAttempt.db.deleteWhere(
     session,
-    where: (final _) => Constant.bool(true),
-  );
-
-  await EmailAccountPasswordResetRequestAttempt.db.deleteWhere(
-    session,
-    where: (final _) => Constant.bool(true),
-  );
-
-  await EmailAccountFailedLoginAttempt.db.deleteWhere(
-    session,
-    where: (final _) => Constant.bool(true),
+    where: (final t) => t.domain.equals('email'),
   );
 }

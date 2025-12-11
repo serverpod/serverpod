@@ -600,7 +600,7 @@ void main() {
       );
 
       test(
-        'when calling `verifyPasswordResetCode` the correct verification code after the email account being deleted, '
+        'when calling `verifyPasswordResetCode` with the correct verification code after the email account being deleted, '
         'then an error is thrown with reason `invalid`.',
         () async {
           await EmailAccount.db.deleteWhere(
@@ -779,7 +779,7 @@ void main() {
       );
 
       test(
-        'when calling `finishPasswordReset` the correct finish password reset token after the email account being deleted, '
+        'when calling `finishPasswordReset` with the correct finish password reset token after the email account being deleted, '
         'then an error is thrown with reason `invalid`.',
         () async {
           await EmailAccount.db.deleteWhere(
@@ -1151,18 +1151,8 @@ Future<void> _cleanUpDatabase(final Session session) async {
     where: (final _) => Constant.bool(true),
   );
 
-  await EmailAccountPasswordResetCompleteAttempt.db.deleteWhere(
+  await RateLimitedRequestAttempt.db.deleteWhere(
     session,
-    where: (final _) => Constant.bool(true),
-  );
-
-  await EmailAccountPasswordResetRequestAttempt.db.deleteWhere(
-    session,
-    where: (final _) => Constant.bool(true),
-  );
-
-  await EmailAccountFailedLoginAttempt.db.deleteWhere(
-    session,
-    where: (final _) => Constant.bool(true),
+    where: (final t) => t.domain.equals('email'),
   );
 }

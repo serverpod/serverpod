@@ -1,0 +1,40 @@
+### Database table for tracking rate limited request attempts.
+### A new entry will be created whenever the request is attempted.
+class: RateLimitedRequestAttempt
+serverOnly: true
+table: serverpod_auth_idp_rate_limited_request_attempt
+fields:
+  ### The ID of the attempt.
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### The domain of the attempt.
+  ### Example: "email", "sms", etc.
+  domain: String
+
+  ### The source of the attempt.
+  ### Example: "password_reset", "login_attempt", etc.
+  source: String
+
+  ### The unique identifier for the request.
+  ### Can be a request ID, a token, an email address, etc.
+  nonce: String
+
+  ### The IP address calling the request, in case it is relevant.
+  ### Should only be used for logging and auditing purposes.
+  ipAddress: String?
+
+  ### The time of the attempt.
+  attemptedAt: DateTime, defaultModel=now
+
+  ### Additional data to be logged for the attempt.
+  extraData: Map<String, String>?
+
+indexes:
+  serverpod_auth_idp_rate_limited_request_attempt_domain:
+    fields: domain
+
+  serverpod_auth_idp_rate_limited_request_attempt_source:
+    fields: source
+
+  serverpod_auth_idp_rate_limited_request_attempt_nonce:
+    fields: nonce

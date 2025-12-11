@@ -123,9 +123,9 @@ abstract class Session implements DatabaseAccessor {
   /// Method that triggered this session, if any.
   final String? method;
 
-  /// Information identifying the remote client that triggered this session.
-  /// This is extracted from HTTP headers and may not be trustworthy.
-  final String? remoteInfo;
+  /// The [Request] associated with the call, if any.
+  /// This is null for [InternalSession] and [FutureCallSession].
+  final Request? request;
 
   /// Creates a new session. This is typically done internally by the [Server].
   Session({
@@ -136,7 +136,7 @@ abstract class Session implements DatabaseAccessor {
     required this.endpoint,
     int? messageId,
     this.method,
-    this.remoteInfo,
+    this.request,
   }) : _authenticationKey = authenticationKey,
        _messageId = messageId,
        sessionId = sessionId ?? const Uuid().v4obj() {
@@ -302,8 +302,11 @@ class MethodCallSession extends Session {
   @override
   String get method => _method;
 
+  final Request _request;
+
   /// The [Request] associated with the call.
-  final Request request;
+  @override
+  Request get request => _request;
 
   /// Creates a new [Session] for a method call to an endpoint.
   MethodCallSession._({
@@ -311,15 +314,15 @@ class MethodCallSession extends Session {
     required this.uri,
     required this.body,
     required String path,
-    required this.request,
+    required Request request,
     required super.endpoint,
     required String method,
     required this.queryParameters,
     required super.authenticationKey,
     super.enableLogging = true,
-    super.remoteInfo,
   }) : _method = method,
-       super(method: method);
+       _request = request,
+       super(method: method, request: request);
 }
 
 /// When a request is made to the web server a [WebCallSession] object is
@@ -332,7 +335,6 @@ class WebCallSession extends Session {
     required super.endpoint,
     required super.authenticationKey,
     super.enableLogging = true,
-    super.remoteInfo,
   });
 }
 
@@ -349,6 +351,12 @@ class MethodStreamSession extends Session {
   @override
   String get method => _method;
 
+  final Request _request;
+
+  /// The [Request] associated with the call.
+  @override
+  Request get request => _request;
+
   /// Creates a new [MethodStreamSession].
   MethodStreamSession._({
     required super.server,
@@ -357,8 +365,10 @@ class MethodStreamSession extends Session {
     required super.endpoint,
     required String method,
     required this.connectionId,
+    required Request request,
   }) : _method = method,
-       super(method: method);
+       _request = request,
+       super(method: method, request: request);
 }
 
 /// When a web socket connection is opened to the [Server] a [StreamingSession]
@@ -371,8 +381,11 @@ class StreamingSession extends Session {
   /// Query parameters of the server call.
   late final Map<String, String> queryParameters;
 
+  final Request _request;
+
   /// The [Request] associated with the call.
-  final Request request;
+  @override
+  Request get request => _request;
 
   /// The underlying web socket that handles communication with the server.
   final RelicWebSocket webSocket;
@@ -392,12 +405,13 @@ class StreamingSession extends Session {
   StreamingSession._({
     required super.server,
     required this.uri,
-    required this.request,
+    required Request request,
     required this.webSocket,
     super.endpoint = 'StreamingSession',
     super.enableLogging = true,
   }) : _endpoint = endpoint,
-       super(messageId: 0) {
+       _request = request,
+       super(messageId: 0, request: request) {
     // Read query parameters
     var queryParameters = <String, String>{};
     queryParameters.addAll(uri.queryParameters);
@@ -668,7 +682,6 @@ extension SessionInternalMethods on Session {
     required Map<String, dynamic> queryParameters,
     required String? authenticationKey,
     bool enableLogging = true,
-    String? remoteInfo,
   }) async {
     final session = MethodCallSession._(
       server: server,
@@ -681,7 +694,6 @@ extension SessionInternalMethods on Session {
       queryParameters: queryParameters,
       authenticationKey: authenticationKey,
       enableLogging: enableLogging,
-      remoteInfo: remoteInfo,
     );
     await session.initializeAuthentication();
     return session;
@@ -693,14 +705,12 @@ extension SessionInternalMethods on Session {
     required String endpoint,
     required String? authenticationKey,
     bool enableLogging = true,
-    String? remoteInfo,
   }) async {
     final session = WebCallSession._(
       server: server,
       endpoint: endpoint,
       authenticationKey: authenticationKey,
       enableLogging: enableLogging,
-      remoteInfo: remoteInfo,
     );
     await session.initializeAuthentication();
     return session;
@@ -714,6 +724,7 @@ extension SessionInternalMethods on Session {
     required String endpoint,
     required String method,
     required UuidValue connectionId,
+    required Request request,
   }) async {
     final session = MethodStreamSession._(
       server: server,
@@ -722,6 +733,7 @@ extension SessionInternalMethods on Session {
       endpoint: endpoint,
       method: method,
       connectionId: connectionId,
+      request: request,
     );
     await session.initializeAuthentication();
     return session;

@@ -1,0 +1,4 @@
+class: ParentEntity
+table: parent_entity
+fields:
+  children: List<ChildEntity>?, relation

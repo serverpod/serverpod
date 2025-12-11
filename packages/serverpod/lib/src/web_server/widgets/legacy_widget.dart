@@ -21,7 +21,7 @@ abstract class AbstractWidget extends WebWidget {}
 )
 class Widget extends TemplateWidget {
   /// Creates a new [Widget].
-  Widget({required super.name});
+  Widget({required super.name, super.values});
 }
 
 /// Deprecated alias for [ListWidget].

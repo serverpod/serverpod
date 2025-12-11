@@ -600,7 +600,7 @@ class SerializableModelLibraryGenerator {
     var hiddenFields = classDefinition.fields.where(
       (field) => field.hiddenSerializableField(serverCode),
     );
-    var visibleFields = classDefinition.fields.where(
+    var visibleFields = classDefinition.fieldsIncludingInherited.where(
       (field) => field.shouldIncludeField(serverCode),
     );
     return Class((classBuilder) {
@@ -638,7 +638,7 @@ class SerializableModelLibraryGenerator {
               ..name = '_'
               ..optionalParameters.addAll(
                 _buildModelClassConstructorParameters(
-                  classDefinition.fields,
+                  classDefinition.fieldsIncludingInherited,
                   classDefinition.tableName,
                   setAsToThis: false,
                   subDirParts: classDefinition.subDirParts,

@@ -10,12 +10,12 @@ environment:
   sdk: '^3.8.0'
 
 dependencies:
-  serverpod: 3.0.0-rc.3
-  serverpod_auth_idp_server: 3.0.0-rc.3
+  serverpod: 3.0.0-rc.4
+  serverpod_auth_idp_server: 3.0.0-rc.4
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
-  serverpod_test: 3.0.0-rc.3
+  serverpod_test: 3.0.0-rc.4
   test: ^1.25.5
 
 dependency_overrides: 

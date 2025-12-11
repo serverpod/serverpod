@@ -327,6 +327,7 @@ class MethodWebsocketRequestHandler {
                     method: message.method,
                     connectionId: message.connectionId,
                     enableLogging: connector.endpoint.logSessions,
+                    request: webSocket.request,
                   );
               return maybeSession!;
             },
@@ -500,7 +501,7 @@ StreamOpContext _makeEventContext(
     serverRunMode: server.runMode,
     sessionId: session?.sessionId,
     userAuthInfo: session?.authInfoOrNull,
-    remoteInfo: session?.remoteInfo,
+    remoteInfo: session?.request.remoteInfo ?? request.remoteInfo,
     uri: request.url,
     endpoint: endpoint,
     methodName: method,

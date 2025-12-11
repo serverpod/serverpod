@@ -509,7 +509,7 @@ class Protocol extends _i1.SerializationManagerServer {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -660,6 +660,32 @@ class Protocol extends _i1.SerializationManagerServer {
       return _i2.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
+  }
+
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i3.AuthUser => 'AuthUser',
+      _i4.AuthUserBlockedException => 'AuthUserBlockedException',
+      _i5.AuthUserModel => 'AuthUserModel',
+      _i6.AuthUserNotFoundException => 'AuthUserNotFoundException',
+      _i7.AuthStrategy => 'AuthStrategy',
+      _i8.AuthSuccess => 'AuthSuccess',
+      _i9.JwtTokenInfo => 'JwtTokenInfo',
+      _i10.RefreshToken => 'RefreshToken',
+      _i11.RefreshTokenExpiredException => 'RefreshTokenExpiredException',
+      _i12.RefreshTokenInvalidSecretException =>
+        'RefreshTokenInvalidSecretException',
+      _i13.RefreshTokenMalformedException => 'RefreshTokenMalformedException',
+      _i14.RefreshTokenNotFoundException => 'RefreshTokenNotFoundException',
+      _i15.TokenPair => 'TokenPair',
+      _i16.UserProfile => 'UserProfile',
+      _i17.UserProfileData => 'UserProfileData',
+      _i18.UserProfileImage => 'UserProfileImage',
+      _i19.UserProfileModel => 'UserProfileModel',
+      _i20.ServerSideSession => 'ServerSideSession',
+      _i21.ServerSideSessionInfo => 'ServerSideSessionInfo',
+      _ => null,
+    };
   }
 
   @override

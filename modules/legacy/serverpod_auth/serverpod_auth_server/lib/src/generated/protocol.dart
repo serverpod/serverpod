@@ -640,7 +640,7 @@ class Protocol extends _i1.SerializationManagerServer {
     t ??= T;
 
     final dataClassName = getClassNameFromObjectJson(data);
-    if (dataClassName != null && dataClassName != t.toString()) {
+    if (dataClassName != null && dataClassName != getClassNameForType(t)) {
       try {
         return deserializeByClassName({
           'className': dataClassName,
@@ -752,6 +752,26 @@ class Protocol extends _i1.SerializationManagerServer {
       return _i2.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
+  }
+
+  static String? getClassNameForType(Type type) {
+    return switch (type) {
+      _i3.AppleAuthInfo => 'AppleAuthInfo',
+      _i4.AuthKey => 'AuthKey',
+      _i5.AuthenticationFailReason => 'AuthenticationFailReason',
+      _i6.AuthenticationResponse => 'AuthenticationResponse',
+      _i7.EmailAuth => 'EmailAuth',
+      _i8.EmailCreateAccountRequest => 'EmailCreateAccountRequest',
+      _i9.EmailFailedSignIn => 'EmailFailedSignIn',
+      _i10.EmailPasswordReset => 'EmailPasswordReset',
+      _i11.EmailReset => 'EmailReset',
+      _i12.GoogleRefreshToken => 'GoogleRefreshToken',
+      _i13.UserImage => 'UserImage',
+      _i14.UserInfo => 'UserInfo',
+      _i15.UserInfoPublic => 'UserInfoPublic',
+      _i16.UserSettingsConfig => 'UserSettingsConfig',
+      _ => null,
+    };
   }
 
   @override

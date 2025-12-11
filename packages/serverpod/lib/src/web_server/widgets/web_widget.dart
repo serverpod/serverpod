@@ -24,12 +24,13 @@ class TemplateWidget extends WebWidget {
 
   /// Key/value pairs passed to the template. The values will be converted to
   /// strings using the toString method of the values.
-  Map<String, dynamic> values = {};
+  Map<String, dynamic> values;
 
   /// Creates a new [TemplateWidget].
   TemplateWidget({
     required this.name,
-  }) {
+    Map<String, dynamic>? values,
+  }) : values = values ?? {} {
     var cachedTemplate = templates[name];
     if (cachedTemplate == null) {
       throw StateError('Template $name.html missing for $runtimeType');
