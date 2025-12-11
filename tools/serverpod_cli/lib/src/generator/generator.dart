@@ -19,7 +19,7 @@ Future<bool> performGenerate({
   final models = modelAnalyzer.validateAll();
   success &= !modelAnalyzer.hasSevereErrors;
 
-  log.debug('Analyzing future call models.');
+  log.debug('Analyzing the future calls.');
 
   // analyze future calls to collect models for generation
   var futureCallsAnalyzerCollector = CodeGenerationCollector();
@@ -38,6 +38,9 @@ Future<bool> performGenerate({
       }
     }
   }
+
+  success &= !futureCallsAnalyzerCollector.hasSevereErrors;
+  futureCallsAnalyzerCollector.printErrors();
 
   log.debug('Generating files for serializable models.');
 
@@ -62,17 +65,6 @@ Future<bool> performGenerate({
 
   success &= !endpointAnalyzerCollector.hasSevereErrors;
   endpointAnalyzerCollector.printErrors();
-
-  log.debug('Analyzing the future calls.');
-
-  futureCallsAnalyzerCollector = CodeGenerationCollector();
-  futureCalls = await futureCallsAnalyzer.analyze(
-    collector: futureCallsAnalyzerCollector,
-    changedFiles: generatedModelFiles.toSet(),
-  );
-
-  success &= !futureCallsAnalyzerCollector.hasSevereErrors;
-  futureCallsAnalyzerCollector.printErrors();
 
   log.debug('Generating the protocol.');
 
