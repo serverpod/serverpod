@@ -1004,6 +1004,64 @@ class Restrictions {
     return errors;
   }
 
+  List<SourceSpanSeverityException> validateColumnName(
+    String parentNodeName,
+    dynamic column,
+    SourceSpan? span,
+  ) {
+    if (column is! String) return [];
+
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    if ((parentNodeName == defaultPrimaryKeyName)) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.columnKey}" key is not allowed on the "id" field.',
+          span,
+        ),
+      ];
+    }
+
+    if (column.length > _maxColumnNameLength) {
+      return [
+        SourceSpanSeverityException(
+          'The column name "$column" exceeds the $_maxColumnNameLength '
+          'character column name limitation.',
+          span,
+        ),
+      ];
+    }
+
+    var currentModel = parsedModels.findByClassName(definition.className);
+
+    if (currentModel is ModelClassDefinition) {
+      final fieldsWithColumn = _findFieldsWithColumn(currentModel, column);
+
+      if (fieldsWithColumn.length > 1) {
+        return [
+          SourceSpanSeverityException(
+            'The column "$column" should only be used for a single field.',
+            span,
+          ),
+        ];
+      }
+
+      final [field] = fieldsWithColumn;
+      if (field.isSymbolicRelation) {
+        return [
+          SourceSpanSeverityException(
+            'The "${Keyword.columnKey}" key is only allowed on a '
+            'foreign key relation field.',
+            span,
+          ),
+        ];
+      }
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> _validateTableInheritedIdField(
     SourceSpan? span,
   ) {
@@ -2138,5 +2196,14 @@ class Restrictions {
             .firstOrNull;
       },
     );
+  }
+
+  List<SerializableModelFieldDefinition> _findFieldsWithColumn(
+    ModelClassDefinition currentModel,
+    String column,
+  ) {
+    return currentModel.fields
+        .where((field) => field.columnName == column)
+        .toList();
   }
 }

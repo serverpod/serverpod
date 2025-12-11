@@ -89,12 +89,12 @@ Map<String, dynamic> _createColumnMapFromQueryAliasColumns(
   var columnMap = <String, dynamic>{};
   for (var column in columns) {
     var queryKey = truncateIdentifier(
-      column.queryAlias,
+      column.fieldQueryAlias,
       DatabaseConstants.pgsqlMaxNameLimitation,
     );
     var columnData = rawTableRow[queryKey];
     if (columnData != null) {
-      columnMap[column.columnName] = columnData;
+      columnMap[column.fieldName] = columnData;
     }
   }
 

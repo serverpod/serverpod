@@ -302,6 +302,10 @@ class ModelParser {
     var fieldName = key.value;
     if (fieldName is! String) return [];
 
+    final columnNode = node.nodes[Keyword.columnKey];
+    final columnValue = columnNode?.value;
+    final columnNameOverride = columnValue is String ? columnValue : null;
+
     var typeNode = node.nodes[Keyword.type];
     var typeValue = typeNode?.value;
     if (typeNode is! YamlScalar) return [];
@@ -345,6 +349,7 @@ class ModelParser {
         defaultModelValue: defaultModelValue,
         defaultPersistValue: defaultPersistValue,
         isRequired: isRequired,
+        columnNameOverride: columnNameOverride,
       ),
     ];
   }
@@ -566,7 +571,9 @@ class ModelParser {
       if (indexName is! String) return null;
 
       var indexFields = _parseIndexFields(nodeDocument, fields);
-      var indexFieldsTypes = fields.where((f) => indexFields.contains(f.name));
+      var indexFieldsTypes = fields.where(
+        (f) => indexFields.contains(f.columnName),
+      );
       var type = _parseIndexType(
         nodeDocument,
         onlyVectorFields:
@@ -606,6 +613,16 @@ class ModelParser {
 
     var stringifiedFields = fieldsNode.value;
     if (stringifiedFields is! String) return [];
+
+    for (var field in fields) {
+      // Use expected column name for all fields
+      if (field.hasColumnNameOverride) {
+        stringifiedFields = (stringifiedFields as String).replaceAll(
+          field.name,
+          field.columnName,
+        );
+      }
+    }
 
     var indexFields = convertIndexList(stringifiedFields);
 
