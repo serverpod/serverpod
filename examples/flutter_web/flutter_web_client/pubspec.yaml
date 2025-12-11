@@ -1,0 +1,19 @@
+name: flutter_web_client
+description: Starting point for a Serverpod client.
+
+environment:
+  sdk: '^3.8.0'
+
+dependencies:
+  serverpod_auth_idp_client: 3.0.1
+  serverpod_client: 3.0.1
+
+dependency_overrides: 
+  serverpod_auth_core_client:
+    path: /Users/alex/repos/serverpod/4403-server-flutter-app-from-template/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
+  serverpod_auth_idp_client:
+    path: /Users/alex/repos/serverpod/4403-server-flutter-app-from-template/modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client
+  serverpod_client: 
+    path: /Users/alex/repos/serverpod/4403-server-flutter-app-from-template/packages/serverpod_client 
+  serverpod_serialization: 
+    path: /Users/alex/repos/serverpod/4403-server-flutter-app-from-template/packages/serverpod_serialization 

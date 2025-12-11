@@ -1,0 +1,32 @@
+name: flutter_web_server
+description: Starting point for a Serverpod server.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '^3.8.0'
+
+dependencies:
+  serverpod: 3.0.1
+  serverpod_auth_idp_server: 3.0.1
+
+dev_dependencies:
+  lints: '>=3.0.0 <7.0.0'
+  serverpod_test: 3.0.1
+  test: ^1.25.5
+
+dependency_overrides: 
+  serverpod: 
+    path: /Users/alex/repos/serverpod/4403-server-flutter-app-from-template/packages/serverpod 
+  serverpod_serialization: 
+    path: /Users/alex/repos/serverpod/4403-server-flutter-app-from-template/packages/serverpod_serialization 
+  serverpod_shared: 
+    path: /Users/alex/repos/serverpod/4403-server-flutter-app-from-template/packages/serverpod_shared 
+  serverpod_test: 
+    path: /Users/alex/repos/serverpod/4403-server-flutter-app-from-template/packages/serverpod_test 
+  serverpod_lints: 
+    path: /Users/alex/repos/serverpod/4403-server-flutter-app-from-template/packages/serverpod_lints 
+  serverpod_auth_idp_server:
+    path: /Users/alex/repos/serverpod/4403-server-flutter-app-from-template/modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
+  serverpod_auth_core_server:
+    path: /Users/alex/repos/serverpod/4403-server-flutter-app-from-template/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
