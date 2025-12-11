@@ -11,30 +11,16 @@ const tempDirName = 'temp';
 
 void main() {
   final rootPath = path.join(Directory.current.path, '..', '..');
-  final cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
+  final cliProjectPath = getServerpodCliProjectPath(rootPath: rootPath);
   final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
-    await runProcess(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
-    // Run command and activate again to force cache pub dependencies.
-    await runProcess(
-      'serverpod',
-      ['version'],
-      workingDirectory: cliPath,
-    );
-
-    await runProcess(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
     await Directory(tempPath).create();
+    final pubGetProcess = await startProcess('dart', [
+      'pub',
+      'get',
+    ], workingDirectory: cliProjectPath);
+    assert(await pubGetProcess.exitCode == 0);
   });
 
   tearDownAll(() async {
@@ -51,8 +37,7 @@ void main() {
 
     group('when creating a new project', () {
       setUpAll(() async {
-        var process = await startProcess(
-          'serverpod',
+        var process = await startServerpodCli(
           [
             'create',
             '--template',
@@ -61,6 +46,7 @@ void main() {
             '-v',
             '--no-analytics',
           ],
+          rootPath: rootPath,
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -312,8 +298,7 @@ void main() {
       late Process createProcess;
 
       setUp(() async {
-        createProcess = await startProcess(
-          'serverpod',
+        createProcess = await startServerpodCli(
           [
             'create',
             '--template',
@@ -322,6 +307,7 @@ void main() {
             '-v',
             '--no-analytics',
           ],
+          rootPath: rootPath,
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,

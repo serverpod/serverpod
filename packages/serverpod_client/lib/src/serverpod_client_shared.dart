@@ -134,10 +134,17 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Optional [AuthenticationKeyManager] if the client needs to sign the user in.
   @Deprecated(
-    'Use authKeyProvider instead, this will be removed in future releases.',
+    'Use authKeyProvider instead. This will be removed in future releases.',
   )
-  AuthenticationKeyManager? get authenticationKeyManager =>
-      authKeyProvider as AuthenticationKeyManager?;
+  AuthenticationKeyManager? get authenticationKeyManager {
+    final provider = authKeyProvider;
+    if (provider == null) return null;
+    if (provider is AuthenticationKeyManager) return provider;
+    throw StateError(
+      'The authKeyProvider is not an AuthenticationKeyManager. '
+      'Use authKeyProvider directly instead of authenticationKeyManager.',
+    );
+  }
 
   /// Looks up module callers by their name. Overridden by generated code.
   Map<String, ModuleEndpointCaller> get moduleLookup;
@@ -211,24 +218,24 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Creates a new ServerpodClientShared.
   ServerpodClientShared(
-    this.host,
+    String host,
     this.serializationManager, {
     dynamic securityContext,
+    @Deprecated(
+      'Use authKeyProvider instead. This will be removed in future releases.',
+    )
     AuthenticationKeyManager? authenticationKeyManager,
     required Duration? streamingConnectionTimeout,
     required Duration? connectionTimeout,
     this.onFailedCall,
     this.onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-  }) : connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
+  }) : host = host.endsWith('/') ? host : '$host/',
+       connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
        streamingConnectionTimeout =
            streamingConnectionTimeout ?? const Duration(seconds: 5) {
     assert(
-      host.endsWith('/'),
-      'host must end with a slash, eg: https://example.com/',
-    );
-    assert(
-      host.startsWith('http://') || host.startsWith('https://'),
+      this.host.startsWith('http://') || this.host.startsWith('https://'),
       'host must include protocol, eg: https://example.com/',
     );
     _requestDelegate = ServerpodClientRequestDelegateImpl(
@@ -242,7 +249,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _disconnectWebSocketStreamOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
 
-    // This is a backwards compatibility assignment.
+    // Use authKeyProvider if provided, otherwise fall back to deprecated
+    // authenticationKeyManager for backwards compatibility.
     authKeyProvider ??= authenticationKeyManager;
   }
 

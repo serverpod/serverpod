@@ -238,13 +238,14 @@ class Restrictions {
     SourceSpan? span,
   ) {
     return [
-      ..._validateTableName(parentNodeName, tableName, span),
+      ..._validateTableName(tableName, span),
       ..._validateTableInheritedIdField(span),
+      if (tableName is String)
+        ..._validateTableInheritedIndexNames(tableName, span),
     ];
   }
 
   List<SourceSpanSeverityException> _validateTableName(
-    String parentNodeName,
     dynamic tableName,
     SourceSpan? span,
   ) {
@@ -446,28 +447,6 @@ class Restrictions {
         ),
       ];
     }
-    if (!parsedModels.isIndexNameUnique(documentDefinition, indexName)) {
-      var collision = parsedModels.findByIndexName(
-        indexName,
-        ignore: documentDefinition,
-      );
-
-      return [
-        SourceSpanSeverityException(
-          'The index name "$indexName" is already used by the model class "${collision?.className}".',
-          span,
-        ),
-      ];
-    }
-
-    if (indexName.length > DatabaseConstants.pgsqlMaxNameLimitation) {
-      return [
-        SourceSpanSeverityException(
-          'The index name "$indexName" exceeds the ${DatabaseConstants.pgsqlMaxNameLimitation} character index name limitation.',
-          span,
-        ),
-      ];
-    }
 
     var definition = documentDefinition;
     if (definition is ModelClassDefinition && definition.tableName != null) {
@@ -477,6 +456,42 @@ class Restrictions {
             'The index name "$indexName" cannot be the same as the table name. Use a unique name for the index.',
             span,
           ),
+        ];
+      }
+
+      if (!parsedModels.isIndexNameUnique(documentDefinition, indexName)) {
+        var collision = parsedModels.findByIndexName(
+          indexName,
+          ignore: documentDefinition,
+        );
+
+        return [
+          SourceSpanSeverityException(
+            'The index name "$indexName" is already used by the model class "${collision?.className}".',
+            span,
+          ),
+        ];
+      }
+
+      if (indexName.length > DatabaseConstants.pgsqlMaxNameLimitation) {
+        final baseMessage =
+            'The index name "$indexName" exceeds the ${DatabaseConstants.pgsqlMaxNameLimitation} character index name limitation.';
+
+        if (definition.inheritedIndexes.any((i) => i.name == indexName)) {
+          return [
+            SourceSpanSeverityException(
+              '$baseMessage '
+              'Consider shortening either the base index name or the table name. '
+              'Note that changing the base index name may require dropping and '
+              'recreating indexes for other tables that already extend the '
+              'model where it is defined.',
+              span,
+            ),
+          ];
+        }
+
+        return [
+          SourceSpanSeverityException(baseMessage, span),
         ];
       }
     }
@@ -989,6 +1004,64 @@ class Restrictions {
     return errors;
   }
 
+  List<SourceSpanSeverityException> validateColumnName(
+    String parentNodeName,
+    dynamic column,
+    SourceSpan? span,
+  ) {
+    if (column is! String) return [];
+
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    if ((parentNodeName == defaultPrimaryKeyName)) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.columnKey}" key is not allowed on the "id" field.',
+          span,
+        ),
+      ];
+    }
+
+    if (column.length > _maxColumnNameLength) {
+      return [
+        SourceSpanSeverityException(
+          'The column name "$column" exceeds the $_maxColumnNameLength '
+          'character column name limitation.',
+          span,
+        ),
+      ];
+    }
+
+    var currentModel = parsedModels.findByClassName(definition.className);
+
+    if (currentModel is ModelClassDefinition) {
+      final fieldsWithColumn = _findFieldsWithColumn(currentModel, column);
+
+      if (fieldsWithColumn.length > 1) {
+        return [
+          SourceSpanSeverityException(
+            'The column "$column" should only be used for a single field.',
+            span,
+          ),
+        ];
+      }
+
+      final [field] = fieldsWithColumn;
+      if (field.isSymbolicRelation) {
+        return [
+          SourceSpanSeverityException(
+            'The "${Keyword.columnKey}" key is only allowed on a '
+            'foreign key relation field.',
+            span,
+          ),
+        ];
+      }
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> _validateTableInheritedIdField(
     SourceSpan? span,
   ) {
@@ -1035,6 +1108,20 @@ class Restrictions {
     }
 
     return errors;
+  }
+
+  List<SourceSpanSeverityException> _validateTableInheritedIndexNames(
+    String tableName,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition) return [];
+
+    var indexNames = definition.inheritedIndexes.map((i) => i.name);
+    return [
+      for (var indexName in indexNames)
+        ...validateTableIndexName(tableName, indexName, span),
+    ];
   }
 
   List<SourceSpanSeverityException> _validateIdFieldDataType(
@@ -2109,5 +2196,14 @@ class Restrictions {
             .firstOrNull;
       },
     );
+  }
+
+  List<SerializableModelFieldDefinition> _findFieldsWithColumn(
+    ModelClassDefinition currentModel,
+    String column,
+  ) {
+    return currentModel.fields
+        .where((field) => field.columnName == column)
+        .toList();
   }
 }

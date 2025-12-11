@@ -29,6 +29,7 @@ void main() {
     setUp(() async {
       primaryClient = Client(
         serverUrl,
+        // ignore: deprecated_member_use
         authenticationKeyManager: FlutterAuthenticationKeyManager(
           storage: MockStorage(),
         ),
@@ -41,6 +42,7 @@ void main() {
 
       secondaryClient = Client(
         serverUrl,
+        // ignore: deprecated_member_use
         authenticationKeyManager: FlutterAuthenticationKeyManager(
           storage: MockStorage(),
         ),

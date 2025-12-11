@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:serverpod/src/authentication/scope.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
@@ -9,6 +7,7 @@ import 'package:test/test.dart';
 void main() {
   var client = Client(
     serverUrl,
+    // ignore: deprecated_member_use
     authenticationKeyManager: TestAuthKeyManager(),
   );
 
@@ -63,6 +62,7 @@ void main() {
         'password',
       );
       if (response.success) {
+        // ignore: deprecated_member_use
         await client.authenticationKeyManager!.put(
           '${response.keyId}:${response.key}',
         );
@@ -126,6 +126,7 @@ void main() {
         'password',
       );
       assert(response.success, 'Failed to authenticate user');
+      // ignore: deprecated_member_use
       await client.authenticationKeyManager?.put(
         '${response.keyId}:${response.key}',
       );
@@ -136,6 +137,7 @@ void main() {
     });
 
     tearDown(() async {
+      // ignore: deprecated_member_use
       await client.authenticationKeyManager?.remove();
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
@@ -169,6 +171,7 @@ void main() {
         [Scope.admin.name!],
       );
       assert(response.success, 'Failed to authenticate user');
+      // ignore: deprecated_member_use
       await client.authenticationKeyManager?.put(
         '${response.keyId}:${response.key}',
       );
@@ -179,6 +182,7 @@ void main() {
     });
 
     tearDown(() async {
+      // ignore: deprecated_member_use
       await client.authenticationKeyManager?.remove();
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
@@ -203,6 +207,7 @@ void main() {
         'password',
       );
       assert(response.success, 'Failed to authenticate user');
+      // ignore: deprecated_member_use
       await client.authenticationKeyManager?.put(
         '${response.keyId}:${response.key}',
       );
@@ -213,6 +218,7 @@ void main() {
     });
 
     tearDown(() async {
+      // ignore: deprecated_member_use
       await client.authenticationKeyManager?.remove();
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();

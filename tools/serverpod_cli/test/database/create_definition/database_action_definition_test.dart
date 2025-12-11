@@ -144,4 +144,83 @@ void main() {
       });
     },
   );
+
+  group(
+    'Given a class definition with a table with an explicit column name ',
+    () {
+      const fieldName = 'userName';
+      const columnName = 'user_name';
+      const columnType = 'String';
+      const tableName = 'example';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withTableName(tableName)
+            .withField(
+              FieldDefinitionBuilder()
+                  .withName(fieldName)
+                  .withColumnNameOverride(columnName)
+                  .withTypeDefinition(columnType, true)
+                  .withScope(ModelFieldScopeDefinition.all)
+                  .withShouldPersist(true)
+                  .build(),
+            )
+            .build(),
+      ];
+
+      test('then a column with the explicit name is generated.', () {
+        var databaseDefinition = createDatabaseDefinitionFromModels(
+          models,
+          tableName,
+          [],
+        );
+
+        expect(databaseDefinition.tables, hasLength(1));
+        expect(databaseDefinition.tables.first.name, tableName);
+        final table = databaseDefinition.findTableNamed(tableName);
+        expect(table, isNotNull);
+        final column = table!.findColumnNamed(columnName);
+        expect(column, isNotNull);
+      });
+
+      test('with a foreign relation, then the foreign key columns includes '
+          'the explicit column name', () {
+        var relation = ForeignRelationDefinitionBuilder()
+            .withParentTable(tableName)
+            .withReferenceFieldName('id')
+            .withOnDelete(ForeignKeyAction.setNull)
+            .withOnUpdate(ForeignKeyAction.setNull)
+            .build();
+
+        const relationFieldName = 'parentId';
+        const relationColumnName = 'parent_id';
+
+        var field = FieldDefinitionBuilder()
+            .withName(relationFieldName)
+            .withColumnNameOverride(relationColumnName)
+            .withIdType(isNullable: true)
+            .withRelation(relation)
+            .build();
+
+        var model = ModelClassDefinitionBuilder()
+            .withTableName('${tableName}_child')
+            .withField(field)
+            .build();
+        models.add(model);
+
+        var databaseDefinition = createDatabaseDefinitionFromModels(
+          models,
+          tableName,
+          [],
+        );
+        var table = databaseDefinition.tables.last;
+        expect(
+          table.foreignKeys,
+          isNotEmpty,
+          reason: 'Expected a foreign relation to exists.',
+        );
+        var foreignKey = table.foreignKeys.first;
+        expect(foreignKey.columns, contains(relationColumnName));
+      });
+    },
+  );
 }
