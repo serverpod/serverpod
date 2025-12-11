@@ -133,9 +133,15 @@ Set<String> _findDependentTables(
                   (targetForeignKey) =>
                       targetForeignKey.constraintName ==
                           foreignKey.constraintName &&
-                      // Also verify that the foreign key still references the same table
-                      // to handle cases where constraint names get renumbered
-                      targetForeignKey.referenceTable == foreignKey.referenceTable,
+                      // Check if it's the same FK (by comparing columns).
+                      // This handles two scenarios:
+                      // 1. FK still references the deleted table (original case)
+                      // 2. FK references a different table but uses same columns (rename case)
+                      // If columns are different, it's a different FK reusing the name (renumbering case)
+                      _sameColumns(
+                        targetForeignKey.columns,
+                        foreignKey.columns,
+                      ),
                 ),
           ),
     );
@@ -159,6 +165,15 @@ Set<String> _findDependentTables(
   }
 
   return dependentTables;
+}
+
+/// Compares two lists of column names for equality.
+bool _sameColumns(List<String> columns1, List<String> columns2) {
+  if (columns1.length != columns2.length) return false;
+  for (var i = 0; i < columns1.length; i++) {
+    if (columns1[i] != columns2[i]) return false;
+  }
+  return true;
 }
 
 TableMigration? generateTableMigration(
