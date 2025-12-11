@@ -11,4 +11,10 @@ class Parameters {
     required this.positional,
     required this.named,
   });
+
+  List<ParameterDefinition> get allParameters => [
+    ...required,
+    ...positional,
+    ...named,
+  ];
 }

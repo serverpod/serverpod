@@ -141,12 +141,17 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
 
     var libDirectory = Directory(path.joinAll(config.libSourcePathParts));
     var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
-    var futureCallsAnalyzer = FutureCallsAnalyzer(libDirectory);
 
     var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
     var modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
       collector.printErrors();
     });
+
+    final futureCallsAnalyzer = FutureCallsAnalyzer(
+      directory: libDirectory,
+      config: config,
+      modelAnalyzer: modelAnalyzer,
+    );
 
     bool success = true;
     if (watch) {

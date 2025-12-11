@@ -36,9 +36,14 @@ Future<bool> performGenerateContinuously({
   await for (WatchEvent event in watchers) {
     log.debug('File changed: $event');
 
-    var shouldGenerate = await endpointsAnalyzer.updateFileContexts({
+    final shouldGenerateEndpoints = await endpointsAnalyzer.updateFileContexts({
       event.path,
     });
+
+    final shouldGenerateFutureCalls = await futureCallsAnalyzer
+        .updateFileContexts({event.path});
+
+    var shouldGenerate = shouldGenerateEndpoints || shouldGenerateFutureCalls;
 
     if (ModelHelper.isModelFile(
       event.path,

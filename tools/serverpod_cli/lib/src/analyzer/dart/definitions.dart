@@ -1,4 +1,6 @@
+import 'package:recase/recase.dart';
 import '../../generator/types.dart';
+import '../models/definitions.dart';
 
 /// Describes a single future call.
 class FutureCallDefinition {
@@ -26,7 +28,7 @@ class FutureCallDefinition {
   final String filePath;
 
   /// The methods this future call defines.
-  final List<MethodDefinition> methods;
+  final List<FutureCallMethodDefinition> methods;
 
   /// The annotations of this future call.
   final List<AnnotationDefinition> annotations;
@@ -39,6 +41,86 @@ class FutureCallDefinition {
   String? get packageName => filePath.startsWith('package:')
       ? filePath.split('/').first.split(':').last
       : null;
+}
+
+/// Describes a single callable method in a [FutureCallDefinition].
+final class FutureCallMethodDefinition extends MethodDefinition {
+  /// The optional parameter that will be generated from other
+  /// valid Dart types to implement [SerializableModel] interface.
+  final FutureCallParameterDefinition? futureCallMethodParameter;
+
+  /// Creates a new [FutureCallMethodDefinition].
+  const FutureCallMethodDefinition({
+    required super.name,
+    required super.documentationComment,
+    required super.annotations,
+    required super.parameters,
+    required super.parametersPositional,
+    required super.parametersNamed,
+    required super.returnType,
+    required this.futureCallMethodParameter,
+  });
+}
+
+/// Describes a single parameter of a [FutureCallMethodDefinition]
+/// which should be used to generate [SerializableModel] interfaces.
+class FutureCallParameterDefinition {
+  /// The variable name of the parameter.
+  final String name;
+
+  /// The type of the parameter.
+  final TypeDefinition type;
+
+  /// Whether this parameter is required.
+  final bool required;
+
+  /// The required positional parameters of this method.
+  final List<ParameterDefinition> parameters;
+
+  /// The optional positional parameters of this method.
+  final List<ParameterDefinition> parametersPositional;
+
+  /// The named parameters of this method.
+  final List<ParameterDefinition> parametersNamed;
+
+  List<ParameterDefinition> get allParameters => [
+    ...parameters,
+    ...parametersPositional,
+    ...parametersNamed,
+  ];
+
+  /// Create a new [FutureCallParameterDefinition].
+  const FutureCallParameterDefinition({
+    required this.name,
+    required this.type,
+    required this.required,
+    required this.parameters,
+    required this.parametersPositional,
+    required this.parametersNamed,
+  });
+
+  SerializableModelDefinition toSerializableModel() {
+    return ModelClassDefinition(
+      fileName: type.className.snakeCase,
+      sourceFileName: '',
+      className: type.className,
+      fields: [
+        for (final parameter in allParameters)
+          SerializableModelFieldDefinition(
+            name: parameter.name,
+            isRequired: true,
+            type: parameter.type,
+            scope: ModelFieldScopeDefinition.serverOnly,
+            shouldPersist: false,
+          ),
+      ],
+      serverOnly: true,
+      manageMigration: false,
+      type: type,
+      isSealed: false,
+      isImmutable: false,
+    );
+  }
 }
 
 /// Describes a single endpoint.

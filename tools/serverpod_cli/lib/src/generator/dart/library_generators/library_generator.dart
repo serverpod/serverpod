@@ -1786,8 +1786,11 @@ typedef _InvokeFutureCall =
               for (var futureCall in futureCalls)
                 for (var method in futureCall.methods)
                   if (!futureCall.isAbstract)
-                    getFutureCallClassName(futureCall.name, method.name): refer(
-                      getFutureCallClassName(futureCall.name, method.name),
+                    _getFutureCallClassName(
+                      futureCall.name,
+                      method.name,
+                    ): refer(
+                      _getFutureCallClassName(futureCall.name, method.name),
                     ).call([]),
             },
             refer('String'),
@@ -1852,7 +1855,7 @@ typedef _InvokeFutureCall =
       libraryBuilder.body.add(
         Class(
           (c) => c
-            ..name = '${ReCase(definition.name).pascalCase}FutureCallCaller'
+            ..name = '${definition.name.pascalCase}FutureCallCaller'
             ..fields.add(
               Field(
                 (f) => f
@@ -1884,7 +1887,7 @@ typedef _InvokeFutureCall =
 
   Method _buildFutureCallCallerMethod(
     String futureClassName,
-    MethodDefinition method,
+    FutureCallMethodDefinition method,
   ) {
     final requiredParameters = method.parameters;
     final optionalParameters = method.parametersPositional;
@@ -1933,13 +1936,35 @@ typedef _InvokeFutureCall =
             ),
         ])
         ..body = Block.of([
+          // Generate serializable model instance
+          if (method.futureCallMethodParameter != null) ...[
+            refer('var object')
+                .assign(
+                  refer(
+                    method.futureCallMethodParameter!.type.className,
+                    TypeDefinition.getRef(
+                      method.futureCallMethodParameter!.toSerializableModel(),
+                    ),
+                  ).call(
+                    [],
+                    {
+                      for (final param in method.allParameters)
+                        param.name: refer(param.name),
+                    },
+                  ),
+                )
+                .statement,
+          ],
+
           refer('_invokeFutureCall')
               .call([
                 literalString(
-                  getFutureCallClassName(futureClassName, method.name),
+                  _getFutureCallClassName(futureClassName, method.name),
                 ),
-                for (final parameter in method.parameters)
-                  refer(parameter.name),
+                if (method.futureCallMethodParameter != null)
+                  refer('object')
+                else
+                  refer(method.parameters.first.name),
               ])
               .returned
               .statement,
@@ -1948,7 +1973,7 @@ typedef _InvokeFutureCall =
   }
 
   String _futureCallPath(FutureCallDefinition futureCall) {
-    // For endpoints defined in other packages, the filePath is the library uri.
+    // For future calls defined in other packages, the filePath is the library uri.
     if (futureCall.filePath.startsWith('package:')) return futureCall.filePath;
 
     var relativePath = p.relative(
@@ -1960,12 +1985,18 @@ typedef _InvokeFutureCall =
     return p.split(relativePath).join('/');
   }
 
-  String getFutureCallClassName(String futureCallName, [String? methodName]) {
+  String _getFutureCallClassName(String futureCallName, [String? methodName]) {
     final buffer = StringBuffer()
-      ..write('FutureCall${ReCase(futureCallName).pascalCase}')
-      ..write(methodName == null ? '' : ReCase(methodName).pascalCase);
+      ..write(futureCallName.pascalCase)
+      ..write(methodName == null ? '' : methodName.pascalCase)
+      ..write('FutureCall');
 
     return buffer.toString();
+  }
+
+  String _getNullableClassName(String className) {
+    if (!className.endsWith('?')) return '$className?';
+    return className;
   }
 
   /// Generates future calls for the server.
@@ -1973,7 +2004,7 @@ typedef _InvokeFutureCall =
     for (var definition in protocolDefinition.futureCalls) {
       // Generate a future call class for each method in the definition
       for (var method in definition.methods) {
-        var futureCallClassName = getFutureCallClassName(
+        var futureCallClassName = _getFutureCallClassName(
           definition.name,
           method.name,
         );
@@ -1991,12 +2022,21 @@ typedef _InvokeFutureCall =
                 (t) => t
                   ..symbol = 'FutureCall'
                   ..url = serverpodUrl(true)
-                  ..types.add(
-                    requiredParams.first.type.asNonNullable.reference(
-                      true,
-                      config: config,
-                    ),
-                  ),
+                  ..types.addAll([
+                    if (method.futureCallMethodParameter != null)
+                      refer(
+                        method.futureCallMethodParameter!.type.className,
+                        TypeDefinition.getRef(
+                          method.futureCallMethodParameter!
+                              .toSerializableModel(),
+                        ),
+                      )
+                    else
+                      requiredParams.first.type.asNonNullable.reference(
+                        true,
+                        config: config,
+                      ),
+                  ]),
               )
               ..abstract = definition.isAbstract;
 
@@ -2015,37 +2055,29 @@ typedef _InvokeFutureCall =
                         ..name = 'session'
                         ..type = refer('Session', serverpodUrl(true)),
                     ),
-                    for (var param in requiredParams)
+                    if (method.futureCallMethodParameter != null)
                       Parameter(
                         (p) => p
-                          ..name = param.name
-                          ..type = param.type.reference(
-                            true,
-                            config: config,
+                          ..name = method.futureCallMethodParameter!.name
+                          ..type = refer(
+                            _getNullableClassName(
+                              method.futureCallMethodParameter!.type.className,
+                            ),
+                            TypeDefinition.getRef(
+                              method.futureCallMethodParameter!
+                                  .toSerializableModel(),
+                            ),
                           ),
-                      ),
-                  ])
-                  ..optionalParameters.addAll([
-                    for (var param in optionalParams)
+                      )
+                    else
                       Parameter(
                         (p) => p
-                          ..named = false
-                          ..name = param.name
-                          ..type = param.type.reference(
-                            true,
-                            config: config,
-                          ),
-                      ),
-                    for (var param in namedParameters)
-                      Parameter(
-                        (p) => p
-                          ..named = true
-                          ..required = param.required
-                          ..name = param.name
-                          ..type = param.type.reference(
-                            true,
-                            config: config,
-                          ),
+                          ..name = requiredParams.first.name
+                          ..type = requiredParams.first.type.asNullable
+                              .reference(
+                                true,
+                                config: config,
+                              ),
                       ),
                   ])
                   ..body = definition.isAbstract
@@ -2056,15 +2088,20 @@ typedef _InvokeFutureCall =
                             .call(
                               [
                                 refer('session'),
-                                for (var param in requiredParams)
-                                  refer(param.name),
+                                if (method.futureCallMethodParameter !=
+                                    null) ...[
+                                  for (var param in requiredParams)
+                                    refer('object!.${param.name}'),
+                                ] else
+                                  refer(requiredParams.first.name).nullChecked,
+                                if (method.futureCallMethodParameter != null)
+                                  for (var param in optionalParams)
+                                    refer('object!.${param.name}'),
                               ],
                               {
-                                for (var param in optionalParams)
-                                  param.name: refer(param.name),
-
-                                for (var param in namedParameters)
-                                  param.name: refer(param.name),
+                                if (method.futureCallMethodParameter != null)
+                                  for (var param in namedParameters)
+                                    param.name: refer('object!.${param.name}'),
                               },
                             )
                             .returned

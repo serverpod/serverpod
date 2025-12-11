@@ -6,11 +6,14 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_parameter_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/validator.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
@@ -19,16 +22,26 @@ class FutureCallsAnalyzer {
   final AnalysisContextCollection collection;
 
   final String absoluteIncludedPaths;
+  final GeneratorConfig config;
+  final StatefulAnalyzer modelAnalyzer;
+  final FutureCallMethodParameterValidator parameterValidator;
 
   /// Create a new [FutureCallsAnalyzer], containing a
   /// [AnalysisContextCollection] that analyzes all dart files in the
   /// provided [directory].
-  FutureCallsAnalyzer(Directory directory)
-    : collection = AnalysisContextCollection(
-        includedPaths: [directory.absolute.path],
-        resourceProvider: PhysicalResourceProvider.INSTANCE,
-      ),
-      absoluteIncludedPaths = directory.absolute.path;
+  FutureCallsAnalyzer({
+    required Directory directory,
+    required this.config,
+    required this.modelAnalyzer,
+  }) : collection = AnalysisContextCollection(
+         includedPaths: [directory.absolute.path],
+         resourceProvider: PhysicalResourceProvider.INSTANCE,
+       ),
+       absoluteIncludedPaths = directory.absolute.path,
+       parameterValidator = FutureCallMethodParameterValidator(
+         config: config,
+         modelAnalyzer: modelAnalyzer,
+       );
 
   Set<FutureCallDefinition> _futureCallDefinitions = {};
 
@@ -69,9 +82,7 @@ class FutureCallsAnalyzer {
 
     await for (var (library, filePath) in _libraries) {
       var futureCallClasses = _getFutureCallClasses(library);
-      if (futureCallClasses.isEmpty) {
-        continue;
-      }
+      if (futureCallClasses.isEmpty) continue;
 
       var maybeDartErrors = await _getErrorsForFile(library.session, filePath);
       if (maybeDartErrors.isNotEmpty) {
@@ -173,6 +184,7 @@ class FutureCallsAnalyzer {
         filePath,
         futureCallDefinitions,
         templateRegistry: templateRegistry,
+        parameterValidator: parameterValidator,
       );
     }
 
@@ -215,6 +227,7 @@ class FutureCallsAnalyzer {
         classElement,
         duplicatedClasses,
       );
+
       if (errors.isNotEmpty) {
         validationErrors[FutureCallClassAnalyzer.elementNamespace(
               classElement,
@@ -226,11 +239,16 @@ class FutureCallsAnalyzer {
       var futureCallMethods = classElement.methods.where(
         FutureCallMethodAnalyzer.isFutureCallMethod,
       );
+
       for (var method in futureCallMethods) {
         errors = FutureCallMethodAnalyzer.validate(method, classElement);
         errors.addAll(
-          FutureCallParameterAnalyzer.validate(method.formalParameters),
+          FutureCallParameterAnalyzer.validate(
+            method.formalParameters,
+            parameterValidator,
+          ),
         );
+
         if (errors.isNotEmpty) {
           validationErrors[FutureCallMethodAnalyzer.elementNamespace(
                 classElement,

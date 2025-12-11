@@ -25,7 +25,6 @@ class GenerateFiles {
 
     var libDirectory = Directory(p.joinAll(config.libSourcePathParts));
     var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
-    var futureCallsAnalyzer = FutureCallsAnalyzer(libDirectory);
 
     var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
@@ -39,6 +38,12 @@ class GenerateFiles {
         hasErrors = true;
       }
     });
+
+    final futureCallsAnalyzer = FutureCallsAnalyzer(
+      directory: libDirectory,
+      config: config,
+      modelAnalyzer: modelAnalyzer,
+    );
 
     if (hasErrors) {
       log.error(
