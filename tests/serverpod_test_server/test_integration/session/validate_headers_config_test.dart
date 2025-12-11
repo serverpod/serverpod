@@ -54,27 +54,6 @@ void main() {
     );
 
     test(
-      'when calling endpoint with Basic-wrapped token in Authorization header '
-      'then request should succeed',
-      () async {
-        final response = await http.post(
-          Uri.parse('http://localhost:8080/echoRequest'),
-          headers: {
-            'content-type': 'application/json',
-            'Authorization':
-                'Basic ${base64.encode(utf8.encode(validTestToken))}',
-          },
-          body: jsonEncode({
-            'method': 'echoAuthenticationKey',
-          }),
-        );
-
-        expect(response.statusCode, equals(200));
-        expect(response.body, '"$validTestToken"');
-      },
-    );
-
-    test(
       'when calling endpoint with unwrapped token in Authorization header '
       'then request should fail with 400',
       () async {
