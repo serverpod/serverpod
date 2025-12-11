@@ -261,7 +261,7 @@ jobs:
           [
             "tests/serverpod_test_module/serverpod_test_module_server",
             "tests/serverpod_test_nonvector/serverpod_test_nonvector_server",
-            "tests/serverpod_new_auth_test/serverpod_new_auth_test_server",
+            "tests/serverpod_auth_test/serverpod_auth_test_server",
             "modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server",
             "modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server",
             "modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server",
@@ -302,8 +302,8 @@ jobs:
       matrix:
         flutter-version: ['3.32.0', '3.38.4']
         module:
-          - server: tests/serverpod_new_auth_test/serverpod_new_auth_test_server
-            client: tests/serverpod_new_auth_test/serverpod_new_auth_test_flutter
+          - server: tests/serverpod_auth_test/serverpod_auth_test_server
+            client: tests/serverpod_auth_test/serverpod_auth_test_flutter
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2

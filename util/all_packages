@@ -21,7 +21,7 @@ declare -a FLUTTER_PACKAGES_PATHS=(
     "modules/legacy/serverpod_chat/serverpod_chat_flutter"
     "packages/serverpod_flutter"
     "templates/serverpod_templates/projectname_flutter"
-    "tests/serverpod_new_auth_test/serverpod_new_auth_test_flutter"
+    "tests/serverpod_auth_test/serverpod_auth_test_flutter"
     "tests/serverpod_test_flutter"
 )
 
@@ -47,8 +47,8 @@ declare -a DART_PACKAGES_PATHS=(
     "tests/serverpod_test_nonvector/serverpod_test_nonvector_server"
     "tests/bootstrap_project"
     "tests/serverpod_cli_e2e_test"
-    "tests/serverpod_new_auth_test/serverpod_new_auth_test_client"
-    "tests/serverpod_new_auth_test/serverpod_new_auth_test_server"
+    "tests/serverpod_auth_test/serverpod_auth_test_client"
+    "tests/serverpod_auth_test/serverpod_auth_test_server"
     "templates/serverpod_templates/projectname_server"
     "templates/serverpod_templates/projectname_client"
     "templates/serverpod_templates/modulename_server"
@@ -85,7 +85,7 @@ declare -a SERVERPOD_SERVER_PATHS=(
     "tests/serverpod_test_server"
     "tests/serverpod_test_module/serverpod_test_module_server"
     "tests/serverpod_test_nonvector/serverpod_test_nonvector_server"
-    "tests/serverpod_new_auth_test/serverpod_new_auth_test_server"
+    "tests/serverpod_auth_test/serverpod_auth_test_server"
 )
 
 declare -a SERVERPOD_SERVER_EXPERIMENTAL_PATHS=(
