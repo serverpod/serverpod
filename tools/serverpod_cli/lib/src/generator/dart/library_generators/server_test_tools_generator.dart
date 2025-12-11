@@ -112,6 +112,7 @@ class ServerTestToolsGenerator {
     return Method(
       (m) => m
         ..name = method.name
+        ..modifier = MethodModifier.async
         ..returns = TypeReference(
           (t) => t
             ..symbol = 'Future'
