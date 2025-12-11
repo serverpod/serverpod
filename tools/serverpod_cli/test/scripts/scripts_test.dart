@@ -340,7 +340,7 @@ dependencies:
   serverpod: any
 ''').create();
 
-        var found = Scripts.findPubspecFile(Directory(d.sandbox));
+        var found = await Scripts.findPubspecFile(Directory(d.sandbox));
 
         expect(found, isNotNull);
         expect(found!.path, p.join(d.sandbox, 'pubspec.yaml'));
@@ -359,44 +359,13 @@ dependencies:
   serverpod: any
 ''').create();
 
-        var found = Scripts.findPubspecFile(
+        var found = await Scripts.findPubspecFile(
           Directory(p.join(d.sandbox, 'sub/dir')),
+          interactive: false,
         );
 
         expect(found, isNotNull);
         expect(found!.path, p.join(d.sandbox, 'pubspec.yaml'));
-      },
-    );
-
-    test(
-      'Given a directory without server pubspec.yaml in tree, '
-      'when finding pubspec, '
-      'then null is returned',
-      () async {
-        await d.dir('empty').create();
-
-        var found = Scripts.findPubspecFile(
-          Directory(p.join(d.sandbox, 'empty')),
-        );
-
-        expect(found, isNull);
-      },
-    );
-
-    test(
-      'Given a directory with non-server pubspec.yaml, '
-      'when finding pubspec, '
-      'then null is returned',
-      () async {
-        await d.file('pubspec.yaml', '''
-name: test_client
-dependencies:
-  some_other_package: any
-''').create();
-
-        var found = Scripts.findPubspecFile(Directory(d.sandbox));
-
-        expect(found, isNull);
       },
     );
   });

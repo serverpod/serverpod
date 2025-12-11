@@ -2,12 +2,15 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:async/async.dart';
+import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/scripts/script.dart';
 import 'package:serverpod_cli/src/scripts/scripts.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+
+import '../runner/serverpod_command_runner.dart';
 
 /// Options for the `run` command.
 enum RunOption<V> implements OptionDefinition<V> {
@@ -55,8 +58,18 @@ class RunCommand extends ServerpodCommand<RunOption> {
     final listScripts = commandConfig.value(RunOption.list);
     final scriptName = commandConfig.optionalValue(RunOption.scriptName);
 
+    // Get interactive flag from global configuration
+    final interactive =
+        serverpodRunner.globalConfiguration.optionalValue(
+          GlobalOption.interactive,
+        ) ??
+        !ci.isCI;
+
     // Find pubspec.yaml
-    final pubspecFile = Scripts.findPubspecFile(Directory.current);
+    final pubspecFile = await Scripts.findPubspecFile(
+      Directory.current,
+      interactive: interactive,
+    );
     if (pubspecFile == null) {
       log.error('Could not find pubspec.yaml in current or parent directories');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);

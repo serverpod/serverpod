@@ -102,10 +102,14 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
   /// repository boundary detection.
   ///
   /// Returns null if no server directory is found.
-  static File? findPubspecFile(Directory directory) {
-    final serverDir = ServerDirectoryFinder.search(directory);
-    if (serverDir == null) return null;
-
+  static Future<File?> findPubspecFile(
+    Directory directory, {
+    bool interactive = true,
+  }) async {
+    final serverDir = await ServerDirectoryFinder.findOrPrompt(
+      startDir: directory,
+      interactive: interactive,
+    );
     final pubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
     return pubspecFile.existsSync() ? pubspecFile : null;
   }
