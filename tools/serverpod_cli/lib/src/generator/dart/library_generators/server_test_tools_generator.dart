@@ -1,4 +1,5 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
@@ -27,12 +28,18 @@ class ServerTestToolsGenerator {
         _buildWithServerpodFunction(),
         _buildPublicTestEndpointsClass(),
         _buildPrivateTestEndpointsClass(),
+        _buildFutureCallClass(),
       ],
     );
 
     for (var endpoint in protocolDefinition.endpoints) {
       if (endpoint.isAbstract) continue;
       library.body.add(_buildEndpointClassWithMethodCalls(endpoint));
+    }
+
+    for (var futureCall in protocolDefinition.futureCalls) {
+      if (futureCall.isAbstract) continue;
+      library.body.add(_buildFutureCallClassWithMethodCalls(futureCall));
     }
 
     return library.build();
@@ -58,6 +65,171 @@ class ServerTestToolsGenerator {
     ]);
 
     library.ignoreForFile.add('no_leading_underscores_for_local_identifiers');
+  }
+
+  Class _buildFutureCallClass() {
+    return Class((classBuilder) {
+      classBuilder
+        ..name = '_FutureCalls'
+        ..methods.addAll([
+          for (var definition in protocolDefinition.futureCalls)
+            Method(
+              (m) => m
+                ..name = definition.name
+                ..type = MethodType.getter
+                ..returns = refer(
+                  '_${definition.name.pascalCase}FutureCall',
+                )
+                ..body = Block.of([
+                  refer(
+                    '_${definition.name.pascalCase}FutureCall',
+                  ).call([]).returned.statement,
+                ]),
+            ),
+        ]);
+    });
+  }
+
+  Class _buildFutureCallClassWithMethodCalls(FutureCallDefinition futureCall) {
+    return Class((classBuilder) {
+      classBuilder
+        ..name = '_${futureCall.name.pascalCase}FutureCall'
+        ..methods.addAll([
+          for (final method in futureCall.methods)
+            _buildFutureCallMethod(method, futureCall),
+        ]);
+    });
+  }
+
+  Method _buildFutureCallMethod(
+    FutureCallMethodDefinition method,
+    FutureCallDefinition futureCall,
+  ) {
+    final requiredParameters = method.parameters;
+    final optionalParameters = method.parametersPositional;
+    final namedParameters = method.parametersNamed;
+
+    return Method(
+      (m) => m
+        ..name = method.name
+        ..returns = TypeReference(
+          (t) => t
+            ..symbol = 'Future'
+            ..types.add(refer('void')),
+        )
+        ..requiredParameters.addAll([
+          Parameter(
+            (p) => p
+              ..name = 'sessionBuilder'
+              ..type = refer('TestSessionBuilder', serverpodTestUrl),
+          ),
+          for (var param in requiredParameters)
+            Parameter(
+              (p) => p
+                ..name = param.name
+                ..type = param.type.reference(
+                  true,
+                  config: config,
+                ),
+            ),
+        ])
+        ..optionalParameters.addAll([
+          for (var param in optionalParameters)
+            Parameter(
+              (p) => p
+                ..named = false
+                ..name = param.name
+                ..type = param.type.reference(
+                  true,
+                  config: config,
+                ),
+            ),
+          for (var param in namedParameters)
+            Parameter(
+              (p) => p
+                ..named = true
+                ..required = param.required
+                ..name = param.name
+                ..type = param.type.reference(
+                  true,
+                  config: config,
+                ),
+            ),
+        ])
+        ..body = Block.of([
+          _buildFutureCallMethodSerializableModel(method),
+
+          refer('var _localUniqueSession')
+              .assign(
+                refer('sessionBuilder')
+                    .asA(refer('InternalTestSessionBuilder', serverpodTestUrl))
+                    .property('internalBuild')
+                    .call([]),
+              )
+              .statement,
+          const Code('try {'),
+          refer(
+                _getFutureCallClassName(futureCall.className, method.name),
+                'package:${config.serverPackage}/src/generated/future_calls.dart',
+              )
+              .call([])
+              .property('invoke')
+              .call(
+                [
+                  refer('_localUniqueSession'),
+                  if (method.futureCallMethodParameter != null)
+                    refer('object')
+                  else
+                    refer(requiredParameters.first.name),
+                ],
+              )
+              .returned
+              .statement,
+          const Code('} finally {'),
+          refer(
+            '_localUniqueSession',
+          ).property('close').call([]).awaited.statement,
+          const Code('}'),
+        ]),
+    );
+  }
+
+  Code _buildFutureCallMethodSerializableModel(
+    FutureCallMethodDefinition method,
+  ) {
+    String? filePath;
+    if (method.futureCallMethodParameter != null) {
+      filePath = TypeDefinition.getRef(
+        method.futureCallMethodParameter!.toSerializableModel(),
+      );
+    }
+
+    return Block.of([
+      if (method.futureCallMethodParameter != null)
+        refer('var object')
+            .assign(
+              refer(
+                method.futureCallMethodParameter!.type.className,
+                'package:${config.serverPackage}/src/generated/$filePath',
+              ).call(
+                [],
+                {
+                  for (final param in method.allParameters)
+                    param.name: refer(param.name),
+                },
+              ),
+            )
+            .statement,
+    ]);
+  }
+
+  String _getFutureCallClassName(String futureCallName, [String? methodName]) {
+    final buffer = StringBuffer()
+      ..write(futureCallName.pascalCase)
+      ..write(methodName == null ? '' : methodName.pascalCase)
+      ..write('FutureCall');
+
+    return buffer.toString();
   }
 
   Class _buildEndpointClassWithMethodCalls(EndpointDefinition endpoint) {
@@ -455,6 +627,20 @@ class ServerTestToolsGenerator {
   Class _buildPublicTestEndpointsClass() {
     return Class((classBuilder) {
       classBuilder.name = 'TestEndpoints';
+
+      classBuilder.fields.add(
+        Field(
+          (fieldBuilder) {
+            fieldBuilder
+              ..name = 'futureCalls'
+              ..modifier = FieldModifier.final$
+              ..type = refer('_FutureCalls')
+              ..assignment = Block.of([
+                const Code('_FutureCalls()'),
+              ]);
+          },
+        ),
+      );
 
       for (var endpoint in protocolDefinition.endpoints) {
         if (endpoint.isAbstract) continue;
