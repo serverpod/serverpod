@@ -102,8 +102,8 @@ class Copier {
         processedLine = processedLine
             .replaceAll(_uncommentMarker, '')
             .trimRight();
-        // Remove leading # while preserving indentation
-        final match = RegExp(r'^(\s*)#(.*)$').firstMatch(processedLine);
+        // Remove leading #(s) while preserving indentation
+        final match = RegExp(r'^(\s*)#+(.*)$').firstMatch(processedLine);
         if (match != null) {
           processedLine = '${match.group(1)}${match.group(2)}';
         }
