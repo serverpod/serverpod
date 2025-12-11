@@ -40,7 +40,8 @@ extension RequestExtension on Request {
       return headers.authorization?.headerValue;
     } else {
       // Use non-typed API - allows unwrapped tokens
-      return headers['authorization'];
+      // headers['authorization'] returns Iterable<String>?, get first value
+      return headers['authorization']?.firstOrNull;
     }
   }
 }

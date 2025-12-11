@@ -29,7 +29,16 @@ class IntegrationTestServer extends TestServerpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
+    bool? validateHeaders,
   }) {
+    // If validateHeaders is specified and no config is provided,
+    // create a default config with the specified validateHeaders value
+    if (validateHeaders != null && config == null) {
+      config = ServerpodConfig.defaultConfig().copyWith(
+        validateHeaders: validateHeaders,
+      );
+    }
+
     return Serverpod(
       _integrationTestFlags,
       Protocol(),

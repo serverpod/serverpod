@@ -301,6 +301,7 @@ class ServerpodConfig {
     Duration? experimentalDiagnosticHandlerTimeout,
     FutureCallConfig? futureCall,
     bool? futureCallExecutionEnabled,
+    bool? validateHeaders,
   }) {
     return ServerpodConfig(
       apiServer: apiServer ?? this.apiServer,
@@ -323,6 +324,7 @@ class ServerpodConfig {
       futureCall: futureCall ?? this.futureCall,
       futureCallExecutionEnabled:
           futureCallExecutionEnabled ?? this.futureCallExecutionEnabled,
+      validateHeaders: validateHeaders ?? this.validateHeaders,
     );
   }
 
