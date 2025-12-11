@@ -46,7 +46,6 @@ void main() {
       () async {
         final initialCount = pod.server.requestCount;
 
-        // Make a request to any endpoint (even if it fails)
         await http.post(
           Uri.http('localhost:$port', '/invalid-endpoint'),
         );
@@ -60,7 +59,6 @@ void main() {
       () async {
         final initialCount = pod.server.requestCount;
 
-        // Make multiple requests
         await http.post(Uri.http('localhost:$port', '/endpoint1'));
         await http.post(Uri.http('localhost:$port', '/endpoint2'));
         await http.post(Uri.http('localhost:$port', '/endpoint3'));
@@ -74,11 +72,10 @@ void main() {
       () async {
         final initialCount = pod.server.requestCount;
 
-        // Make a request to the health check endpoint (GET /)
         await http.get(Uri.http('localhost:$port', '/'));
 
-        // Health check requests should not increment the counter as they are
-        // typically from load balancer probes and should not prevent the
+        // NOTE: Health check requests should not increment the counter as they
+        // are typically from load balancer probes and should not prevent the
         // server from being considered idle.
         expect(pod.server.requestCount, equals(initialCount));
       },

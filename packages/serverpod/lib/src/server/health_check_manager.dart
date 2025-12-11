@@ -88,14 +88,14 @@ class HealthCheckManager {
     var session = _pod.internalSession;
     var numHealthChecks = 0;
 
-    // Check if the server has been active since the last health check.
-    // If the server is idle (no requests handled), we skip database operations
-    // to allow the database to sleep and reduce resource usage.
     var currentRequestCount = _pod.server.requestCount;
     var serverWasActive = currentRequestCount != _lastRequestCount;
     _lastRequestCount = currentRequestCount;
 
-    // In maintenance mode, always perform health checks regardless of activity.
+    // NOTE: Check if the server has been active since the last health check.
+    // If the server is idle (no requests handled), we skip database operations
+    // to allow the database to sleep and reduce resource usage. In maintenance
+    // mode, always perform health checks regardless of activity.
     var skipDatabaseOperations =
         !serverWasActive && _pod.config.role != ServerpodRole.maintenance;
 
@@ -109,7 +109,10 @@ class HealthCheckManager {
         }
 
         for (var connectionInfo in result.connectionInfos) {
-          await ServerHealthConnectionInfo.db.insertRow(session, connectionInfo);
+          await ServerHealthConnectionInfo.db.insertRow(
+            session,
+            connectionInfo,
+          );
         }
       } catch (e) {
         // ISSUE(https://github.com/serverpod/serverpod/issues/4123):
