@@ -7,7 +7,7 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a server with validateHeaders enabled (default)', () {
+  group('Given a server with validateHeaders enabled', () {
     late Serverpod server;
     const validTestToken = 'valid-test-token';
 

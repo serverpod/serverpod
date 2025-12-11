@@ -1740,87 +1740,85 @@ serverId: configFileServerId
     },
   );
 
-  group('validateHeaders configuration', () {
-    test(
-      'Given no validateHeaders config when loading from Map then default value is true',
-      () {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          {},
-        );
+  test(
+    'Given a Serverpod config with no validateHeaders config when loading from Map then the default value is true',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {},
+      );
 
-        expect(config.validateHeaders, isTrue);
-      },
-    );
+      expect(config.validateHeaders, isTrue);
+    },
+  );
 
-    test(
-      'Given validateHeaders set to false in config when loading from Map then value is false',
-      () {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          {
-            'validateHeaders': false,
-          },
-        );
+  test(
+    'Given a Serverpod config with validateHeaders set to false when loading from Map then the value is false',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {
+          'validateHeaders': false,
+        },
+      );
 
-        expect(config.validateHeaders, isFalse);
-      },
-    );
+      expect(config.validateHeaders, isFalse);
+    },
+  );
 
-    test(
-      'Given validateHeaders set to true in config when loading from Map then value is true',
-      () {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          {
-            'validateHeaders': true,
-          },
-        );
+  test(
+    'Given a Serverpod config with validateHeaders set to true when loading from Map then the value is true',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {
+          'validateHeaders': true,
+        },
+      );
 
-        expect(config.validateHeaders, isTrue);
-      },
-    );
+      expect(config.validateHeaders, isTrue);
+    },
+  );
 
-    test(
-      'Given validateHeaders in environment variable when loading from Map then environment value overrides config',
-      () {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          {
-            'validateHeaders': true,
-          },
-          environment: {
-            'SERVERPOD_VALIDATE_HEADERS': 'false',
-          },
-        );
+  test(
+    'Given a Serverpod config with validateHeaders in environment variable when loading from Map then the environment value overrides config',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {
+          'validateHeaders': true,
+        },
+        environment: {
+          'SERVERPOD_VALIDATE_HEADERS': 'false',
+        },
+      );
 
-        expect(config.validateHeaders, isFalse);
-      },
-    );
+      expect(config.validateHeaders, isFalse);
+    },
+  );
 
-    test(
-      'Given validateHeaders only in environment variable when loading from Map then environment value is used',
-      () {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          {},
-          environment: {
-            'SERVERPOD_VALIDATE_HEADERS': 'false',
-          },
-        );
+  test(
+    'Given a Serverpod config with validateHeaders only in environment variable when loading from Map then the environment value is used',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {},
+        environment: {
+          'SERVERPOD_VALIDATE_HEADERS': 'false',
+        },
+      );
 
-        expect(config.validateHeaders, isFalse);
-      },
-    );
-  });
+      expect(config.validateHeaders, isFalse);
+    },
+  );
 }
