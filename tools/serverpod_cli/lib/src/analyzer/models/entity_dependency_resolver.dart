@@ -140,7 +140,7 @@ class ModelDependencyResolver {
     SerializableModelFieldDefinition fieldDefinition,
     ModelClassDefinition classDefinition,
   ) {
-    var indexes = classDefinition.indexes;
+    var indexes = classDefinition.indexesIncludingInherited;
     if (indexes.isEmpty) return;
 
     var indexesContainingField = indexes

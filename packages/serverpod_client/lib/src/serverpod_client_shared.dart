@@ -218,7 +218,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
   /// Creates a new ServerpodClientShared.
   ServerpodClientShared(
-    this.host,
+    String host,
     this.serializationManager, {
     dynamic securityContext,
     @Deprecated(
@@ -230,15 +230,12 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.onFailedCall,
     this.onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-  }) : connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
+  }) : host = host.endsWith('/') ? host : '$host/',
+       connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
        streamingConnectionTimeout =
            streamingConnectionTimeout ?? const Duration(seconds: 5) {
     assert(
-      host.endsWith('/'),
-      'host must end with a slash, eg: https://example.com/',
-    );
-    assert(
-      host.startsWith('http://') || host.startsWith('https://'),
+      this.host.startsWith('http://') || this.host.startsWith('https://'),
       'host must include protocol, eg: https://example.com/',
     );
     _requestDelegate = ServerpodClientRequestDelegateImpl(
