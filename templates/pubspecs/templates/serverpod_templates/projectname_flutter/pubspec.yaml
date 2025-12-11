@@ -21,7 +21,7 @@ environment:
   sdk: DART_VERSION
   flutter: FLUTTER_VERSION
 
-#resolution: workspace
+#resolution: workspace #--UNCOMMENT_LINE--#
 
 dependencies:
   # The following adds the Cupertino Icons font to your application.

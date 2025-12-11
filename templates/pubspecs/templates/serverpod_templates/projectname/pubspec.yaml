@@ -4,10 +4,10 @@ publish_to: none
 environment:
   sdk: DART_VERSION
 
-#workspace:
-#  - projectname_client
-#  - projectname_server
-#  - projectname_flutter
+#workspace: #--UNCOMMENT_LINE--#
+#  - projectname_client #--UNCOMMENT_LINE--#
+#  - projectname_server #--UNCOMMENT_LINE--#
+#  - projectname_flutter #--UNCOMMENT_LINE--#
 
 dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
   serverpod: #--CONDITIONALLY_REMOVE_LINE--#

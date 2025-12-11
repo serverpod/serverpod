@@ -6,7 +6,7 @@ description: Starting point for a Serverpod server.
 environment:
   sdk: DART_VERSION
 
-#resolution: workspace
+#resolution: workspace #--UNCOMMENT_LINE--#
 
 dependencies:
   serverpod: SERVERPOD_VERSION
