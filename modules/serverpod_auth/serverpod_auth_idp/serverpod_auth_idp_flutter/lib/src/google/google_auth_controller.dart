@@ -203,6 +203,8 @@ class GoogleAuthController extends ChangeNotifier {
     if (error is GoogleSignInException &&
         error.code == GoogleSignInExceptionCode.canceled) {
       // The Google Sign-In package already prints these to the debug log.
+      // Reset state to idle so the button spinner stops.
+      _setState(GoogleAuthState.idle);
       return;
     }
     _error = error;
