@@ -6,7 +6,7 @@ description: Starting point for a Serverpod server.
 environment:
   sdk: '^3.8.0'
 
-#resolution: workspace
+#resolution: workspace #--UNCOMMENT_LINE--#
 
 dependencies:
   serverpod: 3.0.1

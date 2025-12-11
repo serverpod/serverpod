@@ -21,7 +21,7 @@ environment:
   sdk: '^3.8.0'
   flutter: '^3.32.0'
 
-#resolution: workspace
+#resolution: workspace #--UNCOMMENT_LINE--#
 
 dependencies:
   # The following adds the Cupertino Icons font to your application.

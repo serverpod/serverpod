@@ -6,7 +6,7 @@ description: Starting point for a Serverpod module client.
 environment:
   sdk: '^3.8.0'
 
-#resolution: workspace
+#resolution: workspace #--UNCOMMENT_LINE--#
 
 dependencies:
   serverpod_client: 3.0.1

@@ -4,9 +4,9 @@ publish_to: none
 environment:
   sdk: '^3.8.0'
 
-#workspace:
-#  - modulename_client
-#  - modulename_server
+#workspace: #--UNCOMMENT_LINE--#
+#  - modulename_client #--UNCOMMENT_LINE--#
+#  - modulename_server #--UNCOMMENT_LINE--#
 
 dependency_overrides: 
   serverpod: 
