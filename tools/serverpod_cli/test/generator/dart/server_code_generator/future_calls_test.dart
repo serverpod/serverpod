@@ -5,8 +5,8 @@ import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
 import '../../../test_util/builders/future_call_definition_builder.dart';
+import '../../../test_util/builders/future_call_method_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
-import '../../../test_util/builders/method_definition_builder.dart';
 import '../../../test_util/builders/parameter_definition_builder.dart';
 import '../../../test_util/builders/type_definition_builder.dart';
 
@@ -82,26 +82,29 @@ void main() {
                 .withClassName('${futureCallName.pascalCase}FutureCall')
                 .withName(futureCallName)
                 .withMethods([
-                  MethodDefinitionBuilder().withName('sayHello').withParameters(
-                    [
-                      ParameterDefinitionBuilder()
-                          .withName('session')
-                          .withType(
-                            TypeDefinitionBuilder()
-                                .withClassName('Session')
-                                .build(),
-                          )
-                          .build(),
-                      ParameterDefinitionBuilder()
-                          .withName('name')
-                          .withType(
-                            TypeDefinitionBuilder()
-                                .withClassName('String')
-                                .build(),
-                          )
-                          .build(),
-                    ],
-                  ).buildMethodCallDefinition(),
+                  FutureCallMethodDefinitionBuilder()
+                      .withName('sayHello')
+                      .withParameters(
+                        [
+                          ParameterDefinitionBuilder()
+                              .withName('session')
+                              .withType(
+                                TypeDefinitionBuilder()
+                                    .withClassName('Session')
+                                    .build(),
+                              )
+                              .build(),
+                          ParameterDefinitionBuilder()
+                              .withName('name')
+                              .withType(
+                                TypeDefinitionBuilder()
+                                    .withClassName('String')
+                                    .build(),
+                              )
+                              .build(),
+                        ],
+                      )
+                      .buildMethodCallDefinition(),
                 ])
                 .build(),
           ],
@@ -134,7 +137,7 @@ void main() {
               expect(
                 futureCallsFile,
                 contains(
-                  'FutureCall${futureCallName.pascalCase}SayHello',
+                  '${futureCallName.pascalCase}SayHelloFutureCall',
                 ),
               );
             },
@@ -159,52 +162,58 @@ void main() {
                 .withClassName('${firstFutureCallName.pascalCase}FutureCall')
                 .withName(firstFutureCallName)
                 .withMethods([
-                  MethodDefinitionBuilder().withName('sayHello').withParameters(
-                    [
-                      ParameterDefinitionBuilder()
-                          .withName('session')
-                          .withType(
-                            TypeDefinitionBuilder()
-                                .withClassName('Session')
-                                .build(),
-                          )
-                          .build(),
-                      ParameterDefinitionBuilder()
-                          .withName('name')
-                          .withType(
-                            TypeDefinitionBuilder()
-                                .withClassName('String')
-                                .build(),
-                          )
-                          .build(),
-                    ],
-                  ).buildMethodCallDefinition(),
+                  FutureCallMethodDefinitionBuilder()
+                      .withName('sayHello')
+                      .withParameters(
+                        [
+                          ParameterDefinitionBuilder()
+                              .withName('session')
+                              .withType(
+                                TypeDefinitionBuilder()
+                                    .withClassName('Session')
+                                    .build(),
+                              )
+                              .build(),
+                          ParameterDefinitionBuilder()
+                              .withName('name')
+                              .withType(
+                                TypeDefinitionBuilder()
+                                    .withClassName('String')
+                                    .build(),
+                              )
+                              .build(),
+                        ],
+                      )
+                      .buildMethodCallDefinition(),
                 ])
                 .build(),
             FutureCallDefinitionBuilder()
                 .withClassName('${secondFutureCallName.pascalCase}FutureCall')
                 .withName(secondFutureCallName)
                 .withMethods([
-                  MethodDefinitionBuilder().withName('sayBye').withParameters(
-                    [
-                      ParameterDefinitionBuilder()
-                          .withName('session')
-                          .withType(
-                            TypeDefinitionBuilder()
-                                .withClassName('Session')
-                                .build(),
-                          )
-                          .build(),
-                      ParameterDefinitionBuilder()
-                          .withName('name')
-                          .withType(
-                            TypeDefinitionBuilder()
-                                .withClassName('int')
-                                .build(),
-                          )
-                          .build(),
-                    ],
-                  ).buildMethodCallDefinition(),
+                  FutureCallMethodDefinitionBuilder()
+                      .withName('sayBye')
+                      .withParameters(
+                        [
+                          ParameterDefinitionBuilder()
+                              .withName('session')
+                              .withType(
+                                TypeDefinitionBuilder()
+                                    .withClassName('Session')
+                                    .build(),
+                              )
+                              .build(),
+                          ParameterDefinitionBuilder()
+                              .withName('name')
+                              .withType(
+                                TypeDefinitionBuilder()
+                                    .withClassName('int')
+                                    .build(),
+                              )
+                              .build(),
+                        ],
+                      )
+                      .buildMethodCallDefinition(),
                 ])
                 .build(),
           ],
@@ -236,13 +245,13 @@ void main() {
               expect(
                 futureCallsFile,
                 contains(
-                  'FutureCall${firstFutureCallName.pascalCase}SayHello',
+                  '${firstFutureCallName.pascalCase}SayHelloFutureCall',
                 ),
               );
               expect(
                 futureCallsFile,
                 contains(
-                  'FutureCall${secondFutureCallName.pascalCase}SayBye',
+                  '${secondFutureCallName.pascalCase}SayByeFutureCall',
                 ),
               );
             },

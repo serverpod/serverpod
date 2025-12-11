@@ -5,7 +5,7 @@ class FutureCallDefinitionBuilder {
   String? _documentationComment;
   String _className = 'ExampleFutureCall';
   String _filePath = 'example.dart';
-  List<MethodDefinition> _methods = [];
+  List<FutureCallMethodDefinition> _methods = [];
   List<AnnotationDefinition> _annotations = [];
   bool _isAbstract = false;
 
@@ -38,7 +38,9 @@ class FutureCallDefinitionBuilder {
     return this;
   }
 
-  FutureCallDefinitionBuilder withMethods(List<MethodDefinition> methods) {
+  FutureCallDefinitionBuilder withMethods(
+    List<FutureCallMethodDefinition> methods,
+  ) {
     _methods = methods;
     return this;
   }
