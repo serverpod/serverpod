@@ -1,25 +1,66 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/annotation.dart';
-import 'package:serverpod_cli/src/analyzer/dart/extension/endpoint_parameters_extension.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/annotation.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/validation_utils.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
 abstract class FutureCallMethodAnalyzer {
   /// Parses an [MethodElement] into a [MethodDefinition].
   /// Assumes that the [MethodElement] is a valid future call method.
-  static MethodDefinition parse(
+  static FutureCallMethodDefinition parse(
     MethodElement method,
     Parameters parameters, {
     required DartDocTemplateRegistry templateRegistry,
+    required String className,
   }) {
-    return MethodCallDefinition(
+    FutureCallParameterDefinition? futureCallMethodParameter;
+
+    final allParametersWithoutSession =
+        parameters.allParameters.withoutSessionParameter;
+    final allParametersWithoutSessionLength =
+        allParametersWithoutSession.length;
+
+    // Generate futureCallMethodParameter if there is one or more
+    // parameters apart from the Session type.
+    // When there is only one parameter apart from the Session parameter,
+    // only generate futureCallMethodParameter if the parameter type is supported
+    // for serialization.
+    // If the only parameter apart from the Session paramter
+    // is a SerializableModel, it will be skipped since it would
+    // have been defined with yaml for generation.
+    final shouldGenerateSerializableModelDefinition =
+        allParametersWithoutSessionLength == 1 &&
+        isValidSerializableDartType(
+          allParametersWithoutSession.first.type.className,
+        );
+
+    if (shouldGenerateSerializableModelDefinition ||
+        allParametersWithoutSessionLength > 1) {
+      futureCallMethodParameter = FutureCallParameterDefinition(
+        name: 'object',
+        type: TypeDefinition(
+          className:
+              '${ReCase(className).pascalCase}${ReCase(method.displayName).pascalCase}Model',
+          nullable: false,
+          customClass: false,
+        ),
+        required: true,
+        parameters: parameters.required.withoutSessionParameter,
+        parametersPositional: parameters.positional,
+        parametersNamed: parameters.named,
+      );
+    }
+
+    return FutureCallMethodDefinition(
       name: method.displayName,
       documentationComment: stripDocumentationTemplateMarkers(
         method.documentationComment,
@@ -30,6 +71,7 @@ abstract class FutureCallMethodAnalyzer {
       parametersNamed: parameters.named,
       parametersPositional: parameters.positional,
       returnType: TypeDefinition.fromDartType(method.returnType),
+      futureCallMethodParameter: futureCallMethodParameter,
     );
   }
 
@@ -52,7 +94,9 @@ abstract class FutureCallMethodAnalyzer {
     if (method.isPrivate) return false;
     if (method.markedAsIgnored) return false;
 
-    return method.formalParameters.isFirstRequiredParameterSession;
+    if (method.formalParameters.isEmpty) return false;
+
+    return method.returnType.isDartAsyncFuture;
   }
 
   /// Validates the [MethodElement] and returns a list of
@@ -84,7 +128,7 @@ abstract class FutureCallMethodAnalyzer {
 
     if (dartType is! InterfaceType) {
       return SourceSpanSeverityException(
-        'This type is not supported as return type.',
+        'The type "$dartType" is not a supported future call return type.',
         dartElement.span,
       );
     }
@@ -122,5 +166,14 @@ abstract class FutureCallMethodAnalyzer {
     }
 
     return null;
+  }
+}
+
+extension _ParameterDefinitionExtension on List<ParameterDefinition> {
+  /// Returns a list of parameters without the session parameter.
+  List<ParameterDefinition> get withoutSessionParameter {
+    return where(
+      (parameter) => parameter.type.className != Keyword.sessionClassName,
+    ).toList();
   }
 }

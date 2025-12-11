@@ -4,6 +4,7 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/extension/endpoint_parameters_extension.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/validator.dart';
 import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
 
 import 'package:serverpod_cli/src/generator/types.dart';
@@ -45,6 +46,7 @@ abstract class FutureCallParameterAnalyzer {
   /// Validates a list of [FormalParameterElement] and returns a list of errors.
   static List<SourceSpanSeverityException> validate(
     List<FormalParameterElement> parameters,
+    FutureCallMethodParameterValidator parameterValidator,
   ) {
     List<SourceSpanSeverityException> exceptions = [];
 
@@ -53,7 +55,6 @@ abstract class FutureCallParameterAnalyzer {
         SourceSpanSeverityException(
           'The first parameter of a future call method must be a required positional parameter of type "Session".',
           parameters.first.span,
-          severity: SourceSpanSeverity.error,
         ),
       );
       return exceptions;
@@ -69,9 +70,27 @@ abstract class FutureCallParameterAnalyzer {
       );
     }
 
+    if (parameters.withoutSessionParameter.isEmpty) {
+      exceptions.add(
+        SourceSpanSeverityException(
+          'Future call methods must have at least one optional positional parameter that is supported for serialization.',
+          parameters.first.span,
+        ),
+      );
+      return exceptions;
+    }
+
     exceptions.addAll(
-      parameters.map((parameter) {
+      parameters.withoutSessionParameter.map((parameter) {
         var type = parameter.type;
+
+        if (!parameterValidator.isValid(parameter)) {
+          return SourceSpanSeverityException(
+            'The type "$type" is not a supported future call parameter type.',
+            parameter.span,
+          );
+        }
+
         if (type.isDartAsyncFuture) {
           return SourceSpanSeverityException(
             'The type "Future" is not a supported future call parameter type.',

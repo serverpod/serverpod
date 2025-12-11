@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/annotation.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_parameter_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/validator.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
 abstract class FutureCallClassAnalyzer {
@@ -24,6 +25,7 @@ abstract class FutureCallClassAnalyzer {
     String filePath,
     List<FutureCallDefinition> futureCallDefinitions, {
     required DartDocTemplateRegistry templateRegistry,
+    required FutureCallMethodParameterValidator parameterValidator,
   }) {
     var className = element.displayName;
     var futureCallName = _formatFutureCallName(className);
@@ -49,6 +51,7 @@ abstract class FutureCallClassAnalyzer {
           validationErrors,
           filePath,
           templateRegistry: templateRegistry,
+          parameterValidator: parameterValidator,
         ),
         filePath: filePath,
         annotations: annotations,
@@ -57,18 +60,19 @@ abstract class FutureCallClassAnalyzer {
     );
   }
 
-  static List<MethodDefinition> _parseFutureCallMethods(
+  static List<FutureCallMethodDefinition> _parseFutureCallMethods(
     ClassElement classElement,
     Map<String, List<SourceSpanSeverityException>> validationErrors,
     String filePath, {
     required DartDocTemplateRegistry templateRegistry,
+    required FutureCallMethodParameterValidator parameterValidator,
   }) {
     var futureCallMethods = classElement.collectFutureCallMethods(
       validationErrors: validationErrors,
       filePath: filePath,
     );
 
-    var methodDefs = <MethodDefinition>[];
+    var methodDefs = <FutureCallMethodDefinition>[];
     for (var method in futureCallMethods) {
       var parameters = FutureCallParameterAnalyzer.parse(
         method.formalParameters,
@@ -79,6 +83,7 @@ abstract class FutureCallClassAnalyzer {
           method,
           parameters,
           templateRegistry: templateRegistry,
+          className: classElement.displayName,
         ),
       );
     }
