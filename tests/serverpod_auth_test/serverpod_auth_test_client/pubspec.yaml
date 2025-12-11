@@ -1,21 +1,31 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
 
-name: auth_client
+publish_to: none
+
+name: serverpod_auth_test_client
 description: Starting point for a Serverpod client.
 
 environment:
   sdk: '^3.8.0'
 
 dependencies:
+  serverpod_auth_client: 3.0.1
   serverpod_auth_idp_client: 3.0.1
+  serverpod_auth_migration_client: 3.0.1
   serverpod_client: 3.0.1
 
 dependency_overrides:
+  serverpod_auth_bridge_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_client
+  serverpod_auth_client:
+    path: ../../../modules/legacy/serverpod_auth/serverpod_auth_client
   serverpod_auth_core_client:
     path: ../../../modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
   serverpod_auth_idp_client:
     path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client
+  serverpod_auth_migration_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client
   serverpod_client:
     path: ../../../packages/serverpod_client
   serverpod_serialization:

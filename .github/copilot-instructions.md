@@ -298,7 +298,7 @@ flutter run
 ### Modules (`/modules/`)
 
 - **`legacy/serverpod_auth`**: Legacy authentication module (Google, Apple, Email, Firebase)
-- **`new_serverpod_auth`**: New authentication system
+- **`serverpod_auth`**: New authentication system
 - **`legacy/serverpod_chat`**: Legacy real-time chat module
 
 ### Examples (`/examples/`)

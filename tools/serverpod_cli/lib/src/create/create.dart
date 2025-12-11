@@ -413,25 +413,25 @@ Future<void> _copyFlutterUpgrade(
     version: templateVersion,
     customServerpodPath: customServerpodPath,
     overridePath:
-        'modules/new_serverpod_auth/serverpod_auth_idp/'
+        'modules/serverpod_auth/serverpod_auth_idp/'
         'serverpod_auth_idp_flutter',
     transitiveDeps: [
       (
         name: 'serverpod_auth_core_client',
         path:
-            'modules/new_serverpod_auth/serverpod_auth_core/'
+            'modules/serverpod_auth/serverpod_auth_core/'
             'serverpod_auth_core_client',
       ),
       (
         name: 'serverpod_auth_core_flutter',
         path:
-            'modules/new_serverpod_auth/serverpod_auth_core/'
+            'modules/serverpod_auth/serverpod_auth_core/'
             'serverpod_auth_core_flutter',
       ),
       (
         name: 'serverpod_auth_idp_client',
         path:
-            'modules/new_serverpod_auth/serverpod_auth_idp/'
+            'modules/serverpod_auth/serverpod_auth_idp/'
             'serverpod_auth_idp_client',
       ),
     ],
@@ -633,13 +633,13 @@ Future<void> _copyServerUpgrade(
       version: templateVersion,
       customServerpodPath: customServerpodPath,
       overridePath:
-          'modules/new_serverpod_auth/serverpod_auth_idp/'
+          'modules/serverpod_auth/serverpod_auth_idp/'
           'serverpod_auth_idp_server',
       transitiveDeps: [
         (
           name: 'serverpod_auth_core_server',
           path:
-              'modules/new_serverpod_auth/serverpod_auth_core/'
+              'modules/serverpod_auth/serverpod_auth_core/'
               'serverpod_auth_core_server',
         ),
       ],
@@ -650,13 +650,13 @@ Future<void> _copyServerUpgrade(
       version: templateVersion,
       customServerpodPath: customServerpodPath,
       overridePath:
-          'modules/new_serverpod_auth/serverpod_auth_idp/'
+          'modules/serverpod_auth/serverpod_auth_idp/'
           'serverpod_auth_idp_client',
       transitiveDeps: [
         (
           name: 'serverpod_auth_core_client',
           path:
-              'modules/new_serverpod_auth/serverpod_auth_core/'
+              'modules/serverpod_auth/serverpod_auth_core/'
               'serverpod_auth_core_client',
         ),
       ],
