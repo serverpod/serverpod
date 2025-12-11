@@ -95,20 +95,20 @@ void main() {
           // Should have:
           // 1. Delete grant_bundle table
           // 2. Alter grant_allowance table (drop foreign key and column)
-          
+
           // Filter out actions related to grant_allowance
           var grantAllowanceDeleteActions = migration.actions.where(
             (action) =>
                 action.type == DatabaseMigrationActionType.deleteTable &&
                 action.deleteTable == 'grant_allowance',
           );
-          
+
           var grantAllowanceCreateActions = migration.actions.where(
             (action) =>
                 action.type == DatabaseMigrationActionType.createTable &&
                 action.createTable?.name == 'grant_allowance',
           );
-          
+
           var grantAllowanceAlterActions = migration.actions.where(
             (action) =>
                 action.type == DatabaseMigrationActionType.alterTable &&
@@ -129,7 +129,8 @@ void main() {
           expect(
             grantAllowanceAlterActions,
             hasLength(1),
-            reason: 'grant_allowance should be altered to drop the foreign key and column',
+            reason:
+                'grant_allowance should be altered to drop the foreign key and column',
           );
         },
       );
@@ -392,7 +393,8 @@ void main() {
                 // Foreign key to table_c is renumbered to _fk_0
                 .withForeignKey(
                   ForeignKeyDefinition(
-                    constraintName: 'main_table_fk_0', // NOW points to table_c (renumbered)
+                    constraintName:
+                        'main_table_fk_0', // NOW points to table_c (renumbered)
                     columns: ['table_c_id'],
                     referenceTable: 'table_c',
                     referenceTableSchema: 'public',
@@ -463,7 +465,8 @@ void main() {
           expect(
             mainTableAlterActions,
             hasLength(1),
-            reason: 'main_table should be altered to remove the foreign key to table_b',
+            reason:
+                'main_table should be altered to remove the foreign key to table_b',
           );
         },
       );
