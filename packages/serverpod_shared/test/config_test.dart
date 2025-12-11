@@ -1739,4 +1739,88 @@ serverId: configFileServerId
       expect(config.serverId, '');
     },
   );
+
+  group('validateHeaders configuration', () {
+    test(
+      'Given no validateHeaders config when loading from Map then default value is true',
+      () {
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          {},
+        );
+
+        expect(config.validateHeaders, isTrue);
+      },
+    );
+
+    test(
+      'Given validateHeaders set to false in config when loading from Map then value is false',
+      () {
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          {
+            'validateHeaders': false,
+          },
+        );
+
+        expect(config.validateHeaders, isFalse);
+      },
+    );
+
+    test(
+      'Given validateHeaders set to true in config when loading from Map then value is true',
+      () {
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          {
+            'validateHeaders': true,
+          },
+        );
+
+        expect(config.validateHeaders, isTrue);
+      },
+    );
+
+    test(
+      'Given validateHeaders in environment variable when loading from Map then environment value overrides config',
+      () {
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          {
+            'validateHeaders': true,
+          },
+          environment: {
+            'SERVERPOD_VALIDATE_HEADERS': 'false',
+          },
+        );
+
+        expect(config.validateHeaders, isFalse);
+      },
+    );
+
+    test(
+      'Given validateHeaders only in environment variable when loading from Map then environment value is used',
+      () {
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          {},
+          environment: {
+            'SERVERPOD_VALIDATE_HEADERS': 'false',
+          },
+        );
+
+        expect(config.validateHeaders, isFalse);
+      },
+    );
+  });
 }
