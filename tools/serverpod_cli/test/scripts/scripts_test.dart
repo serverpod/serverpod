@@ -56,7 +56,7 @@ void main() {
       'when parsing, '
       'then an empty Scripts is returned',
       () {
-        var scripts = Scripts.fromYaml(null);
+        var scripts = ScriptsInternal.fromYaml(null);
 
         expect(scripts, isEmpty);
       },
@@ -73,7 +73,7 @@ start: dart bin/main.dart
 ''')
                 as YamlMap;
 
-        var scripts = Scripts.fromYaml(yaml);
+        var scripts = ScriptsInternal.fromYaml(yaml);
 
         expect(scripts.length, 1);
         expect(scripts['start']?.name, 'start');
@@ -94,7 +94,7 @@ build: dart compile exe bin/main.dart
 ''')
                 as YamlMap;
 
-        var scripts = Scripts.fromYaml(yaml);
+        var scripts = ScriptsInternal.fromYaml(yaml);
 
         expect(scripts.length, 3);
         expect(scripts['start']?.command, 'dart bin/main.dart');
@@ -117,7 +117,7 @@ start:
                 as YamlMap;
 
         expect(
-          () => Scripts.fromYaml(yaml),
+          () => ScriptsInternal.fromYaml(yaml),
           throwsA(
             isA<ScriptsParseException>()
                 .having(
@@ -180,13 +180,14 @@ invalid_value: 123
     test(
       'Given a non-existent file, '
       'when loading scripts, '
-      'then an empty Scripts is returned',
+      'then it throws PathNotFoundException',
       () {
         var nonExistentFile = File(p.join(d.sandbox, 'nonexistent.yaml'));
 
-        var scripts = Scripts.fromPubspecFile(nonExistentFile);
-
-        expect(scripts, isEmpty);
+        expect(
+          () => Scripts.fromPubspecFile(nonExistentFile),
+          throwsA(isA<PathNotFoundException>()),
+        );
       },
     );
 

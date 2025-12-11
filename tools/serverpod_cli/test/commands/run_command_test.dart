@@ -7,6 +7,8 @@ import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
+import '../test_util/matchers/contains_lines.dart';
+
 /// Path to the serverpod_cli package root (current directory when tests run).
 final _cliRoot = Directory.current.path;
 
@@ -103,10 +105,10 @@ serverpod_scripts:
         );
 
         expect(result.exitCode, 0);
-        expect(result.stdout, contains('hello:'));
-        expect(result.stdout, contains('fail:'));
-        expect(result.stdout, contains('start:'));
-        expect(result.stdout, contains('test:'));
+        expect(
+          result.stdout,
+          containsLines(['hello:', 'fail:', 'start:', 'test:']),
+        );
       },
     );
 
@@ -121,7 +123,10 @@ serverpod_scripts:
         expect(result.exitCode, isNot(0));
         final output = '${result.stdout}${result.stderr}';
         expect(output, contains('Script "nonexistent" not found'));
-        expect(output, contains('hello:'));
+        expect(
+          result.stdout,
+          containsLines(['hello:', 'fail:', 'start:', 'test:']),
+        );
       },
     );
 
@@ -135,7 +140,10 @@ serverpod_scripts:
 
         expect(result.exitCode, 0);
         expect(result.stdout, contains('Available scripts:'));
-        expect(result.stdout, contains('hello:'));
+        expect(
+          result.stdout,
+          containsLines(['hello:', 'fail:', 'start:', 'test:']),
+        );
       },
     );
 

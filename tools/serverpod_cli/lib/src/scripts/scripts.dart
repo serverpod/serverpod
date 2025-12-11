@@ -29,7 +29,7 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
   /// from pubspec.yaml, or null if not present.
   ///
   /// Throws [ScriptsParseException] if the YAML structure is invalid.
-  factory Scripts.fromYaml(YamlMap? yaml) {
+  factory Scripts._fromYaml(YamlMap? yaml) {
     if (yaml == null) {
       return Scripts._({});
     }
@@ -68,14 +68,8 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
   /// a `serverpod_scripts` section.
   ///
   /// Throws [ScriptsParseException] if the scripts section is malformed.
-  factory Scripts.fromPubspecFile(File pubspecFile) {
-    if (!pubspecFile.existsSync()) {
-      return Scripts._({});
-    }
-
-    final pubspecPlus = PubspecPlus.fromFile(pubspecFile);
-    return Scripts.fromPubspec(pubspecPlus);
-  }
+  factory Scripts.fromPubspecFile(File pubspecFile) =>
+      Scripts.fromPubspec(PubspecPlus.fromFile(pubspecFile));
 
   /// Loads scripts from [pubspecPlus]
   ///
@@ -98,7 +92,7 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
       );
     }
 
-    return Scripts.fromYaml(scriptsYaml);
+    return Scripts._fromYaml(scriptsYaml);
   }
 
   /// Finds the pubspec.yaml file for the Serverpod server project.
@@ -111,7 +105,9 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
   static File? findPubspecFile(Directory directory) {
     final serverDir = ServerDirectoryFinder.search(directory);
     if (serverDir == null) return null;
-    return File(p.join(serverDir.path, 'pubspec.yaml'));
+
+    final pubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
+    return pubspecFile.existsSync() ? pubspecFile : null;
   }
 
   @override
@@ -119,4 +115,9 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
 
   @override
   Iterable<String> get keys => _scripts.keys;
+}
+
+extension ScriptsInternal on Scripts {
+  // Expose private ctor to tests
+  static const fromYaml = Scripts._fromYaml;
 }

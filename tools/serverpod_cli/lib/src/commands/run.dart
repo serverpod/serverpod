@@ -89,7 +89,6 @@ class RunCommand extends ServerpodCommand<RunOption> {
     final script = scripts[scriptName];
     if (script == null) {
       log.error('Script "$scriptName" not found.');
-      log.info('Available scripts:');
       _listScripts(scripts);
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
