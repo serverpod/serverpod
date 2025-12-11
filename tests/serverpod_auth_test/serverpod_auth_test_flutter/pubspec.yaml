@@ -40,11 +40,11 @@ dependency_overrides:
     path: ../../../modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client
   serverpod_auth_shared_flutter:
     path: ../../../modules/legacy/serverpod_auth/serverpod_auth_shared_flutter
+  serverpod_auth_test_client:
+    path: ../serverpod_auth_test_client
   serverpod_client:
     path: ../../../packages/serverpod_client
   serverpod_lints:
     path: ../../../packages/serverpod_lints
-  serverpod_auth_test_client:
-    path: ../serverpod_auth_test_client
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization
