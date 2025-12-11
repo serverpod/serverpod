@@ -132,7 +132,10 @@ Set<String> _findDependentTables(
                 targetTable.foreignKeys.any(
                   (targetForeignKey) =>
                       targetForeignKey.constraintName ==
-                      foreignKey.constraintName,
+                          foreignKey.constraintName &&
+                      // Also verify that the foreign key still references the same table
+                      // to handle cases where constraint names get renumbered
+                      targetForeignKey.referenceTable == foreignKey.referenceTable,
                 ),
           ),
     );
