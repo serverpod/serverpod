@@ -72,6 +72,11 @@ class ServerpodConfig {
   /// True if future call execution should be disabled.
   final bool futureCallExecutionEnabled;
 
+  /// Whether to validate HTTP headers using typed APIs.
+  /// If false, allows unwrapped tokens in Authorization header for backward compatibility.
+  /// Defaults to true.
+  final bool validateHeaders;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -91,6 +96,7 @@ class ServerpodConfig {
     this.experimentalDiagnosticHandlerTimeout = const Duration(seconds: 30),
     this.futureCall = const FutureCallConfig(),
     this.futureCallExecutionEnabled = true,
+    this.validateHeaders = true,
   }) : sessionLogs =
            sessionLogs ??
            SessionLogConfig.buildDefault(
@@ -220,6 +226,11 @@ class ServerpodConfig {
       environment,
     );
 
+    var validateHeaders = _readValidateHeaders(
+      configMap,
+      environment,
+    );
+
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
@@ -237,6 +248,7 @@ class ServerpodConfig {
       sessionLogs: sessionLogsConfig,
       futureCall: futureCallConfig,
       futureCallExecutionEnabled: futureCallExecutionEnabled,
+      validateHeaders: validateHeaders,
     );
   }
 
@@ -1108,6 +1120,22 @@ bool _readIsFutureCallExecutionEnabled(
 
   futureCallsExecutionEnabled ??= true;
   return futureCallsExecutionEnabled;
+}
+
+bool _readValidateHeaders(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  var validateHeaders = configMap[ServerpodEnv.validateHeaders.configKey];
+  validateHeaders =
+      environment[ServerpodEnv.validateHeaders.envVariable] ?? validateHeaders;
+
+  if (validateHeaders is String) {
+    validateHeaders = bool.tryParse(validateHeaders);
+  }
+
+  validateHeaders ??= true;
+  return validateHeaders;
 }
 
 /// Validates that a JSON configuration contains all required keys, and that

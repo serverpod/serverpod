@@ -187,7 +187,9 @@ class _SessionMiddleware extends MiddlewareObject {
   Handler call(Handler next) {
     return (req) async {
       final authenticationKey = unwrapAuthHeaderValue(
-        req.headers.authorization?.headerValue,
+        req.getAuthorizationHeaderValue(
+          _server.serverpod.config.validateHeaders,
+        ),
       );
       final deferredSession = _Deferred(
         () => SessionInternalMethods.createWebCallSession(
