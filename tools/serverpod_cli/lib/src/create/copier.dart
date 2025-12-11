@@ -26,7 +26,7 @@ class Copier {
     required this.fileNameReplacements,
     this.removePatterns = const <String>[],
     this.ignoreFileNames = const <String>[],
-    this.processUncommentMarker = false,
+    this.processUncommentMarker = true,
   });
 
   void copyFiles() {

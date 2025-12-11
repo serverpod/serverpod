@@ -399,7 +399,6 @@ Future<void> _copyFlutterUpgrade(
     ],
     fileNameReplacements: const [],
     ignoreFileNames: const [],
-    processUncommentMarker: true,
   );
   copier.copyFiles();
 
@@ -585,7 +584,6 @@ Future<void> _copyServerUpgrade(
         'jwt_refresh_endpoint.dart',
       ],
     ],
-    processUncommentMarker: true,
   );
   copier.copyFiles();
 
@@ -620,7 +618,6 @@ Future<void> _copyServerUpgrade(
       ),
     ],
     fileNameReplacements: [],
-    processUncommentMarker: true,
   );
   copier.copyFiles();
 
@@ -754,7 +751,6 @@ void _copyServerTemplates(
     ],
     fileNameReplacements: const [],
     ignoreFileNames: const [],
-    processUncommentMarker: true,
   );
   rootCopier.copyFiles();
 
@@ -786,7 +782,6 @@ void _copyServerTemplates(
       ),
     ],
     ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
-    processUncommentMarker: true,
   );
   copier.copyFiles();
 
@@ -818,7 +813,6 @@ void _copyServerTemplates(
       ),
     ],
     ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
-    processUncommentMarker: true,
   );
   copier.copyFiles();
 
@@ -858,7 +852,6 @@ void _copyServerTemplates(
       'macos',
       'build',
     ],
-    processUncommentMarker: true,
   );
   copier.copyFiles();
 
@@ -904,7 +897,6 @@ void _copyModuleTemplates(
     ],
     fileNameReplacements: const [],
     ignoreFileNames: const [],
-    processUncommentMarker: true,
   );
   rootCopier.copyFiles();
 
@@ -936,7 +928,6 @@ void _copyModuleTemplates(
       ),
     ],
     ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
-    processUncommentMarker: true,
   );
   copier.copyFiles();
 
@@ -968,7 +959,6 @@ void _copyModuleTemplates(
       ),
     ],
     ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
-    processUncommentMarker: true,
   );
   copier.copyFiles();
 
