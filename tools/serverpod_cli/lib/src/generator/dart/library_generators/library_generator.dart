@@ -1674,7 +1674,6 @@ typedef _InvokeFutureCall =
           ..methods.add(
             Method((m) {
               m
-                ..annotations.add(refer('override'))
                 ..name = 'callAtTime'
                 ..returns = refer('FutureCallRef')
                 ..requiredParameters.add(
@@ -1716,7 +1715,6 @@ typedef _InvokeFutureCall =
           ..methods.add(
             Method((m) {
               m
-                ..annotations.add(refer('override'))
                 ..name = 'callWithDelay'
                 ..returns = refer('FutureCallRef')
                 ..requiredParameters.add(
