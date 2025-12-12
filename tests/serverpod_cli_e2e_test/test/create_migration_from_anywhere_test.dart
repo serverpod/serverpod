@@ -231,4 +231,193 @@ environment:
       );
     },
   );
+
+  group(
+    'Given a serverpod project with a root pubspec when create-repair-migration is called from project root',
+    () {
+      var projectName =
+          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+
+      late Process createProcess;
+
+      setUp(() async {
+        createProcess = await Process.start(
+          'serverpod',
+          ['create', projectName, '-v', '--no-analytics'],
+          workingDirectory: tempDir.path,
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
+
+        createProcess.stdout.transform(const Utf8Decoder()).listen(print);
+        createProcess.stderr.transform(const Utf8Decoder()).listen(print);
+
+        var createProjectExitCode = await createProcess.exitCode;
+        assert(
+          createProjectExitCode == 0,
+          'Failed to create the serverpod project.',
+        );
+
+        // Create a root pubspec.yaml with name: _ (simulating workspace)
+        var rootPubspec = File(
+          path.join(tempDir.path, projectName, 'pubspec.yaml'),
+        );
+        rootPubspec.writeAsStringSync('''
+name: _
+environment:
+  sdk: ^3.0.0
+''');
+      });
+
+      tearDown(() async {
+        createProcess.kill();
+      });
+
+      test(
+        'then create-repair-migration should fail gracefully when run from project root.',
+        () async {
+          var migrationProcess = await Process.start(
+            'serverpod',
+            ['create-repair-migration', '--no-analytics'],
+            workingDirectory: path.join(tempDir.path, projectName),
+            environment: {
+              'SERVERPOD_HOME': rootPath,
+            },
+          );
+
+          var stdout = <String>[];
+          var stderr = <String>[];
+
+          migrationProcess.stdout
+              .transform(const Utf8Decoder())
+              .transform(const LineSplitter())
+              .listen((line) {
+                stdout.add(line);
+                print('stdout: $line');
+              });
+
+          migrationProcess.stderr
+              .transform(const Utf8Decoder())
+              .transform(const LineSplitter())
+              .listen((line) {
+                stderr.add(line);
+                print('stderr: $line');
+              });
+
+          var exitCode = await migrationProcess.exitCode;
+
+          var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
+
+          // Should not contain error about not being a server package
+          expect(
+            allOutput.contains('not a server package (_)'),
+            isFalse,
+            reason: 'Should not error about root pubspec name',
+          );
+
+          // The command will likely fail because there's no server running,
+          // but it should not fail with "not a server package" error
+          // If it does exit non-zero, verify it's for the right reason
+          if (exitCode != 0) {
+            expect(
+              allOutput.contains('not a server package'),
+              isFalse,
+              reason: 'Should not fail due to server package detection',
+            );
+          }
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a serverpod project when create-repair-migration is called from client directory',
+    () {
+      var projectName =
+          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+      var clientDir = path.join(projectName, '${projectName}_client');
+
+      late Process createProcess;
+
+      setUp(() async {
+        createProcess = await Process.start(
+          'serverpod',
+          ['create', projectName, '-v', '--no-analytics'],
+          workingDirectory: tempDir.path,
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
+
+        createProcess.stdout.transform(const Utf8Decoder()).listen(print);
+        createProcess.stderr.transform(const Utf8Decoder()).listen(print);
+
+        var createProjectExitCode = await createProcess.exitCode;
+        assert(
+          createProjectExitCode == 0,
+          'Failed to create the serverpod project.',
+        );
+      });
+
+      tearDown(() async {
+        createProcess.kill();
+      });
+
+      test(
+        'then create-repair-migration should fail gracefully when run from client directory.',
+        () async {
+          var migrationProcess = await Process.start(
+            'serverpod',
+            ['create-repair-migration', '--no-analytics'],
+            workingDirectory: path.join(tempDir.path, clientDir),
+            environment: {
+              'SERVERPOD_HOME': rootPath,
+            },
+          );
+
+          var stdout = <String>[];
+          var stderr = <String>[];
+
+          migrationProcess.stdout
+              .transform(const Utf8Decoder())
+              .transform(const LineSplitter())
+              .listen((line) {
+                stdout.add(line);
+                print('stdout: $line');
+              });
+
+          migrationProcess.stderr
+              .transform(const Utf8Decoder())
+              .transform(const LineSplitter())
+              .listen((line) {
+                stderr.add(line);
+                print('stderr: $line');
+              });
+
+          var exitCode = await migrationProcess.exitCode;
+
+          var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
+
+          // Should not contain error about not being a server package
+          expect(
+            allOutput.contains('not a server package'),
+            isFalse,
+            reason: 'Should not error about client package name',
+          );
+
+          // The command will likely fail because there's no server running,
+          // but it should not fail with "not a server package" error
+          // If it does exit non-zero, verify it's for the right reason
+          if (exitCode != 0) {
+            expect(
+              allOutput.contains('not a server package'),
+              isFalse,
+              reason: 'Should not fail due to server package detection',
+            );
+          }
+        },
+      );
+    },
+  );
 }
