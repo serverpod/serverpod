@@ -148,9 +148,6 @@ class Serverpod {
 
   FutureCallManager? _futureCallManager;
 
-  /// Responsible for managing and executing [FutureCall]s.
-  FutureCallManager? get futureCallManager => _futureCallManager;
-
   final TaskManagerImpl _requestReceivingShutdownTasks = TaskManagerImpl();
   final TaskManagerImpl _internalServicesShutdownTasks = TaskManagerImpl();
 
@@ -359,6 +356,10 @@ class Serverpod {
   /// ```
   final RuntimeParametersListBuilder? runtimeParametersBuilder;
 
+  /// The [FutureCallInitializer] is responsible for initializing the
+  /// generated future calls after this [Serverpod] is started.
+  final FutureCallInitializer futureCallInitializer;
+
   /// Creates a new Serverpod.
   ///
   /// ## Experimental features
@@ -368,7 +369,8 @@ class Serverpod {
   Serverpod(
     List<String> args,
     this.serializationManager,
-    this.endpoints, {
+    this.endpoints,
+    this.futureCallInitializer, {
     ServerpodConfig? config,
     this.authenticationHandler,
     this.healthCheckHandler,
@@ -762,6 +764,11 @@ class Serverpod {
     if (config.role == ServerpodRole.maintenance && appliedMigrations) {
       logVerbose('Finished applying database migrations.');
       throw ExitException(_exitCode);
+    }
+
+    if (_futureCallManager != null) {
+      logVerbose('Initializing future calls.');
+      futureCallInitializer.initialize(_futureCallManager!, serverId);
     }
   }
 
