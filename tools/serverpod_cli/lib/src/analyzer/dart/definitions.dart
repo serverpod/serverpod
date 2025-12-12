@@ -252,11 +252,15 @@ class ParameterDefinition {
   /// Whether this parameter is required.
   final bool required;
 
+  /// The default value of this parameter, if any.
+  final String? defaultValue;
+
   /// Create a new [ParameterDefinition].
   const ParameterDefinition({
     required this.name,
     required this.type,
     required this.required,
+    this.defaultValue,
   });
 }
 
