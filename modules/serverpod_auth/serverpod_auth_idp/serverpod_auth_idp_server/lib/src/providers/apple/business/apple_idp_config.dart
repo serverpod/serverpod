@@ -2,6 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
 import '../../../../../core.dart';
+import '../../../utils/get_passwords_extension.dart';
 import 'apple_idp.dart';
 
 /// Configuration for the Apple identity provider.
@@ -56,16 +57,16 @@ class AppleIdpConfigFromPasswords extends AppleIdpConfig {
   /// Creates a new [AppleIdpConfigFromPasswords] instance.
   AppleIdpConfigFromPasswords()
     : super(
-        serviceIdentifier: Serverpod.instance.getPassword(
+        serviceIdentifier: Serverpod.instance.getPasswordOrThrow(
           'appleServiceIdentifier',
-        )!,
-        bundleIdentifier: Serverpod.instance.getPassword(
+        ),
+        bundleIdentifier: Serverpod.instance.getPasswordOrThrow(
           'appleBundleIdentifier',
-        )!,
-        redirectUri: Serverpod.instance.getPassword('appleRedirectUri')!,
-        teamId: Serverpod.instance.getPassword('appleTeamId')!,
-        keyId: Serverpod.instance.getPassword('appleKeyId')!,
-        key: Serverpod.instance.getPassword('appleKey')!,
+        ),
+        redirectUri: Serverpod.instance.getPasswordOrThrow('appleRedirectUri'),
+        teamId: Serverpod.instance.getPasswordOrThrow('appleTeamId'),
+        keyId: Serverpod.instance.getPasswordOrThrow('appleKeyId'),
+        key: Serverpod.instance.getPasswordOrThrow('appleKey'),
       );
 }
 
