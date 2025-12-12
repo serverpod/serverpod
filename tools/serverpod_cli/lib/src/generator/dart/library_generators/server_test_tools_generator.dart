@@ -38,7 +38,7 @@ class ServerTestToolsGenerator {
     }
 
     for (var futureCall in protocolDefinition.futureCalls) {
-      if (futureCall.isAbstract) continue;
+      if (futureCall.isAbstract || futureCall.methods.isEmpty) continue;
       library.body.add(_buildFutureCallClassWithMethodCalls(futureCall));
     }
 
@@ -73,19 +73,20 @@ class ServerTestToolsGenerator {
         ..name = '_FutureCalls'
         ..methods.addAll([
           for (var definition in protocolDefinition.futureCalls)
-            Method(
-              (m) => m
-                ..name = definition.name
-                ..type = MethodType.getter
-                ..returns = refer(
-                  '_${definition.name.pascalCase}FutureCall',
-                )
-                ..body = Block.of([
-                  refer(
+            if (definition.methods.isNotEmpty)
+              Method(
+                (m) => m
+                  ..name = definition.name
+                  ..type = MethodType.getter
+                  ..returns = refer(
                     '_${definition.name.pascalCase}FutureCall',
-                  ).call([]).returned.statement,
-                ]),
-            ),
+                  )
+                  ..body = Block.of([
+                    refer(
+                      '_${definition.name.pascalCase}FutureCall',
+                    ).call([]).returned.statement,
+                  ]),
+              ),
         ]);
     });
   }
