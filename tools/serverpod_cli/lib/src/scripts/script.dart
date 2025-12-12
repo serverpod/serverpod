@@ -1,4 +1,4 @@
-/// Represents a script defined in the `serverpod_scripts` section of
+/// Represents a script defined in the `serverpod/scripts` section of
 /// pubspec.yaml.
 class Script {
   /// The name of the script (the key in the YAML map).

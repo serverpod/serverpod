@@ -38,7 +38,7 @@ enum RunOption<V> implements OptionDefinition<V> {
   final ConfigOptionBase<V> option;
 }
 
-/// Command to run scripts defined in the `serverpod_scripts` section
+/// Command to run scripts defined in the `serverpod/scripts` section
 /// of pubspec.yaml.
 class RunCommand extends ServerpodCommand<RunOption> {
   @override
@@ -46,7 +46,7 @@ class RunCommand extends ServerpodCommand<RunOption> {
 
   @override
   final description =
-      'Run a script defined in the serverpod_scripts section of pubspec.yaml.';
+      'Run a script defined in the "serverpod/scripts" section of pubspec.yaml.';
 
   @override
   String get invocation => 'serverpod run <script-name>';
@@ -79,14 +79,14 @@ class RunCommand extends ServerpodCommand<RunOption> {
     try {
       scripts = Scripts.fromPubspecFile(pubspecFile);
     } on ScriptsParseException catch (e) {
-      log.error('Error parsing serverpod_scripts:\n$e');
+      log.error('Error parsing "serverpod/scripts":\n$e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
     if (scripts.isEmpty) {
       log.error(
         'No scripts defined in pubspec.yaml. '
-        'Add a serverpod_scripts section with your scripts.',
+        'Add a "serverpod/scripts" section with your scripts.',
       );
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }

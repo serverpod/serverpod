@@ -33,7 +33,7 @@ class ScriptsParseException extends YamlException {
   ScriptsParseException(super.message, [super.span]);
 }
 
-/// A collection of scripts parsed from the `serverpod_scripts` section
+/// A collection of scripts parsed from the `serverpod/scripts` section
 /// of pubspec.yaml.
 class Scripts extends UnmodifiableMapBase<String, Script> {
   final Map<String, Script> _scripts;
@@ -79,7 +79,7 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
   /// error messages with source spans.
   ///
   /// Returns an empty [Scripts] if the file doesn't exist or doesn't contain
-  /// a `serverpod_scripts` section.
+  /// a `serverpod/scripts` section.
   ///
   /// Throws [ScriptsParseException] if the scripts section is malformed.
   factory Scripts.fromPubspecFile(File pubspecFile) =>
@@ -88,7 +88,7 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
   /// Loads scripts from [pubspecPlus]
   ///
   /// Returns an empty [Scripts] if the file doesn't exist or doesn't contain
-  /// a `serverpod_scripts` section.
+  /// a `serverpod/scripts` section.
   ///
   /// Throws [ScriptsParseException] if the scripts section is malformed.
   factory Scripts.fromPubspec(PubspecPlus pubspecPlus) {
