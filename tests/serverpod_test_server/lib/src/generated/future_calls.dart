@@ -96,17 +96,17 @@ class _FutureCallRef {
 
   final _InvokeFutureCall _invokeFutureCall;
 
-  _TestCallFutureCallCaller get testCall {
-    return _TestCallFutureCallCaller(_invokeFutureCall);
+  _TestCallFutureCallDispatcher get testCall {
+    return _TestCallFutureCallDispatcher(_invokeFutureCall);
   }
 
-  _TestExceptionCallFutureCallCaller get testExceptionCall {
-    return _TestExceptionCallFutureCallCaller(_invokeFutureCall);
+  _TestExceptionCallFutureCallDispatcher get testExceptionCall {
+    return _TestExceptionCallFutureCallDispatcher(_invokeFutureCall);
   }
 }
 
-class _TestCallFutureCallCaller {
-  _TestCallFutureCallCaller(this._invokeFutureCall);
+class _TestCallFutureCallDispatcher {
+  _TestCallFutureCallDispatcher(this._invokeFutureCall);
 
   final _InvokeFutureCall _invokeFutureCall;
 
@@ -118,8 +118,8 @@ class _TestCallFutureCallCaller {
   }
 }
 
-class _TestExceptionCallFutureCallCaller {
-  _TestExceptionCallFutureCallCaller(this._invokeFutureCall);
+class _TestExceptionCallFutureCallDispatcher {
+  _TestExceptionCallFutureCallDispatcher(this._invokeFutureCall);
 
   final _InvokeFutureCall _invokeFutureCall;
 
@@ -138,7 +138,7 @@ class TestCallInvokeFutureCall extends _i1.FutureCall<_i2.SimpleData> {
     _i1.Session session,
     _i2.SimpleData? object,
   ) async {
-    _i4.TestCall().invoke(
+    await _i4.TestCall().invoke(
       session,
       object,
     );
@@ -152,7 +152,7 @@ class TestExceptionCallInvokeFutureCall extends _i1.FutureCall<_i2.SimpleData> {
     _i1.Session session,
     _i2.SimpleData? object,
   ) async {
-    _i5.TestExceptionCall().invoke(
+    await _i5.TestExceptionCall().invoke(
       session,
       object,
     );

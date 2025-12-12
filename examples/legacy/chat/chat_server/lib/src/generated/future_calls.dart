@@ -94,13 +94,13 @@ class _FutureCallRef {
 
   final _InvokeFutureCall _invokeFutureCall;
 
-  _ExampleFutureCallCaller get example {
-    return _ExampleFutureCallCaller(_invokeFutureCall);
+  _ExampleFutureCallDispatcher get example {
+    return _ExampleFutureCallDispatcher(_invokeFutureCall);
   }
 }
 
-class _ExampleFutureCallCaller {
-  _ExampleFutureCallCaller(this._invokeFutureCall);
+class _ExampleFutureCallDispatcher {
+  _ExampleFutureCallDispatcher(this._invokeFutureCall);
 
   final _InvokeFutureCall _invokeFutureCall;
 
@@ -119,7 +119,7 @@ class ExampleInvokeFutureCall extends _i1.FutureCall<_i2.SerializableModel> {
     _i1.Session session,
     _i2.SerializableModel? object,
   ) async {
-    _i4.ExampleFutureCall().invoke(
+    await _i4.ExampleFutureCall().invoke(
       session,
       object,
     );
