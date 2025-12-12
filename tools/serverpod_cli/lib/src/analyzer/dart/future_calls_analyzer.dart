@@ -6,14 +6,12 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/validator.dart';
-import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
@@ -22,8 +20,6 @@ class FutureCallsAnalyzer {
   final AnalysisContextCollection collection;
 
   final String absoluteIncludedPaths;
-  final GeneratorConfig config;
-  final StatefulAnalyzer modelAnalyzer;
   final FutureCallMethodParameterValidator parameterValidator;
 
   /// Create a new [FutureCallsAnalyzer], containing a
@@ -31,17 +27,12 @@ class FutureCallsAnalyzer {
   /// provided [directory].
   FutureCallsAnalyzer({
     required Directory directory,
-    required this.config,
-    required this.modelAnalyzer,
+    required this.parameterValidator,
   }) : collection = AnalysisContextCollection(
          includedPaths: [directory.absolute.path],
          resourceProvider: PhysicalResourceProvider.INSTANCE,
        ),
-       absoluteIncludedPaths = directory.absolute.path,
-       parameterValidator = FutureCallMethodParameterValidator(
-         config: config,
-         modelAnalyzer: modelAnalyzer,
-       );
+       absoluteIncludedPaths = directory.absolute.path;
 
   Set<FutureCallDefinition> _futureCallDefinitions = {};
 

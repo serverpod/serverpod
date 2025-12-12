@@ -6,6 +6,7 @@ import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/validator.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
@@ -147,10 +148,14 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
       collector.printErrors();
     });
 
-    final futureCallsAnalyzer = FutureCallsAnalyzer(
-      directory: libDirectory,
+    var parameterValidator = FutureCallMethodParameterValidator(
       config: config,
       modelAnalyzer: modelAnalyzer,
+    );
+
+    var futureCallsAnalyzer = FutureCallsAnalyzer(
+      directory: libDirectory,
+      parameterValidator: parameterValidator,
     );
 
     bool success = true;
