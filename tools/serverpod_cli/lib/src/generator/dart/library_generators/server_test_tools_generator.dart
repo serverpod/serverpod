@@ -72,18 +72,18 @@ class ServerTestToolsGenerator {
       classBuilder
         ..name = '_FutureCalls'
         ..methods.addAll([
-          for (var definition in protocolDefinition.futureCalls)
-            if (definition.methods.isNotEmpty)
+          for (var futureCall in protocolDefinition.futureCalls)
+            if (futureCall.methods.isNotEmpty)
               Method(
                 (m) => m
-                  ..name = definition.name
+                  ..name = futureCall.name
                   ..type = MethodType.getter
                   ..returns = refer(
-                    '_${definition.name.pascalCase}FutureCall',
+                    '_${futureCall.name.pascalCase}FutureCall',
                   )
                   ..body = Block.of([
                     refer(
-                      '_${definition.name.pascalCase}FutureCall',
+                      '_${futureCall.name.pascalCase}FutureCall',
                     ).call([]).returned.statement,
                   ]),
               ),
