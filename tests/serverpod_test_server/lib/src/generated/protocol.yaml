@@ -151,7 +151,7 @@ failedCalls:
 fieldScopes:
   - storeObject:
   - retrieveObject:
-futureCalls:
+testFutureCalls:
   - makeFutureCall:
   - makeFutureCallThatThrows:
 listParameters:

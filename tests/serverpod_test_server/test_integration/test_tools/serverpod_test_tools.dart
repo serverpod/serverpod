@@ -55,6 +55,7 @@ import 'package:serverpod_test_server/src/generated/session_auth_info.dart'
     as _i28;
 import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
     as _i29;
+import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i30;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -162,6 +163,8 @@ void withServerpod(
 }
 
 class TestEndpoints {
+  final _FutureCalls futureCalls = _FutureCalls();
+
   late final _AsyncTasksEndpoint asyncTasks;
 
   late final _AuthenticationEndpoint authentication;
@@ -219,7 +222,7 @@ class TestEndpoints {
 
   late final _FieldScopesEndpoint fieldScopes;
 
-  late final _FutureCallsEndpoint futureCalls;
+  late final _TestFutureCallsEndpoint testFutureCalls;
 
   late final _ListParametersEndpoint listParameters;
 
@@ -421,7 +424,7 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
-    futureCalls = _FutureCallsEndpoint(
+    testFutureCalls = _TestFutureCallsEndpoint(
       endpoints,
       serializationManager,
     );
@@ -581,6 +584,16 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
+  }
+}
+
+class _FutureCalls {
+  _TestCallFutureCall get testCall {
+    return _TestCallFutureCall();
+  }
+
+  _TestExceptionCallFutureCall get testExceptionCall {
+    return _TestExceptionCallFutureCall();
   }
 }
 
@@ -4764,8 +4777,8 @@ class _FieldScopesEndpoint {
   }
 }
 
-class _FutureCallsEndpoint {
-  _FutureCallsEndpoint(
+class _TestFutureCallsEndpoint {
+  _TestFutureCallsEndpoint(
     this._endpointDispatch,
     this._serializationManager,
   );
@@ -4781,13 +4794,13 @@ class _FutureCallsEndpoint {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'futureCalls',
+            endpoint: 'testFutureCalls',
             method: 'makeFutureCall',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'futureCalls',
+          endpointPath: 'testFutureCalls',
           methodName: 'makeFutureCall',
           parameters: _i1.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
@@ -4812,13 +4825,13 @@ class _FutureCallsEndpoint {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'futureCalls',
+            endpoint: 'testFutureCalls',
             method: 'makeFutureCallThatThrows',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'futureCalls',
+          endpointPath: 'testFutureCalls',
           methodName: 'makeFutureCallThatThrows',
           parameters: _i1.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
@@ -15282,5 +15295,41 @@ class _MyFeatureEndpoint {
         await _localUniqueSession.close();
       }
     });
+  }
+}
+
+class _TestCallFutureCall {
+  Future<void> invoke(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i10.SimpleData? object,
+  ) async {
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      return _i30.TestCallInvokeFutureCall().invoke(
+        _localUniqueSession,
+        object,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
+  }
+}
+
+class _TestExceptionCallFutureCall {
+  Future<void> invoke(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i10.SimpleData? object,
+  ) async {
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      return _i30.TestExceptionCallInvokeFutureCall().invoke(
+        _localUniqueSession,
+        object,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
   }
 }
