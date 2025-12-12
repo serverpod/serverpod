@@ -95,13 +95,13 @@ class _FutureCallRef {
 
   final _InvokeFutureCall _invokeFutureCall;
 
-  _BirthdayReminderFutureCallCaller get birthdayReminder {
-    return _BirthdayReminderFutureCallCaller(_invokeFutureCall);
+  _BirthdayReminderFutureCallDispatcher get birthdayReminder {
+    return _BirthdayReminderFutureCallDispatcher(_invokeFutureCall);
   }
 }
 
-class _BirthdayReminderFutureCallCaller {
-  _BirthdayReminderFutureCallCaller(this._invokeFutureCall);
+class _BirthdayReminderFutureCallDispatcher {
+  _BirthdayReminderFutureCallDispatcher(this._invokeFutureCall);
 
   final _InvokeFutureCall _invokeFutureCall;
 
@@ -120,7 +120,7 @@ class BirthdayReminderInvokeFutureCall extends _i1.FutureCall<_i2.Greeting> {
     _i1.Session session,
     _i2.Greeting? object,
   ) async {
-    _i4.BirthdayReminder().invoke(
+    await _i4.BirthdayReminder().invoke(
       session,
       object,
     );
