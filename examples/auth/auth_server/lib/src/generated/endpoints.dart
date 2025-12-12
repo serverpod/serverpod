@@ -45,10 +45,10 @@ class Endpoints extends _i1.EndpointDispatch {
           'googleIdp',
           null,
         ),
-      'jwtRefresh': _i5.JwtRefreshEndpoint()
+      'refreshJwtTokens': _i5.RefreshJwtTokensEndpoint()
         ..initialize(
           server,
-          'jwtRefresh',
+          'refreshJwtTokens',
           null,
         ),
       'passkeyIdp': _i6.PasskeyIdpEndpoint()
@@ -313,9 +313,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    connectors['jwtRefresh'] = _i1.EndpointConnector(
-      name: 'jwtRefresh',
-      endpoint: endpoints['jwtRefresh']!,
+    connectors['refreshJwtTokens'] = _i1.EndpointConnector(
+      name: 'refreshJwtTokens',
+      endpoint: endpoints['refreshJwtTokens']!,
       methodConnectors: {
         'refreshAccessToken': _i1.MethodConnector(
           name: 'refreshAccessToken',
@@ -330,11 +330,13 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['jwtRefresh'] as _i5.JwtRefreshEndpoint)
-                  .refreshAccessToken(
-                    session,
-                    refreshToken: params['refreshToken'],
-                  ),
+              ) async =>
+                  (endpoints['refreshJwtTokens']
+                          as _i5.RefreshJwtTokensEndpoint)
+                      .refreshAccessToken(
+                        session,
+                        refreshToken: params['refreshToken'],
+                      ),
         ),
       },
     );

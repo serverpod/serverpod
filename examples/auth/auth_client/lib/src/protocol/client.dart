@@ -253,14 +253,14 @@ class EndpointGoogleIdp extends _i1.EndpointGoogleIdpBase {
   );
 }
 
-/// By extending [RefreshJwtTokensEndpoint], the JWT token refresh endpoint
+/// By extending [core.RefreshJwtTokensEndpoint], the JWT token refresh endpoint
 /// is made available on the server and enables automatic token refresh on the client.
 /// {@category Endpoint}
-class EndpointJwtRefresh extends _i4.EndpointRefreshJwtTokens {
-  EndpointJwtRefresh(_i2.EndpointCaller caller) : super(caller);
+class EndpointRefreshJwtTokens extends _i4.EndpointRefreshJwtTokens {
+  EndpointRefreshJwtTokens(_i2.EndpointCaller caller) : super(caller);
 
   @override
-  String get name => 'jwtRefresh';
+  String get name => 'refreshJwtTokens';
 
   /// Creates a new token pair for the given [refreshToken].
   ///
@@ -284,7 +284,7 @@ class EndpointJwtRefresh extends _i4.EndpointRefreshJwtTokens {
   _i3.Future<_i4.AuthSuccess> refreshAccessToken({
     required String refreshToken,
   }) => caller.callServerEndpoint<_i4.AuthSuccess>(
-    'jwtRefresh',
+    'refreshJwtTokens',
     'refreshAccessToken',
     {'refreshToken': refreshToken},
     authenticated: false,
@@ -391,7 +391,7 @@ class Client extends _i2.ServerpodClientShared {
     appleIdp = EndpointAppleIdp(this);
     emailIdp = EndpointEmailIdp(this);
     googleIdp = EndpointGoogleIdp(this);
-    jwtRefresh = EndpointJwtRefresh(this);
+    refreshJwtTokens = EndpointRefreshJwtTokens(this);
     passkeyIdp = EndpointPasskeyIdp(this);
     greeting = EndpointGreeting(this);
     modules = Modules(this);
@@ -403,7 +403,7 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointGoogleIdp googleIdp;
 
-  late final EndpointJwtRefresh jwtRefresh;
+  late final EndpointRefreshJwtTokens refreshJwtTokens;
 
   late final EndpointPasskeyIdp passkeyIdp;
 
@@ -416,7 +416,7 @@ class Client extends _i2.ServerpodClientShared {
     'appleIdp': appleIdp,
     'emailIdp': emailIdp,
     'googleIdp': googleIdp,
-    'jwtRefresh': jwtRefresh,
+    'refreshJwtTokens': refreshJwtTokens,
     'passkeyIdp': passkeyIdp,
     'greeting': greeting,
   };

@@ -10,7 +10,7 @@ emailIdp:
   - finishPasswordReset:
 googleIdp:
   - login:
-jwtRefresh:
+refreshJwtTokens:
   - refreshAccessToken:
 passkeyIdp:
   - createChallenge:
