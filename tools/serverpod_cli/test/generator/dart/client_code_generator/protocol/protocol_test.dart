@@ -429,4 +429,78 @@ void main() {
       );
     },
   );
+
+  group(
+    'Given serverOnly models with List field of another serverOnly model when generating protocol files',
+    () {
+      var serverOnlyModel = 'Article';
+      var serverOnlyModelWithList = 'ArticleList';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(serverOnlyModel)
+            .withFileName('article')
+            .withServerOnly(true)
+            .withSimpleField('name', 'String')
+            .withSimpleField('price', 'double')
+            .build(),
+        ModelClassDefinitionBuilder()
+            .withClassName(serverOnlyModelWithList)
+            .withFileName('article_list')
+            .withServerOnly(true)
+            .withListField(
+              'results',
+              serverOnlyModel,
+              scope: ModelFieldScopeDefinition.serverOnly,
+            )
+            .build(),
+      ];
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: models,
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test(
+        'then the protocol.dart file is created.',
+        () {
+          expect(codeMap[expectedFileName], isNotNull);
+        },
+      );
+
+      test(
+        'then the protocol.dart does not contain deserialization entry for serverOnly model.',
+        () {
+          var protocolContent = codeMap[expectedFileName]!;
+          // Should NOT contain: if (t == Article)
+          expect(
+            protocolContent,
+            isNot(contains(RegExp(
+              r'if\s*\(\s*t\s*==\s*[^)]*Article[^)]*\)',
+              multiLine: true,
+            ))),
+          );
+        },
+      );
+
+      test(
+        'then the protocol.dart does not contain deserialization entry for List of serverOnly model.',
+        () {
+          var protocolContent = codeMap[expectedFileName]!;
+          // Should NOT contain: if (t == List<Article>)
+          expect(
+            protocolContent,
+            isNot(contains(RegExp(
+              r'if\s*\(\s*t\s*==\s*List<[^>]*Article[^>]*>\s*\)',
+              multiLine: true,
+            ))),
+          );
+        },
+      );
+    },
+  );
 }
