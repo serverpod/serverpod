@@ -397,7 +397,9 @@ class Server implements RouterInjectable {
     String? authenticationKey;
     String? authenticationHeaderValue;
 
-    authenticationHeaderValue = request.headers.authorization?.headerValue;
+    authenticationHeaderValue = request.getAuthorizationHeaderValue(
+      serverpod.config.validateHeaders,
+    );
     authenticationKey = unwrapAuthHeaderValue(authenticationHeaderValue);
     authenticationKey ??= queryParameters['auth'] as String?;
 
