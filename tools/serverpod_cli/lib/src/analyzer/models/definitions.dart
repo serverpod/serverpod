@@ -331,8 +331,7 @@ class SerializableModelFieldDefinition {
   /// - [shouldIncludeField]
   /// - [shouldSerializeFieldForDatabase]
   bool shouldSerializeField(bool serverCode) {
-    return scope == ModelFieldScopeDefinition.all ||
-        (serverCode && scope == ModelFieldScopeDefinition.serverOnly);
+    return scope == ModelFieldScopeDefinition.all;
   }
 
   /// Returns true, if this field should be added to the serialization for the

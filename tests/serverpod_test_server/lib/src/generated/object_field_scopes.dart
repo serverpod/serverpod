@@ -80,7 +80,6 @@ abstract class ObjectFieldScopes
       if (id != null) 'id': id,
       'normal': normal,
       if (api != null) 'api': api,
-      if (database != null) 'database': database,
     };
   }
 

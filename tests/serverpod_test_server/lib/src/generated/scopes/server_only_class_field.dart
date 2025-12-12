@@ -71,17 +71,7 @@ abstract class ServerOnlyClassField
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
-    return {
-      '__className__': 'ServerOnlyClassField',
-      if (serverOnlyClassList != null)
-        'serverOnlyClassList': serverOnlyClassList?.toJson(
-          valueToJson: (v) => v.toJsonForProtocol(),
-        ),
-      if (serverOnlyClassMap != null)
-        'serverOnlyClassMap': serverOnlyClassMap?.toJson(
-          valueToJson: (v) => v.toJsonForProtocol(),
-        ),
-    };
+    return {'__className__': 'ServerOnlyClassField'};
   }
 
   @override
