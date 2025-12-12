@@ -3,10 +3,30 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/scripts/script.dart';
 import 'package:serverpod_cli/src/scripts/scripts.dart';
+import 'package:serverpod_cli/src/util/pubspec_plus.dart';
 import 'package:term_glyph/term_glyph.dart' as glyph;
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:yaml/yaml.dart';
+import 'package:yaml_edit/yaml_edit.dart';
+
+PubspecPlus _buildPubspec(String scriptsText) {
+  final editor = YamlEditor('''
+name: test_project
+version: 1.0.0
+''');
+  final node = loadYamlNode(scriptsText);
+  if (node is YamlMap) {
+    editor.update(
+      ['serverpod'],
+      wrapAsYamlNode({'scripts': node}),
+    );
+  }
+  return PubspecPlus.parse(editor.toString());
+}
+
+Scripts _buildScripts(String scriptsText) =>
+    Scripts.fromPubspec(_buildPubspec(scriptsText));
 
 void main() {
   // Use Unicode glyphs for better and consistent visual output
@@ -50,30 +70,15 @@ void main() {
     );
   });
 
-  group('Scripts.fromYaml', () {
-    test(
-      'Given null yaml, '
-      'when parsing, '
-      'then an empty Scripts is returned',
-      () {
-        var scripts = ScriptsInternal.fromYaml(null);
-
-        expect(scripts, isEmpty);
-      },
-    );
-
+  group('Scripts.fromPubspec', () {
     test(
       'Given yaml with a single script, '
       'when parsing, '
       'then Scripts contains one entry',
       () {
-        var yaml =
-            loadYaml('''
+        var scripts = _buildScripts('''
 start: dart bin/main.dart
-''')
-                as YamlMap;
-
-        var scripts = ScriptsInternal.fromYaml(yaml);
+''');
 
         expect(scripts.length, 1);
         expect(scripts['start']?.name, 'start');
@@ -86,15 +91,11 @@ start: dart bin/main.dart
       'when parsing, '
       'then Scripts contains all entries',
       () {
-        var yaml =
-            loadYaml('''
+        var scripts = _buildScripts('''
 start: dart bin/main.dart
 test: dart test
 build: dart compile exe bin/main.dart
-''')
-                as YamlMap;
-
-        var scripts = ScriptsInternal.fromYaml(yaml);
+''');
 
         expect(scripts.length, 3);
         expect(scripts['start']?.command, 'dart bin/main.dart');
@@ -108,16 +109,14 @@ build: dart compile exe bin/main.dart
       'when parsing, '
       'then ScriptsParseException is thrown with correct message and span',
       () {
-        var yaml =
-            loadYaml('''
+        var pubspec = _buildPubspec('''
 start:
   - dart
   - run
-''')
-                as YamlMap;
+''');
 
         expect(
-          () => ScriptsInternal.fromYaml(yaml),
+          () => Scripts.fromPubspec(pubspec),
           throwsA(
             isA<ScriptsParseException>()
                 .having(
@@ -129,10 +128,10 @@ start:
                 .having(
                   (e) => e.toString(),
                   'toString()',
-                  'Error on line 2, column 3: Script "start" must have a string command, got YamlList\n'
+                  'Error on line 5, column 7: Script "start" must have a string command, got YamlList\n'
                       '  ╷\n'
-                      '2 │ ┌   - dart\n'
-                      '3 │ └   - run\n'
+                      '5 │ ┌       - dart\n'
+                      '6 │ └       - run\n'
                       '  ╵',
                 ),
           ),
@@ -192,18 +191,13 @@ invalid_value: 123
     );
 
     test(
-      'Given a pubspec without serverpod_scripts, '
+      'Given a pubspec without "serverpod/scripts", '
       'when loading scripts, '
       'then an empty Scripts is returned',
       () async {
-        await d.file('pubspec.yaml', '''
-name: test_project
-version: 1.0.0
-''').create();
+        final pubspec = _buildPubspec('');
 
-        var scripts = Scripts.fromPubspecFile(
-          File(p.join(d.sandbox, 'pubspec.yaml')),
-        );
+        var scripts = Scripts.fromPubspec(pubspec);
 
         expect(scripts, isEmpty);
       },
@@ -218,9 +212,10 @@ version: 1.0.0
 name: test_project
 version: 1.0.0
 
-serverpod_scripts:
-  start: dart bin/main.dart --apply-migrations
-  dev: dart bin/main.dart --role webserver
+serverpod:
+  scripts:
+    start: dart bin/main.dart --apply-migrations
+    dev: dart bin/main.dart --role webserver
 ''').create();
 
         var scripts = Scripts.fromPubspecFile(
@@ -245,7 +240,8 @@ serverpod_scripts:
 name: test_project
 version: 1.0.0
 
-serverpod_scripts: not_a_map
+serverpod:
+  scripts: not_a_map
 ''').create();
 
         expect(
@@ -256,20 +252,20 @@ serverpod_scripts: not_a_map
                 .having(
                   (e) => e.message,
                   'message',
-                  'serverpod_scripts must be a map of script names to commands',
+                  'Invalid node',
                 )
                 .having((e) => e.span, 'span', isNotNull)
                 .having(
                   (e) => e.toString(),
                   'toString()',
                   allOf(
-                    startsWith('Error on line 4, column 20 of '),
+                    startsWith('Error on line 5, column 12 of '),
                     // path is dynamic
                     endsWith(
-                      'pubspec.yaml: serverpod_scripts must be a map of script names to commands\n'
+                      'pubspec.yaml: Invalid node\n'
                       '  ╷\n'
-                      '4 │ serverpod_scripts: not_a_map\n'
-                      '  │                    ^^^^^^^^^\n'
+                      '5 │   scripts: not_a_map\n'
+                      '  │            ^^^^^^^^^\n'
                       '  ╵',
                     ),
                   ),
@@ -288,8 +284,9 @@ serverpod_scripts: not_a_map
 name: test_project
 version: 1.0.0
 
-serverpod_scripts:
-  start:
+serverpod:
+  scripts:
+    start:
     - not
     - a
     - string
@@ -310,14 +307,14 @@ serverpod_scripts:
                   (e) => e.toString(),
                   'toString()',
                   allOf(
-                    startsWith('Error on line 6, column 5 of '),
+                    startsWith('Error on line 7, column 5 of '),
                     // path is dynamic
                     endsWith(
                       'pubspec.yaml: Script "start" must have a string command, got YamlList\n'
                       '  ╷\n'
-                      '6 │ ┌     - not\n'
-                      '7 │ │     - a\n'
-                      '8 │ └     - string\n'
+                      '7 │ ┌     - not\n'
+                      '8 │ │     - a\n'
+                      '9 │ └     - string\n'
                       '  ╵',
                     ),
                   ),

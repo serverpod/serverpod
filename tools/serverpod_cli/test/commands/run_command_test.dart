@@ -60,12 +60,13 @@ environment:
 dependencies:
   serverpod: any
 
-serverpod_scripts:
-  hello: echo "Hello from script"
-  fail: exit 42
-  start: dart bin/main.dart
-  test: dart test
-  trap: trap "echo SIGINT; exit 0" INT; while :; do sleep 0.1; done
+serverpod:
+  scripts:
+    hello: echo "Hello from script"
+    fail: exit 42
+    start: dart bin/main.dart
+    test: dart test
+    trap: trap "echo SIGINT; exit 0" INT; while :; do sleep 0.1; done
 '''),
       ]).create();
       serverDir = p.join(d.sandbox, 'test_server');

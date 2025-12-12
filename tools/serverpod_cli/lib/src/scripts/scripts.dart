@@ -9,7 +9,26 @@ import '../util/server_directory_finder.dart';
 import 'script.dart';
 
 /// The key used in pubspec.yaml to define scripts.
-const String _scriptsKey = 'serverpod_scripts';
+const _scriptsPath = ['serverpod', 'scripts'];
+
+extension on YamlMap {
+  YamlNode? findNode(Iterable<Object?> path) {
+    final self = this;
+    YamlMap next = self;
+    YamlNode? node;
+    for (final segment in path) {
+      node = next.nodes[segment];
+      if (node is YamlMap) {
+        next = node;
+      } else if (node == null) {
+        return null; // not found
+      } else {
+        throw ScriptsParseException('Invalid node', node.span);
+      }
+    }
+    return node;
+  }
+}
 
 /// Exception thrown when there's an error parsing scripts from pubspec.yaml.
 class ScriptsParseException extends YamlException {
@@ -21,21 +40,18 @@ class ScriptsParseException extends YamlException {
 class Scripts extends UnmodifiableMapBase<String, Script> {
   final Map<String, Script> _scripts;
 
-  Scripts._(this._scripts);
+  const Scripts._(this._scripts);
 
   /// Creates a [Scripts] instance from a YAML map.
   ///
-  /// The [yaml] parameter should be the value of the `serverpod_scripts` key
-  /// from pubspec.yaml, or null if not present.
+  /// The [yaml] parameter should be the value of the `serverpod/scripts` node
+  /// from pubspec.yaml.
   ///
   /// Throws [ScriptsParseException] if the YAML structure is invalid.
-  factory Scripts._fromYaml(YamlMap? yaml) {
-    if (yaml == null) {
-      return Scripts._({});
-    }
-
+  factory Scripts._fromYaml(YamlMap scriptsNode) {
     final scripts = <String, Script>{};
-    for (final entry in yaml.nodes.entries) {
+
+    for (final entry in scriptsNode.nodes.entries) {
       final keyNode = entry.key as YamlNode;
       final valueNode = entry.value;
       final name = keyNode.value;
@@ -78,21 +94,20 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
   ///
   /// Throws [ScriptsParseException] if the scripts section is malformed.
   factory Scripts.fromPubspec(PubspecPlus pubspecPlus) {
-    final scriptsYaml = pubspecPlus.yaml[_scriptsKey];
+    final scriptsNode = pubspecPlus.yaml.findNode(_scriptsPath);
 
-    if (scriptsYaml == null) {
-      return Scripts._({});
+    if (scriptsNode == null) {
+      return const Scripts._({});
     }
 
-    if (scriptsYaml is! YamlMap) {
-      final scriptsNode = pubspecPlus.yaml.nodes[_scriptsKey];
+    if (scriptsNode is! YamlMap) {
       throw ScriptsParseException(
-        '$_scriptsKey must be a map of script names to commands',
-        scriptsNode?.span,
+        '$_scriptsPath must be a map of script names to commands',
+        scriptsNode.span,
       );
     }
 
-    return Scripts._fromYaml(scriptsYaml);
+    return Scripts._fromYaml(scriptsNode);
   }
 
   /// Finds the pubspec.yaml file for the Serverpod server project.
@@ -119,9 +134,4 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
 
   @override
   Iterable<String> get keys => _scripts.keys;
-}
-
-extension ScriptsInternal on Scripts {
-  // Expose private ctor to tests
-  static const fromYaml = Scripts._fromYaml;
 }
