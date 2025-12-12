@@ -17,18 +17,19 @@ typedef _InvokeFutureCall =
     Future<void> Function(String name, _i1.SerializableModel? object);
 
 /// Global variable for accessing future calls via a typed interface.
-final futureCalls = FutureCalls();
+final futureCalls = _FutureCalls();
 
-class FutureCalls {
+class _FutureCalls implements _i1.FutureCallInitializer {
   _i1.FutureCallManager? _futureCallManager;
 
   String? _serverId;
 
+  @override
   void initialize(
-    _i1.FutureCallManager? futureCallManager,
+    _i1.FutureCallManager futureCallManager,
     String serverId,
   ) {}
-  FutureCallRef callAtTime(
+  _FutureCallRef callAtTime(
     DateTime time, {
     String? identifier,
   }) {
@@ -38,7 +39,7 @@ class FutureCalls {
     if (_futureCallManager == null) {
       throw StateError('Future calls are disabled.');
     }
-    return FutureCallRef(
+    return _FutureCallRef(
       (name, object) {
         return _futureCallManager!.scheduleFutureCall(
           name,
@@ -51,7 +52,7 @@ class FutureCalls {
     );
   }
 
-  FutureCallRef callWithDelay(
+  _FutureCallRef callWithDelay(
     Duration delay, {
     String? identifier,
   }) {
@@ -61,7 +62,7 @@ class FutureCalls {
     if (_futureCallManager == null) {
       throw StateError('Future calls are disabled.');
     }
-    return FutureCallRef(
+    return _FutureCallRef(
       (name, object) {
         return _futureCallManager!.scheduleFutureCall(
           name,
@@ -75,8 +76,8 @@ class FutureCalls {
   }
 }
 
-class FutureCallRef {
-  FutureCallRef(this._invokeFutureCall);
+class _FutureCallRef {
+  _FutureCallRef(this._invokeFutureCall);
 
   // ignore: unused_field
   final _InvokeFutureCall _invokeFutureCall;
