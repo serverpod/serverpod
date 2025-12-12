@@ -1,5 +1,4 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
@@ -25,6 +24,7 @@ abstract class FutureCallParameterAnalyzer {
         name: parameter.name!,
         required: _isRequired(parameter),
         type: TypeDefinition.fromDartType(parameter.type),
+        defaultValue: parameter.defaultValueCode,
       );
 
       if (parameter.isRequiredPositional) {
@@ -127,11 +127,6 @@ abstract class FutureCallParameterAnalyzer {
     }
 
     if (parameter.isRequiredNamed) {
-      return true;
-    }
-
-    if (parameter.isNamed &&
-        parameter.type.nullabilitySuffix == NullabilitySuffix.none) {
       return true;
     }
 
