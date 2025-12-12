@@ -64,7 +64,7 @@ void main() {
       );
 
       var error = collector.errors.first;
-      expect(error.message, 'The "values" property must be a list of strings.');
+      expect(error.message, 'The "values" property must be a list.');
     },
   );
 
@@ -96,7 +96,7 @@ void main() {
       );
 
       var error = collector.errors.first;
-      expect(error.message, 'The "values" property must be a list of strings.');
+      expect(error.message, 'The "values" property must be a list.');
     },
   );
 
@@ -128,7 +128,10 @@ void main() {
       );
 
       var error = collector.errors.first;
-      expect(error.message, 'The "values" property must be a list of strings.');
+      expect(
+        error.message,
+        'Enum values must be strings or maps with property values.',
+      );
     },
   );
 
@@ -159,7 +162,10 @@ void main() {
       );
 
       var error = collector.errors.first;
-      expect(error.message, 'The "values" property must be a list of strings.');
+      expect(
+        error.message,
+        'Enum values must be strings or maps with property values.',
+      );
     },
   );
 
