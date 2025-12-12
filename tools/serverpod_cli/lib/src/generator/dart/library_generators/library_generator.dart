@@ -1759,7 +1759,7 @@ typedef _InvokeFutureCall =
     );
 
     _generateFutureCallRef(library);
-    _generateFutureCallCallers(library);
+    _generateFutureCallDispatchers(library);
     _generateServerFutureCalls(library);
 
     return library.build();
@@ -1833,18 +1833,18 @@ typedef _InvokeFutureCall =
           )
           // Getters for future call callers
           ..methods.addAll([
-            for (var definition in protocolDefinition.futureCalls)
-              if (definition.methods.isNotEmpty)
+            for (var futureCall in protocolDefinition.futureCalls)
+              if (futureCall.methods.isNotEmpty)
                 Method(
                   (m) => m
-                    ..name = definition.name
+                    ..name = futureCall.name
                     ..type = MethodType.getter
                     ..returns = refer(
-                      '_${definition.name.pascalCase}FutureCallCaller',
+                      _generateFutureCallDispatcherClassName(futureCall),
                     )
                     ..body = Block.of([
                       refer(
-                        '_${definition.name.pascalCase}FutureCallCaller',
+                        _generateFutureCallDispatcherClassName(futureCall),
                       ).call([refer('_invokeFutureCall')]).returned.statement,
                     ]),
                 ),
@@ -1853,15 +1853,21 @@ typedef _InvokeFutureCall =
     );
   }
 
-  /// Generates callers for each future call class for server side.
-  void _generateFutureCallCallers(LibraryBuilder libraryBuilder) {
-    for (final definition in protocolDefinition.futureCalls) {
-      if (definition.methods.isEmpty) continue;
-      // FutureCallCaller class
+  String _generateFutureCallDispatcherClassName(
+    FutureCallDefinition futureCall,
+  ) {
+    return '_${futureCall.name.pascalCase}FutureCallDispatcher';
+  }
+
+  /// Generates dispatchers for all future call classes.
+  void _generateFutureCallDispatchers(LibraryBuilder libraryBuilder) {
+    for (final futureCall in protocolDefinition.futureCalls) {
+      if (futureCall.methods.isEmpty) continue;
+      // FutureCallDispatcher class
       libraryBuilder.body.add(
         Class(
           (c) => c
-            ..name = '_${definition.name.pascalCase}FutureCallCaller'
+            ..name = _generateFutureCallDispatcherClassName(futureCall)
             ..fields.add(
               Field(
                 (f) => f
@@ -1883,15 +1889,15 @@ typedef _InvokeFutureCall =
               ),
             )
             ..methods.addAll([
-              for (var method in definition.methods)
-                _buildFutureCallCallerMethod(definition.name, method),
+              for (var method in futureCall.methods)
+                _buildFutureCallDispatcherMethod(futureCall.name, method),
             ]),
         ),
       );
     }
   }
 
-  Method _buildFutureCallCallerMethod(
+  Method _buildFutureCallDispatcherMethod(
     String futureClassName,
     FutureCallMethodDefinition method,
   ) {
@@ -2013,19 +2019,18 @@ typedef _InvokeFutureCall =
 
   /// Generates future calls for the server.
   void _generateServerFutureCalls(LibraryBuilder libraryBuilder) {
-    for (var definition in protocolDefinition.futureCalls) {
+    for (var futureCall in protocolDefinition.futureCalls) {
+      if (futureCall.isAbstract) continue;
       // Generate a future call class for each method in the definition
-      for (var method in definition.methods) {
+      for (var method in futureCall.methods) {
         var futureCallClassName = _getFutureCallClassName(
-          definition.name,
+          futureCall.name,
           method.name,
         );
 
         libraryBuilder.body.add(
           Class((c) {
-            var requiredParams = method.parameters;
-            var optionalParams = method.parametersPositional;
-            var namedParameters = method.parametersNamed;
+            var requiredParameters = method.parameters;
 
             c
               ..annotations.add(refer('doNotGenerate', serverpodUrl(true)))
@@ -2045,13 +2050,13 @@ typedef _InvokeFutureCall =
                         ),
                       )
                     else
-                      requiredParams.first.type.asNonNullable.reference(
+                      requiredParameters.first.type.asNonNullable.reference(
                         true,
                         config: config,
                       ),
                   ]),
               )
-              ..abstract = definition.isAbstract;
+              ..abstract = futureCall.isAbstract;
 
             c.methods.add(
               Method(
@@ -2086,57 +2091,79 @@ typedef _InvokeFutureCall =
                     else
                       Parameter(
                         (p) => p
-                          ..name = requiredParams.first.name
-                          ..type = requiredParams.first.type.asNullable
+                          ..name = requiredParameters.first.name
+                          ..type = requiredParameters.first.type.asNullable
                               .reference(
                                 true,
                                 config: config,
                               ),
                       ),
                   ])
-                  ..body = definition.isAbstract
+                  ..body = futureCall.isAbstract
                       ? null
-                      : Block.of([
-                          if (method.futureCallMethodParameter != null)
-                            const Code('if(object != null) { await'),
-                          refer(
-                                definition.className,
-                                _futureCallPath(definition),
-                              )
-                              .call([])
-                              .property(method.name)
-                              .call(
-                                [
-                                  refer('session'),
-                                  if (method.futureCallMethodParameter !=
-                                      null) ...[
-                                    for (var param in requiredParams)
-                                      refer('object!.${param.name}'),
-                                  ] else
-                                    refer(requiredParams.first.name),
-                                  if (method.futureCallMethodParameter != null)
-                                    for (var param in optionalParams)
-                                      refer('object!.${param.name}'),
-                                ],
-                                {
-                                  if (method.futureCallMethodParameter != null)
-                                    for (var param in namedParameters)
-                                      param.name: refer(
-                                        'object!.${param.name}',
-                                      ),
-                                },
-                              )
-                              .statement,
-
-                          if (method.futureCallMethodParameter != null)
-                            const Code('}'),
-                        ]),
+                      : _buildFutureCallMethodBody(futureCall, method),
               ),
             );
           }),
         );
       }
     }
+  }
+
+  Code _buildFutureCallMethodBody(
+    FutureCallDefinition futureCall,
+    FutureCallMethodDefinition method,
+  ) {
+    var requiredParameters = method.parameters;
+    var optionalParameters = method.parametersPositional;
+    var namedParameters = method.parametersNamed;
+
+    Expression buildPositionalParameter() {
+      final isPositionalParameterNullable =
+          requiredParameters.firstOrNull?.type.nullable == true;
+
+      if (isPositionalParameterNullable) {
+        return refer(requiredParameters.first.name);
+      } else {
+        return refer(requiredParameters.first.name).nullChecked;
+      }
+    }
+
+    return Block.of([
+      if (method.futureCallMethodParameter != null)
+        const Code('if(object != null) { await')
+      else
+        const Code('await'),
+      refer(
+            futureCall.className,
+            _futureCallPath(futureCall),
+          )
+          .call([])
+          .property(method.name)
+          .call(
+            [
+              refer('session'),
+              if (method.futureCallMethodParameter != null) ...[
+                for (var param in requiredParameters)
+                  refer('object!.${param.name}'),
+              ] else
+                buildPositionalParameter(),
+              if (method.futureCallMethodParameter != null)
+                for (var param in optionalParameters)
+                  refer('object!.${param.name}'),
+            ],
+            {
+              if (method.futureCallMethodParameter != null)
+                for (var param in namedParameters)
+                  param.name: refer(
+                    'object!.${param.name}',
+                  ),
+            },
+          )
+          .statement,
+
+      if (method.futureCallMethodParameter != null) const Code('}'),
+    ]);
   }
 }
 
