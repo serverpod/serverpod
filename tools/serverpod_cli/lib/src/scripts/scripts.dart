@@ -1,11 +1,9 @@
 import 'dart:collection';
 import 'dart:io';
 
-import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
 import '../util/pubspec_plus.dart';
-import '../util/server_directory_finder.dart';
 import 'script.dart';
 
 /// The key used in pubspec.yaml to define scripts.
@@ -108,25 +106,6 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
     }
 
     return Scripts._fromYaml(scriptsNode);
-  }
-
-  /// Finds the pubspec.yaml file for the Serverpod server project.
-  ///
-  /// Uses [ServerDirectoryFinder] to locate the server directory,
-  /// which handles walking up directories, sibling patterns, and
-  /// repository boundary detection.
-  ///
-  /// Returns null if no server directory is found.
-  static Future<File?> findPubspecFile(
-    Directory directory, {
-    bool interactive = true,
-  }) async {
-    final serverDir = await ServerDirectoryFinder.findOrPrompt(
-      startDir: directory,
-      interactive: interactive,
-    );
-    final pubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
-    return pubspecFile.existsSync() ? pubspecFile : null;
   }
 
   @override

@@ -5,9 +5,11 @@ import 'package:async/async.dart';
 import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/scripts/script.dart';
 import 'package:serverpod_cli/src/scripts/scripts.dart';
+import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 import '../runner/serverpod_command_runner.dart';
@@ -66,14 +68,11 @@ class RunCommand extends ServerpodCommand<RunOption> {
         !ci.isCI;
 
     // Find pubspec.yaml
-    final pubspecFile = await Scripts.findPubspecFile(
-      Directory.current,
+    final serverDir = await ServerDirectoryFinder.findOrPrompt(
+      startDir: Directory.current,
       interactive: interactive,
     );
-    if (pubspecFile == null) {
-      log.error('Could not find pubspec.yaml in current or parent directories');
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
+    final pubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
 
     // Parse scripts
     final Scripts scripts;
