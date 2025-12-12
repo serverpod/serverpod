@@ -306,7 +306,8 @@ class TypeDefinition {
 
     return TypeReference(
       (t) {
-        if (url?.startsWith('${_moduleRef}serverpod') ?? false) {
+        if (url == '${_moduleRef}serverpod' ||
+            (url?.startsWith('${_moduleRef}serverpod:') ?? false)) {
           // module:serverpod reference
           t.url = serverpodUrl(serverCode);
         } else if (url?.startsWith(_moduleRef) ?? false) {
