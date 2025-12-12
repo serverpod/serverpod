@@ -83,6 +83,8 @@ abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
     return {
       '__className__': 'ScopeServerOnlyFieldChild',
       if (allScope != null) 'allScope': allScope?.toJsonForProtocol(),
+      if (serverOnlyScope != null)
+        'serverOnlyScope': serverOnlyScope?.toJsonForProtocol(),
       if (nested != null) 'nested': nested?.toJsonForProtocol(),
       'childFoo': childFoo,
     };

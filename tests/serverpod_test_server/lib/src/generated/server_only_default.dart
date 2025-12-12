@@ -66,6 +66,9 @@ abstract class ServerOnlyDefault
     return {
       '__className__': 'ServerOnlyDefault',
       'normalField': normalField,
+      if (serverOnlyField != null) 'serverOnlyField': serverOnlyField,
+      if (serverOnlyStringField != null)
+        'serverOnlyStringField': serverOnlyStringField,
     };
   }
 

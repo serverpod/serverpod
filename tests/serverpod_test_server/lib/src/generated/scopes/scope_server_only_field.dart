@@ -85,6 +85,8 @@ class ScopeServerOnlyField
     return {
       '__className__': 'ScopeServerOnlyField',
       if (allScope != null) 'allScope': allScope?.toJsonForProtocol(),
+      if (serverOnlyScope != null)
+        'serverOnlyScope': serverOnlyScope?.toJsonForProtocol(),
       if (nested != null) 'nested': nested?.toJsonForProtocol(),
     };
   }
