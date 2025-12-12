@@ -119,9 +119,9 @@ abstract class FutureCallMethodAnalyzer {
     required DartType dartType,
     required Element dartElement,
   }) {
-    if (!(dartType.isDartAsyncFuture)) {
+    if (!dartType.isDartAsyncFuture) {
       return SourceSpanSeverityException(
-        'Return type must be a Future',
+        'Return type must be a Future.',
         dartElement.span,
       );
     }
@@ -134,24 +134,11 @@ abstract class FutureCallMethodAnalyzer {
     }
 
     var typeArguments = dartType.typeArguments;
-    if (typeArguments.length != 1) {
-      // Interface type must always have a type argument so this is just for
-      // safety.
+    late var innerType = typeArguments[0];
+
+    if (typeArguments.length != 1 || innerType is! VoidType) {
       return SourceSpanSeverityException(
-        'Return generic must be type defined. E.g. ${dartType.element.name}<String>.',
-        dartElement.span,
-      );
-    }
-
-    var innerType = typeArguments[0];
-
-    if (innerType is VoidType && dartType.isDartAsyncFuture) {
-      return null;
-    }
-
-    if (innerType is DynamicType) {
-      return SourceSpanSeverityException(
-        'Return generic must have a type defined. E.g. ${dartType.element.name}<String>.',
+        'Return type must be a Future<void>.',
         dartElement.span,
       );
     }
