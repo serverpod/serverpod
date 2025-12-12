@@ -46,21 +46,6 @@ void run(List<String> args) async {
 
   // Start the server.
   await pod.start();
-
-  // You can schedule future calls for a later time during startup. But you can
-  // also schedule them in any endpoint or webroute using the global [futureCalls].
-  // There is also [futureCalls.callAtTime] if you want to schedule a future call at a
-  // specific time.
-  await futureCalls
-      .callWithDelay(Duration(seconds: 5))
-      .birthdayReminder
-      .invoke(
-        Greeting(
-          message: 'Hello!',
-          author: 'Serverpod Server',
-          timestamp: DateTime.now(),
-        ),
-      );
 }
 
 void _sendRegistrationCode(
