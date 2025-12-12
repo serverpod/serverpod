@@ -1621,7 +1621,7 @@ typedef _InvokeFutureCall =
     Future<void> Function(String name, $type? object);
 
     /// Global variable for accessing future calls via a typed interface.
-    final futureCalls = FutureCalls();
+    final futureCalls = _FutureCalls();
 ''';
       }),
     );
@@ -1630,7 +1630,8 @@ typedef _InvokeFutureCall =
     library.body.add(
       Class(
         (c) => c
-          ..name = 'FutureCalls'
+          ..name = '_FutureCalls'
+          ..implements.add(refer('FutureCallInitializer', serverpodUrl(true)))
           ..fields.addAll([
             Field(
               (f) => f
@@ -1647,12 +1648,13 @@ typedef _InvokeFutureCall =
           ..methods.add(
             Method.returnsVoid(
               (m) => m
+                ..annotations.add(refer('override'))
                 ..name = 'initialize'
                 ..requiredParameters.addAll([
                   Parameter(
                     ((p) => p
                       ..name = 'futureCallManager'
-                      ..type = refer('FutureCallManager?', serverpodUrl(true))),
+                      ..type = refer('FutureCallManager', serverpodUrl(true))),
                   ),
                   Parameter(
                     ((p) => p
@@ -1675,7 +1677,7 @@ typedef _InvokeFutureCall =
             Method((m) {
               m
                 ..name = 'callAtTime'
-                ..returns = refer('FutureCallRef')
+                ..returns = refer('_FutureCallRef')
                 ..requiredParameters.add(
                   Parameter(
                     (p) => p
@@ -1698,7 +1700,7 @@ typedef _InvokeFutureCall =
       if (_futureCallManager == null) {
         throw StateError('Future calls are disabled.');
       }
-      return FutureCallRef(
+      return _FutureCallRef(
         (name, object) {
           return _futureCallManager!.scheduleFutureCall(
             name,
@@ -1716,7 +1718,7 @@ typedef _InvokeFutureCall =
             Method((m) {
               m
                 ..name = 'callWithDelay'
-                ..returns = refer('FutureCallRef')
+                ..returns = refer('_FutureCallRef')
                 ..requiredParameters.add(
                   Parameter(
                     (p) => p
@@ -1739,7 +1741,7 @@ typedef _InvokeFutureCall =
       if (_futureCallManager == null) {
         throw StateError('Future calls are disabled.');
       }
-      return FutureCallRef(
+      return _FutureCallRef(
         (name, object) {
         return _futureCallManager!.scheduleFutureCall(
           name,
@@ -1768,7 +1770,6 @@ typedef _InvokeFutureCall =
       const Code('''
         _futureCallManager = futureCallManager;
         _serverId = serverId;
-        if (_futureCallManager == null) return;
         for (final entry in futureCalls.entries) {
           _futureCallManager?.registerFutureCall(entry.value, entry.key);
         }
@@ -1804,7 +1805,7 @@ typedef _InvokeFutureCall =
     libraryBuilder.body.add(
       Class(
         (c) => c
-          ..name = 'FutureCallRef'
+          ..name = '_FutureCallRef'
           ..fields.add(
             Field(
               (f) {
@@ -1839,11 +1840,11 @@ typedef _InvokeFutureCall =
                     ..name = definition.name
                     ..type = MethodType.getter
                     ..returns = refer(
-                      '${ReCase(definition.name).pascalCase}FutureCallCaller',
+                      '_${definition.name.pascalCase}FutureCallCaller',
                     )
                     ..body = Block.of([
                       refer(
-                        '${ReCase(definition.name).pascalCase}FutureCallCaller',
+                        '_${definition.name.pascalCase}FutureCallCaller',
                       ).call([refer('_invokeFutureCall')]).returned.statement,
                     ]),
                 ),
@@ -1860,7 +1861,7 @@ typedef _InvokeFutureCall =
       libraryBuilder.body.add(
         Class(
           (c) => c
-            ..name = '${definition.name.pascalCase}FutureCallCaller'
+            ..name = '_${definition.name.pascalCase}FutureCallCaller'
             ..fields.add(
               Field(
                 (f) => f
@@ -1923,6 +1924,9 @@ typedef _InvokeFutureCall =
               (p) => p
                 ..named = false
                 ..name = param.name
+                ..defaultTo = param.defaultValue != null
+                    ? Code(param.defaultValue!)
+                    : null
                 ..type = param.type.reference(
                   true,
                   config: config,
@@ -1934,6 +1938,9 @@ typedef _InvokeFutureCall =
                 ..named = true
                 ..required = param.required
                 ..name = param.name
+                ..defaultTo = param.defaultValue != null
+                    ? Code(param.defaultValue!)
+                    : null
                 ..type = param.type.reference(
                   true,
                   config: config,
@@ -2021,6 +2028,7 @@ typedef _InvokeFutureCall =
             var namedParameters = method.parametersNamed;
 
             c
+              ..annotations.add(refer('doNotGenerate', serverpodUrl(true)))
               ..docs.add(method.documentationComment ?? '')
               ..name = futureCallClassName
               ..extend = TypeReference(
@@ -2048,8 +2056,8 @@ typedef _InvokeFutureCall =
             c.methods.add(
               Method(
                 (m) => m
-                  ..annotations.add(refer('doNotGenerate', serverpodUrl(true)))
                   ..annotations.add(refer('override'))
+                  ..modifier = MethodModifier.async
                   ..returns = method.returnType.reference(
                     true,
                     config: config,
@@ -2088,30 +2096,41 @@ typedef _InvokeFutureCall =
                   ])
                   ..body = definition.isAbstract
                       ? null
-                      : refer(definition.className, _futureCallPath(definition))
-                            .call([])
-                            .property(method.name)
-                            .call(
-                              [
-                                refer('session'),
-                                if (method.futureCallMethodParameter !=
-                                    null) ...[
-                                  for (var param in requiredParams)
-                                    refer('object!.${param.name}'),
-                                ] else
-                                  refer(requiredParams.first.name).nullChecked,
-                                if (method.futureCallMethodParameter != null)
-                                  for (var param in optionalParams)
-                                    refer('object!.${param.name}'),
-                              ],
-                              {
-                                if (method.futureCallMethodParameter != null)
-                                  for (var param in namedParameters)
-                                    param.name: refer('object!.${param.name}'),
-                              },
-                            )
-                            .returned
-                            .statement,
+                      : Block.of([
+                          if (method.futureCallMethodParameter != null)
+                            const Code('if(object != null) { await'),
+                          refer(
+                                definition.className,
+                                _futureCallPath(definition),
+                              )
+                              .call([])
+                              .property(method.name)
+                              .call(
+                                [
+                                  refer('session'),
+                                  if (method.futureCallMethodParameter !=
+                                      null) ...[
+                                    for (var param in requiredParams)
+                                      refer('object!.${param.name}'),
+                                  ] else
+                                    refer(requiredParams.first.name),
+                                  if (method.futureCallMethodParameter != null)
+                                    for (var param in optionalParams)
+                                      refer('object!.${param.name}'),
+                                ],
+                                {
+                                  if (method.futureCallMethodParameter != null)
+                                    for (var param in namedParameters)
+                                      param.name: refer(
+                                        'object!.${param.name}',
+                                      ),
+                                },
+                              )
+                              .statement,
+
+                          if (method.futureCallMethodParameter != null)
+                            const Code('}'),
+                        ]),
               ),
             );
           }),
