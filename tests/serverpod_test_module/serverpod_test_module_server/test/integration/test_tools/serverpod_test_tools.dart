@@ -126,6 +126,8 @@ void withServerpod(
 }
 
 class TestEndpoints {
+  final _FutureCalls futureCalls = _FutureCalls();
+
   late final _ConcreteBaseEndpoint concreteBase;
 
   late final _ModuleEndpoint module;
@@ -172,6 +174,8 @@ class _InternalTestEndpoints extends TestEndpoints
     );
   }
 }
+
+class _FutureCalls {}
 
 class _ConcreteBaseEndpoint {
   _ConcreteBaseEndpoint(

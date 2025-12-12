@@ -17,6 +17,8 @@ import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
 import 'package:serverpod_test_nonvector_server/src/generated/greeting.dart'
     as _i4;
+import 'package:serverpod_test_nonvector_server/src/generated/future_calls.dart'
+    as _i5;
 import 'package:serverpod_test_nonvector_server/src/generated/protocol.dart';
 import 'package:serverpod_test_nonvector_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -124,6 +126,8 @@ void withServerpod(
 }
 
 class TestEndpoints {
+  final _FutureCalls futureCalls = _FutureCalls();
+
   late final _GreetingEndpoint greeting;
 }
 
@@ -138,6 +142,12 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
+  }
+}
+
+class _FutureCalls {
+  _BirthdayReminderFutureCall get birthdayReminder {
+    return _BirthdayReminderFutureCall();
   }
 }
 
@@ -180,5 +190,23 @@ class _GreetingEndpoint {
         await _localUniqueSession.close();
       }
     });
+  }
+}
+
+class _BirthdayReminderFutureCall {
+  Future<void> invoke(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i4.Greeting? object,
+  ) async {
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      return _i5.BirthdayReminderInvokeFutureCall().invoke(
+        _localUniqueSession,
+        object,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
   }
 }

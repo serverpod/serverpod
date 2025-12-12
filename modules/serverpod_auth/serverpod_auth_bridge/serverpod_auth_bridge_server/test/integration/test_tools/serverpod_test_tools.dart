@@ -124,6 +124,8 @@ void withServerpod(
 }
 
 class TestEndpoints {
+  final _FutureCalls futureCalls = _FutureCalls();
+
   late final _SessionMigrationEndpoint sessionMigration;
 }
 
@@ -140,6 +142,8 @@ class _InternalTestEndpoints extends TestEndpoints
     );
   }
 }
+
+class _FutureCalls {}
 
 class _SessionMigrationEndpoint {
   _SessionMigrationEndpoint(

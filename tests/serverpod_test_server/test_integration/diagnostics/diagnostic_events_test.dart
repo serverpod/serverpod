@@ -131,7 +131,7 @@ void main() {
         'when a client calls an endpoint method that schedules a future call that throws '
         'then the diagnostic event handler gets called',
         () async {
-          await client.futureCalls.makeFutureCallThatThrows(
+          await client.testFutureCalls.makeFutureCallThatThrows(
             SimpleData(num: 42),
           );
 
