@@ -1833,19 +1833,20 @@ typedef _InvokeFutureCall =
           // Getters for future call callers
           ..methods.addAll([
             for (var definition in protocolDefinition.futureCalls)
-              Method(
-                (m) => m
-                  ..name = definition.name
-                  ..type = MethodType.getter
-                  ..returns = refer(
-                    '${ReCase(definition.name).pascalCase}FutureCallCaller',
-                  )
-                  ..body = Block.of([
-                    refer(
+              if (definition.methods.isNotEmpty)
+                Method(
+                  (m) => m
+                    ..name = definition.name
+                    ..type = MethodType.getter
+                    ..returns = refer(
                       '${ReCase(definition.name).pascalCase}FutureCallCaller',
-                    ).call([refer('_invokeFutureCall')]).returned.statement,
-                  ]),
-              ),
+                    )
+                    ..body = Block.of([
+                      refer(
+                        '${ReCase(definition.name).pascalCase}FutureCallCaller',
+                      ).call([refer('_invokeFutureCall')]).returned.statement,
+                    ]),
+                ),
           ]),
       ),
     );
@@ -1854,6 +1855,7 @@ typedef _InvokeFutureCall =
   /// Generates callers for each future call class for server side.
   void _generateFutureCallCallers(LibraryBuilder libraryBuilder) {
     for (final definition in protocolDefinition.futureCalls) {
+      if (definition.methods.isEmpty) continue;
       // FutureCallCaller class
       libraryBuilder.body.add(
         Class(
@@ -2046,6 +2048,7 @@ typedef _InvokeFutureCall =
             c.methods.add(
               Method(
                 (m) => m
+                  ..annotations.add(refer('doNotGenerate', serverpodUrl(true)))
                   ..annotations.add(refer('override'))
                   ..returns = method.returnType.reference(
                     true,
