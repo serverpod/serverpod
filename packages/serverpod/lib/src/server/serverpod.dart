@@ -354,7 +354,7 @@ class Serverpod {
 
   /// The [FutureCallInitializer] is responsible for initializing the
   /// generated future calls after this [Serverpod] is started.
-  final FutureCallInitializer futureCallInitializer;
+  final FutureCallInitializer? futureCalls;
 
   /// Creates a new Serverpod.
   ///
@@ -365,8 +365,8 @@ class Serverpod {
   Serverpod(
     List<String> args,
     this.serializationManager,
-    this.endpoints,
-    this.futureCallInitializer, {
+    this.endpoints, {
+    this.futureCalls,
     ServerpodConfig? config,
     this.authenticationHandler,
     this.healthCheckHandler,
@@ -763,7 +763,7 @@ class Serverpod {
 
     if (_futureCallManager != null) {
       logVerbose('Initializing future calls.');
-      futureCallInitializer.initialize(_futureCallManager!, serverId);
+      futureCalls?.initialize(_futureCallManager!, serverId);
     }
   }
 

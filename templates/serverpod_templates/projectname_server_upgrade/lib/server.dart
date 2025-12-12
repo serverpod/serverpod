@@ -14,7 +14,12 @@ import 'src/generated/future_calls.dart';
 
 void run(List<String> args) async {
   // Initialize Serverpod and connect it with your generated code.
-  final pod = Serverpod(args, Protocol(), Endpoints(), futureCalls);
+  final pod = Serverpod(
+    args,
+    Protocol(),
+    Endpoints(),
+    futureCalls: futureCalls,
+  );
 
   // Setup a default page at the web root.
   pod.webServer.addRoute(RootRoute(), '/');
