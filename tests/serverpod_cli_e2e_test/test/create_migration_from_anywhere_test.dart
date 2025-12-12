@@ -47,7 +47,6 @@ void main() async {
     () {
       var projectName =
           'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      var serverDir = path.join(projectName, '${projectName}_server');
 
       late Process createProcess;
 
@@ -71,7 +70,9 @@ void main() async {
         );
 
         // Create a root pubspec.yaml with name: _ (simulating workspace)
-        var rootPubspec = File(path.join(tempDir.path, projectName, 'pubspec.yaml'));
+        var rootPubspec = File(
+          path.join(tempDir.path, projectName, 'pubspec.yaml'),
+        );
         rootPubspec.writeAsStringSync('''
 name: _
 environment:
@@ -149,7 +150,6 @@ environment:
     () {
       var projectName =
           'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      var serverDir = path.join(projectName, '${projectName}_server');
       var clientDir = path.join(projectName, '${projectName}_client');
 
       late Process createProcess;
