@@ -1,0 +1,26 @@
+name: projectname
+publish_to: none
+
+environment:
+  sdk: '^3.8.0'
+
+#workspace: #--UNCOMMENT_LINE--#
+#  - projectname_client #--UNCOMMENT_LINE--#
+#  - projectname_server #--UNCOMMENT_LINE--#
+#  - projectname_flutter #--UNCOMMENT_LINE--#
+
+dependency_overrides: 
+  serverpod: 
+    path: ../../../packages/serverpod 
+  serverpod_serialization: 
+    path: ../../../packages/serverpod_serialization 
+  serverpod_shared: 
+    path: ../../../packages/serverpod_shared 
+  serverpod_test: 
+    path: ../../../packages/serverpod_test 
+  serverpod_lints: 
+    path: ../../../packages/serverpod_lints 
+  serverpod_client: 
+    path: ../../../packages/serverpod_client 
+  serverpod_flutter: 
+    path: ../../../packages/serverpod_flutter 
