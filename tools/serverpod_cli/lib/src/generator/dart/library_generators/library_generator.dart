@@ -1807,10 +1807,15 @@ typedef _InvokeFutureCall =
           ..name = 'FutureCallRef'
           ..fields.add(
             Field(
-              (f) => f
-                ..modifier = FieldModifier.final$
-                ..name = '_invokeFutureCall'
-                ..type = refer('_InvokeFutureCall'),
+              (f) {
+                if (protocolDefinition.futureCalls.isEmpty) {
+                  f.docs.add('// ignore: unused_field');
+                }
+                f
+                  ..modifier = FieldModifier.final$
+                  ..name = '_invokeFutureCall'
+                  ..type = refer('_InvokeFutureCall');
+              },
             ),
           )
           ..constructors.add(
