@@ -99,6 +99,7 @@ abstract class FutureCallClassAnalyzer {
   /// Returns true if the [ClassElement] is an active future call class that should
   /// be validated and parsed.
   static bool isFutureCallClass(ClassElement element) {
+    if (element.markedAsIgnored) return false;
     if (!element.isConstructable && !element.isAbstract) return false;
     return isFutureCallInterface(element);
   }
