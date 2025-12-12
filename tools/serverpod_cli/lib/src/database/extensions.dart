@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/database/migration.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 //
@@ -241,6 +242,11 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
       out += '\n';
     }
 
+    if (tables.any((t) => t.columns.any((c) => c.isGeographyColumn))) {
+      out += _sqlCreatePostgisExtensionIfAvailable();
+      out += '\n';
+    }
+
     // Must be declared at the beginning for the function to be available.
     if (tables.any(
       (t) => t.columns.any((c) => c.columnDefault == pgsqlFunctionRandomUuidV7),
@@ -348,6 +354,13 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
       columnType == ColumnType.sparsevec ||
       columnType == ColumnType.bit;
 
+  /// Whether the column is of a geography type (PostGIS).
+  bool get isGeographyColumn =>
+      columnType == ColumnType.geographypoint ||
+      columnType == ColumnType.geographylinestring ||
+      columnType == ColumnType.geographypolygon ||
+      columnType == ColumnType.geographymultipolygon;
+
   String toPgSqlFragment() {
     String type;
     switch (columnType) {
@@ -380,6 +393,18 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
         break;
       case ColumnType.vector:
         type = 'vector(${vectorDimension!})';
+        break;
+      case ColumnType.geographypoint:
+        type = 'geography(Point)';
+        break;
+      case ColumnType.geographypolygon:
+        type = 'geography(Polygon)';
+        break;
+      case ColumnType.geographymultipolygon:
+        type = 'geography(MultiPolygon)';
+        break;
+      case ColumnType.geographylinestring:
+        type = 'geography(LineString)';
         break;
       case ColumnType.halfvec:
         type = 'halfvec(${vectorDimension!})';
@@ -519,6 +544,17 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
       out += '\n';
     }
 
+    if (actions.any(
+      (e) =>
+          (e.createTable != null &&
+              e.createTable!.columns.any((c) => c.isGeographyColumn)) ||
+          (e.alterTable != null &&
+              e.alterTable!.addColumns.any((c) => c.isGeographyColumn)),
+    )) {
+      out += _sqlCreatePostgisExtensionIfAvailable();
+      out += '\n';
+    }
+
     // Must be declared at the beginning for the function to be available.
     // Only add the function if it is used by any column on the migration.
     if (actions.any(
@@ -647,6 +683,7 @@ extension TableMigrationPgSqlGenerator on TableMigration {
 
     // Add columns
     for (var addColumn in addColumns) {
+      log.debug("------- Column $addColumn");
       out += 'ALTER TABLE "$name" ADD COLUMN ${addColumn.toPgSqlFragment()};\n';
     }
 
@@ -754,7 +791,21 @@ String _sqlCreateVectorExtensionIfAvailable() {
       '\n\$\$;'
       '\n';
 }
-
+String _sqlCreatePostgisExtensionIfAvailable() {
+  return '--'
+      '\n-- CREATE POSTGIS EXTENSION IF AVAILABLE'
+      '\n--'
+      '\nDO \$\$'
+      '\nBEGIN'
+      "\n  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'postgis') THEN"
+      "\n    EXECUTE 'CREATE EXTENSION IF NOT EXISTS postgis';"
+      '\n  ELSE'
+      '\n    RAISE EXCEPTION \'Required extension "postgis" is not available on this instance. Please install PostGIS. For instructions, see https://docs.serverpod.dev/database/postgis.\';\n'
+      '\n  END IF;'
+      '\nEND'
+      '\n\$\$;'
+      '\n';
+}
 const pgsqlFunctionRandomUuidV7 = 'gen_random_uuid_v7()';
 
 /// Add a function to generate v7 UUIDs in the database. The function name was

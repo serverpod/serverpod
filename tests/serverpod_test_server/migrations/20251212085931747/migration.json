@@ -1,0 +1,158 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_postgis",
+        "dartName": "ObjectWithPostgis",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('object_with_postgis_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "point",
+            "columnType": 14,
+            "isNullable": false,
+            "dartType": "GeographyPoint"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "pointNullable",
+            "columnType": 14,
+            "isNullable": true,
+            "dartType": "GeographyPoint?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "lineString",
+            "columnType": 17,
+            "isNullable": false,
+            "dartType": "GeographyLineString"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "lineStringNullable",
+            "columnType": 17,
+            "isNullable": true,
+            "dartType": "GeographyLineString?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "polygon",
+            "columnType": 15,
+            "isNullable": false,
+            "dartType": "GeographyPolygon"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "polygonNullable",
+            "columnType": 15,
+            "isNullable": true,
+            "dartType": "GeographyPolygon?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "multiPolygon",
+            "columnType": 16,
+            "isNullable": false,
+            "dartType": "GeographyMultiPolygon"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "multiPolygonNullable",
+            "columnType": 16,
+            "isNullable": true,
+            "dartType": "GeographyMultiPolygon?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "object_with_postgis_pkey",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "point_index",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "point"
+              }
+            ],
+            "type": "gist",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "line_string_index",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "lineString"
+              }
+            ],
+            "type": "gist",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "polygon_index",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "polygon"
+              }
+            ],
+            "type": "gist",
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "multi_polygon_index",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "multiPolygon"
+              }
+            ],
+            "type": "gist",
+            "isUnique": false,
+            "isPrimary": false
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

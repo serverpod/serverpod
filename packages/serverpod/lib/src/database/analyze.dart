@@ -80,23 +80,32 @@ WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
       '''
 SELECT column_name, column_default, is_nullable,
        CASE WHEN (data_type = 'USER-DEFINED') THEN udt_name ELSE data_type END as data_type,
-       CASE WHEN (udt_name IN ($vectorTypes)) THEN a.atttypmod ELSE NULL END as vector_size
+       CASE WHEN (udt_name IN ($vectorTypes)) THEN a.atttypmod ELSE NULL END as vector_size,
+       CASE WHEN (data_type = 'USER-DEFINED' AND udt_name = 'geography') 
+            THEN ('geography' || LOWER(gc.type)) 
+            WHEN (data_type = 'USER-DEFINED') 
+            THEN udt_name 
+            ELSE data_type
+        END as data_type
 FROM information_schema.columns
   LEFT JOIN pg_catalog.pg_attribute a ON a.attname = column_name
   LEFT JOIN pg_catalog.pg_class c ON c.oid = a.attrelid
   LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+  LEFT JOIN geography_columns gc ON gc.f_table_schema = '$schemaName' 
+    AND gc.f_table_name = '$tableName' 
+    AND gc.f_geography_column = column_name
 WHERE table_schema = '$schemaName' AND table_name = '$tableName'
   AND n.nspname = '$schemaName' AND c.relname = '$tableName'
 ORDER BY ordinal_position;
 ''',
     );
-
     return queryResult
         .map(
           (e) => ColumnDefinition(
             name: e[0],
             columnDefault: e[1],
-            columnType: ExtendedColumnType.fromSqlType(e[3]),
+            // e[5] represent the POSTGIS data type PostgisPoint, PostgisPolygon, etc..
+            columnType: ExtendedColumnType.fromSqlType(e[3], e[5]),
             // SQL outputs YES or NO. So we have to convert it to a bool manually.
             isNullable: e[2] == 'YES',
             vectorDimension: e[4],

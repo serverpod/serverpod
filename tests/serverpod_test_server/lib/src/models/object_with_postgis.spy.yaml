@@ -1,0 +1,25 @@
+class: ObjectWithPostgis
+table: object_with_postgis
+fields:
+  point: GeographyPoint
+  pointNullable: GeographyPoint?
+  lineString: GeographyLineString
+  lineStringNullable: GeographyLineString?
+  polygon: GeographyPolygon
+  polygonNullable: GeographyPolygon?
+  multiPolygon: GeographyMultiPolygon
+  multiPolygonNullable: GeographyMultiPolygon?
+
+indexes:
+  point_index:
+    type: gist
+    fields: point
+  line_string_index:
+    type: gist
+    fields: lineString
+  polygon_index:
+    type: gist
+    fields: polygon
+  multi_polygon_index:
+    type: gist
+    fields: multiPolygon

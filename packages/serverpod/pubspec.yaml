@@ -3,7 +3,8 @@
 
 name: serverpod
 version: 3.0.1
-description: Serverpod is an open-source, scalable app server, written in Dart for the Flutter community.
+description: Serverpod is an open-source, scalable app server, written in Dart
+  for the Flutter community.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
