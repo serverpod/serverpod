@@ -24,7 +24,7 @@ void main() {
     var config = GeneratorConfigBuilder()
         .withName(projectName)
         .withModules([authCoreModule])
-        .build();;
+        .build();
 
     // Define AuthUser from the auth_core module
     var authUser = ModelClassDefinitionBuilder()
@@ -96,6 +96,74 @@ void main() {
       () {
         // Parse and check for syntax errors
         var parseResult = parseString(content: myDomainDataCode);
+        expect(
+          parseResult.errors,
+          isEmpty,
+          reason: 'Generated code should be valid Dart code without errors',
+        );
+      },
+    );
+  });
+
+  // Regression test: ensure module:serverpod references still work
+  group('Given a model that references a type from module:serverpod', () {
+    var config = GeneratorConfigBuilder().withName(projectName).build();
+
+    var myModel = ModelClassDefinitionBuilder()
+        .withClassName('MyModel')
+        .withFileName('my_model')
+        .withField(
+          FieldDefinitionBuilder()
+              .withName('uuidValue')
+              .withType(
+                TypeDefinitionBuilder()
+                    .withClassName('UuidValue')
+                    .withUrl('module:serverpod')
+                    .withNullable(true)
+                    .build(),
+              )
+              .build(),
+        )
+        .build();
+
+    var models = [myModel];
+
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
+      config: config,
+    );
+
+    String getExpectedFilePath(String fileName) => p.joinAll([
+          'lib',
+          'src',
+          'generated',
+          '$fileName.dart',
+        ]);
+
+    var myModelCode = codeMap[getExpectedFilePath('my_model')]!;
+    var compilationUnit = parseString(content: myModelCode).unit;
+
+    test(
+      'then the generated file imports from package:serverpod/serverpod.dart',
+      () {
+        var import = CompilationUnitHelpers.tryFindImportDirective(
+          compilationUnit,
+          uri: 'package:serverpod/serverpod.dart',
+        );
+
+        expect(
+          import,
+          isNotNull,
+          reason:
+              'Generated code should import from serverpod package for module:serverpod types',
+        );
+      },
+    );
+
+    test(
+      'then the generated file does not have compilation errors',
+      () {
+        var parseResult = parseString(content: myModelCode);
         expect(
           parseResult.errors,
           isEmpty,
