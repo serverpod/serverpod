@@ -520,7 +520,7 @@ class ExampleFutureCall extends FutureCall {
         () {
           expect(
             collector.errors.firstOrNull?.message,
-            'Return type must be a Future<void>.',
+            'Return generic must have a type defined. E.g. Future<void>.',
           );
         },
       );
@@ -580,7 +580,7 @@ class ExampleFutureCall extends FutureCall {
         () {
           expect(
             collector.errors.firstOrNull?.message,
-            'Return type must be a Future<void>.',
+            'Return generic must have a type defined. E.g. Future<void>.',
           );
         },
       );
