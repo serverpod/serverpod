@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/validator.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -39,10 +40,14 @@ class GenerateFiles {
       }
     });
 
-    final futureCallsAnalyzer = FutureCallsAnalyzer(
-      directory: libDirectory,
+    var parameterValidator = FutureCallMethodParameterValidator(
       config: config,
       modelAnalyzer: modelAnalyzer,
+    );
+
+    var futureCallsAnalyzer = FutureCallsAnalyzer(
+      directory: libDirectory,
+      parameterValidator: parameterValidator,
     );
 
     if (hasErrors) {
