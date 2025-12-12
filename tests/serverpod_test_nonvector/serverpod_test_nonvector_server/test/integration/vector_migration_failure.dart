@@ -17,6 +17,7 @@ void main() {
     (sessionBuilder, endpoints) {
       var serviceClient = Client(
         serviceServerUrl,
+        // ignore: deprecated_member_use
         authenticationKeyManager: TestServiceKeyManager(
           '0',
           'super_SECRET_password',

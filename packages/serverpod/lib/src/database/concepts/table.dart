@@ -16,6 +16,25 @@ abstract interface class TableRow<T_ID> implements SerializableModel {
   Table<T_ID> get table;
 }
 
+/// Extension on a [TableRow] to ensure database serialization matches the
+/// expected naming of the column in the database
+extension TableRowDatabaseJsonExtension on TableRow {
+  /// Returns the json representation to be sent to the database for storage
+  dynamic toJsonForDatabase() {
+    final json = toJson();
+    if (json is! Map<String, dynamic>) return json;
+
+    final dbJson = <String, dynamic>{};
+    for (final column in table.columns) {
+      // Eliminate non persistent fields
+      if (!json.containsKey(column.fieldName)) continue;
+
+      dbJson[column.columnName] = json[column.fieldName];
+    }
+    return dbJson;
+  }
+}
+
 /// Represents a database table.
 class Table<T_ID> {
   /// Name of the table as used in the database.
@@ -38,6 +57,10 @@ class Table<T_ID> {
 
   /// Table relation for [Column]s of the table.
   final TableRelation? tableRelation;
+
+  /// Cached flag indicating whether any columns have explicit column names
+  /// that differ from their field names. Computed lazily on first access.
+  late final bool hasColumnMapping = _computeHasColumnMapping();
 
   /// Creates a new [Table]. Typically, this is done only by generated code.
   Table({
@@ -69,6 +92,16 @@ class Table<T_ID> {
     } else {
       throw Exception('Unsupported id type: $T_ID');
     }
+  }
+
+  /// Checks if any columns have explicit column names that differ from field names.
+  bool _computeHasColumnMapping() {
+    for (final column in columns) {
+      if (column.columnName != column.fieldName) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /// Returns [TableColumnRelation] for the given [relationField]. If no relation

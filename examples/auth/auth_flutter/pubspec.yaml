@@ -30,8 +30,8 @@ dependencies:
   extended_image: ^10.0.1
   flutter:
     sdk: flutter
-  serverpod_auth_idp_flutter: 3.0.0-rc.4
-  serverpod_flutter: 3.0.0-rc.4
+  serverpod_auth_idp_flutter: 3.0.1
+  serverpod_flutter: 3.0.1
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
@@ -40,13 +40,13 @@ dev_dependencies:
 
 dependency_overrides:
   serverpod_auth_core_client:
-    path: ../../../modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
+    path: ../../../modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
   serverpod_auth_core_flutter:
-    path: ../../../modules/new_serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter
+    path: ../../../modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter
   serverpod_auth_idp_client:
-    path: ../../../modules/new_serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client
+    path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client
   serverpod_auth_idp_flutter:
-    path: ../../../modules/new_serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter
+    path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter
   serverpod_client:
     path: ../../../packages/serverpod_client
   serverpod_flutter:

@@ -37,6 +37,8 @@ class Keyword {
   static const String defaultModelKey = 'defaultModel';
   static const String defaultPersistKey = 'defaultPersist';
 
+  static const String columnKey = 'column';
+
   /// Special keyword to allow keys to be any string.
   static const String any = '#any';
 }

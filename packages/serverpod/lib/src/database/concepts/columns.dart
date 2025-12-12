@@ -17,11 +17,19 @@ abstract class Column<T> {
   /// Name of the [Column].
   String get columnName => _columnName;
 
+  final String? _fieldName;
+
+  /// Name of the field in the model
+  String get fieldName => _fieldName ?? _columnName;
+
   /// Table that column belongs to.
   final Table table;
 
   /// Query alias for the [Column].
-  String get queryAlias => '${table.queryPrefix}.$_columnName';
+  String get queryAlias => '${table.queryPrefix}.$columnName';
+
+  /// Field name alias for the [Column] to be used in queries.
+  String get fieldQueryAlias => '${table.queryPrefix}.$fieldName';
 
   /// flag to tell if this [Column] has any [default] value
   final bool hasDefault;
@@ -31,7 +39,9 @@ abstract class Column<T> {
     this._columnName,
     this.table, {
     this.hasDefault = false,
-  }) : type = T;
+    String? fieldName,
+  }) : _fieldName = fieldName ?? _columnName,
+       type = T;
 
   @override
   String toString() {
@@ -46,6 +56,7 @@ class ColumnByteData extends Column<ByteData> {
     super.columnName,
     super.table, {
     super.hasDefault,
+    super.fieldName,
   });
 }
 
@@ -57,6 +68,7 @@ class ColumnSerializable<T> extends Column<T> {
     super.columnName,
     super.table, {
     super.hasDefault,
+    super.fieldName,
   });
 }
 
@@ -65,6 +77,7 @@ abstract class _ValueOperatorColumn<T> extends Column<T> {
     super.columnName,
     super.table, {
     super.hasDefault,
+    super.fieldName,
   });
 
   /// Applies encoding to value before it is sent to the database.
@@ -79,6 +92,7 @@ abstract class _ColumnComparableEquals<T> extends _ValueOperatorColumn<T>
     super.columnName,
     super.table, {
     super.hasDefault,
+    super.fieldName,
   });
 }
 
@@ -92,6 +106,7 @@ abstract class ColumnComparable<T> extends _ColumnComparableEquals<T>
     super.columnName,
     super.table, {
     super.hasDefault,
+    super.fieldName,
   });
 }
 
@@ -104,6 +119,7 @@ class ColumnEnum<E extends Enum> extends _ColumnComparableEquals<E> {
     super.table,
     this._serialized, {
     super.hasDefault,
+    super.fieldName,
   });
 
   /// Creates a new [Column], this is typically done in generated code only.
@@ -112,6 +128,7 @@ class ColumnEnum<E extends Enum> extends _ColumnComparableEquals<E> {
     Table table,
     EnumSerialization serialized, {
     bool hasDefault,
+    String fieldName,
   }) = ColumnEnumExtended<E>;
 
   @override
@@ -133,6 +150,7 @@ class ColumnEnumExtended<E extends Enum> extends ColumnEnum<E> {
     super.table,
     super.serialized, {
     super.hasDefault,
+    super.fieldName,
   }) : super._();
 
   /// Data type for serialization of the enum.
@@ -150,6 +168,7 @@ class ColumnString extends ColumnComparable<String> {
     super.table, {
     this.varcharLength,
     super.hasDefault,
+    super.fieldName,
   });
 
   /// Creates an [Expression] checking if the value in the column is LIKE the
@@ -191,6 +210,7 @@ class ColumnBool extends _ColumnComparableEquals<bool> {
     super.columnName,
     super.table, {
     super.hasDefault,
+    super.fieldName,
   });
 
   @override
@@ -206,6 +226,7 @@ class ColumnDateTime extends ColumnComparable<DateTime>
     super.columnName,
     super.table, {
     super.hasDefault,
+    super.fieldName,
   });
 
   @override
@@ -220,6 +241,7 @@ class ColumnDuration extends ColumnComparable<Duration>
     super.columnName,
     super.table, {
     super.hasDefault,
+    super.fieldName,
   });
 
   @override
@@ -233,6 +255,7 @@ class ColumnUuid extends ColumnComparable<UuidValue> {
     super.columnName,
     super.table, {
     super.hasDefault,
+    super.fieldName,
   });
 
   @override
@@ -247,6 +270,7 @@ class ColumnUri extends _ValueOperatorColumn<Uri>
     super.columnName,
     super.table, {
     super.hasDefault,
+    super.fieldName,
   });
 
   @override
@@ -261,6 +285,7 @@ class ColumnBigInt extends _ValueOperatorColumn<BigInt>
     super.columnName,
     super.table, {
     super.hasDefault,
+    super.fieldName,
   });
 
   @override
@@ -275,6 +300,7 @@ class ColumnInt extends ColumnComparable<int>
     super.columnName,
     super.table, {
     super.hasDefault,
+    super.fieldName,
   });
 
   @override
@@ -289,6 +315,7 @@ class ColumnDouble extends ColumnComparable<double>
     super.columnName,
     super.table, {
     super.hasDefault,
+    super.fieldName,
   });
 
   @override
@@ -311,7 +338,7 @@ class ColumnCount extends _ValueOperatorColumn<int>
 
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnCount(this.innerWhere, Column column)
-    : super(column.columnName, column.table);
+    : super(column.columnName, column.table, fieldName: column.fieldName);
 
   @override
   Expression _encodeValueForQuery(int value) => Expression(value);
@@ -331,6 +358,7 @@ class ColumnVector extends _ValueOperatorColumn<Vector>
     super.table, {
     required this.dimension,
     super.hasDefault,
+    super.fieldName,
   });
 
   @override
@@ -351,6 +379,7 @@ class ColumnHalfVector extends _ValueOperatorColumn<HalfVector>
     super.table, {
     required this.dimension,
     super.hasDefault,
+    super.fieldName,
   });
 
   @override
@@ -371,6 +400,7 @@ class ColumnSparseVector extends _ValueOperatorColumn<SparseVector>
     super.table, {
     required this.dimension,
     super.hasDefault,
+    super.fieldName,
   });
 
   @override
@@ -390,6 +420,7 @@ class ColumnBit extends _ValueOperatorColumn<Bit>
     super.table, {
     required this.dimension,
     super.hasDefault,
+    super.fieldName,
   });
 
   @override
@@ -424,7 +455,11 @@ class ColumnVectorDistance<T> extends ColumnDouble {
 
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnVectorDistance(this._expression)
-    : super(_expression.column.columnName, _expression.column.table);
+    : super(
+        _expression.column.columnName,
+        _expression.column.table,
+        fieldName: _expression.column.fieldName,
+      );
 
   @override
   String toString() => _expression.toString();

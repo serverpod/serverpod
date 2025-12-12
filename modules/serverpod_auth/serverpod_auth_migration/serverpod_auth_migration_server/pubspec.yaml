@@ -1,0 +1,44 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+name: serverpod_auth_migration_server
+description: Serverpod authentication migration server module.
+version: 3.0.1
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: '^3.8.0'
+
+dependencies:
+  meta: ^1.15.0
+  serverpod: 3.0.1
+  serverpod_auth_bridge_server: 3.0.1
+  serverpod_auth_core_server: 3.0.1
+  serverpod_auth_idp_server: 3.0.1
+  serverpod_auth_server: 3.0.1
+  serverpod_shared: 3.0.1
+
+dev_dependencies:
+  serverpod_lints: 3.0.1
+  serverpod_test: 3.0.1
+  test: ^1.25.5
+
+dependency_overrides:
+  serverpod:
+    path: ../../../../packages/serverpod
+  serverpod_auth_bridge_server:
+    path: ../../serverpod_auth_bridge/serverpod_auth_bridge_server
+  serverpod_auth_core_server:
+    path: ../../serverpod_auth_core/serverpod_auth_core_server
+  serverpod_auth_idp_server:
+    path: ../../serverpod_auth_idp/serverpod_auth_idp_server
+  serverpod_auth_server:
+    path: ../../../legacy/serverpod_auth/serverpod_auth_server
+  serverpod_lints:
+    path: ../../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../../packages/serverpod_test

@@ -116,7 +116,7 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
           ),
         );
 
-        if (isAtBoundary) break;
+        if (isAtBoundary || candidates.isNotEmpty) break;
 
         current = current.parent;
       }
@@ -133,11 +133,11 @@ Directory? _returnCandidates(List<Directory> candidates) {
   // Remove duplicates by normalized path
   var uniquePaths = <String>{};
   candidates = candidates.where((dir) {
-    var normalized = p.normalize(dir.path);
-    if (uniquePaths.contains(normalized)) {
+    var canonicalized = p.canonicalize(dir.resolveSymbolicLinksSync());
+    if (uniquePaths.contains(canonicalized)) {
       return false;
     }
-    uniquePaths.add(normalized);
+    uniquePaths.add(canonicalized);
     return true;
   }).toList();
 
@@ -245,9 +245,9 @@ class ServerDirectoryFinder {
   }) {
     if (maxDepth < 0) return [];
 
-    var normalizedPath = p.normalize(dir.path);
-    if (visited.contains(normalizedPath)) return [];
-    visited.add(normalizedPath);
+    var canonicalizedPath = p.canonicalize(dir.path);
+    if (visited.contains(canonicalizedPath)) return [];
+    visited.add(canonicalizedPath);
 
     var results = <Directory>[];
 
@@ -321,9 +321,22 @@ class ServerDirectoryFinder {
       }
       var homeDir =
           Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
-      if (homeDir != null && p.normalize(dir.path) == p.normalize(homeDir)) {
+
+      final parentPath = p.canonicalize(dir.parent.resolveSymbolicLinksSync());
+
+      // Stop at first level within top-level directories to prevent
+      // cross-contamination between concurrent or leftover of previous tests
+      // Paths must be resolved first to avoid legacy DOS Windows paths.
+      final topLevelDirectories = {
+        p.rootPrefix(parentPath),
+        p.canonicalize(Directory.systemTemp.path),
+        if (homeDir != null)
+          p.canonicalize(Directory(homeDir).resolveSymbolicLinksSync()),
+      };
+      if (topLevelDirectories.any((d) => d == parentPath)) {
         return true;
       }
+
       return false;
     } on FileSystemException catch (_) {
       return true;

@@ -18,6 +18,7 @@ void main() {
         // prepare a proper authentication key
         client = Client(
           serverUrl,
+          // ignore: deprecated_member_use
           authenticationKeyManager: TestAuthKeyManager(),
         );
         var response = await client.authentication.authenticate(

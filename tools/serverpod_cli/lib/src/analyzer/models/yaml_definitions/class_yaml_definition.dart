@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.d
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class ClassYamlDefinition {
@@ -197,6 +198,13 @@ class ClassYamlDefinition {
                 mutuallyExclusiveKeys: {
                   Keyword.relation,
                 },
+              ),
+              ValidateNode(
+                Keyword.columnKey,
+                valueRestriction: restrictions.validateColumnName,
+                isHidden: !restrictions.config.isExperimentalFeatureEnabled(
+                  ExperimentalFeature.columnOverride,
+                ),
               ),
             },
           ),

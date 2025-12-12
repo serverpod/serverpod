@@ -1,0 +1,6 @@
+class: TableWithExplicitColumnName
+table: table_with_explicit_column_names
+fields:
+  id: int?
+  userName: String, column=user_name
+  description: String?, column=user_description, default='Just some information'

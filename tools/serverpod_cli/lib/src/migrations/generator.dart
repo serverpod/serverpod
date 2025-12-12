@@ -107,12 +107,12 @@ class MigrationGenerator {
 
     if (warnings.isNotEmpty && !force) {
       log.info('Migration aborted. Use --force to ignore warnings.');
-      return null;
+      throw const MigrationAbortedException();
     }
 
-    if (migration.isEmpty && !force) {
+    if (migration.isEmpty) {
       log.info(
-        'No changes detected. Use --force to create an empty migration.',
+        'No changes detected.',
       );
       return null;
     }

@@ -32,7 +32,7 @@ void run(List<String> args) async {
       'jwtRefreshTokenHashPepper',
     )!,
     algorithm: JwtAlgorithm.hmacSha512(
-      SecretKey(pod.getPassword('jwtPrivateKey')!),
+      SecretKey(pod.getPassword('jwtHmacSha512PrivateKey')!),
     ),
   );
 

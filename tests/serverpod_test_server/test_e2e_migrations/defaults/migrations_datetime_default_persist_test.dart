@@ -8,6 +8,7 @@ import 'package:test/test.dart';
 void main() {
   var serviceClient = Client(
     serviceServerUrl,
+    // ignore: deprecated_member_use
     authenticationKeyManager: TestServiceKeyManager(
       '0',
       'super_SECRET_password',

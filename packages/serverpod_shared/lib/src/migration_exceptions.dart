@@ -68,3 +68,9 @@ class MigrationVersionAlreadyExistsException implements Exception {
     required this.directoryPath,
   });
 }
+
+/// Exception thrown when a migration is aborted.
+class MigrationAbortedException implements Exception {
+  /// Creates a new [MigrationAbortedException].
+  const MigrationAbortedException();
+}

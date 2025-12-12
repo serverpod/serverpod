@@ -889,14 +889,17 @@ class LibraryGenerator {
                     ),
                     Parameter(
                       (p) => p
+                        ..annotations.add(
+                          refer('Deprecated', 'dart:core').call([
+                            literalString(
+                              'Use authKeyProvider instead. '
+                              'This will be removed in future releases.',
+                            ),
+                          ]),
+                        )
                         ..name = 'authenticationKeyManager'
                         ..named = true
-                        ..type = TypeReference(
-                          (t) => t
-                            ..symbol = 'AuthenticationKeyManager'
-                            ..url = serverpodUrl(false)
-                            ..isNullable = true,
-                        ),
+                        ..toSuper = true,
                     ),
                     Parameter(
                       (p) => p
@@ -987,9 +990,6 @@ class LibraryGenerator {
                           ],
                           {
                             'securityContext': refer('securityContext'),
-                            'authenticationKeyManager': refer(
-                              'authenticationKeyManager',
-                            ),
                             'streamingConnectionTimeout': refer(
                               'streamingConnectionTimeout',
                             ),
