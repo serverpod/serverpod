@@ -149,7 +149,6 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
     });
 
     var parameterValidator = FutureCallMethodParameterValidator(
-      config: config,
       modelAnalyzer: modelAnalyzer,
     );
 

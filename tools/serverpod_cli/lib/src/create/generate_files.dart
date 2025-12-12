@@ -41,7 +41,6 @@ class GenerateFiles {
     });
 
     var parameterValidator = FutureCallMethodParameterValidator(
-      config: config,
       modelAnalyzer: modelAnalyzer,
     );
 

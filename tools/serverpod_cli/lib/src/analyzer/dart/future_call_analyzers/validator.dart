@@ -5,13 +5,9 @@ import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/validation_utils.dart';
 
 class FutureCallMethodParameterValidator {
-  final GeneratorConfig config;
   final StatefulAnalyzer modelAnalyzer;
 
-  FutureCallMethodParameterValidator({
-    required this.config,
-    required this.modelAnalyzer,
-  });
+  FutureCallMethodParameterValidator({required this.modelAnalyzer});
 
   bool isValid(FormalParameterElement parameter) {
     return _isValidType(TypeDefinition.fromDartType(parameter.type));
