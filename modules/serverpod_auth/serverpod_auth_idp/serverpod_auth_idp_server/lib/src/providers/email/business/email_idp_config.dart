@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
+import '../../../utils/get_passwords_extension.dart';
 import '../util/default_code_generators.dart';
 import '../util/registration_password_policy.dart';
 import 'email_idp.dart';
@@ -215,9 +216,9 @@ class EmailIdpConfigFromPasswords extends EmailIdpConfig {
     super.secretHashSaltLength,
     super.onAfterAccountCreated,
   }) : super(
-         secretHashPepper: Serverpod.instance.getPassword(
+         secretHashPepper: Serverpod.instance.getPasswordOrThrow(
            'emailSecretHashPepper',
-         )!,
+         ),
        );
 }
 

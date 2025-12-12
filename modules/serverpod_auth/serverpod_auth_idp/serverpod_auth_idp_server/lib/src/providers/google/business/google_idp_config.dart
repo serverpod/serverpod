@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
+import '../../../utils/get_passwords_extension.dart';
 import 'google_idp.dart';
 import 'google_idp_utils.dart';
 
@@ -94,7 +95,7 @@ class GoogleIdpConfigFromPasswords extends GoogleIdpConfig {
   GoogleIdpConfigFromPasswords()
     : super(
         clientSecret: GoogleClientSecret.fromJsonString(
-          Serverpod.instance.getPassword('googleClientSecret')!,
+          Serverpod.instance.getPasswordOrThrow('googleClientSecret'),
         ),
       );
 }
