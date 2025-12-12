@@ -21,15 +21,16 @@ typedef _InvokeFutureCall =
     Future<void> Function(String name, _i1.SerializableModel? object);
 
 /// Global variable for accessing future calls via a typed interface.
-final futureCalls = FutureCalls();
+final futureCalls = _FutureCalls();
 
-class FutureCalls {
+class _FutureCalls implements _i1.FutureCallInitializer {
   _i1.FutureCallManager? _futureCallManager;
 
   String? _serverId;
 
+  @override
   void initialize(
-    _i1.FutureCallManager? futureCallManager,
+    _i1.FutureCallManager futureCallManager,
     String serverId,
   ) {
     var futureCalls = <String, _i1.FutureCall>{
@@ -38,13 +39,12 @@ class FutureCalls {
     };
     _futureCallManager = futureCallManager;
     _serverId = serverId;
-    if (_futureCallManager == null) return;
     for (final entry in futureCalls.entries) {
       _futureCallManager?.registerFutureCall(entry.value, entry.key);
     }
   }
 
-  FutureCallRef callAtTime(
+  _FutureCallRef callAtTime(
     DateTime time, {
     String? identifier,
   }) {
@@ -54,7 +54,7 @@ class FutureCalls {
     if (_futureCallManager == null) {
       throw StateError('Future calls are disabled.');
     }
-    return FutureCallRef(
+    return _FutureCallRef(
       (name, object) {
         return _futureCallManager!.scheduleFutureCall(
           name,
@@ -67,7 +67,7 @@ class FutureCalls {
     );
   }
 
-  FutureCallRef callWithDelay(
+  _FutureCallRef callWithDelay(
     Duration delay, {
     String? identifier,
   }) {
@@ -77,7 +77,7 @@ class FutureCalls {
     if (_futureCallManager == null) {
       throw StateError('Future calls are disabled.');
     }
-    return FutureCallRef(
+    return _FutureCallRef(
       (name, object) {
         return _futureCallManager!.scheduleFutureCall(
           name,
@@ -91,22 +91,22 @@ class FutureCalls {
   }
 }
 
-class FutureCallRef {
-  FutureCallRef(this._invokeFutureCall);
+class _FutureCallRef {
+  _FutureCallRef(this._invokeFutureCall);
 
   final _InvokeFutureCall _invokeFutureCall;
 
-  TestCallFutureCallCaller get testCall {
-    return TestCallFutureCallCaller(_invokeFutureCall);
+  _TestCallFutureCallCaller get testCall {
+    return _TestCallFutureCallCaller(_invokeFutureCall);
   }
 
-  TestExceptionCallFutureCallCaller get testExceptionCall {
-    return TestExceptionCallFutureCallCaller(_invokeFutureCall);
+  _TestExceptionCallFutureCallCaller get testExceptionCall {
+    return _TestExceptionCallFutureCallCaller(_invokeFutureCall);
   }
 }
 
-class TestCallFutureCallCaller {
-  TestCallFutureCallCaller(this._invokeFutureCall);
+class _TestCallFutureCallCaller {
+  _TestCallFutureCallCaller(this._invokeFutureCall);
 
   final _InvokeFutureCall _invokeFutureCall;
 
@@ -118,8 +118,8 @@ class TestCallFutureCallCaller {
   }
 }
 
-class TestExceptionCallFutureCallCaller {
-  TestExceptionCallFutureCallCaller(this._invokeFutureCall);
+class _TestExceptionCallFutureCallCaller {
+  _TestExceptionCallFutureCallCaller(this._invokeFutureCall);
 
   final _InvokeFutureCall _invokeFutureCall;
 
@@ -131,30 +131,30 @@ class TestExceptionCallFutureCallCaller {
   }
 }
 
+@_i1.doNotGenerate
 class TestCallInvokeFutureCall extends _i1.FutureCall<_i2.SimpleData> {
-  @_i1.doNotGenerate
   @override
   _i3.Future<void> invoke(
     _i1.Session session,
     _i2.SimpleData? object,
-  ) {
-    return _i4.TestCall().invoke(
+  ) async {
+    _i4.TestCall().invoke(
       session,
-      object!,
+      object,
     );
   }
 }
 
+@_i1.doNotGenerate
 class TestExceptionCallInvokeFutureCall extends _i1.FutureCall<_i2.SimpleData> {
-  @_i1.doNotGenerate
   @override
   _i3.Future<void> invoke(
     _i1.Session session,
     _i2.SimpleData? object,
-  ) {
-    return _i5.TestExceptionCall().invoke(
+  ) async {
+    _i5.TestExceptionCall().invoke(
       session,
-      object!,
+      object,
     );
   }
 }
