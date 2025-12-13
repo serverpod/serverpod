@@ -1,6 +1,5 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:test/test.dart';
 
@@ -16,17 +15,15 @@ const generator = DartClientCodeGenerator();
 
 void main() {
   group('Given a model that references AuthUser from serverpod_auth_core', () {
-    // Set up module config for serverpod_auth_core
-    var authCoreModule =
-        ModuleConfigBuilder('serverpod_auth_core', 'serverpod_auth_core')
-            .build();
+    var authCoreModule = ModuleConfigBuilder(
+      'serverpod_auth_core',
+      'serverpod_auth_core',
+    ).build();
 
-    var config = GeneratorConfigBuilder()
-        .withName(projectName)
-        .withModules([authCoreModule])
-        .build();
+    var config = GeneratorConfigBuilder().withName(projectName).withModules([
+      authCoreModule,
+    ]).build();
 
-    // Define a custom model that references AuthUser
     var myDomainData = ModelClassDefinitionBuilder()
         .withClassName('MyDomainData')
         .withFileName('my_domain_data')
@@ -53,16 +50,24 @@ void main() {
     );
 
     String getExpectedFilePath(String fileName) => p.joinAll([
-          '..',
-          'example_project_client',
-          'lib',
-          'src',
-          'protocol',
-          '$fileName.dart',
-        ]);
+      '..',
+      'example_project_client',
+      'lib',
+      'src',
+      'protocol',
+      '$fileName.dart',
+    ]);
 
     var myDomainDataCode = codeMap[getExpectedFilePath('my_domain_data')]!;
     var compilationUnit = parseString(content: myDomainDataCode).unit;
+
+    test(
+      'then the generated file does not have compilation errors',
+      () {
+        var parseResult = parseString(content: myDomainDataCode);
+        expect(parseResult.errors, isEmpty);
+      },
+    );
 
     test(
       'then the generated file has an import directive for serverpod_auth_core_client package',
@@ -73,25 +78,7 @@ void main() {
               'package:serverpod_auth_core_client/serverpod_auth_core_client.dart',
         );
 
-        expect(
-          import,
-          isNotNull,
-          reason:
-              'Generated code should import the auth_core client module package for AuthUser type',
-        );
-      },
-    );
-
-    test(
-      'then the generated file does not have compilation errors',
-      () {
-        // Parse and check for syntax errors
-        var parseResult = parseString(content: myDomainDataCode);
-        expect(
-          parseResult.errors,
-          isEmpty,
-          reason: 'Generated code should be valid Dart code without errors',
-        );
+        expect(import, isNotNull);
       },
     );
   });
