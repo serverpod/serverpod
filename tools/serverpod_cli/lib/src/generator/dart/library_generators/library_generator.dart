@@ -137,7 +137,7 @@ class LibraryGenerator {
     final allFieldsToGenerateSerialization = unsealedModels
         .whereType<ModelClassDefinition>()
         .expand((m) => m.fields)
-        .where((f) => f.shouldSerializeField(serverCode))
+        .where((f) => f.shouldIncludeField(serverCode))
         .distinct();
 
     protocol.methods.addAll([

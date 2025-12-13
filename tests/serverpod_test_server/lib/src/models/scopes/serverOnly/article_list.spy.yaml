@@ -1,0 +1,4 @@
+class: ArticleList
+serverOnly: true
+fields:
+  results: List<Article>

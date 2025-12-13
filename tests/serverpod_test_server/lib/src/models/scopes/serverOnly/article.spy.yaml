@@ -1,0 +1,5 @@
+class: Article
+serverOnly: true
+fields:
+  name: String
+  price: double
