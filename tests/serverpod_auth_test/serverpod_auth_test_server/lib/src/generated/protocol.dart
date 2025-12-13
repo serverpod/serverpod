@@ -21,6 +21,10 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
     as _i6;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i7;
+import 'challenge_tracker.dart' as _i8;
+import 'user_data.dart' as _i9;
+export 'challenge_tracker.dart';
+export 'user_data.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -30,6 +34,154 @@ class Protocol extends _i1.SerializationManagerServer {
   static final Protocol _instance = Protocol._();
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
+    _i2.TableDefinition(
+      name: 'challenge_tracker',
+      dartName: 'ChallengeTracker',
+      schema: 'public',
+      module: 'serverpod_auth_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'challenge_tracker_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'secretChallengeId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'trackedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'notes',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'challenge_tracker_fk_0',
+          columns: ['secretChallengeId'],
+          referenceTable: 'serverpod_auth_idp_secret_challenge',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'challenge_tracker_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'secret_challenge_id_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'secretChallengeId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'user_data',
+      dartName: 'UserData',
+      schema: 'public',
+      module: 'serverpod_auth_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'user_data_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'displayName',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'bio',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'user_data_fk_0',
+          columns: ['authUserId'],
+          referenceTable: 'serverpod_auth_core_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'user_data_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'auth_user_id_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'authUserId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
     ..._i3.Protocol.targetTableDefinitions,
     ..._i4.Protocol.targetTableDefinitions,
     ..._i5.Protocol.targetTableDefinitions,
@@ -65,6 +217,18 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
 
+    if (t == _i8.ChallengeTracker) {
+      return _i8.ChallengeTracker.fromJson(data) as T;
+    }
+    if (t == _i9.UserData) {
+      return _i9.UserData.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i8.ChallengeTracker?>()) {
+      return (data != null ? _i8.ChallengeTracker.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i9.UserData?>()) {
+      return (data != null ? _i9.UserData.fromJson(data) : null) as T;
+    }
     if (t == Set<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
     }
@@ -91,6 +255,8 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
+      _i8.ChallengeTracker => 'ChallengeTracker',
+      _i9.UserData => 'UserData',
       _ => null,
     };
   }
@@ -107,6 +273,12 @@ class Protocol extends _i1.SerializationManagerServer {
       );
     }
 
+    switch (data) {
+      case _i8.ChallengeTracker():
+        return 'ChallengeTracker';
+      case _i9.UserData():
+        return 'UserData';
+    }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod.$className';
@@ -139,6 +311,12 @@ class Protocol extends _i1.SerializationManagerServer {
     var dataClassName = data['className'];
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
+    }
+    if (dataClassName == 'ChallengeTracker') {
+      return deserialize<_i8.ChallengeTracker>(data['data']);
+    }
+    if (dataClassName == 'UserData') {
+      return deserialize<_i9.UserData>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -204,6 +382,12 @@ class Protocol extends _i1.SerializationManagerServer {
       if (table != null) {
         return table;
       }
+    }
+    switch (t) {
+      case _i8.ChallengeTracker:
+        return _i8.ChallengeTracker.t;
+      case _i9.UserData:
+        return _i9.UserData.t;
     }
     return null;
   }
