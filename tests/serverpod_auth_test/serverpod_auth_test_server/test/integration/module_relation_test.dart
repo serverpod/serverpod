@@ -1,26 +1,20 @@
-import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 import 'package:serverpod_auth_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
-import '../util/test_tags.dart';
 import 'test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod(
-    'Given UserData model with relation to AuthUser',
-    (sessionBuilder, endpoints) {
-      tearDown(() async {
-        await _cleanUpDatabase(sessionBuilder.build());
-      });
-
+    'Given UserData model with relation to AuthUser from the auth core module',
+    (final sessionBuilder, final endpoints) {
       test(
-        'when creating a UserData with AuthUser relation then the relation is correctly established',
+        'when creating a UserData with AuthUser relation '
+        'then the relation is correctly established',
         () async {
-          final session = await sessionBuilder.build();
+          final session = sessionBuilder.build();
 
-          // Create an AuthUser
           final authUser = AuthUser(
             scopeNames: {'user'},
             blocked: false,
@@ -30,7 +24,6 @@ void main() {
             authUser,
           );
 
-          // Create a UserData linked to the AuthUser
           final userData = UserData(
             authUserId: insertedAuthUser.id!,
             displayName: 'Test User',
@@ -51,9 +44,8 @@ void main() {
       test(
         'when fetching UserData with include then AuthUser is loaded',
         () async {
-          final session = await sessionBuilder.build();
+          final session = sessionBuilder.build();
 
-          // Create an AuthUser
           final authUser = AuthUser(
             scopeNames: {'admin'},
             blocked: false,
@@ -63,7 +55,6 @@ void main() {
             authUser,
           );
 
-          // Create a UserData linked to the AuthUser
           final userData = UserData(
             authUserId: insertedAuthUser.id!,
             displayName: 'Admin User',
@@ -71,7 +62,6 @@ void main() {
           );
           await UserData.db.insertRow(session, userData);
 
-          // Fetch with include
           final fetchedData = await UserData.db.find(
             session,
             include: UserData.include(
@@ -92,9 +82,8 @@ void main() {
       test(
         'when AuthUser is deleted with cascade then UserData is also deleted',
         () async {
-          final session = await sessionBuilder.build();
+          final session = sessionBuilder.build();
 
-          // Create an AuthUser
           final authUser = AuthUser(
             scopeNames: {'user'},
             blocked: false,
@@ -104,7 +93,6 @@ void main() {
             authUser,
           );
 
-          // Create a UserData linked to the AuthUser
           final userData = UserData(
             authUserId: insertedAuthUser.id!,
             displayName: 'Cascade Test User',
@@ -112,10 +100,8 @@ void main() {
           );
           await UserData.db.insertRow(session, userData);
 
-          // Delete the AuthUser (should cascade to UserData)
           await AuthUser.db.deleteRow(session, insertedAuthUser);
 
-          // Verify UserData was deleted
           final remainingData = await UserData.db.find(session);
           expect(remainingData.length, equals(0));
         },
@@ -124,18 +110,14 @@ void main() {
   );
 
   withServerpod(
-    'Given ChallengeTracker model with relation to SecretChallenge',
-    (sessionBuilder, endpoints) {
-      tearDown(() async {
-        await _cleanUpDatabase(sessionBuilder.build());
-      });
-
+    'Given ChallengeTracker model with relation to SecretChallenge from the IDP module',
+    (final sessionBuilder, final endpoints) {
       test(
-        'when creating a ChallengeTracker with SecretChallenge relation then the relation is correctly established',
+        'when creating a ChallengeTracker with SecretChallenge relation '
+        'then the relation is correctly established',
         () async {
-          final session = await sessionBuilder.build();
+          final session = sessionBuilder.build();
 
-          // Create a SecretChallenge
           final secretChallenge = SecretChallenge(
             challengeCodeHash: 'test-hash-value',
           );
@@ -144,7 +126,6 @@ void main() {
             secretChallenge,
           );
 
-          // Create a ChallengeTracker linked to the SecretChallenge
           final challengeTracker = ChallengeTracker(
             secretChallengeId: insertedChallenge.id!,
             notes: 'Test challenge tracker',
@@ -165,11 +146,11 @@ void main() {
       );
 
       test(
-        'when fetching ChallengeTracker with include then SecretChallenge is loaded',
+        'when fetching ChallengeTracker with include '
+        'then SecretChallenge is loaded',
         () async {
-          final session = await sessionBuilder.build();
+          final session = sessionBuilder.build();
 
-          // Create a SecretChallenge
           final secretChallenge = SecretChallenge(
             challengeCodeHash: 'another-test-hash',
           );
@@ -178,14 +159,12 @@ void main() {
             secretChallenge,
           );
 
-          // Create a ChallengeTracker linked to the SecretChallenge
           final challengeTracker = ChallengeTracker(
             secretChallengeId: insertedChallenge.id!,
             notes: 'Tracked challenge',
           );
           await ChallengeTracker.db.insertRow(session, challengeTracker);
 
-          // Fetch with include
           final fetchedTrackers = await ChallengeTracker.db.find(
             session,
             include: ChallengeTracker.include(
@@ -203,11 +182,11 @@ void main() {
       );
 
       test(
-        'when SecretChallenge is deleted with cascade then ChallengeTracker is also deleted',
+        'when SecretChallenge is deleted with cascade '
+        'then ChallengeTracker is also deleted',
         () async {
-          final session = await sessionBuilder.build();
+          final session = sessionBuilder.build();
 
-          // Create a SecretChallenge
           final secretChallenge = SecretChallenge(
             challengeCodeHash: 'cascade-test-hash',
           );
@@ -216,29 +195,18 @@ void main() {
             secretChallenge,
           );
 
-          // Create a ChallengeTracker linked to the SecretChallenge
           final challengeTracker = ChallengeTracker(
             secretChallengeId: insertedChallenge.id!,
             notes: 'Will be cascaded',
           );
           await ChallengeTracker.db.insertRow(session, challengeTracker);
 
-          // Delete the SecretChallenge (should cascade to ChallengeTracker)
           await SecretChallenge.db.deleteRow(session, insertedChallenge);
 
-          // Verify ChallengeTracker was deleted
           final remainingTrackers = await ChallengeTracker.db.find(session);
           expect(remainingTrackers.length, equals(0));
         },
       );
     },
   );
-}
-
-Future<void> _cleanUpDatabase(Session session) async {
-  // Clean up in reverse order of dependencies
-  await ChallengeTracker.db.deleteWhere(session, where: (_) => Constant.bool(true));
-  await UserData.db.deleteWhere(session, where: (_) => Constant.bool(true));
-  await SecretChallenge.db.deleteWhere(session, where: (_) => Constant.bool(true));
-  await AuthUser.db.deleteWhere(session, where: (_) => Constant.bool(true));
 }
