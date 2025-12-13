@@ -1,0 +1,16 @@
+class: UserData
+table: user_data
+fields:
+  ### The [AuthUser] this profile belongs to
+  authUser: module:serverpod_auth_core:AuthUser?, relation(onDelete=Cascade)
+  
+  ### User's display name
+  displayName: String
+  
+  ### User's bio
+  bio: String?
+
+indexes:
+  auth_user_id_unique_idx:
+    fields: authUserId
+    unique: true
