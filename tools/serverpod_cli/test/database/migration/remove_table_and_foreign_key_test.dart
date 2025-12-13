@@ -8,15 +8,9 @@ import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
   group(
-    'Given two tables with a foreign key relation when the referenced table '
-    'and the foreign key are removed',
+    'Given two tables with a foreign key relation '
+    'when the referenced table and the foreign key pointing to it are removed',
     () {
-      // Simulate the scenario from the bug report:
-      // 1. GrantAllowance (table A) has a foreign key to GrantBundle (table B)
-      // 2. Both the GrantBundle table and the foreign key from GrantAllowance are removed
-      // Expected: Only the foreign key column should be dropped from GrantAllowance
-      // Bug: The entire GrantAllowance table is dropped and recreated
-
       var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
@@ -64,8 +58,6 @@ void main() {
           )
           .build();
 
-      // Target: GrantBundle table is removed, and the foreign key + column
-      // are removed from GrantAllowance
       var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
@@ -90,13 +82,8 @@ void main() {
       );
 
       test(
-        'then grant_allowance table should be altered, not deleted and recreated.',
+        'then grant_allowance table should only be altered to drop the foreign key and column, not deleted and recreated.',
         () {
-          // Should have:
-          // 1. Delete grant_bundle table
-          // 2. Alter grant_allowance table (drop foreign key and column)
-
-          // Filter out actions related to grant_allowance
           var grantAllowanceDeleteActions = migration.actions.where(
             (action) =>
                 action.type == DatabaseMigrationActionType.deleteTable &&
@@ -115,7 +102,6 @@ void main() {
                 action.alterTable?.name == 'grant_allowance',
           );
 
-          // grant_allowance should only be altered
           expect(
             grantAllowanceDeleteActions,
             isEmpty,
@@ -189,12 +175,9 @@ void main() {
   );
 
   group(
-    'Given two tables with a foreign key relation when only the referenced '
-    'table is removed but the foreign key remains',
+    'Given two tables with a foreign key relation '
+    'when only the referenced table is removed but the foreign key pointing to it remains',
     () {
-      // This is the scenario where the table SHOULD be dropped and recreated
-      // because we cannot have a foreign key pointing to a non-existent table
-
       var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
@@ -235,8 +218,6 @@ void main() {
           )
           .build();
 
-      // Target: table_b is removed, but table_a STILL has the foreign key
-      // (This is an invalid state, but we need to handle it)
       var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
@@ -294,14 +275,9 @@ void main() {
   );
 
   group(
-    'Given a table with multiple foreign keys when the first foreign key '
-    'and its referenced table are removed',
+    'Given a table with multiple foreign keys with sequential constraint names (_fk_0, _fk_1, etc.) '
+    'when the first foreign key and its referenced table are removed',
     () {
-      // This tests a potential bug where foreign key constraint names are
-      // numbered sequentially (_fk_0, _fk_1, etc.), and removing one might
-      // cause the remaining ones to be renumbered, leading to incorrect
-      // detection of "retained" foreign keys.
-
       var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
@@ -373,9 +349,6 @@ void main() {
           )
           .build();
 
-      // Target: table_b is removed, and the foreign key to it is removed.
-      // However, the foreign key to table_c might get renumbered from _fk_1 to _fk_0
-      // which could confuse the logic.
       var targetDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
@@ -393,8 +366,7 @@ void main() {
                 // Foreign key to table_c is renumbered to _fk_0
                 .withForeignKey(
                   ForeignKeyDefinition(
-                    constraintName:
-                        'main_table_fk_0', // NOW points to table_c (renumbered)
+                    constraintName: 'main_table_fk_0', // Renumbered to table_c
                     columns: ['table_c_id'],
                     referenceTable: 'table_c',
                     referenceTableSchema: 'public',
@@ -421,37 +393,31 @@ void main() {
           // table_b is removed
           .build();
 
-      var migration = generateDatabaseMigration(
+      late var migration = generateDatabaseMigration(
         databaseSource: sourceDefinition,
         databaseTarget: targetDefinition,
+      );
+      late var mainTableDeleteActions = migration.actions.where(
+        (action) =>
+            action.type == DatabaseMigrationActionType.deleteTable &&
+            action.deleteTable == 'main_table',
+      );
+
+      late var mainTableCreateActions = migration.actions.where(
+        (action) =>
+            action.type == DatabaseMigrationActionType.createTable &&
+            action.createTable?.name == 'main_table',
+      );
+
+      late var mainTableAlterActions = migration.actions.where(
+        (action) =>
+            action.type == DatabaseMigrationActionType.alterTable &&
+            action.alterTable?.name == 'main_table',
       );
 
       test(
         'then main_table should only be altered, not dropped and recreated.',
         () {
-          // After the fix, main_table should only be altered, not dropped
-          // even though there's a constraint name collision (_fk_0 exists in both
-          // source and target), because we now also check that the foreign key
-          // references the same table.
-
-          var mainTableDeleteActions = migration.actions.where(
-            (action) =>
-                action.type == DatabaseMigrationActionType.deleteTable &&
-                action.deleteTable == 'main_table',
-          );
-
-          var mainTableCreateActions = migration.actions.where(
-            (action) =>
-                action.type == DatabaseMigrationActionType.createTable &&
-                action.createTable?.name == 'main_table',
-          );
-
-          var mainTableAlterActions = migration.actions.where(
-            (action) =>
-                action.type == DatabaseMigrationActionType.alterTable &&
-                action.alterTable?.name == 'main_table',
-          );
-
           expect(
             mainTableDeleteActions,
             isEmpty,
@@ -467,6 +433,44 @@ void main() {
             hasLength(1),
             reason:
                 'main_table should be altered to remove the foreign key to table_b',
+          );
+        },
+      );
+
+      test(
+        'then the alter action for main_table should drop the foreign key to table_b and add a foreign key to table_c.',
+        () {
+          var alterAction = mainTableAlterActions.first;
+          var alterTable = alterAction.alterTable;
+
+          expect(
+            alterTable?.deleteColumns,
+            contains('table_b_id'),
+            reason: 'alterTable should delete the table_b_id column',
+          );
+
+          expect(
+            alterTable?.deleteForeignKeys,
+            contains('main_table_fk_0'),
+            reason:
+                'alterTable should delete the foreign key with constraintName main_table_fk_0 that referenced table_b',
+          );
+
+          expect(
+            alterTable?.addForeignKeys,
+            isNotEmpty,
+            reason: 'alterTable should add a foreign key',
+          );
+
+          expect(
+            alterTable?.addForeignKeys.any(
+              (fk) =>
+                  fk.constraintName == 'main_table_fk_0' &&
+                  fk.referenceTable == 'table_c',
+            ),
+            isTrue,
+            reason:
+                'alterTable should add a foreign key with constraintName main_table_fk_0 referencing table_c',
           );
         },
       );
