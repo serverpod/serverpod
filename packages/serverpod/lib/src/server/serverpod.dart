@@ -565,6 +565,7 @@ class Serverpod {
       _healthCheckManager = HealthCheckManager(
         this,
         _onCompletedHealthChecks,
+        interval: config.healthCheckInterval,
       );
     }
 

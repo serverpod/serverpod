@@ -21,6 +21,9 @@ class HealthCheckManager {
   /// running in [ServerpodRole.maintenance] mode.
   final void Function() onCompleted;
 
+  /// The interval between health checks.
+  final Duration interval;
+
   bool _running = false;
   Timer? _timer;
   Completer<void>? _pendingHealthCheck;
@@ -30,7 +33,11 @@ class HealthCheckManager {
   int _lastRequestCount = 0;
 
   /// Creates a new [HealthCheckManager].
-  HealthCheckManager(this._pod, this.onCompleted);
+  HealthCheckManager(
+    this._pod,
+    this.onCompleted, {
+    this.interval = const Duration(minutes: 1),
+  });
 
   /// Starts the health check manager.
   Future<void> start() async {
@@ -80,6 +87,19 @@ class HealthCheckManager {
     }
   }
 
+  /// Determines whether database operations should be skipped during health checks.
+  ///
+  /// Checks if the server has been active since the last health check.
+  /// If the server is idle (no requests handled), we skip database operations
+  /// to allow the database to sleep and reduce resource usage. In maintenance
+  /// mode, always perform health checks regardless of activity.
+  bool get _shouldSkipDatabaseOperations {
+    var currentRequestCount = _pod.server.requestCount;
+    var serverWasActive = currentRequestCount != _lastRequestCount;
+    _lastRequestCount = currentRequestCount;
+    return !serverWasActive && _pod.config.role != ServerpodRole.maintenance;
+  }
+
   Future<void> _innerPerformHealthCheck() async {
     if (_pod.config.role == ServerpodRole.maintenance) {
       stdout.writeln('Performing health checks.');
@@ -88,18 +108,7 @@ class HealthCheckManager {
     var session = _pod.internalSession;
     var numHealthChecks = 0;
 
-    var currentRequestCount = _pod.server.requestCount;
-    var serverWasActive = currentRequestCount != _lastRequestCount;
-    _lastRequestCount = currentRequestCount;
-
-    // NOTE: Check if the server has been active since the last health check.
-    // If the server is idle (no requests handled), we skip database operations
-    // to allow the database to sleep and reduce resource usage. In maintenance
-    // mode, always perform health checks regardless of activity.
-    var skipDatabaseOperations =
-        !serverWasActive && _pod.config.role != ServerpodRole.maintenance;
-
-    if (!skipDatabaseOperations) {
+    if (!_shouldSkipDatabaseOperations) {
       try {
         var result = await performHealthChecks(_pod);
         numHealthChecks = result.metrics.length;
@@ -141,7 +150,7 @@ class HealthCheckManager {
     if (!_running) {
       return;
     }
-    _timer = Timer(_timeUntilNextMinute(), _performHealthCheck);
+    _timer = Timer(_timeUntilNextInterval(), _performHealthCheck);
   }
 
   Future<void> _cleanUpClosedSessions() async {
@@ -421,15 +430,14 @@ class HealthCheckManager {
       ),
     );
   }
-}
 
-Duration _timeUntilNextMinute() {
-  // Add a second to make sure we don't end up on the same minute.
-  var now = DateTime.now().toUtc().add(const Duration(seconds: 2));
-  var next = DateTime.utc(now.year, now.month, now.day, now.hour, now.minute)
-      .add(
-        const Duration(minutes: 1),
-      );
-
-  return next.difference(now);
+  Duration _timeUntilNextInterval() {
+    // Add a second to make sure we don't end up on the same minute.
+    var now = DateTime.now().toUtc().add(const Duration(seconds: 2));
+    var next = DateTime.utc(now.year, now.month, now.day, now.hour, now.minute)
+        .add(
+          interval,
+        );
+    return next.difference(now);
+  }
 }
