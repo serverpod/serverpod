@@ -1110,10 +1110,12 @@ void main() {
           // Should contain: if (t == Article) { return Article.fromJson(data) as T; }
           expect(
             protocolContent,
-            contains(RegExp(
-              r'if\s*\(\s*t\s*==\s*[^)]*Article[^)]*\)\s*{',
-              multiLine: true,
-            )),
+            contains(
+              RegExp(
+                r'if\s*\(\s*t\s*==\s*[^)]*Article[^)]*\)\s*{',
+                multiLine: true,
+              ),
+            ),
           );
         },
       );
@@ -1125,10 +1127,12 @@ void main() {
           // Should contain: if (t == List<Article>) { ... }
           expect(
             protocolContent,
-            contains(RegExp(
-              r'if\s*\(\s*t\s*==\s*List<[^>]*Article[^>]*>\s*\)',
-              multiLine: true,
-            )),
+            contains(
+              RegExp(
+                r'if\s*\(\s*t\s*==\s*List<[^>]*Article[^>]*>\s*\)',
+                multiLine: true,
+              ),
+            ),
           );
         },
       );

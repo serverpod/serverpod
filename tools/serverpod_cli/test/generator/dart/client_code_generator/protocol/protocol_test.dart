@@ -479,10 +479,14 @@ void main() {
           // Should NOT contain: if (t == Article)
           expect(
             protocolContent,
-            isNot(contains(RegExp(
-              r'if\s*\(\s*t\s*==\s*[^)]*Article[^)]*\)',
-              multiLine: true,
-            ))),
+            isNot(
+              contains(
+                RegExp(
+                  r'if\s*\(\s*t\s*==\s*[^)]*Article[^)]*\)',
+                  multiLine: true,
+                ),
+              ),
+            ),
           );
         },
       );
@@ -494,10 +498,14 @@ void main() {
           // Should NOT contain: if (t == List<Article>)
           expect(
             protocolContent,
-            isNot(contains(RegExp(
-              r'if\s*\(\s*t\s*==\s*List<[^>]*Article[^>]*>\s*\)',
-              multiLine: true,
-            ))),
+            isNot(
+              contains(
+                RegExp(
+                  r'if\s*\(\s*t\s*==\s*List<[^>]*Article[^>]*>\s*\)',
+                  multiLine: true,
+                ),
+              ),
+            ),
           );
         },
       );
