@@ -177,6 +177,18 @@ Future<bool> performCreate(
     });
   }
 
+  if (template == ServerpodTemplateType.server) {
+    success &= await log.progress(
+      'Building Flutter web app.',
+      () {
+        return CommandLineTools.flutterBuild(
+          serverpodDirs.flutterDir,
+          serverpodDirs.serverDir,
+        );
+      },
+    );
+  }
+
   if (success || force) {
     log.info(
       'Serverpod project created.',

@@ -387,6 +387,30 @@ void main() async {
             reason: 'Server generated protocol.yaml file does not exist.',
           );
         });
+
+        test('has a web/app directory containing the flutter web app', () {
+          expect(
+            Directory(
+              path.join(tempPath, serverDir, 'web', 'app'),
+            ).existsSync(),
+            isTrue,
+            reason: 'Server web/app directory does not exist.',
+          );
+          expect(
+            File(
+              path.join(tempPath, serverDir, 'web', 'app', 'index.html'),
+            ).existsSync(),
+            isTrue,
+            reason: 'Server web/app/index.html file does not exist.',
+          );
+          expect(
+            File(
+              path.join(tempPath, serverDir, 'web', 'app', 'main.dart.js'),
+            ).existsSync(),
+            isTrue,
+            reason: 'Server web/app/main.dart.js file does not exist.',
+          );
+        });
       });
 
       group('then the flutter project', () {

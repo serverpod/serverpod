@@ -194,6 +194,17 @@ void main() async {
         expect(content, isNot(contains('serverpod_auth_idp_server')));
       });
 
+      test(
+        'then the server does not contain a web directory',
+        () {
+          expect(
+            Directory(path.join(tempPath, serverDir, 'web')).existsSync(),
+            isFalse,
+            reason: 'Server web directory should not exist but it was found.',
+          );
+        },
+      );
+
       test('then the email_idp_endpoint.dart does not exist', () {
         final endpointFile = File(
           path.join(
