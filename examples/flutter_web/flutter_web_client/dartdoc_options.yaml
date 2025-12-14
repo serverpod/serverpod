@@ -1,5 +1,0 @@
-dartdoc:
-  categories: 
-    "Endpoint":
-      markdown: doc/endpoint.md
-      name: Endpoint
