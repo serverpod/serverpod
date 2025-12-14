@@ -418,6 +418,13 @@ Future<void> _copyFlutterUpgrade(
         ),
         type: DependencyType.normal,
       ),
+      (
+        name: 'flutter_secure_storage',
+        source: DependencySource.version(
+          VersionConstraint.parse('^10.0.0'),
+        ),
+        type: DependencyType.override,
+      ),
       if (customServerpodPath != null) ...[
         (
           name: 'serverpod_auth_idp_flutter',

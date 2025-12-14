@@ -228,6 +228,17 @@ void main() async {
         expect(content, isNot(contains('serverpod_auth_idp_flutter')));
       });
 
+      test(
+        'then the flutter pubspec does not contain override for flutter secure storage',
+        () {
+          final pubspec = File(
+            path.join(tempPath, flutterDir, 'pubspec.yaml'),
+          );
+          final content = pubspec.readAsStringSync();
+          expect(content, isNot(contains('flutter_secure_storage')));
+        },
+      );
+
       test('then the flutter main.dart does not contain auth imports', () {
         final mainFile = File(
           path.join(tempPath, flutterDir, 'lib', 'main.dart'),
@@ -526,6 +537,19 @@ void main() async {
           final content = pubspec.readAsStringSync();
           expect(content, isNot(contains('serverpod_auth_idp_flutter')));
         });
+
+        test(
+          'then the flutter pubspec does not contain override for flutter secure storage',
+          () {
+            final (:serverDir, :flutterDir, :clientDir) =
+                createProjectFolderPaths(projectName);
+            final pubspec = File(
+              path.join(tempPath, flutterDir, 'pubspec.yaml'),
+            );
+            final content = pubspec.readAsStringSync();
+            expect(content, isNot(contains('flutter_secure_storage')));
+          },
+        );
 
         test('then the flutter main.dart does not contain auth imports', () {
           final (:serverDir, :flutterDir, :clientDir) =

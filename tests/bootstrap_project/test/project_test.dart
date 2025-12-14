@@ -405,6 +405,20 @@ void main() async {
             reason: 'Flutter pubspec file does not exist.',
           );
         });
+
+        test(
+          'then the flutter pubspec contains override for flutter secure storage',
+          () {
+            final (:serverDir, :flutterDir, :clientDir) =
+                createProjectFolderPaths(projectName);
+            final pubspec = File(
+              path.join(tempPath, flutterDir, 'pubspec.yaml'),
+            );
+            final content = pubspec.readAsStringSync();
+            expect(content, contains('flutter_secure_storage'));
+          },
+        );
+
         test(
           'macOS DebugProfile entitlements has network client tag and true',
           () {
