@@ -765,7 +765,7 @@ void _copyServerTemplates(
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock'],
+    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
 
@@ -829,6 +829,7 @@ void _copyServerTemplates(
     ],
     ignoreFileNames: [
       'pubspec.lock',
+      'pubspec_overrides.yaml',
       'ios',
       'android',
       'web',
@@ -871,7 +872,7 @@ void _copyModuleTemplates(
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock'],
+    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
 
@@ -902,7 +903,7 @@ void _copyModuleTemplates(
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock'],
+    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
 }
