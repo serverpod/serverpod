@@ -12,7 +12,6 @@ import 'package:serverpod/serverpod.dart';
 /// ```dart
 /// pod.webServer.addRoute(
 ///   FlutterRoute(Directory('web/flutter_app')),
-///   '/**',
 /// );
 /// ```
 class FlutterRoute extends Route {

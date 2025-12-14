@@ -52,7 +52,6 @@ void main() {
 
       pod.webServer.addRoute(
         FlutterRoute(webDir),
-        '/**',
       );
 
       await pod.start();
@@ -133,7 +132,6 @@ void main() {
 
       pod.webServer.addRoute(
         FlutterRoute(webDir, indexFile: customIndex),
-        '/**',
       );
 
       await pod.start();
@@ -184,7 +182,6 @@ void main() {
           webDir,
           cacheControlFactory: StaticRoute.public(maxAge: Duration(hours: 1)),
         ),
-        '/**',
       );
 
       await pod.start();
