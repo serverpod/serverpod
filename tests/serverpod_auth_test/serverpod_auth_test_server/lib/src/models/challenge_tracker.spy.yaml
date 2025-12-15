@@ -1,0 +1,17 @@
+class: ChallengeTracker
+serverOnly: true
+table: challenge_tracker
+fields:
+  ### The [SecretChallenge] being tracked
+  secretChallenge: module:serverpod_auth_idp:SecretChallenge?, relation(onDelete=Cascade)
+  
+  ### Tracking timestamp
+  trackedAt: DateTime, defaultModel=now
+  
+  ### Notes about the challenge
+  notes: String?
+
+indexes:
+  secret_challenge_id_unique_idx:
+    fields: secretChallengeId
+    unique: true
