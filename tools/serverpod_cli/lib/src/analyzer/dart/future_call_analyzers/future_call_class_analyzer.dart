@@ -12,10 +12,8 @@ abstract class FutureCallClassAnalyzer {
   /// Parses an [ClassElement] into a [FutureCallDefinition].
   ///
   /// Assumes that the [ClassElement] is a valid future call class. This method
-  /// mutates the inputs [futureCallDefinitions] and [validationErrors]. If the
-  /// [element] extends another future call class, that parent class is also parsed
-  /// and added to the [futureCallDefinitions] list. [FutureCallDefinition]s that
-  /// have already been parsed are not parsed again.
+  /// mutates the inputs [futureCallDefinitions] and [validationErrors].
+  /// [FutureCallDefinition]s that have already been parsed are not parsed again.
   ///
   /// For [FutureCallDefinition]s that are not part of this package, the field
   /// [FutureCallDefinition.filePath] will be set to the library uri.
