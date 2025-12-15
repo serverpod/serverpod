@@ -133,7 +133,7 @@ void main() {
         ),
         '/',
       );
-      pod.webServer.addRoute(StaticRoute.directory(webDir), '/**');
+      pod.webServer.addRoute(StaticRoute.directory(webDir));
 
       await pod.start();
       port = pod.webServer.port!;
