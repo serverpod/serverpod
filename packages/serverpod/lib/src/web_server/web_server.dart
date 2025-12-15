@@ -55,10 +55,28 @@ class WebServer {
   /// Returns true if the webserver is currently running.
   bool get running => _running;
 
-  /// Adds [route] to the server, together with a [path] that defines how
-  /// calls are routed.
-  void addRoute(Route route, [String path = '/']) =>
-      _app.group(path).inject(route);
+  /// Adds [route] to the server at [path].
+  ///
+  /// The [path] supports:
+  /// - Literal segments: `/users/profile`
+  /// - Parameters: `/users/<id>`
+  /// - Wildcards: `/files/*` (single segment) or `/files/**` (tail match)
+  ///
+  /// The full route path combines [path] with [Route.path]. For example,
+  /// a route with `path: '/edit'` added via `addRoute(route, '/users')`
+  /// handles requests to `/users/edit`.
+  ///
+  /// ## Tail paths
+  ///
+  /// A tail path (`/**`) matches all remaining segments and must be terminal.
+  /// Routes can only be added at a tail path if their [Route.injectIn]
+  /// registers a single route at `/`. This prevents nested tails
+  /// (e.g., `/a/**/b/**`), which are invalid.
+  ///
+  /// The default [Route.injectIn] satisfies this requirement.
+  void addRoute(Route route, [String path = '/']) {
+    _app.injectAt(path, route);
+  }
 
   /// Adds a [Middleware] to the server for all routes below [path].
   void addMiddleware(Middleware middleware, String path) =>
