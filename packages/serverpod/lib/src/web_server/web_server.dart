@@ -58,9 +58,10 @@ class WebServer {
   /// Adds [route] to the server at [path].
   ///
   /// The [path] supports:
-  /// - Literal segments: `/users/profile`
-  /// - Parameters: `/users/<id>`
-  /// - Wildcards: `/files/*` (single segment) or `/files/**` (tail match)
+  /// - Literal segments: `/admin/profile/edit`
+  /// - Parameters: `/users/:id/posts`
+  /// - Wildcards: `/api/*/list` (single segment)
+  /// - Tails: `/files/**` (tail match)
   ///
   /// The full route path combines [path] with [Route.path]. For example,
   /// a route with `path: '/edit'` added via `addRoute(route, '/users')`
