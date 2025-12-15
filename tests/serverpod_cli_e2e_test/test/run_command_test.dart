@@ -152,23 +152,32 @@ serverpod:
     },
   );
 
-  test(
-    'when running a non-existent script, then an error is shown',
-    () async {
-      final result = await runServerpod(
+  group('when running a non-existent script', () {
+    late ProcessResult result;
+
+    setUpAll(() async {
+      result = await runServerpod(
         ['run', 'nonexistent'],
         workingDirectory: serverDir,
       );
+    });
 
+    test('then the exit code is non-zero', () {
       expect(result.exitCode, isNot(0));
+    });
+
+    test('then an error message is shown', () {
       final output = '${result.stdout}${result.stderr}';
       expect(output, contains('Script "nonexistent" not found'));
+    });
+
+    test('then all available scripts are listed', () {
       expect(
         result.stdout,
         containsLines(['hello:', 'fail:', 'start:', 'test:']),
       );
-    },
-  );
+    });
+  });
 
   test(
     'when running without script name, then available scripts are listed',
@@ -219,4 +228,60 @@ serverpod:
     },
     timeout: Timeout(const Duration(minutes: 3)), // allow time to compile
   );
+
+  group('given pubspec without serverpod namespace', () {
+    late String serverDirNoNamespace;
+
+    setUpAll(() async {
+      await d.dir('test_server_no_namespace', [
+        d.file('pubspec.yaml', '''
+name: test_server_no_namespace
+environment:
+  sdk: ^3.0.0
+dependencies:
+  serverpod: any
+'''),
+      ]).create();
+      serverDirNoNamespace = p.join(d.sandbox, 'test_server_no_namespace');
+    });
+
+    test(
+      'when running a script, then an error about no scripts is shown',
+      () async {
+        final result = await runServerpod(
+          ['run', 'hello'],
+          workingDirectory: serverDirNoNamespace,
+        );
+
+        expect(result.exitCode, isNot(0));
+        expect(result.stdout, contains('No scripts defined'));
+      },
+    );
+
+    test(
+      'when running with --list flag, then an error about no scripts is shown',
+      () async {
+        final result = await runServerpod(
+          ['run', '--list'],
+          workingDirectory: serverDirNoNamespace,
+        );
+
+        expect(result.exitCode, isNot(0));
+        expect(result.stdout, contains('No scripts defined'));
+      },
+    );
+
+    test(
+      'when running without script name, then an error about no scripts is shown',
+      () async {
+        final result = await runServerpod(
+          ['run'],
+          workingDirectory: serverDirNoNamespace,
+        );
+
+        expect(result.exitCode, isNot(0));
+        expect(result.stdout, contains('No scripts defined'));
+      },
+    );
+  });
 }
