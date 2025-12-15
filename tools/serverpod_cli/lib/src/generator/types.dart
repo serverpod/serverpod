@@ -384,6 +384,8 @@ class TypeDefinition {
                   'package:${module.serverPackage}',
                   'package:${module.dartClientPackage}',
                 );
+        } else if (className == 'SerializableModel') {
+          t.url = serverpodUrl(serverCode);
         } else {
           t.url = url;
         }

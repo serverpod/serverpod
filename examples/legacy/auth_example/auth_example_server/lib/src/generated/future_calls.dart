@@ -11,9 +11,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/src/serialization.dart' as _i2;
-import 'dart:async' as _i3;
-import '../future_calls/example_future_call.dart' as _i4;
+import 'dart:async' as _i2;
+import '../future_calls/example_future_call.dart' as _i3;
 
 /// Invokes a future call.
 typedef _InvokeFutureCall =
@@ -104,7 +103,7 @@ class _ExampleFutureCallDispatcher {
 
   final _InvokeFutureCall _invokeFutureCall;
 
-  Future<void> invoke(_i2.SerializableModel? object) {
+  Future<void> invoke(_i1.SerializableModel? object) {
     return _invokeFutureCall(
       'ExampleInvokeFutureCall',
       object,
@@ -113,13 +112,13 @@ class _ExampleFutureCallDispatcher {
 }
 
 @_i1.doNotGenerate
-class ExampleInvokeFutureCall extends _i1.FutureCall<_i2.SerializableModel> {
+class ExampleInvokeFutureCall extends _i1.FutureCall<_i1.SerializableModel> {
   @override
-  _i3.Future<void> invoke(
+  _i2.Future<void> invoke(
     _i1.Session session,
-    _i2.SerializableModel? object,
+    _i1.SerializableModel? object,
   ) async {
-    await _i4.ExampleFutureCall().invoke(
+    await _i3.ExampleFutureCall().invoke(
       session,
       object,
     );
