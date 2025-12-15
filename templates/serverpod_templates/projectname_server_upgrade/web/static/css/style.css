@@ -74,3 +74,40 @@ hr {
 .link-box a {
     text-decoration: none;
 }
+
+.cta{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:.5rem;
+  
+    width:100%;
+    margin-top:12px;
+  
+    padding:12px 14px;
+    border-radius:10px;
+  
+    background: #1D4ED8;          /* primary */
+    color:#fff;
+    text-decoration:none;
+  
+    font-weight:600;
+    font-size:14px;
+    line-height:1;
+  
+    box-shadow: 0 6px 16px rgba(0,0,0,.18);
+    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
+  }
+  
+  .cta:hover{
+    background:#1E40AF;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(0,0,0,.22);
+  }
+  
+  .cta:active{ transform: translateY(0px); }
+  
+  .cta:focus-visible{
+    outline: 3px solid rgba(59,130,246,.45);
+    outline-offset: 2px;
+  }

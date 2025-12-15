@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as p;
+import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/create/generate_files.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
@@ -12,10 +13,10 @@ import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/entitlements_modifier.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
+import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:yaml_edit/yaml_edit.dart';
 
 import 'copier.dart';
 
@@ -174,6 +175,18 @@ Future<bool> performCreate(
         interactive: interactive,
       );
     });
+  }
+
+  if (template == ServerpodTemplateType.server) {
+    success &= await log.progress(
+      'Building Flutter web app.',
+      () {
+        return CommandLineTools.flutterBuild(
+          serverpodDirs.flutterDir,
+          serverpodDirs.serverDir,
+        );
+      },
+    );
   }
 
   if (success || force) {
@@ -407,33 +420,53 @@ Future<void> _copyFlutterUpgrade(
   copier.copyFiles();
 
   log.debug('Adding auth dependencies to Flutter pubspec', newParagraph: true);
-  await _addDependenciesToPubspec(
+  _addDependenciesToPubspec(
     pubspecFile: File(p.join(serverpodDirs.flutterDir.path, 'pubspec.yaml')),
-    dependency: 'serverpod_auth_idp_flutter',
-    version: templateVersion,
-    customServerpodPath: customServerpodPath,
-    overridePath:
-        'modules/serverpod_auth/serverpod_auth_idp/'
-        'serverpod_auth_idp_flutter',
-    transitiveDeps: [
+    additions: [
       (
-        name: 'serverpod_auth_core_client',
-        path:
-            'modules/serverpod_auth/serverpod_auth_core/'
-            'serverpod_auth_core_client',
+        name: 'serverpod_auth_idp_flutter',
+        source: DependencySource.version(
+          VersionConstraint.parse(templateVersion),
+        ),
+        type: DependencyType.normal,
       ),
       (
-        name: 'serverpod_auth_core_flutter',
-        path:
-            'modules/serverpod_auth/serverpod_auth_core/'
-            'serverpod_auth_core_flutter',
+        name: 'flutter_secure_storage',
+        source: DependencySource.version(
+          VersionConstraint.parse('^10.0.0'),
+        ),
+        type: DependencyType.override,
       ),
-      (
-        name: 'serverpod_auth_idp_client',
-        path:
-            'modules/serverpod_auth/serverpod_auth_idp/'
-            'serverpod_auth_idp_client',
-      ),
+      if (customServerpodPath != null) ...[
+        (
+          name: 'serverpod_auth_idp_flutter',
+          source: DependencySourcePath(
+            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter',
+          ),
+          type: DependencyType.override,
+        ),
+        (
+          name: 'serverpod_auth_core_client',
+          source: DependencySourcePath(
+            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client',
+          ),
+          type: DependencyType.override,
+        ),
+        (
+          name: 'serverpod_auth_core_flutter',
+          source: DependencySourcePath(
+            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter',
+          ),
+          type: DependencyType.override,
+        ),
+        (
+          name: 'serverpod_auth_idp_client',
+          source: DependencySourcePath(
+            '$customServerpodPath/modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client',
+          ),
+          type: DependencyType.override,
+        ),
+      ],
     ],
   );
 }
@@ -627,78 +660,77 @@ Future<void> _copyServerUpgrade(
       'Adding auth dependencies to server and client pubspecs',
       newParagraph: true,
     );
-    await _addDependenciesToPubspec(
+    _addDependenciesToPubspec(
       pubspecFile: File(p.join(serverpodDirs.serverDir.path, 'pubspec.yaml')),
-      dependency: 'serverpod_auth_idp_server',
-      version: templateVersion,
-      customServerpodPath: customServerpodPath,
-      overridePath:
-          'modules/serverpod_auth/serverpod_auth_idp/'
-          'serverpod_auth_idp_server',
-      transitiveDeps: [
+      additions: [
         (
-          name: 'serverpod_auth_core_server',
-          path:
-              'modules/serverpod_auth/serverpod_auth_core/'
-              'serverpod_auth_core_server',
+          name: 'serverpod_auth_idp_server',
+          source: DependencySource.version(
+            VersionConstraint.parse(templateVersion),
+          ),
+          type: DependencyType.normal,
         ),
+        if (customServerpodPath != null) ...[
+          (
+            name: 'serverpod_auth_idp_server',
+            source: DependencySourcePath(
+              '$customServerpodPath/modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server',
+            ),
+            type: DependencyType.override,
+          ),
+          (
+            name: 'serverpod_auth_core_server',
+            source: DependencySourcePath(
+              '$customServerpodPath/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server',
+            ),
+            type: DependencyType.override,
+          ),
+        ],
       ],
     );
-    await _addDependenciesToPubspec(
+    _addDependenciesToPubspec(
       pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
-      dependency: 'serverpod_auth_idp_client',
-      version: templateVersion,
-      customServerpodPath: customServerpodPath,
-      overridePath:
-          'modules/serverpod_auth/serverpod_auth_idp/'
-          'serverpod_auth_idp_client',
-      transitiveDeps: [
+      additions: [
         (
-          name: 'serverpod_auth_core_client',
-          path:
-              'modules/serverpod_auth/serverpod_auth_core/'
-              'serverpod_auth_core_client',
+          name: 'serverpod_auth_idp_client',
+          source: DependencySource.version(
+            VersionConstraint.parse(templateVersion),
+          ),
+          type: DependencyType.normal,
         ),
+        if (customServerpodPath != null) ...[
+          (
+            name: 'serverpod_auth_idp_client',
+            source: DependencySourcePath(
+              '$customServerpodPath/modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client',
+            ),
+            type: DependencyType.override,
+          ),
+          (
+            name: 'serverpod_auth_core_client',
+            source: DependencySourcePath(
+              '$customServerpodPath/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client',
+            ),
+            type: DependencyType.override,
+          ),
+        ],
       ],
     );
   }
 }
 
-Future<void> _addDependenciesToPubspec({
+void _addDependenciesToPubspec({
   required File pubspecFile,
-  required String dependency,
-  required String version,
-  required String? customServerpodPath,
-  required String overridePath,
-  List<({String name, String path})> transitiveDeps = const [],
-}) async {
+  required List<DependencyUpdate> additions,
+}) {
   if (!pubspecFile.existsSync()) {
     log.debug('Pubspec file not found: ${pubspecFile.path}');
     return;
   }
 
   var contents = pubspecFile.readAsStringSync();
-  final editor = YamlEditor(contents);
-
-  editor.update(
-    ['dependencies', dependency],
-    version,
-  );
-
-  if (customServerpodPath != null) {
-    editor.update(
-      ['dependency_overrides', dependency],
-      {'path': '$customServerpodPath/$overridePath'},
-    );
-    for (final dep in transitiveDeps) {
-      editor.update(
-        ['dependency_overrides', dep.name],
-        {'path': '$customServerpodPath/${dep.path}'},
-      );
-    }
-  }
-
-  pubspecFile.writeAsStringSync(editor.toString());
+  contents = addDependencyToPubspec(contents, additions: additions);
+  pubspecFile.writeAsStringSync(contents);
 }
 
 void _copyServerTemplates(
@@ -733,7 +765,7 @@ void _copyServerTemplates(
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock'],
+    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
 
@@ -797,6 +829,7 @@ void _copyServerTemplates(
     ],
     ignoreFileNames: [
       'pubspec.lock',
+      'pubspec_overrides.yaml',
       'ios',
       'android',
       'web',
@@ -839,7 +872,7 @@ void _copyModuleTemplates(
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock'],
+    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
 
@@ -870,7 +903,7 @@ void _copyModuleTemplates(
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock'],
+    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
 }
