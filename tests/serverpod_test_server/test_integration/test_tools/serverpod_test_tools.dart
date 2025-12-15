@@ -15306,7 +15306,7 @@ class _TestCallFutureCall {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      return _i30.TestCallInvokeFutureCall().invoke(
+      await _i30.TestCallInvokeFutureCall().invoke(
         _localUniqueSession,
         object,
       );
@@ -15324,7 +15324,7 @@ class _TestExceptionCallFutureCall {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      return _i30.TestExceptionCallInvokeFutureCall().invoke(
+      await _i30.TestExceptionCallInvokeFutureCall().invoke(
         _localUniqueSession,
         object,
       );

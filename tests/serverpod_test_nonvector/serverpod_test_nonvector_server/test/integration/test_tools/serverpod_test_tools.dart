@@ -201,7 +201,7 @@ class _BirthdayReminderFutureCall {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      return _i5.BirthdayReminderInvokeFutureCall().invoke(
+      await _i5.BirthdayReminderInvokeFutureCall().invoke(
         _localUniqueSession,
         object,
       );
