@@ -11,8 +11,9 @@ class AppConfig {
 
   static Future<AppConfig> loadConfig() async {
     final config = await _loadJsonConfig();
+    final String? apiUrl = config['apiUrl'];
 
-    return AppConfig(apiUrl: config.get<String>('apiUrl'));
+    return AppConfig(apiUrl: apiUrl);
   }
 
   static Future<Map<String, dynamic>> _loadJsonConfig() async {
@@ -21,12 +22,5 @@ class AppConfig {
     );
 
     return jsonDecode(data);
-  }
-}
-
-extension on Map<String, dynamic> {
-  T? get<T>(String key) {
-    final value = this[key];
-    return value as T?;
   }
 }
