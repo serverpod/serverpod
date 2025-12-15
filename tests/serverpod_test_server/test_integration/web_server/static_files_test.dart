@@ -54,7 +54,7 @@ void main() {
                 ? CacheControlHeader(maxAge: 1)
                 : null,
           ),
-          '/url_prefix/**',
+          '/url_prefix',
         );
         // Server should start after adding the route otherwise web server
         // will not be started.
@@ -94,7 +94,7 @@ void main() {
                 ? CacheControlHeader(maxAge: 1)
                 : null,
           ),
-          '/url_prefix/**',
+          '/url_prefix',
         );
         // Server should start after adding the route otherwise web server
         // will not be started.
@@ -138,7 +138,7 @@ void main() {
             directory,
             cacheBustingConfig: cacheBustingConfig,
           ),
-          '/url_prefix/**',
+          '/url_prefix',
         );
         await pod.start();
 
@@ -168,7 +168,7 @@ void main() {
       setUp(() async {
         pod.webServer.addRoute(
           StaticRoute.directory(directory),
-          '/url_prefix/**',
+          '/url_prefix',
         );
         await pod.start();
       });
@@ -190,7 +190,7 @@ void main() {
       setUp(() async {
         pod.webServer.addRoute(
           StaticRoute.directory(directory),
-          '/url_prefix/**',
+          '/url_prefix',
         );
         await pod.start();
       });

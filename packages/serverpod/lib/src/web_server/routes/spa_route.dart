@@ -14,7 +14,6 @@ import 'package:serverpod/serverpod.dart';
 ///     Directory('web/app'),
 ///     fallback: File('web/app/index.html'),
 ///   ),
-///   '/**',
 /// );
 /// ```
 class SpaRoute extends Route {

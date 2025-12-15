@@ -32,7 +32,8 @@ class StaticRoute extends Route {
 
   final Handler _handler;
 
-  StaticRoute._(this._handler) : super(methods: {Method.get, Method.head});
+  StaticRoute._(this._handler, {required bool tailMatch})
+    : super(methods: {Method.get, Method.head}, path: tailMatch ? '/**' : '/');
 
   /// Use [StaticRoute.directory] to serve everything below a given [root].
   ///
@@ -50,6 +51,7 @@ class StaticRoute extends Route {
         cacheBustingConfig: cacheBustingConfig,
         cacheControl: cacheControlFactory,
       ).asHandler,
+      tailMatch: true,
     );
   }
 
@@ -67,6 +69,7 @@ class StaticRoute extends Route {
         file,
         cacheControl: cacheControlFactory,
       ).asHandler,
+      tailMatch: false,
     );
   }
 
