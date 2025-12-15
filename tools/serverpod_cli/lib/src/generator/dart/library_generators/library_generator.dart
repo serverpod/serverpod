@@ -1981,7 +1981,7 @@ typedef _InvokeFutureCall =
                 ),
                 if (method.futureCallMethodParameter != null)
                   refer('object')
-                else
+                else if (method.parameters.isNotEmpty)
                   refer(method.parameters.first.name),
               ])
               .returned
@@ -2049,7 +2049,7 @@ typedef _InvokeFutureCall =
                               .toSerializableModel(),
                         ),
                       )
-                    else
+                    else if (requiredParameters.isNotEmpty)
                       requiredParameters.first.type.asNonNullable.reference(
                         true,
                         config: config,
@@ -2088,7 +2088,7 @@ typedef _InvokeFutureCall =
                             ),
                           ),
                       )
-                    else
+                    else if (requiredParameters.isNotEmpty)
                       Parameter(
                         (p) => p
                           ..name = requiredParameters.first.name
@@ -2146,7 +2146,7 @@ typedef _InvokeFutureCall =
               if (method.futureCallMethodParameter != null) ...[
                 for (var param in requiredParameters)
                   refer('object!.${param.name}'),
-              ] else
+              ] else if (requiredParameters.isNotEmpty)
                 buildPositionalParameter(),
               if (method.futureCallMethodParameter != null)
                 for (var param in optionalParameters)

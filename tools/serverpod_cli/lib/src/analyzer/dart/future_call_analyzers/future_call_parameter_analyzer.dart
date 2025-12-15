@@ -54,7 +54,7 @@ abstract class FutureCallParameterAnalyzer {
       exceptions.add(
         SourceSpanSeverityException(
           'The first parameter of a future call method must be a required positional parameter of type "Session".',
-          parameters.first.span,
+          parameters.firstOrNull?.span,
         ),
       );
       return exceptions;
@@ -73,7 +73,7 @@ abstract class FutureCallParameterAnalyzer {
     if (parameters.withoutSessionParameter.isEmpty) {
       exceptions.add(
         SourceSpanSeverityException(
-          'Future call methods must have at least one optional positional parameter that is supported for serialization.',
+          'Future call methods must have at least one parameter (besides Session) that is supported for serialization.',
           parameters.first.span,
         ),
       );

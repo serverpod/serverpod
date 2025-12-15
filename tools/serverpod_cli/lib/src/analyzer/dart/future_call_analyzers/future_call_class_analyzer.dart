@@ -135,6 +135,8 @@ abstract class FutureCallClassAnalyzer {
   }
 
   static String _formatFutureCallName(String className) {
+    if (className.length < 2) return className;
+
     const removeEnding = 'FutureCall';
 
     var futureCallName =
@@ -151,16 +153,16 @@ abstract class FutureCallClassAnalyzer {
 }
 
 extension on ClassElement {
-  /// Returns all the methods from the class which are callabe as FutureCall.
-  /// This means only methods with first parameter of type Session
-  /// and a return type of Future will be returned.
-  /// Only returns methods that are defined directly on the class and not inherited ones.
+  /// Returns all the methods from the class which are callable as FutureCall.
+  /// This means only methods with parameter(s) and a return type
+  /// of Future will be returned.
+  /// Only returns methods that are defined directly on the class
+  /// and not inherited ones.
   List<MethodElement> collectFutureCallMethods({
     required Map<String, List<SourceSpanSeverityException>> validationErrors,
     required String filePath,
   }) {
     var futureCallMethods = <MethodElement>[];
-    var handledMethods = <String>{};
 
     for (final method in methods) {
       if (FutureCallMethodAnalyzer.isFutureCallMethod(method) &&
@@ -169,8 +171,6 @@ extension on ClassElement {
           )) {
         futureCallMethods.add(method);
       }
-
-      handledMethods.add(method.name!);
     }
 
     return futureCallMethods;

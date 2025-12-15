@@ -134,7 +134,6 @@ abstract class FutureCallMethodAnalyzer {
     }
 
     var typeArguments = dartType.typeArguments;
-    var innerType = typeArguments[0];
 
     if (typeArguments.length != 1) {
       // Interface type must always have a type argument so this is just for
@@ -144,6 +143,8 @@ abstract class FutureCallMethodAnalyzer {
         dartElement.span,
       );
     }
+
+    var innerType = typeArguments[0];
 
     if (innerType is DynamicType) {
       return SourceSpanSeverityException(
