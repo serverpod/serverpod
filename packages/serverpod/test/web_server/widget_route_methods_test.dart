@@ -1,40 +1,57 @@
-import 'dart:async';
-
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/generated/endpoints.dart';
 import 'package:serverpod/src/generated/protocol.dart' as internal;
 import 'package:test/test.dart';
+import 'package:http/http.dart' as http;
 
-class _EmptyEndpoints extends EndpointDispatch {
+class TestWidget extends WebWidget {
+  final String method;
+
+  TestWidget(this.method);
+
   @override
-  void initializeEndpoints(Server server) {}
+  String toString() => '<html><body>Method: $method</body></html>';
 }
 
-class _TestWidget extends WebWidget {
+class GetPostRoute extends WidgetRoute {
+  GetPostRoute() : super(methods: {Method.get, Method.post});
+
   @override
-  String toString() => '<html><body>Test</body></html>';
+  Future<WebWidget> build(Session session, Request request) async {
+    return TestWidget(request.method.toString());
+  }
 }
 
 void main() {
-  final portZeroConfig = ServerConfig(
-    port: 0,
-    publicScheme: 'http',
-    publicHost: 'localhost',
-    publicPort: 0,
-  );
-
-  group('Given WidgetRoute with custom HTTP methods', () {
+  group('Given a widget route that accepts GET and POST methods', () {
     late Serverpod pod;
+    late int port;
 
     setUp(() async {
       pod = Serverpod(
         [],
         internal.Protocol(),
-        _EmptyEndpoints(),
+        Endpoints(),
         config: ServerpodConfig(
-          apiServer: portZeroConfig,
-          webServer: portZeroConfig,
+          apiServer: ServerConfig(
+            port: 0,
+            publicScheme: 'http',
+            publicHost: 'localhost',
+            publicPort: 0,
+          ),
+          webServer: ServerConfig(
+            port: 0,
+            publicScheme: 'http',
+            publicHost: 'localhost',
+            publicPort: 0,
+          ),
         ),
       );
+
+      pod.webServer.addRoute(GetPostRoute(), '/test-route');
+
+      await pod.start();
+      port = pod.webServer.port!;
     });
 
     tearDown(() async {
@@ -42,62 +59,27 @@ void main() {
     });
 
     test(
-      'when WidgetRoute is created with GET only (default) then methods contains only GET.',
-      () {
-        final route = _GetOnlyRoute();
-        expect(route.methods, {Method.get});
-      },
-    );
-
-    test(
-      'when WidgetRoute is created with GET and POST then methods contains both.',
-      () {
-        final route = _GetPostRoute();
-        expect(route.methods, {Method.get, Method.post});
-      },
-    );
-
-    test(
-      'when WidgetRoute is created with POST only then methods contains only POST.',
-      () {
-        final route = _PostOnlyRoute();
-        expect(route.methods, {Method.post});
-      },
-    );
-
-    test(
-      'when WidgetRoute with custom methods is added to WebServer then it is accepted.',
-      () {
-        expect(
-          () => pod.webServer.addRoute(_GetPostRoute(), '/test'),
-          returnsNormally,
+      'when GET request is made then route responds successfully.',
+      () async {
+        var response = await http.get(
+          Uri.parse('http://localhost:$port/test-route'),
         );
+
+        expect(response.statusCode, 200);
+        expect(response.body, contains('Method: Method.get'));
+      },
+    );
+
+    test(
+      'when POST request is made then route responds successfully.',
+      () async {
+        var response = await http.post(
+          Uri.parse('http://localhost:$port/test-route'),
+        );
+
+        expect(response.statusCode, 200);
+        expect(response.body, contains('Method: Method.post'));
       },
     );
   });
-}
-
-class _GetOnlyRoute extends WidgetRoute {
-  @override
-  Future<WebWidget> build(Session session, Request request) async {
-    return _TestWidget();
-  }
-}
-
-class _GetPostRoute extends WidgetRoute {
-  _GetPostRoute() : super(methods: {Method.get, Method.post});
-
-  @override
-  Future<WebWidget> build(Session session, Request request) async {
-    return _TestWidget();
-  }
-}
-
-class _PostOnlyRoute extends WidgetRoute {
-  _PostOnlyRoute() : super(methods: {Method.post});
-
-  @override
-  Future<WebWidget> build(Session session, Request request) async {
-    return _TestWidget();
-  }
 }
