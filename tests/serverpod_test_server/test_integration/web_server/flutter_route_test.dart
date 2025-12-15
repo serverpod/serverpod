@@ -212,4 +212,129 @@ void main() {
       expect(response.headers['cache-control'], contains('max-age=3600'));
     });
   });
+
+  group('Given a FlutterRoute with default caching', () {
+    late Serverpod pod;
+    late int port;
+
+    setUp(() async {
+      pod = Serverpod(
+        [],
+        Protocol(),
+        Endpoints(),
+        config: ServerpodConfig(
+          apiServer: portZeroConfig,
+          webServer: portZeroConfig,
+        ),
+      );
+
+      await d.dir('web_cache_test', [
+        d.file('index.html', '<html><body>Flutter App</body></html>'),
+        d.file('flutter_service_worker.js', '// Service worker'),
+        d.file('flutter_bootstrap.js', '// Bootstrap'),
+        d.file('manifest.json', '{"name": "App"}'),
+        d.file('version.json', '{"version": "1.0.0"}'),
+        d.file('main.dart.js', '// Flutter web JS'),
+        d.dir('assets', [
+          d.file('image.png', 'fake image data'),
+        ]),
+      ]).create();
+
+      final testWebDir = Directory(path.join(d.sandbox, 'web_cache_test'));
+      pod.webServer.addRoute(
+        FlutterRoute(testWebDir),
+      );
+
+      await pod.start();
+      port = pod.webServer.port!;
+    });
+
+    tearDown(() async {
+      await pod.shutdown(exitProcess: false);
+    });
+
+    test(
+      'Given index.html when requested then no-cache headers are present.',
+      () async {
+        final response = await client.get(
+          Uri.http('localhost:$port', '/index.html'),
+        );
+        expect(response.statusCode, 200);
+        expect(response.headers['cache-control'], contains('no-cache'));
+        expect(response.headers['cache-control'], contains('private'));
+      },
+    );
+
+    test(
+      'Given flutter_service_worker.js when requested then no-cache headers are present.',
+      () async {
+        final response = await client.get(
+          Uri.http('localhost:$port', '/flutter_service_worker.js'),
+        );
+        expect(response.statusCode, 200);
+        expect(response.headers['cache-control'], contains('no-cache'));
+        expect(response.headers['cache-control'], contains('private'));
+      },
+    );
+
+    test(
+      'Given flutter_bootstrap.js when requested then no-cache headers are present.',
+      () async {
+        final response = await client.get(
+          Uri.http('localhost:$port', '/flutter_bootstrap.js'),
+        );
+        expect(response.statusCode, 200);
+        expect(response.headers['cache-control'], contains('no-cache'));
+        expect(response.headers['cache-control'], contains('private'));
+      },
+    );
+
+    test(
+      'Given manifest.json when requested then no-cache headers are present.',
+      () async {
+        final response = await client.get(
+          Uri.http('localhost:$port', '/manifest.json'),
+        );
+        expect(response.statusCode, 200);
+        expect(response.headers['cache-control'], contains('no-cache'));
+        expect(response.headers['cache-control'], contains('private'));
+      },
+    );
+
+    test(
+      'Given version.json when requested then no-cache headers are present.',
+      () async {
+        final response = await client.get(
+          Uri.http('localhost:$port', '/version.json'),
+        );
+        expect(response.statusCode, 200);
+        expect(response.headers['cache-control'], contains('no-cache'));
+        expect(response.headers['cache-control'], contains('private'));
+      },
+    );
+
+    test(
+      'Given main.dart.js when requested then cache-control header is public and max-age=86400.',
+      () async {
+        final response = await client.get(
+          Uri.http('localhost:$port', '/main.dart.js'),
+        );
+        expect(response.statusCode, 200);
+        expect(response.headers['cache-control'], contains('public'));
+        expect(response.headers['cache-control'], contains('max-age=86400'));
+      },
+    );
+
+    test(
+      'Given assets/image.png when requested then cache-control header is public and max-age=86400.',
+      () async {
+        final response = await client.get(
+          Uri.http('localhost:$port', '/assets/image.png'),
+        );
+        expect(response.statusCode, 200);
+        expect(response.headers['cache-control'], contains('public'));
+        expect(response.headers['cache-control'], contains('max-age=86400'));
+      },
+    );
+  });
 }
