@@ -171,7 +171,7 @@ class ServerTestToolsGenerator {
               .statement,
           const Code('try {'),
           refer(
-                _getFutureCallClassName(futureCall.className, method.name),
+                _getFutureCallClassName(futureCall.name, method.name),
                 'package:${config.serverPackage}/src/generated/future_calls.dart',
               )
               .call([])
@@ -181,11 +181,11 @@ class ServerTestToolsGenerator {
                   refer('_localUniqueSession'),
                   if (method.futureCallMethodParameter != null)
                     refer('object')
-                  else
+                  else if (requiredParameters.isNotEmpty)
                     refer(requiredParameters.first.name),
                 ],
               )
-              .returned
+              .awaited
               .statement,
           const Code('} finally {'),
           refer(
