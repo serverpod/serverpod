@@ -476,11 +476,7 @@ void main() {
         'then the protocol.dart does not contain any reference to serverOnly model.',
         () {
           var protocolContent = codeMap[expectedFileName]!;
-          // Should NOT contain Article at all
-          expect(
-            protocolContent,
-            isNot(contains('Article')),
-          );
+          expect(protocolContent, isNot(contains('Article')));
         },
       );
     },

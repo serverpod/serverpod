@@ -1107,11 +1107,7 @@ void main() {
         'then the protocol.dart contains reference to serverOnly model.',
         () {
           var protocolContent = codeMap[expectedFileName]!;
-          // Should contain Article
-          expect(
-            protocolContent,
-            contains('Article'),
-          );
+          expect(protocolContent, contains('Article'));
         },
       );
     },
