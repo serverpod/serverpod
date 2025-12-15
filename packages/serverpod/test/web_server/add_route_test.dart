@@ -17,7 +17,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('WebServer.addRoute', () {
+  group('Given WebServer.addRoute', () {
     late Serverpod pod;
 
     setUp(() async {
@@ -38,7 +38,7 @@ void main() {
 
     group('when calling with a tail-path', () {
       test(
-        'then it accepts route with rooted-path',
+        'then it accepts route with root-path',
         () {
           expect(
             () => pod.webServer.addRoute(_TestRoute(path: '/'), '/**'),
@@ -63,7 +63,7 @@ void main() {
       );
 
       test(
-        'rejects route with non-rooted path',
+        'then it rejects route with non-root path',
         () {
           expect(
             () => pod.webServer.addRoute(_TestRoute(path: '/a'), '/**'),
@@ -73,7 +73,7 @@ void main() {
       );
 
       test(
-        'rejects route with tail in its own path',
+        'then it rejects route with tail in its own path',
         () {
           expect(
             () => pod.webServer.addRoute(_TestRoute(path: '/**'), '/**'),
@@ -83,9 +83,9 @@ void main() {
       );
     });
 
-    group('without tail path', () {
+    group('when calling without tail path', () {
       test(
-        'accepts route that registers sub-routes',
+        'then it accepts route that registers sub-routes',
         () {
           expect(
             () => pod.webServer.addRoute(
@@ -100,7 +100,7 @@ void main() {
       );
 
       test(
-        'accepts route with non-rooted path',
+        'then it accepts route with non-root path',
         () {
           expect(
             () => pod.webServer.addRoute(_TestRoute(path: '/a'), '/api'),
@@ -110,7 +110,7 @@ void main() {
       );
 
       test(
-        'accepts route with tail in its own path',
+        'then it accepts route with tail in its own path',
         () {
           expect(
             () => pod.webServer.addRoute(_TestRoute(path: 'b/**'), '/api'),

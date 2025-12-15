@@ -16,7 +16,7 @@ import 'package:serverpod/serverpod.dart';
 /// don't need to use it directly:
 ///
 /// ```dart
-/// pod.webServer.addRoute(FlutterRoute(Directory('web/app')), '/**');
+/// pod.webServer.addRoute(FlutterRoute(Directory('web/app')));
 /// ```
 ///
 /// ## Standalone Usage
@@ -24,7 +24,7 @@ import 'package:serverpod/serverpod.dart';
 /// You can also apply it manually to any route:
 ///
 /// ```dart
-/// pod.webServer.addMiddleware(WasmHeadersMiddleware(), '/app/**');
+/// pod.webServer.addMiddleware(WasmHeadersMiddleware(), '/app');
 /// ```
 ///
 /// ## How It Works
