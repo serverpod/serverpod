@@ -44,7 +44,7 @@ class CommandLineTools {
     log.debug('Running `flutter build` in ${dir.path}', newParagraph: true);
 
     // Unfortunately, we can't use the `-o` flag directly because of an error
-    // that happens on windows. Issue is tracked by in flutter
+    // that happens on windows. Issue is tracked in the flutter
     // repository here: https://github.com/flutter/flutter/issues/157886
     var flutterBuildExitCode = await _runProcessWithDefaultLogger(
       executable: 'flutter',
