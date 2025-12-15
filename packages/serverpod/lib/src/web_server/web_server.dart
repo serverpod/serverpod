@@ -320,6 +320,13 @@ abstract class Route extends HandlerObject {
 /// A [WidgetRoute] is the most convenient way to create routes in your server.
 /// Override the [build] method and return an appropriate [WebWidget].
 abstract class WidgetRoute extends Route {
+  /// Creates a new [WidgetRoute].
+  ///
+  /// The [methods] parameter specifies which HTTP methods this route will
+  /// respond to (defaults to GET only). The [path] parameter specifies the
+  /// suffix path (defaults to '/').
+  WidgetRoute({super.methods, super.path});
+
   /// Override this method to build your web widget from the current [session]
   /// and [request].
   Future<WebWidget> build(Session session, Request request);
