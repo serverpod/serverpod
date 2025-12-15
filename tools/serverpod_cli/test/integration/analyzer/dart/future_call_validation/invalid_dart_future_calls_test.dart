@@ -31,7 +31,7 @@ void main() {
   });
 
   group(
-    'Given an future call file with incomplete future call class defined when analyzed',
+    'Given a future call file with incomplete future call class defined when analyzed',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -82,7 +82,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given an future call file with incomplete future call method defined when analyzed',
+    'Given a future call file with incomplete future call method defined when analyzed',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -133,7 +133,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given an future call method that returns a Future with multiple defined types',
+    'Given a future call method that returns a Future with multiple defined types',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(

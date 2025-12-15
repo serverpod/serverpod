@@ -179,7 +179,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given an future call with a method that has a `Session` as second positional parameter when analyzed',
+    'Given a future call with a method that has a second positional parameter of type `Session` when analyzed',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -221,7 +221,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given an future call with a method that has a `Session` as required named parameter when analyzed',
+    'Given a future call with a method that has a `Session` as required named parameter when analyzed',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -265,7 +265,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given an future call method without a first positional `Session` param',
+    'Given a future call method without a first positional `Session` param',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -319,7 +319,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given an future call method without a first positional `Session` param and the first parameter instead contains a named `Session` parameter when analyzed',
+    'Given a future call method without a first positional `Session` param and the first parameter instead contains a named `Session` parameter when analyzed',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -373,7 +373,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given an future call method without a first positional `Session` param and the first parameter instead contains an optional `Session` parameter when analyzed',
+    'Given a future call method without a first positional `Session` parameter and the first parameter instead contains an optional `Session` parameter when analyzed',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -427,7 +427,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given an future call method that does not return Future when analyzed',
+    'Given a future call method that does not return Future when analyzed',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -477,7 +477,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given an future call method that returns a Future missing defined type when analyzed',
+    'Given a future call method that returns a Future missing defined type when analyzed',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -537,7 +537,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given an future call method that returns a Future with dynamic type when analyzed',
+    'Given a future call method that returns a Future with dynamic type when analyzed',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -637,7 +637,7 @@ class ExampleFutureCall extends FutureCall {
       expect(futureCallDefinitions, hasLength(1));
     });
 
-    test('then future call definition has does not have method defined.', () {
+    test('then future call definition does not have method defined.', () {
       var methods = futureCallDefinitions.firstOrNull?.methods;
       expect(methods, isEmpty);
     });
@@ -988,7 +988,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a valid future call with a method that has serializable parameters after the Session parameter',
+    'Given a valid future call with a method that has serializable parameters after the first positional Session parameter',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(

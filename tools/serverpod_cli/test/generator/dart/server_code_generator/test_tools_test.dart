@@ -1656,7 +1656,7 @@ void main() {
   );
 
   group(
-    'Given protocol definition with future call when generating test tools file file',
+    'Given protocol definition with future call when generating test tools file',
     () {
       var futureClassName = 'testing';
       var method = 'sayHello';
