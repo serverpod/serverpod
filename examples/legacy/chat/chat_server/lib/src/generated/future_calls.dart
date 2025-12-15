@@ -31,12 +31,12 @@ class _FutureCalls implements _i1.FutureCallInitializer {
     _i1.FutureCallManager futureCallManager,
     String serverId,
   ) {
-    var futureCalls = <String, _i1.FutureCall>{
+    var registeredFutureCalls = <String, _i1.FutureCall>{
       'ExampleInvokeFutureCall': ExampleInvokeFutureCall(),
     };
     _futureCallManager = futureCallManager;
     _serverId = serverId;
-    for (final entry in futureCalls.entries) {
+    for (final entry in registeredFutureCalls.entries) {
       _futureCallManager?.registerFutureCall(entry.value, entry.key);
     }
   }

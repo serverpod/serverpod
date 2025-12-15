@@ -1770,7 +1770,7 @@ typedef _InvokeFutureCall =
       const Code('''
         _futureCallManager = futureCallManager;
         _serverId = serverId;
-        for (final entry in futureCalls.entries) {
+        for (final entry in registeredFutureCalls.entries) {
           _futureCallManager?.registerFutureCall(entry.value, entry.key);
         }
 '''),
@@ -1778,7 +1778,7 @@ typedef _InvokeFutureCall =
   }
 
   Code _buildFutureCallLookupMap(List<FutureCallDefinition> futureCalls) {
-    return refer('var futureCalls')
+    return refer('var registeredFutureCalls')
         .assign(
           literalMap(
             {

@@ -13,6 +13,7 @@ class FutureCallMethodDefinitionBuilder {
   List<ParameterDefinition> _parameters = [];
   List<ParameterDefinition> _parametersPositional = [];
   List<ParameterDefinition> _parametersNamed = [];
+  FutureCallParameterDefinition? _futureCallMethodParameter;
 
   FutureCallMethodDefinitionBuilder withName(String name) {
     _name = name;
@@ -59,6 +60,13 @@ class FutureCallMethodDefinitionBuilder {
     return this;
   }
 
+  FutureCallMethodDefinitionBuilder withFutureCallMethodParameter(
+    FutureCallParameterDefinition? futureCallMethodParameter,
+  ) {
+    _futureCallMethodParameter = futureCallMethodParameter;
+    return this;
+  }
+
   FutureCallMethodDefinition buildMethodCallDefinition() {
     return FutureCallMethodDefinition(
       name: _name,
@@ -68,7 +76,7 @@ class FutureCallMethodDefinitionBuilder {
       parameters: _parameters,
       parametersPositional: _parametersPositional,
       parametersNamed: _parametersNamed,
-      futureCallMethodParameter: null,
+      futureCallMethodParameter: _futureCallMethodParameter,
     );
   }
 }

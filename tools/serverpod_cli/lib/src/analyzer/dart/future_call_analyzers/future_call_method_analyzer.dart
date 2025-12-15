@@ -34,7 +34,7 @@ abstract class FutureCallMethodAnalyzer {
     // When there is only one parameter apart from the Session parameter,
     // only generate futureCallMethodParameter if the parameter type is supported
     // for serialization.
-    // If the only parameter apart from the Session paramter
+    // If the only parameter apart from the Session parameter
     // is a SerializableModel, it will be skipped since it would
     // have been defined with yaml for generation.
     final shouldGenerateSerializableModelDefinition =
