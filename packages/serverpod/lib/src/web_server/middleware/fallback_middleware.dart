@@ -18,9 +18,9 @@ import 'package:serverpod/serverpod.dart';
 ///     fallback: StaticRoute.file(indexFile),
 ///     on: (response) => response.statusCode == 404,
 ///   ),
-///   '/**',
+///   '/',
 /// );
-/// pod.webServer.addRoute(StaticRoute.directory(webDir), '/**');
+/// pod.webServer.addRoute(StaticRoute.directory(webDir));
 /// ```
 ///
 /// ## Custom Condition Example
@@ -31,7 +31,7 @@ import 'package:serverpod/serverpod.dart';
 ///     fallback: errorPageRoute,
 ///     on: (response) => response.statusCode >= 500,
 ///   ),
-///   '/api/**',
+///   '/api',
 /// );
 /// ```
 ///

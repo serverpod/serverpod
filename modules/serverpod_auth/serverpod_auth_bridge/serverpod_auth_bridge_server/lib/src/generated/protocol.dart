@@ -290,6 +290,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i7.LegacySession?>()) {
       return (data != null ? _i7.LegacySession.fromJson(data) : null) as T;
     }
+    if (t == Set<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
+    }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}

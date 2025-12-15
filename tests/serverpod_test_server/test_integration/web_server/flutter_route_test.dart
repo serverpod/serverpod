@@ -52,7 +52,6 @@ void main() {
 
       pod.webServer.addRoute(
         FlutterRoute(webDir),
-        '/**',
       );
 
       await pod.start();
@@ -108,6 +107,17 @@ void main() {
         expect(response.body, contains('Flutter App'));
       },
     );
+
+    test(
+      'when requesting / then index.html is used',
+      () async {
+        final response = await client.get(
+          Uri.http('localhost:$port', '/'),
+        );
+        expect(response.statusCode, 200);
+        expect(response.body, contains('Flutter App'));
+      },
+    );
   });
 
   group('Given a FlutterRoute with custom index file', () {
@@ -133,7 +143,6 @@ void main() {
 
       pod.webServer.addRoute(
         FlutterRoute(webDir, indexFile: customIndex),
-        '/**',
       );
 
       await pod.start();
@@ -184,7 +193,6 @@ void main() {
           webDir,
           cacheControlFactory: StaticRoute.public(maxAge: Duration(hours: 1)),
         ),
-        '/**',
       );
 
       await pod.start();

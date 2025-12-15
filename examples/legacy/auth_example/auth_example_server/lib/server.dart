@@ -39,7 +39,6 @@ void run(List<String> args) async {
   // Serve all files in the /static directory.
   pod.webServer.addRoute(
     StaticRoute.directory(Directory('static')),
-    '/**',
   );
 
   // Configuration for sign in with email.

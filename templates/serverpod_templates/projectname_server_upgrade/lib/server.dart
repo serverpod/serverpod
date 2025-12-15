@@ -39,7 +39,7 @@ void run(List<String> args) async {
   // Serve all files in the web/static relative directory under /.
   // These are used by the default web page.
   final root = Directory(Uri(path: 'web/static').toFilePath());
-  pod.webServer.addRoute(StaticRoute.directory(root), '/**');
+  pod.webServer.addRoute(StaticRoute.directory(root));
 
   // Setup the app config route.
   // We build this configuration based on the servers api url and serve it to
