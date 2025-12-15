@@ -3,10 +3,10 @@ import 'package:test/test.dart';
 
 void main() {
   group(
-    'Given a serverOnly model with a List field of another serverOnly model',
+    'Given a serverOnly model with a List field of another serverOnly model when deserializing ArticleList from json',
     () {
       test(
-        'when deserializing ArticleList on server then deserialization should succeed.',
+        'then deserialization should succeed.',
         () {
           var json = {
             'results': [
@@ -23,9 +23,14 @@ void main() {
           expect(articleList.results[0].price, 10.0);
         },
       );
+    },
+  );
 
+  group(
+    'Given a serverOnly model when deserializing List<Article> directly from json',
+    () {
       test(
-        'when deserializing List<Article> directly then deserialization should succeed.',
+        'then deserialization should succeed.',
         () {
           var json = [
             {'name': 'Article 1', 'price': 10.0},
@@ -40,9 +45,14 @@ void main() {
           expect(articles[0].price, 10.0);
         },
       );
+    },
+  );
 
+  group(
+    'Given a serverOnly model with a List field of another serverOnly model when encoding ArticleList',
+    () {
       test(
-        'when encoding ArticleList on server then serialization should succeed.',
+        'then serialization should succeed.',
         () {
           var articleList = ArticleList(
             results: [

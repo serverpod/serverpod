@@ -473,39 +473,13 @@ void main() {
       );
 
       test(
-        'then the protocol.dart does not contain deserialization entry for serverOnly model.',
+        'then the protocol.dart does not contain any reference to serverOnly model.',
         () {
           var protocolContent = codeMap[expectedFileName]!;
-          // Should NOT contain: if (t == Article)
+          // Should NOT contain Article at all
           expect(
             protocolContent,
-            isNot(
-              contains(
-                RegExp(
-                  r'if\s*\(\s*t\s*==\s*[^)]*Article[^)]*\)',
-                  multiLine: true,
-                ),
-              ),
-            ),
-          );
-        },
-      );
-
-      test(
-        'then the protocol.dart does not contain deserialization entry for List of serverOnly model.',
-        () {
-          var protocolContent = codeMap[expectedFileName]!;
-          // Should NOT contain: if (t == List<Article>)
-          expect(
-            protocolContent,
-            isNot(
-              contains(
-                RegExp(
-                  r'if\s*\(\s*t\s*==\s*List<[^>]*Article[^>]*>\s*\)',
-                  multiLine: true,
-                ),
-              ),
-            ),
+            isNot(contains('Article')),
           );
         },
       );

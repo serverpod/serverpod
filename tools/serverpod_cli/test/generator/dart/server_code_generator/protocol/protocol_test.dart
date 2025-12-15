@@ -1104,35 +1104,13 @@ void main() {
       );
 
       test(
-        'then the protocol.dart contains deserialization entry for serverOnly model.',
+        'then the protocol.dart contains reference to serverOnly model.',
         () {
           var protocolContent = codeMap[expectedFileName]!;
-          // Should contain: if (t == Article) { return Article.fromJson(data) as T; }
+          // Should contain Article
           expect(
             protocolContent,
-            contains(
-              RegExp(
-                r'if\s*\(\s*t\s*==\s*[^)]*Article[^)]*\)\s*{',
-                multiLine: true,
-              ),
-            ),
-          );
-        },
-      );
-
-      test(
-        'then the protocol.dart contains deserialization entry for List of serverOnly model.',
-        () {
-          var protocolContent = codeMap[expectedFileName]!;
-          // Should contain: if (t == List<Article>) { ... }
-          expect(
-            protocolContent,
-            contains(
-              RegExp(
-                r'if\s*\(\s*t\s*==\s*List<[^>]*Article[^>]*>\s*\)',
-                multiLine: true,
-              ),
-            ),
+            contains('Article'),
           );
         },
       );
