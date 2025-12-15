@@ -107,6 +107,17 @@ void main() {
         expect(response.body, contains('Flutter App'));
       },
     );
+
+    test(
+      'when requesting / then index.html is used',
+      () async {
+        final response = await client.get(
+          Uri.http('localhost:$port', '/'),
+        );
+        expect(response.statusCode, 200);
+        expect(response.body, contains('Flutter App'));
+      },
+    );
   });
 
   group('Given a FlutterRoute with custom index file', () {

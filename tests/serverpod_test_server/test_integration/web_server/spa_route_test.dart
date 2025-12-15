@@ -101,6 +101,17 @@ void main() {
         expect(response.body, contains('SPA Index'));
       },
     );
+
+    test(
+      'when requesting / then fallback is served',
+      () async {
+        final response = await client.get(
+          Uri.http('localhost:$port', '/'),
+        );
+        expect(response.statusCode, 200);
+        expect(response.body, contains('SPA Index'));
+      },
+    );
   });
 
   group('Given a SpaRoute with custom fallback', () {
