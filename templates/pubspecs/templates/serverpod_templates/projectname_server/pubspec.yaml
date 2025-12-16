@@ -36,4 +36,4 @@ serverpod:
     # Unfortunately, we can't use the `-o` flag directly because of an error
     # that happens on windows. Issue is tracked in the flutter
     # repository here: https://github.com/flutter/flutter/issues/157886
-    flutter_build: rm -r web/app && cd ../projectname_flutter && flutter build web --base-href /app/ --wasm && mv build/web/ ../projectname_server/web/app
+    flutter_build: rm -rf web/app && cd ../projectname_flutter && flutter build web --base-href /app/ --wasm && mv build/web/ ../projectname_server/web/app
