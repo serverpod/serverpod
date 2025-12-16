@@ -46,7 +46,7 @@ class ExampleApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
         colorScheme: const ColorScheme.light(
           surface: Colors.white,
-          primary: Colors.black,
+          primary: Color.fromARGB(255, 1, 58, 104),
         ),
       ),
       debugShowCheckedModeBanner: false,
