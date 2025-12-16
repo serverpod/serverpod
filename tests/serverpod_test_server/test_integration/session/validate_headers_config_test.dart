@@ -44,94 +44,127 @@ class _BasicTokenAuthProvider implements ClientAuthKeyProvider {
 }
 
 void main() {
-  group('Given a server with validateHeaders enabled', () {
-    late Serverpod server;
+  group(
+    'Given a server with default configuration (validateHeaders enabled)',
+    () {
+      late Serverpod server;
 
-    setUpAll(() async {
-      server = IntegrationTestServer.create(
-        authenticationHandler: (final session, final token) async {
-          if (token == _testToken) {
-            return AuthenticationInfo(
-              _testUserId,
-              {Scope('test')},
-              authId: _testAuthId,
+      setUpAll(() async {
+        server = IntegrationTestServer.create(
+          authenticationHandler: (final session, final token) async {
+            if (token == _testToken) {
+              return AuthenticationInfo(
+                _testUserId,
+                {Scope('test')},
+                authId: _testAuthId,
+              );
+            }
+            return null;
+          },
+        );
+
+        server.webServer.addRoute(SessionTestRoute(), '/session-test');
+
+        await server.start();
+      });
+
+      tearDownAll(() async {
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'then validateHeaders defaults to true',
+        () {
+          expect(server.config.validateHeaders, isTrue);
+        },
+      );
+
+      group('when calling endpoint with Bearer-wrapped token', () {
+        late Client client;
+
+        setUp(() {
+          client = Client(_apiServerUrl)
+            ..authKeyProvider = _BearerTokenAuthProvider(_testToken);
+        });
+
+        tearDown(() {
+          client.close();
+        });
+
+        test(
+          'then request should succeed',
+          () async {
+            final result = await client.echoRequest.echoAuthenticationKey();
+            expect(result, equals(_testToken));
+          },
+        );
+      });
+
+      group('when calling endpoint with unwrapped token', () {
+        late Client client;
+
+        setUp(() {
+          client = Client(_apiServerUrl)
+            ..authKeyProvider = _UnwrappedTokenAuthProvider(_testToken);
+        });
+
+        tearDown(() {
+          client.close();
+        });
+
+        test(
+          'then request should fail',
+          () async {
+            await expectLater(
+              client.echoRequest.echoAuthenticationKey(),
+              throwsA(isA<ServerpodClientException>()),
             );
-          }
-          return null;
-        },
-      );
-
-      server.webServer.addRoute(SessionTestRoute(), '/session-test');
-
-      await server.start();
-    });
-
-    tearDownAll(() async {
-      await server.shutdown(exitProcess: false);
-    });
-
-    group('when calling endpoint with Bearer-wrapped token', () {
-      late Client client;
-
-      setUp(() {
-        client = Client(_apiServerUrl)
-          ..authKeyProvider = _BearerTokenAuthProvider(_testToken);
+          },
+        );
       });
 
-      tearDown(() {
-        client.close();
+      group('when calling streaming endpoint with unwrapped token', () {
+        late Client client;
+
+        setUp(() {
+          client = Client(_apiServerUrl)
+            ..authKeyProvider = _UnwrappedTokenAuthProvider(_testToken);
+        });
+
+        tearDown(() {
+          client.close();
+        });
+
+        test(
+          'then stream should fail',
+          () async {
+            await expectLater(
+              client.methodStreaming.simpleStream(),
+              emitsError(isA<ServerpodClientException>()),
+            );
+          },
+        );
       });
 
-      test(
-        'then request should succeed',
-        () async {
-          final result = await client.echoRequest.echoAuthenticationKey();
-          expect(result, equals(_testToken));
-        },
-      );
-    });
+      group('when accessing web route with unwrapped token', () {
+        test(
+          'then request should fail with 400',
+          () async {
+            final response = await http.get(
+              Uri.parse(_webServerUrl),
+              headers: {
+                'Authorization': _testToken,
+              },
+            );
 
-    group('when calling endpoint with unwrapped token', () {
-      late Client client;
-
-      setUp(() {
-        client = Client(_apiServerUrl)
-          ..authKeyProvider = _UnwrappedTokenAuthProvider(_testToken);
+            expect(response.statusCode, equals(400));
+          },
+        );
       });
+    },
+  );
 
-      tearDown(() {
-        client.close();
-      });
-
-      test(
-        'then request should fail',
-        () async {
-          await expectLater(
-            client.echoRequest.echoAuthenticationKey(),
-            throwsA(isA<ServerpodClientException>()),
-          );
-        },
-      );
-    });
-
-    group('when accessing web route with unwrapped token', () {
-      test(
-        'then request should fail with 400',
-        () async {
-          final response = await http.get(
-            Uri.parse(_webServerUrl),
-            headers: {
-              'Authorization': _testToken,
-            },
-          );
-
-          expect(response.statusCode, equals(400));
-        },
-      );
-    });
-  });
-
-  group('Given a server with validateHeaders disabled', () {
+  group('Given a server with validateHeaders explicitly disabled', () {
     late Serverpod server;
 
     setUpAll(() async {
@@ -189,6 +222,30 @@ void main() {
         () async {
           final result = await client.echoRequest.echoAuthenticationKey();
           expect(result, equals(_testToken));
+        },
+      );
+    });
+
+    group('when calling streaming endpoint with unwrapped token', () {
+      late Client client;
+
+      setUp(() {
+        client = Client(_apiServerUrl)
+          ..authKeyProvider = _UnwrappedTokenAuthProvider(_testToken);
+      });
+
+      tearDown(() {
+        client.close();
+      });
+
+      test(
+        'then stream should succeed',
+        () async {
+          final stream = await client.methodStreaming.simpleStream();
+          await expectLater(
+            stream.take(1),
+            emits(isA<int>()),
+          );
         },
       );
     });
