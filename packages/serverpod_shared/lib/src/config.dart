@@ -73,7 +73,9 @@ class ServerpodConfig {
   final bool futureCallExecutionEnabled;
 
   /// Whether to validate HTTP headers using typed APIs.
-  /// If false, allows unwrapped tokens in Authorization header for backward compatibility.
+  ///
+  /// When false, uses non-typed API for headers (e.g., Authorization),
+  /// allowing unwrapped tokens for backward compatibility.
   /// Defaults to true.
   final bool validateHeaders;
 

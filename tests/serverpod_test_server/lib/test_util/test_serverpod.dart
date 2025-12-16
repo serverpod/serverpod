@@ -29,30 +29,7 @@ class IntegrationTestServer extends TestServerpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
-    bool? validateHeaders,
   }) {
-    // If validateHeaders is specified and no config is provided,
-    // create a config with the specified validateHeaders value
-    if (validateHeaders != null && config == null) {
-      // Create a minimal config with web server enabled
-      // This mirrors the production.yaml config structure
-      config = ServerpodConfig(
-        apiServer: ServerConfig(
-          port: 8080,
-          publicHost: 'serverpod_test_server',
-          publicPort: 8080,
-          publicScheme: 'http',
-        ),
-        webServer: ServerConfig(
-          port: 8082,
-          publicHost: 'serverpod_test_server',
-          publicPort: 8082,
-          publicScheme: 'http',
-        ),
-        validateHeaders: validateHeaders,
-      );
-    }
-
     return Serverpod(
       _integrationTestFlags,
       Protocol(),

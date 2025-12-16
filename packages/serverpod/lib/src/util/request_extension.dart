@@ -29,18 +29,22 @@ extension RequestExtension on Request {
   /// Gets the Authorization header value from the request.
   ///
   /// If [validateHeaders] is true (default), uses Relic's typed API which
-  /// validates that the Authorization header has a proper scheme (e.g., "Bearer" or "Basic").
-  /// This will throw a [HeaderException] if the header is malformed.
+  /// validates that the Authorization header has a proper scheme (e.g.,
+  /// "Bearer" or "Basic"). This will throw a [HeaderException] if the header
+  /// is malformed.
   ///
-  /// If [validateHeaders] is false, uses the non-typed API to get the raw header value,
-  /// allowing unwrapped tokens for backward compatibility with Serverpod 2 clients.
+  /// If [validateHeaders] is false, uses the non-typed API to get the raw
+  /// header value, allowing unwrapped tokens for backward compatibility with
+  /// Serverpod 2 clients.
   String? getAuthorizationHeaderValue(bool validateHeaders) {
     if (validateHeaders) {
       // Use typed API - validates header format
       return headers.authorization?.headerValue;
     } else {
       // Use non-typed API - allows unwrapped tokens
-      // headers['authorization'] returns Iterable<String>?, get first value
+      // The non-typed API returns Iterable<String>? for header values.
+      // Authorization header should only appear once per HTTP spec, so we
+      // take the first value.
       return headers['authorization']?.firstOrNull;
     }
   }
