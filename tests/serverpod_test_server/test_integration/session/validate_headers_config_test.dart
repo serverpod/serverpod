@@ -40,6 +40,7 @@ class _BasicTokenAuthProvider implements ClientAuthKeyProvider {
 void main() {
   group('Given a server with validateHeaders enabled', () {
     late Serverpod server;
+    late Client client;
     const testToken = 'test-token';
 
     setUpAll(() async {
@@ -65,21 +66,19 @@ void main() {
       await server.shutdown(exitProcess: false);
     });
 
+    tearDown(() {
+      client.close();
+    });
+
     test(
       'when calling endpoint with Bearer-wrapped token '
       'then request should succeed',
       () async {
-        final client = Client(
-          'http://localhost:8080/',
-          authKeyProvider: _BearerTokenAuthProvider(testToken),
-        );
+        client = Client('http://localhost:8080/')
+          ..authKeyProvider = _BearerTokenAuthProvider(testToken);
 
-        try {
-          final result = await client.echoRequest.echoAuthenticationKey();
-          expect(result, equals(testToken));
-        } finally {
-          client.close();
-        }
+        final result = await client.echoRequest.echoAuthenticationKey();
+        expect(result, equals(testToken));
       },
     );
 
@@ -87,19 +86,13 @@ void main() {
       'when calling endpoint with unwrapped token '
       'then request should fail',
       () async {
-        final client = Client(
-          'http://localhost:8080/',
-          authKeyProvider: _UnwrappedTokenAuthProvider(testToken),
-        );
+        client = Client('http://localhost:8080/')
+          ..authKeyProvider = _UnwrappedTokenAuthProvider(testToken);
 
-        try {
-          await expectLater(
-            client.echoRequest.echoAuthenticationKey(),
-            throwsA(isA<ServerpodClientException>()),
-          );
-        } finally {
-          client.close();
-        }
+        await expectLater(
+          client.echoRequest.echoAuthenticationKey(),
+          throwsA(isA<ServerpodClientException>()),
+        );
       },
     );
 
@@ -121,6 +114,7 @@ void main() {
 
   group('Given a server with validateHeaders disabled', () {
     late Serverpod server;
+    late Client client;
     const testToken = 'test-token';
 
     setUpAll(() async {
@@ -161,21 +155,19 @@ void main() {
       await server.shutdown(exitProcess: false);
     });
 
+    tearDown(() {
+      client.close();
+    });
+
     test(
       'when calling endpoint with unwrapped token '
       'then request should succeed',
       () async {
-        final client = Client(
-          'http://localhost:8080/',
-          authKeyProvider: _UnwrappedTokenAuthProvider(testToken),
-        );
+        client = Client('http://localhost:8080/')
+          ..authKeyProvider = _UnwrappedTokenAuthProvider(testToken);
 
-        try {
-          final result = await client.echoRequest.echoAuthenticationKey();
-          expect(result, equals(testToken));
-        } finally {
-          client.close();
-        }
+        final result = await client.echoRequest.echoAuthenticationKey();
+        expect(result, equals(testToken));
       },
     );
 
@@ -183,17 +175,11 @@ void main() {
       'when calling endpoint with Bearer-wrapped token '
       'then request should succeed and token should be unwrapped',
       () async {
-        final client = Client(
-          'http://localhost:8080/',
-          authKeyProvider: _BearerTokenAuthProvider(testToken),
-        );
+        client = Client('http://localhost:8080/')
+          ..authKeyProvider = _BearerTokenAuthProvider(testToken);
 
-        try {
-          final result = await client.echoRequest.echoAuthenticationKey();
-          expect(result, equals(testToken));
-        } finally {
-          client.close();
-        }
+        final result = await client.echoRequest.echoAuthenticationKey();
+        expect(result, equals(testToken));
       },
     );
 
@@ -201,17 +187,11 @@ void main() {
       'when calling endpoint with Basic-wrapped token '
       'then request should succeed and token should be unwrapped',
       () async {
-        final client = Client(
-          'http://localhost:8080/',
-          authKeyProvider: _BasicTokenAuthProvider(testToken),
-        );
+        client = Client('http://localhost:8080/')
+          ..authKeyProvider = _BasicTokenAuthProvider(testToken);
 
-        try {
-          final result = await client.echoRequest.echoAuthenticationKey();
-          expect(result, equals(testToken));
-        } finally {
-          client.close();
-        }
+        final result = await client.echoRequest.echoAuthenticationKey();
+        expect(result, equals(testToken));
       },
     );
 
