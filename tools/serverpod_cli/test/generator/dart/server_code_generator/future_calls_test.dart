@@ -48,7 +48,10 @@ void main() {
         'then future calls file',
         () {
           test('has no future calls defined.', () {
-            expect(futureCallsFile, isNot(contains('var futureCalls =')));
+            expect(
+              futureCallsFile,
+              isNot(contains('var registeredFutureCalls =')),
+            );
           });
 
           test('has a future call manager field defined.', () {
@@ -128,7 +131,7 @@ void main() {
         'then future calls file',
         () {
           test('has future calls map defined.', () {
-            expect(futureCallsFile, contains('var futureCalls ='));
+            expect(futureCallsFile, contains('var registeredFutureCalls ='));
           });
 
           test(
@@ -236,7 +239,7 @@ void main() {
         'then future calls file',
         () {
           test('has future calls defined.', () {
-            expect(futureCallsFile, contains('var futureCalls ='));
+            expect(futureCallsFile, contains('var registeredFutureCalls ='));
           });
 
           test(
