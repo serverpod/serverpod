@@ -26,8 +26,8 @@ class ActionButton extends StatelessWidget {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 16),
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.black,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         textStyle: Theme.of(context).textTheme.bodyLarge,
         shape: const StadiumBorder(),
       ),
