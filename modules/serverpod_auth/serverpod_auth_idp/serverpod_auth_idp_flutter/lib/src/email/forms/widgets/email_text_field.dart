@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../common/text_formatters.dart';
 import '../../../common/widgets/text_field.dart';
 import '../../email_auth_controller.dart';
 
@@ -26,6 +27,7 @@ class EmailTextField extends StatelessWidget {
           : null,
       inputFormatters: [
         FilteringTextInputFormatter.deny(RegExp(r'[\s()<>[\]\\,;:]')),
+        const LetterCaseTextFormatter(letterCase: LetterCase.lowercase),
       ],
     );
   }
