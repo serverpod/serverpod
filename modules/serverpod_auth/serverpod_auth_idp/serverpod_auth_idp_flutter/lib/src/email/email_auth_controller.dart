@@ -141,9 +141,19 @@ class EmailAuthController extends ChangeNotifier {
       });
     });
 
-    passwordController.addListener(notifyListeners);
+    passwordController.addListener(() {
+      if (passwordController.text.isEmpty ||
+          passwordController.text != _lastPassword) {
+        _setState(EmailAuthState.idle);
+      }
+      _lastPassword = passwordController.text;
+    });
+
     legalNoticeAcceptedNotifier.addListener(notifyListeners);
   }
+
+  /// The last typed password for comparison of changed value.
+  String _lastPassword = '';
 
   /// Debounce timer for email validation.
   Timer? _debounce;
