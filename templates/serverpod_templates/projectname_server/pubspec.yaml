@@ -6,6 +6,8 @@ description: Starting point for a Serverpod server.
 environment:
   sdk: '^3.8.0'
 
+#resolution: workspace #--UNCOMMENT_LINE--#
+
 dependencies:
   serverpod: 3.0.1
 
@@ -14,25 +16,13 @@ dev_dependencies:
   serverpod_test: 3.0.1
   test: ^1.25.5
 
-dependency_overrides: 
-  serverpod: 
-    path: ../../../packages/serverpod 
-  serverpod_serialization: 
-    path: ../../../packages/serverpod_serialization 
-  serverpod_shared: 
-    path: ../../../packages/serverpod_shared 
-  serverpod_test: 
-    path: ../../../packages/serverpod_test 
-  serverpod_lints: 
-    path: ../../../packages/serverpod_lints 
-
 serverpod:
   scripts:
     # Starts the server and applies migrations
     start: dart bin/main.dart --apply-migrations
 
     # Build the Flutter web app and move it to the server's web directory
-    # 
+    #
     # Unfortunately, we can't use the `-o` flag directly because of an error
     # that happens on windows. Issue is tracked in the flutter
     # repository here: https://github.com/flutter/flutter/issues/157886

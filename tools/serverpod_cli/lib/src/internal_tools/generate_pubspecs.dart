@@ -64,6 +64,7 @@ void performGeneratePubspecs({
         ),
       ],
       fileNameReplacements: [],
+      processUncommentMarker: false,
     );
     copier.copyFiles();
   } else {
@@ -82,6 +83,7 @@ void performGeneratePubspecs({
         '#--CONDITIONALLY_REMOVE_LINE--#',
       ],
       fileNameReplacements: [],
+      processUncommentMarker: false,
     );
     copier.copyFiles();
   }

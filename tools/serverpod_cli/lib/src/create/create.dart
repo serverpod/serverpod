@@ -22,6 +22,7 @@ import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:yaml_edit/yaml_edit.dart';
 
 import 'copier.dart';
 
@@ -141,18 +142,14 @@ Future<bool> performCreate(
     );
   }
 
-  success &= await log.progress('Getting server package dependencies.', () {
-    return CommandLineTools.dartPubGet(serverpodDirs.serverDir);
-  });
-
-  success &= await log.progress('Getting client package dependencies.', () {
-    return CommandLineTools.dartPubGet(serverpodDirs.clientDir);
+  success &= await log.progress('Getting workspace dependencies.', () {
+    return CommandLineTools.dartPubGet(serverpodDirs.projectDir);
   });
 
   if (template == ServerpodTemplateType.server ||
       template == ServerpodTemplateType.mini) {
     success &= await log.progress(
-      'Getting Flutter app package dependencies.',
+      'Creating Flutter app platform files.',
       () {
         return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
       },
@@ -465,6 +462,30 @@ Future<void> _copyFlutterUpgrade(
         ),
         type: DependencyType.normal,
       ),
+    ],
+  );
+
+  log.debug('Adding auth dependencies to client pubspec', newParagraph: true);
+  _addDependenciesToPubspec(
+    pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
+    additions: [
+      (
+        name: 'serverpod_auth_idp_client',
+        source: DependencySource.version(
+          VersionConstraint.parse(templateVersion),
+        ),
+        type: DependencyType.normal,
+      ),
+    ],
+  );
+
+  log.debug(
+    'Adding flutter_secure_storage override to root pubspec',
+    newParagraph: true,
+  );
+  _addDependenciesToPubspec(
+    pubspecFile: File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml')),
+    additions: [
       (
         name: 'flutter_secure_storage',
         source: DependencySource.version(
@@ -472,7 +493,14 @@ Future<void> _copyFlutterUpgrade(
         ),
         type: DependencyType.override,
       ),
-      if (customServerpodPath != null) ...[
+    ],
+  );
+
+  if (customServerpodPath != null) {
+    log.debug('Adding auth path overrides to root pubspec', newParagraph: true);
+    _addDependenciesToPubspec(
+      pubspecFile: File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml')),
+      additions: [
         (
           name: 'serverpod_auth_idp_flutter',
           source: DependencySourcePath(
@@ -502,8 +530,8 @@ Future<void> _copyFlutterUpgrade(
           type: DependencyType.override,
         ),
       ],
-    ],
-  );
+    );
+  }
 }
 
 Future<void> _copyServerUpgrade(
@@ -692,7 +720,7 @@ Future<void> _copyServerUpgrade(
 
   if (!isUpgrade) {
     log.debug(
-      'Adding auth dependencies to server and client pubspecs',
+      'Adding auth dependencies to server pubspec',
       newParagraph: true,
     );
     _addDependenciesToPubspec(
@@ -705,7 +733,19 @@ Future<void> _copyServerUpgrade(
           ),
           type: DependencyType.normal,
         ),
-        if (customServerpodPath != null) ...[
+      ],
+    );
+
+    if (customServerpodPath != null) {
+      log.debug(
+        'Adding auth path overrides to root pubspec',
+        newParagraph: true,
+      );
+      _addDependenciesToPubspec(
+        pubspecFile: File(
+          p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'),
+        ),
+        additions: [
           (
             name: 'serverpod_auth_idp_server',
             source: DependencySourcePath(
@@ -721,37 +761,19 @@ Future<void> _copyServerUpgrade(
             type: DependencyType.override,
           ),
         ],
-      ],
-    );
-    _addDependenciesToPubspec(
-      pubspecFile: File(p.join(serverpodDirs.clientDir.path, 'pubspec.yaml')),
-      additions: [
-        (
-          name: 'serverpod_auth_idp_client',
-          source: DependencySource.version(
-            VersionConstraint.parse(templateVersion),
-          ),
-          type: DependencyType.normal,
-        ),
-        if (customServerpodPath != null) ...[
-          (
-            name: 'serverpod_auth_idp_client',
-            source: DependencySourcePath(
-              '$customServerpodPath/modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client',
-            ),
-            type: DependencyType.override,
-          ),
-          (
-            name: 'serverpod_auth_core_client',
-            source: DependencySourcePath(
-              '$customServerpodPath/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client',
-            ),
-            type: DependencyType.override,
-          ),
-        ],
-      ],
-    );
+      );
+    }
   }
+}
+
+void _enableWorkspaceInRootPubspec({
+  required File rootPubspecFile,
+  required List<String> workspaceMembers,
+}) {
+  var contents = rootPubspecFile.readAsStringSync();
+  final editor = YamlEditor(contents);
+  editor.update(['workspace'], workspaceMembers);
+  rootPubspecFile.writeAsStringSync(editor.toString());
 }
 
 void _addDependenciesToPubspec({
@@ -773,6 +795,33 @@ void _copyServerTemplates(
   required String name,
   String? customServerpodPath,
 }) {
+  log.debug('Copying root workspace pubspec');
+  var rootCopier = Copier(
+    srcDir: Directory(
+      p.join(resourceManager.templateDirectory.path, 'projectname'),
+    ),
+    dstDir: serverpodDirs.projectDir,
+    replacements: [
+      // Replace 'name: projectname' with 'name: _' BEFORE general projectname replacement
+      Replacement(
+        slotName: 'name: projectname',
+        replacement: 'name: _',
+      ),
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      if (customServerpodPath != null)
+        Replacement(
+          slotName: 'path: ../../../packages/',
+          replacement: 'path: $customServerpodPath/packages/',
+        ),
+    ],
+    fileNameReplacements: const [],
+    ignoreFileNames: const [],
+  );
+  rootCopier.copyFiles();
+
   log.debug('Copying server files');
   var copier = Copier(
     srcDir: Directory(
@@ -831,7 +880,7 @@ void _copyServerTemplates(
         replacement: '.gitignore',
       ),
     ],
-    ignoreFileNames: ['pubspec.lock'],
+    ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
 
@@ -873,6 +922,18 @@ void _copyServerTemplates(
     ],
   );
   copier.copyFiles();
+
+  log.debug('Enabling workspace configuration', newParagraph: true);
+  _enableWorkspaceInRootPubspec(
+    rootPubspecFile: File(
+      p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'),
+    ),
+    workspaceMembers: [
+      '${name}_client',
+      '${name}_server',
+      '${name}_flutter',
+    ],
+  );
 }
 
 void _copyModuleTemplates(
@@ -880,6 +941,33 @@ void _copyModuleTemplates(
   required String name,
   String? customServerpodPath,
 }) {
+  log.debug('Copying root workspace pubspec');
+  var rootCopier = Copier(
+    srcDir: Directory(
+      p.join(resourceManager.templateDirectory.path, 'modulename'),
+    ),
+    dstDir: serverpodDirs.projectDir,
+    replacements: [
+      // Replace 'name: modulename' with 'name: _' BEFORE general modulename replacement
+      Replacement(
+        slotName: 'name: modulename',
+        replacement: 'name: _',
+      ),
+      Replacement(
+        slotName: 'modulename',
+        replacement: name,
+      ),
+      if (customServerpodPath != null)
+        Replacement(
+          slotName: 'path: ../../../packages/',
+          replacement: 'path: $customServerpodPath/packages/',
+        ),
+    ],
+    fileNameReplacements: const [],
+    ignoreFileNames: const [],
+  );
+  rootCopier.copyFiles();
+
   log.debug('Copying server files', newParagraph: true);
   var copier = Copier(
     srcDir: Directory(
@@ -941,6 +1029,17 @@ void _copyModuleTemplates(
     ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
+
+  log.debug('Enabling workspace configuration', newParagraph: true);
+  _enableWorkspaceInRootPubspec(
+    rootPubspecFile: File(
+      p.join(serverpodDirs.projectDir.path, 'pubspec.yaml'),
+    ),
+    workspaceMembers: [
+      '${name}_client',
+      '${name}_server',
+    ],
+  );
 }
 
 Script? _locateFlutterBuildScript(Directory serverDir) {
