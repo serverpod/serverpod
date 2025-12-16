@@ -164,8 +164,8 @@ enum ServerpodEnv {
 
   /// Whether to validate HTTP headers using typed APIs.
   ///
-  /// When false, uses non-typed API for headers (e.g., Authorization),
-  /// allowing unwrapped tokens for backward compatibility.
+  /// When false, uses non-typed header API, allowing headers without
+  /// required formatting (e.g., unwrapped tokens in Authorization header).
   validateHeaders;
 
   /// The key used in the environment configuration file.
