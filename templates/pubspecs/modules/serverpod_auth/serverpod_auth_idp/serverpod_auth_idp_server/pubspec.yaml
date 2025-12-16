@@ -42,3 +42,6 @@ dependency_overrides:
     path: ../../../../packages/serverpod_shared
   serverpod_test:
     path: ../../../../packages/serverpod_test
+
+false_secrets: 
+  - test/config/from_passwords_config_test.dart
