@@ -109,6 +109,9 @@ class RunCommand extends ServerpodCommand<RunOption> {
     final exitCode = await ScriptExecutor.executeScript(
       script,
       workingDirectory,
+      stdout: stdout,
+      stderr: stderr,
+      stdin: stdin,
     );
 
     if (exitCode != 0) {

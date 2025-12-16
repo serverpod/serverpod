@@ -23,10 +23,10 @@ Future<ScriptResult> _runScript(
       return await ScriptExecutor.executeScript(
         script,
         workingDirectory,
+        stdout: stdout,
+        stderr: stderr,
       );
     },
-    stdout: () => stdout,
-    stderr: () => stderr,
     stdin: () => stdin,
   );
 
