@@ -19,6 +19,7 @@ class GeneratorConfigBuilder {
   List<ServerpodFeature> _enabledFeatures;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
+  List<String>? _relativeMigrationPathParts;
 
   GeneratorConfigBuilder()
     : _name = _defaultName,
@@ -46,7 +47,8 @@ class GeneratorConfigBuilder {
       ],
       _extraClasses = [],
       _enabledFeatures = [ServerpodFeature.database],
-      _enabledExperimentalFeatures = [];
+      _enabledExperimentalFeatures = [],
+      _relativeMigrationPathParts = null;
 
   GeneratorConfigBuilder withName(String name) {
     _name = name;
@@ -124,6 +126,13 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withRelativeMigrationPathParts(
+    List<String>? relativeMigrationPathParts,
+  ) {
+    _relativeMigrationPathParts = relativeMigrationPathParts;
+    return this;
+  }
+
   GeneratorConfig build() {
     return GeneratorConfig(
       name: _name,
@@ -138,6 +147,7 @@ class GeneratorConfigBuilder {
       enabledFeatures: _enabledFeatures,
       experimentalFeatures: _enabledExperimentalFeatures,
       relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,
+      relativeMigrationPathParts: _relativeMigrationPathParts,
     );
   }
 }

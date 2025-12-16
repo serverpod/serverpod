@@ -84,8 +84,10 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.extraClasses,
     required this.enabledFeatures,
     this.experimentalFeatures = const [],
+    List<String>? relativeMigrationPathParts,
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
+       _relativeMigrationPathParts = relativeMigrationPathParts,
        _modules = modules;
 
   /// The name of the serverpod project.
@@ -194,6 +196,25 @@ class GeneratorConfig implements ModelLoadConfig {
     'test',
     'integration',
     'test_tools',
+  ];
+
+  /// Relative path parts to the custom migration directory, if configured.
+  final List<String>? _relativeMigrationPathParts;
+
+  /// The default relative migration path parts.
+  static const defaultRelativeMigrationPathParts = ['migrations'];
+
+  /// Relative migration path parts, defaulting to 'migrations' if not configured.
+  List<String> get relativeMigrationPathParts =>
+      _relativeMigrationPathParts ?? defaultRelativeMigrationPathParts;
+
+  /// Returns true if a custom migration path is configured.
+  bool get hasCustomMigrationPath => _relativeMigrationPathParts != null;
+
+  /// Full path parts to the migrations directory.
+  List<String> get migrationPathParts => [
+    ...serverPackageDirectoryPathParts,
+    ...relativeMigrationPathParts,
   ];
 
   List<String>? get generatedServerTestToolsPathParts {
@@ -327,6 +348,13 @@ class GeneratorConfig implements ModelLoadConfig {
       );
     }
 
+    List<String>? relativeMigrationPathParts;
+    if (generatorConfig['migration_path'] != null) {
+      relativeMigrationPathParts = p.split(
+        generatorConfig['migration_path'],
+      );
+    }
+
     late String dartClientPackage;
     late bool dartClientDependsOnServiceClient;
 
@@ -433,6 +461,7 @@ class GeneratorConfig implements ModelLoadConfig {
       serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
       relativeServerTestToolsPathParts: relativeServerTestToolsPathParts,
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
+      relativeMigrationPathParts: relativeMigrationPathParts,
       modules: modules,
       extraClasses: extraClasses,
       enabledFeatures: enabledFeatures,

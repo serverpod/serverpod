@@ -1739,4 +1739,111 @@ serverId: configFileServerId
       expect(config.serverId, '');
     },
   );
+
+  group('migrationsPath', () {
+    test(
+      'Given a config without migrationsPath when loading then migrationsPath is null.',
+      () {
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          {},
+        );
+
+        expect(config.migrationsPath, isNull);
+      },
+    );
+
+    test(
+      'Given a config with migrationsPath in yaml when loading then migrationsPath is set.',
+      () {
+        var serverpodConfig = '''
+migrationsPath: custom/migrations
+''';
+
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml(serverpodConfig),
+        );
+
+        expect(config.migrationsPath, equals('custom/migrations'));
+      },
+    );
+
+    test(
+      'Given migrationsPath in environment when loading then environment takes precedence.',
+      () {
+        var serverpodConfig = '''
+migrationsPath: yaml/migrations
+''';
+
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml(serverpodConfig),
+          environment: {
+            'SERVERPOD_MIGRATIONS_PATH': 'env/migrations',
+          },
+        );
+
+        expect(config.migrationsPath, equals('env/migrations'));
+      },
+    );
+
+    test(
+      'Given migrationsPath only in environment when loading then environment value is used.',
+      () {
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          {},
+          environment: {
+            'SERVERPOD_MIGRATIONS_PATH': 'env/migrations',
+          },
+        );
+
+        expect(config.migrationsPath, equals('env/migrations'));
+      },
+    );
+
+    test(
+      'Given migrationsPath when using copyWith then migrationsPath is copied.',
+      () {
+        var config = ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          {},
+        );
+
+        var copiedConfig = config.copyWith(migrationsPath: 'copied/migrations');
+
+        expect(copiedConfig.migrationsPath, equals('copied/migrations'));
+      },
+    );
+
+    test(
+      'Given migrationsPath when using copyWith with null then original is kept.',
+      () {
+        var config = ServerpodConfig(
+          apiServer: ServerConfig(
+            port: 8080,
+            publicHost: 'localhost',
+            publicPort: 8080,
+            publicScheme: 'http',
+          ),
+          migrationsPath: 'original/migrations',
+        );
+
+        var copiedConfig = config.copyWith();
+
+        expect(copiedConfig.migrationsPath, equals('original/migrations'));
+      },
+    );
+  });
 }

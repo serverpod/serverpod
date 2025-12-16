@@ -19,10 +19,15 @@ class MigrationGenerator {
   MigrationGenerator({
     required this.directory,
     required this.projectName,
+    this.customMigrationsPath,
   });
 
   final Directory directory;
   final String projectName;
+
+  /// Custom migration path relative to the project directory.
+  /// If null, the default 'migrations' directory is used.
+  final String? customMigrationsPath;
 
   static String createVersionName(String? tag) {
     var now = DateTime.now().toUtc();
@@ -55,7 +60,10 @@ class MigrationGenerator {
     bool write = true,
   }) async {
     var migrationRegistry = MigrationRegistry.load(
-      MigrationConstants.migrationsBaseDirectory(directory),
+      MigrationConstants.migrationsBaseDirectory(
+        directory,
+        customMigrationsPath: customMigrationsPath,
+      ),
     );
 
     var databaseDefinitionLatest = await _getSourceDatabaseDefinition(
@@ -124,6 +132,7 @@ class MigrationGenerator {
       migration: migration,
       databaseDefinitionProject: databaseDefinitionProject,
       databaseDefinitionFull: databaseDefinitionNext,
+      customMigrationsPath: customMigrationsPath,
     );
 
     if (write) {
@@ -237,7 +246,10 @@ class MigrationGenerator {
 
   void _validateRepairMigrationVersion(String? migrationVersion) {
     var migrationRegistry = MigrationRegistry.load(
-      MigrationConstants.migrationsBaseDirectory(directory),
+      MigrationConstants.migrationsBaseDirectory(
+        directory,
+        customMigrationsPath: customMigrationsPath,
+      ),
     );
 
     if (migrationVersion == null ||
@@ -280,6 +292,7 @@ class MigrationGenerator {
       moduleName: projectName,
       versionName: migrationVersionName,
       projectDirectory: directory,
+      customMigrationsPath: customMigrationsPath,
     );
 
     return migrationVersion.databaseDefinitionFull;
@@ -287,7 +300,10 @@ class MigrationGenerator {
 
   String? _getLatestMigrationVersion() {
     var migrationRegistry = MigrationRegistry.load(
-      MigrationConstants.migrationsBaseDirectory(directory),
+      MigrationConstants.migrationsBaseDirectory(
+        directory,
+        customMigrationsPath: customMigrationsPath,
+      ),
     );
     return migrationRegistry.getLatest();
   }
@@ -435,6 +451,7 @@ class MigrationVersion {
     required this.migration,
     required this.databaseDefinitionProject,
     required this.databaseDefinitionFull,
+    this.customMigrationsPath,
   });
 
   final Directory projectDirectory;
@@ -445,10 +462,15 @@ class MigrationVersion {
   final DatabaseDefinition databaseDefinitionProject;
   final DatabaseDefinition databaseDefinitionFull;
 
+  /// Custom migration path relative to the project directory.
+  /// If null, the default 'migrations' directory is used.
+  final String? customMigrationsPath;
+
   static Future<MigrationVersion> load({
     required String moduleName,
     required String versionName,
     required Directory projectDirectory,
+    String? customMigrationsPath,
   }) async {
     try {
       // Get the serialization manager
@@ -459,6 +481,7 @@ class MigrationVersion {
           MigrationConstants.databaseDefinitionProjectJSONPath(
             projectDirectory,
             versionName,
+            customMigrationsPath: customMigrationsPath,
           );
 
       var databaseDefinitionProject =
@@ -471,6 +494,7 @@ class MigrationVersion {
           MigrationConstants.databaseDefinitionJSONPath(
             projectDirectory,
             versionName,
+            customMigrationsPath: customMigrationsPath,
           );
       var databaseDefinition = await _readMigrationDataFile<DatabaseDefinition>(
         databaseDefinitionPath,
@@ -481,6 +505,7 @@ class MigrationVersion {
       var migrationPath = MigrationConstants.databaseMigrationJSONPath(
         projectDirectory,
         versionName,
+        customMigrationsPath: customMigrationsPath,
       );
       var migrationDefinition = await _readMigrationDataFile<DatabaseMigration>(
         migrationPath,
@@ -494,6 +519,7 @@ class MigrationVersion {
         migration: migrationDefinition,
         databaseDefinitionProject: databaseDefinitionProject,
         databaseDefinitionFull: databaseDefinition,
+        customMigrationsPath: customMigrationsPath,
       );
     } catch (e) {
       throw MigrationVersionLoadException(
@@ -522,6 +548,7 @@ class MigrationVersion {
     var migrationDirectory = MigrationConstants.migrationVersionDirectory(
       projectDirectory,
       versionName,
+      customMigrationsPath: customMigrationsPath,
     );
 
     if (migrationDirectory.existsSync()) {
@@ -545,6 +572,7 @@ class MigrationVersion {
     var definitionFile = MigrationConstants.databaseDefinitionProjectJSONPath(
       projectDirectory,
       versionName,
+      customMigrationsPath: customMigrationsPath,
     );
     var definitionData = SerializationManager.encode(
       databaseDefinitionProject,
@@ -556,6 +584,7 @@ class MigrationVersion {
     var definitionFullFile = MigrationConstants.databaseDefinitionJSONPath(
       projectDirectory,
       versionName,
+      customMigrationsPath: customMigrationsPath,
     );
     var definitionFullData = SerializationManager.encode(
       databaseDefinitionFull,
@@ -567,6 +596,7 @@ class MigrationVersion {
     var definitionSqlFile = MigrationConstants.databaseDefinitionSQLPath(
       projectDirectory,
       versionName,
+      customMigrationsPath: customMigrationsPath,
     );
     await definitionSqlFile.writeAsString(definitionSql);
 
@@ -574,6 +604,7 @@ class MigrationVersion {
     var migrationFile = MigrationConstants.databaseMigrationJSONPath(
       projectDirectory,
       versionName,
+      customMigrationsPath: customMigrationsPath,
     );
     var migrationData = SerializationManager.encode(
       migration,
@@ -585,6 +616,7 @@ class MigrationVersion {
     var migrationSqlFile = MigrationConstants.databaseMigrationSQLPath(
       projectDirectory,
       versionName,
+      customMigrationsPath: customMigrationsPath,
     );
     await migrationSqlFile.writeAsString(migrationSql);
   }
