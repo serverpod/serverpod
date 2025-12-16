@@ -8,6 +8,8 @@ import '../util/default_code_generators.dart';
 import '../util/registration_password_policy.dart';
 import 'email_idp.dart';
 
+export '../util/default_code_generators.dart';
+
 /// Function to be called after a password reset is successfully completed.
 typedef OnPasswordResetCompletedFunction =
     void Function(

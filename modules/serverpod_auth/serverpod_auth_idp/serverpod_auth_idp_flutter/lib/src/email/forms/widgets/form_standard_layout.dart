@@ -27,8 +27,8 @@ class FormStandardLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(maxHeight: 320),
+    return SizedBox(
+      height: 330,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

@@ -25,11 +25,12 @@ class ActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.black,
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         textStyle: Theme.of(context).textTheme.bodyLarge,
         shape: const StadiumBorder(),
+        fixedSize: const Size(double.infinity, 48),
       ),
       onPressed: isLoading ? null : onPressed,
       child: isLoading ? const LoadingIndicator() : Text(label),

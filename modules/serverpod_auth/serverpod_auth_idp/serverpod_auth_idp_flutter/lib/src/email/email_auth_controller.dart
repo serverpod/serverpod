@@ -141,9 +141,19 @@ class EmailAuthController extends ChangeNotifier {
       });
     });
 
-    passwordController.addListener(notifyListeners);
+    passwordController.addListener(() {
+      if (passwordController.text.isEmpty ||
+          passwordController.text != _lastPassword) {
+        _setState(EmailAuthState.idle);
+      }
+      _lastPassword = passwordController.text;
+    });
+
     legalNoticeAcceptedNotifier.addListener(notifyListeners);
   }
+
+  /// The last typed password for comparison of changed value.
+  String _lastPassword = '';
 
   /// Debounce timer for email validation.
   Timer? _debounce;
@@ -468,6 +478,14 @@ class EmailAuthController extends ChangeNotifier {
       _error = e;
       _setState(EmailAuthState.error);
       debugPrint('[EmailAuthController] $_currentScreen -> $targetState: $e');
+
+      // If we have a network error, start a timer to enable the action button
+      // again after a short delay.
+      if (e is ServerpodClientException && e.statusCode == -1) {
+        Timer(const Duration(seconds: 1), () {
+          _setState(EmailAuthState.idle);
+        });
+      }
 
       final userFriendlyError = convertToUserFacingException(e);
       if (userFriendlyError != null) {

@@ -41,7 +41,7 @@ Widget _signInWidgetStory(
   bool disableAppleSignInWidget = false,
 }) {
   return SizedBox(
-    width: 350,
+    width: 400,
     child: SignInWidget(
       client: context.read<Client>(),
       onAuthenticated: () {
