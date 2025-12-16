@@ -36,10 +36,16 @@ void main() {
         Endpoints(),
         config: ServerpodConfig(apiServer: portZeroConfig),
       );
-    });
 
-    tearDownAll(() async {
-      Directory.current = originalDir;
+      // Teardown need to be done using `addTearDown` instead of `tearDownAll`
+      // because the call to `addTearDown` inside `d.sandbox` will add a tear
+      // down that will run before any declared `tearDown` functions. Otherwise,
+      // the tests will fail on Windows because the `d.sandbox` teardown will
+      // try to delete the original directory while `Directory.current` is still
+      // set to it.
+      addTearDown(() async {
+        Directory.current = originalDir;
+      });
     });
 
     test(
@@ -130,10 +136,10 @@ test:
         Endpoints(),
         config: ServerpodConfig(apiServer: portZeroConfig),
       );
-    });
 
-    tearDownAll(() async {
-      Directory.current = originalDir;
+      addTearDown(() async {
+        Directory.current = originalDir;
+      });
     });
 
     test(
@@ -168,10 +174,10 @@ test:
         Endpoints(),
         config: ServerpodConfig(apiServer: portZeroConfig),
       );
-    });
 
-    tearDownAll(() async {
-      Directory.current = originalDir;
+      addTearDown(() async {
+        Directory.current = originalDir;
+      });
     });
 
     test(
@@ -216,10 +222,10 @@ test:
         Endpoints(),
         config: ServerpodConfig(apiServer: portZeroConfig),
       );
-    });
 
-    tearDownAll(() async {
-      Directory.current = originalDir;
+      addTearDown(() async {
+        Directory.current = originalDir;
+      });
     });
 
     test(
@@ -254,10 +260,10 @@ test:
         Endpoints(),
         config: ServerpodConfig(apiServer: portZeroConfig),
       );
-    });
 
-    tearDownAll(() async {
-      Directory.current = originalDir;
+      addTearDown(() async {
+        Directory.current = originalDir;
+      });
     });
 
     test(
