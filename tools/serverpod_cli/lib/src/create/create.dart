@@ -181,7 +181,7 @@ Future<bool> performCreate(
   }
 
   if (template == ServerpodTemplateType.server) {
-    success &= await log.progress(
+    await log.progress(
       'Building Flutter web app.',
       () async {
         final script = _locateFlutterBuildScript(serverpodDirs.serverDir);
