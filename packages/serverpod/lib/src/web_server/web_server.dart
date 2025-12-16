@@ -55,10 +55,29 @@ class WebServer {
   /// Returns true if the webserver is currently running.
   bool get running => _running;
 
-  /// Adds [route] to the server, together with a [path] that defines how
-  /// calls are routed.
-  void addRoute(Route route, [String path = '/']) =>
-      _app.group(path).inject(route);
+  /// Adds [route] to the server at [path].
+  ///
+  /// The [path] supports:
+  /// - Literal segments: `/admin/profile/edit`
+  /// - Parameters: `/users/:id/posts`
+  /// - Wildcards: `/api/*/list` (single segment)
+  /// - Tails: `/files/**` (tail match)
+  ///
+  /// The full route path combines [path] with [Route.path]. For example,
+  /// a route with `path: '/edit'` added via `addRoute(route, '/users')`
+  /// handles requests to `/users/edit`.
+  ///
+  /// ## Tail paths
+  ///
+  /// A tail path (`/**`) matches all remaining segments and must be terminal.
+  /// Routes can only be added at a tail path if their [Route.injectIn]
+  /// registers a single route at `/`. This prevents nested tails
+  /// (e.g., `/a/**/b/**`), which are invalid.
+  ///
+  /// The default [Route.injectIn] satisfies this requirement.
+  void addRoute(Route route, [String path = '/']) {
+    _app.injectAt(path, route);
+  }
 
   /// Adds a [Middleware] to the server for all routes below [path].
   void addMiddleware(Middleware middleware, String path) =>
@@ -300,7 +319,33 @@ abstract class Route extends HandlerObject {
 
 /// A [WidgetRoute] is the most convenient way to create routes in your server.
 /// Override the [build] method and return an appropriate [WebWidget].
+///
+/// By default, a [WidgetRoute] only responds to GET requests. To support
+/// additional HTTP methods like POST, pass them in the constructor:
+///
+/// ```dart
+/// class FormRoute extends WidgetRoute {
+///   FormRoute() : super(methods: {Method.get, Method.post});
+///
+///   @override
+///   Future<WebWidget> build(Session session, Request request) async {
+///     if (request.method == Method.post) {
+///       // Handle form submission
+///       return SuccessWidget();
+///     }
+///     // Show form
+///     return FormWidget();
+///   }
+/// }
+/// ```
 abstract class WidgetRoute extends Route {
+  /// Creates a new [WidgetRoute].
+  ///
+  /// The [methods] parameter specifies which HTTP methods this route will
+  /// respond to (defaults to GET only). The [path] parameter specifies the
+  /// suffix path (defaults to '/').
+  WidgetRoute({super.methods, super.path});
+
   /// Override this method to build your web widget from the current [session]
   /// and [request].
   Future<WebWidget> build(Session session, Request request);

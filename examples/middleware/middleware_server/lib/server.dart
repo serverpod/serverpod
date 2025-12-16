@@ -21,7 +21,7 @@ void run(List<String> args) async {
   pod.webServer.addRoute(RootRoute(), '/index.html');
   // Serve all files in the web/static relative directory under /.
   final root = Directory(Uri(path: 'web/static').toFilePath());
-  pod.webServer.addRoute(StaticRoute.directory(root), '/**');
+  pod.webServer.addRoute(StaticRoute.directory(root));
 
   // ## Verbose Mode
   //

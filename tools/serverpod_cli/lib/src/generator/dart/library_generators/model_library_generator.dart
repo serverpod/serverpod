@@ -1665,11 +1665,13 @@ class SerializableModelLibraryGenerator {
         nullCheckedReference: field.hiddenSerializableField(serverCode),
       );
 
+      final fieldKey = field.name;
+
       return {
         ...map,
         if (field.type.nullable)
-          Code("if (${fieldName.symbol} != null) '${field.name}'"): fieldRef,
-        if (!field.type.nullable) Code("'${field.name}'"): fieldRef,
+          Code("if (${fieldName.symbol} != null) '$fieldKey'"): fieldRef,
+        if (!field.type.nullable) Code("'$fieldKey'"): fieldRef,
       };
     });
 
@@ -2703,7 +2705,7 @@ class SerializableModelLibraryGenerator {
     assert(!field.type.isEnumType);
 
     var constructorArgs = <Expression>[
-      literalString(field.name),
+      literalString(field.columnName),
       refer('this'),
     ];
 
@@ -2727,6 +2729,7 @@ class SerializableModelLibraryGenerator {
       if (field.type.isVectorType)
         'dimension': literalNum(field.type.vectorDimension!),
       if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
+      if (field.hasColumnNameOverride) 'fieldName': literalString(field.name),
     });
   }
 
@@ -2754,12 +2757,13 @@ class SerializableModelLibraryGenerator {
         ..types.addAll([]),
     ).call(
       [
-        literalString(field.name),
+        literalString(field.columnName),
         refer('this'),
         serializedAs,
       ],
       {
         if (field.defaultPersistValue != null) 'hasDefault': literalBool(true),
+        if (field.hasColumnNameOverride) 'fieldName': literalString(field.name),
       },
     );
   }

@@ -27,7 +27,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
             for (var column in classDefinition.fieldsIncludingInherited)
               if (column.shouldSerializeFieldForDatabase(true))
                 ColumnDefinition(
-                  name: column.name,
+                  name: column.columnName,
                   columnType: ColumnType.values.byName(
                     column.type.databaseTypeEnum,
                   ),
@@ -126,7 +126,7 @@ List<ForeignKeyDefinition> _createForeignKeys(
     foreignKeys.add(
       ForeignKeyDefinition(
         constraintName: '${classDefinition.tableName!}_fk_$i',
-        columns: [field.name],
+        columns: [field.columnName],
         referenceTable: relation.parentTable,
         referenceTableSchema: 'public',
         referenceColumns: ['id'],

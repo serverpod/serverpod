@@ -59,9 +59,9 @@ void main() {
             fallback: StaticRoute.file(indexFile),
             on: (response) => response.statusCode == 404,
           ),
-          '/**',
+          '/',
         );
-        pod.webServer.addRoute(StaticRoute.directory(webDir), '/**');
+        pod.webServer.addRoute(StaticRoute.directory(webDir));
 
         await pod.start();
         port = pod.webServer.port!;
@@ -131,9 +131,9 @@ void main() {
           fallback: _NotFoundRoute(),
           on: (response) => response.statusCode == 404,
         ),
-        '/**',
+        '/',
       );
-      pod.webServer.addRoute(StaticRoute.directory(webDir), '/**');
+      pod.webServer.addRoute(StaticRoute.directory(webDir));
 
       await pod.start();
       port = pod.webServer.port!;
@@ -180,11 +180,11 @@ void main() {
           fallback: StaticRoute.file(adminIndexFile),
           on: (response) => response.statusCode == 404,
         ),
-        '/admin/**',
+        '/admin',
       );
       pod.webServer.addRoute(
         StaticRoute.directory(adminDir),
-        '/admin/**',
+        '/admin',
       );
 
       pod.webServer.addMiddleware(
@@ -192,9 +192,9 @@ void main() {
           fallback: StaticRoute.file(indexFile),
           on: (response) => response.statusCode == 404,
         ),
-        '/**',
+        '/',
       );
-      pod.webServer.addRoute(StaticRoute.directory(webDir), '/**');
+      pod.webServer.addRoute(StaticRoute.directory(webDir));
 
       await pod.start();
       port = pod.webServer.port!;

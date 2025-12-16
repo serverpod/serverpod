@@ -54,7 +54,6 @@ void main() {
 
       pod.webServer.addRoute(
         SpaRoute(webDir, fallback: indexFile),
-        '/**',
       );
 
       await pod.start();
@@ -102,6 +101,17 @@ void main() {
         expect(response.body, contains('SPA Index'));
       },
     );
+
+    test(
+      'when requesting / then fallback is served',
+      () async {
+        final response = await client.get(
+          Uri.http('localhost:$port', '/'),
+        );
+        expect(response.statusCode, 200);
+        expect(response.body, contains('SPA Index'));
+      },
+    );
   });
 
   group('Given a SpaRoute with custom fallback', () {
@@ -125,10 +135,7 @@ void main() {
           .create();
       customFallback = File(path.join(webDir.path, 'custom.html'));
 
-      pod.webServer.addRoute(
-        SpaRoute(webDir, fallback: customFallback),
-        '/**',
-      );
+      pod.webServer.addRoute(SpaRoute(webDir, fallback: customFallback));
 
       await pod.start();
       port = pod.webServer.port!;
@@ -165,10 +172,7 @@ void main() {
         ),
       );
 
-      pod.webServer.addRoute(
-        SpaRoute(webDir, fallback: indexFile),
-        '/app/**',
-      );
+      pod.webServer.addRoute(SpaRoute(webDir, fallback: indexFile), '/app');
 
       await pod.start();
       port = pod.webServer.port!;
@@ -234,13 +238,10 @@ void main() {
 
       pod.webServer.addRoute(
         SpaRoute(adminDir, fallback: adminIndexFile),
-        '/admin/**',
+        '/admin',
       );
 
-      pod.webServer.addRoute(
-        SpaRoute(webDir, fallback: indexFile),
-        '/**',
-      );
+      pod.webServer.addRoute(SpaRoute(webDir, fallback: indexFile));
 
       await pod.start();
       port = pod.webServer.port!;
@@ -291,7 +292,6 @@ void main() {
           fallback: indexFile,
           cacheControlFactory: StaticRoute.public(maxAge: Duration(hours: 1)),
         ),
-        '/**',
       );
 
       await pod.start();

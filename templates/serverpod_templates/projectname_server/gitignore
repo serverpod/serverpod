@@ -5,6 +5,9 @@
 # Conventional directory for build outputs
 build/
 
+# Ignore the flutter web app directory
+web/app
+
 # Directory created by dartdoc
 doc/api/
 
