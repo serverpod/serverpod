@@ -184,8 +184,18 @@ Future<bool> performCreate(
     await log.progress(
       'Building Flutter web app.',
       () async {
-        final script = _locateFlutterBuildScript(serverpodDirs.serverDir);
-        if (script == null) return false;
+        final Script? script;
+        try {
+          script = _locateFlutterBuildScript(serverpodDirs.serverDir);
+        } catch (e) {
+          log.error('Error when locating flutter build script: $e');
+          return false;
+        }
+
+        if (script == null) {
+          log.error('Failed to locate flutter build script, skipping build.');
+          return false;
+        }
 
         final exitCode = await ScriptExecutor.executeScript(
           script,
@@ -917,11 +927,7 @@ void _copyModuleTemplates(
 }
 
 Script? _locateFlutterBuildScript(Directory serverDir) {
-  try {
-    final pubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
-    final scripts = Scripts.fromPubspecFile(pubspecFile);
-    return scripts['flutter_build'];
-  } catch (e) {
-    return null;
-  }
+  final pubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
+  final scripts = Scripts.fromPubspecFile(pubspecFile);
+  return scripts['flutter_build'];
 }
