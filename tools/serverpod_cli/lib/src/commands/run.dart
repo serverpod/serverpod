@@ -1,13 +1,11 @@
-import 'dart:async';
 import 'dart:io';
 
-import 'package:async/async.dart';
 import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
-import 'package:serverpod_cli/src/scripts/script.dart';
+import 'package:serverpod_cli/src/scripts/script_executor.dart';
 import 'package:serverpod_cli/src/scripts/scripts.dart';
 import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -105,8 +103,13 @@ class RunCommand extends ServerpodCommand<RunOption> {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
-    final workingDirectory = pubspecFile.parent.path;
-    final exitCode = await _executeScript(script, workingDirectory);
+    log.info('Running "${script.name}": ${script.command}');
+
+    final workingDirectory = pubspecFile.parent;
+    final exitCode = await ScriptExecutor.executeScript(
+      script,
+      workingDirectory,
+    );
 
     if (exitCode != 0) {
       throw ExitException(exitCode);
@@ -118,50 +121,5 @@ class RunCommand extends ServerpodCommand<RunOption> {
     for (final script in scripts.values) {
       log.info('  ${script.name}: ${script.command}');
     }
-  }
-
-  Future<int> _executeScript(Script script, String workingDirectory) async {
-    log.info('Running "${script.name}": ${script.command}');
-
-    final shell = Platform.isWindows ? 'cmd' : 'bash';
-    final shellArg = Platform.isWindows ? '/c' : '-c';
-
-    // NOTE: We invoke a shell instead of the script.command directly (with
-    // runInShell: true). This avoid a lot of edge cases regarding quoting,
-    // repeated spaces, etc.
-    final process = await Process.start(
-      shell,
-      [shellArg, script.command],
-      workingDirectory: workingDirectory,
-    );
-
-    // Forward signals to child process
-    final sigSubscription =
-        StreamGroup.merge(
-          [
-            ProcessSignal.sigint,
-            ProcessSignal.sigterm,
-          ].map((s) => s.watch()).toList(),
-        ).listen((s) {
-          process.kill(s);
-        });
-
-    // Forward stdin to the child process
-    final stdinSubscription = stdin.listen(
-      process.stdin.add,
-      cancelOnError: true,
-      onError: (_) {}, // extremely unlikely, but why not
-    );
-
-    // Stream output directly to terminal
-    await [
-      stdout.addStream(process.stdout),
-      stderr.addStream(process.stderr),
-    ].wait;
-    await process.stdin.close();
-    await stdinSubscription.cancel();
-    await sigSubscription.cancel();
-
-    return process.exitCode;
   }
 }
