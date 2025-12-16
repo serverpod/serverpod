@@ -82,19 +82,11 @@ void main() {
       final (:stdout, :stderr, :exitCode) = await _runScript(script, testDir);
 
       expect(exitCode, 0);
-      // `pwd` outputs with forward slashes on all platforms, so we need to
-      // split the path and check that the output contains all the path
-      // segments.
-      final pathSegments = testDir.path
-          .toLowerCase()
-          .split(Platform.pathSeparator)
-          .where((e) => e.isNotEmpty);
-      final outputPathSegments = stdout.output
-          .toLowerCase()
-          .trim()
-          .split('/')
-          .where((e) => e.isNotEmpty);
-      expect(outputPathSegments, containsAll(pathSegments));
+      expect(
+        path.equals(stdout.output.trim(), testDir.path),
+        isTrue,
+        reason: 'Output path should be equal to test directory path',
+      );
       expect(stderr.output, isEmpty);
     },
   );
