@@ -16,8 +16,11 @@ class ScriptExecutor {
   /// [workingDirectory] - The directory in which to execute the script
   static Future<int> executeScript(
     Script script,
-    Directory workingDirectory,
-  ) async {
+    Directory workingDirectory, {
+    required IOSink stdout,
+    required IOSink stderr,
+    Stream<List<int>>? stdin,
+  }) async {
     final shell = Platform.isWindows ? 'cmd' : 'bash';
     final shellArg = Platform.isWindows ? '/c' : '-c';
 
@@ -42,7 +45,7 @@ class ScriptExecutor {
         });
 
     // Forward stdin to the child process
-    final stdinSubscription = stdin.listen(
+    final stdinSubscription = stdin?.listen(
       process.stdin.add,
       cancelOnError: true,
       onError: (_) {}, // extremely unlikely, but why not
@@ -54,9 +57,9 @@ class ScriptExecutor {
       stderr.addStream(process.stderr),
     ].wait;
     await process.stdin.close();
-    await stdinSubscription.cancel();
+    await stdinSubscription?.cancel();
     await sigSubscription.cancel();
 
-    return process.exitCode;
+    return await process.exitCode;
   }
 }
