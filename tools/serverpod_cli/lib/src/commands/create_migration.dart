@@ -84,13 +84,17 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
-    var projectName = await getProjectName();
+    var serverDirectory = Directory(
+      path.joinAll(config.serverPackageDirectoryPathParts),
+    );
+
+    var projectName = await getProjectName(serverDirectory);
     if (projectName == null) {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
     var generator = MigrationGenerator(
-      directory: Directory.current,
+      directory: serverDirectory,
       projectName: projectName,
     );
 
