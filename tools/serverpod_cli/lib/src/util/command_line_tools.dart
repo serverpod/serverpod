@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
-import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class CommandLineTools {
@@ -34,47 +33,6 @@ class CommandLineTools {
 
     if (exitCode != 0) {
       log.error('Failed to run `flutter create .` in ${dir.path}');
-      return false;
-    }
-
-    return true;
-  }
-
-  static Future<bool> flutterBuild(Directory dir, Directory serverDir) async {
-    log.debug('Running `flutter build` in ${dir.path}', newParagraph: true);
-
-    // Unfortunately, we can't use the `-o` flag directly because of an error
-    // that happens on windows. Issue is tracked in the flutter
-    // repository here: https://github.com/flutter/flutter/issues/157886
-    var flutterBuildExitCode = await _runProcessWithDefaultLogger(
-      executable: 'flutter',
-      arguments: [
-        'build',
-        'web',
-        '--base-href',
-        '/app/',
-        '--wasm',
-      ],
-      workingDirectory: dir.path,
-    );
-
-    if (flutterBuildExitCode != 0) {
-      log.error('Failed to run `flutter build` in ${dir.path}');
-      return false;
-    }
-
-    log.debug('Copying Flutter web app to server project.', newParagraph: true);
-    var copyExitCode = await _runProcessWithDefaultLogger(
-      executable: 'mv',
-      arguments: [
-        path.join(dir.path, 'build', 'web'),
-        path.join(serverDir.path, 'web', 'app'),
-      ],
-      workingDirectory: dir.path,
-    );
-
-    if (copyExitCode != 0) {
-      log.error('Failed to copy Flutter web app to server project.');
       return false;
     }
 

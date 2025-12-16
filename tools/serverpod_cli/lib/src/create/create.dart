@@ -8,6 +8,9 @@ import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/create/generate_files.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/scripts/script.dart';
+import 'package:serverpod_cli/src/scripts/script_executor.dart';
+import 'package:serverpod_cli/src/scripts/scripts.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
@@ -178,13 +181,28 @@ Future<bool> performCreate(
   }
 
   if (template == ServerpodTemplateType.server) {
-    success &= await log.progress(
+    await log.progress(
       'Building Flutter web app.',
-      () {
-        return CommandLineTools.flutterBuild(
-          serverpodDirs.flutterDir,
+      () async {
+        final Script? script;
+        try {
+          script = _locateFlutterBuildScript(serverpodDirs.serverDir);
+        } catch (e) {
+          log.error('Error when locating flutter build script: $e');
+          return false;
+        }
+
+        if (script == null) {
+          log.error('Failed to locate flutter build script, skipping build.');
+          return false;
+        }
+
+        final exitCode = await ScriptExecutor.executeScript(
+          script,
           serverpodDirs.serverDir,
         );
+
+        return exitCode == 0;
       },
     );
   }
@@ -906,4 +924,10 @@ void _copyModuleTemplates(
     ignoreFileNames: ['pubspec.lock', 'pubspec_overrides.yaml'],
   );
   copier.copyFiles();
+}
+
+Script? _locateFlutterBuildScript(Directory serverDir) {
+  final pubspecFile = File(p.join(serverDir.path, 'pubspec.yaml'));
+  final scripts = Scripts.fromPubspecFile(pubspecFile);
+  return scripts['flutter_build'];
 }
