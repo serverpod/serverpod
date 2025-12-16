@@ -340,7 +340,7 @@ void main() {
           // Missing required "Admin" scope
           var authKey = await UserAuthentication.signInUser(session, 1, 'test');
           session.close();
-          token = '${authKey.id}:${authKey.key}';
+          token = wrapAsBearerAuthHeaderValue('${authKey.id}:${authKey.key}');
         });
 
         tearDown(() async {
@@ -395,7 +395,7 @@ void main() {
             scopes: {Scope.admin}, // Scope required by the endpoint
           );
           session.close();
-          token = '${authKey.id}:${authKey.key}';
+          token = wrapAsBearerAuthHeaderValue('${authKey.id}:${authKey.key}');
         });
 
         tearDown(() async {

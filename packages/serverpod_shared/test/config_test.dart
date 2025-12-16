@@ -1739,4 +1739,86 @@ serverId: configFileServerId
       expect(config.serverId, '');
     },
   );
+
+  test(
+    'Given a Serverpod config with no validateHeaders config when loading from Map then the default value is true',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {},
+      );
+
+      expect(config.validateHeaders, isTrue);
+    },
+  );
+
+  test(
+    'Given a Serverpod config with validateHeaders set to false when loading from Map then the value is false',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {
+          'validateHeaders': false,
+        },
+      );
+
+      expect(config.validateHeaders, isFalse);
+    },
+  );
+
+  test(
+    'Given a Serverpod config with validateHeaders set to true when loading from Map then the value is true',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {
+          'validateHeaders': true,
+        },
+      );
+
+      expect(config.validateHeaders, isTrue);
+    },
+  );
+
+  test(
+    'Given a Serverpod config with validateHeaders in environment variable when loading from Map then the environment value overrides config',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {
+          'validateHeaders': true,
+        },
+        environment: {
+          'SERVERPOD_VALIDATE_HEADERS': 'false',
+        },
+      );
+
+      expect(config.validateHeaders, isFalse);
+    },
+  );
+
+  test(
+    'Given a Serverpod config with validateHeaders only in environment variable when loading from Map then the environment value is used',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {},
+        environment: {
+          'SERVERPOD_VALIDATE_HEADERS': 'false',
+        },
+      );
+
+      expect(config.validateHeaders, isFalse);
+    },
+  );
 }

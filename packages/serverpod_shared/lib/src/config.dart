@@ -72,6 +72,13 @@ class ServerpodConfig {
   /// True if future call execution should be disabled.
   final bool futureCallExecutionEnabled;
 
+  /// Whether to validate HTTP headers using typed APIs.
+  ///
+  /// When false, uses non-typed header API, allowing headers without
+  /// required formatting (e.g., unwrapped tokens in Authorization header).
+  /// Defaults to true.
+  final bool validateHeaders;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -91,6 +98,7 @@ class ServerpodConfig {
     this.experimentalDiagnosticHandlerTimeout = const Duration(seconds: 30),
     this.futureCall = const FutureCallConfig(),
     this.futureCallExecutionEnabled = true,
+    this.validateHeaders = true,
   }) : sessionLogs =
            sessionLogs ??
            SessionLogConfig.buildDefault(
@@ -220,6 +228,11 @@ class ServerpodConfig {
       environment,
     );
 
+    var validateHeaders = _readValidateHeaders(
+      configMap,
+      environment,
+    );
+
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
@@ -237,6 +250,7 @@ class ServerpodConfig {
       sessionLogs: sessionLogsConfig,
       futureCall: futureCallConfig,
       futureCallExecutionEnabled: futureCallExecutionEnabled,
+      validateHeaders: validateHeaders,
     );
   }
 
@@ -289,6 +303,7 @@ class ServerpodConfig {
     Duration? experimentalDiagnosticHandlerTimeout,
     FutureCallConfig? futureCall,
     bool? futureCallExecutionEnabled,
+    bool? validateHeaders,
   }) {
     return ServerpodConfig(
       apiServer: apiServer ?? this.apiServer,
@@ -311,6 +326,7 @@ class ServerpodConfig {
       futureCall: futureCall ?? this.futureCall,
       futureCallExecutionEnabled:
           futureCallExecutionEnabled ?? this.futureCallExecutionEnabled,
+      validateHeaders: validateHeaders ?? this.validateHeaders,
     );
   }
 
@@ -1108,6 +1124,22 @@ bool _readIsFutureCallExecutionEnabled(
 
   futureCallsExecutionEnabled ??= true;
   return futureCallsExecutionEnabled;
+}
+
+bool _readValidateHeaders(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  var validateHeaders = configMap[ServerpodEnv.validateHeaders.configKey];
+  validateHeaders =
+      environment[ServerpodEnv.validateHeaders.envVariable] ?? validateHeaders;
+
+  if (validateHeaders is String) {
+    validateHeaders = bool.tryParse(validateHeaders);
+  }
+
+  validateHeaders ??= true;
+  return validateHeaders;
 }
 
 /// Validates that a JSON configuration contains all required keys, and that

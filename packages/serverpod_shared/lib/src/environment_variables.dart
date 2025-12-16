@@ -160,7 +160,13 @@ enum ServerpodEnv {
   applyMigrations,
 
   /// If true, the server will apply database repair migration on startup.
-  applyRepairMigration;
+  applyRepairMigration,
+
+  /// Whether to validate HTTP headers using typed APIs.
+  ///
+  /// When false, uses non-typed header API, allowing headers without
+  /// required formatting (e.g., unwrapped tokens in Authorization header).
+  validateHeaders;
 
   /// The key used in the environment configuration file.
   String get configKey {
@@ -206,6 +212,7 @@ enum ServerpodEnv {
       (ServerpodEnv.serverId) => 'serverId',
       (ServerpodEnv.applyMigrations) => 'applyMigrations',
       (ServerpodEnv.applyRepairMigration) => 'applyRepairMigration',
+      (ServerpodEnv.validateHeaders) => 'validateHeaders',
     };
   }
 
@@ -261,6 +268,7 @@ enum ServerpodEnv {
       (ServerpodEnv.serverId) => 'SERVERPOD_SERVER_ID',
       (ServerpodEnv.applyMigrations) => 'SERVERPOD_APPLY_MIGRATIONS',
       (ServerpodEnv.applyRepairMigration) => 'SERVERPOD_APPLY_REPAIR_MIGRATION',
+      (ServerpodEnv.validateHeaders) => 'SERVERPOD_VALIDATE_HEADERS',
     };
   }
 }

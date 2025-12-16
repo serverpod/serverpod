@@ -205,9 +205,20 @@ class _SessionMiddleware extends MiddlewareObject {
   @override
   Handler call(Handler next) {
     return (req) async {
-      final authenticationKey = unwrapAuthHeaderValue(
-        req.headers.authorization?.headerValue,
-      );
+      String? authenticationKey;
+      try {
+        authenticationKey = unwrapAuthHeaderValue(
+          req.getAuthorizationHeaderValue(
+            _server.serverpod.config.validateHeaders,
+          ),
+        );
+      } on HeaderException catch (_) {
+        // If validation is enabled and header is malformed, return 400
+        return Response.badRequest(
+          body: Body.fromString('Request has invalid "authorization" header'),
+        );
+      }
+
       final deferredSession = _Deferred(
         () => SessionInternalMethods.createWebCallSession(
           server: _server,

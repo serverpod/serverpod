@@ -310,6 +310,21 @@ class MethodWebsocketRequestHandler {
       );
     }
 
+    var authentication = message.authentication;
+    if (server.serverpod.config.validateHeaders &&
+        authentication != null &&
+        !isValidAuthHeaderValue(authentication)) {
+      server.serverpod.logVerbose(
+        'Invalid authentication header format for open stream request: $message',
+      );
+      return OpenMethodStreamResponse.buildMessage(
+        endpoint: message.endpoint,
+        method: message.method,
+        connectionId: message.connectionId,
+        responseType: OpenMethodStreamResponseType.authenticationFailed,
+      );
+    }
+
     MethodStreamSession? maybeSession;
     MethodStreamCallContext methodStreamCallContext;
     bool keepSessionOpen = false;
@@ -321,7 +336,7 @@ class MethodWebsocketRequestHandler {
                   await SessionInternalMethods.createMethodStreamSession(
                     server: server,
                     authenticationKey: unwrapAuthHeaderValue(
-                      message.authentication,
+                      authentication,
                     ),
                     endpoint: message.endpoint,
                     method: message.method,
