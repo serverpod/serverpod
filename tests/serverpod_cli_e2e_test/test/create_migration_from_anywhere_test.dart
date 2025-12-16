@@ -49,6 +49,10 @@ void main() async {
           'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
 
       late Process createProcess;
+      late Process migrationProcess;
+      late int exitCode;
+      late List<String> stdout;
+      late List<String> stderr;
 
       setUp(() async {
         createProcess = await Process.start(
@@ -78,6 +82,37 @@ name: _
 environment:
   sdk: ^3.0.0
 ''');
+
+        // When: Run create-migration from project root
+        migrationProcess = await Process.start(
+          'serverpod',
+          ['create-migration', '--no-analytics'],
+          workingDirectory: path.join(tempDir.path, projectName),
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
+
+        stdout = <String>[];
+        stderr = <String>[];
+
+        migrationProcess.stdout
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen((line) {
+              stdout.add(line);
+              print('stdout: $line');
+            });
+
+        migrationProcess.stderr
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen((line) {
+              stderr.add(line);
+              print('stderr: $line');
+            });
+
+        exitCode = await migrationProcess.exitCode;
       });
 
       tearDown(() async {
@@ -87,36 +122,6 @@ environment:
       test(
         'then create-migration should succeed when run from project root.',
         () async {
-          var migrationProcess = await Process.start(
-            'serverpod',
-            ['create-migration', '--no-analytics'],
-            workingDirectory: path.join(tempDir.path, projectName),
-            environment: {
-              'SERVERPOD_HOME': rootPath,
-            },
-          );
-
-          var stdout = <String>[];
-          var stderr = <String>[];
-
-          migrationProcess.stdout
-              .transform(const Utf8Decoder())
-              .transform(const LineSplitter())
-              .listen((line) {
-                stdout.add(line);
-                print('stdout: $line');
-              });
-
-          migrationProcess.stderr
-              .transform(const Utf8Decoder())
-              .transform(const LineSplitter())
-              .listen((line) {
-                stderr.add(line);
-                print('stderr: $line');
-              });
-
-          var exitCode = await migrationProcess.exitCode;
-
           var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
 
           // Should not contain error about not being a server package
@@ -153,6 +158,10 @@ environment:
       var clientDir = path.join(projectName, '${projectName}_client');
 
       late Process createProcess;
+      late Process migrationProcess;
+      late int exitCode;
+      late List<String> stdout;
+      late List<String> stderr;
 
       setUp(() async {
         createProcess = await Process.start(
@@ -172,6 +181,37 @@ environment:
           createProjectExitCode == 0,
           'Failed to create the serverpod project.',
         );
+
+        // When: Run create-migration from client directory
+        migrationProcess = await Process.start(
+          'serverpod',
+          ['create-migration', '--no-analytics'],
+          workingDirectory: path.join(tempDir.path, clientDir),
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
+
+        stdout = <String>[];
+        stderr = <String>[];
+
+        migrationProcess.stdout
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen((line) {
+              stdout.add(line);
+              print('stdout: $line');
+            });
+
+        migrationProcess.stderr
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen((line) {
+              stderr.add(line);
+              print('stderr: $line');
+            });
+
+        exitCode = await migrationProcess.exitCode;
       });
 
       tearDown(() async {
@@ -181,36 +221,6 @@ environment:
       test(
         'then create-migration should succeed when run from client directory.',
         () async {
-          var migrationProcess = await Process.start(
-            'serverpod',
-            ['create-migration', '--no-analytics'],
-            workingDirectory: path.join(tempDir.path, clientDir),
-            environment: {
-              'SERVERPOD_HOME': rootPath,
-            },
-          );
-
-          var stdout = <String>[];
-          var stderr = <String>[];
-
-          migrationProcess.stdout
-              .transform(const Utf8Decoder())
-              .transform(const LineSplitter())
-              .listen((line) {
-                stdout.add(line);
-                print('stdout: $line');
-              });
-
-          migrationProcess.stderr
-              .transform(const Utf8Decoder())
-              .transform(const LineSplitter())
-              .listen((line) {
-                stderr.add(line);
-                print('stderr: $line');
-              });
-
-          var exitCode = await migrationProcess.exitCode;
-
           var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
 
           // Should succeed (either no changes or migration created)
@@ -239,6 +249,10 @@ environment:
           'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
 
       late Process createProcess;
+      late Process migrationProcess;
+      late int exitCode;
+      late List<String> stdout;
+      late List<String> stderr;
 
       setUp(() async {
         createProcess = await Process.start(
@@ -268,6 +282,37 @@ name: _
 environment:
   sdk: ^3.0.0
 ''');
+
+        // When: Run create-repair-migration from project root
+        migrationProcess = await Process.start(
+          'serverpod',
+          ['create-repair-migration', '--no-analytics'],
+          workingDirectory: path.join(tempDir.path, projectName),
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
+
+        stdout = <String>[];
+        stderr = <String>[];
+
+        migrationProcess.stdout
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen((line) {
+              stdout.add(line);
+              print('stdout: $line');
+            });
+
+        migrationProcess.stderr
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen((line) {
+              stderr.add(line);
+              print('stderr: $line');
+            });
+
+        exitCode = await migrationProcess.exitCode;
       });
 
       tearDown(() async {
@@ -277,36 +322,6 @@ environment:
       test(
         'then create-repair-migration should fail gracefully when run from project root.',
         () async {
-          var migrationProcess = await Process.start(
-            'serverpod',
-            ['create-repair-migration', '--no-analytics'],
-            workingDirectory: path.join(tempDir.path, projectName),
-            environment: {
-              'SERVERPOD_HOME': rootPath,
-            },
-          );
-
-          var stdout = <String>[];
-          var stderr = <String>[];
-
-          migrationProcess.stdout
-              .transform(const Utf8Decoder())
-              .transform(const LineSplitter())
-              .listen((line) {
-                stdout.add(line);
-                print('stdout: $line');
-              });
-
-          migrationProcess.stderr
-              .transform(const Utf8Decoder())
-              .transform(const LineSplitter())
-              .listen((line) {
-                stderr.add(line);
-                print('stderr: $line');
-              });
-
-          var exitCode = await migrationProcess.exitCode;
-
           var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
 
           // Should not contain error about not being a server package
@@ -339,6 +354,10 @@ environment:
       var clientDir = path.join(projectName, '${projectName}_client');
 
       late Process createProcess;
+      late Process migrationProcess;
+      late int exitCode;
+      late List<String> stdout;
+      late List<String> stderr;
 
       setUp(() async {
         createProcess = await Process.start(
@@ -358,6 +377,37 @@ environment:
           createProjectExitCode == 0,
           'Failed to create the serverpod project.',
         );
+
+        // When: Run create-repair-migration from client directory
+        migrationProcess = await Process.start(
+          'serverpod',
+          ['create-repair-migration', '--no-analytics'],
+          workingDirectory: path.join(tempDir.path, clientDir),
+          environment: {
+            'SERVERPOD_HOME': rootPath,
+          },
+        );
+
+        stdout = <String>[];
+        stderr = <String>[];
+
+        migrationProcess.stdout
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen((line) {
+              stdout.add(line);
+              print('stdout: $line');
+            });
+
+        migrationProcess.stderr
+            .transform(const Utf8Decoder())
+            .transform(const LineSplitter())
+            .listen((line) {
+              stderr.add(line);
+              print('stderr: $line');
+            });
+
+        exitCode = await migrationProcess.exitCode;
       });
 
       tearDown(() async {
@@ -367,36 +417,6 @@ environment:
       test(
         'then create-repair-migration should fail gracefully when run from client directory.',
         () async {
-          var migrationProcess = await Process.start(
-            'serverpod',
-            ['create-repair-migration', '--no-analytics'],
-            workingDirectory: path.join(tempDir.path, clientDir),
-            environment: {
-              'SERVERPOD_HOME': rootPath,
-            },
-          );
-
-          var stdout = <String>[];
-          var stderr = <String>[];
-
-          migrationProcess.stdout
-              .transform(const Utf8Decoder())
-              .transform(const LineSplitter())
-              .listen((line) {
-                stdout.add(line);
-                print('stdout: $line');
-              });
-
-          migrationProcess.stderr
-              .transform(const Utf8Decoder())
-              .transform(const LineSplitter())
-              .listen((line) {
-                stderr.add(line);
-                print('stderr: $line');
-              });
-
-          var exitCode = await migrationProcess.exitCode;
-
           var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
 
           // Should not contain error about not being a server package

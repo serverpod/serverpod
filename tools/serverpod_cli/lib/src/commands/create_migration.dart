@@ -7,6 +7,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
+import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
@@ -87,9 +88,14 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
       path.joinAll(config.serverPackageDirectoryPathParts),
     );
 
+    var projectName = await getProjectName(serverDirectory);
+    if (projectName == null) {
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+    }
+
     var generator = MigrationGenerator(
       directory: serverDirectory,
-      projectName: config.name,
+      projectName: projectName,
     );
 
     MigrationVersion? migration;
