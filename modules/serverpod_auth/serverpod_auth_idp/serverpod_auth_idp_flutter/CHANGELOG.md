@@ -1,3 +1,42 @@
+## 3.1.0
+ 
+Serverpod 3.1 focuses on improving the developer experience with new tooling, enhanced Flutter web support, and important bug fixes.
+
+### Flutter web integration
+- feat: Serve a Flutter app for new project templates.
+- feat: Prevent caching of critical Flutter web files in FlutterRoute.
+
+### Developer tooling
+- feat: Add `serverpod run` command for running scripts.
+- feat: Add Serverpod script for starting the server and building flutter app.
+
+### Web server enhancements
+- feat: Add HTTP methods support to `WidgetRoute`.
+
+### Model improvements
+- feat: Allow setting column name explicitly on models.
+
+### Additional changes
+- feat: Prevent database operations on health check when the database is idle.
+- feat: Add validateHeaders config option for backward compatibility with Serverpod 2 clients.
+
+### Bug fixes
+- fix: Fix minor issues with the new auth email widgets.
+- fix: Improves templates with easier structure to digest.
+- fix: Throw PasswordNotFoundException instead of null assertion in IDP configs.
+- fix: Use resolved server directory in migration commands.
+- fix: Use resolved server directory in migration commands.
+- fix: Ensure consistent copy behavior for `flutter_build` script.
+- fix: Don't double bind the `stdout` streams.
+- fix: Ensure tailmatch (`/**`) is the default for `StaticRoute.directory`.
+- fix: Fix deserialization of collections of `serverOnly` models.
+- fix: Prevent unnecessary table drops when removing foreign keys with constraint name collisions.
+- fix: Fix incorrect import generation for modules with `serverpod` prefix.
+- fix: Stop Google Sign-In button spinner when authentication is canceled.
+
+### Testing
+- test: Add transaction to test cleanup code. 
+
 ## 3.0.1
 - fix: Allows the server address to be specified without trailing slash on the client.
 - fix: Fixes allowed `indexes` key on non-table base models to allow inheritance of indexes.
