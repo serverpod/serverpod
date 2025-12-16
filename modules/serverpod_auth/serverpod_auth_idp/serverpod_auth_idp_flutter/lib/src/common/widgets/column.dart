@@ -29,7 +29,7 @@ class SignInWidgetsColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      minimum: const EdgeInsets.all(16),
+      minimum: const EdgeInsets.all(24),
       child: Center(
         child: Container(
           constraints: BoxConstraints(maxWidth: width),
