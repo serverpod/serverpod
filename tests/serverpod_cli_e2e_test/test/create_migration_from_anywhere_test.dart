@@ -83,7 +83,6 @@ environment:
   sdk: ^3.0.0
 ''');
 
-        // When: Run create-migration from project root
         migrationProcess = await Process.start(
           'serverpod',
           ['create-migration', '--no-analytics'],
@@ -124,21 +123,18 @@ environment:
         () async {
           var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
 
-          // Should not contain error about not being a server package
           expect(
             allOutput.contains('not a server package (_)'),
             isFalse,
             reason: 'Should not error about root pubspec name',
           );
 
-          // Should succeed (either no changes or migration created)
           expect(
             exitCode,
             equals(0),
             reason: 'create-migration should succeed with exit code 0',
           );
 
-          // Should either detect no changes or create migration
           expect(
             allOutput.contains('no changes detected') ||
                 allOutput.contains('migration created'),
@@ -182,7 +178,6 @@ environment:
           'Failed to create the serverpod project.',
         );
 
-        // When: Run create-migration from client directory
         migrationProcess = await Process.start(
           'serverpod',
           ['create-migration', '--no-analytics'],
@@ -223,14 +218,12 @@ environment:
         () async {
           var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
 
-          // Should succeed (either no changes or migration created)
           expect(
             exitCode,
             equals(0),
             reason: 'create-migration should succeed with exit code 0',
           );
 
-          // Should either detect no changes or create migration
           expect(
             allOutput.contains('no changes detected') ||
                 allOutput.contains('migration created'),
@@ -283,7 +276,6 @@ environment:
   sdk: ^3.0.0
 ''');
 
-        // When: Run create-repair-migration from project root
         migrationProcess = await Process.start(
           'serverpod',
           ['create-repair-migration', '--no-analytics'],
@@ -324,16 +316,12 @@ environment:
         () async {
           var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
 
-          // Should not contain error about not being a server package
           expect(
             allOutput.contains('not a server package (_)'),
             isFalse,
             reason: 'Should not error about root pubspec name',
           );
 
-          // The command will likely fail because there's no server running,
-          // but it should not fail with "not a server package" error
-          // If it does exit non-zero, verify it's for the right reason
           if (exitCode != 0) {
             expect(
               allOutput.contains('not a server package'),
@@ -378,7 +366,6 @@ environment:
           'Failed to create the serverpod project.',
         );
 
-        // When: Run create-repair-migration from client directory
         migrationProcess = await Process.start(
           'serverpod',
           ['create-repair-migration', '--no-analytics'],
@@ -419,16 +406,12 @@ environment:
         () async {
           var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
 
-          // Should not contain error about not being a server package
           expect(
             allOutput.contains('not a server package'),
             isFalse,
             reason: 'Should not error about client package name',
           );
 
-          // The command will likely fail because there's no server running,
-          // but it should not fail with "not a server package" error
-          // If it does exit non-zero, verify it's for the right reason
           if (exitCode != 0) {
             expect(
               allOutput.contains('not a server package'),
