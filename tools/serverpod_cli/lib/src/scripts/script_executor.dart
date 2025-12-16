@@ -35,7 +35,7 @@ class ScriptExecutor {
         StreamGroup.merge(
           [
             ProcessSignal.sigint,
-            ProcessSignal.sigterm,
+            if (!Platform.isWindows) ProcessSignal.sigterm,
           ].map((s) => s.watch()).toList(),
         ).listen((s) {
           process.kill(s);
