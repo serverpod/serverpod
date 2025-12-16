@@ -18,18 +18,11 @@ void main() {
     publicPort: 0,
   );
 
-  late Directory originalDir;
-
-  setUpAll(() async {
-    originalDir = Directory.current;
-  });
-
-  tearDownAll(() async {
-    Directory.current = originalDir;
-  });
-
   group('Given missing IDP passwords', () {
+    late Directory originalDir;
+
     setUpAll(() async {
+      originalDir = Directory.current;
       await d.dir('config', [
         d.file('passwords.yaml', 'test:\n  database: "test"'),
       ]).create();
@@ -43,6 +36,10 @@ void main() {
         Endpoints(),
         config: ServerpodConfig(apiServer: portZeroConfig),
       );
+    });
+
+    tearDownAll(() async {
+      Directory.current = originalDir;
     });
 
     test(
@@ -111,7 +108,10 @@ void main() {
   });
 
   group('Given emailSecretHashPepper password is present', () {
+    late Directory originalDir;
+
     setUpAll(() async {
+      originalDir = Directory.current;
       await d.dir('config', [
         d.file(
           'passwords.yaml',
@@ -132,6 +132,10 @@ test:
       );
     });
 
+    tearDownAll(() async {
+      Directory.current = originalDir;
+    });
+
     test(
       'when constructing EmailIdpConfigFromPasswords then succeeds.',
       () {
@@ -142,6 +146,8 @@ test:
   });
 
   group('Given googleClientSecret password is present', () {
+    late Directory originalDir;
+
     setUpAll(() async {
       originalDir = Directory.current;
       await d.dir('config', [
@@ -164,6 +170,10 @@ test:
       );
     });
 
+    tearDownAll(() async {
+      Directory.current = originalDir;
+    });
+
     test(
       'when constructing GoogleIdpConfigFromPasswords then succeeds.',
       () {
@@ -174,6 +184,8 @@ test:
   });
 
   group('Given all apple passwords are present', () {
+    late Directory originalDir;
+
     setUpAll(() async {
       originalDir = Directory.current;
       await d.dir('config', [
@@ -206,6 +218,10 @@ test:
       );
     });
 
+    tearDownAll(() async {
+      Directory.current = originalDir;
+    });
+
     test(
       'when constructing AppleIdpConfigFromPasswords then succeeds.',
       () {
@@ -216,6 +232,8 @@ test:
   });
 
   group('Given passkeyHostname password is present', () {
+    late Directory originalDir;
+
     setUpAll(() async {
       originalDir = Directory.current;
       await d.dir('config', [
@@ -236,6 +254,10 @@ test:
         Endpoints(),
         config: ServerpodConfig(apiServer: portZeroConfig),
       );
+    });
+
+    tearDownAll(() async {
+      Directory.current = originalDir;
     });
 
     test(
