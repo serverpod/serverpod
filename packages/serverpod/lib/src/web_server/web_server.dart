@@ -319,7 +319,33 @@ abstract class Route extends HandlerObject {
 
 /// A [WidgetRoute] is the most convenient way to create routes in your server.
 /// Override the [build] method and return an appropriate [WebWidget].
+///
+/// By default, a [WidgetRoute] only responds to GET requests. To support
+/// additional HTTP methods like POST, pass them in the constructor:
+///
+/// ```dart
+/// class FormRoute extends WidgetRoute {
+///   FormRoute() : super(methods: {Method.get, Method.post});
+///
+///   @override
+///   Future<WebWidget> build(Session session, Request request) async {
+///     if (request.method == Method.post) {
+///       // Handle form submission
+///       return SuccessWidget();
+///     }
+///     // Show form
+///     return FormWidget();
+///   }
+/// }
+/// ```
 abstract class WidgetRoute extends Route {
+  /// Creates a new [WidgetRoute].
+  ///
+  /// The [methods] parameter specifies which HTTP methods this route will
+  /// respond to (defaults to GET only). The [path] parameter specifies the
+  /// suffix path (defaults to '/').
+  WidgetRoute({super.methods, super.path});
+
   /// Override this method to build your web widget from the current [session]
   /// and [request].
   Future<WebWidget> build(Session session, Request request);
