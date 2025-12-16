@@ -62,6 +62,10 @@ class ServerpodConfig {
   /// Configuration for Session logs.
   final SessionLogConfig sessionLogs;
 
+  /// Health check interval.
+  /// Default is 1 minute.
+  final Duration healthCheckInterval;
+
   /// The timeout for the diagnostic event handlers.
   /// Default is 30 seconds.
   final Duration? experimentalDiagnosticHandlerTimeout;
@@ -95,6 +99,7 @@ class ServerpodConfig {
     this.redis,
     this.serviceSecret,
     SessionLogConfig? sessionLogs,
+    this.healthCheckInterval = const Duration(minutes: 1),
     this.experimentalDiagnosticHandlerTimeout = const Duration(seconds: 30),
     this.futureCall = const FutureCallConfig(),
     this.futureCallExecutionEnabled = true,
@@ -300,6 +305,7 @@ class ServerpodConfig {
     RedisConfig? redis,
     String? serviceSecret,
     SessionLogConfig? sessionLogs,
+    Duration? healthCheckInterval,
     Duration? experimentalDiagnosticHandlerTimeout,
     FutureCallConfig? futureCall,
     bool? futureCallExecutionEnabled,
@@ -320,6 +326,7 @@ class ServerpodConfig {
       redis: redis ?? this.redis,
       serviceSecret: serviceSecret ?? this.serviceSecret,
       sessionLogs: sessionLogs ?? this.sessionLogs,
+      healthCheckInterval: healthCheckInterval ?? this.healthCheckInterval,
       experimentalDiagnosticHandlerTimeout:
           experimentalDiagnosticHandlerTimeout ??
           this.experimentalDiagnosticHandlerTimeout,

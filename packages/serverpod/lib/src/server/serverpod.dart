@@ -98,6 +98,10 @@ class Serverpod {
 
   DatabasePoolManager? _databasePoolManager;
 
+  /// The last time a database operation was performed. This can be used to
+  /// determine if the database is sleeping.
+  DateTime? lastDatabaseOperationTime;
+
   late Caches _caches;
 
   /// The Redis controller used by Serverpod.
@@ -565,6 +569,7 @@ class Serverpod {
       _healthCheckManager = HealthCheckManager(
         this,
         _onCompletedHealthChecks,
+        interval: config.healthCheckInterval,
       );
     }
 

@@ -532,6 +532,8 @@ class DatabaseConnection {
         parameters: parameters?.parameters,
       );
 
+      session.serverpod.lastDatabaseOperationTime = startTime;
+
       _logQuery(
         session,
         query,
