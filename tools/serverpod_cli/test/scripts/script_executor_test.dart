@@ -75,18 +75,20 @@ void main() {
     'when executing it, '
     'then it executes in the correct directory',
     () async {
-      const script = Script(
-        name: 'test',
-        command: 'pwd',
-      );
+      final script = switch (Platform.isWindows) {
+        true => const Script(
+          name: 'test',
+          command: 'echo %cd%',
+        ),
+        false => const Script(
+          name: 'test',
+          command: 'pwd',
+        ),
+      };
       final (:stdout, :stderr, :exitCode) = await _runScript(script, testDir);
 
       expect(exitCode, 0);
-      expect(
-        path.equals(stdout.output.trim(), testDir.path),
-        isTrue,
-        reason: 'Output path should be equal to test directory path',
-      );
+      expect(stdout.output.trim(), testDir.path);
       expect(stderr.output, isEmpty);
     },
   );
