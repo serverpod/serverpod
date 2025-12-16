@@ -6,6 +6,12 @@ import 'package:serverpod_test_server/src/web/routes/session_test_route.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
+const _testToken = 'test-token';
+const _testUserId = 'test-user-123';
+const _testAuthId = 'auth-id-456';
+const _apiServerUrl = 'http://localhost:8080/';
+const _webServerUrl = 'http://localhost:8082/session-test';
+
 // Custom auth provider that returns a raw unwrapped token
 class _UnwrappedTokenAuthProvider implements ClientAuthKeyProvider {
   final String token;
@@ -40,17 +46,15 @@ class _BasicTokenAuthProvider implements ClientAuthKeyProvider {
 void main() {
   group('Given a server with validateHeaders enabled', () {
     late Serverpod server;
-    late Client client;
-    const testToken = 'test-token';
 
     setUpAll(() async {
       server = IntegrationTestServer.create(
         authenticationHandler: (final session, final token) async {
-          if (token == testToken) {
+          if (token == _testToken) {
             return AuthenticationInfo(
-              'test-user-123',
+              _testUserId,
               {Scope('test')},
-              authId: 'auth-id-456',
+              authId: _testAuthId,
             );
           }
           return null;
@@ -66,56 +70,69 @@ void main() {
       await server.shutdown(exitProcess: false);
     });
 
-    tearDown(() {
-      client.close();
+    group('when calling endpoint with Bearer-wrapped token', () {
+      late Client client;
+
+      setUp(() {
+        client = Client(_apiServerUrl)
+          ..authKeyProvider = _BearerTokenAuthProvider(_testToken);
+      });
+
+      tearDown(() {
+        client.close();
+      });
+
+      test(
+        'then request should succeed',
+        () async {
+          final result = await client.echoRequest.echoAuthenticationKey();
+          expect(result, equals(_testToken));
+        },
+      );
     });
 
-    test(
-      'when calling endpoint with Bearer-wrapped token '
-      'then request should succeed',
-      () async {
-        client = Client('http://localhost:8080/')
-          ..authKeyProvider = _BearerTokenAuthProvider(testToken);
+    group('when calling endpoint with unwrapped token', () {
+      late Client client;
 
-        final result = await client.echoRequest.echoAuthenticationKey();
-        expect(result, equals(testToken));
-      },
-    );
+      setUp(() {
+        client = Client(_apiServerUrl)
+          ..authKeyProvider = _UnwrappedTokenAuthProvider(_testToken);
+      });
 
-    test(
-      'when calling endpoint with unwrapped token '
-      'then request should fail',
-      () async {
-        client = Client('http://localhost:8080/')
-          ..authKeyProvider = _UnwrappedTokenAuthProvider(testToken);
+      tearDown(() {
+        client.close();
+      });
 
-        await expectLater(
-          client.echoRequest.echoAuthenticationKey(),
-          throwsA(isA<ServerpodClientException>()),
-        );
-      },
-    );
+      test(
+        'then request should fail',
+        () async {
+          await expectLater(
+            client.echoRequest.echoAuthenticationKey(),
+            throwsA(isA<ServerpodClientException>()),
+          );
+        },
+      );
+    });
 
-    test(
-      'when accessing web route with unwrapped token in Authorization header '
-      'then request should fail with 400',
-      () async {
-        final response = await http.get(
-          Uri.parse('http://localhost:8082/session-test'),
-          headers: {
-            'Authorization': testToken,
-          },
-        );
+    group('when accessing web route with unwrapped token', () {
+      test(
+        'then request should fail with 400',
+        () async {
+          final response = await http.get(
+            Uri.parse(_webServerUrl),
+            headers: {
+              'Authorization': _testToken,
+            },
+          );
 
-        expect(response.statusCode, equals(400));
-      },
-    );
+          expect(response.statusCode, equals(400));
+        },
+      );
+    });
   });
 
   group('Given a server with validateHeaders disabled', () {
     late Serverpod server;
-    late Client client;
-    const testToken = 'test-token';
 
     setUpAll(() async {
       server = IntegrationTestServer.create(
@@ -135,11 +152,11 @@ void main() {
           validateHeaders: false,
         ),
         authenticationHandler: (final session, final token) async {
-          if (token == testToken) {
+          if (token == _testToken) {
             return AuthenticationInfo(
-              'test-user-123',
+              _testUserId,
               {Scope('test')},
-              authId: 'auth-id-456',
+              authId: _testAuthId,
             );
           }
           return null;
@@ -155,80 +172,105 @@ void main() {
       await server.shutdown(exitProcess: false);
     });
 
-    tearDown(() {
-      client.close();
+    group('when calling endpoint with unwrapped token', () {
+      late Client client;
+
+      setUp(() {
+        client = Client(_apiServerUrl)
+          ..authKeyProvider = _UnwrappedTokenAuthProvider(_testToken);
+      });
+
+      tearDown(() {
+        client.close();
+      });
+
+      test(
+        'then request should succeed',
+        () async {
+          final result = await client.echoRequest.echoAuthenticationKey();
+          expect(result, equals(_testToken));
+        },
+      );
     });
 
-    test(
-      'when calling endpoint with unwrapped token '
-      'then request should succeed',
-      () async {
-        client = Client('http://localhost:8080/')
-          ..authKeyProvider = _UnwrappedTokenAuthProvider(testToken);
+    group('when calling endpoint with Bearer-wrapped token', () {
+      late Client client;
 
-        final result = await client.echoRequest.echoAuthenticationKey();
-        expect(result, equals(testToken));
-      },
-    );
+      setUp(() {
+        client = Client(_apiServerUrl)
+          ..authKeyProvider = _BearerTokenAuthProvider(_testToken);
+      });
 
-    test(
-      'when calling endpoint with Bearer-wrapped token '
-      'then request should succeed and token should be unwrapped',
-      () async {
-        client = Client('http://localhost:8080/')
-          ..authKeyProvider = _BearerTokenAuthProvider(testToken);
+      tearDown(() {
+        client.close();
+      });
 
-        final result = await client.echoRequest.echoAuthenticationKey();
-        expect(result, equals(testToken));
-      },
-    );
+      test(
+        'then request should succeed and token should be unwrapped',
+        () async {
+          final result = await client.echoRequest.echoAuthenticationKey();
+          expect(result, equals(_testToken));
+        },
+      );
+    });
 
-    test(
-      'when calling endpoint with Basic-wrapped token '
-      'then request should succeed and token should be unwrapped',
-      () async {
-        client = Client('http://localhost:8080/')
-          ..authKeyProvider = _BasicTokenAuthProvider(testToken);
+    group('when calling endpoint with Basic-wrapped token', () {
+      late Client client;
 
-        final result = await client.echoRequest.echoAuthenticationKey();
-        expect(result, equals(testToken));
-      },
-    );
+      setUp(() {
+        client = Client(_apiServerUrl)
+          ..authKeyProvider = _BasicTokenAuthProvider(_testToken);
+      });
 
-    test(
-      'when accessing web route with unwrapped token in Authorization header '
-      'then session should be authenticated',
-      () async {
-        final response = await http.get(
-          Uri.parse('http://localhost:8082/session-test'),
-          headers: {
-            'Authorization': testToken,
-          },
-        );
+      tearDown(() {
+        client.close();
+      });
 
-        expect(response.statusCode, equals(200));
-        final body = jsonDecode(response.body) as Map<String, dynamic>;
-        expect(body['isAuthenticated'], isTrue);
-        expect(body['userId'], equals('test-user-123'));
-      },
-    );
+      test(
+        'then request should succeed and token should be unwrapped',
+        () async {
+          final result = await client.echoRequest.echoAuthenticationKey();
+          expect(result, equals(_testToken));
+        },
+      );
+    });
 
-    test(
-      'when accessing web route with Bearer-wrapped token in Authorization header '
-      'then session should be authenticated',
-      () async {
-        final response = await http.get(
-          Uri.parse('http://localhost:8082/session-test'),
-          headers: {
-            'Authorization': 'Bearer $testToken',
-          },
-        );
+    group('when accessing web route with unwrapped token', () {
+      test(
+        'then session should be authenticated',
+        () async {
+          final response = await http.get(
+            Uri.parse(_webServerUrl),
+            headers: {
+              'Authorization': _testToken,
+            },
+          );
 
-        expect(response.statusCode, equals(200));
-        final body = jsonDecode(response.body) as Map<String, dynamic>;
-        expect(body['isAuthenticated'], isTrue);
-        expect(body['userId'], equals('test-user-123'));
-      },
-    );
+          expect(response.statusCode, equals(200));
+          final body = jsonDecode(response.body) as Map<String, dynamic>;
+          expect(body['isAuthenticated'], isTrue);
+          expect(body['userId'], equals(_testUserId));
+        },
+      );
+    });
+
+    group('when accessing web route with Bearer-wrapped token', () {
+      test(
+        'then session should be authenticated',
+        () async {
+          final response = await http.get(
+            Uri.parse(_webServerUrl),
+            headers: {
+              'Authorization': 'Bearer $_testToken',
+            },
+          );
+
+          expect(response.statusCode, equals(200));
+          final body = jsonDecode(response.body) as Map<String, dynamic>;
+          expect(body['isAuthenticated'], isTrue);
+          expect(body['userId'], equals(_testUserId));
+        },
+      );
+    });
   });
 }
