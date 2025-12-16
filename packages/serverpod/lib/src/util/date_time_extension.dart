@@ -18,4 +18,11 @@ extension DateTimeExt on DateTime {
   /// Returns a copy of the timestamp with anything smaller than a day
   /// stripped.
   DateTime get asDay => DateTime.utc(year, month, day);
+
+  /// Truncates the timestamp to the given granularity.
+  DateTime truncateTo(Duration duration) {
+    final ms = millisecondsSinceEpoch;
+    final d = duration.inMilliseconds;
+    return DateTime.fromMillisecondsSinceEpoch(ms - (ms % d), isUtc: isUtc);
+  }
 }

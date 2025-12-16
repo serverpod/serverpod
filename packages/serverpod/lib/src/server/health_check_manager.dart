@@ -133,7 +133,7 @@ class HealthCheckManager {
 
     if (_shouldPerformDatabaseOperations) {
       try {
-        var result = await performHealthChecks(_pod);
+        var result = await performHealthChecks(_pod, granularity: interval);
         numHealthChecks = result.metrics.length;
 
         for (var metric in result.metrics) {
@@ -460,12 +460,7 @@ class HealthCheckManager {
   }
 
   Duration _timeUntilNextInterval() {
-    // Add a second to make sure we don't end up on the same minute.
-    var now = DateTime.now().toUtc().add(const Duration(seconds: 2));
-    var next = DateTime.utc(now.year, now.month, now.day, now.hour, now.minute)
-        .add(
-          interval,
-        );
-    return next.difference(now);
+    var now = DateTime.now().toUtc();
+    return now.truncateTo(interval).add(interval).difference(now);
   }
 }
