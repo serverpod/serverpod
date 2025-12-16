@@ -4,10 +4,10 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:uuid/uuid.dart';
 
 void main() async {
-  late Directory tempDir;
   var rootPath = path.join(Directory.current.path, '..', '..');
   var cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
 
@@ -32,16 +32,6 @@ void main() async {
     );
   });
 
-  setUp(() async {
-    tempDir = await Directory.systemTemp.createTemp();
-  });
-
-  tearDown(() async {
-    if (tempDir.existsSync()) {
-      tempDir.deleteSync(recursive: true);
-    }
-  });
-
   group(
     'Given a serverpod project with a root pubspec when create-migration is called from project root',
     () {
@@ -58,7 +48,7 @@ void main() async {
         createProcess = await Process.start(
           'serverpod',
           ['create', projectName, '-v', '--no-analytics'],
-          workingDirectory: tempDir.path,
+          workingDirectory: d.sandbox,
           environment: {
             'SERVERPOD_HOME': rootPath,
           },
@@ -75,7 +65,7 @@ void main() async {
 
         // Create a root pubspec.yaml with name: _ (simulating workspace)
         var rootPubspec = File(
-          path.join(tempDir.path, projectName, 'pubspec.yaml'),
+          path.join(d.sandbox, projectName, 'pubspec.yaml'),
         );
         rootPubspec.writeAsStringSync('''
 name: _
@@ -86,7 +76,7 @@ environment:
         migrationProcess = await Process.start(
           'serverpod',
           ['create-migration', '--no-analytics'],
-          workingDirectory: path.join(tempDir.path, projectName),
+          workingDirectory: path.join(d.sandbox, projectName),
           environment: {
             'SERVERPOD_HOME': rootPath,
           },
@@ -163,7 +153,7 @@ environment:
         createProcess = await Process.start(
           'serverpod',
           ['create', projectName, '-v', '--no-analytics'],
-          workingDirectory: tempDir.path,
+          workingDirectory: d.sandbox,
           environment: {
             'SERVERPOD_HOME': rootPath,
           },
@@ -181,7 +171,7 @@ environment:
         migrationProcess = await Process.start(
           'serverpod',
           ['create-migration', '--no-analytics'],
-          workingDirectory: path.join(tempDir.path, clientDir),
+          workingDirectory: path.join(d.sandbox, clientDir),
           environment: {
             'SERVERPOD_HOME': rootPath,
           },
@@ -251,7 +241,7 @@ environment:
         createProcess = await Process.start(
           'serverpod',
           ['create', projectName, '-v', '--no-analytics'],
-          workingDirectory: tempDir.path,
+          workingDirectory: d.sandbox,
           environment: {
             'SERVERPOD_HOME': rootPath,
           },
@@ -268,7 +258,7 @@ environment:
 
         // Create a root pubspec.yaml with name: _ (simulating workspace)
         var rootPubspec = File(
-          path.join(tempDir.path, projectName, 'pubspec.yaml'),
+          path.join(d.sandbox, projectName, 'pubspec.yaml'),
         );
         rootPubspec.writeAsStringSync('''
 name: _
@@ -279,7 +269,7 @@ environment:
         migrationProcess = await Process.start(
           'serverpod',
           ['create-repair-migration', '--no-analytics'],
-          workingDirectory: path.join(tempDir.path, projectName),
+          workingDirectory: path.join(d.sandbox, projectName),
           environment: {
             'SERVERPOD_HOME': rootPath,
           },
@@ -351,7 +341,7 @@ environment:
         createProcess = await Process.start(
           'serverpod',
           ['create', projectName, '-v', '--no-analytics'],
-          workingDirectory: tempDir.path,
+          workingDirectory: d.sandbox,
           environment: {
             'SERVERPOD_HOME': rootPath,
           },
@@ -369,7 +359,7 @@ environment:
         migrationProcess = await Process.start(
           'serverpod',
           ['create-repair-migration', '--no-analytics'],
-          workingDirectory: path.join(tempDir.path, clientDir),
+          workingDirectory: path.join(d.sandbox, clientDir),
           environment: {
             'SERVERPOD_HOME': rootPath,
           },
