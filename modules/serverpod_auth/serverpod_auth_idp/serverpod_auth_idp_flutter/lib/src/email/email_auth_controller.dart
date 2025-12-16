@@ -479,6 +479,14 @@ class EmailAuthController extends ChangeNotifier {
       _setState(EmailAuthState.error);
       debugPrint('[EmailAuthController] $_currentScreen -> $targetState: $e');
 
+      // If we have a network error, start a timer to enable the action button
+      // again after a short delay.
+      if (e is ServerpodClientException && e.statusCode == -1) {
+        Timer(const Duration(seconds: 1), () {
+          _setState(EmailAuthState.idle);
+        });
+      }
+
       final userFriendlyError = convertToUserFacingException(e);
       if (userFriendlyError != null) {
         onError?.call(userFriendlyError);
