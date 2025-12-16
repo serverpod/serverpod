@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 
@@ -197,9 +199,24 @@ Future<bool> performCreate(
           return false;
         }
 
+        final stdoutController = StreamController<List<int>>();
+        stdoutController.stream
+            .transform(utf8.decoder)
+            .transform(const LineSplitter())
+            .listen((data) => log.debug(data));
+        final toDebugLog = IOSink(stdoutController);
+        final stderrController = StreamController<List<int>>();
+        stderrController.stream
+            .transform(utf8.decoder)
+            .transform(const LineSplitter())
+            .listen((data) => log.error(data));
+        final toErrorLog = IOSink(stderrController);
+
         final exitCode = await ScriptExecutor.executeScript(
           script,
           serverpodDirs.serverDir,
+          stdout: toDebugLog,
+          stderr: toErrorLog,
         );
 
         return exitCode == 0;
