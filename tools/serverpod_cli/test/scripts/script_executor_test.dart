@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/scripts/script.dart';
 import 'package:serverpod_cli/src/scripts/script_executor.dart';
 import 'package:test/test.dart';
