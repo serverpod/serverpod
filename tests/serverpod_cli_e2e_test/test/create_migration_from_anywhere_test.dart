@@ -8,46 +8,31 @@ import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:uuid/uuid.dart';
 
 void main() async {
-  var rootPath = path.join(Directory.current.path, '..', '..');
-  var cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
+  final rootPath = path.join(Directory.current.path, '..', '..');
+  final cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
+  final cliBinPath = path.join(cliPath, 'bin', 'serverpod_cli.dart');
 
   setUpAll(() async {
     await Process.run(
       'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
-    // Run command and activate again to force cache pub dependencies.
-    await Process.run(
-      'serverpod',
-      ['version'],
-      workingDirectory: cliPath,
-    );
-
-    await Process.run(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
+      ['pub', 'get'],
       workingDirectory: cliPath,
     );
   });
 
   group(
-    'Given a serverpod project with a root pubspec when create-migration is called from project root',
+    'Given a serverpod project with a root pubspec',
     () {
-      var projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-
+      late String projectName;
       late Process createProcess;
-      late Process migrationProcess;
-      late int exitCode;
-      late List<String> stdout;
-      late List<String> stderr;
 
       setUp(() async {
+        projectName =
+            'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+
         createProcess = await Process.start(
-          'serverpod',
-          ['create', projectName, '-v', '--no-analytics'],
+          'dart',
+          ['run', cliBinPath, 'create', projectName, '-v', '--no-analytics'],
           workingDirectory: d.sandbox,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -57,51 +42,20 @@ void main() async {
         createProcess.stdout.transform(const Utf8Decoder()).listen(print);
         createProcess.stderr.transform(const Utf8Decoder()).listen(print);
 
-        var createProjectExitCode = await createProcess.exitCode;
+        final createProjectExitCode = await createProcess.exitCode;
         assert(
           createProjectExitCode == 0,
           'Failed to create the serverpod project.',
         );
 
         // Create a root pubspec.yaml with name: _ (simulating workspace)
-        var rootPubspec = File(
-          path.join(d.sandbox, projectName, 'pubspec.yaml'),
-        );
-        rootPubspec.writeAsStringSync('''
+        await d.dir(projectName, [
+          d.file('pubspec.yaml', '''
 name: _
 environment:
   sdk: ^3.0.0
-''');
-
-        migrationProcess = await Process.start(
-          'serverpod',
-          ['create-migration', '--no-analytics'],
-          workingDirectory: path.join(d.sandbox, projectName),
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
-        );
-
-        stdout = <String>[];
-        stderr = <String>[];
-
-        migrationProcess.stdout
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stdout.add(line);
-              print('stdout: $line');
-            });
-
-        migrationProcess.stderr
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stderr.add(line);
-              print('stderr: $line');
-            });
-
-        exitCode = await migrationProcess.exitCode;
+'''),
+        ]).create();
       });
 
       tearDown(() async {
@@ -109,212 +63,55 @@ environment:
       });
 
       test(
-        'then create-migration should succeed when run from project root.',
+        'when create-migration is called from project root then it should succeed.',
         () async {
-          var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
+          final result = await _runServerpodCommand(
+            cliBinPath,
+            ['create-migration', '--no-analytics'],
+            workingDirectory: path.join(d.sandbox, projectName),
+            environment: {'SERVERPOD_HOME': rootPath},
+          );
 
           expect(
-            allOutput.contains('not a server package (_)'),
+            result.allOutput.contains('not a server package (_)'),
             isFalse,
             reason: 'Should not error about root pubspec name',
           );
 
           expect(
-            exitCode,
+            result.exitCode,
             equals(0),
             reason: 'create-migration should succeed with exit code 0',
           );
 
           expect(
-            allOutput.contains('no changes detected') ||
-                allOutput.contains('migration created'),
+            result.allOutput.contains('no changes detected') ||
+                result.allOutput.contains('migration created'),
             isTrue,
             reason: 'Should indicate no changes or migration created',
           );
         },
       );
-    },
-  );
-
-  group(
-    'Given a serverpod project when create-migration is called from client directory',
-    () {
-      var projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      var clientDir = path.join(projectName, '${projectName}_client');
-
-      late Process createProcess;
-      late Process migrationProcess;
-      late int exitCode;
-      late List<String> stdout;
-      late List<String> stderr;
-
-      setUp(() async {
-        createProcess = await Process.start(
-          'serverpod',
-          ['create', projectName, '-v', '--no-analytics'],
-          workingDirectory: d.sandbox,
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
-        );
-
-        createProcess.stdout.transform(const Utf8Decoder()).listen(print);
-        createProcess.stderr.transform(const Utf8Decoder()).listen(print);
-
-        var createProjectExitCode = await createProcess.exitCode;
-        assert(
-          createProjectExitCode == 0,
-          'Failed to create the serverpod project.',
-        );
-
-        migrationProcess = await Process.start(
-          'serverpod',
-          ['create-migration', '--no-analytics'],
-          workingDirectory: path.join(d.sandbox, clientDir),
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
-        );
-
-        stdout = <String>[];
-        stderr = <String>[];
-
-        migrationProcess.stdout
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stdout.add(line);
-              print('stdout: $line');
-            });
-
-        migrationProcess.stderr
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stderr.add(line);
-              print('stderr: $line');
-            });
-
-        exitCode = await migrationProcess.exitCode;
-      });
-
-      tearDown(() async {
-        createProcess.kill();
-      });
 
       test(
-        'then create-migration should succeed when run from client directory.',
+        'when create-repair-migration is called from project root then it should not fail due to root pubspec.',
         () async {
-          var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
-
-          expect(
-            exitCode,
-            equals(0),
-            reason: 'create-migration should succeed with exit code 0',
+          final result = await _runServerpodCommand(
+            cliBinPath,
+            ['create-repair-migration', '--no-analytics'],
+            workingDirectory: path.join(d.sandbox, projectName),
+            environment: {'SERVERPOD_HOME': rootPath},
           );
 
           expect(
-            allOutput.contains('no changes detected') ||
-                allOutput.contains('migration created'),
-            isTrue,
-            reason: 'Should indicate no changes or migration created',
-          );
-        },
-      );
-    },
-  );
-
-  group(
-    'Given a serverpod project with a root pubspec when create-repair-migration is called from project root',
-    () {
-      var projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-
-      late Process createProcess;
-      late Process migrationProcess;
-      late int exitCode;
-      late List<String> stdout;
-      late List<String> stderr;
-
-      setUp(() async {
-        createProcess = await Process.start(
-          'serverpod',
-          ['create', projectName, '-v', '--no-analytics'],
-          workingDirectory: d.sandbox,
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
-        );
-
-        createProcess.stdout.transform(const Utf8Decoder()).listen(print);
-        createProcess.stderr.transform(const Utf8Decoder()).listen(print);
-
-        var createProjectExitCode = await createProcess.exitCode;
-        assert(
-          createProjectExitCode == 0,
-          'Failed to create the serverpod project.',
-        );
-
-        // Create a root pubspec.yaml with name: _ (simulating workspace)
-        var rootPubspec = File(
-          path.join(d.sandbox, projectName, 'pubspec.yaml'),
-        );
-        rootPubspec.writeAsStringSync('''
-name: _
-environment:
-  sdk: ^3.0.0
-''');
-
-        migrationProcess = await Process.start(
-          'serverpod',
-          ['create-repair-migration', '--no-analytics'],
-          workingDirectory: path.join(d.sandbox, projectName),
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
-        );
-
-        stdout = <String>[];
-        stderr = <String>[];
-
-        migrationProcess.stdout
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stdout.add(line);
-              print('stdout: $line');
-            });
-
-        migrationProcess.stderr
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stderr.add(line);
-              print('stderr: $line');
-            });
-
-        exitCode = await migrationProcess.exitCode;
-      });
-
-      tearDown(() async {
-        createProcess.kill();
-      });
-
-      test(
-        'then create-repair-migration should fail gracefully when run from project root.',
-        () async {
-          var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
-
-          expect(
-            allOutput.contains('not a server package (_)'),
+            result.allOutput.contains('not a server package (_)'),
             isFalse,
             reason: 'Should not error about root pubspec name',
           );
 
-          if (exitCode != 0) {
+          if (result.exitCode != 0) {
             expect(
-              allOutput.contains('not a server package'),
+              result.allOutput.contains('not a server package'),
               isFalse,
               reason: 'Should not fail due to server package detection',
             );
@@ -325,22 +122,20 @@ environment:
   );
 
   group(
-    'Given a serverpod project when create-repair-migration is called from client directory',
+    'Given a serverpod project without a root pubspec',
     () {
-      var projectName =
-          'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-      var clientDir = path.join(projectName, '${projectName}_client');
-
+      late String projectName;
+      late String clientDir;
       late Process createProcess;
-      late Process migrationProcess;
-      late int exitCode;
-      late List<String> stdout;
-      late List<String> stderr;
 
       setUp(() async {
+        projectName =
+            'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
+        clientDir = path.join(projectName, '${projectName}_client');
+
         createProcess = await Process.start(
-          'serverpod',
-          ['create', projectName, '-v', '--no-analytics'],
+          'dart',
+          ['run', cliBinPath, 'create', projectName, '-v', '--no-analytics'],
           workingDirectory: d.sandbox,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -350,41 +145,11 @@ environment:
         createProcess.stdout.transform(const Utf8Decoder()).listen(print);
         createProcess.stderr.transform(const Utf8Decoder()).listen(print);
 
-        var createProjectExitCode = await createProcess.exitCode;
+        final createProjectExitCode = await createProcess.exitCode;
         assert(
           createProjectExitCode == 0,
           'Failed to create the serverpod project.',
         );
-
-        migrationProcess = await Process.start(
-          'serverpod',
-          ['create-repair-migration', '--no-analytics'],
-          workingDirectory: path.join(d.sandbox, clientDir),
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
-        );
-
-        stdout = <String>[];
-        stderr = <String>[];
-
-        migrationProcess.stdout
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stdout.add(line);
-              print('stdout: $line');
-            });
-
-        migrationProcess.stderr
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stderr.add(line);
-              print('stderr: $line');
-            });
-
-        exitCode = await migrationProcess.exitCode;
       });
 
       tearDown(() async {
@@ -392,19 +157,49 @@ environment:
       });
 
       test(
-        'then create-repair-migration should fail gracefully when run from client directory.',
+        'when create-migration is called from client directory then it should succeed.',
         () async {
-          var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
+          final result = await _runServerpodCommand(
+            cliBinPath,
+            ['create-migration', '--no-analytics'],
+            workingDirectory: path.join(d.sandbox, clientDir),
+            environment: {'SERVERPOD_HOME': rootPath},
+          );
 
           expect(
-            allOutput.contains('not a server package'),
+            result.exitCode,
+            equals(0),
+            reason: 'create-migration should succeed with exit code 0',
+          );
+
+          expect(
+            result.allOutput.contains('no changes detected') ||
+                result.allOutput.contains('migration created'),
+            isTrue,
+            reason: 'Should indicate no changes or migration created',
+          );
+        },
+      );
+
+      test(
+        'when create-repair-migration is called from client directory then it should not fail due to package detection.',
+        () async {
+          final result = await _runServerpodCommand(
+            cliBinPath,
+            ['create-repair-migration', '--no-analytics'],
+            workingDirectory: path.join(d.sandbox, clientDir),
+            environment: {'SERVERPOD_HOME': rootPath},
+          );
+
+          expect(
+            result.allOutput.contains('not a server package'),
             isFalse,
             reason: 'Should not error about client package name',
           );
 
-          if (exitCode != 0) {
+          if (result.exitCode != 0) {
             expect(
-              allOutput.contains('not a server package'),
+              result.allOutput.contains('not a server package'),
               isFalse,
               reason: 'Should not fail due to server package detection',
             );
@@ -412,5 +207,61 @@ environment:
         },
       );
     },
+  );
+}
+
+class _ProcessResult {
+  final int exitCode;
+  final List<String> stdout;
+  final List<String> stderr;
+
+  _ProcessResult({
+    required this.exitCode,
+    required this.stdout,
+    required this.stderr,
+  });
+
+  String get allOutput => [...stdout, ...stderr].join('\n').toLowerCase();
+}
+
+// TODO: Remove once https://github.com/serverpod/serverpod/issues/4459 is implemented.
+Future<_ProcessResult> _runServerpodCommand(
+  String cliBinPath,
+  List<String> args, {
+  required String workingDirectory,
+  required Map<String, String> environment,
+}) async {
+  final process = await Process.start(
+    'dart',
+    ['run', cliBinPath, ...args],
+    workingDirectory: workingDirectory,
+    environment: environment,
+  );
+
+  final stdout = <String>[];
+  final stderr = <String>[];
+
+  process.stdout
+      .transform(const Utf8Decoder())
+      .transform(const LineSplitter())
+      .listen((line) {
+        stdout.add(line);
+        print('stdout: $line');
+      });
+
+  process.stderr
+      .transform(const Utf8Decoder())
+      .transform(const LineSplitter())
+      .listen((line) {
+        stderr.add(line);
+        print('stderr: $line');
+      });
+
+  final exitCode = await process.exitCode;
+
+  return _ProcessResult(
+    exitCode: exitCode,
+    stdout: stdout,
+    stderr: stderr,
   );
 }
