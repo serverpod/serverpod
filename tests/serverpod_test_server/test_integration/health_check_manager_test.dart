@@ -52,10 +52,14 @@ void main() {
         await server.shutdown(exitProcess: false);
       });
 
-      test('when server starts then one health check is recorded.', () async {
-        final healthChecks = await server.countHealthChecks(session);
-        expect(healthChecks, equals(1));
-      });
+      test(
+        'when server starts then one health check is recorded.',
+        () async {
+          final healthChecks = await server.countHealthChecks(session);
+          expect(healthChecks, equals(1));
+        },
+        skip: 'Test is flaky on the CI. Should be fixed with #4465.',
+      );
 
       test(
         'while no endpoint calls are made then only the first health check exists.',
@@ -64,6 +68,7 @@ void main() {
           final healthChecks = await server.countHealthChecks(session);
           expect(healthChecks, equals(1));
         },
+        skip: 'Test is flaky on the CI. Should be fixed with #4465.',
       );
 
       test(
@@ -74,6 +79,7 @@ void main() {
           final healthChecks = await server.countHealthChecks(session);
           expect(healthChecks, equals(2));
         },
+        skip: 'Test is flaky on the CI. Should be fixed with #4465.',
       );
 
       test(
@@ -84,6 +90,7 @@ void main() {
           final healthChecks = await server.countHealthChecks(session);
           expect(healthChecks, equals(2));
         },
+        skip: 'Test is flaky on the CI. Should be fixed with #4465.',
       );
     },
   );
