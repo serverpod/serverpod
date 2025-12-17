@@ -2,15 +2,14 @@ import 'dart:io';
 
 import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
+import 'package:cli_tools/execute.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
-import 'package:serverpod_cli/src/scripts/script_executor.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/scripts/scripts.dart';
 import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
-
-import '../runner/serverpod_command_runner.dart';
 
 /// Options for the `run` command.
 enum RunOption<V> implements OptionDefinition<V> {
@@ -111,10 +110,9 @@ class RunCommand extends ServerpodCommand<RunOption> {
 
     log.info('Running "${script.name}": ${script.command}');
 
-    final workingDirectory = pubspecFile.parent;
-    final exitCode = await ScriptExecutor.executeScript(
-      script,
-      workingDirectory,
+    final exitCode = await execute(
+      script.command,
+      workingDirectory: pubspecFile.parent,
       stdout: stdout,
       stderr: stderr,
       stdin: stdin,
