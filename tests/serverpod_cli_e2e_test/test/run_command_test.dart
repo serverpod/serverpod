@@ -1,3 +1,6 @@
+@Timeout(const Duration(minutes: 5)) // allow time to compile serverpod
+library;
+
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -147,7 +150,6 @@ serverpod:
       expect(stdout, contains('SIGINT'));
       expect(exitCode, 0);
     },
-    timeout: Timeout(const Duration(minutes: 3)), // allow time to compile
     skip: Platform.isWindows
         ? 'trap is a bash builtin, not available on Windows'
         : null,
