@@ -1,3 +1,8 @@
+## 3.1.1
+
+- fix: Fixes unkonwn encodings crashing the CLI when creating a new project.
+- fix: Fixes template web server serving the Flutter app config on the wrong path.
+
 ## 3.1.0
 
 Serverpod 3.1 focuses on improving the developer experience with new tooling, enhanced Flutter web support, and important bug fixes.
