@@ -76,7 +76,7 @@ class RunCommand extends ServerpodCommand<RunOption> {
     final Scripts scripts;
     try {
       scripts = Scripts.fromPubspecFile(pubspecFile);
-    } on ScriptsParseException catch (e) {
+    } on ScriptParseException catch (e) {
       log.error('Error parsing "serverpod/scripts":\n$e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }

@@ -114,7 +114,7 @@ build: dart compile exe bin/main.dart
   test(
     'Given yaml with a non-string command value, '
     'when parsing, '
-    'then ScriptsParseException is thrown with correct message and span',
+    'then ScriptParseException is thrown with correct message and span',
     () {
       var pubspec = _buildPubspec('''
 start:
@@ -125,17 +125,18 @@ start:
       expect(
         () => Scripts.fromPubspec(pubspec),
         throwsA(
-          isA<ScriptsParseException>()
+          isA<ScriptParseException>()
               .having(
                 (e) => e.message,
                 'message',
-                'Script "start" must have a string command, got YamlList',
+                'Script "start" must be a string command or a map with '
+                    '"windows" and/or "posix" keys, got YamlList',
               )
               .having((e) => e.span, 'span', isNotNull)
               .having(
                 (e) => e.toString(),
                 'toString()',
-                'Error on line 5, column 7: Script "start" must have a string command, got YamlList\n'
+                'Error on line 5, column 7: Script "start" must be a string command or a map with "windows" and/or "posix" keys, got YamlList\n'
                     '  ╷\n'
                     '5 │ ┌       - dart\n'
                     '6 │ └       - run\n'
@@ -147,11 +148,11 @@ start:
   );
 
   test(
-    'Given an ScriptsParseException without a span, '
+    'Given an ScriptParseException without a span, '
     'when calling toString, '
     'then only the message is returned',
     () {
-      var exception = ScriptsParseException('Test error message');
+      var exception = ScriptParseException('Test error message');
 
       expect(exception.toString(), equals('Test error message'));
       expect(exception.span, isNull);
@@ -159,7 +160,7 @@ start:
   );
 
   test(
-    'Given an ScriptsParseException with a span, '
+    'Given an ScriptParseException with a span, '
     'when calling toString, '
     'then the output includes source context',
     () {
@@ -170,7 +171,7 @@ invalid_value: 123
               as YamlMap;
       var span = yaml.nodes['invalid_value']!.span;
 
-      var exception = ScriptsParseException('Value must be a string', span);
+      var exception = ScriptParseException('Value must be a string', span);
 
       var output = exception.toString();
       expect(output, contains('Value must be a string'));
@@ -224,7 +225,7 @@ serverpod:
   test(
     'Given a pubspec.yaml file with "serverpod/scripts" as a non-map value, '
     'when loading scripts, '
-    'then ScriptsParseException is thrown with correct message and span',
+    'then ScriptParseException is thrown with correct message and span',
     () async {
       await d.file('pubspec.yaml', '''
 name: test_project
@@ -237,7 +238,7 @@ serverpod:
       expect(
         () => Scripts.fromPubspecFile(File(p.join(d.sandbox, 'pubspec.yaml'))),
         throwsA(
-          isA<ScriptsParseException>()
+          isA<ScriptParseException>()
               .having(
                 (e) => e.message,
                 'message',
@@ -267,7 +268,7 @@ serverpod:
   test(
     'Given a pubspec.yaml file with an invalid script command, '
     'when loading scripts, '
-    'then ScriptsParseException is thrown with correct message and span',
+    'then ScriptParseException is thrown with correct message and span',
     () async {
       await d.file('pubspec.yaml', '''
 name: test_project
@@ -284,11 +285,12 @@ serverpod:
       expect(
         () => Scripts.fromPubspecFile(File(p.join(d.sandbox, 'pubspec.yaml'))),
         throwsA(
-          isA<ScriptsParseException>()
+          isA<ScriptParseException>()
               .having(
                 (e) => e.message,
                 'message',
-                'Script "start" must have a string command, got YamlList',
+                'Script "start" must be a string command or a map with '
+                    '"windows" and/or "posix" keys, got YamlList',
               )
               .having((e) => e.span, 'span', isNotNull)
               .having(
@@ -298,7 +300,7 @@ serverpod:
                   startsWith('Error on line 7, column 5 of '),
                   // path is dynamic
                   endsWith(
-                    'pubspec.yaml: Script "start" must have a string command, got YamlList\n'
+                    'pubspec.yaml: Script "start" must be a string command or a map with "windows" and/or "posix" keys, got YamlList\n'
                     '  ╷\n'
                     '7 │ ┌     - not\n'
                     '8 │ │     - a\n'
@@ -311,4 +313,190 @@ serverpod:
       );
     },
   );
+
+  group('Platform-specific scripts', () {
+    test(
+      'Given yaml with platform-specific script with both platforms, '
+      'when parsing, '
+      'then Script has both commands',
+      () {
+        var scripts = _buildScripts('''
+start:
+  windows: start.bat
+  posix: ./start.sh
+''');
+
+        expect(scripts.length, 1);
+        expect(scripts['start']?.name, 'start');
+        expect(scripts['start']?.windowsCommand, 'start.bat');
+        expect(scripts['start']?.posixCommand, './start.sh');
+      },
+    );
+
+    test(
+      'Given yaml with platform-specific script with only windows, '
+      'when parsing, '
+      'then Script has only windows command',
+      () {
+        var scripts = _buildScripts('''
+start:
+  windows: start.bat
+''');
+
+        expect(scripts.length, 1);
+        expect(scripts['start']?.windowsCommand, 'start.bat');
+        expect(scripts['start']?.posixCommand, isNull);
+      },
+    );
+
+    test(
+      'Given yaml with platform-specific script with only posix, '
+      'when parsing, '
+      'then Script has only posix command',
+      () {
+        var scripts = _buildScripts('''
+start:
+  posix: ./start.sh
+''');
+
+        expect(scripts.length, 1);
+        expect(scripts['start']?.windowsCommand, isNull);
+        expect(scripts['start']?.posixCommand, './start.sh');
+      },
+    );
+
+    test(
+      'Given yaml with mixed simple and platform-specific scripts, '
+      'when parsing, '
+      'then all scripts are parsed correctly',
+      () {
+        var scripts = _buildScripts('''
+simple: dart run
+platform:
+  windows: cmd /c start
+  posix: ./run.sh
+''');
+
+        expect(scripts.length, 2);
+        expect(scripts['simple']?.windowsCommand, 'dart run');
+        expect(scripts['simple']?.posixCommand, 'dart run');
+        expect(scripts['platform']?.windowsCommand, 'cmd /c start');
+        expect(scripts['platform']?.posixCommand, './run.sh');
+      },
+    );
+
+    test(
+      'Given yaml with empty platform map, '
+      'when parsing, '
+      'then ScriptParseException is thrown',
+      () {
+        var pubspec = _buildPubspec('''
+start: {}
+''');
+
+        expect(
+          () => Scripts.fromPubspec(pubspec),
+          throwsA(
+            isA<ScriptParseException>().having(
+              (e) => e.message,
+              'message',
+              'Script "start" must specify at least one platform command '
+                  '(windows or posix)',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'Given yaml with unknown platform key, '
+      'when parsing, '
+      'then ScriptParseException is thrown',
+      () {
+        var pubspec = _buildPubspec('''
+start:
+  linux: ./start.sh
+''');
+
+        expect(
+          () => Scripts.fromPubspec(pubspec),
+          throwsA(
+            isA<ScriptParseException>().having(
+              (e) => e.message,
+              'message',
+              'Unknown platform "linux". Valid platforms are: windows, posix',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'Given yaml with non-string platform command, '
+      'when parsing, '
+      'then ScriptParseException is thrown',
+      () {
+        var pubspec = _buildPubspec('''
+start:
+  windows: 123
+''');
+
+        expect(
+          () => Scripts.fromPubspec(pubspec),
+          throwsA(
+            isA<ScriptParseException>().having(
+              (e) => e.message,
+              'message',
+              'Command for platform "windows" must be a string, got int',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'Given a Script created with simple command, '
+      'when checking equality with platformSpecific, '
+      'then they are equal if commands match',
+      () {
+        var simple = const Script(name: 'test', command: 'dart run');
+        var specific = const Script.platformSpecific(
+          name: 'test',
+          windowsCommand: 'dart run',
+          posixCommand: 'dart run',
+        );
+
+        expect(simple, equals(specific));
+      },
+    );
+
+    test(
+      'Given a Script with different platform commands, '
+      'when calling toString, '
+      'then it shows both platforms',
+      () {
+        var script = const Script.platformSpecific(
+          name: 'start',
+          windowsCommand: 'start.bat',
+          posixCommand: './start.sh',
+        );
+
+        expect(
+          script.toString(),
+          'Script(name: start, windows: start.bat, posix: ./start.sh)',
+        );
+      },
+    );
+
+    test(
+      'Given a Script with same command for both platforms, '
+      'when calling toString, '
+      'then it shows single command',
+      () {
+        var script = const Script(name: 'start', command: 'dart run');
+
+        expect(script.toString(), 'Script(name: start, command: dart run)');
+      },
+    );
+  });
 }

@@ -6,6 +6,8 @@ import 'package:yaml/yaml.dart';
 import '../util/pubspec_plus.dart';
 import 'script.dart';
 
+export 'script.dart' show ScriptParseException;
+
 /// The key used in pubspec.yaml to define scripts.
 const _scriptsPath = ['serverpod', 'scripts'];
 
@@ -21,16 +23,11 @@ extension on YamlMap {
       } else if (node == null) {
         return null; // not found
       } else {
-        throw ScriptsParseException('Invalid node', node.span);
+        throw ScriptParseException('Invalid node', node.span);
       }
     }
     return node;
   }
-}
-
-/// Exception thrown when there's an error parsing scripts from pubspec.yaml.
-class ScriptsParseException extends YamlException {
-  ScriptsParseException(super.message, [super.span]);
 }
 
 /// A collection of scripts parsed from the `serverpod/scripts` section
@@ -42,10 +39,10 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
 
   /// Creates a [Scripts] instance from a YAML map.
   ///
-  /// The [yaml] parameter should be the value of the `serverpod/scripts` node
-  /// from pubspec.yaml.
+  /// The [scriptsNode] parameter should be the value of the `serverpod/scripts`
+  /// node from pubspec.yaml.
   ///
-  /// Throws [ScriptsParseException] if the YAML structure is invalid.
+  /// Throws [ScriptParseException] if the YAML structure is invalid.
   factory Scripts._fromYaml(YamlMap scriptsNode) {
     final scripts = <String, Script>{};
 
@@ -53,23 +50,15 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
       final keyNode = entry.key as YamlNode;
       final valueNode = entry.value;
       final name = keyNode.value;
-      final value = valueNode.value;
 
       if (name is! String) {
-        throw ScriptsParseException(
+        throw ScriptParseException(
           'Script name must be a string, got ${name.runtimeType}',
           keyNode.span,
         );
       }
 
-      if (value is! String) {
-        throw ScriptsParseException(
-          'Script "$name" must have a string command, got ${value.runtimeType}',
-          valueNode.span,
-        );
-      }
-
-      scripts[name] = Script(name: name, command: value);
+      scripts[name] = Script.fromYaml(name: name, valueNode: valueNode);
     }
 
     return Scripts._(scripts);
@@ -81,7 +70,7 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
   /// Returns an empty [Scripts] if the file doesn't exist or doesn't contain
   /// a `serverpod/scripts` section.
   ///
-  /// Throws [ScriptsParseException] if the scripts section is malformed.
+  /// Throws [ScriptParseException] if the scripts section is malformed.
   factory Scripts.fromPubspecFile(File pubspecFile) =>
       Scripts.fromPubspec(PubspecPlus.fromFile(pubspecFile));
 
@@ -90,7 +79,7 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
   /// Returns an empty [Scripts] if the file doesn't exist or doesn't contain
   /// a `serverpod/scripts` section.
   ///
-  /// Throws [ScriptsParseException] if the scripts section is malformed.
+  /// Throws [ScriptParseException] if the scripts section is malformed.
   factory Scripts.fromPubspec(PubspecPlus pubspecPlus) {
     final scriptsNode = pubspecPlus.yaml.findNode(_scriptsPath);
 
@@ -99,7 +88,7 @@ class Scripts extends UnmodifiableMapBase<String, Script> {
     }
 
     if (scriptsNode is! YamlMap) {
-      throw ScriptsParseException(
+      throw ScriptParseException(
         '$_scriptsPath must be a map of script names to commands',
         scriptsNode.span,
       );
