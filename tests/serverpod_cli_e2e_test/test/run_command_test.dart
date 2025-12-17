@@ -1,6 +1,3 @@
-@TestOn('!windows')
-library;
-
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -24,11 +21,14 @@ dependencies:
 
 serverpod:
   scripts:
-    hello: echo "Hello from script"
+    hello:
+      windows: echo Hello from script
+      posix: echo "Hello from script"
     fail: exit 42
     start: dart bin/main.dart
     test: dart test
-    trap: trap "echo SIGINT; exit 0" INT; echo "Trap Running"; while :; do sleep 0.1; done
+    trap:
+      posix: trap "echo SIGINT; exit 0" INT; echo "Trap Running"; while :; do sleep 0.1; done
 '''),
     ]).create();
     serverDir = p.join(d.sandbox, 'test_server');
@@ -148,6 +148,9 @@ serverpod:
       expect(exitCode, 0);
     },
     timeout: Timeout(const Duration(minutes: 3)), // allow time to compile
+    skip: Platform.isWindows
+        ? 'trap is a bash builtin, not available on Windows'
+        : null,
   );
 
   group('given pubspec without serverpod namespace', () {
