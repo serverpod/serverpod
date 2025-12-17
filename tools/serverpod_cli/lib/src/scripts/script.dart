@@ -7,6 +7,17 @@ class ScriptParseException extends YamlException {
   ScriptParseException(super.message, [super.span]);
 }
 
+/// Exception thrown when a script does not support the current platform.
+class UnsupportedPlatformException implements Exception {
+  final String scriptName;
+  final String platform;
+
+  UnsupportedPlatformException(this.scriptName, this.platform);
+
+  @override
+  String toString() => 'Script "$scriptName" is not available on $platform';
+}
+
 /// Represents a script defined in the `serverpod/scripts` section of
 /// pubspec.yaml.
 ///
@@ -131,13 +142,20 @@ class Script {
 
   /// Returns the command for the current platform.
   ///
-  /// Returns null if no command is defined for the current platform.
-  String? get command {
-    if (Platform.isWindows) {
-      return windowsCommand;
+  /// Throws [UnsupportedPlatformException] if no command is defined for the
+  /// current platform.
+  String get command {
+    final cmd = Platform.isWindows ? windowsCommand : posixCommand;
+    if (cmd == null) {
+      final platform = Platform.isWindows ? 'Windows' : 'POSIX';
+      throw UnsupportedPlatformException(name, platform);
     }
-    return posixCommand;
+    return cmd;
   }
+
+  /// Returns true if this script has a command for the current platform.
+  bool get supportsCurrentPlatform =>
+      Platform.isWindows ? windowsCommand != null : posixCommand != null;
 
   @override
   String toString() {

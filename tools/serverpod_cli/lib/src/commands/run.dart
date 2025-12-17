@@ -103,6 +103,12 @@ class RunCommand extends ServerpodCommand<RunOption> {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
+    if (!script.supportsCurrentPlatform) {
+      final platform = Platform.isWindows ? 'Windows' : 'POSIX';
+      log.error('Script "$scriptName" is not available on $platform.');
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+    }
+
     log.info('Running "${script.name}": ${script.command}');
 
     final workingDirectory = pubspecFile.parent;
@@ -122,7 +128,12 @@ class RunCommand extends ServerpodCommand<RunOption> {
   void _listScripts(Scripts scripts) {
     log.info('Available scripts:');
     for (final script in scripts.values) {
-      log.info('  ${script.name}: ${script.command}');
+      if (script.supportsCurrentPlatform) {
+        log.info('  ${script.name}: ${script.command}');
+      } else {
+        final platform = Platform.isWindows ? 'Windows' : 'POSIX';
+        log.info('  ${script.name}: (not available on $platform)');
+      }
     }
   }
 }

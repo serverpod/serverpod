@@ -6,7 +6,7 @@ import 'package:yaml/yaml.dart';
 import '../util/pubspec_plus.dart';
 import 'script.dart';
 
-export 'script.dart' show ScriptParseException;
+export 'script.dart' show ScriptParseException, UnsupportedPlatformException;
 
 /// The key used in pubspec.yaml to define scripts.
 const _scriptsPath = ['serverpod', 'scripts'];

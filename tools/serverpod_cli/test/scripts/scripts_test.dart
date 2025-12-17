@@ -498,5 +498,74 @@ start:
         expect(script.toString(), 'Script(name: start, command: dart run)');
       },
     );
+
+    test(
+      'Given a Script with command for current platform, '
+      'when checking supportsCurrentPlatform, '
+      'then it returns true',
+      () {
+        var script = const Script(name: 'start', command: 'dart run');
+
+        expect(script.supportsCurrentPlatform, isTrue);
+      },
+    );
+
+    test(
+      'Given a Script without command for current platform, '
+      'when checking supportsCurrentPlatform, '
+      'then it returns false',
+      () {
+        // Create a script that only supports the other platform
+        var script = Platform.isWindows
+            ? const Script.platformSpecific(
+                name: 'start',
+                posixCommand: './start.sh',
+              )
+            : const Script.platformSpecific(
+                name: 'start',
+                windowsCommand: 'start.bat',
+              );
+
+        expect(script.supportsCurrentPlatform, isFalse);
+      },
+    );
+
+    test(
+      'Given a Script without command for current platform, '
+      'when accessing command, '
+      'then UnsupportedPlatformException is thrown',
+      () {
+        // Create a script that only supports the other platform
+        var script = Platform.isWindows
+            ? const Script.platformSpecific(
+                name: 'start',
+                posixCommand: './start.sh',
+              )
+            : const Script.platformSpecific(
+                name: 'start',
+                windowsCommand: 'start.bat',
+              );
+
+        expect(
+          () => script.command,
+          throwsA(
+            isA<UnsupportedPlatformException>()
+                .having((e) => e.scriptName, 'scriptName', 'start')
+                .having(
+                  (e) => e.platform,
+                  'platform',
+                  Platform.isWindows ? 'Windows' : 'POSIX',
+                )
+                .having(
+                  (e) => e.toString(),
+                  'toString()',
+                  Platform.isWindows
+                      ? 'Script "start" is not available on Windows'
+                      : 'Script "start" is not available on POSIX',
+                ),
+          ),
+        );
+      },
+    );
   });
 }
