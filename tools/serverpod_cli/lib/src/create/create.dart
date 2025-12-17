@@ -201,13 +201,13 @@ Future<bool> performCreate(
 
         final stdoutController = StreamController<List<int>>();
         stdoutController.stream
-            .transform(utf8.decoder)
+            .transform(const Utf8Decoder(allowMalformed: true))
             .transform(const LineSplitter())
             .listen((data) => log.debug(data));
         final toDebugLog = IOSink(stdoutController);
         final stderrController = StreamController<List<int>>();
         stderrController.stream
-            .transform(utf8.decoder)
+            .transform(const Utf8Decoder(allowMalformed: true))
             .transform(const LineSplitter())
             .listen((data) => log.error(data));
         final toErrorLog = IOSink(stderrController);
