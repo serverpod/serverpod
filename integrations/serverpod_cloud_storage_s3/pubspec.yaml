@@ -3,7 +3,7 @@
 
 name: serverpod_cloud_storage_s3
 description: Serverpod integration for S3 cloud storage
-version: 3.1.0
+version: 3.1.1
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -17,7 +17,7 @@ dependencies:
   built_value: ^8.4.4
   http: '>=1.1.0 <2.0.0'
   path: ^1.8.3
-  serverpod: 3.1.0
+  serverpod: 3.1.1
   xml2json: ^6.0.0
 
 dev_dependencies:
