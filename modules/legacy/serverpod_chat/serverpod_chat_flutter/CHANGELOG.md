@@ -1,6 +1,7 @@
 ## 3.1.1
-- fix: Fixes an issue where unknown encodings when creating a new project would crash the CLI.
-- fix: Fixes an issue where the template web server served the Flutter app config on the wrong path.
+
+- fix: Fixes unkonwn encodings crashing the CLI when creating a new project.
+- fix: Fixes template web server serving the Flutter app config on the wrong path.
 
 ## 3.1.0
 
