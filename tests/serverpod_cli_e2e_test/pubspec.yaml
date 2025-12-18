@@ -33,6 +33,3 @@ dependency_overrides:
     path: ../../packages/serverpod_service_client
   serverpod_shared:
     path: ../../packages/serverpod_shared
-dependencies:
-  path: any
-  test: any
