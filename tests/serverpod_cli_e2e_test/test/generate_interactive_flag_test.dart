@@ -6,21 +6,10 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:uuid/uuid.dart';
 
 void main() async {
-  late Directory tempDir;
-
-  setUp(() async {
-    tempDir = await Directory.systemTemp.createTemp();
-  });
-
-  tearDown(() async {
-    if (tempDir.existsSync()) {
-      tempDir.deleteSync(recursive: true);
-    }
-  });
-
   group(
     'Given a serverpod project when generate is called with --no-interactive flag',
     () {
@@ -31,7 +20,7 @@ void main() async {
       setUp(() async {
         var result = await runServerpod(
           ['create', projectName, '--mini', '-v', '--no-analytics'],
-          workingDirectory: tempDir.path,
+          workingDirectory: d.sandbox,
         );
         assert(
           result.exitCode == 0,
@@ -42,7 +31,7 @@ void main() async {
       test('then code generation succeeds from server directory', () async {
         var result = await runServerpod(
           ['--no-interactive', 'generate', '--no-analytics'],
-          workingDirectory: path.join(tempDir.path, serverDir),
+          workingDirectory: path.join(d.sandbox, serverDir),
         );
 
         expect(result.exitCode, equals(0), reason: 'Generate should succeed');
@@ -61,7 +50,7 @@ void main() async {
           // For this test we need to use startServerpod to set custom environment
           var process = await startServerpod(
             ['generate', '--no-analytics'],
-            workingDirectory: path.join(tempDir.path, serverDir),
+            workingDirectory: path.join(d.sandbox, serverDir),
           );
 
           var stdout = await process.stdout
@@ -93,7 +82,7 @@ void main() async {
       test('then --interactive flag overrides CI environment', () async {
         var result = await runServerpod(
           ['--interactive', 'generate', '--no-analytics'],
-          workingDirectory: path.join(tempDir.path, serverDir),
+          workingDirectory: path.join(d.sandbox, serverDir),
         );
 
         expect(
@@ -119,7 +108,7 @@ void main() async {
     late Directory server2;
 
     setUp(() async {
-      projectRoot = path.join(tempDir.path, 'multi_server_project');
+      projectRoot = path.join(d.sandbox, 'multi_server_project');
       await Directory(projectRoot).create(recursive: true);
 
       // Create first server directory

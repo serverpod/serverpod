@@ -4,21 +4,10 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:uuid/uuid.dart';
 
 void main() async {
-  late Directory tempDir;
-
-  setUp(() async {
-    tempDir = await Directory.systemTemp.createTemp();
-  });
-
-  tearDown(() async {
-    if (tempDir.existsSync()) {
-      tempDir.deleteSync(recursive: true);
-    }
-  });
-
   group(
     'Given a serverpod project when generate is called with -d option from a different directory',
     () {
@@ -30,7 +19,7 @@ void main() async {
       setUp(() async {
         var result = await runServerpod(
           ['create', projectName, '--mini', '-v', '--no-analytics'],
-          workingDirectory: tempDir.path,
+          workingDirectory: d.sandbox,
         );
         assert(
           result.exitCode == 0,
@@ -42,10 +31,10 @@ void main() async {
         'then code generation succeeds when using absolute path with -d option.',
         () async {
           // Run generate from temp directory (parent of project) using -d with absolute path
-          var absoluteServerPath = path.join(tempDir.path, serverDir);
+          var absoluteServerPath = path.join(d.sandbox, serverDir);
           var result = await runServerpod(
             ['generate', '-d', absoluteServerPath, '--no-analytics'],
-            workingDirectory: tempDir.path,
+            workingDirectory: d.sandbox,
           );
 
           expect(result.exitCode, equals(0), reason: 'Generate should succeed');
@@ -60,7 +49,7 @@ void main() async {
           // Verify that generated files exist
           var generatedEndpointsFile = File(
             path.join(
-              tempDir.path,
+              d.sandbox,
               serverDir,
               'lib',
               'src',
@@ -76,7 +65,7 @@ void main() async {
 
           var generatedProtocolFile = File(
             path.join(
-              tempDir.path,
+              d.sandbox,
               serverDir,
               'lib',
               'src',
@@ -93,7 +82,7 @@ void main() async {
           // Verify client files were generated
           var clientProtocolDir = Directory(
             path.join(
-              tempDir.path,
+              d.sandbox,
               clientDir,
               'lib',
               'src',
@@ -114,7 +103,7 @@ void main() async {
           // Run generate from temp directory using -d with relative path
           var result = await runServerpod(
             ['generate', '-d', serverDir, '--no-analytics'],
-            workingDirectory: tempDir.path,
+            workingDirectory: d.sandbox,
           );
 
           expect(result.exitCode, equals(0), reason: 'Generate should succeed');
@@ -129,7 +118,7 @@ void main() async {
           // Verify that generated files exist
           var generatedEndpointsFile = File(
             path.join(
-              tempDir.path,
+              d.sandbox,
               serverDir,
               'lib',
               'src',
@@ -148,10 +137,10 @@ void main() async {
       test(
         'then code generation fails with proper error when directory does not exist.',
         () async {
-          var nonExistentDir = path.join(tempDir.path, 'nonexistent_server');
+          var nonExistentDir = path.join(d.sandbox, 'nonexistent_server');
           var result = await runServerpod(
             ['generate', '-d', nonExistentDir, '--no-analytics'],
-            workingDirectory: tempDir.path,
+            workingDirectory: d.sandbox,
           );
 
           expect(

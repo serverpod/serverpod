@@ -8,6 +8,7 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli_e2e_test/src/keyword_search_in_stream.dart';
 import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:uuid/uuid.dart';
 
 const generateWatchCompletionKeywords = [
@@ -16,18 +17,8 @@ const generateWatchCompletionKeywords = [
 ];
 
 void main() async {
-  var tempPath = path.join(Directory.current.path, 'temp');
-
-  setUpAll(() async {
-    Directory(tempPath).createSync(recursive: true);
-  });
-
-  tearDownAll(() async {
-    Directory(tempPath).deleteSync(recursive: true);
-  });
-
   group('Given a model file that is changed when generate watch is active', () {
-    var (projectName, _) = createRandomProjectName(tempPath);
+    var projectName = createRandomProjectName();
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
     Process? generateWatch;
@@ -37,7 +28,7 @@ void main() async {
     setUp(() async {
       var result = await runServerpod(
         ['create', projectName, '-v', '--no-analytics'],
-        workingDirectory: tempPath,
+        workingDirectory: d.sandbox,
       );
       assert(
         result.exitCode == 0,
@@ -53,7 +44,7 @@ void main() async {
     test('then the entity files are generated and updated as expected.', () async {
       generateWatch = await startServerpod(
         ['generate', '--watch', '-v', '--no-analytics'],
-        workingDirectory: path.join(tempPath, serverDir),
+        workingDirectory: path.join(d.sandbox, serverDir),
       );
 
       generateStreamSearch = KeywordSearchInStream(
@@ -81,7 +72,7 @@ void main() async {
       var protocolFileName = 'test_entity';
       var protocolFile = File(
         createProtocolFileInModelDirectory(
-          tempPath,
+          d.sandbox,
           serverDir,
           protocolFileName,
         ),
@@ -103,7 +94,7 @@ fields:
       // Validate that entity file is generated
       var entityFileName = '$protocolFileName.dart';
       var entityDirectory = Directory(
-        createClientModelDirectoryPath(tempPath, clientDir),
+        createClientModelDirectoryPath(d.sandbox, clientDir),
       );
       var entityFiles = entityDirectory.listSync();
       expect(
@@ -177,7 +168,7 @@ fields:
   group(
     'Given a model file in the "lib/src/ directory that is changed when generate watch is active',
     () {
-      var (projectName, _) = createRandomProjectName(tempPath);
+      var projectName = createRandomProjectName();
       var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
       Process? generateWatch;
@@ -187,7 +178,7 @@ fields:
       setUp(() async {
         var result = await runServerpod(
           ['create', projectName, '-v', '--no-analytics'],
-          workingDirectory: tempPath,
+          workingDirectory: d.sandbox,
         );
         assert(
           result.exitCode == 0,
@@ -203,7 +194,7 @@ fields:
       test('then the entity files are generated and updated as expected.', () async {
         generateWatch = await startServerpod(
           ['generate', '--watch', '-v', '--no-analytics'],
-          workingDirectory: path.join(tempPath, serverDir),
+          workingDirectory: path.join(d.sandbox, serverDir),
         );
 
         generateStreamSearch = KeywordSearchInStream(
@@ -231,7 +222,7 @@ fields:
         var protocolFileName = 'test_entity';
         var protocolFile = File(
           createProjectProtocolFile(
-            tempPath,
+            d.sandbox,
             serverDir,
             protocolFileName,
           ),
@@ -253,7 +244,7 @@ fields:
         // Validate that entity file is generated
         var entityFileName = '$protocolFileName.dart';
         var entityDirectory = Directory(
-          createClientModelDirectoryPath(tempPath, clientDir),
+          createClientModelDirectoryPath(d.sandbox, clientDir),
         );
         var entityFiles = entityDirectory.listSync();
         expect(
@@ -326,7 +317,7 @@ fields:
   );
 
   group('Given an endpoint file that is changed when generate watch is active', () {
-    var (projectName, _) = createRandomProjectName(tempPath);
+    var projectName = createRandomProjectName();
     var (serverDir, _, _) = createProjectFolderPaths(projectName);
 
     Process? generateWatch;
@@ -336,7 +327,7 @@ fields:
     setUp(() async {
       var result = await runServerpod(
         ['create', projectName, '-v', '--no-analytics'],
-        workingDirectory: tempPath,
+        workingDirectory: d.sandbox,
       );
       assert(
         result.exitCode == 0,
@@ -351,7 +342,7 @@ fields:
     test('then endpoint dispatcher is generated and updated as expected.', () async {
       generateWatch = await startServerpod(
         ['generate', '--watch', '-v', '--no-analytics'],
-        workingDirectory: path.join(tempPath, serverDir),
+        workingDirectory: path.join(d.sandbox, serverDir),
       );
 
       generateWatch!.stdout
@@ -375,7 +366,7 @@ fields:
 
       var endpointFile = File(
         createProjectDartFilePath(
-          tmpFolder: tempPath,
+          tmpFolder: d.sandbox,
           serverDir: serverDir,
           pathParts: ['endpoints'],
           fileName: 'test_endpoint',
@@ -403,7 +394,7 @@ class TestEndpoint extends Endpoint {
       // Validate endpoint client methods are generated
       var endpointDispatcherFile = File(
         createServerEndpointDispatcherFilePath(
-          tempPath,
+          d.sandbox,
           serverDir,
         ),
       );
@@ -483,7 +474,7 @@ class TestEndpoint extends Endpoint {
   group(
     'Given an endpoint file in the "lib/src" folder that is changed when generate watch is active',
     () {
-      var (projectName, _) = createRandomProjectName(tempPath);
+      var projectName = createRandomProjectName();
       var (serverDir, _, _) = createProjectFolderPaths(projectName);
 
       Process? generateWatch;
@@ -493,7 +484,7 @@ class TestEndpoint extends Endpoint {
       setUp(() async {
         var result = await runServerpod(
           ['create', projectName, '-v', '--no-analytics'],
-          workingDirectory: tempPath,
+          workingDirectory: d.sandbox,
         );
         assert(
           result.exitCode == 0,
@@ -509,7 +500,7 @@ class TestEndpoint extends Endpoint {
       test('then endpoint dispatcher is generated and updated as expected.', () async {
         generateWatch = await startServerpod(
           ['generate', '--watch', '-v', '--no-analytics'],
-          workingDirectory: path.join(tempPath, serverDir),
+          workingDirectory: path.join(d.sandbox, serverDir),
         );
 
         generateWatch!.stdout
@@ -533,7 +524,7 @@ class TestEndpoint extends Endpoint {
 
         var endpointFile = File(
           createProjectDartFilePath(
-            tmpFolder: tempPath,
+            tmpFolder: d.sandbox,
             serverDir: serverDir,
             fileName: 'test_endpoint',
           ),
@@ -560,7 +551,7 @@ class TestEndpoint extends Endpoint {
         // Validate endpoint client methods are generated
         var endpointDispatcherFile = File(
           createServerEndpointDispatcherFilePath(
-            tempPath,
+            d.sandbox,
             serverDir,
           ),
         );
@@ -642,7 +633,7 @@ class TestEndpoint extends Endpoint {
   group(
     'Given a serializable model used in an endpoint that is moved to a subfolder when generate watch is active',
     () {
-      var (projectName, _) = createRandomProjectName(tempPath);
+      var projectName = createRandomProjectName();
       var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
       Process? generateWatch;
@@ -652,7 +643,7 @@ class TestEndpoint extends Endpoint {
       setUp(() async {
         var result = await runServerpod(
           ['create', projectName, '-v', '--no-analytics'],
-          workingDirectory: tempPath,
+          workingDirectory: d.sandbox,
         );
         assert(
           result.exitCode == 0,
@@ -667,7 +658,7 @@ class TestEndpoint extends Endpoint {
       test('then client endpoint dispatcher is updated as expected.', () async {
         var endpointFile = File(
           createProjectDartFilePath(
-            tmpFolder: tempPath,
+            tmpFolder: d.sandbox,
             serverDir: serverDir,
             pathParts: ['endpoints'],
             fileName: 'test_endpoint',
@@ -688,7 +679,7 @@ class TestEndpoint extends Endpoint {
         var protocolFileName = 'test_entity';
         var protocolFile = File(
           createProtocolFileInModelDirectory(
-            tempPath,
+            d.sandbox,
             serverDir,
             protocolFileName,
           ),
@@ -702,7 +693,7 @@ fields:
 
         generateWatch = await startServerpod(
           ['generate', '--watch', '-v', '--no-analytics'],
-          workingDirectory: path.join(tempPath, serverDir),
+          workingDirectory: path.join(d.sandbox, serverDir),
         );
 
         generateWatch!.stdout
@@ -727,7 +718,7 @@ fields:
         // Validate both are present
         var entityFileName = '$protocolFileName.dart';
         var entityDirectory = Directory(
-          createClientModelDirectoryPath(tempPath, clientDir),
+          createClientModelDirectoryPath(d.sandbox, clientDir),
         );
         var entityFiles = entityDirectory.listSync();
         expect(
@@ -738,7 +729,7 @@ fields:
 
         var endpointDispatcherFile = File(
           createClientEndpointDispatcherFilePath(
-            tempPath,
+            d.sandbox,
             clientDir,
           ),
         );
@@ -761,13 +752,13 @@ fields:
         // Move model file to subfolder
         var subFolderName = 'subfolder';
         Directory(
-          createModelDirectoryPath(tempPath, serverDir, subFolderName),
+          createModelDirectoryPath(d.sandbox, serverDir, subFolderName),
         ).createSync(
           recursive: true,
         );
         protocolFile.renameSync(
           createProtocolFileInModelDirectory(
-            tempPath,
+            d.sandbox,
             serverDir,
             protocolFileName,
             subFolder: subFolderName,
@@ -797,7 +788,7 @@ fields:
   );
 
   group('Given a generated file that is changed when generate watch is active', () {
-    var (projectName, _) = createRandomProjectName(tempPath);
+    var projectName = createRandomProjectName();
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
     Process? generateWatch;
@@ -807,7 +798,7 @@ fields:
     setUp(() async {
       var result = await runServerpod(
         ['create', projectName, '-v', '--no-analytics'],
-        workingDirectory: tempPath,
+        workingDirectory: d.sandbox,
       );
       assert(
         result.exitCode == 0,
@@ -823,7 +814,7 @@ fields:
     test('then generator is not triggered.', () async {
       generateWatch = await startServerpod(
         ['generate', '--watch', '-v', '--no-analytics'],
-        workingDirectory: path.join(tempPath, serverDir),
+        workingDirectory: path.join(d.sandbox, serverDir),
       );
 
       generateStreamSearch = KeywordSearchInStream(
@@ -851,7 +842,7 @@ fields:
       var protocolFileName = 'test_entity';
       var protocolFile = File(
         createProtocolFileInModelDirectory(
-          tempPath,
+          d.sandbox,
           serverDir,
           protocolFileName,
         ),
@@ -873,7 +864,7 @@ fields:
       // Validate that entity file is generated
       var entityFileName = '$protocolFileName.dart';
       var entityDirectory = Directory(
-        createClientModelDirectoryPath(tempPath, clientDir),
+        createClientModelDirectoryPath(d.sandbox, clientDir),
       );
       var entityFiles = entityDirectory.listSync();
       expect(
@@ -909,12 +900,10 @@ fields:
   });
 }
 
-(String, String) createRandomProjectName(String root) {
+String createRandomProjectName() {
   var projectName =
       'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
-  var commandRoot = path.join(root, projectName, '${projectName}_server');
-
-  return (projectName, commandRoot);
+  return projectName;
 }
 
 (String, String, String) createProjectFolderPaths(String projectName) {

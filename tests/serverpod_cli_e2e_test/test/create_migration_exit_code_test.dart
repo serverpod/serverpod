@@ -24,7 +24,7 @@ void main() async {
         );
         assert(
           result.exitCode == 0,
-          'Failed to create the serverpod project.',
+          'Failed to create the serverpod project.${result.stderr}',
         );
 
         serverDir = path.join(

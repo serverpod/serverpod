@@ -1,24 +1,12 @@
-@Timeout(Duration(minutes: 5))
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:uuid/uuid.dart';
 
 void main() async {
-  late Directory tempDir;
-
-  setUp(() async {
-    tempDir = await Directory.systemTemp.createTemp();
-  });
-
-  tearDown(() async {
-    if (tempDir.existsSync()) {
-      tempDir.deleteSync(recursive: true);
-    }
-  });
-
   group('Given a serverpod project when generate is called from anywhere', () {
     var projectName =
         'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
@@ -27,7 +15,7 @@ void main() async {
     setUp(() async {
       var result = await runServerpod(
         ['create', projectName, '--mini', '-v', '--no-analytics'],
-        workingDirectory: tempDir.path,
+        workingDirectory: d.sandbox,
       );
       assert(
         result.exitCode == 0,
@@ -41,7 +29,7 @@ void main() async {
         var clientDir = path.join(projectName, '${projectName}_client');
         var result = await runServerpod(
           ['generate', '--no-analytics'],
-          workingDirectory: path.join(tempDir.path, clientDir),
+          workingDirectory: path.join(d.sandbox, clientDir),
         );
 
         expect(result.exitCode, equals(0), reason: 'Generate should succeed');
@@ -56,7 +44,7 @@ void main() async {
         // Verify that generated files exist
         var generatedEndpointsFile = File(
           path.join(
-            tempDir.path,
+            d.sandbox,
             serverDir,
             'lib',
             'src',
@@ -72,7 +60,7 @@ void main() async {
 
         var generatedProtocolFile = File(
           path.join(
-            tempDir.path,
+            d.sandbox,
             serverDir,
             'lib',
             'src',
@@ -91,7 +79,7 @@ void main() async {
     test(
       'then code generation succeeds when running from server subdirectory.',
       () async {
-        var libSrcPath = path.join(tempDir.path, serverDir, 'lib', 'src');
+        var libSrcPath = path.join(d.sandbox, serverDir, 'lib', 'src');
 
         var result = await runServerpod(
           ['generate', '--no-analytics'],
@@ -110,7 +98,7 @@ void main() async {
         // Verify that generated files exist
         var generatedEndpointsFile = File(
           path.join(
-            tempDir.path,
+            d.sandbox,
             serverDir,
             'lib',
             'src',
@@ -131,7 +119,7 @@ void main() async {
       () async {
         var result = await runServerpod(
           ['generate', '--no-analytics'],
-          workingDirectory: path.join(tempDir.path, projectName),
+          workingDirectory: path.join(d.sandbox, projectName),
         );
 
         expect(result.exitCode, equals(0), reason: 'Generate should succeed');
@@ -146,7 +134,7 @@ void main() async {
         // Verify that generated files exist
         var generatedEndpointsFile = File(
           path.join(
-            tempDir.path,
+            d.sandbox,
             serverDir,
             'lib',
             'src',
