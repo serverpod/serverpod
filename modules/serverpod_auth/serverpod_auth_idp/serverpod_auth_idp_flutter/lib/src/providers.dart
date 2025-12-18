@@ -24,7 +24,8 @@ class AvailableIdps {
   bool get hasAny => count > 0;
 
   /// The number of available identity providers.
-  int get count => [hasEmail, hasGoogle, hasApple].where((e) => e).length;
+  int get count =>
+      [hasEmail, hasGoogle, hasApple, hasFirebase].where((e) => e).length;
 
   /// Whether the email authentication provider is available.
   bool get hasEmail => _isProviderAvailable<EndpointEmailIdpBase>();
@@ -34,6 +35,9 @@ class AvailableIdps {
 
   /// Whether the Apple authentication provider is available.
   bool get hasApple => _isProviderAvailable<EndpointAppleIdpBase>();
+
+  /// Whether the Firebase authentication provider is available.
+  bool get hasFirebase => _isProviderAvailable<EndpointFirebaseIdpBase>();
 }
 
 /// Extension to provide information about available identity providers.
