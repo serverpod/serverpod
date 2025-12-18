@@ -4,34 +4,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
 void main() async {
   late Directory tempDir;
-  var rootPath = path.join(Directory.current.path, '..', '..');
-  var cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
-
-  setUpAll(() async {
-    await Process.run(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
-    // Run command and activate again to force cache pub dependencies.
-    await Process.run(
-      'serverpod',
-      ['version'],
-      workingDirectory: cliPath,
-    );
-
-    await Process.run(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-  });
 
   setUp(() async {
     tempDir = await Directory.systemTemp.createTemp();
@@ -50,64 +28,26 @@ void main() async {
           'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
       var serverDir = path.join(projectName, '${projectName}_server');
 
-      late Process createProcess;
-
       setUp(() async {
-        createProcess = await Process.start(
-          'serverpod',
+        var result = await runServerpod(
           ['create', projectName, '--mini', '-v', '--no-analytics'],
           workingDirectory: tempDir.path,
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
         );
-
-        createProcess.stdout.transform(const Utf8Decoder()).listen(print);
-        createProcess.stderr.transform(const Utf8Decoder()).listen(print);
-
-        var createProjectExitCode = await createProcess.exitCode;
         assert(
-          createProjectExitCode == 0,
+          result.exitCode == 0,
           'Failed to create the serverpod project.',
         );
       });
 
-      tearDown(() async {
-        createProcess.kill();
-      });
-
       test('then code generation succeeds from server directory', () async {
-        var generateProcess = await Process.start(
-          'serverpod',
+        var result = await runServerpod(
           ['--no-interactive', 'generate', '--no-analytics'],
           workingDirectory: path.join(tempDir.path, serverDir),
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
         );
 
-        var stdout = <String>[];
-        var stderr = <String>[];
+        expect(result.exitCode, equals(0), reason: 'Generate should succeed');
 
-        generateProcess.stdout
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stdout.add(line);
-            });
-
-        generateProcess.stderr
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stderr.add(line);
-            });
-
-        var exitCode = await generateProcess.exitCode;
-
-        expect(exitCode, equals(0), reason: 'Generate should succeed');
-
-        var allOutput = [...stdout, ...stderr].join('\n');
+        var allOutput = '${result.stdout}${result.stderr}';
         expect(
           allOutput.contains('Done') || allOutput.contains('success'),
           isTrue,
@@ -118,34 +58,22 @@ void main() async {
       test(
         'then code generation succeeds in CI environment (CI=true)',
         () async {
-          var generateProcess = await Process.start(
-            'serverpod',
+          // For this test we need to use startServerpod to set custom environment
+          var process = await startServerpod(
             ['generate', '--no-analytics'],
             workingDirectory: path.join(tempDir.path, serverDir),
-            environment: {
-              'SERVERPOD_HOME': rootPath,
-              'CI': 'true', // Simulate CI environment
-            },
           );
 
-          var stdout = <String>[];
-          var stderr = <String>[];
-
-          generateProcess.stdout
+          var stdout = await process.stdout
               .transform(const Utf8Decoder())
               .transform(const LineSplitter())
-              .listen((line) {
-                stdout.add(line);
-              });
-
-          generateProcess.stderr
+              .toList();
+          var stderr = await process.stderr
               .transform(const Utf8Decoder())
               .transform(const LineSplitter())
-              .listen((line) {
-                stderr.add(line);
-              });
+              .toList();
 
-          var exitCode = await generateProcess.exitCode;
+          var exitCode = await process.exitCode;
 
           expect(
             exitCode,
@@ -163,43 +91,19 @@ void main() async {
       );
 
       test('then --interactive flag overrides CI environment', () async {
-        var generateProcess = await Process.start(
-          'serverpod',
+        var result = await runServerpod(
           ['--interactive', 'generate', '--no-analytics'],
           workingDirectory: path.join(tempDir.path, serverDir),
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-            'CI': 'true', // Simulate CI environment
-          },
         );
 
-        var stdout = <String>[];
-        var stderr = <String>[];
-
-        generateProcess.stdout
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stdout.add(line);
-            });
-
-        generateProcess.stderr
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stderr.add(line);
-            });
-
-        var exitCode = await generateProcess.exitCode;
-
         expect(
-          exitCode,
+          result.exitCode,
           equals(0),
           reason:
               'Generate should succeed even in CI when --interactive is explicitly set',
         );
 
-        var allOutput = [...stdout, ...stderr].join('\n');
+        var allOutput = '${result.stdout}${result.stderr}';
         expect(
           allOutput.contains('Done') || allOutput.contains('success'),
           isTrue,
@@ -228,42 +132,19 @@ void main() async {
     });
 
     test('then with --no-interactive it fails with ambiguous error', () async {
-      var generateProcess = await Process.start(
-        'serverpod',
+      var result = await runServerpod(
         ['--no-interactive', 'generate', '--no-analytics'],
         workingDirectory: projectRoot,
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
       );
 
-      var stdout = <String>[];
-      var stderr = <String>[];
-
-      generateProcess.stdout
-          .transform(const Utf8Decoder())
-          .transform(const LineSplitter())
-          .listen((line) {
-            stdout.add(line);
-          });
-
-      generateProcess.stderr
-          .transform(const Utf8Decoder())
-          .transform(const LineSplitter())
-          .listen((line) {
-            stderr.add(line);
-          });
-
-      var exitCode = await generateProcess.exitCode;
-
       expect(
-        exitCode,
+        result.exitCode,
         isNot(equals(0)),
         reason:
             'Generate should fail with multiple servers in non-interactive mode',
       );
 
-      var allOutput = [...stdout, ...stderr].join('\n');
+      var allOutput = '${result.stdout}${result.stderr}';
       expect(
         allOutput.contains('Multiple Serverpod projects detected'),
         isTrue,
@@ -272,20 +153,16 @@ void main() async {
     });
 
     test('then with --interactive it shows selection prompt', () async {
-      var generateProcess = await Process.start(
-        'serverpod',
+      var process = await startServerpod(
         ['--interactive', 'generate', '--no-analytics'],
         workingDirectory: projectRoot,
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
       );
 
       var stdout = <String>[];
       var stderr = <String>[];
       var promptDetected = Completer<bool>();
 
-      generateProcess.stdout
+      process.stdout
           .transform(const Utf8Decoder())
           .transform(const LineSplitter())
           .listen((line) {
@@ -296,7 +173,7 @@ void main() async {
             }
           });
 
-      generateProcess.stderr
+      process.stderr
           .transform(const Utf8Decoder())
           .transform(const LineSplitter())
           .listen((line) {
@@ -314,8 +191,8 @@ void main() async {
       );
 
       // Kill the process since we can't interact with it
-      generateProcess.kill();
-      await generateProcess.exitCode;
+      process.kill();
+      await process.exitCode;
 
       expect(
         hasPrompt,

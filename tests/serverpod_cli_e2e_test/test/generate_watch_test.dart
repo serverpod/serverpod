@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli_e2e_test/src/keyword_search_in_stream.dart';
+import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
@@ -16,29 +17,8 @@ const generateWatchCompletionKeywords = [
 
 void main() async {
   var tempPath = path.join(Directory.current.path, 'temp');
-  var rootPath = path.join(Directory.current.path, '..', '..');
-  var cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
 
   setUpAll(() async {
-    await Process.run(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
-    // Run command and activate again to force cache pub dependencies.
-    await Process.run(
-      'serverpod',
-      ['version'],
-      workingDirectory: cliPath,
-    );
-
-    await Process.run(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
     Directory(tempPath).createSync(recursive: true);
   });
 
@@ -50,45 +30,30 @@ void main() async {
     var (projectName, _) = createRandomProjectName(tempPath);
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
-    late Process createProcess;
     Process? generateWatch;
     KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
       keywords: generateWatchCompletionKeywords,
     );
     setUp(() async {
-      createProcess = await Process.start(
-        'serverpod',
+      var result = await runServerpod(
         ['create', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
       );
-
-      createProcess.stdout.transform(const Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(const Utf8Decoder()).listen(print);
-
-      var createProjectExitCode = await createProcess.exitCode;
       assert(
-        createProjectExitCode == 0,
+        result.exitCode == 0,
         'Failed to create the serverpod project.',
       );
     });
 
     tearDown(() async {
-      createProcess.kill();
       generateWatch?.kill();
       generateStreamSearch.cancel();
     });
 
     test('then the entity files are generated and updated as expected.', () async {
-      generateWatch = await Process.start(
-        'serverpod',
+      generateWatch = await startServerpod(
         ['generate', '--watch', '-v', '--no-analytics'],
         workingDirectory: path.join(tempPath, serverDir),
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
       );
 
       generateStreamSearch = KeywordSearchInStream(
@@ -215,45 +180,30 @@ fields:
       var (projectName, _) = createRandomProjectName(tempPath);
       var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
-      late Process createProcess;
       Process? generateWatch;
       KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
         keywords: generateWatchCompletionKeywords,
       );
       setUp(() async {
-        createProcess = await Process.start(
-          'serverpod',
+        var result = await runServerpod(
           ['create', projectName, '-v', '--no-analytics'],
           workingDirectory: tempPath,
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
         );
-
-        createProcess.stdout.transform(const Utf8Decoder()).listen(print);
-        createProcess.stderr.transform(const Utf8Decoder()).listen(print);
-
-        var createProjectExitCode = await createProcess.exitCode;
         assert(
-          createProjectExitCode == 0,
+          result.exitCode == 0,
           'Failed to create the serverpod project.',
         );
       });
 
       tearDown(() async {
-        createProcess.kill();
         generateWatch?.kill();
         generateStreamSearch.cancel();
       });
 
       test('then the entity files are generated and updated as expected.', () async {
-        generateWatch = await Process.start(
-          'serverpod',
+        generateWatch = await startServerpod(
           ['generate', '--watch', '-v', '--no-analytics'],
           workingDirectory: path.join(tempPath, serverDir),
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
         );
 
         generateStreamSearch = KeywordSearchInStream(
@@ -379,44 +329,29 @@ fields:
     var (projectName, _) = createRandomProjectName(tempPath);
     var (serverDir, _, _) = createProjectFolderPaths(projectName);
 
-    late Process createProcess;
     Process? generateWatch;
     KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
       keywords: generateWatchCompletionKeywords,
     );
     setUp(() async {
-      createProcess = await Process.start(
-        'serverpod',
+      var result = await runServerpod(
         ['create', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
       );
-
-      createProcess.stdout.transform(const Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(const Utf8Decoder()).listen(print);
-
-      var createProjectExitCode = await createProcess.exitCode;
       assert(
-        createProjectExitCode == 0,
+        result.exitCode == 0,
         'Failed to create the serverpod project.',
       );
     });
 
     tearDown(() async {
-      createProcess.kill();
       generateWatch?.kill();
       generateStreamSearch.cancel();
     });
     test('then endpoint dispatcher is generated and updated as expected.', () async {
-      generateWatch = await Process.start(
-        'serverpod',
+      generateWatch = await startServerpod(
         ['generate', '--watch', '-v', '--no-analytics'],
         workingDirectory: path.join(tempPath, serverDir),
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
       );
 
       generateWatch!.stdout
@@ -551,45 +486,30 @@ class TestEndpoint extends Endpoint {
       var (projectName, _) = createRandomProjectName(tempPath);
       var (serverDir, _, _) = createProjectFolderPaths(projectName);
 
-      late Process createProcess;
       Process? generateWatch;
       KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
         keywords: generateWatchCompletionKeywords,
       );
       setUp(() async {
-        createProcess = await Process.start(
-          'serverpod',
+        var result = await runServerpod(
           ['create', projectName, '-v', '--no-analytics'],
           workingDirectory: tempPath,
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
         );
-
-        createProcess.stdout.transform(const Utf8Decoder()).listen(print);
-        createProcess.stderr.transform(const Utf8Decoder()).listen(print);
-
-        var createProjectExitCode = await createProcess.exitCode;
         assert(
-          createProjectExitCode == 0,
+          result.exitCode == 0,
           'Failed to create the serverpod project.',
         );
       });
 
       tearDown(() async {
-        createProcess.kill();
         generateWatch?.kill();
         generateStreamSearch.cancel();
       });
 
       test('then endpoint dispatcher is generated and updated as expected.', () async {
-        generateWatch = await Process.start(
-          'serverpod',
+        generateWatch = await startServerpod(
           ['generate', '--watch', '-v', '--no-analytics'],
           workingDirectory: path.join(tempPath, serverDir),
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
         );
 
         generateWatch!.stdout
@@ -725,33 +645,22 @@ class TestEndpoint extends Endpoint {
       var (projectName, _) = createRandomProjectName(tempPath);
       var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
-      late Process createProcess;
       Process? generateWatch;
       KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
         keywords: generateWatchCompletionKeywords,
       );
       setUp(() async {
-        createProcess = await Process.start(
-          'serverpod',
+        var result = await runServerpod(
           ['create', projectName, '-v', '--no-analytics'],
           workingDirectory: tempPath,
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
         );
-
-        createProcess.stdout.transform(const Utf8Decoder()).listen(print);
-        createProcess.stderr.transform(const Utf8Decoder()).listen(print);
-
-        var createProjectExitCode = await createProcess.exitCode;
         assert(
-          createProjectExitCode == 0,
+          result.exitCode == 0,
           'Failed to create the serverpod project.',
         );
       });
 
       tearDown(() async {
-        createProcess.kill();
         generateWatch?.kill();
         generateStreamSearch.cancel();
       });
@@ -791,13 +700,9 @@ fields:
   name: String
 ''', flush: true);
 
-        generateWatch = await Process.start(
-          'serverpod',
+        generateWatch = await startServerpod(
           ['generate', '--watch', '-v', '--no-analytics'],
           workingDirectory: path.join(tempPath, serverDir),
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
         );
 
         generateWatch!.stdout
@@ -895,45 +800,30 @@ fields:
     var (projectName, _) = createRandomProjectName(tempPath);
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
-    late Process createProcess;
     Process? generateWatch;
     KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
       keywords: generateWatchCompletionKeywords,
     );
     setUp(() async {
-      createProcess = await Process.start(
-        'serverpod',
+      var result = await runServerpod(
         ['create', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
       );
-
-      createProcess.stdout.transform(const Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(const Utf8Decoder()).listen(print);
-
-      var createProjectExitCode = await createProcess.exitCode;
       assert(
-        createProjectExitCode == 0,
+        result.exitCode == 0,
         'Failed to create the serverpod project.',
       );
     });
 
     tearDown(() async {
-      createProcess.kill();
       generateWatch?.kill();
       generateStreamSearch.cancel();
     });
 
     test('then generator is not triggered.', () async {
-      generateWatch = await Process.start(
-        'serverpod',
+      generateWatch = await startServerpod(
         ['generate', '--watch', '-v', '--no-analytics'],
         workingDirectory: path.join(tempPath, serverDir),
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
       );
 
       generateStreamSearch = KeywordSearchInStream(

@@ -122,11 +122,9 @@ serverpod:
   test(
     'when sending SIGINT, then it is forwarded to the child process',
     () async {
-      final process = await Process.start(
-        await compiledServerpodCliExe,
+      final process = await startServerpod(
         ['run', 'trap'],
         workingDirectory: serverDir,
-        environment: {'SERVERPOD_HOME': serverpodHome},
       );
 
       // Collect stdout incrementally

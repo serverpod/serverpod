@@ -1,36 +1,13 @@
 @Timeout(Duration(minutes: 5))
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
 void main() async {
   late Directory tempDir;
-  var rootPath = path.join(Directory.current.path, '..', '..');
-  var cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
-
-  setUpAll(() async {
-    await Process.run(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-
-    // Run command and activate again to force cache pub dependencies.
-    await Process.run(
-      'serverpod',
-      ['version'],
-      workingDirectory: cliPath,
-    );
-
-    await Process.run(
-      'dart',
-      ['pub', 'global', 'activate', '-s', 'path', '.'],
-      workingDirectory: cliPath,
-    );
-  });
 
   setUp(() async {
     tempDir = await Directory.systemTemp.createTemp();
@@ -46,68 +23,30 @@ void main() async {
     var projectName =
         'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
     var serverDir = path.join(projectName, '${projectName}_server');
-    var clientDir = path.join(projectName, '${projectName}_client');
-
-    late Process createProcess;
 
     setUp(() async {
-      createProcess = await Process.start(
-        'serverpod',
+      var result = await runServerpod(
         ['create', projectName, '--mini', '-v', '--no-analytics'],
         workingDirectory: tempDir.path,
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
       );
-
-      createProcess.stdout.transform(const Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(const Utf8Decoder()).listen(print);
-
-      var createProjectExitCode = await createProcess.exitCode;
       assert(
-        createProjectExitCode == 0,
+        result.exitCode == 0,
         'Failed to create the serverpod project.',
       );
-    });
-
-    tearDown(() async {
-      createProcess.kill();
     });
 
     test(
       'then code generation succeeds when running from client directory.',
       () async {
-        var generateProcess = await Process.start(
-          'serverpod',
+        var clientDir = path.join(projectName, '${projectName}_client');
+        var result = await runServerpod(
           ['generate', '--no-analytics'],
           workingDirectory: path.join(tempDir.path, clientDir),
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
         );
 
-        var stdout = <String>[];
-        var stderr = <String>[];
+        expect(result.exitCode, equals(0), reason: 'Generate should succeed');
 
-        generateProcess.stdout
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stdout.add(line);
-            });
-
-        generateProcess.stderr
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stderr.add(line);
-            });
-
-        var exitCode = await generateProcess.exitCode;
-
-        expect(exitCode, equals(0), reason: 'Generate should succeed');
-
-        var allOutput = [...stdout, ...stderr].join('\n');
+        var allOutput = '${result.stdout}${result.stderr}';
         expect(
           allOutput.contains('Done') || allOutput.contains('success'),
           isTrue,
@@ -154,37 +93,14 @@ void main() async {
       () async {
         var libSrcPath = path.join(tempDir.path, serverDir, 'lib', 'src');
 
-        var generateProcess = await Process.start(
-          'serverpod',
+        var result = await runServerpod(
           ['generate', '--no-analytics'],
           workingDirectory: libSrcPath,
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
         );
 
-        var stdout = <String>[];
-        var stderr = <String>[];
+        expect(result.exitCode, equals(0), reason: 'Generate should succeed');
 
-        generateProcess.stdout
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stdout.add(line);
-            });
-
-        generateProcess.stderr
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stderr.add(line);
-            });
-
-        var exitCode = await generateProcess.exitCode;
-
-        expect(exitCode, equals(0), reason: 'Generate should succeed');
-
-        var allOutput = [...stdout, ...stderr].join('\n');
+        var allOutput = '${result.stdout}${result.stderr}';
         expect(
           allOutput.contains('Done') || allOutput.contains('success'),
           isTrue,
@@ -213,37 +129,14 @@ void main() async {
     test(
       'then code generation succeeds when running from project root.',
       () async {
-        var generateProcess = await Process.start(
-          'serverpod',
+        var result = await runServerpod(
           ['generate', '--no-analytics'],
           workingDirectory: path.join(tempDir.path, projectName),
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
         );
 
-        var stdout = <String>[];
-        var stderr = <String>[];
+        expect(result.exitCode, equals(0), reason: 'Generate should succeed');
 
-        generateProcess.stdout
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stdout.add(line);
-            });
-
-        generateProcess.stderr
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stderr.add(line);
-            });
-
-        var exitCode = await generateProcess.exitCode;
-
-        expect(exitCode, equals(0), reason: 'Generate should succeed');
-
-        var allOutput = [...stdout, ...stderr].join('\n');
+        var allOutput = '${result.stdout}${result.stderr}';
         expect(
           allOutput.contains('Done') || allOutput.contains('success'),
           isTrue,
