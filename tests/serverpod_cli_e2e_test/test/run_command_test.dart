@@ -9,6 +9,15 @@ import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
+final listsScripts = containsLines([
+  'hello',
+  'fail',
+  'succeed',
+  'start',
+  'test',
+  'trap',
+]);
+
 void main() {
   late String serverDir;
 
@@ -28,6 +37,7 @@ serverpod:
       windows: echo Hello from script
       posix: echo "Hello from script"
     fail: exit 42
+    succeed: exit 0
     start: dart bin/main.dart
     test: dart test
     trap:
@@ -63,6 +73,18 @@ serverpod:
   );
 
   test(
+    'when running a shared script that succeeds, then the exit code is propagated',
+    () async {
+      final result = await runServerpod(
+        ['run', 'succeed'],
+        workingDirectory: serverDir,
+      );
+
+      expect(result.exitCode, 0);
+    },
+  );
+
+  test(
     'when running with --list flag, then all scripts are listed',
     () async {
       final result = await runServerpod(
@@ -71,10 +93,7 @@ serverpod:
       );
 
       expect(result.exitCode, 0);
-      expect(
-        result.stdout,
-        containsLines(['hello:', 'fail:', 'start:', 'test:']),
-      );
+      expect(result.stdout, listsScripts);
     },
   );
 
@@ -98,10 +117,7 @@ serverpod:
     });
 
     test('then all available scripts are listed', () {
-      expect(
-        result.stdout,
-        containsLines(['hello:', 'fail:', 'start:', 'test:']),
-      );
+      expect(result.stdout, listsScripts);
     });
   });
 
@@ -115,10 +131,7 @@ serverpod:
 
       expect(result.exitCode, 0);
       expect(result.stdout, contains('Available scripts:'));
-      expect(
-        result.stdout,
-        containsLines(['hello:', 'fail:', 'start:', 'test:']),
-      );
+      expect(result.stdout, listsScripts);
     },
   );
 
