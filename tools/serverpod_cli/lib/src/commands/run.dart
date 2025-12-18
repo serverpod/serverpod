@@ -103,8 +103,9 @@ class RunCommand extends ServerpodCommand<RunOption> {
     }
 
     if (!script.supportsCurrentPlatform) {
-      final platform = Platform.isWindows ? 'Windows' : 'POSIX';
-      log.error('Script "$scriptName" is not available on $platform.');
+      log.error(
+        'Script "$scriptName" is not available on ${Platform.operatingSystem}.',
+      );
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
@@ -129,8 +130,9 @@ class RunCommand extends ServerpodCommand<RunOption> {
       if (script.supportsCurrentPlatform) {
         log.info('  ${script.name}: ${script.command}');
       } else {
-        final platform = Platform.isWindows ? 'Windows' : 'POSIX';
-        log.info('  ${script.name}: (not available on $platform)');
+        log.info(
+          '  ${script.name}: (not available on ${Platform.operatingSystem})',
+        );
       }
     }
   }
