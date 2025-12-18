@@ -88,22 +88,45 @@ enum RunType {
   installed, // 3.10 feature
 }
 
-/// Runs `serverpod` with the given arguments.
-Future<ProcessResult> runServerpod(
-  List<String> args, {
-  required String workingDirectory,
-  RunType runType = RunType.compiled,
-}) async {
-  final (exe, fullArgs) = switch (runType) {
-    RunType.dartRun => (
-      'dart',
-      ['run', _cliPath, ...args],
-    ),
+Future<(String exe, List<String> args)> _resolveCommand(
+  List<String> args,
+  RunType runType,
+) async {
+  return switch (runType) {
+    RunType.dartRun => ('dart', ['run', _cliPath, ...args]),
     RunType.compiled => (await compiledServerpodCliExe, args),
     RunType.activated => (await _activatedServerpodCliExe, args),
     RunType.installed => throw UnimplementedError(), // 3.10 feature
   };
+}
+
+/// Runs `serverpod` with the given arguments.
+Future<ProcessResult> runServerpod(
+  List<String> args, {
+  String? workingDirectory,
+  RunType runType = RunType.compiled,
+}) async {
+  workingDirectory ??= Directory.current.path;
+  final (exe, fullArgs) = await _resolveCommand(args, runType);
   return Process.run(
+    exe,
+    fullArgs,
+    workingDirectory: workingDirectory,
+    environment: {'SERVERPOD_HOME': serverpodHome},
+  );
+}
+
+/// Starts `serverpod` with the given arguments.
+///
+/// Unlike [runServerpod], this returns a [Process] that can be interacted with
+/// (e.g., to send signals or read stdout/stderr incrementally).
+Future<Process> startServerpod(
+  List<String> args, {
+  required String workingDirectory,
+  RunType runType = RunType.compiled,
+}) async {
+  final (exe, fullArgs) = await _resolveCommand(args, runType);
+  return Process.start(
     exe,
     fullArgs,
     workingDirectory: workingDirectory,
