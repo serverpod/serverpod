@@ -334,6 +334,9 @@ class EndpointsAnalyzer {
   }
 }
 
+/// Find the path to the Dart SDK
+// This is needed to work around this issue with the analyzer package:
+// https://github.com/dart-lang/sdk/issues/48002
 String? _findDartSdk() {
   // If running as a script, resolvedExecutable points to dart binary
   var dartSdk = _sdkPathFromDartExe(Platform.resolvedExecutable);
