@@ -799,6 +799,57 @@ class EndpointDeprecation extends _i1.EndpointRef {
     'getGlobalDouble',
     {},
   );
+
+  /// A method with a deprecated parameter using "@deprecated" annotation.
+  _i2.Future<String> methodWithDeprecatedParam(String deprecatedParam) =>
+      caller.callServerEndpoint<String>(
+        'deprecation',
+        'methodWithDeprecatedParam',
+        {'deprecatedParam': deprecatedParam},
+      );
+
+  /// A method with a deprecated parameter using "@Deprecated(..)" annotation.
+  _i2.Future<String> methodWithDeprecatedParamMessage(String deprecatedParam) =>
+      caller.callServerEndpoint<String>(
+        'deprecation',
+        'methodWithDeprecatedParamMessage',
+        {'deprecatedParam': deprecatedParam},
+      );
+
+  /// A method with both deprecated and non-deprecated parameters.
+  _i2.Future<String> methodWithMixedParams(
+    String normalParam,
+    String deprecatedParam,
+  ) => caller.callServerEndpoint<String>(
+    'deprecation',
+    'methodWithMixedParams',
+    {
+      'normalParam': normalParam,
+      'deprecatedParam': deprecatedParam,
+    },
+  );
+
+  /// A method with deprecated optional positional parameter.
+  _i2.Future<String> methodWithOptionalDeprecatedParam([
+    String? deprecatedParam,
+  ]) => caller.callServerEndpoint<String>(
+    'deprecation',
+    'methodWithOptionalDeprecatedParam',
+    {'deprecatedParam': deprecatedParam},
+  );
+
+  /// A method with deprecated named parameter.
+  _i2.Future<String> methodWithNamedDeprecatedParam({
+    required String normalParam,
+    String? deprecatedParam,
+  }) => caller.callServerEndpoint<String>(
+    'deprecation',
+    'methodWithNamedDeprecatedParam',
+    {
+      'normalParam': normalParam,
+      'deprecatedParam': deprecatedParam,
+    },
+  );
 }
 
 /// {@category Endpoint}

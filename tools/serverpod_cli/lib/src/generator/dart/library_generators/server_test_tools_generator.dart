@@ -142,7 +142,10 @@ class ServerTestToolsGenerator {
                 Parameter(
                   (p) => p
                     ..name = parameter.name
-                    ..type = parameter.type.reference(true, config: config),
+                    ..type = parameter.type.reference(true, config: config)
+                    ..annotations.addAll(
+                      buildParameterAnnotations(parameter),
+                    ),
                 ),
             ],
           )
@@ -153,7 +156,10 @@ class ServerTestToolsGenerator {
                   (p) => p
                     ..name = parameter.name
                     ..type = parameter.type.reference(true, config: config)
-                    ..named = false,
+                    ..named = false
+                    ..annotations.addAll(
+                      buildParameterAnnotations(parameter),
+                    ),
                 ),
               for (var parameter in method.parametersNamed)
                 Parameter(
@@ -161,7 +167,10 @@ class ServerTestToolsGenerator {
                     ..name = parameter.name
                     ..type = parameter.type.reference(true, config: config)
                     ..named = true
-                    ..required = parameter.required,
+                    ..required = parameter.required
+                    ..annotations.addAll(
+                      buildParameterAnnotations(parameter),
+                    ),
                 ),
             ],
           );

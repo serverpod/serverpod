@@ -2187,6 +2187,113 @@ class Endpoints extends _i1.EndpointDispatch {
                   // ignore: deprecated_member_use_from_same_package
                   getGlobalDouble(session),
         ),
+        'methodWithDeprecatedParam': _i1.MethodConnector(
+          name: 'methodWithDeprecatedParam',
+          params: {
+            'deprecatedParam': _i1.ParameterDescription(
+              name: 'deprecatedParam',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['deprecation'] as _i12.DeprecationEndpoint)
+                  .methodWithDeprecatedParam(
+                    session,
+                    params['deprecatedParam'],
+                  ),
+        ),
+        'methodWithDeprecatedParamMessage': _i1.MethodConnector(
+          name: 'methodWithDeprecatedParamMessage',
+          params: {
+            'deprecatedParam': _i1.ParameterDescription(
+              name: 'deprecatedParam',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['deprecation'] as _i12.DeprecationEndpoint)
+                  .methodWithDeprecatedParamMessage(
+                    session,
+                    params['deprecatedParam'],
+                  ),
+        ),
+        'methodWithMixedParams': _i1.MethodConnector(
+          name: 'methodWithMixedParams',
+          params: {
+            'normalParam': _i1.ParameterDescription(
+              name: 'normalParam',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'deprecatedParam': _i1.ParameterDescription(
+              name: 'deprecatedParam',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['deprecation'] as _i12.DeprecationEndpoint)
+                  .methodWithMixedParams(
+                    session,
+                    params['normalParam'],
+                    params['deprecatedParam'],
+                  ),
+        ),
+        'methodWithOptionalDeprecatedParam': _i1.MethodConnector(
+          name: 'methodWithOptionalDeprecatedParam',
+          params: {
+            'deprecatedParam': _i1.ParameterDescription(
+              name: 'deprecatedParam',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['deprecation'] as _i12.DeprecationEndpoint)
+                  .methodWithOptionalDeprecatedParam(
+                    session,
+                    params['deprecatedParam'],
+                  ),
+        ),
+        'methodWithNamedDeprecatedParam': _i1.MethodConnector(
+          name: 'methodWithNamedDeprecatedParam',
+          params: {
+            'normalParam': _i1.ParameterDescription(
+              name: 'normalParam',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'deprecatedParam': _i1.ParameterDescription(
+              name: 'deprecatedParam',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['deprecation'] as _i12.DeprecationEndpoint)
+                  .methodWithNamedDeprecatedParam(
+                    session,
+                    normalParam: params['normalParam'],
+                    deprecatedParam: params['deprecatedParam'],
+                  ),
+        ),
       },
     );
     connectors['diagnosticEventTest'] = _i1.EndpointConnector(

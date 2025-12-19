@@ -743,6 +743,9 @@ class LibraryGenerator {
                           ..type = parameterDef.type.reference(
                             false,
                             config: config,
+                          )
+                          ..annotations.addAll(
+                            buildParameterAnnotations(parameterDef),
                           ),
                       ),
                   ])
@@ -755,6 +758,9 @@ class LibraryGenerator {
                           ..type = parameterDef.type.reference(
                             false,
                             config: config,
+                          )
+                          ..annotations.addAll(
+                            buildParameterAnnotations(parameterDef),
                           ),
                       ),
                     for (var parameterDef in namedParameters)
@@ -766,6 +772,9 @@ class LibraryGenerator {
                           ..type = parameterDef.type.reference(
                             false,
                             config: config,
+                          )
+                          ..annotations.addAll(
+                            buildParameterAnnotations(parameterDef),
                           ),
                       ),
                   ])
