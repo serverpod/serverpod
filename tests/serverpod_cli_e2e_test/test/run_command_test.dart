@@ -5,86 +5,9 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli_e2e_test/src/matchers/contains_lines.dart';
+import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
-
-/// Path to the serverpod root (for SERVERPOD_HOME).
-final _serverpodHome = p.canonicalize(
-  p.join(Directory.current.path, '..', '..'),
-);
-
-final _cliRoot = p.join(
-  _serverpodHome,
-  'tools',
-  'serverpod_cli',
-);
-
-final _cliPath = p.join(
-  _cliRoot,
-  'bin',
-  'serverpod_cli.dart',
-);
-
-/// Path to the compiled serverpod executable.
-final _compiledServerpodCliExe = _compileServerpodCli();
-Future<String> _compileServerpodCli() async {
-  // Compile the CLI once for all tests
-  final path = p.join(d.sandbox, 'serverpod_cli_test');
-  final result = await Process.run(
-    'dart',
-    ['compile', 'exe', _cliPath, '-o', path],
-  );
-  if (result.exitCode != 0) {
-    throw StateError(
-      'Failed to compile serverpod_cli:\n${result.stderr}',
-    );
-  }
-  return path;
-}
-
-final _activateLocalServerpodCliExe = _activateLocalServerpodCli();
-Future<String> _activateLocalServerpodCli() async {
-  final result = await Process.run(
-    'dart',
-    ['pub', 'global', 'activate', '--overwrite', '--source', 'path', _cliRoot],
-  );
-  if (result.exitCode != 0) {
-    throw StateError(
-      'Failed to compile serverpod_cli:\n${result.stderr}',
-    );
-  }
-  return 'serverpod';
-}
-
-enum RunType {
-  dartRun,
-  activated,
-  compiled,
-  installed, // 3.10 feature
-}
-
-/// Runs `serverpod` with the given arguments.
-Future<ProcessResult> runServerpod(
-  List<String> args, {
-  required String workingDirectory,
-  RunType runType = RunType.activated,
-}) async {
-  final (exe, fullArgs) = switch (runType) {
-    RunType.dartRun => (
-      'dart',
-      ['run', _cliPath, ...args],
-    ),
-    RunType.compiled => (await _compiledServerpodCliExe, args),
-    RunType.activated => (await _activateLocalServerpodCliExe, args),
-    RunType.installed => throw UnimplementedError(), // 3.10 feature
-  };
-  return Process.run(
-    exe,
-    fullArgs,
-    workingDirectory: workingDirectory,
-    environment: {'SERVERPOD_HOME': _serverpodHome},
-  );
-}
 
 void main() {
   late String serverDir;
@@ -199,11 +122,9 @@ serverpod:
   test(
     'when sending SIGINT, then it is forwarded to the child process',
     () async {
-      final process = await Process.start(
-        await _compiledServerpodCliExe,
+      final process = await startServerpod(
         ['run', 'trap'],
         workingDirectory: serverDir,
-        environment: {'SERVERPOD_HOME': _serverpodHome},
       );
 
       // Collect stdout incrementally
