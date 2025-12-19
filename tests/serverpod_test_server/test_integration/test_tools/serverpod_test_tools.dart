@@ -3342,7 +3342,7 @@ class _DeprecationEndpoint {
 
   _i3.Future<String> methodWithDeprecatedParam(
     _i1.TestSessionBuilder sessionBuilder,
-    String deprecatedParam,
+    @deprecated String deprecatedParam,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -3375,7 +3375,7 @@ class _DeprecationEndpoint {
 
   _i3.Future<String> methodWithDeprecatedParamMessage(
     _i1.TestSessionBuilder sessionBuilder,
-    String deprecatedParam,
+    @Deprecated('This parameter is deprecated') String deprecatedParam,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -3409,7 +3409,7 @@ class _DeprecationEndpoint {
   _i3.Future<String> methodWithMixedParams(
     _i1.TestSessionBuilder sessionBuilder,
     String normalParam,
-    String deprecatedParam,
+    @deprecated String deprecatedParam,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -3443,7 +3443,7 @@ class _DeprecationEndpoint {
 
   _i3.Future<String> methodWithOptionalDeprecatedParam(
     _i1.TestSessionBuilder sessionBuilder, [
-    String? deprecatedParam,
+    @deprecated String? deprecatedParam,
   ]) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -3477,7 +3477,7 @@ class _DeprecationEndpoint {
   _i3.Future<String> methodWithNamedDeprecatedParam(
     _i1.TestSessionBuilder sessionBuilder, {
     required String normalParam,
-    String? deprecatedParam,
+    @deprecated String? deprecatedParam,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =

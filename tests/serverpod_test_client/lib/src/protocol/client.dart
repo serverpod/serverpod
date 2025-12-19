@@ -801,25 +801,27 @@ class EndpointDeprecation extends _i1.EndpointRef {
   );
 
   /// A method with a deprecated parameter using "@deprecated" annotation.
-  _i2.Future<String> methodWithDeprecatedParam(String deprecatedParam) =>
-      caller.callServerEndpoint<String>(
-        'deprecation',
-        'methodWithDeprecatedParam',
-        {'deprecatedParam': deprecatedParam},
-      );
+  _i2.Future<String> methodWithDeprecatedParam(
+    @deprecated String deprecatedParam,
+  ) => caller.callServerEndpoint<String>(
+    'deprecation',
+    'methodWithDeprecatedParam',
+    {'deprecatedParam': deprecatedParam},
+  );
 
   /// A method with a deprecated parameter using "@Deprecated(..)" annotation.
-  _i2.Future<String> methodWithDeprecatedParamMessage(String deprecatedParam) =>
-      caller.callServerEndpoint<String>(
-        'deprecation',
-        'methodWithDeprecatedParamMessage',
-        {'deprecatedParam': deprecatedParam},
-      );
+  _i2.Future<String> methodWithDeprecatedParamMessage(
+    @Deprecated('This parameter is deprecated') String deprecatedParam,
+  ) => caller.callServerEndpoint<String>(
+    'deprecation',
+    'methodWithDeprecatedParamMessage',
+    {'deprecatedParam': deprecatedParam},
+  );
 
   /// A method with both deprecated and non-deprecated parameters.
   _i2.Future<String> methodWithMixedParams(
     String normalParam,
-    String deprecatedParam,
+    @deprecated String deprecatedParam,
   ) => caller.callServerEndpoint<String>(
     'deprecation',
     'methodWithMixedParams',
@@ -831,7 +833,7 @@ class EndpointDeprecation extends _i1.EndpointRef {
 
   /// A method with deprecated optional positional parameter.
   _i2.Future<String> methodWithOptionalDeprecatedParam([
-    String? deprecatedParam,
+    @deprecated String? deprecatedParam,
   ]) => caller.callServerEndpoint<String>(
     'deprecation',
     'methodWithOptionalDeprecatedParam',
@@ -841,7 +843,7 @@ class EndpointDeprecation extends _i1.EndpointRef {
   /// A method with deprecated named parameter.
   _i2.Future<String> methodWithNamedDeprecatedParam({
     required String normalParam,
-    String? deprecatedParam,
+    @deprecated String? deprecatedParam,
   }) => caller.callServerEndpoint<String>(
     'deprecation',
     'methodWithNamedDeprecatedParam',
