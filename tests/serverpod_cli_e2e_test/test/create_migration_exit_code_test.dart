@@ -19,7 +19,7 @@ void main() async {
             'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
 
         var result = await runServerpod(
-          ['create', projectName, '-v', '--no-analytics'],
+          ['create', projectName],
           workingDirectory: d.sandbox,
         );
         assert(
@@ -38,7 +38,7 @@ void main() async {
         'when create-migration is called with no changes then exit code is 0.',
         () async {
           var result = await runServerpod(
-            ['create-migration', '--no-analytics'],
+            ['create-migration'],
             workingDirectory: serverDir,
           );
 
@@ -70,7 +70,7 @@ void main() async {
             'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
 
         var createResult = await runServerpod(
-          ['create', projectName, '-v', '--no-analytics'],
+          ['create', projectName],
           workingDirectory: d.sandbox,
         );
         assert(
@@ -99,7 +99,7 @@ fields:
 
         // Create initial migration with the column
         var initialMigrationResult = await runServerpod(
-          ['create-migration', '--force', '--no-analytics'],
+          ['create-migration', '--force'],
           workingDirectory: serverDir,
         );
         assert(
@@ -120,7 +120,7 @@ fields:
         'when create-migration is called without --force then exit code is 1.',
         () async {
           var result = await runServerpod(
-            ['create-migration', '--no-analytics'],
+            ['create-migration'],
             workingDirectory: serverDir,
           );
 
@@ -143,7 +143,7 @@ fields:
         'when create-migration is called with --force then exit code is 0.',
         () async {
           var result = await runServerpod(
-            ['create-migration', '--force', '--no-analytics'],
+            ['create-migration', '--force'],
             workingDirectory: serverDir,
           );
 

@@ -15,7 +15,7 @@ void main() async {
             'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
 
         var result = await runServerpod(
-          ['create', projectName, '-v', '--no-analytics'],
+          ['create', projectName],
           workingDirectory: d.sandbox,
         );
         assert(
@@ -37,7 +37,7 @@ environment:
         'when create-migration is called from project root then it should succeed.',
         () async {
           var result = await runServerpod(
-            ['create-migration', '--no-analytics'],
+            ['create-migration'],
             workingDirectory: path.join(d.sandbox, projectName),
           );
 
@@ -67,7 +67,7 @@ environment:
         'when create-repair-migration is called from project root then it should not fail due to root pubspec.',
         () async {
           var result = await runServerpod(
-            ['create-repair-migration', '--no-analytics'],
+            ['create-repair-migration'],
             workingDirectory: path.join(d.sandbox, projectName),
           );
 
@@ -102,7 +102,7 @@ environment:
         clientDir = path.join(projectName, '${projectName}_client');
 
         var result = await runServerpod(
-          ['create', projectName, '-v', '--no-analytics'],
+          ['create', projectName],
           workingDirectory: d.sandbox,
         );
         assert(
@@ -115,7 +115,7 @@ environment:
         'when create-migration is called from client directory then it should succeed.',
         () async {
           var result = await runServerpod(
-            ['create-migration', '--no-analytics'],
+            ['create-migration'],
             workingDirectory: path.join(d.sandbox, clientDir),
           );
 
@@ -139,7 +139,7 @@ environment:
         'when create-repair-migration is called from client directory then it should not fail due to package detection.',
         () async {
           var result = await runServerpod(
-            ['create-repair-migration', '--no-analytics'],
+            ['create-repair-migration'],
             workingDirectory: path.join(d.sandbox, clientDir),
           );
 

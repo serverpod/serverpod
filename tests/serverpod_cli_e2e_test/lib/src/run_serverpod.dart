@@ -105,9 +105,13 @@ Future<ProcessResult> runServerpod(
   List<String> args, {
   String? workingDirectory,
   RunType runType = RunType.compiled,
+  List<String> implicitArgs = const ['--verbose', '--no-analytics'],
 }) async {
   workingDirectory ??= Directory.current.path;
-  final (exe, fullArgs) = await _resolveCommand(args, runType);
+  final (exe, fullArgs) = await _resolveCommand([
+    ...args,
+    ...implicitArgs,
+  ], runType);
   return Process.run(
     exe,
     fullArgs,

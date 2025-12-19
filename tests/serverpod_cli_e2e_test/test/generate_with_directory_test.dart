@@ -18,7 +18,7 @@ void main() async {
 
       setUp(() async {
         var result = await runServerpod(
-          ['create', projectName, '--mini', '-v', '--no-analytics'],
+          ['create', projectName, '--mini'],
           workingDirectory: d.sandbox,
         );
         assert(
@@ -33,7 +33,7 @@ void main() async {
           // Run generate from temp directory (parent of project) using -d with absolute path
           var absoluteServerPath = path.join(d.sandbox, serverDir);
           var result = await runServerpod(
-            ['generate', '-d', absoluteServerPath, '--no-analytics'],
+            ['generate', '-d', absoluteServerPath],
             workingDirectory: d.sandbox,
           );
 
@@ -102,7 +102,7 @@ void main() async {
         () async {
           // Run generate from temp directory using -d with relative path
           var result = await runServerpod(
-            ['generate', '-d', serverDir, '--no-analytics'],
+            ['generate', '-d', serverDir],
             workingDirectory: d.sandbox,
           );
 
@@ -139,7 +139,7 @@ void main() async {
         () async {
           var nonExistentDir = path.join(d.sandbox, 'nonexistent_server');
           var result = await runServerpod(
-            ['generate', '-d', nonExistentDir, '--no-analytics'],
+            ['generate', '-d', nonExistentDir],
             workingDirectory: d.sandbox,
           );
 

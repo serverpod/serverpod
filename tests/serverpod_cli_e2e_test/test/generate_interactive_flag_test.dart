@@ -19,7 +19,7 @@ void main() async {
 
       setUp(() async {
         var result = await runServerpod(
-          ['create', projectName, '--mini', '-v', '--no-analytics'],
+          ['create', projectName, '--mini'],
           workingDirectory: d.sandbox,
         );
         assert(
@@ -30,7 +30,7 @@ void main() async {
 
       test('then code generation succeeds from server directory', () async {
         var result = await runServerpod(
-          ['--no-interactive', 'generate', '--no-analytics'],
+          ['--no-interactive', 'generate'],
           workingDirectory: path.join(d.sandbox, serverDir),
         );
 
@@ -49,7 +49,7 @@ void main() async {
         () async {
           // For this test we need to use startServerpod to set custom environment
           var process = await startServerpod(
-            ['generate', '--no-analytics'],
+            ['generate'],
             workingDirectory: path.join(d.sandbox, serverDir),
           );
 
@@ -81,7 +81,7 @@ void main() async {
 
       test('then --interactive flag overrides CI environment', () async {
         var result = await runServerpod(
-          ['--interactive', 'generate', '--no-analytics'],
+          ['--interactive', 'generate'],
           workingDirectory: path.join(d.sandbox, serverDir),
         );
 
@@ -122,7 +122,7 @@ void main() async {
 
     test('then with --no-interactive it fails with ambiguous error', () async {
       var result = await runServerpod(
-        ['--no-interactive', 'generate', '--no-analytics'],
+        ['--no-interactive', 'generate'],
         workingDirectory: projectRoot,
       );
 
@@ -143,7 +143,7 @@ void main() async {
 
     test('then with --interactive it shows selection prompt', () async {
       var process = await startServerpod(
-        ['--interactive', 'generate', '--no-analytics'],
+        ['--interactive', 'generate'],
         workingDirectory: projectRoot,
       );
 

@@ -14,7 +14,7 @@ void main() async {
 
     setUp(() async {
       var result = await runServerpod(
-        ['create', projectName, '--mini', '-v', '--no-analytics'],
+        ['create', projectName, '--mini'],
         workingDirectory: d.sandbox,
       );
       assert(
@@ -28,7 +28,7 @@ void main() async {
       () async {
         var clientDir = path.join(projectName, '${projectName}_client');
         var result = await runServerpod(
-          ['generate', '--no-analytics'],
+          ['generate'],
           workingDirectory: path.join(d.sandbox, clientDir),
         );
 
@@ -82,7 +82,7 @@ void main() async {
         var libSrcPath = path.join(d.sandbox, serverDir, 'lib', 'src');
 
         var result = await runServerpod(
-          ['generate', '--no-analytics'],
+          ['generate'],
           workingDirectory: libSrcPath,
         );
 
@@ -118,7 +118,7 @@ void main() async {
       'then code generation succeeds when running from project root.',
       () async {
         var result = await runServerpod(
-          ['generate', '--no-analytics'],
+          ['generate'],
           workingDirectory: path.join(d.sandbox, projectName),
         );
 

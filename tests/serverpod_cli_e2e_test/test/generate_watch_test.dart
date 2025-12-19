@@ -27,7 +27,7 @@ void main() async {
     );
     setUp(() async {
       var result = await runServerpod(
-        ['create', projectName, '-v', '--no-analytics'],
+        ['create', projectName],
         workingDirectory: d.sandbox,
       );
       assert(
@@ -43,7 +43,7 @@ void main() async {
 
     test('then the entity files are generated and updated as expected.', () async {
       generateWatch = await startServerpod(
-        ['generate', '--watch', '-v', '--no-analytics'],
+        ['generate', '--watch'],
         workingDirectory: path.join(d.sandbox, serverDir),
       );
 
@@ -177,7 +177,7 @@ fields:
       );
       setUp(() async {
         var result = await runServerpod(
-          ['create', projectName, '-v', '--no-analytics'],
+          ['create', projectName],
           workingDirectory: d.sandbox,
         );
         assert(
@@ -193,7 +193,7 @@ fields:
 
       test('then the entity files are generated and updated as expected.', () async {
         generateWatch = await startServerpod(
-          ['generate', '--watch', '-v', '--no-analytics'],
+          ['generate', '--watch'],
           workingDirectory: path.join(d.sandbox, serverDir),
         );
 
@@ -326,7 +326,7 @@ fields:
     );
     setUp(() async {
       var result = await runServerpod(
-        ['create', projectName, '-v', '--no-analytics'],
+        ['create', projectName],
         workingDirectory: d.sandbox,
       );
       assert(
@@ -341,7 +341,7 @@ fields:
     });
     test('then endpoint dispatcher is generated and updated as expected.', () async {
       generateWatch = await startServerpod(
-        ['generate', '--watch', '-v', '--no-analytics'],
+        ['generate', '--watch'],
         workingDirectory: path.join(d.sandbox, serverDir),
       );
 
@@ -483,7 +483,7 @@ class TestEndpoint extends Endpoint {
       );
       setUp(() async {
         var result = await runServerpod(
-          ['create', projectName, '-v', '--no-analytics'],
+          ['create', projectName],
           workingDirectory: d.sandbox,
         );
         assert(
@@ -499,7 +499,7 @@ class TestEndpoint extends Endpoint {
 
       test('then endpoint dispatcher is generated and updated as expected.', () async {
         generateWatch = await startServerpod(
-          ['generate', '--watch', '-v', '--no-analytics'],
+          ['generate', '--watch'],
           workingDirectory: path.join(d.sandbox, serverDir),
         );
 
@@ -642,7 +642,7 @@ class TestEndpoint extends Endpoint {
       );
       setUp(() async {
         var result = await runServerpod(
-          ['create', projectName, '-v', '--no-analytics'],
+          ['create', projectName],
           workingDirectory: d.sandbox,
         );
         assert(
@@ -692,7 +692,7 @@ fields:
 ''', flush: true);
 
         generateWatch = await startServerpod(
-          ['generate', '--watch', '-v', '--no-analytics'],
+          ['generate', '--watch'],
           workingDirectory: path.join(d.sandbox, serverDir),
         );
 
@@ -797,7 +797,7 @@ fields:
     );
     setUp(() async {
       var result = await runServerpod(
-        ['create', projectName, '-v', '--no-analytics'],
+        ['create', projectName],
         workingDirectory: d.sandbox,
       );
       assert(
@@ -813,7 +813,7 @@ fields:
 
     test('then generator is not triggered.', () async {
       generateWatch = await startServerpod(
-        ['generate', '--watch', '-v', '--no-analytics'],
+        ['generate', '--watch'],
         workingDirectory: path.join(d.sandbox, serverDir),
       );
 
