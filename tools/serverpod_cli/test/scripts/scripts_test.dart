@@ -37,7 +37,7 @@ void main() {
     'when creating a Script, '
     'then it has the correct properties',
     () {
-      var script = const Script(name: 'start', command: 'dart run');
+      var script = Script(name: 'start', command: 'dart run');
 
       expect(script.name, 'start');
       expect(script.command, 'dart run');
@@ -49,8 +49,8 @@ void main() {
     'when comparing, '
     'then they are equal',
     () {
-      var script1 = const Script(name: 'start', command: 'dart run');
-      var script2 = const Script(name: 'start', command: 'dart run');
+      var script1 = Script(name: 'start', command: 'dart run');
+      var script2 = Script(name: 'start', command: 'dart run');
 
       expect(script1, equals(script2));
     },
@@ -61,8 +61,8 @@ void main() {
     'when comparing, '
     'then they are not equal',
     () {
-      var script1 = const Script(name: 'start', command: 'dart run');
-      var script2 = const Script(name: 'start', command: 'dart test');
+      var script1 = Script(name: 'start', command: 'dart run');
+      var script2 = Script(name: 'start', command: 'dart test');
 
       expect(script1, isNot(equals(script2)));
     },
@@ -328,8 +328,8 @@ start:
 
         expect(scripts.length, 1);
         expect(scripts['start']?.name, 'start');
-        expect(scripts['start']?.windowsCommand, 'start.bat');
-        expect(scripts['start']?.posixCommand, './start.sh');
+        expect(scripts['start']?.commands[PlatformGroup.windows], 'start.bat');
+        expect(scripts['start']?.commands[PlatformGroup.posix], './start.sh');
       },
     );
 
@@ -344,8 +344,8 @@ start:
 ''');
 
         expect(scripts.length, 1);
-        expect(scripts['start']?.windowsCommand, 'start.bat');
-        expect(scripts['start']?.posixCommand, isNull);
+        expect(scripts['start']?.commands[PlatformGroup.windows], 'start.bat');
+        expect(scripts['start']?.commands[PlatformGroup.posix], isNull);
       },
     );
 
@@ -360,8 +360,8 @@ start:
 ''');
 
         expect(scripts.length, 1);
-        expect(scripts['start']?.windowsCommand, isNull);
-        expect(scripts['start']?.posixCommand, './start.sh');
+        expect(scripts['start']?.commands[PlatformGroup.windows], isNull);
+        expect(scripts['start']?.commands[PlatformGroup.posix], './start.sh');
       },
     );
 
@@ -378,10 +378,13 @@ platform:
 ''');
 
         expect(scripts.length, 2);
-        expect(scripts['simple']?.windowsCommand, 'dart run');
-        expect(scripts['simple']?.posixCommand, 'dart run');
-        expect(scripts['platform']?.windowsCommand, 'cmd /c start');
-        expect(scripts['platform']?.posixCommand, './run.sh');
+        expect(scripts['simple']?.commands[PlatformGroup.windows], 'dart run');
+        expect(scripts['simple']?.commands[PlatformGroup.posix], 'dart run');
+        expect(
+          scripts['platform']?.commands[PlatformGroup.windows],
+          'cmd /c start',
+        );
+        expect(scripts['platform']?.commands[PlatformGroup.posix], './run.sh');
       },
     );
 
@@ -424,7 +427,7 @@ start:
             isA<ScriptParseException>().having(
               (e) => e.message,
               'message',
-              'Unknown platform "linux". Valid platforms are: windows, posix',
+              'Unknown platform "linux". Valid platforms are: windows or posix',
             ),
           ),
         );
@@ -459,8 +462,8 @@ start:
       'when checking equality with platformSpecific, '
       'then they are equal if commands match',
       () {
-        var simple = const Script(name: 'test', command: 'dart run');
-        var specific = const Script.platformSpecific(
+        var simple = Script(name: 'test', command: 'dart run');
+        var specific = Script.platformSpecific(
           name: 'test',
           windowsCommand: 'dart run',
           posixCommand: 'dart run',
@@ -475,7 +478,7 @@ start:
       'when calling toString, '
       'then it shows both platforms',
       () {
-        var script = const Script.platformSpecific(
+        var script = Script.platformSpecific(
           name: 'start',
           windowsCommand: 'start.bat',
           posixCommand: './start.sh',
@@ -493,7 +496,7 @@ start:
       'when calling toString, '
       'then it shows single command',
       () {
-        var script = const Script(name: 'start', command: 'dart run');
+        var script = Script(name: 'start', command: 'dart run');
 
         expect(script.toString(), 'Script(name: start, command: dart run)');
       },
@@ -504,7 +507,7 @@ start:
       'when checking supportsCurrentPlatform, '
       'then it returns true',
       () {
-        var script = const Script(name: 'start', command: 'dart run');
+        var script = Script(name: 'start', command: 'dart run');
 
         expect(script.supportsCurrentPlatform, isTrue);
       },
@@ -517,11 +520,11 @@ start:
       () {
         // Create a script that only supports the other platform
         var script = Platform.isWindows
-            ? const Script.platformSpecific(
+            ? Script.platformSpecific(
                 name: 'start',
                 posixCommand: './start.sh',
               )
-            : const Script.platformSpecific(
+            : Script.platformSpecific(
                 name: 'start',
                 windowsCommand: 'start.bat',
               );
@@ -537,11 +540,11 @@ start:
       () {
         // Create a script that only supports the other platform
         var script = Platform.isWindows
-            ? const Script.platformSpecific(
+            ? Script.platformSpecific(
                 name: 'start',
                 posixCommand: './start.sh',
               )
-            : const Script.platformSpecific(
+            : Script.platformSpecific(
                 name: 'start',
                 windowsCommand: 'start.bat',
               );
@@ -554,14 +557,14 @@ start:
                 .having(
                   (e) => e.platform,
                   'platform',
-                  Platform.isWindows ? 'Windows' : 'POSIX',
+                  Platform.isWindows ? 'windows' : 'posix',
                 )
                 .having(
                   (e) => e.toString(),
                   'toString()',
                   Platform.isWindows
-                      ? 'Script "start" is not available on Windows'
-                      : 'Script "start" is not available on POSIX',
+                      ? 'Script "start" is not available on windows'
+                      : 'Script "start" is not available on posix',
                 ),
           ),
         );

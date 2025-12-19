@@ -1,5 +1,7 @@
+import 'dart:collection';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:yaml/yaml.dart';
 
 /// Exception thrown when there's an error parsing a script from YAML.
@@ -39,24 +41,25 @@ class Script {
   /// The name of the script (the key in the YAML map).
   final String name;
 
-  /// The command to execute on Windows, or null if not specified.
-  final String? windowsCommand;
+  /// The commands to execute per platform group
+  final Map<PlatformGroup, String> commands;
 
-  /// The command to execute on POSIX systems (macOS, Linux), or null if not
-  /// specified.
-  final String? posixCommand;
+  const Script._(
+    this.name,
+    this.commands,
+  );
 
-  const Script({
-    required this.name,
-    required String command,
-  }) : windowsCommand = command,
-       posixCommand = command;
+  Script({required String name, required String command})
+    : this._(name, ConstantMap(keys: PlatformGroup.values, value: command));
 
-  const Script.platformSpecific({
-    required this.name,
-    this.windowsCommand,
-    this.posixCommand,
-  });
+  Script.platformSpecific({
+    required String name,
+    String? windowsCommand,
+    String? posixCommand,
+  }) : this._(name, {
+         if (windowsCommand != null) PlatformGroup.windows: windowsCommand,
+         if (posixCommand != null) PlatformGroup.posix: posixCommand,
+       });
 
   /// Creates a [Script] from a YAML node.
   ///
@@ -91,9 +94,7 @@ class Script {
     required String name,
     required YamlMap mapNode,
   }) {
-    String? windowsCommand;
-    String? posixCommand;
-
+    final commands = <PlatformGroup, String>{};
     for (final entry in mapNode.nodes.entries) {
       final keyNode = entry.key as YamlNode;
       final key = keyNode.value;
@@ -115,68 +116,101 @@ class Script {
         );
       }
 
-      switch (key) {
-        case 'windows':
-          windowsCommand = command;
-        case 'posix':
-          posixCommand = command;
-        default:
-          throw ScriptParseException(
-            'Unknown platform "$key". Valid platforms are: windows, posix',
-            keyNode.span,
-          );
+      final platform = PlatformGroup.tryParse(key);
+      if (platform == null) {
+        throw ScriptParseException(
+          'Unknown platform "$key". Valid platforms are: ${PlatformGroup.values._format()}',
+          keyNode.span,
+        );
       }
+
+      commands[platform] = command;
     }
 
-    if (windowsCommand == null && posixCommand == null) {
+    if (commands.isEmpty) {
       throw ScriptParseException(
         'Script "$name" must specify at least one platform command '
-        '(windows or posix)',
+        '(${PlatformGroup.values._format()})',
         mapNode.span,
       );
     }
 
-    return Script.platformSpecific(
-      name: name,
-      windowsCommand: windowsCommand,
-      posixCommand: posixCommand,
-    );
+    return Script._(name, commands);
   }
 
   /// Returns the command for the current platform.
   ///
   /// Throws [UnsupportedPlatformException] if no command is defined for the
   /// current platform.
-  String get command {
-    final cmd = Platform.isWindows ? windowsCommand : posixCommand;
-    if (cmd == null) {
-      final platform = Platform.isWindows ? 'Windows' : 'POSIX';
-      throw UnsupportedPlatformException(name, platform);
-    }
-    return cmd;
-  }
+  String get command =>
+      commands[PlatformGroup.current] ??
+      (throw UnsupportedPlatformException(name, PlatformGroup.current.name));
 
   /// Returns true if this script has a command for the current platform.
-  bool get supportsCurrentPlatform =>
-      Platform.isWindows ? windowsCommand != null : posixCommand != null;
+  bool get supportsCurrentPlatform => commands[PlatformGroup.current] != null;
 
   @override
   String toString() {
-    if (windowsCommand == posixCommand) {
-      return 'Script(name: $name, command: $windowsCommand)';
-    }
-    return 'Script(name: $name, windows: $windowsCommand, posix: $posixCommand)';
+    final commandsString = switch (commands) {
+      ConstantMap cm => 'command: ${cm.value}',
+      _ => commands._format(),
+    };
+    return 'Script(name: $name, $commandsString)';
   }
+
+  static const _mapEquality = MapEquality<PlatformGroup, String>();
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Script &&
-          runtimeType == other.runtimeType &&
           name == other.name &&
-          windowsCommand == other.windowsCommand &&
-          posixCommand == other.posixCommand;
+          _mapEquality.equals(commands, other.commands);
 
   @override
-  int get hashCode => Object.hash(name, windowsCommand, posixCommand);
+  int get hashCode => Object.hash(name, _mapEquality.hash(commands));
+}
+
+enum PlatformGroup {
+  windows,
+  posix;
+
+  static PlatformGroup get current {
+    if (Platform.isWindows) return PlatformGroup.windows;
+    if (Platform.isLinux || Platform.isMacOS) return PlatformGroup.posix;
+    throw UnsupportedError(Platform.operatingSystem);
+  }
+
+  static final _nameMap = PlatformGroup.values.asNameMap();
+  static PlatformGroup? tryParse(String s) => _nameMap[s];
+
+  @override
+  String toString() => name;
+}
+
+extension<T> on Iterable<T> {
+  String _format() {
+    return switch (length) {
+      0 => '',
+      1 => first.toString(),
+      2 => '$first or $last',
+      _ => '${take(length - 1).join(', ')}, or $last', // Oxford comma
+    };
+  }
+}
+
+extension<K, V> on Map<K, V> {
+  String _format() => entries.map((e) => '${e.key}: ${e.value}').join(', ');
+}
+
+class ConstantMap<K extends Enum, V> extends UnmodifiableMapBase<K, V> {
+  final V value;
+
+  const ConstantMap({required this.value, required this.keys});
+
+  @override
+  final Iterable<K> keys;
+
+  @override
+  V operator [](covariant K? _) => value;
 }
