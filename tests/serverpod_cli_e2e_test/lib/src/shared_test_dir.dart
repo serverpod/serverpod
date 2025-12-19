@@ -22,7 +22,7 @@ Directory _initSharedTestDir() {
     return testRunDir;
   }
 
-  // Clean up stale directories from other PIDs. Mostly to accomodate Windows,
+  // Clean up stale directories from other PIDs. Mostly to accommodate Windows,
   // but will also cleanup faster on MacOS and Linux.
   final now = DateTime.now();
   for (final entity in Directory.systemTemp.listSync()) {
