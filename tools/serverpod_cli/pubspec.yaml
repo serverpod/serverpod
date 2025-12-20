@@ -18,6 +18,7 @@ dependencies:
   ci: ^0.1.0
   cli_tools: ^0.10.0
   code_builder: ^4.5.0
+  collection: ^1.18.0
   config: ^0.8.3
   dart_style: ^3.0.0
   http: '>=1.1.0 <2.0.0'
