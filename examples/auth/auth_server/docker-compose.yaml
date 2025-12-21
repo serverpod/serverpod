@@ -3,7 +3,7 @@ services:
   postgres:
     image: pgvector/pgvector:pg16
     ports:
-      - "8090:5432"
+      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: auth
@@ -14,7 +14,7 @@ services:
   redis:
     image: redis:6.2.6
     ports:
-      - "8091:6379"
+      - "6379:6379"
     command: redis-server --requirepass "DNn7H0_PXGgdMSuZOuLo6hyyzi4YCY6Z"
     environment:
       - REDIS_REPLICATION_MODE=master
@@ -23,7 +23,7 @@ services:
   postgres_test:
     image: pgvector/pgvector:pg16
     ports:
-      - "9090:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: auth_test
