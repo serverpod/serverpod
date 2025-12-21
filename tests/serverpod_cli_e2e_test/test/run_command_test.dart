@@ -1,4 +1,4 @@
-@TestOn('!windows')
+@Timeout(const Duration(minutes: 5)) // allow time to compile serverpod
 library;
 
 import 'dart:io';
@@ -8,6 +8,15 @@ import 'package:serverpod_cli_e2e_test/src/matchers/contains_lines.dart';
 import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
+
+final listsScripts = containsLines([
+  'hello',
+  'fail',
+  'succeed',
+  'start',
+  'test',
+  'trap',
+]);
 
 void main() {
   late String serverDir;
@@ -24,11 +33,15 @@ dependencies:
 
 serverpod:
   scripts:
-    hello: echo "Hello from script"
+    hello:
+      windows: echo Hello from script
+      posix: echo "Hello from script"
     fail: exit 42
+    succeed: exit 0
     start: dart bin/main.dart
     test: dart test
-    trap: trap "echo SIGINT; exit 0" INT; echo "Trap Running"; while :; do sleep 0.1; done
+    trap:
+      posix: trap "echo SIGINT; exit 0" INT; echo "Trap Running"; while :; do sleep 0.1; done
 '''),
     ]).create();
     serverDir = p.join(d.sandbox, 'test_server');
@@ -60,6 +73,18 @@ serverpod:
   );
 
   test(
+    'when running a shared script that succeeds, then the exit code is propagated',
+    () async {
+      final result = await runServerpod(
+        ['run', 'succeed'],
+        workingDirectory: serverDir,
+      );
+
+      expect(result.exitCode, 0);
+    },
+  );
+
+  test(
     'when running with --list flag, then all scripts are listed',
     () async {
       final result = await runServerpod(
@@ -68,10 +93,7 @@ serverpod:
       );
 
       expect(result.exitCode, 0);
-      expect(
-        result.stdout,
-        containsLines(['hello:', 'fail:', 'start:', 'test:']),
-      );
+      expect(result.stdout, listsScripts);
     },
   );
 
@@ -95,10 +117,7 @@ serverpod:
     });
 
     test('then all available scripts are listed', () {
-      expect(
-        result.stdout,
-        containsLines(['hello:', 'fail:', 'start:', 'test:']),
-      );
+      expect(result.stdout, listsScripts);
     });
   });
 
@@ -112,10 +131,7 @@ serverpod:
 
       expect(result.exitCode, 0);
       expect(result.stdout, contains('Available scripts:'));
-      expect(
-        result.stdout,
-        containsLines(['hello:', 'fail:', 'start:', 'test:']),
-      );
+      expect(result.stdout, listsScripts);
     },
   );
 
@@ -147,7 +163,9 @@ serverpod:
       expect(stdout, contains('SIGINT'));
       expect(exitCode, 0);
     },
-    timeout: Timeout(const Duration(minutes: 3)), // allow time to compile
+    skip: Platform.isWindows
+        ? 'trap is a bash builtin, not available on Windows'
+        : null,
   );
 
   group('given pubspec without serverpod namespace', () {
