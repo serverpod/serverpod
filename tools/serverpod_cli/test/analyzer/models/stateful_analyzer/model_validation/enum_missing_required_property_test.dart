@@ -42,13 +42,15 @@ void main() {
       );
     });
 
-    test('then the error message identifies the missing property and value.',
-        () {
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'Required property "name" is missing for enum value "first".',
-      );
-    });
+    test(
+      'then the error message identifies the missing property and value.',
+      () {
+        var error = collector.errors.first;
+        expect(
+          error.message,
+          'Required property "name" is missing for enum value "first".',
+        );
+      },
+    );
   });
 }
