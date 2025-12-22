@@ -83,6 +83,8 @@ basicDatabase:
   - getTypesRawQuery:
   - storeObjectWithEnum:
   - getObjectWithEnum:
+  - storeObjectWithEnumEnhanced:
+  - getObjectWithEnumEnhanced:
   - storeObjectWithObject:
   - getObjectWithObject:
   - deleteAll:

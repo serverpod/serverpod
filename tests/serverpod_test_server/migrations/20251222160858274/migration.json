@@ -1,0 +1,67 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "object_with_enum_enhanced",
+        "dartName": "ObjectWithEnumEnhanced",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('object_with_enum_enhanced_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "testEnumEnhanced",
+            "columnType": 6,
+            "isNullable": false,
+            "dartType": "protocol:TestEnumEnhanced"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "nullableEnumEnhanced",
+            "columnType": 6,
+            "isNullable": true,
+            "dartType": "protocol:TestEnumEnhanced?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "enumEnhancedList",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "List<protocol:TestEnumEnhanced>"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "object_with_enum_enhanced_pkey",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}

@@ -111,7 +111,11 @@ void main() {
         );
 
         var error = collector.errors.first;
-        expect(error.message, contains('not supported'));
+        expect(
+          error.message,
+          'The property type "List<String>" is not supported. '
+          'Supported types are: int, int?, double, double?, bool, bool?, String, String?.',
+        );
       },
     );
 
@@ -145,7 +149,10 @@ void main() {
         );
 
         var error = collector.errors.first;
-        expect(error.message, contains('reserved'));
+        expect(
+          error.message,
+          'The property name "class" is reserved and cannot be used.',
+        );
       },
     );
 
@@ -248,9 +255,10 @@ void main() {
         );
 
         final error = collector.errors.first;
-        expect(error.message, contains('Required property'));
-        expect(error.message, contains('name'));
-        expect(error.message, contains('missing'));
+        expect(
+          error.message,
+          'Required property "name" is missing for enum value "first".',
+        );
       },
     );
   });
