@@ -44,14 +44,14 @@ void run(List<String> args) async {
     ),
   );
 
-  // final appleIdpConfig = AppleIdpConfig(
-  //   serviceIdentifier: pod.getPassword('appleServiceIdentifier')!,
-  //   bundleIdentifier: pod.getPassword('appleBundleIdentifier')!,
-  //   redirectUri: pod.getPassword('appleRedirectUri')!,
-  //   teamId: pod.getPassword('appleTeamId')!,
-  //   keyId: pod.getPassword('appleKeyId')!,
-  //   key: pod.getPassword('appleKey')!,
-  // );
+  final appleIdpConfig = AppleIdpConfig(
+    serviceIdentifier: pod.getPassword('appleServiceIdentifier')!,
+    bundleIdentifier: pod.getPassword('appleBundleIdentifier')!,
+    redirectUri: pod.getPassword('appleRedirectUri')!,
+    teamId: pod.getPassword('appleTeamId')!,
+    keyId: pod.getPassword('appleKeyId')!,
+    key: pod.getPassword('appleKey')!,
+  );
 
   final emailIdpConfig = EmailIdpConfig(
     secretHashPepper: pod.getPassword('emailSecretHashPepper')!,
@@ -74,7 +74,7 @@ void run(List<String> args) async {
     identityProviderBuilders: [
       anonymousIdpConfig,
       googleIdpConfig,
-      // appleIdpConfig,
+      appleIdpConfig,
       emailIdpConfig,
       passkeyIdpConfig,
     ],
@@ -82,10 +82,10 @@ void run(List<String> args) async {
 
   // Paths must match paths configured on Apple's developer portal. The values
   // below are the defaults if not provided.
-  // pod.configureAppleIdpRoutes(
-  //   revokedNotificationRoutePath: '/hooks/apple-notification',
-  //   webAuthenticationCallbackRoutePath: '/auth/callback',
-  // );
+  pod.configureAppleIdpRoutes(
+    revokedNotificationRoutePath: '/hooks/apple-notification',
+    webAuthenticationCallbackRoutePath: '/auth/callback',
+  );
 
   // Start the server.
   await pod.start();

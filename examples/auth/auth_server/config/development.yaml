@@ -30,7 +30,7 @@ webServer:
 # This is the database setup for your server.
 database:
   host: localhost
-  port: 5432
+  port: 8090
   name: auth
   user: postgres
   #requireSsl: true # defaults to false
@@ -40,7 +40,7 @@ database:
 redis:
   enabled: false
   host: localhost
-  port: 6379
+  port: 8091
   #user: # defaults to empty
   #requireSsl: true # defaults to false
 
@@ -50,7 +50,6 @@ sessionLogs:
   persistentEnabled: true
   consoleEnabled: true
   consoleLogFormat: text # Defaults to "json", options are "text" or "json"
-
 
 # futureCallExecutionEnabled: true # Defaults to true
 
