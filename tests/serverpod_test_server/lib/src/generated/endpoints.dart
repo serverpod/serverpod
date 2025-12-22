@@ -4257,7 +4257,7 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['map'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then((container) => _i62.mapContainerToJson(container)),
         ),
         'returnDateTimeBoolMapNullable': _i1.MethodConnector(
           name: 'returnDateTimeBoolMapNullable',
@@ -4281,7 +4281,7 @@ class Endpoints extends _i1.EndpointDispatch {
                       .then(
                         (container) => container == null
                             ? null
-                            : _i61.mapContainerToJson(container),
+                            : _i62.mapContainerToJson(container),
                       ),
         ),
         'returnIntStringMap': _i1.MethodConnector(
@@ -4303,7 +4303,7 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['map'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then((container) => _i62.mapContainerToJson(container)),
         ),
         'returnIntStringMapNullable': _i1.MethodConnector(
           name: 'returnIntStringMapNullable',
@@ -4327,7 +4327,7 @@ class Endpoints extends _i1.EndpointDispatch {
                       .then(
                         (container) => container == null
                             ? null
-                            : _i61.mapContainerToJson(container),
+                            : _i62.mapContainerToJson(container),
                       ),
         ),
       },

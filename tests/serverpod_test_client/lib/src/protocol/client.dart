@@ -1926,7 +1926,7 @@ class EndpointMapParameters extends _i1.EndpointRef {
   ) => caller.callServerEndpoint<Map<DateTime, bool>>(
     'mapParameters',
     'returnDateTimeBoolMap',
-    {'map': _i17.mapContainerToJson(map)},
+    {'map': _i18.mapContainerToJson(map)},
   );
 
   _i2.Future<Map<DateTime, bool>?> returnDateTimeBoolMapNullable(
@@ -1934,14 +1934,14 @@ class EndpointMapParameters extends _i1.EndpointRef {
   ) => caller.callServerEndpoint<Map<DateTime, bool>?>(
     'mapParameters',
     'returnDateTimeBoolMapNullable',
-    {'map': map == null ? null : _i17.mapContainerToJson(map)},
+    {'map': map == null ? null : _i18.mapContainerToJson(map)},
   );
 
   _i2.Future<Map<int, String>> returnIntStringMap(Map<int, String> map) =>
       caller.callServerEndpoint<Map<int, String>>(
         'mapParameters',
         'returnIntStringMap',
-        {'map': _i17.mapContainerToJson(map)},
+        {'map': _i18.mapContainerToJson(map)},
       );
 
   _i2.Future<Map<int, String>?> returnIntStringMapNullable(
@@ -1949,7 +1949,7 @@ class EndpointMapParameters extends _i1.EndpointRef {
   ) => caller.callServerEndpoint<Map<int, String>?>(
     'mapParameters',
     'returnIntStringMapNullable',
-    {'map': map == null ? null : _i17.mapContainerToJson(map)},
+    {'map': map == null ? null : _i18.mapContainerToJson(map)},
   );
 }
 
