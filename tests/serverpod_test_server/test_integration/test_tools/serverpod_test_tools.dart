@@ -7015,7 +7015,7 @@ class _MapParametersEndpoint {
           endpointPath: 'mapParameters',
           methodName: 'returnDateTimeBoolMap',
           parameters: _i1.testObjectToJson({
-            'map': _i17.mapContainerToJson(map),
+            'map': _i18.mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -7025,7 +7025,7 @@ class _MapParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (map) => _i17.Protocol().deserialize<Map<DateTime, bool>>(map),
+              (map) => _i18.Protocol().deserialize<Map<DateTime, bool>>(map),
             );
         return _localReturnValue;
       } finally {
@@ -7050,7 +7050,7 @@ class _MapParametersEndpoint {
           endpointPath: 'mapParameters',
           methodName: 'returnDateTimeBoolMapNullable',
           parameters: _i1.testObjectToJson({
-            'map': map == null ? null : _i17.mapContainerToJson(map),
+            'map': map == null ? null : _i18.mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -7060,7 +7060,7 @@ class _MapParametersEndpoint {
               _localCallContext.arguments,
             )
             .then(
-              (map) => _i17.Protocol().deserialize<Map<DateTime, bool>?>(map),
+              (map) => _i18.Protocol().deserialize<Map<DateTime, bool>?>(map),
             );
         return _localReturnValue;
       } finally {
@@ -7085,7 +7085,7 @@ class _MapParametersEndpoint {
           endpointPath: 'mapParameters',
           methodName: 'returnIntStringMap',
           parameters: _i1.testObjectToJson({
-            'map': _i17.mapContainerToJson(map),
+            'map': _i18.mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -7094,7 +7094,7 @@ class _MapParametersEndpoint {
               _localUniqueSession,
               _localCallContext.arguments,
             )
-            .then((map) => _i17.Protocol().deserialize<Map<int, String>>(map));
+            .then((map) => _i18.Protocol().deserialize<Map<int, String>>(map));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -7118,7 +7118,7 @@ class _MapParametersEndpoint {
           endpointPath: 'mapParameters',
           methodName: 'returnIntStringMapNullable',
           parameters: _i1.testObjectToJson({
-            'map': map == null ? null : _i17.mapContainerToJson(map),
+            'map': map == null ? null : _i18.mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -7127,7 +7127,7 @@ class _MapParametersEndpoint {
               _localUniqueSession,
               _localCallContext.arguments,
             )
-            .then((map) => _i17.Protocol().deserialize<Map<int, String>?>(map));
+            .then((map) => _i18.Protocol().deserialize<Map<int, String>?>(map));
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
