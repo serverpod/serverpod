@@ -1963,6 +1963,18 @@ class Restrictions {
               );
             }
           }
+
+          // Validate that all provided properties are defined
+          final definedPropertyNames =
+              enumDef.properties.map((p) => p.name).toSet();
+          for (final providedProperty in providedProperties) {
+            if (!definedPropertyNames.contains(providedProperty)) {
+              return SourceSpanSeverityException(
+                'Property "$providedProperty" is not defined for enum "${enumDef.className}".',
+                keyNode.span,
+              );
+            }
+          }
         }
 
         return null;
