@@ -3,19 +3,20 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given an enhanced enum with custom properties', () {
-    test('when accessing shortName property then it returns correct value',
-        () {
+    test('when accessing shortName property then it returns correct value', () {
       expect(TestEnumEnhanced.one.shortName, '1');
       expect(TestEnumEnhanced.two.shortName, '2');
       expect(TestEnumEnhanced.three.shortName, '3');
     });
 
-    test('when accessing description property then it returns correct value',
-        () {
-      expect(TestEnumEnhanced.one.description, 'The first value');
-      expect(TestEnumEnhanced.two.description, 'The second value');
-      expect(TestEnumEnhanced.three.description, 'The third value');
-    });
+    test(
+      'when accessing description property then it returns correct value',
+      () {
+        expect(TestEnumEnhanced.one.description, 'The first value');
+        expect(TestEnumEnhanced.two.description, 'The second value');
+        expect(TestEnumEnhanced.three.description, 'The third value');
+      },
+    );
 
     test('when accessing priority property then default value is used', () {
       expect(TestEnumEnhanced.one.priority, 10);
@@ -35,14 +36,16 @@ void main() {
       expect(TestEnumEnhanced.three.toJson(), 2);
     });
 
-    test('when serializing and deserializing then properties are preserved',
-        () {
-      var encoded = SerializationManager.encode(TestEnumEnhanced.one);
-      var decoded = Protocol().decode<TestEnumEnhanced>(encoded);
-      expect(decoded, TestEnumEnhanced.one);
-      expect(decoded.shortName, '1');
-      expect(decoded.priority, 10);
-    });
+    test(
+      'when serializing and deserializing then properties are preserved',
+      () {
+        var encoded = SerializationManager.encode(TestEnumEnhanced.one);
+        var decoded = Protocol().decode<TestEnumEnhanced>(encoded);
+        expect(decoded, TestEnumEnhanced.one);
+        expect(decoded.shortName, '1');
+        expect(decoded.priority, 10);
+      },
+    );
 
     test('when deserializing then default property values are preserved', () {
       var encoded = SerializationManager.encode(TestEnumEnhanced.two);
