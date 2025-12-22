@@ -9,14 +9,14 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   group(
-      'Given an enum value with a property that is not defined when parsing',
-      () {
-    late CodeGenerationCollector collector;
+    'Given an enum value with a property that is not defined when parsing',
+    () {
+      late CodeGenerationCollector collector;
 
-    setUp(() {
-      var modelSources = [
-        ModelSourceBuilder().withYaml(
-          '''
+      setUp(() {
+        var modelSources = [
+          ModelSourceBuilder().withYaml(
+            '''
           enum: ExampleEnum
           properties:
             id: int
@@ -25,31 +25,32 @@ void main() {
                 id: 1
                 unknownProperty: 'test'
           ''',
-        ).build(),
-      ];
+          ).build(),
+        ];
 
-      collector = CodeGenerationCollector();
-      StatefulAnalyzer(
-        config,
-        modelSources,
-        onErrorsCollector(collector),
-      ).validateAll();
-    });
+        collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          modelSources,
+          onErrorsCollector(collector),
+        ).validateAll();
+      });
 
-    test('then an error is collected.', () {
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error for undefined property.',
-      );
-    });
+      test('then an error is collected.', () {
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error for undefined property.',
+        );
+      });
 
-    test('then the error message identifies the undefined property.', () {
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'Property "unknownProperty" is not defined for enum "ExampleEnum".',
-      );
-    });
-  });
+      test('then the error message identifies the undefined property.', () {
+        var error = collector.errors.first;
+        expect(
+          error.message,
+          'Property "unknownProperty" is not defined for enum "ExampleEnum".',
+        );
+      });
+    },
+  );
 }

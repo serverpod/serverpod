@@ -15,8 +15,9 @@ void main() {
             .withTestEnumEnhanced(TestEnumEnhanced.two)
             .build();
 
-        var result =
-            await client.basicDatabase.storeObjectWithEnumEnhanced(object);
+        var result = await client.basicDatabase.storeObjectWithEnumEnhanced(
+          object,
+        );
 
         expect(result.id, isNotNull);
       },
@@ -29,8 +30,9 @@ void main() {
             .withTestEnumEnhanced(TestEnumEnhanced.two)
             .build();
 
-        var result =
-            await client.basicDatabase.storeObjectWithEnumEnhanced(object);
+        var result = await client.basicDatabase.storeObjectWithEnumEnhanced(
+          object,
+        );
 
         expect(result.testEnumEnhanced, equals(TestEnumEnhanced.two));
       },
@@ -43,8 +45,9 @@ void main() {
             .withTestEnumEnhanced(TestEnumEnhanced.one)
             .build();
 
-        var result =
-            await client.basicDatabase.storeObjectWithEnumEnhanced(object);
+        var result = await client.basicDatabase.storeObjectWithEnumEnhanced(
+          object,
+        );
 
         expect(result.testEnumEnhanced.shortName, equals('1'));
         expect(result.testEnumEnhanced.description, equals('The first value'));
@@ -59,8 +62,9 @@ void main() {
             .withTestEnumEnhanced(TestEnumEnhanced.three)
             .build();
 
-        var result =
-            await client.basicDatabase.storeObjectWithEnumEnhanced(object);
+        var result = await client.basicDatabase.storeObjectWithEnumEnhanced(
+          object,
+        );
 
         expect(result.testEnumEnhanced.priority, equals(0)); // default value
       },
@@ -71,8 +75,9 @@ void main() {
       () async {
         var object = ObjectWithEnumEnhancedBuilder().build();
 
-        var result =
-            await client.basicDatabase.storeObjectWithEnumEnhanced(object);
+        var result = await client.basicDatabase.storeObjectWithEnumEnhanced(
+          object,
+        );
 
         expect(result.nullableEnumEnhanced, isNull);
       },
@@ -81,16 +86,15 @@ void main() {
     test(
       'when enhanced enum list is roundtripped then all values are preserved',
       () async {
-        var object = ObjectWithEnumEnhancedBuilder()
-            .withEnumEnhancedList([
-              TestEnumEnhanced.one,
-              TestEnumEnhanced.two,
-              TestEnumEnhanced.three,
-            ])
-            .build();
+        var object = ObjectWithEnumEnhancedBuilder().withEnumEnhancedList([
+          TestEnumEnhanced.one,
+          TestEnumEnhanced.two,
+          TestEnumEnhanced.three,
+        ]).build();
 
-        var result =
-            await client.basicDatabase.storeObjectWithEnumEnhanced(object);
+        var result = await client.basicDatabase.storeObjectWithEnumEnhanced(
+          object,
+        );
 
         expect(
           result.enumEnhancedList,
