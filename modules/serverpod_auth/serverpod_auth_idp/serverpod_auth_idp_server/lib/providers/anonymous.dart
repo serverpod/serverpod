@@ -5,7 +5,11 @@ library;
 export 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     show AuthSuccess;
 
-export '../src/generated/protocol.dart' show AppleAccount;
+export '../src/generated/protocol.dart'
+    show
+        AnonymousAccount,
+        AnonymousAccountBlockedException,
+        AnonymousAccountBlockedExceptionReason;
 export '../src/providers/anonymous/business/anonymous_idp.dart';
 export '../src/providers/anonymous/business/anonymous_idp_config.dart';
 export '../src/providers/anonymous/business/anonymous_idp_utils.dart';
