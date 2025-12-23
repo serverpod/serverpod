@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/src/utils/session_extension.dart';
 
 import '../../../../../core.dart';
 import '../../../../../providers/email.dart' show RateLimit;
@@ -40,13 +41,15 @@ class AnonymousIdpAccountCreationUtil {
     if (_rateLimitUtil != null) {
       await _rateLimitUtil.recordAttempt(
         session,
-        nonce: '', // TODO: What to provide here?
+        // TODO: Is this correct?
+        nonce: session.remoteIpAddress?.toString() ?? '',
         transaction: transaction,
       );
 
       final attemptCount = await _rateLimitUtil.countAttempts(
         session,
-        nonce: '', // TODO: What to provide here?
+        // TODO: Is this correct?
+        nonce: session.remoteIpAddress?.toString() ?? '',
         transaction: transaction,
       );
 
