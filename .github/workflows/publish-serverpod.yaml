@@ -34,9 +34,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Dart SDK
-        uses: dart-lang/setup-dart@v1
-
       - name: Read version files
         id: versions
         run: |
@@ -51,6 +48,9 @@ jobs:
         with:
           flutter-version: ${{ steps.versions.outputs.flutter_version_clean }}
           channel: 'stable'
+
+      - name: Set up Dart SDK
+        uses: dart-lang/setup-dart@v1
 
       - name: Get dependencies for CLI
         run: |
