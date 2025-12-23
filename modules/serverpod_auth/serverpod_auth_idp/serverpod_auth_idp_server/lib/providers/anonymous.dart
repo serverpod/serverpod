@@ -1,4 +1,4 @@
-/// This library contains the Apple authentication provider for the
+/// This library contains the Anonymous authentication provider for the
 /// Serverpod Idp module.
 library;
 
