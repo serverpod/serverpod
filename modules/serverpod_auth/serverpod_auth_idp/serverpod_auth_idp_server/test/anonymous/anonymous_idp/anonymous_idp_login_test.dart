@@ -22,7 +22,7 @@ void main() {
         fixture = AnonymousIdpTestFixture();
       });
 
-      test('can create a new account', () async {
+      test('when logging in anonymously then a new account is created', () async {
         final result = fixture.anonymousIdp.login(session);
         await expectLater(result, completion(isA<AuthSuccess>()));
       });
