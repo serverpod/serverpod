@@ -1631,7 +1631,7 @@ typedef _InvokeFutureCall =
       Class(
         (c) => c
           ..name = '_FutureCalls'
-          ..implements.add(refer('FutureCallInitializer', serverpodUrl(true)))
+          ..extend = refer('FutureCallInitializer', serverpodUrl(true))
           ..fields.addAll([
             Field(
               (f) => f
@@ -1663,13 +1663,8 @@ typedef _InvokeFutureCall =
                   ),
                 ])
                 ..body = Block.of([
-                  if (protocolDefinition.futureCalls.isNotEmpty &&
-                      !protocolDefinition.futureCalls.every(
-                        (futureCall) => futureCall.isAbstract,
-                      )) ...[
-                    _buildFutureCallLookupMap(protocolDefinition.futureCalls),
-                    _buildFutureCallDispatchInitializer(),
-                  ],
+                  _buildRegisteredFutureCalls(protocolDefinition.futureCalls),
+                  _buildFutureCallDispatchInitializer(),
                 ]),
             ),
           )
@@ -1777,26 +1772,26 @@ typedef _InvokeFutureCall =
     ]);
   }
 
-  Code _buildFutureCallLookupMap(List<FutureCallDefinition> futureCalls) {
-    return refer('var registeredFutureCalls')
-        .assign(
-          literalMap(
-            {
-              for (var futureCall in futureCalls)
-                for (var method in futureCall.methods)
-                  if (!futureCall.isAbstract)
-                    _getFutureCallClassName(
-                      futureCall.name,
-                      method.name,
-                    ): refer(
-                      _getFutureCallClassName(futureCall.name, method.name),
-                    ).call([]),
-            },
-            refer('String'),
-            refer('FutureCall', serverpodUrl(true)),
-          ),
-        )
-        .statement;
+  Code _buildRegisteredFutureCalls(List<FutureCallDefinition> futureCalls) {
+    Code buildFutureCallMethod(
+      FutureCallDefinition futureCall,
+      FutureCallMethodDefinition method,
+    ) {
+      final name = _getFutureCallClassName(
+        futureCall.name,
+        method.name,
+      );
+
+      return refer(
+        'registeredFutureCalls',
+      ).index(literalString(name)).assign(refer(name).call([])).statement;
+    }
+
+    return Block.of([
+      for (var futureCall in futureCalls)
+        for (var method in futureCall.methods)
+          if (!futureCall.isAbstract) buildFutureCallMethod(futureCall, method),
+    ]);
   }
 
   /// Generates FutureCallRef for server side.
@@ -1834,7 +1829,7 @@ typedef _InvokeFutureCall =
           // Getters for future call callers
           ..methods.addAll([
             for (var futureCall in protocolDefinition.futureCalls)
-              if (futureCall.methods.isNotEmpty)
+              if (!futureCall.isAbstract && futureCall.methods.isNotEmpty)
                 Method(
                   (m) => m
                     ..name = futureCall.name
@@ -1862,7 +1857,7 @@ typedef _InvokeFutureCall =
   /// Generates dispatchers for all future call classes.
   void _generateFutureCallDispatchers(LibraryBuilder libraryBuilder) {
     for (final futureCall in protocolDefinition.futureCalls) {
-      if (futureCall.methods.isEmpty) continue;
+      if (futureCall.isAbstract || futureCall.methods.isEmpty) continue;
       // FutureCallDispatcher class
       libraryBuilder.body.add(
         Class(

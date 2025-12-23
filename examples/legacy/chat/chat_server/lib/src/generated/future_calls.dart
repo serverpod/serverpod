@@ -21,7 +21,7 @@ typedef _InvokeFutureCall =
 /// Global variable for accessing future calls via a typed interface.
 final futureCalls = _FutureCalls();
 
-class _FutureCalls implements _i1.FutureCallInitializer {
+class _FutureCalls extends _i1.FutureCallInitializer {
   _i1.FutureCallManager? _futureCallManager;
 
   String? _serverId;
@@ -31,9 +31,8 @@ class _FutureCalls implements _i1.FutureCallInitializer {
     _i1.FutureCallManager futureCallManager,
     String serverId,
   ) {
-    var registeredFutureCalls = <String, _i1.FutureCall>{
-      'ExampleInvokeFutureCall': ExampleInvokeFutureCall(),
-    };
+    registeredFutureCalls['ExampleInvokeFutureCall'] =
+        ExampleInvokeFutureCall();
     _futureCallManager = futureCallManager;
     _serverId = serverId;
     for (final entry in registeredFutureCalls.entries) {

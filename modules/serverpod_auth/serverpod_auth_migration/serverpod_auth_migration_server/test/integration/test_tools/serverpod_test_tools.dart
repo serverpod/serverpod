@@ -14,6 +14,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
+import 'package:serverpod_auth_migration_server/src/generated/future_calls.dart'
+    as _i3;
 import 'package:serverpod_auth_migration_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_migration_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -103,6 +105,7 @@ void withServerpod(
     _i1.TestServerpod(
       testEndpoints: _InternalTestEndpoints(),
       endpoints: Endpoints(),
+      futureCalls: _i3.futureCalls,
       serializationManager: Protocol(),
       runMode: runMode,
       applyMigrations: applyMigrations,
