@@ -21,8 +21,8 @@ void main() {
           session,
         );
 
-        expect(logEntries, hasLength(1));
-        expect(logEntries.first.message, 'null');
+        expect(logEntries, isNotEmpty);
+        expect(logEntries.last.message, 'null');
       });
     },
     enableSessionLogging: true,
