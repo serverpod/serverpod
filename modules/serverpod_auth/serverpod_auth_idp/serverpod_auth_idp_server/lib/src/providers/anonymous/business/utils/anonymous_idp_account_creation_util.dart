@@ -27,6 +27,11 @@ class AnonymousIdpAccountCreationUtil {
                  source: 'account_creation',
                  maxAttempts: config.rateLimit?.maxAttempts,
                  timeframe: config.rateLimit?.timeframe,
+                 onRateLimitExceeded: (session, nonce) {
+                   throw AnonymousAccountBlockedException(
+                     reason: AnonymousAccountBlockedExceptionReason.throttled,
+                   );
+                 },
                ),
              )
            : null;
