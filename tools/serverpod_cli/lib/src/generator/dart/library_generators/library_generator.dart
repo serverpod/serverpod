@@ -1773,25 +1773,25 @@ typedef _InvokeFutureCall =
   }
 
   Code _buildRegisteredFutureCalls(List<FutureCallDefinition> futureCalls) {
-    Code buildFutureCallMethod(
-      FutureCallDefinition futureCall,
-      FutureCallMethodDefinition method,
-    ) {
-      final name = _getFutureCallClassName(
-        futureCall.name,
-        method.name,
-      );
-
-      return refer(
-        'registeredFutureCalls',
-      ).index(literalString(name)).assign(refer(name).call([])).statement;
-    }
-
-    return Block.of([
-      for (var futureCall in futureCalls)
-        for (var method in futureCall.methods)
-          if (!futureCall.isAbstract) buildFutureCallMethod(futureCall, method),
-    ]);
+    return refer('var registeredFutureCalls')
+        .assign(
+          literalMap(
+            {
+              for (var futureCall in futureCalls)
+                for (var method in futureCall.methods)
+                  if (!futureCall.isAbstract)
+                    _getFutureCallClassName(
+                      futureCall.name,
+                      method.name,
+                    ): refer(
+                      _getFutureCallClassName(futureCall.name, method.name),
+                    ).call([]),
+            },
+            refer('String'),
+            refer('FutureCall', serverpodUrl(true)),
+          ),
+        )
+        .statement;
   }
 
   /// Generates FutureCallRef for server side.
@@ -2140,18 +2140,18 @@ typedef _InvokeFutureCall =
               refer('session'),
               if (method.futureCallMethodParameter != null) ...[
                 for (var param in requiredParameters)
-                  refer('object!.${param.name}'),
+                  refer('object.${param.name}'),
               ] else if (requiredParameters.isNotEmpty)
                 buildPositionalParameter(),
               if (method.futureCallMethodParameter != null)
                 for (var param in optionalParameters)
-                  refer('object!.${param.name}'),
+                  refer('object.${param.name}'),
             ],
             {
               if (method.futureCallMethodParameter != null)
                 for (var param in namedParameters)
                   param.name: refer(
-                    'object!.${param.name}',
+                    'object.${param.name}',
                   ),
             },
           )

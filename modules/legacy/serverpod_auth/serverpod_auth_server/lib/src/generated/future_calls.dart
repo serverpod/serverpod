@@ -29,6 +29,7 @@ class _FutureCalls extends _i1.FutureCallInitializer {
     _i1.FutureCallManager futureCallManager,
     String serverId,
   ) {
+    var registeredFutureCalls = <String, _i1.FutureCall>{};
     _futureCallManager = futureCallManager;
     _serverId = serverId;
     for (final entry in registeredFutureCalls.entries) {

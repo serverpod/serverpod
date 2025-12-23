@@ -33,8 +33,9 @@ class _FutureCalls extends _i1.FutureCallInitializer {
     _i1.FutureCallManager futureCallManager,
     String serverId,
   ) {
-    registeredFutureCalls['BirthdayReminderInvokeFutureCall'] =
-        BirthdayReminderInvokeFutureCall();
+    var registeredFutureCalls = <String, _i1.FutureCall>{
+      'BirthdayReminderInvokeFutureCall': BirthdayReminderInvokeFutureCall(),
+    };
     _futureCallManager = futureCallManager;
     _serverId = serverId;
     for (final entry in registeredFutureCalls.entries) {

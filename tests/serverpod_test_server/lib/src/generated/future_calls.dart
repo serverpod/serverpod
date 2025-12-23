@@ -33,10 +33,10 @@ class _FutureCalls extends _i1.FutureCallInitializer {
     _i1.FutureCallManager futureCallManager,
     String serverId,
   ) {
-    registeredFutureCalls['TestCallInvokeFutureCall'] =
-        TestCallInvokeFutureCall();
-    registeredFutureCalls['TestExceptionCallInvokeFutureCall'] =
-        TestExceptionCallInvokeFutureCall();
+    var registeredFutureCalls = <String, _i1.FutureCall>{
+      'TestCallInvokeFutureCall': TestCallInvokeFutureCall(),
+      'TestExceptionCallInvokeFutureCall': TestExceptionCallInvokeFutureCall(),
+    };
     _futureCallManager = futureCallManager;
     _serverId = serverId;
     for (final entry in registeredFutureCalls.entries) {
