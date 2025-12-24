@@ -28,6 +28,20 @@ class _FutureCalls extends _i1.FutureCallInitializer {
 
   String? _serverId;
 
+  String get _effectiveServerId {
+    if (_serverId == null) {
+      throw StateError('FutureCalls is not initialized.');
+    }
+    return _serverId!;
+  }
+
+  _i1.FutureCallManager get _effectiveFutureCallManager {
+    if (_futureCallManager == null) {
+      throw StateError('FutureCalls is not initialized.');
+    }
+    return _futureCallManager!;
+  }
+
   @override
   void initialize(
     _i1.FutureCallManager futureCallManager,
@@ -47,19 +61,13 @@ class _FutureCalls extends _i1.FutureCallInitializer {
     DateTime time, {
     String? identifier,
   }) {
-    if (_serverId == null) {
-      throw StateError('FutureCalls is not initialized.');
-    }
-    if (_futureCallManager == null) {
-      throw StateError('Future calls are disabled.');
-    }
     return _FutureCallRef(
       (name, object) {
-        return _futureCallManager!.scheduleFutureCall(
+        return _effectiveFutureCallManager.scheduleFutureCall(
           name,
           object,
           time,
-          _serverId!,
+          _effectiveServerId,
           identifier,
         );
       },
@@ -70,19 +78,13 @@ class _FutureCalls extends _i1.FutureCallInitializer {
     Duration delay, {
     String? identifier,
   }) {
-    if (_serverId == null) {
-      throw StateError('FutureCalls is not initialized.');
-    }
-    if (_futureCallManager == null) {
-      throw StateError('Future calls are disabled.');
-    }
     return _FutureCallRef(
       (name, object) {
-        return _futureCallManager!.scheduleFutureCall(
+        return _effectiveFutureCallManager.scheduleFutureCall(
           name,
           object,
           DateTime.now().toUtc().add(delay),
-          _serverId!,
+          _effectiveServerId,
           identifier,
         );
       },
@@ -95,9 +97,9 @@ class _FutureCallRef {
 
   final _InvokeFutureCall _invokeFutureCall;
 
-  _BirthdayReminderFutureCallDispatcher get birthdayReminder {
-    return _BirthdayReminderFutureCallDispatcher(_invokeFutureCall);
-  }
+  late final birthdayReminder = _BirthdayReminderFutureCallDispatcher(
+    _invokeFutureCall,
+  );
 }
 
 class _BirthdayReminderFutureCallDispatcher {

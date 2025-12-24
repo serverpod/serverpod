@@ -79,9 +79,9 @@ class ServerTestToolsGenerator {
                   ..late = true
                   ..name = futureCall.name
                   ..modifier = FieldModifier.final$
-                  ..assignment = Block.of([
-                    Code('_${futureCall.name.pascalCase}FutureCall()'),
-                  ]),
+                  ..assignment = Code(
+                    '_${futureCall.name.pascalCase}FutureCall()',
+                  ),
               ),
         ]);
     });

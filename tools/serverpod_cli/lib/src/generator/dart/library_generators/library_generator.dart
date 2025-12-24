@@ -1662,8 +1662,34 @@ typedef _InvokeFutureCall =
                 ..type = refer('String?'),
             ),
           ])
-          // Init method
-          ..methods.add(
+          ..methods.addAll([
+            Method(
+              (m) => m
+                ..name = '_effectiveServerId'
+                ..type = MethodType.getter
+                ..returns = refer('String')
+                ..body = const Code('''
+                    if (_serverId == null) {
+                      throw StateError('FutureCalls is not initialized.');
+                    }
+                    return _serverId!;
+                  '''),
+            ),
+
+            Method(
+              (m) => m
+                ..name = '_effectiveFutureCallManager'
+                ..type = MethodType.getter
+                ..returns = refer('FutureCallManager', serverpodUrl(true))
+                ..body = const Code('''
+                    if (_futureCallManager == null) {
+                      throw StateError('FutureCalls is not initialized.');
+                    }
+                    return _futureCallManager!;
+                  '''),
+            ),
+
+            // Initialize method
             Method.returnsVoid(
               (m) => m
                 ..annotations.add(refer('override'))
@@ -1685,8 +1711,7 @@ typedef _InvokeFutureCall =
                   _buildFutureCallDispatchInitializer(),
                 ]),
             ),
-          )
-          ..methods.add(
+
             Method((m) {
               m
                 ..name = 'callAtTime'
@@ -1707,27 +1732,20 @@ typedef _InvokeFutureCall =
                   ),
                 )
                 ..body = const Code('''
-      if (_serverId == null) {
-        throw StateError('FutureCalls is not initialized.');
-      }
-      if (_futureCallManager == null) {
-        throw StateError('Future calls are disabled.');
-      }
-      return _FutureCallRef(
-        (name, object) {
-          return _futureCallManager!.scheduleFutureCall(
-            name,
-            object,
-            time,
-            _serverId!,
-            identifier,
-          );
-        },
-      );
-    ''');
+                    return _FutureCallRef(
+                      (name, object) {
+                        return _effectiveFutureCallManager.scheduleFutureCall(
+                          name,
+                          object,
+                          time,
+                          _effectiveServerId,
+                          identifier,
+                        );
+                      },
+                    );
+                  ''');
             }),
-          )
-          ..methods.add(
+
             Method((m) {
               m
                 ..name = 'callWithDelay'
@@ -1748,26 +1766,20 @@ typedef _InvokeFutureCall =
                   ),
                 )
                 ..body = const Code('''
-      if (_serverId == null) {
-        throw StateError('FutureCalls is not initialized.');
-      }
-      if (_futureCallManager == null) {
-        throw StateError('Future calls are disabled.');
-      }
-      return _FutureCallRef(
-        (name, object) {
-        return _futureCallManager!.scheduleFutureCall(
-          name,
-          object,
-          DateTime.now().toUtc().add(delay),
-          _serverId!,
-          identifier,
-        );
-      },
-      );
-    ''');
+                    return _FutureCallRef(
+                      (name, object) {
+                        return _effectiveFutureCallManager.scheduleFutureCall(
+                          name,
+                          object,
+                          DateTime.now().toUtc().add(delay),
+                          _effectiveServerId,
+                          identifier,
+                        );
+                      },
+                    );
+                  ''');
             }),
-          ),
+          ]),
       ),
     );
 
@@ -1822,9 +1834,6 @@ typedef _InvokeFutureCall =
           ..fields.add(
             Field(
               (f) {
-                if (protocolDefinition.futureCalls.isEmpty) {
-                  f.docs.add('// ignore: unused_field');
-                }
                 f
                   ..modifier = FieldModifier.final$
                   ..name = '_invokeFutureCall'
@@ -1844,22 +1853,20 @@ typedef _InvokeFutureCall =
                 ),
             ),
           )
-          // Getters for future call callers
-          ..methods.addAll([
+          // Final fields for future call callers
+          ..fields.addAll([
             for (var futureCall in protocolDefinition.futureCalls)
               if (!futureCall.isAbstract && futureCall.methods.isNotEmpty)
-                Method(
-                  (m) => m
+                Field(
+                  (f) => f
+                    ..late = true
                     ..name = futureCall.name
-                    ..type = MethodType.getter
-                    ..returns = refer(
-                      _generateFutureCallDispatcherClassName(futureCall),
-                    )
-                    ..body = Block.of([
-                      refer(
-                        _generateFutureCallDispatcherClassName(futureCall),
-                      ).call([refer('_invokeFutureCall')]).returned.statement,
-                    ]),
+                    ..modifier = FieldModifier.final$
+                    ..assignment = Code.scope((_) {
+                      final dispatcherClassName =
+                          _generateFutureCallDispatcherClassName(futureCall);
+                      return '$dispatcherClassName(_invokeFutureCall)';
+                    }),
                 ),
           ]),
       ),
