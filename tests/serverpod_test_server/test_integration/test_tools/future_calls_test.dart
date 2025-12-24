@@ -15,14 +15,17 @@ void main() {
       });
 
       test('when a future call is invoked then it is executed', () async {
-        await endpoints.futureCalls.testCall.invoke(sessionBuilder, null);
+        await endpoints.futureCalls.testGeneratedCall.hello(
+          sessionBuilder,
+          'Lucky',
+        );
 
         final logEntries = await LogEntry.db.find(
           session,
         );
 
         expect(logEntries, isNotEmpty);
-        expect(logEntries.last.message, 'null');
+        expect(logEntries.last.message, 'Hello Lucky');
       });
     },
     enableSessionLogging: true,

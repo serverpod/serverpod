@@ -56,6 +56,10 @@ import 'package:serverpod_test_server/src/generated/session_auth_info.dart'
 import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
     as _i29;
 import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i30;
+import 'package:serverpod_test_server/src/generated/test_generated_call_hello_model.dart'
+    as _i31;
+import 'package:serverpod_test_server/src/generated/test_generated_call_bye_model.dart'
+    as _i32;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -591,6 +595,8 @@ class _FutureCalls {
   late final testCall = _TestCallFutureCall();
 
   late final testExceptionCall = _TestExceptionCallFutureCall();
+
+  late final testGeneratedCall = _TestGeneratedCallFutureCall();
 }
 
 class _AsyncTasksEndpoint {
@@ -15321,6 +15327,46 @@ class _TestExceptionCallFutureCall {
         .internalBuild();
     try {
       await _i30.TestExceptionCallInvokeFutureCall().invoke(
+        _localUniqueSession,
+        object,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
+  }
+}
+
+class _TestGeneratedCallFutureCall {
+  Future<void> hello(
+    _i1.TestSessionBuilder sessionBuilder,
+    String name,
+  ) async {
+    var object = _i31.TestGeneratedCallHelloModel(name: name);
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      await _i30.TestGeneratedCallHelloFutureCall().invoke(
+        _localUniqueSession,
+        object,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
+  }
+
+  Future<void> bye(
+    _i1.TestSessionBuilder sessionBuilder,
+    String name, {
+    int code = 0,
+  }) async {
+    var object = _i32.TestGeneratedCallByeModel(
+      name: name,
+      code: code,
+    );
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      await _i30.TestGeneratedCallByeFutureCall().invoke(
         _localUniqueSession,
         object,
       );

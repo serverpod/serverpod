@@ -1,7 +1,6 @@
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/future_calls.dart';
-import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
@@ -13,7 +12,8 @@ void main() {
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late Session session;
-      var testCallName = 'TestCallInvokeFutureCall';
+      // generated name for the future call
+      var testCallName = 'TestGeneratedCallHelloFutureCall';
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -31,8 +31,8 @@ void main() {
         () async {
           await futureCalls
               .callAtTime(DateTime.now())
-              .testCall
-              .invoke(SimpleData(num: 0));
+              .testGeneratedCall
+              .hello('Lucky');
 
           final futureCallEntries = await FutureCallEntry.db.find(
             session,
@@ -48,9 +48,9 @@ void main() {
         'then a FutureCallEntry is added to the database',
         () async {
           await futureCalls
-              .callWithDelay(Duration(seconds: 3))
-              .testCall
-              .invoke(SimpleData(num: 0));
+              .callWithDelay(Duration(milliseconds: 10))
+              .testGeneratedCall
+              .hello('Lucky');
 
           final futureCallEntries = await FutureCallEntry.db.find(
             session,
@@ -58,6 +58,27 @@ void main() {
           );
 
           expect(futureCallEntries, hasLength(1));
+        },
+      );
+
+      test(
+        'when scheduling a future call with an identifier'
+        'then a FutureCallEntry with same identifier is added to the database',
+        () async {
+          final identifier = 'lucky-id';
+
+          await futureCalls
+              .callAtTime(DateTime.now(), identifier: identifier)
+              .testGeneratedCall
+              .hello('Lucky');
+
+          final futureCallEntries = await FutureCallEntry.db.find(
+            session,
+            where: (entry) => entry.name.equals(testCallName),
+          );
+
+          expect(futureCallEntries, hasLength(1));
+          expect(futureCallEntries.first.identifier, identifier);
         },
       );
     },
@@ -80,8 +101,8 @@ void main() {
 
         await futureCalls
             .callAtTime(DateTime.now().subtract(const Duration(seconds: 1)))
-            .testCall
-            .invoke(SimpleData(num: 20));
+            .testGeneratedCall
+            .bye('Lucky', code: 20);
       });
 
       group('when running scheduled FutureCalls', () {
@@ -95,7 +116,7 @@ void main() {
           );
 
           expect(logEntries, hasLength(1));
-          expect(logEntries.first.message, '20');
+          expect(logEntries.first.message, 'Bye Lucky. Code: 20');
         });
 
         test('then the FutureCallEntry gets deleted from database', () async {
