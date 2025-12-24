@@ -62,7 +62,7 @@ final class FutureCallMethodDefinition extends MethodDefinition {
   });
 }
 
-/// Describes a single parameter of a [FutureCallMethodDefinition]
+/// Describes parameters of a [FutureCallMethodDefinition]
 /// which should be used to generate [SerializableModel] interfaces.
 class FutureCallParameterDefinition {
   /// The variable name of the parameter.

@@ -9,7 +9,6 @@ import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/keywords.dart
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/annotation.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
-import 'package:serverpod_cli/src/analyzer/models/utils/validation_utils.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
@@ -39,9 +38,7 @@ abstract class FutureCallMethodAnalyzer {
     // have been defined with yaml for generation.
     final shouldGenerateSerializableModelDefinition =
         allParametersWithoutSessionLength == 1 &&
-        isValidSerializableDartType(
-          allParametersWithoutSession.first.type.className,
-        );
+        allParametersWithoutSession.first.type.isSerializableDartType;
 
     if (shouldGenerateSerializableModelDefinition ||
         allParametersWithoutSessionLength > 1) {

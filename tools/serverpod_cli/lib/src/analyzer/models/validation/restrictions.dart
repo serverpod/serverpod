@@ -3,7 +3,6 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/models/utils/validation_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
@@ -2024,7 +2023,7 @@ class Restrictions {
   }
 
   bool _isValidType(TypeDefinition type) {
-    return isValidSerializableDartType(type.className) ||
+    return type.isSerializableDartType ||
         _isModelType(type) ||
         _isCustomType(type) ||
         _isRecordType(type);

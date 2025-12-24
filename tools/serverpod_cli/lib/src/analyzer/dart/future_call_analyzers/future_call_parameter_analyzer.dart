@@ -2,7 +2,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
-import 'package:serverpod_cli/src/analyzer/dart/extension/endpoint_parameters_extension.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/validator.dart';
 import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
 

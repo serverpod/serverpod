@@ -23,6 +23,27 @@ const _moduleRef = 'module:';
 const _projectRef = 'project:';
 const _packageRef = 'package:';
 
+/// The Dart types that are supported for serialization.
+const _whiteListedTypes = [
+  'String',
+  'bool',
+  'int',
+  'double',
+  'DateTime',
+  'Duration',
+  'UuidValue',
+  'Uri',
+  'BigInt',
+  'ByteData',
+  'Vector',
+  'HalfVector',
+  'SparseVector',
+  'Bit',
+  'List',
+  'Map',
+  'Set',
+];
+
 /// Contains information about the type of fields, arguments and return values.
 class TypeDefinition {
   /// The class name of the type.
@@ -164,6 +185,8 @@ class TypeDefinition {
   bool get isEnumType => enumDefinition != null;
 
   bool get isColumnSerializable => columnType == 'ColumnSerializable';
+
+  bool get isSerializableDartType => _whiteListedTypes.contains(className);
 
   String? get moduleAlias {
     if (url == defaultModuleAlias) return url;
