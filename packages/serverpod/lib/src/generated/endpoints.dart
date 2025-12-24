@@ -15,7 +15,6 @@ import '../endpoints/insights.dart' as _i2;
 import 'package:serverpod/src/generated/runtime_settings.dart' as _i3;
 import 'package:serverpod/src/generated/session_log_filter.dart' as _i4;
 import 'package:serverpod/src/generated/database/filter/filter.dart' as _i5;
-import 'package:serverpod/src/generated/future_calls.dart' as _i6;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -340,10 +339,5 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-  }
-
-  @override
-  _i1.FutureCallInitializer get futureCallInitializer {
-    return _i6.futureCalls;
   }
 }

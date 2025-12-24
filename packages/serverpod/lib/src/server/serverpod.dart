@@ -763,7 +763,10 @@ class Serverpod {
 
     if (_futureCallManager != null) {
       logVerbose('Initializing future calls.');
-      endpoints.futureCallInitializer.initialize(_futureCallManager!, serverId);
+      endpoints.futureCallInitializer?.initialize(
+        _futureCallManager!,
+        serverId,
+      );
     }
   }
 

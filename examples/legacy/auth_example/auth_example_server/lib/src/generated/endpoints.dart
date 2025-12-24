@@ -54,7 +54,7 @@ class Endpoints extends _i1.EndpointDispatch {
   }
 
   @override
-  _i1.FutureCallInitializer get futureCallInitializer {
+  _i1.FutureCallInitializer? get futureCallInitializer {
     return _i4.futureCalls;
   }
 }

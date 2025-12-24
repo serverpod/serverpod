@@ -596,8 +596,8 @@ class LibraryGenerator {
         (c) => c
           ..name = 'Endpoints'
           ..extend = refer('EndpointDispatch', serverpodUrl(true))
-          // Init method
-          ..methods.add(
+          ..methods.addAll([
+            // Init method
             Method.returnsVoid(
               (m) => m
                 ..name = 'initializeEndpoints'
@@ -634,22 +634,25 @@ class LibraryGenerator {
                         .statement,
                 ]),
             ),
-          )
-          ..methods.add(
-            Method(
-              (m) => m
-                ..annotations.add(refer('override'))
-                ..name = 'futureCallInitializer'
-                ..type = MethodType.getter
-                ..returns = refer('FutureCallInitializer', serverpodUrl(true))
-                ..body = Block.of([
-                  refer(
-                    'futureCalls',
-                    'package:${config.serverPackage}/src/generated/future_calls.dart',
-                  ).returned.statement,
-                ]),
-            ),
-          ),
+
+            if (protocolDefinition.futureCalls.isNotEmpty)
+              Method(
+                (m) => m
+                  ..annotations.add(refer('override'))
+                  ..name = 'futureCallInitializer'
+                  ..type = MethodType.getter
+                  ..returns = refer(
+                    'FutureCallInitializer?',
+                    serverpodUrl(true),
+                  )
+                  ..body = Block.of([
+                    refer(
+                      'futureCalls',
+                      'package:${config.serverPackage}/src/generated/future_calls.dart',
+                    ).returned.statement,
+                  ]),
+              ),
+          ]),
       ),
     );
 

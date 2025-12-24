@@ -32,8 +32,6 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
 import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.dart'
     as _i15;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i16;
-import 'package:serverpod_auth_test_server/src/generated/future_calls.dart'
-    as _i17;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -950,10 +948,5 @@ class Endpoints extends _i1.EndpointDispatch {
     modules['serverpod_auth_migration'] = _i15.Endpoints()
       ..initializeEndpoints(server);
     modules['serverpod_auth'] = _i16.Endpoints()..initializeEndpoints(server);
-  }
-
-  @override
-  _i1.FutureCallInitializer get futureCallInitializer {
-    return _i17.futureCalls;
   }
 }

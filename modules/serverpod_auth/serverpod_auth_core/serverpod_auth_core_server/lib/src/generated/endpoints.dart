@@ -13,8 +13,6 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../common/endpoints/status_endpoint.dart' as _i2;
 import '../profile/endpoints/user_profile_base_endpoint.dart' as _i3;
-import 'package:serverpod_auth_core_server/src/generated/future_calls.dart'
-    as _i4;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -87,10 +85,5 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-  }
-
-  @override
-  _i1.FutureCallInitializer get futureCallInitializer {
-    return _i4.futureCalls;
   }
 }

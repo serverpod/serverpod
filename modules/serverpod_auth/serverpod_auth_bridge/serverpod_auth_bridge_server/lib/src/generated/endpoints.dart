@@ -16,8 +16,6 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i3;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i4;
-import 'package:serverpod_auth_bridge_server/src/generated/future_calls.dart'
-    as _i5;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -61,10 +59,5 @@ class Endpoints extends _i1.EndpointDispatch {
       ..initializeEndpoints(server);
     modules['serverpod_auth_idp'] = _i4.Endpoints()
       ..initializeEndpoints(server);
-  }
-
-  @override
-  _i1.FutureCallInitializer get futureCallInitializer {
-    return _i5.futureCalls;
   }
 }

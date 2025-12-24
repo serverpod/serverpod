@@ -24,7 +24,7 @@ abstract class EndpointDispatch {
   void initializeEndpoints(Server server);
 
   /// Initializer for the generated future calls.
-  FutureCallInitializer get futureCallInitializer;
+  FutureCallInitializer? get futureCallInitializer => null;
 
   /// Finds an [EndpointConnector] by its name. If the connector is in a module,
   /// a period should separate the module name from the endpoint name.
