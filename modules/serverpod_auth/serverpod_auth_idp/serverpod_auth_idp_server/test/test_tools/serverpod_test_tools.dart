@@ -120,9 +120,7 @@ void withServerpod(
   )(testClosure);
 }
 
-class TestEndpoints {
-  final _FutureCalls futureCalls = _FutureCalls();
-}
+class TestEndpoints {}
 
 class _InternalTestEndpoints extends TestEndpoints
     implements _i1.InternalTestEndpoints {
@@ -132,5 +130,3 @@ class _InternalTestEndpoints extends TestEndpoints
     _i2.EndpointDispatch endpoints,
   ) {}
 }
-
-class _FutureCalls {}

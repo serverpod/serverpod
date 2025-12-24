@@ -126,7 +126,7 @@ void withServerpod(
 }
 
 class TestEndpoints {
-  final _FutureCalls futureCalls = _FutureCalls();
+  late final futureCalls = _FutureCalls();
 
   late final _GreetingEndpoint greeting;
 }
@@ -146,9 +146,7 @@ class _InternalTestEndpoints extends TestEndpoints
 }
 
 class _FutureCalls {
-  _BirthdayReminderFutureCall get birthdayReminder {
-    return _BirthdayReminderFutureCall();
-  }
+  late final birthdayReminder = _BirthdayReminderFutureCall();
 }
 
 class _GreetingEndpoint {

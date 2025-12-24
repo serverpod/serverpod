@@ -130,8 +130,6 @@ void withServerpod(
 }
 
 class TestEndpoints {
-  final _FutureCalls futureCalls = _FutureCalls();
-
   late final _AdminEndpoint admin;
 
   late final _AppleEndpoint apple;
@@ -184,8 +182,6 @@ class _InternalTestEndpoints extends TestEndpoints
     );
   }
 }
-
-class _FutureCalls {}
 
 class _AdminEndpoint {
   _AdminEndpoint(

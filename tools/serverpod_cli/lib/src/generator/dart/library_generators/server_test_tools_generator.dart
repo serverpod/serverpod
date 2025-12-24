@@ -28,7 +28,7 @@ class ServerTestToolsGenerator {
         _buildWithServerpodFunction(),
         _buildPublicTestEndpointsClass(),
         _buildPrivateTestEndpointsClass(),
-        _buildFutureCallClass(),
+        if (protocolDefinition.futureCalls.isNotEmpty) _buildFutureCallClass(),
       ],
     );
 
@@ -71,20 +71,16 @@ class ServerTestToolsGenerator {
     return Class((classBuilder) {
       classBuilder
         ..name = '_FutureCalls'
-        ..methods.addAll([
+        ..fields.addAll([
           for (var futureCall in protocolDefinition.futureCalls)
-            if (futureCall.methods.isNotEmpty)
-              Method(
-                (m) => m
+            if (!futureCall.isAbstract && futureCall.methods.isNotEmpty)
+              Field(
+                (f) => f
+                  ..late = true
                   ..name = futureCall.name
-                  ..type = MethodType.getter
-                  ..returns = refer(
-                    '_${futureCall.name.pascalCase}FutureCall',
-                  )
-                  ..body = Block.of([
-                    refer(
-                      '_${futureCall.name.pascalCase}FutureCall',
-                    ).call([]).returned.statement,
+                  ..modifier = FieldModifier.final$
+                  ..assignment = Block.of([
+                    Code('_${futureCall.name.pascalCase}FutureCall()'),
                   ]),
               ),
         ]);
@@ -141,6 +137,9 @@ class ServerTestToolsGenerator {
               (p) => p
                 ..named = false
                 ..name = param.name
+                ..defaultTo = param.defaultValue != null
+                    ? Code(param.defaultValue!)
+                    : null
                 ..type = param.type.reference(
                   true,
                   config: config,
@@ -152,6 +151,9 @@ class ServerTestToolsGenerator {
                 ..named = true
                 ..required = param.required
                 ..name = param.name
+                ..defaultTo = param.defaultValue != null
+                    ? Code(param.defaultValue!)
+                    : null
                 ..type = param.type.reference(
                   true,
                   config: config,
@@ -630,19 +632,21 @@ class ServerTestToolsGenerator {
     return Class((classBuilder) {
       classBuilder.name = 'TestEndpoints';
 
-      classBuilder.fields.add(
-        Field(
-          (fieldBuilder) {
-            fieldBuilder
-              ..name = 'futureCalls'
-              ..modifier = FieldModifier.final$
-              ..type = refer('_FutureCalls')
-              ..assignment = Block.of([
-                const Code('_FutureCalls()'),
-              ]);
-          },
-        ),
-      );
+      if (protocolDefinition.futureCalls.isNotEmpty) {
+        classBuilder.fields.add(
+          Field(
+            (fieldBuilder) {
+              fieldBuilder
+                ..name = 'futureCalls'
+                ..late = true
+                ..modifier = FieldModifier.final$
+                ..assignment = Block.of([
+                  const Code('_FutureCalls()'),
+                ]);
+            },
+          ),
+        );
+      }
 
       for (var endpoint in protocolDefinition.endpoints) {
         if (endpoint.isAbstract) continue;

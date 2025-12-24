@@ -126,8 +126,6 @@ void withServerpod(
 }
 
 class TestEndpoints {
-  final _FutureCalls futureCalls = _FutureCalls();
-
   late final _AuthTestEndpoint authTest;
 
   late final _AuthenticatedStreamingTestEndpoint authenticatedStreamingTest;
@@ -197,8 +195,6 @@ class _InternalTestEndpoints extends TestEndpoints
     );
   }
 }
-
-class _FutureCalls {}
 
 class _AuthTestEndpoint {
   _AuthTestEndpoint(

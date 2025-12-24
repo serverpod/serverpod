@@ -163,7 +163,7 @@ void withServerpod(
 }
 
 class TestEndpoints {
-  final _FutureCalls futureCalls = _FutureCalls();
+  late final futureCalls = _FutureCalls();
 
   late final _AsyncTasksEndpoint asyncTasks;
 
@@ -588,13 +588,9 @@ class _InternalTestEndpoints extends TestEndpoints
 }
 
 class _FutureCalls {
-  _TestCallFutureCall get testCall {
-    return _TestCallFutureCall();
-  }
+  late final testCall = _TestCallFutureCall();
 
-  _TestExceptionCallFutureCall get testExceptionCall {
-    return _TestExceptionCallFutureCall();
-  }
+  late final testExceptionCall = _TestExceptionCallFutureCall();
 }
 
 class _AsyncTasksEndpoint {
