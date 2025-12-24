@@ -1133,4 +1133,64 @@ class ExampleFutureCall extends FutureCall {
       );
     },
   );
+
+  group(
+    'Given a valid future call with a method that has non serializable parameters after the first positional Session parameter',
+    () {
+      var collector = CodeGenerationCollector();
+      var testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session session, Object data) async {
+    session.log('Hello \$data');
+  }
+}
+''');
+        final parameterValidator = FutureCallMethodParameterValidatorBuilder()
+            .build();
+
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          parameterValidator: parameterValidator,
+        );
+
+        futureCallDefinitions = await analyzer.analyze(collector: collector);
+      });
+
+      test('then validation errors is reported.', () {
+        expect(collector.errors, hasLength(1));
+      });
+
+      test(
+        'then validation error informs that the non serializable parameter type is not supported',
+        () {
+          expect(
+            collector.errors.firstOrNull?.message,
+            'The type "Object" is not a supported future call parameter type.',
+          );
+        },
+      );
+
+      test('then future call definition is created.', () {
+        expect(futureCallDefinitions, hasLength(1));
+      });
+
+      test('then no future call method definition is created.', () {
+        var methods = futureCallDefinitions.firstOrNull?.methods;
+        expect(methods, isEmpty);
+      });
+    },
+  );
 }
