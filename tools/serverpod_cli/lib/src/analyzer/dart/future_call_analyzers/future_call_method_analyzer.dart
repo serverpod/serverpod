@@ -50,7 +50,6 @@ abstract class FutureCallMethodAnalyzer {
           nullable: false,
           customClass: false,
         ),
-        required: true,
         parameters: parameters.required.withoutSessionParameter,
         parametersPositional: parameters.positional,
         parametersNamed: parameters.named,

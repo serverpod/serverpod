@@ -71,9 +71,6 @@ class FutureCallParameterDefinition {
   /// The type of the parameter.
   final TypeDefinition type;
 
-  /// Whether this parameter is required.
-  final bool required;
-
   /// The required positional parameters of this method.
   final List<ParameterDefinition> parameters;
 
@@ -93,7 +90,6 @@ class FutureCallParameterDefinition {
   const FutureCallParameterDefinition({
     required this.name,
     required this.type,
-    required this.required,
     required this.parameters,
     required this.parametersPositional,
     required this.parametersNamed,

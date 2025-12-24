@@ -38,6 +38,7 @@ void main() {
       var protocolDefinition = const ProtocolDefinition(
         endpoints: [],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -200,6 +201,7 @@ void main() {
       var protocolDefinition = const ProtocolDefinition(
         endpoints: [],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -316,6 +318,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -457,6 +460,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -609,6 +613,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -669,6 +674,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -736,6 +742,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -806,6 +813,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -877,6 +885,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -945,6 +954,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1018,6 +1028,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1093,6 +1104,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1155,6 +1167,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1213,6 +1226,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1330,6 +1344,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [baseEndpoint, concreteEndpoint],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1447,6 +1462,7 @@ void main() {
           concreteSubclassEndpoint,
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1590,6 +1606,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1633,6 +1650,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(

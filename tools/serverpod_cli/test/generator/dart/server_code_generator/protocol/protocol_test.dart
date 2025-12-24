@@ -53,6 +53,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -115,6 +116,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -176,6 +178,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -236,6 +239,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -296,6 +300,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -362,6 +367,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -414,6 +420,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -461,6 +468,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -508,6 +516,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -572,6 +581,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -641,6 +651,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -681,7 +692,11 @@ void main() {
           .build(),
     ];
 
-    var protocolDefinition = ProtocolDefinition(endpoints: [], models: models);
+    var protocolDefinition = ProtocolDefinition(
+      endpoints: [],
+      models: models,
+      futureCalls: [],
+    );
 
     var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,
@@ -799,6 +814,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -895,6 +911,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -943,6 +960,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -988,6 +1006,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -1035,6 +1054,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -1089,6 +1109,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [],
         models: models,
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(

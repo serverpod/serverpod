@@ -17,6 +17,6 @@ class ProtocolDefinition {
   const ProtocolDefinition({
     required this.endpoints,
     required this.models,
-    this.futureCalls = const [],
+    required this.futureCalls,
   });
 }
