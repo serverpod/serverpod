@@ -50,7 +50,9 @@ void main() {
           test('has no future calls defined.', () {
             expect(
               futureCallsFile,
-              isNot(contains('var registeredFutureCalls =')),
+              matches(
+                r'var registeredFutureCalls = <String, _i\d.FutureCall>\{\};',
+              ),
             );
           });
 
@@ -131,7 +133,14 @@ void main() {
         'then future calls file',
         () {
           test('has future calls map defined.', () {
-            expect(futureCallsFile, contains('var registeredFutureCalls ='));
+            expect(
+              futureCallsFile,
+              matches(
+                r'var registeredFutureCalls = <String, _i\d.FutureCall>\{\n'
+                r"      \'TestingSayHelloFutureCall\': TestingSayHelloFutureCall\(\),\n"
+                r'    \};\n',
+              ),
+            );
           });
 
           test(
@@ -239,7 +248,15 @@ void main() {
         'then future calls file',
         () {
           test('has future calls defined.', () {
-            expect(futureCallsFile, contains('var registeredFutureCalls ='));
+            expect(
+              futureCallsFile,
+              matches(
+                r'var registeredFutureCalls = <String, _i\d.FutureCall>\{\n'
+                r"      \'Testing1SayHelloFutureCall\': Testing1SayHelloFutureCall\(\),\n"
+                r"      \'Testing2SayByeFutureCall\': Testing2SayByeFutureCall\(\),\n"
+                r'    \};\n',
+              ),
+            );
           });
 
           test(
