@@ -25,7 +25,6 @@ void main() {
     'Given protocol definition without future calls when generating future calls file',
     () {
       late Map<String, String> codeMap;
-      late String? futureCallsFile;
       setUpAll(() {
         var protocolDefinition = const ProtocolDefinition(
           endpoints: [],
@@ -37,40 +36,11 @@ void main() {
           protocolDefinition: protocolDefinition,
           config: config,
         );
-        futureCallsFile = codeMap[expectedFileName];
       });
 
-      test('then future calls file is created.', () {
-        expect(codeMap, contains(expectedFileName));
+      test('then no future calls file is created.', () {
+        expect(codeMap[expectedFileName], isNull);
       });
-
-      group(
-        'then future calls file',
-        () {
-          test('has no future calls defined.', () {
-            expect(
-              futureCallsFile,
-              matches(
-                r'var registeredFutureCalls = <String, _i\d.FutureCall>\{\};',
-              ),
-            );
-          });
-
-          test('has a future call manager field defined.', () {
-            expect(
-              futureCallsFile,
-              contains('FutureCallManager? _futureCallManager;'),
-            );
-          });
-
-          test('has a serverId field defined.', () {
-            expect(
-              futureCallsFile,
-              contains('String? _serverId;'),
-            );
-          });
-        },
-      );
     },
   );
 
