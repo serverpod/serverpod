@@ -14,10 +14,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
-import 'package:serverpod_test_nonvector_server/src/generated/future_calls.dart'
-    as _i3;
-import 'dart:async' as _i4;
+import 'dart:async' as _i3;
 import 'package:serverpod_test_nonvector_server/src/generated/greeting.dart'
+    as _i4;
+import 'package:serverpod_test_nonvector_server/src/generated/future_calls.dart'
     as _i5;
 import 'package:serverpod_test_nonvector_server/src/generated/protocol.dart';
 import 'package:serverpod_test_nonvector_server/src/generated/endpoints.dart';
@@ -108,7 +108,6 @@ void withServerpod(
     _i1.TestServerpod(
       testEndpoints: _InternalTestEndpoints(),
       endpoints: Endpoints(),
-      futureCalls: _i3.futureCalls,
       serializationManager: Protocol(),
       runMode: runMode,
       applyMigrations: applyMigrations,
@@ -162,7 +161,7 @@ class _GreetingEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i4.Future<_i5.Greeting> hello(
+  _i3.Future<_i4.Greeting> hello(
     _i1.TestSessionBuilder sessionBuilder,
     String name,
   ) async {
@@ -185,7 +184,7 @@ class _GreetingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i5.Greeting>);
+                as _i3.Future<_i4.Greeting>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -197,12 +196,12 @@ class _GreetingEndpoint {
 class _BirthdayReminderFutureCall {
   Future<void> invoke(
     _i1.TestSessionBuilder sessionBuilder,
-    _i5.Greeting? object,
+    _i4.Greeting? object,
   ) async {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i3.BirthdayReminderInvokeFutureCall().invoke(
+      await _i5.BirthdayReminderInvokeFutureCall().invoke(
         _localUniqueSession,
         object,
       );

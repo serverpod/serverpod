@@ -4,9 +4,17 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/protocol.dart' as internal;
 import 'package:test/test.dart';
 
+class _FutureCallInitializer extends FutureCallInitializer {
+  @override
+  void initialize(FutureCallManager futureCallManager, String serverId) {}
+}
+
 class _EmptyEndpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {}
+
+  @override
+  FutureCallInitializer get futureCallInitializer => _FutureCallInitializer();
 }
 
 void main() {

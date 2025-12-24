@@ -14,16 +14,15 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
-import 'package:serverpod_auth_server/src/generated/future_calls.dart' as _i3;
-import 'dart:async' as _i4;
-import 'package:serverpod_auth_server/src/generated/user_info.dart' as _i5;
+import 'dart:async' as _i3;
+import 'package:serverpod_auth_server/src/generated/user_info.dart' as _i4;
 import 'package:serverpod_auth_server/src/generated/authentication_response.dart'
-    as _i6;
+    as _i5;
 import 'package:serverpod_auth_server/src/generated/apple_auth_info.dart'
-    as _i7;
+    as _i6;
 import 'package:serverpod_auth_server/src/generated/user_settings_config.dart'
-    as _i8;
-import 'dart:typed_data' as _i9;
+    as _i7;
+import 'dart:typed_data' as _i8;
 import 'package:serverpod_auth_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -113,7 +112,6 @@ void withServerpod(
     _i1.TestServerpod(
       testEndpoints: _InternalTestEndpoints(),
       endpoints: Endpoints(),
-      futureCalls: _i3.futureCalls,
       serializationManager: Protocol(),
       runMode: runMode,
       applyMigrations: applyMigrations,
@@ -199,7 +197,7 @@ class _AdminEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i4.Future<_i5.UserInfo?> getUserInfo(
+  _i3.Future<_i4.UserInfo?> getUserInfo(
     _i1.TestSessionBuilder sessionBuilder,
     int userId,
   ) async {
@@ -222,7 +220,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i5.UserInfo?>);
+                as _i3.Future<_i4.UserInfo?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -230,7 +228,7 @@ class _AdminEndpoint {
     });
   }
 
-  _i4.Future<void> blockUser(
+  _i3.Future<void> blockUser(
     _i1.TestSessionBuilder sessionBuilder,
     int userId,
   ) async {
@@ -253,7 +251,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _i3.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -261,7 +259,7 @@ class _AdminEndpoint {
     });
   }
 
-  _i4.Future<void> unblockUser(
+  _i3.Future<void> unblockUser(
     _i1.TestSessionBuilder sessionBuilder,
     int userId,
   ) async {
@@ -284,7 +282,7 @@ class _AdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _i3.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -303,9 +301,9 @@ class _AppleEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i4.Future<_i6.AuthenticationResponse> authenticate(
+  _i3.Future<_i5.AuthenticationResponse> authenticate(
     _i1.TestSessionBuilder sessionBuilder,
-    _i7.AppleAuthInfo authInfo,
+    _i6.AppleAuthInfo authInfo,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -326,7 +324,7 @@ class _AppleEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i6.AuthenticationResponse>);
+                as _i3.Future<_i5.AuthenticationResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -345,7 +343,7 @@ class _EmailEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i4.Future<_i6.AuthenticationResponse> authenticate(
+  _i3.Future<_i5.AuthenticationResponse> authenticate(
     _i1.TestSessionBuilder sessionBuilder,
     String email,
     String password,
@@ -372,7 +370,7 @@ class _EmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i6.AuthenticationResponse>);
+                as _i3.Future<_i5.AuthenticationResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -380,7 +378,7 @@ class _EmailEndpoint {
     });
   }
 
-  _i4.Future<bool> changePassword(
+  _i3.Future<bool> changePassword(
     _i1.TestSessionBuilder sessionBuilder,
     String oldPassword,
     String newPassword,
@@ -407,7 +405,7 @@ class _EmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _i3.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -415,7 +413,7 @@ class _EmailEndpoint {
     });
   }
 
-  _i4.Future<bool> initiatePasswordReset(
+  _i3.Future<bool> initiatePasswordReset(
     _i1.TestSessionBuilder sessionBuilder,
     String email,
   ) async {
@@ -438,7 +436,7 @@ class _EmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _i3.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -446,7 +444,7 @@ class _EmailEndpoint {
     });
   }
 
-  _i4.Future<bool> resetPassword(
+  _i3.Future<bool> resetPassword(
     _i1.TestSessionBuilder sessionBuilder,
     String verificationCode,
     String password,
@@ -473,7 +471,7 @@ class _EmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _i3.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -481,7 +479,7 @@ class _EmailEndpoint {
     });
   }
 
-  _i4.Future<bool> createAccountRequest(
+  _i3.Future<bool> createAccountRequest(
     _i1.TestSessionBuilder sessionBuilder,
     String userName,
     String email,
@@ -510,7 +508,7 @@ class _EmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _i3.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -518,7 +516,7 @@ class _EmailEndpoint {
     });
   }
 
-  _i4.Future<_i5.UserInfo?> createAccount(
+  _i3.Future<_i4.UserInfo?> createAccount(
     _i1.TestSessionBuilder sessionBuilder,
     String email,
     String verificationCode,
@@ -545,7 +543,7 @@ class _EmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i5.UserInfo?>);
+                as _i3.Future<_i4.UserInfo?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -564,7 +562,7 @@ class _FirebaseEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i4.Future<_i6.AuthenticationResponse> authenticate(
+  _i3.Future<_i5.AuthenticationResponse> authenticate(
     _i1.TestSessionBuilder sessionBuilder,
     String idToken,
   ) async {
@@ -587,7 +585,7 @@ class _FirebaseEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i6.AuthenticationResponse>);
+                as _i3.Future<_i5.AuthenticationResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -606,7 +604,7 @@ class _GoogleEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i4.Future<_i6.AuthenticationResponse> authenticateWithServerAuthCode(
+  _i3.Future<_i5.AuthenticationResponse> authenticateWithServerAuthCode(
     _i1.TestSessionBuilder sessionBuilder,
     String authenticationCode,
     String? redirectUri,
@@ -633,7 +631,7 @@ class _GoogleEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i6.AuthenticationResponse>);
+                as _i3.Future<_i5.AuthenticationResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -641,7 +639,7 @@ class _GoogleEndpoint {
     });
   }
 
-  _i4.Future<_i6.AuthenticationResponse> authenticateWithIdToken(
+  _i3.Future<_i5.AuthenticationResponse> authenticateWithIdToken(
     _i1.TestSessionBuilder sessionBuilder,
     String idToken,
   ) async {
@@ -664,7 +662,7 @@ class _GoogleEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i6.AuthenticationResponse>);
+                as _i3.Future<_i5.AuthenticationResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -683,7 +681,7 @@ class _StatusEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i4.Future<bool> isSignedIn(_i1.TestSessionBuilder sessionBuilder) async {
+  _i3.Future<bool> isSignedIn(_i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -703,7 +701,7 @@ class _StatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _i3.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -711,7 +709,7 @@ class _StatusEndpoint {
     });
   }
 
-  _i4.Future<void> signOutDevice(_i1.TestSessionBuilder sessionBuilder) async {
+  _i3.Future<void> signOutDevice(_i1.TestSessionBuilder sessionBuilder) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -731,7 +729,7 @@ class _StatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _i3.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -739,7 +737,7 @@ class _StatusEndpoint {
     });
   }
 
-  _i4.Future<void> signOutAllDevices(
+  _i3.Future<void> signOutAllDevices(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -761,7 +759,7 @@ class _StatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _i3.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -769,7 +767,7 @@ class _StatusEndpoint {
     });
   }
 
-  _i4.Future<_i5.UserInfo?> getUserInfo(
+  _i3.Future<_i4.UserInfo?> getUserInfo(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -791,7 +789,7 @@ class _StatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i5.UserInfo?>);
+                as _i3.Future<_i4.UserInfo?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -799,7 +797,7 @@ class _StatusEndpoint {
     });
   }
 
-  _i4.Future<_i8.UserSettingsConfig> getUserSettingsConfig(
+  _i3.Future<_i7.UserSettingsConfig> getUserSettingsConfig(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -821,7 +819,7 @@ class _StatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i8.UserSettingsConfig>);
+                as _i3.Future<_i7.UserSettingsConfig>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -840,7 +838,7 @@ class _UserEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i4.Future<bool> removeUserImage(
+  _i3.Future<bool> removeUserImage(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -862,7 +860,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _i3.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -870,9 +868,9 @@ class _UserEndpoint {
     });
   }
 
-  _i4.Future<bool> setUserImage(
+  _i3.Future<bool> setUserImage(
     _i1.TestSessionBuilder sessionBuilder,
-    _i9.ByteData image,
+    _i8.ByteData image,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -893,7 +891,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _i3.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -901,7 +899,7 @@ class _UserEndpoint {
     });
   }
 
-  _i4.Future<bool> changeUserName(
+  _i3.Future<bool> changeUserName(
     _i1.TestSessionBuilder sessionBuilder,
     String userName,
   ) async {
@@ -924,7 +922,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _i3.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -932,7 +930,7 @@ class _UserEndpoint {
     });
   }
 
-  _i4.Future<bool> changeFullName(
+  _i3.Future<bool> changeFullName(
     _i1.TestSessionBuilder sessionBuilder,
     String fullName,
   ) async {
@@ -955,7 +953,7 @@ class _UserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _i3.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

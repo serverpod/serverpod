@@ -21,6 +21,7 @@ import '../endpoints/user_endpoint.dart' as _i8;
 import 'package:serverpod_auth_server/src/generated/apple_auth_info.dart'
     as _i9;
 import 'dart:typed_data' as _i10;
+import 'package:serverpod_auth_server/src/generated/future_calls.dart' as _i11;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -510,5 +511,10 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+  }
+
+  @override
+  _i1.FutureCallInitializer get futureCallInitializer {
+    return _i11.futureCalls;
   }
 }

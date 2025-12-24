@@ -634,6 +634,21 @@ class LibraryGenerator {
                         .statement,
                 ]),
             ),
+          )
+          ..methods.add(
+            Method(
+              (m) => m
+                ..annotations.add(refer('override'))
+                ..name = 'futureCallInitializer'
+                ..type = MethodType.getter
+                ..returns = refer('FutureCallInitializer', serverpodUrl(true))
+                ..body = Block.of([
+                  refer(
+                    'futureCalls',
+                    'package:${config.serverPackage}/src/generated/future_calls.dart',
+                  ).returned.statement,
+                ]),
+            ),
           ),
       ),
     );

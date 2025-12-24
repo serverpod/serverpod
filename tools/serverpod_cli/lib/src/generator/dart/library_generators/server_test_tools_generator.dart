@@ -765,10 +765,6 @@ class ServerTestToolsGenerator {
                           '_InternalTestEndpoints',
                         ).newInstance([]),
                         'endpoints': refer('Endpoints').newInstance([]),
-                        'futureCalls': refer(
-                          'futureCalls',
-                          'package:${config.serverPackage}/src/generated/future_calls.dart',
-                        ),
                         'serializationManager': refer(
                           'Protocol',
                         ).newInstance([]),

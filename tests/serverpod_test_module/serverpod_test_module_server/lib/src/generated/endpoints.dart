@@ -18,6 +18,8 @@ import '../endpoints/unauthenticated.dart' as _i5;
 import '../module_feature/endpoints/my_feature_endpoint.dart' as _i6;
 import 'package:serverpod_test_module_server/src/generated/module_class.dart'
     as _i7;
+import 'package:serverpod_test_module_server/src/generated/future_calls.dart'
+    as _i8;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -325,5 +327,10 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+  }
+
+  @override
+  _i1.FutureCallInitializer get futureCallInitializer {
+    return _i8.futureCalls;
   }
 }

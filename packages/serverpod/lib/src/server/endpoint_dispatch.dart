@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:serverpod/src/authentication/authentication_info.dart';
 import 'package:serverpod/src/authentication/scope.dart';
 import 'package:serverpod/src/server/endpoint_parameter_helper.dart';
+import 'package:serverpod/src/server/future_call_initializer.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'endpoint.dart';
@@ -21,6 +22,9 @@ abstract class EndpointDispatch {
 
   /// Initializes all endpoints that are connected to the dispatch.
   void initializeEndpoints(Server server);
+
+  /// Initializer for the generated future calls.
+  FutureCallInitializer get futureCallInitializer;
 
   /// Finds an [EndpointConnector] by its name. If the connector is in a module,
   /// a period should separate the module name from the endpoint name.

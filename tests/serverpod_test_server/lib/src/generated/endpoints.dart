@@ -88,6 +88,7 @@ import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/con
 import 'package:serverpod_test_server/src/generated/types_record.dart' as _i68;
 import 'package:serverpod_test_server/src/generated/module_datatype.dart'
     as _i69;
+import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i70;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -9362,5 +9363,10 @@ class Endpoints extends _i1.EndpointDispatch {
     modules['serverpod_auth'] = _i63.Endpoints()..initializeEndpoints(server);
     modules['serverpod_test_module'] = _i64.Endpoints()
       ..initializeEndpoints(server);
+  }
+
+  @override
+  _i1.FutureCallInitializer get futureCallInitializer {
+    return _i70.futureCalls;
   }
 }
