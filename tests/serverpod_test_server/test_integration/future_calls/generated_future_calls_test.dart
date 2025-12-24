@@ -26,9 +26,8 @@ void main() {
       });
 
       test(
-        '''when scheduling a future call at specified time,
-          then a FutureCallEntry is added to the database
-        ''',
+        'when scheduling a future call at specified time'
+        'then a FutureCallEntry is added to the database',
         () async {
           await futureCalls
               .callAtTime(DateTime.now())
@@ -45,9 +44,8 @@ void main() {
       );
 
       test(
-        '''when scheduling a future call with a delay,
-          then a FutureCallEntry is added to the database
-        ''',
+        'when scheduling a future call with a delay'
+        'then a FutureCallEntry is added to the database',
         () async {
           await futureCalls
               .callWithDelay(Duration(seconds: 3))
