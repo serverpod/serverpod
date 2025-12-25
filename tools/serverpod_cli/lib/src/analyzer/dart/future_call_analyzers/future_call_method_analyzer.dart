@@ -2,11 +2,10 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/dart/annotation_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/annotation.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/keywords.dart';
-import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/annotation.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
@@ -62,7 +61,7 @@ abstract class FutureCallMethodAnalyzer {
         method.documentationComment,
         templateRegistry: templateRegistry,
       ),
-      annotations: FutureCallAnnotationAnalyzer.parseAnnotations(method),
+      annotations: AnnotationAnalyzer.parseFutureCallAnnotations(method),
       parameters: parameters.required,
       parametersNamed: parameters.named,
       parametersPositional: parameters.positional,
@@ -88,7 +87,7 @@ abstract class FutureCallMethodAnalyzer {
   /// be validated and parsed.
   static bool isFutureCallMethod(MethodElement method) {
     if (method.isPrivate) return false;
-    if (method.markedAsIgnored) return false;
+    if (method.futureCallMarkedAsIgnored) return false;
 
     if (method.formalParameters.isEmpty) return false;
 

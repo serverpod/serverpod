@@ -1,4 +1,4 @@
-import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/validator.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 
 import 'generator_config_builder.dart';
