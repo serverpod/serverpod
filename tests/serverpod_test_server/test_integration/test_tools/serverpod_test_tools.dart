@@ -55,9 +55,9 @@ import 'package:serverpod_test_server/src/generated/session_auth_info.dart'
     as _i28;
 import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
     as _i29;
-import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i30;
 import 'package:serverpod_test_server/src/generated/test_generated_call_hello_model.dart'
-    as _i31;
+    as _i30;
+import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i31;
 import 'package:serverpod_test_server/src/generated/test_generated_call_bye_model.dart'
     as _i32;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
@@ -592,10 +592,6 @@ class _InternalTestEndpoints extends TestEndpoints
 }
 
 class _FutureCalls {
-  late final testCall = _TestCallFutureCall();
-
-  late final testExceptionCall = _TestExceptionCallFutureCall();
-
   late final testGeneratedCall = _TestGeneratedCallFutureCall();
 }
 
@@ -15300,52 +15296,16 @@ class _MyFeatureEndpoint {
   }
 }
 
-class _TestCallFutureCall {
-  Future<void> invoke(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i10.SimpleData? object,
-  ) async {
-    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
-        .internalBuild();
-    try {
-      await _i30.TestCallInvokeFutureCall().invoke(
-        _localUniqueSession,
-        object,
-      );
-    } finally {
-      await _localUniqueSession.close();
-    }
-  }
-}
-
-class _TestExceptionCallFutureCall {
-  Future<void> invoke(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i10.SimpleData? object,
-  ) async {
-    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
-        .internalBuild();
-    try {
-      await _i30.TestExceptionCallInvokeFutureCall().invoke(
-        _localUniqueSession,
-        object,
-      );
-    } finally {
-      await _localUniqueSession.close();
-    }
-  }
-}
-
 class _TestGeneratedCallFutureCall {
   Future<void> hello(
     _i1.TestSessionBuilder sessionBuilder,
     String name,
   ) async {
-    var object = _i31.TestGeneratedCallHelloModel(name: name);
+    var object = _i30.TestGeneratedCallHelloModel(name: name);
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i30.TestGeneratedCallHelloFutureCall().invoke(
+      await _i31.TestGeneratedCallHelloFutureCall().invoke(
         _localUniqueSession,
         object,
       );
@@ -15366,7 +15326,7 @@ class _TestGeneratedCallFutureCall {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i30.TestGeneratedCallByeFutureCall().invoke(
+      await _i31.TestGeneratedCallByeFutureCall().invoke(
         _localUniqueSession,
         object,
       );

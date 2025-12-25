@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_parameter_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/keywords.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
 abstract class FutureCallClassAnalyzer {
@@ -99,6 +100,7 @@ abstract class FutureCallClassAnalyzer {
   static bool isFutureCallClass(ClassElement element) {
     if (element.futureCallMarkedAsIgnored) return false;
     if (!element.isConstructable && !element.isAbstract) return false;
+    if (!element.isFutureCallSpec) return false;
     return isFutureCallInterface(element);
   }
 
@@ -175,4 +177,13 @@ extension on ClassElement {
 
     return futureCallMethods;
   }
+
+  /// Returns true if the generic type argument on this element's
+  /// super type is SerializableModel. Otherwise, returns false.
+  /// This is useful to treat conforming elements as generation specs
+  /// for future calls. It is also useful avoid re-analyzing
+  /// generated FutureCall classes and user-defined ones.
+  bool get isFutureCallSpec =>
+      supertype?.typeArguments.firstOrNull?.element?.name ==
+      Keyword.serializableModelClassName;
 }

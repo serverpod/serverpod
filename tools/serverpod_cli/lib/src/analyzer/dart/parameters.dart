@@ -2,7 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart'
     show ParameterDefinition;
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/keywords.dart';
+import 'package:serverpod_cli/src/analyzer/dart/keywords.dart';
 
 class Parameters {
   final List<ParameterDefinition> required;

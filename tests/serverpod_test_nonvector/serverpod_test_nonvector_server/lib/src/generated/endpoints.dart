@@ -12,8 +12,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../greeting_endpoint.dart' as _i2;
-import 'package:serverpod_test_nonvector_server/src/generated/future_calls.dart'
-    as _i3;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -50,10 +48,5 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-  }
-
-  @override
-  _i1.FutureCallInitializer? get futureCallInitializer {
-    return _i3.futureCalls;
   }
 }

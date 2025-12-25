@@ -111,7 +111,6 @@ class _ExampleFutureCallDispatcher {
   }
 }
 
-@_i1.doNotGenerate
 class ExampleInvokeFutureCall extends _i1.FutureCall<_i1.SerializableModel> {
   @override
   _i2.Future<void> invoke(

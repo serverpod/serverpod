@@ -2053,7 +2053,6 @@ typedef _InvokeFutureCall =
             var requiredParameters = method.parameters;
 
             c
-              ..annotations.add(refer('doNotGenerate', serverpodUrl(true)))
               ..docs.add(method.documentationComment ?? '')
               ..name = futureCallClassName
               ..extend = TypeReference(

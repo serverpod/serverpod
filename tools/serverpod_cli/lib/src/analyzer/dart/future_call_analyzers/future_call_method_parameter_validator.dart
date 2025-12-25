@@ -1,6 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/keywords.dart';
+import 'package:serverpod_cli/src/analyzer/dart/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 
 class FutureCallMethodParameterValidator {

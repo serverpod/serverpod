@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:serverpod_test_server/src/futureCalls/test_exception_call.dart';
 import 'package:test/test.dart';
 
 import 'package:serverpod/serverpod.dart';
@@ -117,6 +118,7 @@ void main() {
             diagnosticEventHandlers: [exceptionHandler],
           ),
         );
+        pod.registerFutureCall(TestExceptionCall(), 'testExceptionCall');
         await pod.start();
       });
 
