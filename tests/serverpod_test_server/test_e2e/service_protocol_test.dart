@@ -235,7 +235,7 @@ void main() {
       expect(logResult.sessionLog[0].logs[0].message, equals('42'));
       expect(
         logResult.sessionLog[0].sessionLogEntry.method,
-        equals('testCall'),
+        equals('TestCallInvokeFutureCall'),
       );
     });
 

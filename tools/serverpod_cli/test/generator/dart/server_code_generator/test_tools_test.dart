@@ -1816,7 +1816,7 @@ void main() {
           expect(
             testToolsFile,
             matches(
-              r'class TestEndpoints \{\n\s*final _FutureCalls futureCalls = _FutureCalls\(\);',
+              r'class TestEndpoints \{\n\s*late final futureCalls = _FutureCalls\(\);',
             ),
           );
         },
