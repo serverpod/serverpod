@@ -189,6 +189,7 @@ class FutureCallManager {
     _hasPendingStart = false;
     await _scanner.stop();
     await _scheduler.drain();
+    _futureCalls.clear();
   }
 
   /// Internal method to dispatch a list of [FutureCallEntry] objects to

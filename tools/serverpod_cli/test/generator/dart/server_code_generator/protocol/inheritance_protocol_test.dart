@@ -75,6 +75,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: endpoints,
         models: models,
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(

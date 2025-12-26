@@ -9,27 +9,56 @@ Future<bool> performGenerate({
   bool dartFormat = true,
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
+  required FutureCallsAnalyzer futureCallsAnalyzer,
   required StatefulAnalyzer modelAnalyzer,
 }) async {
   bool success = true;
 
   log.debug('Analyzing serializable models in the protocol directory.');
 
-  var models = modelAnalyzer.validateAll();
+  final models = modelAnalyzer.validateAll();
   success &= !modelAnalyzer.hasSevereErrors;
+
+  log.debug('Analyzing the future calls.');
+
+  // analyze future calls to collect models for generation
+  var futureCallsAnalyzerCollector = CodeGenerationCollector();
+  var futureCalls = await futureCallsAnalyzer.analyze(
+    collector: futureCallsAnalyzerCollector,
+  );
+
+  final futureCallModels = <SerializableModelDefinition>[];
+
+  for (final futureCall in futureCalls) {
+    for (final method in futureCall.methods) {
+      if (method.futureCallMethodParameter != null) {
+        futureCallModels.add(
+          method.futureCallMethodParameter!.toSerializableModel(),
+        );
+      }
+    }
+  }
+
+  success &= !futureCallsAnalyzerCollector.hasSevereErrors;
+  futureCallsAnalyzerCollector.printErrors();
 
   log.debug('Generating files for serializable models.');
 
-  var generatedModelFiles =
+  final allModels = <SerializableModelDefinition>[
+    ...models,
+    ...futureCallModels,
+  ];
+
+  final generatedModelFiles =
       await ServerpodCodeGenerator.generateSerializableModels(
-        models: models,
+        models: allModels,
         config: config,
       );
 
   log.debug('Analyzing the endpoints.');
 
-  var endpointAnalyzerCollector = CodeGenerationCollector();
-  var endpoints = await endpointsAnalyzer.analyze(
+  final endpointAnalyzerCollector = CodeGenerationCollector();
+  final endpoints = await endpointsAnalyzer.analyze(
     collector: endpointAnalyzerCollector,
     changedFiles: generatedModelFiles.toSet(),
   );
@@ -41,7 +70,8 @@ Future<bool> performGenerate({
 
   var protocolDefinition = ProtocolDefinition(
     endpoints: endpoints,
-    models: models,
+    models: allModels,
+    futureCalls: futureCalls,
   );
 
   var generatedProtocolFiles =

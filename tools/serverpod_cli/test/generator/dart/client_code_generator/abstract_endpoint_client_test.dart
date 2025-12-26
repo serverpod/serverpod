@@ -50,6 +50,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [abstractEndpoint],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -211,6 +212,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [abstractBaseEndpoint, concreteEndpoint],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -415,6 +417,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [concreteEndpoint],
         models: [],
+        futureCalls: [],
       );
 
       final customConfig = GeneratorConfigBuilder()
@@ -533,6 +536,7 @@ void main() {
           concreteSubclassEndpoint,
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(

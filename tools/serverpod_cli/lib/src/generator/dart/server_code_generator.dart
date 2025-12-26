@@ -51,6 +51,12 @@ class DartServerCodeGenerator extends CodeGenerator {
           serverClassGenerator.generateProtocol().generateCode(),
       p.joinAll([...config.generatedServerEndpointFilePathParts]):
           serverClassGenerator.generateServerEndpointDispatch().generateCode(),
+      if (protocolDefinition.futureCalls.isNotEmpty)
+        p.joinAll([
+          ...config.generatedServerFutureCallFilePathParts,
+        ]): serverClassGenerator
+            .generateServerFutureCalls()
+            .generateCode(),
     };
 
     var generatedServerTestToolsPathParts =

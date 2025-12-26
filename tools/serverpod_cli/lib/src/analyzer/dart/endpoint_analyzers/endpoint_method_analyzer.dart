@@ -1,15 +1,13 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/dart/annotation_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/annotation.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
-
-import 'extension/endpoint_parameters_extension.dart';
 
 const _excludedMethodNameSet = {
   'streamOpened',
@@ -41,7 +39,7 @@ abstract class EndpointMethodAnalyzer {
           method.documentationComment,
           templateRegistry: templateRegistry,
         ),
-        annotations: AnnotationAnalyzer.parseAnnotations(method),
+        annotations: AnnotationAnalyzer.parseEndpointAnnotations(method),
         parameters: parameters.required,
         parametersNamed: parameters.named,
         parametersPositional: parameters.positional,
@@ -55,7 +53,7 @@ abstract class EndpointMethodAnalyzer {
         method.documentationComment,
         templateRegistry: templateRegistry,
       ),
-      annotations: AnnotationAnalyzer.parseAnnotations(method),
+      annotations: AnnotationAnalyzer.parseEndpointAnnotations(method),
       parameters: parameters.required,
       parametersNamed: parameters.named,
       parametersPositional: parameters.positional,
@@ -80,7 +78,7 @@ abstract class EndpointMethodAnalyzer {
   /// be validated and parsed.
   static bool isEndpointMethod(MethodElement method) {
     if (method.isPrivate) return false;
-    if (method.markedAsIgnored) return false;
+    if (method.endpointMarkedAsIgnored) return false;
 
     if (_excludedMethodNameSet.contains(method.name)) return false;
 

@@ -6,8 +6,11 @@ import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
 import '../../../test_util/builders/endpoint_definition_builder.dart';
+import '../../../test_util/builders/future_call_definition_builder.dart';
+import '../../../test_util/builders/future_call_method_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
 import '../../../test_util/builders/method_definition_builder.dart';
+import '../../../test_util/builders/parameter_definition_builder.dart';
 import '../../../test_util/builders/type_definition_builder.dart';
 
 const projectName = 'example_project';
@@ -35,6 +38,7 @@ void main() {
       var protocolDefinition = const ProtocolDefinition(
         endpoints: [],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -197,6 +201,7 @@ void main() {
       var protocolDefinition = const ProtocolDefinition(
         endpoints: [],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -313,6 +318,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -454,6 +460,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -606,6 +613,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -666,6 +674,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -733,6 +742,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -803,6 +813,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -874,6 +885,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -942,6 +954,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1015,6 +1028,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1090,6 +1104,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1152,6 +1167,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1210,6 +1226,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1327,6 +1344,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [baseEndpoint, concreteEndpoint],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1444,6 +1462,7 @@ void main() {
           concreteSubclassEndpoint,
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1587,6 +1606,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1630,6 +1650,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -1649,6 +1670,179 @@ void main() {
           contains("@Deprecated('This method is deprecated')"),
         );
       });
+    },
+  );
+
+  group(
+    'Given protocol definition with future call when generating test tools file',
+    () {
+      var futureClassName = 'testing';
+      var method = 'sayHello';
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: [],
+        futureCalls: [
+          FutureCallDefinitionBuilder()
+              .withClassName(futureClassName.pascalCase)
+              .withName(futureClassName)
+              .withMethods([
+                FutureCallMethodDefinitionBuilder()
+                    .withName(method)
+                    .withParameters([
+                      ParameterDefinitionBuilder()
+                          .withName('name')
+                          .withType(
+                            TypeDefinitionBuilder()
+                                .withClassName('String')
+                                .build(),
+                          )
+                          .build(),
+                    ])
+                    .buildMethodCallDefinition(),
+              ])
+              .build(),
+        ],
+      );
+
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test('then test tools file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+
+      late var testToolsFile = codeMap[expectedFileName];
+
+      test(
+        'then test tools file has `withServerpod` function defined with isTestGroup decorator',
+        () {
+          expect(
+            testToolsFile,
+            matches(
+              r'@_i\d\.isTestGroup\n'
+              r'void withServerpod\(\n'
+              r'  String testGroupName,\n'
+              r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
+              r'  bool\? applyMigrations,\n'
+              r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
+              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
+              r'  String\? runMode,\n'
+              r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
+              r'  Duration\? serverpodStartTimeout,\n'
+              r'  List<String>\? testGroupTagsOverride,\n'
+              r'  _i\d\.TestServerOutputMode\? testServerOutputMode,\n'
+              r'\}\)',
+            ),
+          );
+        },
+      );
+
+      test('then doc comment with general description is present', () async {
+        expect(
+          testToolsFile,
+          contains(
+            '/// Creates a new test group that takes a callback that can be used to write tests.',
+          ),
+        );
+      });
+
+      test('then configuration options header is present', () async {
+        expect(
+          testToolsFile,
+          contains(
+            '**Configuration options**',
+          ),
+        );
+      });
+
+      test(
+        'then doc comments with correct spacing exist for each configurable parameter',
+        () async {
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [applyMigrations] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [enableSessionLogging] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [rollbackDatabase] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [runMode] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [serverpodLoggingMode] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [serverpodStartTimeout] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [testGroupTagsOverride] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [testServerOutputMode] '),
+          );
+          expect(
+            testToolsFile,
+            contains('\n///\n/// [experimentalFeatures] '),
+          );
+        },
+      );
+
+      test('then test tools file has `TestEndpoints` class defined.', () {
+        expect(testToolsFile, contains('class TestEndpoints {'));
+      });
+
+      test('then test tools file has `_FutureCalls` class defined.', () {
+        expect(testToolsFile, contains('class _FutureCalls {'));
+      });
+
+      test(
+        'then test tools file has `_FutureCalls` field defined and assigned in `TestEndpoints`.',
+        () {
+          expect(
+            testToolsFile,
+            matches(
+              r'class TestEndpoints \{\n\s*late final futureCalls = _FutureCalls\(\);',
+            ),
+          );
+        },
+      );
+
+      test(
+        'then test tools file has `_InternalTestEndpoints` class defined that extends `TestEndpoints` and implements `InternalTestEndpoints`.',
+        () {
+          expect(
+            testToolsFile,
+            matches(
+              r'class _InternalTestEndpoints extends TestEndpoints\n\s*implements _i\d\.InternalTestEndpoints \{\n',
+            ),
+          );
+        },
+      );
+
+      test(
+        'then test tools file has private future call classes defined.',
+        () {
+          expect(
+            testToolsFile,
+            contains('class _${futureClassName.pascalCase}FutureCall {'),
+          );
+        },
+      );
     },
   );
 }

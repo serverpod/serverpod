@@ -1,8 +1,8 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/dart/annotation_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/annotation.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
@@ -37,14 +37,14 @@ abstract class EndpointClassAnalyzer {
     }
 
     var classDocumentationComment = element.documentationComment;
-    var annotations = AnnotationAnalyzer.parseAnnotations(element);
+    var annotations = AnnotationAnalyzer.parseEndpointAnnotations(element);
 
     var parentClass = element.supertype?.element;
     var parentClassName = parentClass?.name;
     EndpointDefinition? parentEndpointDefinition;
 
     if (parentClass is ClassElement &&
-        !parentClass.markedAsIgnored &&
+        !parentClass.endpointMarkedAsIgnored &&
         parentClassName != null &&
         parentClassName != 'Endpoint') {
       var parentFilePath = parentClass.library == element.library
@@ -121,7 +121,7 @@ abstract class EndpointClassAnalyzer {
   /// Returns true if the [ClassElement] is an active endpoint class that should
   /// be validated and parsed.
   static bool isEndpointClass(ClassElement element) {
-    if (element.markedAsIgnored) return false;
+    if (element.endpointMarkedAsIgnored) return false;
 
     // Allow abstract classes to be included in analysis for client generation.
     if (!element.isConstructable && !element.isAbstract) return false;
