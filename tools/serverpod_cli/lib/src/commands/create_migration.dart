@@ -64,6 +64,12 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     bool force = commandConfig.value(CreateMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
 
+    // Create migration runner
+    final createMigrationRunner = CreateMigrationRunner(
+      force: force,
+      tag: tag,
+    );
+
     // Get interactive flag from global configuration
     final interactive = serverpodRunner.globalConfiguration.optionalValue(
       GlobalOption.interactive,
@@ -93,6 +99,41 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
+    // Create migration using the runner
+    await createMigrationRunner.run(
+      serverDirectory: serverDirectory,
+      projectName: projectName,
+      config: config,
+    );
+  }
+}
+
+/// {@template create_migration_runner}
+/// Creates a new migration from the [serverDirectory] for the [projectName] project.
+/// {@endtemplate}
+class CreateMigrationRunner {
+  /// {@macro create_migration_runner}
+  CreateMigrationRunner({
+    required this.force,
+    required this.tag,
+  });
+
+  /// If [force] is true, the migration will be created even if there are warnings or information that
+  /// may be destroyed.
+  final bool force;
+
+  /// If [tag] is specified, it will be added to the migration.
+  final String? tag;
+
+  /// Create a new migration from the [serverDirectory] for the [projectName] project.
+  /// This is done using the [config].
+  ///
+  /// If [tag] is specified, it will be added to the migration.
+  Future<void> run({
+    required Directory serverDirectory,
+    required String projectName,
+    required GeneratorConfig config,
+  }) async {
     var generator = MigrationGenerator(
       directory: serverDirectory,
       projectName: projectName,
