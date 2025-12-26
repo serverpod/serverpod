@@ -127,4 +127,38 @@ void main() {
       expect(Types.t.aSet, isA<ColumnSerializable<Set<int>>>());
     });
   });
+
+  group('Given declared ObjectWithPostgis class', () {
+    test('then geography point fields are generated correctly.', () {
+      expect(ObjectWithPostgis.t.point, isA<ColumnGeographyPoint>());
+      expect(ObjectWithPostgis.t.pointNullable, isA<ColumnGeographyPoint>());
+    });
+
+    test('then geography linestring fields are generated correctly.', () {
+      expect(ObjectWithPostgis.t.lineString, isA<ColumnGeographyLineString>());
+      expect(
+        ObjectWithPostgis.t.lineStringNullable,
+        isA<ColumnGeographyLineString>(),
+      );
+    });
+
+    test('then geography polygon fields are generated correctly.', () {
+      expect(ObjectWithPostgis.t.polygon, isA<ColumnGeographyPolygon>());
+      expect(
+        ObjectWithPostgis.t.polygonNullable,
+        isA<ColumnGeographyPolygon>(),
+      );
+    });
+
+    test('then geography multipolygon fields are generated correctly.', () {
+      expect(
+        ObjectWithPostgis.t.multiPolygon,
+        isA<ColumnGeographyMultiPolygon>(),
+      );
+      expect(
+        ObjectWithPostgis.t.multiPolygonNullable,
+        isA<ColumnGeographyMultiPolygon>(),
+      );
+    });
+  });
 }

@@ -24,6 +24,38 @@ class DatabaseAnalyzer {
     );
   }
 
+  /// Determines if a table is a system table that should not be managed by migrations.
+  /// System tables include PostGIS, PostgreSQL, and other extension system tables.
+  static bool _isSystemTable(String tableName, String schemaName) {
+    const postgisTables = {
+      'spatial_ref_sys',
+      'geometry_columns',
+      'geography_columns',
+      'raster_columns',
+      'raster_overviews',
+      'layer',
+      'raster_overviews_table',
+      'raster_overviews_rid',
+    };
+
+    // PostGIS system tables are unmanaged
+    if (postgisTables.contains(tableName)) {
+      return true;
+    }
+
+    // PostgreSQL system tables are unmanaged
+    if (tableName.startsWith('pg_')) {
+      return true;
+    }
+
+    // Tables in system schemas are unmanaged
+    if (schemaName.startsWith('pg_') || schemaName == 'information_schema') {
+      return true;
+    }
+
+    return false;
+  }
+
   static Future<List<TableDefinition>> _getTableDefinitions(
     Database database,
   ) async {
@@ -55,12 +87,16 @@ WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
           tableName,
         );
 
+        // Determine if this is a system table that should not be managed by migrations
+        bool isSystemTable = _isSystemTable(tableName, schemaName);
+
         return TableDefinition(
           name: tableName,
           schema: schemaName,
           columns: await columns,
           foreignKeys: await foreignKeys,
           indexes: await indexes,
+          managed: !isSystemTable,
         );
       }),
     );
@@ -75,28 +111,52 @@ WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
         .map((e) => "'${e.name}'")
         .join(', ');
 
+    // Check if PostGIS is enabled
+    final postgisEnabledResult = await database.unsafeQuery(
+      'SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = \'postgis\');',
+    );
+    final postgisEnabled = postgisEnabledResult.first.first == true;
+
+    // Build the query with or without the geography_columns JOIN
+    final geographyJoin = postgisEnabled
+        ? '''LEFT JOIN geography_columns gc ON gc.f_table_schema = '$schemaName' 
+    AND gc.f_table_name = '$tableName' 
+    AND gc.f_geography_column = column_name'''
+        : '';
+
+    final geographyCase = postgisEnabled
+        ? '''CASE WHEN (data_type = 'USER-DEFINED' AND udt_name = 'geography') 
+            THEN ('geography' || LOWER(gc.type)) 
+            WHEN (data_type = 'USER-DEFINED') 
+            THEN udt_name 
+            ELSE data_type
+        END as data_type'''
+        : 'data_type';
+
     var queryResult = await database.unsafeQuery(
       // Get the columns of this table and sort them based on their position.
       '''
 SELECT column_name, column_default, is_nullable,
        CASE WHEN (data_type = 'USER-DEFINED') THEN udt_name ELSE data_type END as data_type,
-       CASE WHEN (udt_name IN ($vectorTypes)) THEN a.atttypmod ELSE NULL END as vector_size
+       CASE WHEN (udt_name IN ($vectorTypes)) THEN a.atttypmod ELSE NULL END as vector_size,
+       $geographyCase
 FROM information_schema.columns
   LEFT JOIN pg_catalog.pg_attribute a ON a.attname = column_name
   LEFT JOIN pg_catalog.pg_class c ON c.oid = a.attrelid
   LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+  $geographyJoin
 WHERE table_schema = '$schemaName' AND table_name = '$tableName'
   AND n.nspname = '$schemaName' AND c.relname = '$tableName'
 ORDER BY ordinal_position;
 ''',
     );
-
     return queryResult
         .map(
           (e) => ColumnDefinition(
             name: e[0],
             columnDefault: e[1],
-            columnType: ExtendedColumnType.fromSqlType(e[3]),
+            // e[5] represent the POSTGIS data type PostgisPoint, PostgisPolygon, etc..
+            columnType: ExtendedColumnType.fromSqlType(e[3], e[5]),
             // SQL outputs YES or NO. So we have to convert it to a bool manually.
             isNullable: e[2] == 'YES',
             vectorDimension: e[4],

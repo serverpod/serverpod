@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Builds a SQL query for a select statement.
@@ -344,9 +345,40 @@ class InsertQueryBuilder {
         .map((row) {
           var values = selectedColumns
               .map((column) {
-                var unformattedValue = row[column.columnName];
+                var value = row[column.columnName];
+
+                // Handle geography types specially - convert JSON back to geography objects
+                // then let the encoder handle them
+                if (value != null) {
+                  if (column is ColumnGeographyPoint) {
+                    if (value is Map) {
+                      value = GeographyPoint.fromJson(
+                        value as Map<String, dynamic>,
+                      );
+                    }
+                  } else if (column is ColumnGeographyPolygon) {
+                    if (value is Map) {
+                      value = GeographyPolygon.fromJson(
+                        value as Map<String, dynamic>,
+                      );
+                    }
+                  } else if (column is ColumnGeographyMultiPolygon) {
+                    if (value is Map) {
+                      value = GeographyMultiPolygon.fromJson(
+                        value as Map<String, dynamic>,
+                      );
+                    }
+                  } else if (column is ColumnGeographyLineString) {
+                    if (value is Map) {
+                      value = GeographyLineString.fromJson(
+                        value as Map<String, dynamic>,
+                      );
+                    }
+                  }
+                }
+
                 return DatabasePoolManager.encoder.convert(
-                  unformattedValue,
+                  value,
                   hasDefaults: column.hasDefault,
                 );
               })
@@ -537,11 +569,19 @@ String _buildSelectStatement(
 String _buildColumnAliases(List<Column> columns) {
   return columns
       .map(
-        (column) =>
-            '$column AS "${truncateIdentifier(
-              column.fieldQueryAlias,
-              DatabaseConstants.pgsqlMaxNameLimitation,
-            )}"',
+        (column) {
+          var columnRef = column.toString();
+          if (column is ColumnGeographyPoint ||
+              column is ColumnGeographyPolygon ||
+              column is ColumnGeographyMultiPolygon ||
+              column is ColumnGeographyLineString) {
+            columnRef = 'ST_AsEWKT($columnRef)';
+          }
+          return '$columnRef AS "${truncateIdentifier(
+            column.fieldQueryAlias,
+            DatabaseConstants.pgsqlMaxNameLimitation,
+          )}"';
+        },
       )
       .join(', ');
 }
