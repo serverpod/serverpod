@@ -396,12 +396,14 @@ class ServerpodDirectories {
   final Directory clientDir;
   final Directory flutterDir;
   final Directory githubDir;
+  final Directory vscodeDir;
 
   ServerpodDirectories({required this.projectDir, required String name})
     : serverDir = Directory(p.join(projectDir.path, '${name}_server')),
       clientDir = Directory(p.join(projectDir.path, '${name}_client')),
       flutterDir = Directory(p.join(projectDir.path, '${name}_flutter')),
-      githubDir = Directory(p.join(projectDir.path, '.github'));
+      githubDir = Directory(p.join(projectDir.path, '.github')),
+      vscodeDir = Directory(p.join(projectDir.path, '.vscode'));
 }
 
 void _createProjectDirectories(
@@ -415,6 +417,7 @@ void _createProjectDirectories(
   if (template == ServerpodTemplateType.server) {
     _createDirectory(serverpodDirs.flutterDir);
     _createDirectory(serverpodDirs.githubDir);
+    _createDirectory(serverpodDirs.vscodeDir);
   }
 }
 
@@ -712,6 +715,20 @@ Future<void> _copyServerUpgrade(
       Replacement(
         slotName: 'CLI_VERSION',
         replacement: templateVersion,
+      ),
+    ],
+    fileNameReplacements: [],
+  );
+  copier.copyFiles();
+
+  log.debug('Copying .vscode files', newParagraph: true);
+  copier = Copier(
+    srcDir: Directory(p.join(resourceManager.templateDirectory.path, 'vscode')),
+    dstDir: serverpodDirs.vscodeDir,
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
       ),
     ],
     fileNameReplacements: [],
