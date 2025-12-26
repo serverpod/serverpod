@@ -46,8 +46,9 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
   static const checkOption = FlagOption(
     argName: 'check',
     argAbbrev: 'c',
-    helpText: 'Validate that only one migration exists since base (CI/CD mode)',
     negatable: false,
+    defaultsTo: false,
+    helpText: 'Validate that only one migration exists since base',
   );
 
   static const forceOption = FlagOption(
@@ -87,8 +88,8 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
-    bool? checkMode = commandConfig.optionalValue(RebaseMigrationOption.check);
-    if (checkMode != null) {
+    bool checkMode = commandConfig.value(RebaseMigrationOption.check);
+    if (checkMode) {
       log.info(
         'Check mode enabled. Only validating that only one migration exists since base migration.',
       );
