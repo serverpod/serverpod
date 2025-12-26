@@ -805,7 +805,7 @@ class Serverpod {
       }
 
       logVerbose('Verifying database integrity.');
-      verified = await MigrationManager.verifyDatabaseIntegrity(
+      verified = await migrationManager.verifyDatabaseIntegrity(
         internalSession,
       );
     } catch (e, stackTrace) {
