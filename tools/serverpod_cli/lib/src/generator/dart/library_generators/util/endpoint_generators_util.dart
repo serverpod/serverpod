@@ -18,3 +18,19 @@ Iterable<Expression> buildEndpointCallAnnotations(MethodDefinition methodDef) {
         );
       });
 }
+
+/// Builds annotations for endpoint parameters, filtering out
+/// annotations that should not be propagated to generated code.
+///
+/// This is used to transfer annotations like @deprecated and @Deprecated
+/// from endpoint parameters to generated client code and test framework methods.
+Iterable<Expression> buildParameterAnnotations(ParameterDefinition parameterDef) {
+  return parameterDef.annotations.map((annotation) {
+    var args = annotation.arguments;
+    return refer(
+      args != null
+          ? '${annotation.name}(${args.join(',')})'
+          : annotation.name,
+    );
+  });
+}
