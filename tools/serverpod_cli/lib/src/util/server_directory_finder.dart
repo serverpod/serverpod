@@ -54,11 +54,14 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
   int maxUpwardLevels = 5,
 }) {
   return (T arg) {
-    print('[serverpodDirectoryFinder] Starting directory search');
+    var printLog = <String>[];
+    printLog.add('[serverpodDirectoryFinder] Starting directory search');
     final start = startingDirectory?.call(arg) ?? Directory.current;
-    print('[serverpodDirectoryFinder] Starting directory: ${start.path}');
+    printLog.add(
+      '[serverpodDirectoryFinder] Starting directory: ${start.path}',
+    );
     final condition = directoryContentCondition ?? isServerDirectory;
-    print(
+    printLog.add(
       '[serverpodDirectoryFinder] Using condition: ${condition == isServerDirectory ? "isServerDirectory" : "custom"}',
     );
 
@@ -66,21 +69,21 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
     var visited = <String>{};
 
     // 1. Check current directory first (fast path)
-    print(
+    printLog.add(
       '[serverpodDirectoryFinder] Step 1: Checking current directory (fast path)',
     );
     if (condition(start)) {
-      print(
+      printLog.add(
         '[serverpodDirectoryFinder] ✓ Current directory is a server directory, returning immediately',
       );
       return start;
     }
-    print(
+    printLog.add(
       '[serverpodDirectoryFinder] ✗ Current directory is not a server directory',
     );
 
     // 2. Search child directories (depth 2)
-    print(
+    printLog.add(
       '[serverpodDirectoryFinder] Step 2: Searching child directories (max depth: 2)',
     );
     candidates.addAll(
@@ -89,86 +92,97 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
         maxDepth: 2,
         visited: visited,
         condition: condition,
+        printLog: printLog,
       ),
     );
-    print(
+    printLog.add(
       '[serverpodDirectoryFinder] Found ${candidates.length} candidate(s) in child directories',
     );
 
     // Early return if we found candidates in children
     if (candidates.isNotEmpty) {
-      print(
+      printLog.add(
         '[serverpodDirectoryFinder] Early return: found candidates in children',
       );
-      return _returnCandidates(candidates);
+      var result = _returnCandidates(candidates, printLog);
+      return result;
     }
-    print(
+    printLog.add(
       '[serverpodDirectoryFinder] No candidates found in children, continuing search',
     );
 
     // Determine if we should search upward/outward
-    print(
+    printLog.add(
       '[serverpodDirectoryFinder] Checking if starting directory is at repository boundary',
     );
-    var atBoundary = ServerDirectoryFinder._isRepositoryBoundary(start);
-    print('[serverpodDirectoryFinder] At boundary: $atBoundary');
+    var atBoundary = ServerDirectoryFinder._isRepositoryBoundary(
+      start,
+      printLog,
+    );
+    printLog.add('[serverpodDirectoryFinder] At boundary: $atBoundary');
 
     if (!atBoundary) {
       // 3. Check for standard naming pattern siblings
-      print(
+      printLog.add(
         '[serverpodDirectoryFinder] Step 3: Checking for sibling server directories',
       );
       var siblingServer = ServerDirectoryFinder._findSiblingServer(
         start,
         condition,
+        printLog,
       );
       if (siblingServer != null) {
-        print(
+        printLog.add(
           '[serverpodDirectoryFinder] ✓ Found sibling server directory: ${siblingServer.path}',
         );
         // Found sibling match, return immediately
         return siblingServer;
       }
-      print('[serverpodDirectoryFinder] ✗ No sibling server directory found');
+      printLog.add(
+        '[serverpodDirectoryFinder] ✗ No sibling server directory found',
+      );
 
       // 4. Search upward through parent directories
-      print(
+      printLog.add(
         '[serverpodDirectoryFinder] Step 4: Searching upward through parent directories (max levels: $maxUpwardLevels)',
       );
       var current = start.parent;
       for (var i = 0; i < maxUpwardLevels; i++) {
-        print(
+        printLog.add(
           '[serverpodDirectoryFinder] Upward search level $i: checking ${current.path}',
         );
         if (current.path == current.parent.path) {
-          print(
+          printLog.add(
             '[serverpodDirectoryFinder] Reached filesystem root, stopping upward search',
           );
           break;
         }
 
-        print(
+        printLog.add(
           '[serverpodDirectoryFinder] Checking if parent directory is a server directory',
         );
         if (condition(current)) {
-          print(
+          printLog.add(
             '[serverpodDirectoryFinder] ✓ Parent directory is a server directory: ${current.path}',
           );
           candidates.add(current);
         } else {
-          print(
+          printLog.add(
             '[serverpodDirectoryFinder] ✗ Parent directory is not a server directory',
           );
         }
 
-        var isAtBoundary = ServerDirectoryFinder._isRepositoryBoundary(current);
-        print(
+        var isAtBoundary = ServerDirectoryFinder._isRepositoryBoundary(
+          current,
+          printLog,
+        );
+        printLog.add(
           '[serverpodDirectoryFinder] Parent directory at boundary: $isAtBoundary',
         );
 
         // At boundaries (like .git), search deeper to find nested servers
         var searchDepth = isAtBoundary ? 2 : 1;
-        print(
+        printLog.add(
           '[serverpodDirectoryFinder] Searching children of parent (depth: $searchDepth)',
         );
         candidates.addAll(
@@ -177,19 +191,20 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
             maxDepth: searchDepth,
             visited: visited,
             condition: condition,
+            printLog: printLog,
           ),
         );
-        print(
+        printLog.add(
           '[serverpodDirectoryFinder] Total candidates after level $i: ${candidates.length}',
         );
 
         if (isAtBoundary || candidates.isNotEmpty) {
           if (isAtBoundary) {
-            print(
+            printLog.add(
               '[serverpodDirectoryFinder] Stopping upward search: reached boundary',
             );
           } else {
-            print(
+            printLog.add(
               '[serverpodDirectoryFinder] Stopping upward search: found candidates',
             );
           }
@@ -199,30 +214,37 @@ DirectoryFinder<T> serverpodDirectoryFinder<T>({
         current = current.parent;
       }
     } else {
-      print(
+      printLog.add(
         '[serverpodDirectoryFinder] Skipping upward/sibling search: starting directory is at boundary',
       );
     }
 
     // Remove duplicates and return result
-    print(
+    printLog.add(
       '[serverpodDirectoryFinder] Final step: processing ${candidates.length} candidate(s)',
     );
-    return _returnCandidates(candidates);
+    var result = _returnCandidates(candidates, printLog);
+    print(printLog.join('\n'));
+    return result;
   };
 }
 
 /// Helper function to handle candidate results.
 /// Returns single directory, throws exception for multiple, or returns null.
-Directory? _returnCandidates(List<Directory> candidates) {
-  print('[_returnCandidates] Processing ${candidates.length} candidate(s)');
+Directory? _returnCandidates(
+  List<Directory> candidates,
+  List<String> printLog,
+) {
+  printLog.add(
+    '[_returnCandidates] Processing ${candidates.length} candidate(s)',
+  );
   // Remove duplicates by normalized path
   var uniquePaths = <String>{};
   var beforeDedup = candidates.length;
   candidates = candidates.where((dir) {
     var canonicalized = p.canonicalize(dir.resolveSymbolicLinksSync());
     if (uniquePaths.contains(canonicalized)) {
-      print(
+      printLog.add(
         '[_returnCandidates] Removing duplicate: ${dir.path} (canonical: $canonicalized)',
       );
       return false;
@@ -231,25 +253,27 @@ Directory? _returnCandidates(List<Directory> candidates) {
     return true;
   }).toList();
   if (candidates.length < beforeDedup) {
-    print(
+    printLog.add(
       '[_returnCandidates] Removed ${beforeDedup - candidates.length} duplicate(s), ${candidates.length} unique candidate(s) remaining',
     );
   }
 
   if (candidates.isEmpty) {
-    print('[_returnCandidates] No candidates found, returning null');
+    printLog.add('[_returnCandidates] No candidates found, returning null');
     return null;
   } else if (candidates.length == 1) {
-    print(
+    printLog.add(
       '[_returnCandidates] Single candidate found: ${candidates.first.path}',
     );
     return candidates.first;
   } else {
-    print(
+    printLog.add(
       '[_returnCandidates] Multiple candidates found (${candidates.length}), throwing AmbiguousSearchException',
     );
     for (var i = 0; i < candidates.length; i++) {
-      print('[_returnCandidates]   Candidate ${i + 1}: ${candidates[i].path}');
+      printLog.add(
+        '[_returnCandidates]   Candidate ${i + 1}: ${candidates[i].path}',
+      );
     }
     throw AmbiguousSearchException(candidates);
   }
@@ -343,53 +367,56 @@ class ServerDirectoryFinder {
   static Directory? _findSiblingServer(
     Directory dir,
     DirectoryContentCondition condition,
+    List<String> printLog,
   ) {
-    print('[_findSiblingServer] Checking for sibling server directory');
-    print('[_findSiblingServer] Current directory: ${dir.path}');
+    printLog.add('[_findSiblingServer] Checking for sibling server directory');
+    printLog.add('[_findSiblingServer] Current directory: ${dir.path}');
     var dirName = p.basename(dir.path);
     var parent = dir.parent;
-    print(
+    printLog.add(
       '[_findSiblingServer] Directory name: $dirName, parent: ${parent.path}',
     );
 
     // Check each sibling pattern until we find a match
     for (var pattern in _siblingPatterns) {
-      print('[_findSiblingServer] Checking pattern: $pattern');
+      printLog.add('[_findSiblingServer] Checking pattern: $pattern');
       if (dirName.endsWith(pattern)) {
-        print(
+        printLog.add(
           '[_findSiblingServer] ✓ Directory name ends with pattern: $pattern',
         );
         var baseName = dirName.substring(0, dirName.length - pattern.length);
         var serverDir = Directory(p.join(parent.path, '${baseName}_server'));
-        print(
+        printLog.add(
           '[_findSiblingServer] Constructed server directory path: ${serverDir.path}',
         );
         if (serverDir.existsSync()) {
-          print(
+          printLog.add(
             '[_findSiblingServer] Server directory exists, checking condition',
           );
           if (condition(serverDir)) {
-            print(
+            printLog.add(
               '[_findSiblingServer] ✓ Server directory matches condition: ${serverDir.path}',
             );
             return serverDir;
           } else {
-            print(
+            printLog.add(
               '[_findSiblingServer] ✗ Server directory exists but does not match condition',
             );
           }
         } else {
-          print('[_findSiblingServer] ✗ Server directory does not exist');
+          printLog.add(
+            '[_findSiblingServer] ✗ Server directory does not exist',
+          );
         }
         break; // Found a pattern match, no need to check others
       } else {
-        print(
+        printLog.add(
           '[_findSiblingServer] ✗ Directory name does not end with pattern: $pattern',
         );
       }
     }
 
-    print('[_findSiblingServer] No sibling server directory found');
+    printLog.add('[_findSiblingServer] No sibling server directory found');
     return null;
   }
 
@@ -402,54 +429,57 @@ class ServerDirectoryFinder {
     required int maxDepth,
     required Set<String> visited,
     required DirectoryContentCondition condition,
+    required List<String> printLog,
   }) {
-    print(
+    printLog.add(
       '[_searchChildrenRecursive] Searching in: ${dir.path} (maxDepth: $maxDepth)',
     );
     if (maxDepth < 0) {
-      print('[_searchChildrenRecursive] Max depth < 0, returning empty');
+      printLog.add('[_searchChildrenRecursive] Max depth < 0, returning empty');
       return [];
     }
 
     var canonicalizedPath = p.canonicalize(dir.path);
     if (visited.contains(canonicalizedPath)) {
-      print(
+      printLog.add(
         '[_searchChildrenRecursive] Already visited: $canonicalizedPath, skipping',
       );
       return [];
     }
     visited.add(canonicalizedPath);
-    print('[_searchChildrenRecursive] Marked as visited: $canonicalizedPath');
+    printLog.add(
+      '[_searchChildrenRecursive] Marked as visited: $canonicalizedPath',
+    );
 
     var results = <Directory>[];
 
     try {
       var children = dir.listSync(followLinks: false);
-      print(
+      printLog.add(
         '[_searchChildrenRecursive] Found ${children.length} child(ren) in ${dir.path}',
       );
       for (var entity in children) {
         if (entity is! Directory) {
-          print(
+          printLog.add(
             '[_searchChildrenRecursive] Skipping non-directory: ${entity.path}',
           );
           continue;
         }
 
-        print(
+        printLog.add(
           '[_searchChildrenRecursive] Checking child directory: ${entity.path}',
         );
         if (condition(entity)) {
-          print(
+          printLog.add(
             '[_searchChildrenRecursive] ✓ Child directory matches condition: ${entity.path}',
           );
           results.add(entity);
         } else {
-          print(
+          printLog.add(
             '[_searchChildrenRecursive] ✗ Child directory does not match condition',
           );
           if (maxDepth > 0) {
-            print(
+            printLog.add(
               '[_searchChildrenRecursive] Recursing into child (remaining depth: ${maxDepth - 1})',
             );
             var subResults = _searchChildrenRecursive(
@@ -457,23 +487,24 @@ class ServerDirectoryFinder {
               maxDepth: maxDepth - 1,
               visited: visited,
               condition: condition,
+              printLog: printLog,
             );
-            print(
+            printLog.add(
               '[_searchChildrenRecursive] Recursion returned ${subResults.length} result(s)',
             );
             results.addAll(subResults);
           } else {
-            print(
+            printLog.add(
               '[_searchChildrenRecursive] Max depth reached, not recursing',
             );
           }
         }
       }
-      print(
+      printLog.add(
         '[_searchChildrenRecursive] Total results from ${dir.path}: ${results.length}',
       );
     } on FileSystemException catch (e) {
-      print(
+      printLog.add(
         '[_searchChildrenRecursive] FileSystemException accessing ${dir.path}: $e',
       );
       // skip directories that cannot be accessed
@@ -514,51 +545,53 @@ class ServerDirectoryFinder {
   ///
   /// This prevents the search from escaping the project and accessing
   /// system directories that may trigger permission prompts.
-  static bool _isRepositoryBoundary(Directory dir) {
-    print(
+  static bool _isRepositoryBoundary(Directory dir, List<String> printLog) {
+    printLog.add(
       '[_isRepositoryBoundary] Checking if directory is a boundary: ${dir.path}',
     );
     try {
       var gitDir = Directory(p.join(dir.path, '.git'));
       if (gitDir.existsSync()) {
-        print(
+        printLog.add(
           '[_isRepositoryBoundary] ✓ Boundary detected: .git directory exists',
         );
         return true;
       }
-      print('[_isRepositoryBoundary] No .git directory');
+      printLog.add('[_isRepositoryBoundary] No .git directory');
 
       var melosFile = File(p.join(dir.path, 'melos.yaml'));
       if (melosFile.existsSync()) {
-        print('[_isRepositoryBoundary] ✓ Boundary detected: melos.yaml exists');
+        printLog.add(
+          '[_isRepositoryBoundary] ✓ Boundary detected: melos.yaml exists',
+        );
         return true;
       }
-      print('[_isRepositoryBoundary] No melos.yaml file');
+      printLog.add('[_isRepositoryBoundary] No melos.yaml file');
 
       var pubspecFile = File(p.join(dir.path, 'pubspec.yaml'));
       if (pubspecFile.existsSync()) {
-        print(
+        printLog.add(
           '[_isRepositoryBoundary] pubspec.yaml exists, checking for workspace:',
         );
         try {
           var content = pubspecFile.readAsStringSync();
           if (content.contains('workspace:')) {
-            print(
+            printLog.add(
               '[_isRepositoryBoundary] ✓ Boundary detected: pubspec.yaml contains workspace:',
             );
             return true;
           }
-          print(
+          printLog.add(
             '[_isRepositoryBoundary] pubspec.yaml does not contain workspace:',
           );
         } on FileSystemException catch (e) {
-          print(
+          printLog.add(
             '[_isRepositoryBoundary] FileSystemException reading pubspec.yaml: $e',
           );
           // skip files that cannot be read
         }
       } else {
-        print('[_isRepositoryBoundary] No pubspec.yaml file');
+        printLog.add('[_isRepositoryBoundary] No pubspec.yaml file');
       }
 
       var homeDir =
@@ -577,20 +610,20 @@ class ServerDirectoryFinder {
       };
       for (var d in topLevelDirectories) {
         if (d == parentPath) {
-          print(
+          printLog.add(
             '[_isRepositoryBoundary] ✓ Boundary detected: parent is top-level directory ($d)',
           );
           return true;
         }
       }
-      print(
+      printLog.add(
         '[_isRepositoryBoundary] Parent is not a top-level directory (parent: $parentPath, top-level directories: ${topLevelDirectories.join(', ')})',
       );
 
-      print('[_isRepositoryBoundary] ✗ Not a boundary');
+      printLog.add('[_isRepositoryBoundary] ✗ Not a boundary');
       return false;
     } on FileSystemException catch (e) {
-      print(
+      printLog.add(
         '[_isRepositoryBoundary] FileSystemException checking boundary: $e, treating as boundary',
       );
       return true;
