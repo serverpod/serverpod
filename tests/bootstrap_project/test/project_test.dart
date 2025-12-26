@@ -695,6 +695,58 @@ void main() async {
           },
         );
       });
+
+      group('then the .vscode directory', () {
+        test('has launch.json', () {
+          expect(
+            File(
+              path.join(
+                tempPath,
+                projectName,
+                '.vscode',
+                'launch.json',
+              ),
+            ).existsSync(),
+            isTrue,
+            reason: 'launch.json does not exist.',
+          );
+        });
+
+        test('has flutter configuration as first entry', () {
+          final launchJson = File(
+            path.join(
+              tempPath,
+              projectName,
+              '.vscode',
+              'launch.json',
+            ),
+          ).readAsStringSync();
+
+          expect(
+            launchJson.contains('"${projectName}_flutter"'),
+            isTrue,
+            reason: 'launch.json does not contain flutter configuration.',
+          );
+
+          // Verify flutter config appears before server and client configs
+          final flutterIndex = launchJson.indexOf('"${projectName}_flutter"');
+          final serverIndex = launchJson.indexOf('"${projectName}_server"');
+          final clientIndex = launchJson.indexOf('"${projectName}_client"');
+
+          expect(
+            flutterIndex,
+            lessThan(serverIndex),
+            reason:
+                'Flutter configuration should appear before server configuration.',
+          );
+          expect(
+            flutterIndex,
+            lessThan(clientIndex),
+            reason:
+                'Flutter configuration should appear before client configuration.',
+          );
+        });
+      });
     });
   });
 
