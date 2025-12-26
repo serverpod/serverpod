@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "projectname_flutter",
+            "cwd": "projectname_flutter",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "projectname_server",
+            "cwd": "projectname_server",
+            "request": "launch",
+            "type": "dart",
+            "program": "bin/main.dart",
+            "args": [
+                "--role",
+                "monolith"
+            ]
+        },
+        {
+            "name": "projectname_client",
+            "request": "launch",
+            "type": "dart"
+        }
+    ]
+}
