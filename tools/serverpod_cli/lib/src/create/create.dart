@@ -721,19 +721,23 @@ Future<void> _copyServerUpgrade(
   );
   copier.copyFiles();
 
-  log.debug('Copying .vscode files', newParagraph: true);
-  copier = Copier(
-    srcDir: Directory(p.join(resourceManager.templateDirectory.path, 'vscode')),
-    dstDir: serverpodDirs.vscodeDir,
-    replacements: [
-      Replacement(
-        slotName: 'projectname',
-        replacement: name,
+  if (!isUpgrade) {
+    log.debug('Copying .vscode files', newParagraph: true);
+    copier = Copier(
+      srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'vscode'),
       ),
-    ],
-    fileNameReplacements: [],
-  );
-  copier.copyFiles();
+      dstDir: serverpodDirs.vscodeDir,
+      replacements: [
+        Replacement(
+          slotName: 'projectname',
+          replacement: name,
+        ),
+      ],
+      fileNameReplacements: [],
+    );
+    copier.copyFiles();
+  }
 
   if (!isUpgrade) {
     log.debug(
