@@ -45,25 +45,11 @@ class AnonymousIdpAccountCreationUtil {
   }) async {
     if (_rateLimitUtil != null) {
       await _rateLimitUtil.recordAttempt(
-        session,
-        // TODO: Is this correct?
-        nonce: session.remoteIpAddress?.toString() ?? '',
-        transaction: transaction,
-      );
-
-      final attemptCount = await _rateLimitUtil.countAttempts(
-        session,
-        // TODO: Is this correct?
-        nonce: session.remoteIpAddress?.toString() ?? '',
-        transaction: transaction,
-      );
-
-      if (attemptCount > _config.rateLimit!.maxAttempts) {
-        throw AnonymousAccountBlockedException(
-          reason: AnonymousAccountBlockedExceptionReason.throttled,
-        );
-      }
-    }
+    await _rateLimitUtil?.hasTooManyAttempts(
+      session,
+      nonce: '', // TODO: What to provide here?
+      transaction: transaction,
+    );
 
     final newUser = await _authUsers.create(
       session,
