@@ -98,19 +98,31 @@ class SignInScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SignInWidget(
-        client: client,
-        // NOTE: No need to call navigation here if it gets done on the
-        // client.auth.authInfo listener.
-        onAuthenticated: () => onAuthenticated(context),
-        onError: (error) => onError(context, error),
-        // NOTE: To customize widgets, pass the desired widget here.
-        // googleSignInWidget: GoogleSignInWidget(
-        //   client: client,
-        //   onAuthenticated: () => onAuthenticated(context),
-        //   onError: (error) => onError(context, error),
-        //   scopes: const [],
-        // ),
+      body: Column(
+        children: [
+          SignInWidget(
+            client: client,
+            // NOTE: No need to call navigation here if it gets done on the
+            // client.auth.authInfo listener.
+            onAuthenticated: () => onAuthenticated(context),
+            onError: (error) => onError(context, error),
+            // NOTE: To customize widgets, pass the desired widget here.
+            // googleSignInWidget: GoogleSignInWidget(
+            //   client: client,
+            //   onAuthenticated: () => onAuthenticated(context),
+            //   onError: (error) => onError(context, error),
+            //   scopes: const [],
+            // ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: AnonymousSignInWidget(
+              client: client,
+              onAuthenticated: () => onAuthenticated(context),
+              onError: (error) => onError(context, error),
+            ),
+          ),
+        ],
       ),
     );
   }
