@@ -94,7 +94,7 @@ class AnonymousIdpAccountCreationUtil {
 /// Configuration for the [AnonymousIdpAccountCreationUtil] class.
 class AnonymousIdpAccountCreationUtilsConfig {
   /// {@macro before_anonymous_account_created_function}
-  final BeforeAnonymousAccountCreatedFunction? beforeAnonymousAccountCreated;
+  final BeforeAnonymousAccountCreatedFunction? onBeforeAnonymousAccountCreated;
 
   /// {@macro after_anonymous_account_created_function}
   final AfterAnonymousAccountCreatedFunction? onAfterAnonymousAccountCreated;
