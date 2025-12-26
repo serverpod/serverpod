@@ -74,9 +74,6 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
   Future<void> runWithConfig(
     final Configuration<RebaseMigrationOption> commandConfig,
   ) async {
-    // Validate the command environment is correct for executing the command
-    await _validateCommandEnvironment();
-
     // Parse command arguments
     String? onto = commandConfig.optionalValue(RebaseMigrationOption.onto);
     String ontoBranch = commandConfig.value(RebaseMigrationOption.ontoBranch);
@@ -94,6 +91,11 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
         'Check mode enabled. Only validating that only one migration exists since base migration.',
       );
     }
+
+    // Validate the command environment is correct for executing the command
+    await _validateCommandEnvironment();
+
+    log.info('Rebasing migration...');
   }
 
   /// Validates the command environment is correct for executing the command
