@@ -136,7 +136,7 @@ features:
       'given both --onto and --onto-branch are specified then an error is thrown',
       () async {
         final rebaseArgs = _RebaseMigrationArgs(
-          onto: 'm1',
+          onto: '20251228100000000',
           ontoBranch: 'other',
           force: true,
         );
@@ -148,7 +148,7 @@ features:
 
         expect(
           testLogger.output.messages,
-          contains('Cannot specify both --onto and --onto-branch'),
+          contains('ERROR: Cannot specify both --onto and --onto-branch'),
         );
       },
     );
@@ -165,7 +165,7 @@ features:
 
       expect(
         testLogger.output.messages,
-        contains('Cannot specify empty --onto'),
+        contains('ERROR: Cannot specify empty --onto'),
       );
     });
 
@@ -183,7 +183,7 @@ features:
 
         expect(
           testLogger.output.messages,
-          contains('Cannot specify empty --onto-branch'),
+          contains('ERROR: Cannot specify empty --onto-branch'),
         );
       },
     );
@@ -201,7 +201,7 @@ features:
         expect(testLogger.output.messages, isNotEmpty);
         expect(
           testLogger.output.messages.first,
-          contains('Failed to load generator config'),
+          contains('ERROR: Failed to load generator config'),
         );
       },
     );
@@ -220,7 +220,7 @@ features:
         expect(
           testLogger.output.messages.firstWhereOrNull(
             (message) => message.contains(
-              'The database feature is not enabled in this project',
+              'ERROR: The database feature is not enabled in this project',
             ),
           ),
           isNotNull,

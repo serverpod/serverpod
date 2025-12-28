@@ -4,19 +4,19 @@ class MockLogOutput {
   List<String> messages = [];
 
   void info(String message) {
-    messages.add(message);
+    messages.add('INFO: $message');
   }
 
   void error(String message) {
-    messages.add(message);
+    messages.add('ERROR: $message');
   }
 
   void debug(String message) {
-    messages.add(message);
+    messages.add('DEBUG: $message');
   }
 
   void warning(String message) {
-    messages.add(message);
+    messages.add('WARNING: $message');
   }
 
   MockLogOutput reset() {
