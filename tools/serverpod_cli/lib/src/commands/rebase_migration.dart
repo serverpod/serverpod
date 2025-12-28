@@ -1,24 +1,58 @@
-import 'dart:io';
-
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
-import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
-import 'package:serverpod_cli/src/migrations/rebase_migration_impl.dart';
+import 'package:serverpod_cli/src/migrations/rebase_migration_runner.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
-import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// {@template rebase_migration_option}
 /// Options for the rebase migration command.
 /// {@endtemplate}
 enum RebaseMigrationOption<V> implements OptionDefinition<V> {
-  onto(RebaseMigrationCommand.ontoOption),
-  ontoBranch(RebaseMigrationCommand.ontoBranchOption),
-  check(RebaseMigrationCommand.checkOption),
-  force(RebaseMigrationCommand.forceOption);
+  /// Onto
+  onto(
+    StringOption(
+      argName: 'onto',
+      argAbbrev: 'o',
+      helpText: 'Specific migration ID to rebase onto',
+    ),
+  ),
+
+  /// Onto branch
+  ontoBranch(
+    StringOption(
+      argName: 'onto-branch',
+      argAbbrev: 'b',
+      helpText:
+          'Base branch to rebase onto, defaults to ${RebaseMigrationRunner.defaultBranch}',
+    ),
+  ),
+
+  /// Check
+  check(
+    FlagOption(
+      argName: 'check',
+      argAbbrev: 'c',
+      negatable: false,
+      defaultsTo: false,
+      helpText: 'Validate that only one migration exists since base',
+    ),
+  ),
+
+  /// Force
+  force(
+    FlagOption(
+      argName: 'force',
+      argAbbrev: 'f',
+      negatable: false,
+      defaultsTo: false,
+      helpText:
+          'Creates the new migration even if there are warnings or information that '
+          'may be destroyed.',
+    ),
+  );
 
   /// {@macro rebase_migration_option}
   const RebaseMigrationOption(this.option);
@@ -32,43 +66,11 @@ enum RebaseMigrationOption<V> implements OptionDefinition<V> {
 /// {@endtemplate}
 class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
   /// {@macro rebase_migration_command}
-  RebaseMigrationCommand({
-    this.rebaseMigrationImpl = const RebaseMigrationImpl(),
-  }) : super(options: RebaseMigrationOption.values);
+  RebaseMigrationCommand({this.rebaseMigrationRunner})
+    : super(options: RebaseMigrationOption.values);
 
   /// Rebase migration implementation
-  final RebaseMigrationImpl rebaseMigrationImpl;
-
-  static const ontoOption = StringOption(
-    argName: 'onto',
-    argAbbrev: 'o',
-    helpText: 'Specific migration ID to rebase onto',
-  );
-
-  static const ontoBranchOption = StringOption(
-    argName: 'onto-branch',
-    argAbbrev: 'b',
-    helpText:
-        'Base branch to rebase onto, defaults to ${RebaseMigrationImpl.defaultBranch}',
-  );
-
-  static const checkOption = FlagOption(
-    argName: 'check',
-    argAbbrev: 'c',
-    negatable: false,
-    defaultsTo: false,
-    helpText: 'Validate that only one migration exists since base',
-  );
-
-  static const forceOption = FlagOption(
-    argName: 'force',
-    argAbbrev: 'f',
-    negatable: false,
-    defaultsTo: false,
-    helpText:
-        'Creates the new migration even if there are warnings or information that '
-        'may be destroyed.',
-  );
+  final RebaseMigrationRunner? rebaseMigrationRunner;
 
   @override
   final name = 'rebase-migration';
@@ -86,7 +88,7 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
     String? ontoBranch = commandConfig.optionalValue(
       RebaseMigrationOption.ontoBranch,
     );
-    // bool force = commandConfig.value(RebaseMigrationOption.force);
+    bool force = commandConfig.value(RebaseMigrationOption.force);
 
     // Ensure both --onto and --onto-branch are not specified
     if (onto != null && ontoBranch != null) {
@@ -102,18 +104,29 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
     }
 
     // Validate the command environment is correct for executing the command
-    await _validateCommandEnvironment();
+    final config = await _validateCommandEnvironment();
+
+    // Create rebase migration runner
+    final runner =
+        rebaseMigrationRunner ??
+        RebaseMigrationRunner(
+          onto: onto,
+          ontoBranch: ontoBranch,
+          check: checkMode,
+          force: force,
+        );
 
     // Check migration
-    final operation = checkMode
-        ? rebaseMigrationImpl.checkMigration
-        : rebaseMigrationImpl.rebaseMigration;
     final message = "${checkMode ? 'Checking' : 'Rebasing'} migration...";
-    await log.progress(message, operation, newParagraph: true);
+    await log.progress(
+      message,
+      () => runner.run(config),
+      newParagraph: true,
+    );
   }
 
   /// Validates the command environment is correct for executing the command
-  Future<void> _validateCommandEnvironment() async {
+  Future<GeneratorConfig> _validateCommandEnvironment() async {
     // Get interactive flag from global configuration
     final interactive = serverpodRunner.globalConfiguration.optionalValue(
       GlobalOption.interactive,
@@ -137,15 +150,6 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
-    // Get server directory
-    var serverDirectory = Directory(
-      path.joinAll(config.serverPackageDirectoryPathParts),
-    );
-
-    // Get project name
-    var projectName = await getProjectName(serverDirectory);
-    if (projectName == null) {
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
+    return config;
   }
 }
