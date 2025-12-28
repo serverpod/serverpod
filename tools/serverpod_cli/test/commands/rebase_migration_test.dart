@@ -3,8 +3,9 @@ import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/rebase_migration.dart';
-import 'package:serverpod_cli/src/migrations/rebase_migration_impl.dart';
+import 'package:serverpod_cli/src/migrations/rebase_migration_runner.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
@@ -40,26 +41,32 @@ class _RebaseMigrationArgs {
 }
 
 /// Mock rebase migration implementation
-class MockRebaseMigrationImpl extends RebaseMigrationImpl {
-  bool success;
-
+class MockRebaseMigrationRunner extends RebaseMigrationRunner {
   int rebaseMigrationCallCount = 0;
   int checkMigrationCallCount = 0;
 
-  MockRebaseMigrationImpl({
-    this.success = true,
+  MockRebaseMigrationRunner({
+    super.onto,
+    super.ontoBranch,
+    super.check,
+    super.force,
   });
 
   @override
-  Future<bool> rebaseMigration() async {
+  Future<bool> rebaseMigration(GeneratorConfig config) async {
     rebaseMigrationCallCount++;
-    return success;
+    return super.rebaseMigration(config);
   }
 
   @override
-  Future<bool> checkMigration() async {
+  Future<String> getBaseMigrationId(GeneratorConfig config) async {
+    return onto ?? ontoBranch ?? '1234567890';
+  }
+
+  @override
+  Future<bool> checkMigration(String baseMigrationId) async {
     checkMigrationCallCount++;
-    return success;
+    return super.checkMigration(baseMigrationId);
   }
 }
 
@@ -68,7 +75,7 @@ void main() {
   late MockLogger testLogger;
   late ServerpodCommandRunner runner;
   late Directory originalDir;
-  late MockRebaseMigrationImpl mockRebaseMigrationImpl;
+  late MockRebaseMigrationRunner mockRebaseMigrationImpl;
 
   /// Creates a valid project for testing
   Future<void> createValidProject({bool withDatabase = true}) async {
@@ -94,12 +101,6 @@ features:
       version,
       onBeforeRunCommand: (_) => Future.value(),
     );
-    mockRebaseMigrationImpl = MockRebaseMigrationImpl();
-    runner.addCommand(
-      RebaseMigrationCommand(
-        rebaseMigrationImpl: mockRebaseMigrationImpl,
-      ),
-    );
 
     originalDir = Directory.current;
   });
@@ -108,6 +109,21 @@ features:
     resetLogger();
     Directory.current = originalDir;
   });
+
+  /// Sets up the rebase migration command with the given arguments
+  void setupCommand(_RebaseMigrationArgs args) {
+    mockRebaseMigrationImpl = MockRebaseMigrationRunner(
+      onto: args.onto,
+      ontoBranch: args.ontoBranch,
+      check: args.check,
+      force: args.force,
+    );
+    runner.addCommand(
+      RebaseMigrationCommand(
+        rebaseMigrationRunner: mockRebaseMigrationImpl,
+      ),
+    );
+  }
 
   group('RebaseMigrationCommand', () {
     test(
@@ -118,6 +134,7 @@ features:
           ontoBranch: 'other',
           force: true,
         );
+        setupCommand(rebaseArgs);
         await expectLater(
           runner.run(rebaseArgs.args),
           throwsA(isA<ExitException>()),
@@ -134,6 +151,7 @@ features:
       'given command environment is not valid then an error is thrown',
       () async {
         final rebaseArgs = _RebaseMigrationArgs();
+        setupCommand(rebaseArgs);
         await expectLater(
           runner.run(rebaseArgs.args),
           throwsA(isA<ExitException>()),
@@ -152,6 +170,7 @@ features:
       () async {
         await createValidProject(withDatabase: false);
         final rebaseArgs = _RebaseMigrationArgs();
+        setupCommand(rebaseArgs);
         await expectLater(
           runner.run(rebaseArgs.args),
           throwsA(isA<ExitException>()),
@@ -174,6 +193,7 @@ features:
         () async {
           await createValidProject();
           final rebaseArgs = _RebaseMigrationArgs(check: false);
+          setupCommand(rebaseArgs);
           await runner.run(rebaseArgs.args);
           expect(mockRebaseMigrationImpl.rebaseMigrationCallCount, 1);
           expect(mockRebaseMigrationImpl.checkMigrationCallCount, 0);
@@ -185,6 +205,7 @@ features:
         () async {
           await createValidProject();
           final rebaseArgs = _RebaseMigrationArgs(check: true);
+          setupCommand(rebaseArgs);
           await runner.run(rebaseArgs.args);
           expect(mockRebaseMigrationImpl.rebaseMigrationCallCount, 0);
           expect(mockRebaseMigrationImpl.checkMigrationCallCount, 1);
