@@ -9,13 +9,16 @@ import '../../../../providers/email.dart' show RateLimit;
 
 /// {@template before_anonymous_account_created_function}
 /// Function to be called before a new anonymous account is created. This
-/// function should return true if the account is allowed to be created, or
+/// function should return null if a new anonymous account is not allowed to be
+/// created, or the Uuid primary key of an existing user
+/// the ID of the authentication user if the account is allowed to be created, or
 /// false otherwise. This mechanism is how an application would protect the
 /// anonymous account creation process to prevent abuse.
 /// {@endtemplate}
 typedef BeforeAnonymousAccountCreatedFunction =
-    FutureOr<bool> Function(
+    FutureOr<UuidValue?> Function(
       Session session, {
+      String? token,
       required Transaction? transaction,
     });
 
@@ -34,7 +37,7 @@ typedef AfterAnonymousAccountCreatedFunction =
 /// {@endtemplate}
 class AnonymousIdpConfig extends IdentityProviderBuilder<AnonymousIdp> {
   /// {@macro before_anonymous_account_created_function}
-  final BeforeAnonymousAccountCreatedFunction? beforeAnonymousAccountCreated;
+  final BeforeAnonymousAccountCreatedFunction? onBeforeAnonymousAccountCreated;
 
   /// {@macro after_anonymous_account_created_function}
   final AfterAnonymousAccountCreatedFunction? onAfterAnonymousAccountCreated;
@@ -47,7 +50,7 @@ class AnonymousIdpConfig extends IdentityProviderBuilder<AnonymousIdp> {
 
   /// Creates a new [AnonymousIdpConfig].
   const AnonymousIdpConfig({
-    this.beforeAnonymousAccountCreated,
+    this.onBeforeAnonymousAccountCreated,
     this.onAfterAnonymousAccountCreated,
     this.perIpAddressRateLimit = const RateLimit(
       maxAttempts: 100,

@@ -17,11 +17,13 @@ class AnonymousIdp {
   final AnonymousIdpUtils utils;
 
   final TokenManager _tokenManager;
+  final AuthUsers _authUsers;
   final UserProfiles _userProfiles;
 
   AnonymousIdp._(
     this.config,
     this.utils,
+    this._authUsers,
     this._userProfiles,
     this._tokenManager,
   );
@@ -37,49 +39,71 @@ class AnonymousIdp {
     return AnonymousIdp._(
       config,
       utils,
+      authUsers,
       userProfiles,
       tokenManager,
     );
   }
 
-  /// {@macro anonymous_account_base_endpoint.login}}
+  /// {@macro anonymous_account_base_endpoint.login}
   Future<AuthSuccess> login(
     final Session session, {
+    final String? token,
     final Transaction? transaction,
   }) async {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
       (final transaction) async {
-        if (config.beforeAnonymousAccountCreated != null) {
-          final canCreateAnonymousAccount =
-              await config.beforeAnonymousAccountCreated!(
-                session,
-                transaction: transaction,
-              );
-          if (!canCreateAnonymousAccount) {
+        UuidValue? authUserId;
+        if (config.onBeforeAnonymousAccountCreated != null) {
+          try {
+            authUserId = await config.onBeforeAnonymousAccountCreated!(
+              session,
+              token: token,
+              transaction: transaction,
+            );
+          } catch (e) {
+            session.log('onBeforeAnonymousAccountCreated failed: $e');
             throw AnonymousAccountBlockedException(
               reason: AnonymousAccountBlockedExceptionReason.denied,
             );
           }
         }
 
-        final result = await utils.accountCreation.createAnonymousAccount(
-          session,
-          transaction: transaction,
-        );
-        await _userProfiles.createUserProfile(
-          session,
-          result.authUserId,
-          UserProfileData(),
-          transaction: transaction,
-        );
+        late Set<Scope> scopes;
+        if (authUserId == null) {
+          // This request is not attached to an existing account, so create all
+          // new records.
+          final result = await utils.createAnonymousAccount(
+            session,
+            transaction: transaction,
+          );
+          authUserId = result.authUserId;
+          await _userProfiles.createUserProfile(
+            session,
+            result.authUserId,
+            UserProfileData(),
+            transaction: transaction,
+          );
+          scopes = result.scopes;
+        } else {
+          // By hook or by crook, this request was attached to an existing
+          // account, so use existing records.
+          final authUser = await _authUsers.get(
+            session,
+            authUserId: authUserId,
+            transaction: transaction,
+          );
+          authUserId = authUser.id;
+          scopes = authUser.scopes;
+        }
 
         return _tokenManager.issueToken(
           session,
-          authUserId: result.authUserId,
+          authUserId: authUserId,
           method: method,
-          scopes: result.scopes,
+          scopes: scopes,
           transaction: transaction,
         );
       },

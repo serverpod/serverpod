@@ -22,10 +22,13 @@ void main() {
         fixture = AnonymousIdpTestFixture();
       });
 
-      test('when logging in anonymously then a new account is created', () async {
-        final result = fixture.anonymousIdp.login(session);
-        await expectLater(result, completion(isA<AuthSuccess>()));
-      });
+      test(
+        'when logging in anonymously then a new account is created',
+        () async {
+          final result = fixture.anonymousIdp.login(session);
+          await expectLater(result, completion(isA<AuthSuccess>()));
+        },
+      );
 
       test('is not blocked by acceptable amount of attempts', () async {
         final rateLimitedFixture = AnonymousIdpTestFixture(
@@ -114,11 +117,12 @@ void main() {
       test('is blocked by beforeAnonymousAccountCreated', () async {
         final cannotCreateFixture = AnonymousIdpTestFixture(
           config: AnonymousIdpConfig(
-            beforeAnonymousAccountCreated:
+            onBeforeAnonymousAccountCreated:
                 (
                   final Session session, {
+                  final String? token,
                   final Transaction? transaction,
-                }) => Future.value(false),
+                }) => Future.value(null),
           ),
         );
         await expectLater(
@@ -130,11 +134,12 @@ void main() {
       test('is blocked by synchronous beforeAnonymousAccountCreated', () async {
         final cannotCreateFixture = AnonymousIdpTestFixture(
           config: AnonymousIdpConfig(
-            beforeAnonymousAccountCreated:
+            onBeforeAnonymousAccountCreated:
                 (
                   final Session session, {
+                  final String? token,
                   final Transaction? transaction,
-                }) => false,
+                }) => null,
           ),
         );
         await expectLater(
