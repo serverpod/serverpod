@@ -64,6 +64,13 @@ class RebaseMigrationRunner {
     // Get migration registry
     MigrationRegistry migrationRegistry = await _getMigrationRegistry(config);
 
+    // Get registry file and ensure it exists
+    final registryFile = migrationRegistry.registryFile;
+    if (!registryFile.existsSync()) {
+      log.error('Migration registry file does not exist.');
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+    }
+
     // Onto is specified
     if (onto != null) {
       // Onto is not a valid migration ID
@@ -96,12 +103,6 @@ class RebaseMigrationRunner {
       }
 
       return lastMigrationId;
-    }
-
-    final registryFile = migrationRegistry.registryFile;
-    if (!registryFile.existsSync()) {
-      log.error('Migration registry file does not exist.');
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
     // If no onto or ontoBranch is specified, return the last migration ID from the default branch
