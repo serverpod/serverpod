@@ -35,15 +35,16 @@ class MigrationRegistry {
   /// Returns the list of migration versions in the registry.
   List<String> get versions => _migrationVersions;
 
+  /// Returns the registry file
+  File get registryFile => File(
+    path.join(
+      moduleMigrationDirectory.path,
+      _migrationRegistryFileName,
+    ),
+  );
+
   /// Writes the registry to the migrations directory.
   Future<void> write() async {
-    var registryFile = File(
-      path.join(
-        moduleMigrationDirectory.path,
-        _migrationRegistryFileName,
-      ),
-    );
-
     var out = '''
 ### AUTOMATICALLY GENERATED DO NOT MODIFY
 ###
