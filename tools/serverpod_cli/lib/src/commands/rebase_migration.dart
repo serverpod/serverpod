@@ -91,13 +91,13 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
     bool force = commandConfig.value(RebaseMigrationOption.force);
 
     // Ensure onto is not empty if specified
-    if (onto != null && onto.isEmpty) {
+    if (onto != null && onto.trim().isEmpty) {
       log.error('Cannot specify empty --onto');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
     // Ensure ontoBranch is not empty if specified
-    if (ontoBranch != null && ontoBranch.isEmpty) {
+    if (ontoBranch != null && ontoBranch.trim().isEmpty) {
       log.error('Cannot specify empty --onto-branch');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
@@ -122,8 +122,8 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
     final runner =
         rebaseMigrationRunner ??
         RebaseMigrationRunner(
-          onto: onto,
-          ontoBranch: ontoBranch,
+          onto: onto?.trim(),
+          ontoBranch: ontoBranch?.trim(),
           check: checkMode,
           force: force,
         );
