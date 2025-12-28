@@ -34,6 +34,11 @@ class MigrationGenerator {
     return versionName;
   }
 
+  /// Returns the [MigrationRegistry] for the project.
+  MigrationRegistry get migrationRegistry => MigrationRegistry.load(
+    MigrationConstants.migrationsBaseDirectory(directory),
+  );
+
   /// Creates a new migration version.
   /// If [tag] is specified, the migration will be tagged with the given name.
   /// If [force] is true, the migration will be created even if there are
@@ -54,10 +59,6 @@ class MigrationGenerator {
     required GeneratorConfig config,
     bool write = true,
   }) async {
-    var migrationRegistry = MigrationRegistry.load(
-      MigrationConstants.migrationsBaseDirectory(directory),
-    );
-
     var databaseDefinitionLatest = await _getSourceDatabaseDefinition(
       projectName,
       migrationRegistry.getLatest(),
