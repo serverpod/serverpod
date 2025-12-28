@@ -71,7 +71,7 @@ class MockRebaseMigrationRunner extends RebaseMigrationRunner {
 }
 
 void main() {
-  var version = Version(1, 1, 0);
+  final version = Version(1, 1, 0);
   late MockLogger testLogger;
   late ServerpodCommandRunner runner;
   late Directory originalDir;
