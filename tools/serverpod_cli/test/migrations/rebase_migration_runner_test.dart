@@ -257,10 +257,10 @@ void main() {
         () async {
           const runner = RebaseMigrationRunner();
           const baseMigration = m1;
-          const migration2 = m1; // Same timestamp
+          const sameTimestamp = m1;
           final migrationRegistry = MigrationRegistry(
             Directory('fake'),
-            [baseMigration, migration2],
+            [baseMigration, sameTimestamp],
           );
 
           expect(
@@ -281,10 +281,10 @@ void main() {
         () async {
           const runner = RebaseMigrationRunner();
           const baseMigration = m2;
-          const migration2 = m1; // m1 is before m2
+          const earlierTimestamp = m1; // m1 is before m2
           final migrationRegistry = MigrationRegistry(
             Directory('fake'),
-            [baseMigration, migration2],
+            [baseMigration, earlierTimestamp],
           );
 
           expect(
