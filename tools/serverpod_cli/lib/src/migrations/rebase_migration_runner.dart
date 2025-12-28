@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/migrations/migration_registry.dart';
@@ -37,33 +38,85 @@ class RebaseMigrationRunner {
 
   /// Execute the runner
   Future<bool> run(GeneratorConfig config) async {
-    final baseMigrationId = await getBaseMigrationId(config);
+    final migrationRegistry = await _getMigrationRegistry(config);
+    final baseMigrationId = await getBaseMigrationId(migrationRegistry);
 
-    return check ? checkMigration(baseMigrationId) : rebaseMigration(config);
+    return check
+        ? checkMigration(migrationRegistry, baseMigrationId)
+        : rebaseMigration(migrationRegistry, baseMigrationId);
   }
 
   /// Rebase the migration
-  Future<bool> rebaseMigration(GeneratorConfig config) async {
-    final baseMigrationId = await getBaseMigrationId(config);
-
-    // Run check migration
-    if (check) {
-      return checkMigration(baseMigrationId);
-    }
-
-    return baseMigrationId.isNotEmpty;
+  Future<bool> rebaseMigration(
+    MigrationRegistry migrationRegistry,
+    String baseMigrationId,
+  ) async {
+    return true;
   }
 
-  /// Check the migration
-  Future<bool> checkMigration(String baseMigrationId) async {
-    return baseMigrationId.isNotEmpty;
+  /// Check the migrations to ensure there is only one migration after the base migration
+  /// If there is more than one migration, exit with error
+  ///
+  Future<bool> checkMigration(
+    MigrationRegistry migrationRegistry,
+    String baseMigrationId,
+  ) async {
+    // Get all migrations after base migration
+    final baseMigrationIndex = migrationRegistry.versions.indexOf(
+      baseMigrationId,
+    );
+    final migrationsAfterBaseMigration = migrationRegistry.versions.sublist(
+      baseMigrationIndex + 1,
+    );
+
+    /// If there is more than one migration, exit with error
+    if (migrationsAfterBaseMigration.length > 1) {
+      log.error('There is more than one migration after the base migration.');
+      throw ExitException(ExitException.codeError);
+    }
+
+    /// If there is no migration, exit with error
+    if (migrationsAfterBaseMigration.isEmpty) {
+      log.error('There is no migration after the base migration.');
+      throw ExitException(ExitException.codeError);
+    }
+
+    ///  Check that migration timestamp is after the base migration timestamp
+    final baseMigrationTimestamp = getMigrationTimestamp(baseMigrationId);
+    final migrationTimestamp = getMigrationTimestamp(
+      migrationsAfterBaseMigration.first,
+    );
+    if (migrationTimestamp <= baseMigrationTimestamp) {
+      log.error(
+        'Migration timestamp is not after the base migration timestamp.',
+      );
+      throw ExitException(ExitException.codeError);
+    }
+
+    log.info('There is only one migration after the base migration.');
+    return true;
+  }
+
+  /// Get the migration timestamp from a migration ID
+  @visibleForTesting
+  int getMigrationTimestamp(String migrationId) {
+    final timestampString = migrationId.split('-').firstOrNull;
+    if (timestampString == null) {
+      log.error('Malformed migration ID: $migrationId');
+      throw ExitException(ExitException.codeError);
+    }
+
+    final timestamp = int.tryParse(timestampString);
+    if (timestamp == null) {
+      log.error('Malformed migration ID: $migrationId');
+      throw ExitException(ExitException.codeError);
+    }
+
+    return timestamp;
   }
 
   /// Get the base migration ID
-  Future<String> getBaseMigrationId(GeneratorConfig config) async {
-    // Get migration registry
-    MigrationRegistry migrationRegistry = await _getMigrationRegistry(config);
-
+  Future<String> getBaseMigrationId(MigrationRegistry migrationRegistry) async {
     // Get registry file and ensure it exists
     final registryFile = migrationRegistry.registryFile;
     if (!registryFile.existsSync()) {
@@ -73,11 +126,8 @@ class RebaseMigrationRunner {
 
     // Onto is specified
     if (onto != null) {
-      // Onto is not a valid migration ID
-      if (!migrationRegistry.versions.contains(onto!)) {
-        log.error('Migration $onto does not exist.');
-        throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-      }
+      // Validate migration to rebase onto
+      validateMigration(onto!, migrationRegistry);
 
       // Onto is a valid migration ID
       return onto!;
@@ -90,23 +140,27 @@ class RebaseMigrationRunner {
         ontoBranch!,
       );
 
-      // No migration found in branch
-      if (lastMigrationId.isEmpty) {
-        log.error('No migration found in branch $ontoBranch.');
-        throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-      }
-
-      // Last migration ID from branch is not a valid migration ID
-      if (!migrationRegistry.versions.contains(lastMigrationId)) {
-        log.error('Migration $lastMigrationId does not exist.');
-        throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-      }
+      // Validate last migration ID from branch
+      validateMigration(lastMigrationId, migrationRegistry);
 
       return lastMigrationId;
     }
 
     // If no onto or ontoBranch is specified, return the last migration ID from the default branch
     return getLastMigrationIdFromBranch(migrationRegistry, defaultBranch);
+  }
+
+  /// Validate the [migration] using the [migrationRegistry]
+  @visibleForTesting
+  void validateMigration(
+    String migration,
+    MigrationRegistry migrationRegistry,
+  ) {
+    // migration is not a valid migration ID
+    if (!migrationRegistry.versions.contains(migration)) {
+      log.error('Migration $migration does not exist.');
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+    }
   }
 
   /// Get the migration registry for the project
