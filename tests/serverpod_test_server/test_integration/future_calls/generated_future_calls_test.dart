@@ -27,12 +27,10 @@ void main() {
 
       test(
         'when scheduling a future call at specified time'
-        'then a FutureCallEntry is added to the database',
+        'then a FutureCallEntry is added to the database with expected time',
         () async {
-          await futureCalls
-              .callAtTime(DateTime.now())
-              .testGeneratedCall
-              .hello('Lucky');
+          final time = DateTime.now().toUtc();
+          await futureCalls.callAtTime(time).testGeneratedCall.hello('Lucky');
 
           final futureCallEntries = await FutureCallEntry.db.find(
             session,
@@ -40,15 +38,19 @@ void main() {
           );
 
           expect(futureCallEntries, hasLength(1));
+          expect(futureCallEntries.firstOrNull?.time, time);
         },
       );
 
       test(
         'when scheduling a future call with a delay'
-        'then a FutureCallEntry is added to the database',
+        'then a FutureCallEntry is added to the database with expected time',
         () async {
+          final delay = Duration(milliseconds: 10);
+          final expectedTime = DateTime.now().add(delay).toUtc();
+
           await futureCalls
-              .callWithDelay(Duration(milliseconds: 10))
+              .callWithDelay(delay)
               .testGeneratedCall
               .hello('Lucky');
 
@@ -58,17 +60,44 @@ void main() {
           );
 
           expect(futureCallEntries, hasLength(1));
+
+          // the difference between the entry time and expected time should be a few milliseconds
+          expect(
+            futureCallEntries.first.time.difference(expectedTime),
+            lessThan(Duration(milliseconds: 200)),
+          );
         },
       );
 
       test(
-        'when scheduling a future call with an identifier'
+        'when scheduling a future call with an identifier at speficied time'
         'then a FutureCallEntry with same identifier is added to the database',
         () async {
           final identifier = 'lucky-id';
 
           await futureCalls
               .callAtTime(DateTime.now(), identifier: identifier)
+              .testGeneratedCall
+              .hello('Lucky');
+
+          final futureCallEntries = await FutureCallEntry.db.find(
+            session,
+            where: (entry) => entry.name.equals(testCallName),
+          );
+
+          expect(futureCallEntries, hasLength(1));
+          expect(futureCallEntries.first.identifier, identifier);
+        },
+      );
+
+      test(
+        'when scheduling a future call with an identifier after a delay'
+        'then a FutureCallEntry with same identifier is added to the database',
+        () async {
+          final identifier = 'lucky-id';
+
+          await futureCalls
+              .callWithDelay(Duration(milliseconds: 10), identifier: identifier)
               .testGeneratedCall
               .hello('Lucky');
 
