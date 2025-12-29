@@ -301,5 +301,115 @@ void main() {
         },
       );
     });
+
+    group('hasConflicts', () {
+      test(
+        'Given a file with conflict markers when checking conflicts then true is returned',
+        () {
+          const runner = RebaseMigrationRunner();
+          final file = File(
+            path.join(d.sandbox, 'registry_with_conflicts.txt'),
+          );
+          file.writeAsStringSync('''
+$m1
+<<<<<<< HEAD
+$m2
+=======
+$m3
+>>>>>>> feature-branch
+''');
+
+          final result = runner.hasConflicts(file);
+          expect(result, isTrue);
+        },
+      );
+
+      test(
+        'Given a file without conflict markers when checking conflicts then false is returned',
+        () {
+          const runner = RebaseMigrationRunner();
+          final file = File(
+            path.join(d.sandbox, 'registry_without_conflicts.txt'),
+          );
+          file.writeAsStringSync('''
+$m1
+$m2
+''');
+
+          final result = runner.hasConflicts(file);
+          expect(result, isFalse);
+        },
+      );
+    });
+
+    group('getIncomingMigration', () {
+      test(
+        'Given a file with conflicts when getting incoming migration then the incoming migration is returned',
+        () {
+          const runner = RebaseMigrationRunner();
+          final file = File(
+            path.join(d.sandbox, 'registry_with_conflicts.txt'),
+          );
+          file.writeAsStringSync('''
+$m1
+<<<<<<< HEAD
+$m2
+=======
+$m3
+>>>>>>> feature-branch
+''');
+
+          final result = runner.getIncomingMigration(file);
+          expect(result, equals(m3));
+        },
+      );
+
+      test(
+        'Given a file with conflicts and multiple lines when getting incoming migration then the incoming migration is returned',
+        () {
+          const runner = RebaseMigrationRunner();
+          final file = File(
+            path.join(d.sandbox, 'registry_with_conflicts.txt'),
+          );
+          file.writeAsStringSync('''
+$m1
+<<<<<<< HEAD
+$m2
+=======
+$m3
+$m1
+>>>>>>> feature-branch
+''');
+
+          final result = runner.getIncomingMigration(file);
+          expect(result, equals('$m3\n$m1'));
+        },
+      );
+
+      test(
+        'Given a file without conflicts when getting incoming migration then an ExitException is thrown',
+        () {
+          const runner = RebaseMigrationRunner();
+          final file = File(
+            path.join(d.sandbox, 'registry_without_conflicts.txt'),
+          );
+          file.writeAsStringSync('''
+$m1
+$m2
+''');
+
+          expect(
+            () => runner.getIncomingMigration(file),
+            throwsA(isA<ExitException>()),
+          );
+          expect(
+            testLogger.output.messages,
+            contains(
+              'ERROR: Migration registry file has no conflicts. Please ensure --onto is provided if you want to rebase onto a specific migration.',
+            ),
+          );
+        },
+      );
+    });
   });
 }
