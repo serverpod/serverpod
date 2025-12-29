@@ -2,25 +2,37 @@ import 'package:cli_tools/cli_tools.dart';
 
 class MockLogOutput {
   List<String> messages = [];
+  List<String> infoMessages = [];
+  List<String> errorMessages = [];
+  List<String> debugMessages = [];
+  List<String> warningMessages = [];
 
   void info(String message) {
-    messages.add('INFO: $message');
+    messages.add(message);
+    infoMessages.add(message);
   }
 
   void error(String message) {
-    messages.add('ERROR: $message');
+    messages.add(message);
+    errorMessages.add(message);
   }
 
   void debug(String message) {
-    messages.add('DEBUG: $message');
+    messages.add(message);
+    debugMessages.add(message);
   }
 
   void warning(String message) {
-    messages.add('WARNING: $message');
+    messages.add(message);
+    warningMessages.add(message);
   }
 
   MockLogOutput reset() {
     messages.clear();
+    infoMessages.clear();
+    errorMessages.clear();
+    debugMessages.clear();
+    warningMessages.clear();
     return this;
   }
 }

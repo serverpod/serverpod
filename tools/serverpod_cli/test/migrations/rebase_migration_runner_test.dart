@@ -118,8 +118,8 @@ void main() {
           throwsA(isA<ExitException>()),
         );
         expect(
-          testLogger.output.messages,
-          contains('ERROR: Migration $m3 does not exist.'),
+          testLogger.output.errorMessages,
+          contains('Migration $m3 does not exist.'),
         );
       },
     );
@@ -156,8 +156,8 @@ void main() {
             throwsA(isA<ExitException>()),
           );
           expect(
-            testLogger.output.messages,
-            contains('ERROR: Migration $onto does not exist.'),
+            testLogger.output.errorMessages,
+            contains('Migration $onto does not exist.'),
           );
         },
       );
@@ -174,8 +174,8 @@ void main() {
             throwsA(isA<ExitException>()),
           );
           expect(
-            testLogger.output.messages,
-            contains('ERROR: Migration registry file does not exist.'),
+            testLogger.output.errorMessages,
+            contains('Migration registry file does not exist.'),
           );
         },
       );
@@ -216,10 +216,10 @@ $m3
             throwsA(isA<ExitException>()),
           );
           expect(
-            testLogger.output.messages,
+            testLogger.output.errorMessages,
             anyElement(
               contains(
-                'ERROR: Migration registry file has no conflicts.',
+                'Migration registry file has no conflicts.',
               ),
             ),
           );
@@ -245,9 +245,9 @@ $m3
           );
           expect(result, isTrue);
           expect(
-            testLogger.output.messages,
+            testLogger.output.infoMessages,
             contains(
-              'INFO: There is only one migration after the base migration.',
+              'There is only one migration after the base migration.',
             ),
           );
         },
@@ -268,8 +268,8 @@ $m3
             throwsA(isA<ExitException>()),
           );
           expect(
-            testLogger.output.messages,
-            contains('ERROR: There is no migration after the base migration.'),
+            testLogger.output.errorMessages,
+            contains('There is no migration after the base migration.'),
           );
         },
       );
@@ -291,9 +291,9 @@ $m3
             throwsA(isA<ExitException>()),
           );
           expect(
-            testLogger.output.messages,
+            testLogger.output.errorMessages,
             contains(
-              'ERROR: There is more than one migration after the base migration.',
+              'There is more than one migration after the base migration.',
             ),
           );
         },
@@ -315,9 +315,9 @@ $m3
             throwsA(isA<ExitException>()),
           );
           expect(
-            testLogger.output.messages,
+            testLogger.output.errorMessages,
             contains(
-              'ERROR: Migration timestamp is not after the base migration timestamp.',
+              'Migration timestamp is not after the base migration timestamp.',
             ),
           );
         },
@@ -339,9 +339,9 @@ $m3
             throwsA(isA<ExitException>()),
           );
           expect(
-            testLogger.output.messages,
+            testLogger.output.errorMessages,
             contains(
-              'ERROR: Migration timestamp is not after the base migration timestamp.',
+              'Migration timestamp is not after the base migration timestamp.',
             ),
           );
         },
@@ -449,10 +449,10 @@ $m2
             throwsA(isA<ExitException>()),
           );
           expect(
-            testLogger.output.messages,
+            testLogger.output.errorMessages,
             anyElement(
               contains(
-                'ERROR: Migration registry file has no conflicts.',
+                'Migration registry file has no conflicts.',
               ),
             ),
           );

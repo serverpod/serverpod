@@ -139,8 +139,8 @@ features:
       );
 
       expect(
-        testLogger.output.messages,
-        contains('ERROR: Cannot specify empty --onto'),
+        testLogger.output.errorMessages,
+        contains('Cannot specify empty --onto'),
       );
     });
 
@@ -154,10 +154,10 @@ features:
           throwsA(isA<ExitException>()),
         );
 
-        expect(testLogger.output.messages, isNotEmpty);
+        expect(testLogger.output.errorMessages, isNotEmpty);
         expect(
-          testLogger.output.messages.first,
-          contains('ERROR: Failed to load generator config'),
+          testLogger.output.errorMessages.first,
+          contains('Failed to load generator config'),
         );
       },
     );
@@ -174,9 +174,9 @@ features:
         );
 
         expect(
-          testLogger.output.messages.firstWhereOrNull(
+          testLogger.output.errorMessages.firstWhereOrNull(
             (message) => message.contains(
-              'ERROR: The database feature is not enabled in this project',
+              'The database feature is not enabled in this project',
             ),
           ),
           isNotNull,
