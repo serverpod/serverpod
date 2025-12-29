@@ -90,7 +90,7 @@ void main() {
 
     test(
       'Given a migration that exists in registry when validating migration then the call succeeds',
-      () async {
+      () {
         const runner = RebaseMigrationRunner();
         final migrationRegistry = MigrationRegistry(
           Directory('fake'),
