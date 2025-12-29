@@ -1,7 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_class_analyzer.dart';
 
 typedef AnnotationDefinitionBuilder =
     AnnotationDefinition Function(
@@ -10,70 +8,6 @@ typedef AnnotationDefinitionBuilder =
     );
 
 abstract class AnnotationAnalyzer {
-  static List<AnnotationDefinition> parseEndpointAnnotations(
-    Element dartElement,
-  ) {
-    return parseAnnotations(
-      dartElement,
-      parentClassPredicate: EndpointClassAnalyzer.isEndpointInterface,
-      annotationBuilders: {
-        'Deprecated': (annotation, annotationName) => AnnotationDefinition(
-          name: annotationName,
-          arguments: _parseAnnotationStringArgument(annotation, 'message'),
-          methodCallAnalyzerIgnoreRule:
-              'deprecated_member_use_from_same_package',
-        ),
-
-        'deprecated': (_, annotationName) =>
-            // @deprecated is a shorthand for @Deprecated(..)
-            // see https://api.flutter.dev/flutter/dart-core/deprecated-constant.html
-            AnnotationDefinition(
-              name: annotationName,
-              methodCallAnalyzerIgnoreRule:
-                  'deprecated_member_use_from_same_package',
-            ),
-        // @ignoreEndpoint is deprecated in favor of @doNotGenerate
-        'ignoreEndpoint': (_, _) =>
-            const AnnotationDefinition(name: 'doNotGenerate'),
-
-        'doNotGenerate': (_, annotationName) =>
-            AnnotationDefinition(name: annotationName),
-
-        'unauthenticatedClientCall': (_, annotationName) =>
-            AnnotationDefinition(name: annotationName),
-      },
-    );
-  }
-
-  static List<AnnotationDefinition> parseFutureCallAnnotations(
-    Element dartElement,
-  ) {
-    return parseAnnotations(
-      dartElement,
-      parentClassPredicate: FutureCallClassAnalyzer.isFutureCallInterface,
-      annotationBuilders: {
-        'Deprecated': (annotation, annotationName) => AnnotationDefinition(
-          name: annotationName,
-          arguments: _parseAnnotationStringArgument(annotation, 'message'),
-          methodCallAnalyzerIgnoreRule:
-              'deprecated_member_use_from_same_package',
-        ),
-
-        'deprecated': (_, annotationName) =>
-            // @deprecated is a shorthand for @Deprecated(..)
-            // see https://api.flutter.dev/flutter/dart-core/deprecated-constant.html
-            AnnotationDefinition(
-              name: annotationName,
-              methodCallAnalyzerIgnoreRule:
-                  'deprecated_member_use_from_same_package',
-            ),
-
-        'doNotGenerate': (_, annotationName) =>
-            AnnotationDefinition(name: annotationName),
-      },
-    );
-  }
-
   static List<AnnotationDefinition> parseAnnotations(
     Element dartElement, {
 
@@ -141,7 +75,7 @@ abstract class AnnotationAnalyzer {
     ];
   }
 
-  static List<String>? _parseAnnotationStringArgument(
+  static List<String>? parseAnnotationStringArgument(
     ElementAnnotation annotation,
     String fieldName,
   ) {
@@ -151,17 +85,4 @@ abstract class AnnotationAnalyzer {
         ?.toStringValue();
     return argument != null ? ["'$argument'"] : null;
   }
-}
-
-extension AnnotationExtensions on Element {
-  bool get futureCallMarkedAsIgnored =>
-      AnnotationAnalyzer.parseFutureCallAnnotations(this).has('doNotGenerate');
-
-  bool get endpointMarkedAsIgnored =>
-      AnnotationAnalyzer.parseEndpointAnnotations(this).has('doNotGenerate');
-
-  bool get markedAsUnauthenticated =>
-      AnnotationAnalyzer.parseEndpointAnnotations(
-        this,
-      ).has('unauthenticatedClientCall');
 }

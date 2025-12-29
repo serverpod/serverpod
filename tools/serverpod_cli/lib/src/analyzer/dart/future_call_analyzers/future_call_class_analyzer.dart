@@ -1,8 +1,8 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/analyzer/dart/annotation_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/annotation.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_parameter_analyzer.dart';
@@ -35,7 +35,7 @@ abstract class FutureCallClassAnalyzer {
     }
 
     var classDocumentationComment = element.documentationComment;
-    var annotations = AnnotationAnalyzer.parseFutureCallAnnotations(element);
+    var annotations = element.futureCallAnnotations;
 
     futureCallDefinitions.add(
       FutureCallDefinition(
@@ -98,7 +98,6 @@ abstract class FutureCallClassAnalyzer {
   /// Returns true if the [ClassElement] is an active future call class that should
   /// be validated and parsed.
   static bool isFutureCallClass(ClassElement element) {
-    if (element.futureCallMarkedAsIgnored) return false;
     if (!element.isConstructable && !element.isAbstract) return false;
     if (!element.isFutureCallSpec) return false;
     return isFutureCallInterface(element);
