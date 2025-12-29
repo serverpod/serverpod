@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
+import 'anonymous_auth_exceptions.dart';
+
 /// Controller for managing anonymous-based authentication flows.
 class AnonymousAuthController extends ChangeNotifier {
   /// The Serverpod client instance.
@@ -17,14 +19,22 @@ class AnonymousAuthController extends ChangeNotifier {
   /// log, but not passed to the callback.
   final Function(Object error)? onError;
 
-  ///
+  /// Creates a new [AnonymousAuthController] instance.
   AnonymousAuthController({
     required this.client,
     this.onAuthenticated,
     this.onError,
   });
 
-  /// Gets the email authentication endpoint from the client.
+  AnonymousAuthState _state = AnonymousAuthState.idle;
+
+  /// The current state of the authentication flow.
+  AnonymousAuthState get state => _state;
+
+  /// Whether the controller is currently processing a request.
+  bool get isLoading => _state == AnonymousAuthState.loading;
+
+  /// Gets the anonymous authentication endpoint from the client.
   EndpointAnonymousIdpBase get _anonymousEndpoint {
     try {
       return client.getEndpointOfType<EndpointAnonymousIdpBase>();
@@ -38,11 +48,43 @@ class AnonymousAuthController extends ChangeNotifier {
 
   /// Initiates the anonymous sign-in process.
   Future<void> login() async {
-    try {
+    await _guarded(() async {
       final authSuccess = await _anonymousEndpoint.login();
       await client.auth.updateSignedInUser(authSuccess);
+    });
+  }
+
+  Future<void> _guarded(Future<void> Function() action) async {
+    _state = AnonymousAuthState.loading;
+    notifyListeners();
+    try {
+      await action();
+      _state = AnonymousAuthState.authenticated;
+      notifyListeners();
+      onAuthenticated?.call();
     } catch (e) {
-      onError?.call(e);
+      _state = AnonymousAuthState.error;
+      notifyListeners();
+
+      final userFriendlyError = convertToUserFacingException(e);
+      if (userFriendlyError != null) {
+        onError?.call(userFriendlyError);
+      }
     }
   }
+}
+
+/// Represents the state of the anonymous authentication flow.
+enum AnonymousAuthState {
+  /// Initial idle state.
+  idle,
+
+  /// Loading state while processing login.
+  loading,
+
+  /// A request ended with error.
+  error,
+
+  /// Authentication was successful.
+  authenticated,
 }

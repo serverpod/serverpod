@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
+import 'anonymous/anonymous_sign_in_widget.dart';
 import 'apple/apple_sign_in_widget.dart';
 import 'common/widgets/gaps.dart';
 import 'common/widgets/column.dart';
@@ -52,6 +53,9 @@ class SignInWidget extends StatefulWidget {
   /// Callback when an error occurs during authentication.
   final Function(Object error)? onError;
 
+  /// Whether to disable the anonymous sign-in widget if it is available.
+  final bool disableAnonymousSignInWidget;
+
   /// Whether to disable the email sign-in widget if it is available.
   final bool disableEmailSignInWidget;
 
@@ -60,6 +64,9 @@ class SignInWidget extends StatefulWidget {
 
   /// Whether to disable the Apple sign-in widget if it is available.
   final bool disableAppleSignInWidget;
+
+  /// Customized widget to use for anonymous sign-in.
+  final AnonymousSignInWidget? anonymousSignInWidget;
 
   /// Customized widget to use for email sign-in.
   final EmailSignInWidget? emailSignInWidget;
@@ -75,9 +82,11 @@ class SignInWidget extends StatefulWidget {
     required this.client,
     this.onAuthenticated,
     this.onError,
+    this.disableAnonymousSignInWidget = false,
     this.disableEmailSignInWidget = false,
     this.disableGoogleSignInWidget = false,
     this.disableAppleSignInWidget = false,
+    this.anonymousSignInWidget,
     this.emailSignInWidget,
     this.googleSignInWidget,
     this.appleSignInWidget,
@@ -91,6 +100,8 @@ class SignInWidget extends StatefulWidget {
 class _SignInWidgetState extends State<SignInWidget> {
   FlutterAuthSessionManager get auth => widget.client.auth;
 
+  bool get hasAnonymous =>
+      auth.idp.hasAnonymous && !widget.disableAnonymousSignInWidget;
   bool get hasEmail => auth.idp.hasEmail && !widget.disableEmailSignInWidget;
   bool get hasGoogle => auth.idp.hasGoogle && !widget.disableGoogleSignInWidget;
   bool get hasApple => auth.idp.hasApple && !widget.disableAppleSignInWidget;
@@ -148,6 +159,15 @@ class _SignInWidgetState extends State<SignInWidget> {
               ),
         if (socialProviders.isNotEmpty && hasEmail) const _SignInSeparator(),
         ...socialProviders,
+        if (hasAnonymous) ...[
+          const Spacer(),
+          widget.anonymousSignInWidget ??
+              AnonymousSignInWidget(
+                client: widget.client,
+                onAuthenticated: widget.onAuthenticated,
+                onError: widget.onError,
+              ),
+        ],
       ],
     );
   }
