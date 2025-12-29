@@ -474,63 +474,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method that does not return Future when analyzed',
-    () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-      var testGeneratedDirectory = Directory(
-        path.join(testDirectory.path, 'src', 'generated'),
-      );
-
-      late List<FutureCallDefinition> futureCallDefinitions;
-      late FutureCallsAnalyzer analyzer;
-      setUpAll(() async {
-        var futureCallFile = File(
-          path.join(testDirectory.path, 'future_call.dart'),
-        );
-        futureCallFile.createSync(recursive: true);
-        futureCallFile.writeAsStringSync('''
-import 'package:serverpod/serverpod.dart';
-
-class ExampleFutureCall extends FutureCall {
-  String hello(Session session, String name) {
-    return 'Hello \$name';
-  }
-}
-''');
-
-        final parameterValidator = FutureCallMethodParameterValidator(
-          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
-        );
-
-        analyzer = FutureCallsAnalyzer(
-          directory: testDirectory,
-          generatedDirectory: testGeneratedDirectory,
-          parameterValidator: parameterValidator,
-        );
-
-        futureCallDefinitions = await analyzer.analyze(collector: collector);
-      });
-
-      test('then no validation errors are reported.', () {
-        expect(collector.errors, isEmpty);
-      });
-
-      test('then future call definition is created.', () {
-        expect(futureCallDefinitions, hasLength(1));
-      });
-
-      test('then no future call method definition is created.', () {
-        var methods = futureCallDefinitions.firstOrNull?.methods;
-        expect(methods, isEmpty);
-      });
-    },
-  );
-
-  group(
-    'Given a future call method that returns a Future missing defined type when analyzed',
+    'Given a future call method that without a Future<void> return type when analyzed',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
