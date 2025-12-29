@@ -13,6 +13,7 @@ import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_cal
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_parameter_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/analysis_helper.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
@@ -56,6 +57,28 @@ class FutureCallsAnalyzer {
     }
 
     return filePaths.any((e) => _isFutureCallFile(File(e)));
+  }
+
+  /// Analyze all files in the [AnalysisContextCollection] for
+  /// [FutureCallParameterDefinition] which need to be converted
+  /// into [SerializableModelDefinition] for model generation.
+  Future<List<SerializableModelDefinition>> analyzeModels(
+    CodeAnalysisCollector collector,
+  ) async {
+    final futureCalls = await analyze(collector: collector);
+    final models = <SerializableModelDefinition>[];
+
+    for (final futureCall in futureCalls) {
+      for (final method in futureCall.methods) {
+        if (method.futureCallMethodParameter != null) {
+          models.add(
+            method.futureCallMethodParameter!.toSerializableModel(),
+          );
+        }
+      }
+    }
+
+    return models;
   }
 
   /// Analyze all files in the [AnalysisContextCollection].

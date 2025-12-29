@@ -19,27 +19,16 @@ Future<bool> performGenerate({
   final models = modelAnalyzer.validateAll();
   success &= !modelAnalyzer.hasSevereErrors;
 
-  log.debug('Analyzing the future calls.');
+  log.debug('Analyzing the future calls models.');
 
-  var futureCallsAnalyzerCollector = CodeGenerationCollector();
-  var futureCalls = await futureCallsAnalyzer.analyze(
-    collector: futureCallsAnalyzerCollector,
+  var futureCallsModelsAnalyzerCollector = CodeGenerationCollector();
+
+  final futureCallModels = await futureCallsAnalyzer.analyzeModels(
+    futureCallsModelsAnalyzerCollector,
   );
 
-  final futureCallModels = <SerializableModelDefinition>[];
-
-  for (final futureCall in futureCalls) {
-    for (final method in futureCall.methods) {
-      if (method.futureCallMethodParameter != null) {
-        futureCallModels.add(
-          method.futureCallMethodParameter!.toSerializableModel(),
-        );
-      }
-    }
-  }
-
-  success &= !futureCallsAnalyzerCollector.hasSevereErrors;
-  futureCallsAnalyzerCollector.printErrors();
+  success &= !futureCallsModelsAnalyzerCollector.hasSevereErrors;
+  futureCallsModelsAnalyzerCollector.printErrors();
 
   log.debug('Generating files for serializable models.');
 
@@ -64,6 +53,17 @@ Future<bool> performGenerate({
 
   success &= !endpointAnalyzerCollector.hasSevereErrors;
   endpointAnalyzerCollector.printErrors();
+
+  log.debug('Analyzing the future calls.');
+
+  var futureCallsAnalyzerCollector = CodeGenerationCollector();
+  var futureCalls = await futureCallsAnalyzer.analyze(
+    collector: futureCallsAnalyzerCollector,
+    changedFiles: generatedModelFiles.toSet(),
+  );
+
+  success &= !futureCallsAnalyzerCollector.hasSevereErrors;
+  futureCallsAnalyzerCollector.printErrors();
 
   log.debug('Generating the protocol.');
 
