@@ -97,7 +97,7 @@ class FutureCallParameterDefinition {
 
   SerializableModelDefinition toSerializableModel() {
     return ModelClassDefinition(
-      fileName: type.className.snakeCase,
+      fileName: 'future_calls_models/${type.className.snakeCase}',
       sourceFileName: '',
       className: type.className,
       fields: [

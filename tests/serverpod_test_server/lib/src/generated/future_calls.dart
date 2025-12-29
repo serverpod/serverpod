@@ -11,10 +11,11 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'test_generated_call_hello_model.dart' as _i2;
-import 'test_generated_call_bye_model.dart' as _i3;
-import 'dart:async' as _i4;
-import '../futureCalls/test_generated_call.dart' as _i5;
+import 'future_calls_models/test_generated_call_hello_model.dart' as _i2;
+import 'future_calls_models/test_generated_call_bye_model.dart' as _i3;
+import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i4;
+import 'dart:async' as _i5;
+import '../futureCalls/test_generated_call.dart' as _i6;
 
 /// Invokes a future call.
 typedef _InvokeFutureCall =
@@ -50,6 +51,8 @@ class _FutureCalls extends _i1.FutureCallInitializer {
     var registeredFutureCalls = <String, _i1.FutureCall>{
       'TestGeneratedCallHelloFutureCall': TestGeneratedCallHelloFutureCall(),
       'TestGeneratedCallByeFutureCall': TestGeneratedCallByeFutureCall(),
+      'TestGeneratedCallLogDataFutureCall':
+          TestGeneratedCallLogDataFutureCall(),
     };
     _futureCallManager = futureCallManager;
     _serverId = serverId;
@@ -129,17 +132,24 @@ class _TestGeneratedCallFutureCallDispatcher {
       object,
     );
   }
+
+  Future<void> logData(_i4.SimpleData data) {
+    return _invokeFutureCall(
+      'TestGeneratedCallLogDataFutureCall',
+      data,
+    );
+  }
 }
 
 class TestGeneratedCallHelloFutureCall
     extends _i1.FutureCall<_i2.TestGeneratedCallHelloModel> {
   @override
-  _i4.Future<void> invoke(
+  _i5.Future<void> invoke(
     _i1.Session session,
     _i2.TestGeneratedCallHelloModel? object,
   ) async {
     if (object != null) {
-      await _i5.TestGeneratedCall().hello(
+      await _i6.TestGeneratedCall().hello(
         session,
         object.name,
       );
@@ -150,16 +160,31 @@ class TestGeneratedCallHelloFutureCall
 class TestGeneratedCallByeFutureCall
     extends _i1.FutureCall<_i3.TestGeneratedCallByeModel> {
   @override
-  _i4.Future<void> invoke(
+  _i5.Future<void> invoke(
     _i1.Session session,
     _i3.TestGeneratedCallByeModel? object,
   ) async {
     if (object != null) {
-      await _i5.TestGeneratedCall().bye(
+      await _i6.TestGeneratedCall().bye(
         session,
         object.name,
         code: object.code,
       );
     }
+  }
+}
+
+/// A sample future call that logs data.
+class TestGeneratedCallLogDataFutureCall
+    extends _i1.FutureCall<_i4.SimpleData> {
+  @override
+  _i5.Future<void> invoke(
+    _i1.Session session,
+    _i4.SimpleData? data,
+  ) async {
+    await _i6.TestGeneratedCall().logData(
+      session,
+      data!,
+    );
   }
 }

@@ -35,6 +35,9 @@ void main() {
     var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
+    var testGeneratedDirectory = Directory(
+      path.join(testDirectory.path, 'src', 'generated'),
+    );
 
     late List<FutureCallDefinition> futureCallDefinitions;
     late FutureCallsAnalyzer analyzer;
@@ -57,6 +60,7 @@ class ExampleFutureCall extends FutureCall {
 
       analyzer = FutureCallsAnalyzer(
         directory: testDirectory,
+        generatedDirectory: testGeneratedDirectory,
         parameterValidator: parameterValidator,
       );
 
@@ -103,6 +107,9 @@ class ExampleFutureCall extends FutureCall {
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
+      );
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -126,6 +133,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -185,6 +193,9 @@ class ExampleFutureCall extends FutureCall {
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
+      );
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -208,6 +219,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -226,6 +238,9 @@ class ExampleFutureCall extends FutureCall {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
       );
 
       late List<FutureCallDefinition> futureCallDefinitions;
@@ -252,6 +267,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -270,6 +286,9 @@ class ExampleFutureCall extends FutureCall {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
       );
 
       late List<FutureCallDefinition> futureCallDefinitions;
@@ -294,6 +313,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -325,6 +345,9 @@ class ExampleFutureCall extends FutureCall {
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
+      );
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -348,6 +371,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -379,6 +403,9 @@ class ExampleFutureCall extends FutureCall {
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
+      );
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -402,6 +429,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -433,6 +461,9 @@ class ExampleFutureCall extends FutureCall {
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
+      );
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -455,6 +486,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -483,6 +515,9 @@ class ExampleFutureCall extends FutureCall {
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
+      );
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -505,6 +540,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -543,6 +579,9 @@ class ExampleFutureCall extends FutureCall {
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
+      );
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -565,6 +604,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -601,6 +641,9 @@ class ExampleFutureCall extends FutureCall {
     var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
+    var testGeneratedDirectory = Directory(
+      path.join(testDirectory.path, 'src', 'generated'),
+    );
 
     late List<FutureCallDefinition> futureCallDefinitions;
     late FutureCallsAnalyzer analyzer;
@@ -623,6 +666,7 @@ class ExampleFutureCall extends FutureCall {
 
       analyzer = FutureCallsAnalyzer(
         directory: testDirectory,
+        generatedDirectory: testGeneratedDirectory,
         parameterValidator: parameterValidator,
       );
 
@@ -650,6 +694,9 @@ class ExampleFutureCall extends FutureCall {
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
+      );
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -676,6 +723,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -710,6 +758,9 @@ class ExampleFutureCall extends FutureCall {
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
+      );
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -733,6 +784,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -768,6 +820,9 @@ class ExampleFutureCall extends FutureCall {
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
+      );
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -791,6 +846,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -826,6 +882,9 @@ class ExampleFutureCall extends FutureCall {
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
+      );
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -851,6 +910,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -884,6 +944,9 @@ class ExampleFutureCall extends FutureCall {
     var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
+    var testGeneratedDirectory = Directory(
+      path.join(testDirectory.path, 'src', 'generated'),
+    );
 
     late List<FutureCallDefinition> futureCallDefinitions;
     late FutureCallsAnalyzer analyzer;
@@ -907,6 +970,7 @@ class ExampleFutureCall extends FutureCall {
 
       analyzer = FutureCallsAnalyzer(
         directory: testDirectory,
+        generatedDirectory: testGeneratedDirectory,
         parameterValidator: parameterValidator,
       );
 
@@ -941,6 +1005,9 @@ class ExampleFutureCall extends FutureCall {
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
+      );
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -964,6 +1031,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -994,6 +1062,9 @@ class ExampleFutureCall extends FutureCall {
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
+      );
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -1016,6 +1087,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -1078,6 +1150,9 @@ class ExampleFutureCall extends FutureCall {
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
+      );
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -1100,6 +1175,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -1141,6 +1217,9 @@ class ExampleFutureCall extends FutureCall {
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
+      var testGeneratedDirectory = Directory(
+        path.join(testDirectory.path, 'src', 'generated'),
+      );
 
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
@@ -1163,6 +1242,7 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
+          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 

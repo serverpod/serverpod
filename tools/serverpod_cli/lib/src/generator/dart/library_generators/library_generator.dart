@@ -58,7 +58,8 @@ class LibraryGenerator {
     // exports
     library.directives.addAll([
       for (var classInfo in topLevelModels)
-        Directive.export(TypeDefinition.getRef(classInfo)),
+        if (classInfo.shouldExport)
+          Directive.export(TypeDefinition.getRef(classInfo)),
       if (!serverCode) Directive.export('client.dart'),
     ]);
 
@@ -2752,5 +2753,14 @@ extension on Iterable<SerializableModelFieldDefinition> {
       yield element;
       visited.add(elementType);
     }
+  }
+}
+
+extension on SerializableModelDefinition {
+  /// Prevent generated future call models from being exported
+  /// from generated protocol code. This ensures that only
+  /// user defined models are exported.
+  bool get shouldExport {
+    return !RegExp(r'^future_calls_models\/.*').hasMatch(fileName);
   }
 }

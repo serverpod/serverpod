@@ -55,10 +55,10 @@ import 'package:serverpod_test_server/src/generated/session_auth_info.dart'
     as _i28;
 import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
     as _i29;
-import 'package:serverpod_test_server/src/generated/test_generated_call_hello_model.dart'
+import 'package:serverpod_test_server/src/generated/future_calls_models/test_generated_call_hello_model.dart'
     as _i30;
 import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i31;
-import 'package:serverpod_test_server/src/generated/test_generated_call_bye_model.dart'
+import 'package:serverpod_test_server/src/generated/future_calls_models/test_generated_call_bye_model.dart'
     as _i32;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
@@ -15329,6 +15329,22 @@ class _TestGeneratedCallFutureCall {
       await _i31.TestGeneratedCallByeFutureCall().invoke(
         _localUniqueSession,
         object,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
+  }
+
+  Future<void> logData(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i10.SimpleData data,
+  ) async {
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      await _i31.TestGeneratedCallLogDataFutureCall().invoke(
+        _localUniqueSession,
+        data,
       );
     } finally {
       await _localUniqueSession.close();
