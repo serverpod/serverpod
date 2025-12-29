@@ -114,43 +114,23 @@ abstract class FutureCallMethodAnalyzer {
   }) {
     if (!dartType.isDartAsyncFuture) {
       return SourceSpanSeverityException(
-        'Return type must be a Future.',
+        'Return type must be a Future<void>.',
         dartElement.span,
       );
     }
 
     if (dartType is! InterfaceType) {
       return SourceSpanSeverityException(
-        'The type "$dartType" is not a supported future call return type.',
+        'Return type must be a Future<void>.',
         dartElement.span,
       );
     }
 
     var typeArguments = dartType.typeArguments;
 
-    if (typeArguments.length != 1) {
-      // Interface type must always have a type argument so this is just for
-      // safety.
+    if (typeArguments.firstOrNull is! VoidType) {
       return SourceSpanSeverityException(
-        'Return generic must be type defined. E.g. ${dartType.element.name}<void>.',
-        dartElement.span,
-      );
-    }
-
-    var innerType = typeArguments[0];
-
-    if (innerType is DynamicType) {
-      return SourceSpanSeverityException(
-        'Return generic must have a type defined. E.g. ${dartType.element.name}<void>.',
-        dartElement.span,
-      );
-    }
-
-    try {
-      TypeDefinition.fromDartType(innerType);
-    } on FromDartTypeClassNameException catch (e) {
-      return SourceSpanSeverityException(
-        'The type "${e.type}" is not a supported future call return type.',
+        'Return type must be a Future<void>.',
         dartElement.span,
       );
     }

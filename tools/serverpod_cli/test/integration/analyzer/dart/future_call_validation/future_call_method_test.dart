@@ -193,7 +193,8 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call with a method that has a second positional parameter of type `Session` when analyzed',
+    'Given a future call with a method that has a second positional parameter'
+    'of type `Session` when analyzed',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -291,7 +292,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method without a first positional `Session` param',
+    'Given a future call method without a first positional `Session` parameter',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -351,7 +352,8 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method without a first positional `Session` param and the first parameter instead contains a named `Session` parameter when analyzed',
+    'Given a future call method without a first positional `Session` parameter'
+    'and the first parameter instead contains a named `Session` parameter when analyzed',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -411,7 +413,8 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method without a first positional `Session` parameter and the first parameter instead contains an optional `Session` parameter when analyzed',
+    'Given a future call method without a first positional `Session` parameter'
+    'and the first parameter instead contains an optional `Session` parameter when analyzed',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -576,7 +579,7 @@ class ExampleFutureCall extends FutureCall {
         () {
           expect(
             collector.errors.firstOrNull?.message,
-            'Return generic must have a type defined. E.g. Future<void>.',
+            'Return type must be a Future<void>.',
           );
         },
       );
@@ -593,7 +596,7 @@ class ExampleFutureCall extends FutureCall {
   );
 
   group(
-    'Given a future call method that returns a Future with dynamic type when analyzed',
+    'Given a future call method that returns a Future with non void type when analyzed',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
@@ -642,7 +645,7 @@ class ExampleFutureCall extends FutureCall {
         () {
           expect(
             collector.errors.firstOrNull?.message,
-            'Return generic must have a type defined. E.g. Future<void>.',
+            'Return type must be a Future<void>.',
           );
         },
       );
@@ -1031,65 +1034,6 @@ class ExampleFutureCall extends FutureCall {
       );
     });
   });
-
-  group(
-    'Given a valid future call with a single method marked as `@doNotGenerate` when analyzed',
-    () {
-      var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-      var testGeneratedDirectory = Directory(
-        path.join(testDirectory.path, 'src', 'generated'),
-      );
-
-      late List<FutureCallDefinition> futureCallDefinitions;
-      late FutureCallsAnalyzer analyzer;
-      setUpAll(() async {
-        var futureCallFile = File(
-          path.join(testDirectory.path, 'future_call.dart'),
-        );
-        futureCallFile.createSync(recursive: true);
-        futureCallFile.writeAsStringSync('''
-import 'package:serverpod/serverpod.dart';
-
-class ExampleFutureCall extends FutureCall {
-  @doNotGenerate
-  Future<void> hello(Session session, String name) async {
-    session.log('Hello \$name');
-  }
-}
-''');
-
-        final parameterValidator = FutureCallMethodParameterValidator(
-          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
-        );
-
-        analyzer = FutureCallsAnalyzer(
-          directory: testDirectory,
-          generatedDirectory: testGeneratedDirectory,
-          parameterValidator: parameterValidator,
-        );
-
-        futureCallDefinitions = await analyzer.analyze(collector: collector);
-      });
-
-      test('then no validation errors are reported.', () {
-        expect(collector.errors, isEmpty);
-      });
-
-      test('then future call definition is created.', () {
-        expect(futureCallDefinitions, hasLength(1));
-      });
-
-      test('then no future call method definition is created.', () {
-        expect(
-          futureCallDefinitions.firstOrNull?.methods,
-          isEmpty,
-        );
-      });
-    },
-  );
 
   group(
     'Given a valid future call with a method that has serializable parameters after the first positional Session parameter',

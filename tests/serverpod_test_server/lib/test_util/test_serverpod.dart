@@ -29,12 +29,11 @@ class IntegrationTestServer extends TestServerpod {
     SecurityContextConfig? securityContextConfig,
     ExperimentalFeatures? experimentalFeatures,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
-    EndpointDispatch? endpoints,
   }) {
     return Serverpod(
       _integrationTestFlags,
       Protocol(),
-      endpoints ?? Endpoints(),
+      Endpoints(),
       config: config,
       authenticationHandler:
           authenticationHandler ?? auth.authenticationHandler,
