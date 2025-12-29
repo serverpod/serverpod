@@ -17,13 +17,11 @@ class AnonymousIdp {
   final AnonymousIdpUtils utils;
 
   final TokenManager _tokenManager;
-  final AuthUsers _authUsers;
   final UserProfiles _userProfiles;
 
   AnonymousIdp._(
     this.config,
     this.utils,
-    this._authUsers,
     this._userProfiles,
     this._tokenManager,
   );
@@ -39,7 +37,6 @@ class AnonymousIdp {
     return AnonymousIdp._(
       config,
       utils,
-      authUsers,
       userProfiles,
       tokenManager,
     );
@@ -55,55 +52,36 @@ class AnonymousIdp {
       session.db,
       transaction,
       (final transaction) async {
-        UuidValue? authUserId;
         if (config.onBeforeAnonymousAccountCreated != null) {
-          try {
-            authUserId = await config.onBeforeAnonymousAccountCreated!(
-              session,
-              token: token,
-              transaction: transaction,
-            );
-          } catch (e) {
-            session.log('onBeforeAnonymousAccountCreated failed: $e');
+          final canCreateAccount =
+              await config.onBeforeAnonymousAccountCreated!(
+                session,
+                token: token,
+                transaction: transaction,
+              );
+          if (!canCreateAccount) {
             throw AnonymousAccountBlockedException(
               reason: AnonymousAccountBlockedExceptionReason.denied,
             );
           }
         }
 
-        late Set<Scope> scopes;
-        if (authUserId == null) {
-          // This request is not attached to an existing account, so create all
-          // new records.
-          final result = await utils.createAnonymousAccount(
-            session,
-            transaction: transaction,
-          );
-          authUserId = result.authUserId;
-          await _userProfiles.createUserProfile(
-            session,
-            result.authUserId,
-            UserProfileData(),
-            transaction: transaction,
-          );
-          scopes = result.scopes;
-        } else {
-          // By hook or by crook, this request was attached to an existing
-          // account, so use existing records.
-          final authUser = await _authUsers.get(
-            session,
-            authUserId: authUserId,
-            transaction: transaction,
-          );
-          authUserId = authUser.id;
-          scopes = authUser.scopes;
-        }
+        final result = await utils.createAnonymousAccount(
+          session,
+          transaction: transaction,
+        );
+        await _userProfiles.createUserProfile(
+          session,
+          result.authUserId,
+          UserProfileData(),
+          transaction: transaction,
+        );
 
         return _tokenManager.issueToken(
           session,
-          authUserId: authUserId,
+          authUserId: result.authUserId,
           method: method,
-          scopes: scopes,
+          scopes: result.scopes,
           transaction: transaction,
         );
       },

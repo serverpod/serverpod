@@ -9,14 +9,12 @@ import '../../../../providers/email.dart' show RateLimit;
 
 /// {@template before_anonymous_account_created_function}
 /// Function to be called before a new anonymous account is created. This
-/// function should return null if a new anonymous account is not allowed to be
-/// created, or the Uuid primary key of an existing user
-/// the ID of the authentication user if the account is allowed to be created, or
-/// false otherwise. This mechanism is how an application would protect the
-/// anonymous account creation process to prevent abuse.
+/// function should return true if a new anonymous account is allowed to be
+/// created, or false otherwise. This mechanism is how an application would
+/// protect the anonymous account creation process to prevent abuse.
 /// {@endtemplate}
 typedef BeforeAnonymousAccountCreatedFunction =
-    FutureOr<UuidValue?> Function(
+    FutureOr<bool> Function(
       Session session, {
       String? token,
       required Transaction? transaction,
