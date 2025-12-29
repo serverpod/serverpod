@@ -167,6 +167,30 @@ class RebaseMigrationRunner {
     return generator.migrationRegistry;
   }
 
+  /// Check if the migration [file] has conflicts
+  bool hasConflicts(File file) {
+    const conflictMarker = '<<<<<<<';
+    final content = file.readAsStringSync();
+    return content.contains(conflictMarker);
+  }
+
+  /// Retrieve the incoming migration in a [registryFile]
+  String getIncomingMigration(File registryFile) {
+    // Check if the registry file has conflicts
+    if (!hasConflicts(registryFile)) {
+      log.error(
+        'Migration registry file has no conflicts. '
+        'Please ensure --onto is provided if you want to rebase onto a specific migration.',
+      );
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+    }
+
+    // Get the incoming migration in the conflict marker
+    final content = registryFile.readAsStringSync();
+    final incomingMigration = content.split('=======').last;
+    return incomingMigration.split('>>>>>>>').first.trim();
+  }
+
   /// Create temp directory
   Directory createTempDirectory(
     MigrationGenerator generator,
