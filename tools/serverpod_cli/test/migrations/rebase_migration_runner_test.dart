@@ -179,6 +179,52 @@ void main() {
           );
         },
       );
+
+      test(
+        'Given no onto and registry has conflicts when getting base migration ID then incoming migration is returned',
+        () async {
+          const runner = RebaseMigrationRunner();
+          final migrationsDir = await setupMigrations([m1, m2]);
+          final registryFile = File(
+            path.join(migrationsDir.path, 'migration_registry.txt'),
+          );
+          registryFile.writeAsStringSync('''
+$m1
+<<<<<<< HEAD
+$m2
+=======
+$m3
+>>>>>>> feature-branch
+''');
+
+          final migrationRegistry = MigrationRegistry.load(migrationsDir);
+
+          final result = runner.getBaseMigrationId(migrationRegistry);
+          expect(result, equals(m3));
+        },
+      );
+
+      test(
+        'Given no onto and registry has no conflicts when getting base migration ID then an ExitException is thrown',
+        () async {
+          const runner = RebaseMigrationRunner();
+          final migrationsDir = await setupMigrations([m1, m2]);
+          final migrationRegistry = MigrationRegistry.load(migrationsDir);
+
+          expect(
+            () => runner.getBaseMigrationId(migrationRegistry),
+            throwsA(isA<ExitException>()),
+          );
+          expect(
+            testLogger.output.messages,
+            anyElement(
+              contains(
+                'ERROR: Migration registry file has no conflicts.',
+              ),
+            ),
+          );
+        },
+      );
     });
 
     group('checkMigration', () {
@@ -404,8 +450,10 @@ $m2
           );
           expect(
             testLogger.output.messages,
-            contains(
-              'ERROR: Migration registry file has no conflicts. Please ensure --onto is provided if you want to rebase onto a specific migration.',
+            anyElement(
+              contains(
+                'ERROR: Migration registry file has no conflicts.',
+              ),
             ),
           );
         },
