@@ -21,6 +21,7 @@ void main() {
     'generated',
     'future_calls.dart',
   );
+
   group(
     'Given protocol definition without future calls when generating future calls file',
     () {

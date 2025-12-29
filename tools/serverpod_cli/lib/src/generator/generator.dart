@@ -21,7 +21,6 @@ Future<bool> performGenerate({
 
   log.debug('Analyzing the future calls.');
 
-  // analyze future calls to collect models for generation
   var futureCallsAnalyzerCollector = CodeGenerationCollector();
   var futureCalls = await futureCallsAnalyzer.analyze(
     collector: futureCallsAnalyzerCollector,

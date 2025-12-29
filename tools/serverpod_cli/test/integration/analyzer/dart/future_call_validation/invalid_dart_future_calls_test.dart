@@ -1,12 +1,14 @@
 import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_calls_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 
-import '../../../../test_util/builders/future_call_method_parameter_validator_builder.dart';
+import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
 const pathToServerpodRoot = '../../../../../../../..';
@@ -56,8 +58,9 @@ class ExampleFutureCall extends FutureCall {
 
 
 ''');
-        final parameterValidator = FutureCallMethodParameterValidatorBuilder()
-            .build();
+        final parameterValidator = FutureCallMethodParameterValidator(
+          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
+        );
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
@@ -111,8 +114,9 @@ import 'package:serverpod/serverpod.dart';
 class ExampleFutureCall extends FutureCall {
   Future<void> hello(Session session, String name) async {
 ''');
-        final parameterValidator = FutureCallMethodParameterValidatorBuilder()
-            .build();
+        final parameterValidator = FutureCallMethodParameterValidator(
+          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
+        );
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
@@ -168,8 +172,9 @@ class ExampleFutureCall extends FutureCall {
   }
 }
 ''');
-        final parameterValidator = FutureCallMethodParameterValidatorBuilder()
-            .build();
+        final parameterValidator = FutureCallMethodParameterValidator(
+          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
+        );
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
@@ -232,8 +237,9 @@ class ExampleFutureCallValid extends FutureCall {
   }
 }
 ''');
-      final parameterValidator = FutureCallMethodParameterValidatorBuilder()
-          .build();
+      final parameterValidator = FutureCallMethodParameterValidator(
+        modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
+      );
 
       analyzer = FutureCallsAnalyzer(
         directory: testDirectory,
@@ -281,8 +287,9 @@ class InvalidClass {
 
 
 ''');
-      final parameterValidator = FutureCallMethodParameterValidatorBuilder()
-          .build();
+      final parameterValidator = FutureCallMethodParameterValidator(
+        modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
+      );
 
       analyzer = FutureCallsAnalyzer(
         directory: testDirectory,
@@ -335,8 +342,9 @@ class ExampleFutureCallValid extends FutureCall {
   }
 }
 ''');
-        final parameterValidator = FutureCallMethodParameterValidatorBuilder()
-            .build();
+        final parameterValidator = FutureCallMethodParameterValidator(
+          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
+        );
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,

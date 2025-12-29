@@ -12,6 +12,6 @@ class TestGeneratedCall extends FutureCall {
 
   /// A sample future call that logs data.
   Future<void> logData(Session session, SimpleData data) async {
-    session.log('${data.num}');
+    session.log('Data: ${data.num}');
   }
 }
