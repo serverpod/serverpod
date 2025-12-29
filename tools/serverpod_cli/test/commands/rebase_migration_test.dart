@@ -18,13 +18,11 @@ import '../test_util/mock_log.dart';
 class _RebaseMigrationArgs {
   _RebaseMigrationArgs({
     this.onto,
-    this.ontoBranch,
     this.check = false,
     this.force = false,
   });
 
   final String? onto;
-  final String? ontoBranch;
   final bool check;
   final bool force;
 
@@ -33,7 +31,6 @@ class _RebaseMigrationArgs {
       '--no-interactive',
       RebaseMigrationCommand().name,
       if (onto != null) ...['--onto', onto!],
-      if (ontoBranch != null) ...['--onto-branch', ontoBranch!],
       if (check) '--check',
       if (force) '--force',
     ];
@@ -47,7 +44,6 @@ class MockRebaseMigrationRunner extends RebaseMigrationRunner {
 
   MockRebaseMigrationRunner({
     super.onto,
-    super.ontoBranch,
     super.check,
     super.force,
   });
@@ -62,8 +58,8 @@ class MockRebaseMigrationRunner extends RebaseMigrationRunner {
   }
 
   @override
-  Future<String> getBaseMigrationId(MigrationRegistry migrationRegistry) async {
-    return onto ?? ontoBranch ?? '1234567890';
+  String getBaseMigrationId(MigrationRegistry migrationRegistry) {
+    return onto ?? '1234567890';
   }
 
   @override
@@ -120,7 +116,6 @@ features:
   void setupCommand(_RebaseMigrationArgs args) {
     mockRebaseMigrationImpl = MockRebaseMigrationRunner(
       onto: args.onto,
-      ontoBranch: args.ontoBranch,
       check: args.check,
       force: args.force,
     );
@@ -132,30 +127,10 @@ features:
   }
 
   group('RebaseMigrationCommand', () {
-    test(
-      'given both --onto and --onto-branch are specified then an error is thrown',
-      () async {
-        final rebaseArgs = _RebaseMigrationArgs(
-          onto: '20251228100000000',
-          ontoBranch: 'other',
-          force: true,
-        );
-        setupCommand(rebaseArgs);
-        await expectLater(
-          runner.run(rebaseArgs.args),
-          throwsA(isA<ExitException>()),
-        );
-
-        expect(
-          testLogger.output.messages,
-          contains('ERROR: Cannot specify both --onto and --onto-branch'),
-        );
-      },
-    );
-
     test('given --onto specified but empty then an error is thrown', () async {
       final rebaseArgs = _RebaseMigrationArgs(
         onto: '',
+        force: true,
       );
       setupCommand(rebaseArgs);
       await expectLater(
@@ -168,25 +143,6 @@ features:
         contains('ERROR: Cannot specify empty --onto'),
       );
     });
-
-    test(
-      'given --onto-branch specified but empty then an error is thrown',
-      () async {
-        final rebaseArgs = _RebaseMigrationArgs(
-          ontoBranch: '',
-        );
-        setupCommand(rebaseArgs);
-        await expectLater(
-          runner.run(rebaseArgs.args),
-          throwsA(isA<ExitException>()),
-        );
-
-        expect(
-          testLogger.output.messages,
-          contains('ERROR: Cannot specify empty --onto-branch'),
-        );
-      },
-    );
 
     test(
       'given command environment is not valid then an error is thrown',

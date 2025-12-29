@@ -16,16 +16,12 @@ class RebaseMigrationRunner {
   /// {@macro rebase_migration_impl}
   const RebaseMigrationRunner({
     this.onto,
-    this.ontoBranch,
     this.check = false,
     this.force = false,
   });
 
   /// onto
   final String? onto;
-
-  /// ontoBranch
-  final String? ontoBranch;
 
   /// check
   final bool check;
@@ -39,7 +35,7 @@ class RebaseMigrationRunner {
   /// Execute the runner
   Future<bool> run(GeneratorConfig config) async {
     final migrationRegistry = await _getMigrationRegistry(config);
-    final baseMigrationId = await getBaseMigrationId(migrationRegistry);
+    final baseMigrationId = getBaseMigrationId(migrationRegistry);
 
     return check
         ? checkMigration(migrationRegistry, baseMigrationId)
@@ -116,14 +112,7 @@ class RebaseMigrationRunner {
   }
 
   /// Get the base migration ID
-  Future<String> getBaseMigrationId(MigrationRegistry migrationRegistry) async {
-    // Get registry file and ensure it exists
-    final registryFile = migrationRegistry.registryFile;
-    if (!registryFile.existsSync()) {
-      log.error('Migration registry file does not exist.');
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
+  String getBaseMigrationId(MigrationRegistry migrationRegistry) {
     // Onto is specified
     if (onto != null) {
       // Validate migration to rebase onto
@@ -133,21 +122,13 @@ class RebaseMigrationRunner {
       return onto!;
     }
 
-    // If ontoBranch is specified, return the last migration ID from ontoBranch
-    if (ontoBranch != null) {
-      final lastMigrationId = getLastMigrationIdFromBranch(
-        migrationRegistry,
-        ontoBranch!,
-      );
-
-      // Validate last migration ID from branch
-      validateMigration(lastMigrationId, migrationRegistry);
-
-      return lastMigrationId;
+    final registryFile = migrationRegistry.registryFile;
+    if (!registryFile.existsSync()) {
+      log.error('Migration registry file does not exist.');
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
-    // If no onto or ontoBranch is specified, return the last migration ID from the default branch
-    return getLastMigrationIdFromBranch(migrationRegistry, defaultBranch);
+    return registryFile.readAsStringSync().split('\n').lastOrNull ?? '';
   }
 
   /// Validate the [migration] using the [migrationRegistry]
@@ -183,15 +164,15 @@ class RebaseMigrationRunner {
       projectName: projectName,
     );
 
-    final migrationRegistry = generator.migrationRegistry;
-    return migrationRegistry;
+    return generator.migrationRegistry;
   }
 
-  /// Get the last migration ID from [ontoBranch]
-  String getLastMigrationIdFromBranch(
-    MigrationRegistry migrationRegistry,
-    String ontoBranch,
+  /// Create temp directory
+  Directory createTempDirectory(
+    MigrationGenerator generator,
   ) {
-    return 'm1';
+    final modulePath = generator.directory.path;
+    return Directory(path.join(modulePath, '.dart_tool/migrations'))
+      ..createSync(recursive: true);
   }
 }

@@ -20,16 +20,6 @@ enum RebaseMigrationOption<V> implements OptionDefinition<V> {
     ),
   ),
 
-  /// Onto branch
-  ontoBranch(
-    StringOption(
-      argName: 'onto-branch',
-      argAbbrev: 'b',
-      helpText:
-          'Base branch to rebase onto, defaults to ${RebaseMigrationRunner.defaultBranch}',
-    ),
-  ),
-
   /// Check
   check(
     FlagOption(
@@ -85,26 +75,11 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
   ) async {
     // Parse command arguments
     String? onto = commandConfig.optionalValue(RebaseMigrationOption.onto);
-    String? ontoBranch = commandConfig.optionalValue(
-      RebaseMigrationOption.ontoBranch,
-    );
     bool force = commandConfig.value(RebaseMigrationOption.force);
 
     // Ensure onto is not empty if specified
     if (onto != null && onto.trim().isEmpty) {
       log.error('Cannot specify empty --onto');
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    // Ensure ontoBranch is not empty if specified
-    if (ontoBranch != null && ontoBranch.trim().isEmpty) {
-      log.error('Cannot specify empty --onto-branch');
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    // Ensure both --onto and --onto-branch are not specified
-    if (onto != null && ontoBranch != null) {
-      log.error('Cannot specify both --onto and --onto-branch');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
@@ -123,7 +98,6 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
         rebaseMigrationRunner ??
         RebaseMigrationRunner(
           onto: onto?.trim(),
-          ontoBranch: ontoBranch?.trim(),
           check: checkMode,
           force: force,
         );

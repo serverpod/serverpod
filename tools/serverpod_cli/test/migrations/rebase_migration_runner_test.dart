@@ -87,6 +87,7 @@ void main() {
         },
       );
     });
+
     test(
       'Given a migration that exists in registry when validating migration then the call succeeds',
       () async {
@@ -134,7 +135,7 @@ void main() {
 
           final migrationRegistry = MigrationRegistry.load(migrationsDir);
 
-          var result = await runner.getBaseMigrationId(migrationRegistry);
+          final result = runner.getBaseMigrationId(migrationRegistry);
           expect(result, equals(onto));
         },
       );
