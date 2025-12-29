@@ -22,6 +22,10 @@ void main() {
         fixture = AnonymousIdpTestFixture();
       });
 
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
       test(
         'when logging in anonymously then a new account is created',
         () async {
@@ -30,30 +34,33 @@ void main() {
         },
       );
 
-      test('is not blocked by acceptable amount of attempts', () async {
-        final rateLimitedFixture = AnonymousIdpTestFixture(
-          config: const AnonymousIdpConfig(
-            perIpAddressRateLimit: RateLimit(
-              // Limit of 2, but only inserting 1 record
-              maxAttempts: 2,
-              timeframe: Duration(minutes: 1),
+      test(
+        'when logging in is not blocked by acceptable amount of attempts',
+        () async {
+          final rateLimitedFixture = AnonymousIdpTestFixture(
+            config: const AnonymousIdpConfig(
+              perIpAddressRateLimit: RateLimit(
+                // Limit of 2, but only inserting 1 record
+                maxAttempts: 2,
+                timeframe: Duration(minutes: 1),
+              ),
             ),
-          ),
-        );
-        final attemptedAt = DateTime.now();
-        await RateLimitedRequestAttempt.db.insertRow(
-          session,
-          RateLimitedRequestAttempt(
-            domain: 'anonymous',
-            source: 'account_creation',
-            nonce: session.remoteIpAddress.toString(),
-            ipAddress: session.remoteIpAddress.toString(),
-            attemptedAt: attemptedAt,
-          ),
-        );
-        final result = rateLimitedFixture.anonymousIdp.login(session);
-        await expectLater(result, completion(isA<AuthSuccess>()));
-      });
+          );
+          final attemptedAt = DateTime.now();
+          await RateLimitedRequestAttempt.db.insertRow(
+            session,
+            RateLimitedRequestAttempt(
+              domain: 'anonymous',
+              source: 'account_creation',
+              nonce: session.remoteIpAddress.toString(),
+              ipAddress: session.remoteIpAddress.toString(),
+              attemptedAt: attemptedAt,
+            ),
+          );
+          final result = rateLimitedFixture.anonymousIdp.login(session);
+          await expectLater(result, completion(isA<AuthSuccess>()));
+        },
+      );
 
       test('is blocked by too many attempts', () async {
         final rateLimitedFixture = AnonymousIdpTestFixture(
@@ -107,29 +114,34 @@ void main() {
               attemptedAt: attemptedAt,
             ),
           );
-          await expectLater(
-            () => rateLimitedFixture.anonymousIdp.login(session),
-            throwsA(isA<AnonymousAccountBlockedException>()),
-          );
+          final result = rateLimitedFixture.anonymousIdp.login(session);
+          await expectLater(result, completion(isA<AuthSuccess>()));
         },
       );
 
-      test('is blocked by beforeAnonymousAccountCreated', () async {
-        final cannotCreateFixture = AnonymousIdpTestFixture(
-          config: AnonymousIdpConfig(
-            onBeforeAnonymousAccountCreated:
-                (
-                  final Session session, {
-                  final String? token,
-                  final Transaction? transaction,
-                }) => Future.value(null),
-          ),
-        );
-        await expectLater(
-          () => cannotCreateFixture.anonymousIdp.login(session),
-          throwsA(isA<AnonymousAccountBlockedException>()),
-        );
-      });
+      test(
+        'is blocked by onBeforeAnonymousAccountCreated',
+        () async {
+          final cannotCreateFixture = AnonymousIdpTestFixture(
+            config: AnonymousIdpConfig(
+              onBeforeAnonymousAccountCreated:
+                  (
+                    final Session session, {
+                    final String? token,
+                    final Transaction? transaction,
+                  }) async {
+                    await Future.delayed(Duration.zero);
+                    throw Exception();
+                  },
+            ),
+          );
+          await expectLater(
+            () => cannotCreateFixture.anonymousIdp.login(session),
+            throwsA(isA<AnonymousAccountBlockedException>()),
+          );
+        },
+        timeout: const Timeout(Duration(seconds: 1)),
+      );
 
       test('is blocked by synchronous beforeAnonymousAccountCreated', () async {
         final cannotCreateFixture = AnonymousIdpTestFixture(
@@ -139,7 +151,7 @@ void main() {
                   final Session session, {
                   final String? token,
                   final Transaction? transaction,
-                }) => null,
+                }) => throw Exception(),
           ),
         );
         await expectLater(

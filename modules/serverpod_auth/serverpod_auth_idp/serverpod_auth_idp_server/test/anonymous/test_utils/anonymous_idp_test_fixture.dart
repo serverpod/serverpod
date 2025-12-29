@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/anonymous.dart';
 
@@ -23,5 +24,27 @@ final class AnonymousIdpTestFixture {
         ).tokenManager;
 
     anonymousIdp = AnonymousIdp(config, tokenManager: this.tokenManager);
+  }
+
+  Future<void> tearDown(final Session session) async {
+    await session.db.transaction((final transaction) async {
+      await Future.wait([
+        AnonymousAccount.db.deleteWhere(
+          session,
+          where: (final _) => Constant.bool(true),
+          transaction: transaction,
+        ),
+        RateLimitedRequestAttempt.db.deleteWhere(
+          session,
+          where: (final _) => Constant.bool(true),
+          transaction: transaction,
+        ),
+        AuthUser.db.deleteWhere(
+          session,
+          where: (final _) => Constant.bool(true),
+          transaction: transaction,
+        ),
+      ]);
+    });
   }
 }
