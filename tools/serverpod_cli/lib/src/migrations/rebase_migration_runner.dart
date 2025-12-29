@@ -128,7 +128,7 @@ class RebaseMigrationRunner {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
-    return registryFile.readAsStringSync().split('\n').lastOrNull ?? '';
+    return getIncomingMigration(registryFile);
   }
 
   /// Validate the [migration] using the [migrationRegistry]
