@@ -1,3 +1,4 @@
+import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import '../../generator/types.dart';
 import '../models/definitions.dart';
@@ -97,7 +98,7 @@ class FutureCallParameterDefinition {
 
   SerializableModelDefinition toSerializableModel() {
     return ModelClassDefinition(
-      fileName: 'future_calls_models/${type.className.snakeCase}',
+      fileName: p.join('future_calls_models', type.className.snakeCase),
       sourceFileName: '',
       className: type.className,
       fields: [
