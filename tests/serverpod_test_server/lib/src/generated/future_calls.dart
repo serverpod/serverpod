@@ -21,10 +21,20 @@ import '../futureCalls/test_generated_call.dart' as _i6;
 typedef _InvokeFutureCall =
     Future<void> Function(String name, _i1.SerializableModel? object);
 
-/// Global variable for accessing future calls via a typed interface.
-final futureCalls = _FutureCalls();
+extension ServerpodFutureCallsGetter on _i1.Serverpod {
+  /// Generated future calls.
+  FutureCalls get futureCalls => FutureCalls();
+}
 
-class _FutureCalls extends _i1.FutureCallInitializer {
+class FutureCalls extends _i1.FutureCallInitializer {
+  FutureCalls._();
+
+  factory FutureCalls() {
+    return _instance;
+  }
+
+  static final FutureCalls _instance = FutureCalls._();
+
   _i1.FutureCallManager? _futureCallManager;
 
   String? _serverId;

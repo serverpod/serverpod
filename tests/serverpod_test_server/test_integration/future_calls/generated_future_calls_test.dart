@@ -12,17 +12,19 @@ void main() {
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late Session session;
+      late Serverpod pod;
       // generated name for the future call
       var testCallName = 'TestGeneratedCallHelloFutureCall';
 
       setUp(() async {
         session = sessionBuilder.build();
+        pod = session.serverpod;
 
         futureCallManager = FutureCallManagerBuilder.fromTestSessionBuilder(
           sessionBuilder,
         ).build();
 
-        futureCalls.initialize(futureCallManager, 'default');
+        pod.futureCalls.initialize(futureCallManager, 'default');
       });
 
       test(
@@ -30,7 +32,10 @@ void main() {
         'then a FutureCallEntry is added to the database with expected time',
         () async {
           final time = DateTime.now().toUtc();
-          await futureCalls.callAtTime(time).testGeneratedCall.hello('Lucky');
+          await pod.futureCalls
+              .callAtTime(time)
+              .testGeneratedCall
+              .hello('Lucky');
 
           final futureCallEntries = await FutureCallEntry.db.find(
             session,
@@ -49,7 +54,7 @@ void main() {
           final delay = Duration(milliseconds: 10);
           final expectedTime = DateTime.now().add(delay).toUtc();
 
-          await futureCalls
+          await pod.futureCalls
               .callWithDelay(delay)
               .testGeneratedCall
               .hello('Lucky');
@@ -75,7 +80,7 @@ void main() {
         () async {
           final identifier = 'lucky-id';
 
-          await futureCalls
+          await pod.futureCalls
               .callAtTime(DateTime.now(), identifier: identifier)
               .testGeneratedCall
               .hello('Lucky');
@@ -96,7 +101,7 @@ void main() {
         () async {
           final identifier = 'lucky-id';
 
-          await futureCalls
+          await pod.futureCalls
               .callWithDelay(Duration(milliseconds: 10), identifier: identifier)
               .testGeneratedCall
               .hello('Lucky');
@@ -118,17 +123,19 @@ void main() {
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
       late Session session;
+      late Serverpod pod;
 
       setUp(() async {
         session = sessionBuilder.build();
+        pod = session.serverpod;
 
         futureCallManager = FutureCallManagerBuilder.fromTestSessionBuilder(
           sessionBuilder,
         ).build();
 
-        futureCalls.initialize(futureCallManager, 'default');
+        pod.futureCalls.initialize(futureCallManager, 'default');
 
-        await futureCalls
+        await pod.futureCalls
             .callAtTime(DateTime.now().subtract(const Duration(seconds: 1)))
             .testGeneratedCall
             .bye('Lucky', code: 20);

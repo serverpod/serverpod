@@ -89,6 +89,7 @@ import 'package:serverpod_test_server/src/generated/types_record.dart' as _i68;
 import 'package:serverpod_test_server/src/generated/module_datatype.dart'
     as _i69;
 import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i70;
+export 'future_calls.dart' show ServerpodFutureCallsGetter;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -9367,6 +9368,6 @@ class Endpoints extends _i1.EndpointDispatch {
 
   @override
   _i1.FutureCallInitializer? get futureCallInitializer {
-    return _i70.futureCalls;
+    return _i70.FutureCalls();
   }
 }

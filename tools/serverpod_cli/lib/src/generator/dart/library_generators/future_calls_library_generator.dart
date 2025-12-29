@@ -7,17 +7,21 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
 
     library.body.add(
       Code.scope((allocate) {
-        final type = allocate(
+        final modelType = allocate(
           refer('SerializableModel', serverpodUrl(true)),
+        );
+        final serverpod = allocate(
+          refer('Serverpod', serverpodUrl(true)),
         );
 
         return '''
-/// Invokes a future call.
-typedef _InvokeFutureCall =
-    Future<void> Function(String name, $type? object);
+  /// Invokes a future call.
+  typedef _InvokeFutureCall = Future<void> Function(String name, $modelType? object);
 
-    /// Global variable for accessing future calls via a typed interface.
-    final futureCalls = _FutureCalls();
+  extension ServerpodFutureCallsGetter on $serverpod {
+  /// Generated future calls.
+  FutureCalls get futureCalls => FutureCalls();
+}
 ''';
       }),
     );
@@ -26,9 +30,27 @@ typedef _InvokeFutureCall =
     library.body.add(
       Class(
         (c) => c
-          ..name = '_FutureCalls'
+          ..name = 'FutureCalls'
           ..extend = refer('FutureCallInitializer', serverpodUrl(true))
+          ..constructors.addAll([
+            Constructor(
+              (c) => c..name = '_',
+            ),
+            Constructor(
+              (c) => c
+                ..factory = true
+                ..body = const Code('return _instance;'),
+            ),
+          ])
           ..fields.addAll([
+            Field(
+              (f) => f
+                ..name = '_instance'
+                ..static = true
+                ..modifier = FieldModifier.final$
+                ..type = refer('FutureCalls')
+                ..assignment = const Code('FutureCalls._()'),
+            ),
             Field(
               (f) => f
                 ..name = '_futureCallManager'

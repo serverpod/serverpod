@@ -15,6 +15,7 @@ import '../endpoints/channels.dart' as _i2;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
 import 'package:serverpod_chat_server/serverpod_chat_server.dart' as _i4;
 import 'package:chat_server/src/generated/future_calls.dart' as _i5;
+export 'future_calls.dart' show ServerpodFutureCallsGetter;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -49,6 +50,6 @@ class Endpoints extends _i1.EndpointDispatch {
 
   @override
   _i1.FutureCallInitializer? get futureCallInitializer {
-    return _i5.futureCalls;
+    return _i5.FutureCalls();
   }
 }

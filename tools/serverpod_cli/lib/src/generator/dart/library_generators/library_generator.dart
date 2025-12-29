@@ -593,6 +593,15 @@ class LibraryGenerator {
   Library generateServerEndpointDispatch() {
     var library = LibraryBuilder();
 
+    if (protocolDefinition.futureCalls.isNotEmpty) {
+      library.directives.add(
+        Directive.export(
+          'future_calls.dart',
+          show: const ['ServerpodFutureCallsGetter'],
+        ),
+      );
+    }
+
     // Endpoint class
     library.body.add(
       Class(
@@ -650,9 +659,9 @@ class LibraryGenerator {
                   )
                   ..body = Block.of([
                     refer(
-                      'futureCalls',
+                      'FutureCalls',
                       'package:${config.serverPackage}/src/generated/future_calls.dart',
-                    ).returned.statement,
+                    ).call([]).returned.statement,
                   ]),
               ),
           ]),
