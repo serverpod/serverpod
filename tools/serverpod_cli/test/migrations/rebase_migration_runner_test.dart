@@ -51,11 +51,6 @@ features:
     );
     await migrationsDir.create(recursive: true);
 
-    // Create migration registry file
-    // await File(
-    //   path.join(migrationsDir.path, 'migration_registry.txt'),
-    // ).writeAsString(migrations.map((m) => '$m\n').join());
-
     generator = MigrationGenerator(
       directory: serverDir,
       projectName: projectName,
