@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -42,6 +43,12 @@ class LocalCloudStorage extends CloudStorage {
   /// public scheme will be used.
   final String? publicScheme;
 
+  /// Timer for periodic cleanup of expired files.
+  Timer? _cleanupTimer;
+
+  /// Whether the cleanup scheduler is currently running.
+  bool get isCleanupSchedulerRunning => _cleanupTimer != null;
+
   /// Creates a new [LocalCloudStorage].
   ///
   /// [serverpod] is the Serverpod instance.
@@ -68,9 +75,31 @@ class LocalCloudStorage extends CloudStorage {
   }
 
   /// Gets the full file path for a given storage path.
+  ///
+  /// Sanitizes the path to prevent directory traversal attacks by:
+  /// 1. Normalizing the path (resolving . and ..)
+  /// 2. Removing any leading slashes to prevent absolute paths
+  /// 3. Removing any remaining .. segments
+  /// 4. Ensuring the final path is within the storage directory
   String _getFullPath(String path) {
-    // Sanitize the path to prevent directory traversal attacks
-    final sanitized = p.normalize(path).replaceAll('..', '');
+    // First normalize the path to handle . and ..
+    var sanitized = p.normalize(path);
+
+    // Remove any leading slashes to treat all paths as relative
+    while (sanitized.startsWith('/') || sanitized.startsWith('\\')) {
+      sanitized = sanitized.substring(1);
+    }
+
+    // Remove any .. segments that might remain after normalization
+    final segments = sanitized.split(RegExp(r'[/\\]'));
+    final cleanSegments = segments.where((s) => s != '..' && s.isNotEmpty);
+    sanitized = cleanSegments.join(p.separator);
+
+    // If empty after cleaning, use a default
+    if (sanitized.isEmpty) {
+      sanitized = 'file';
+    }
+
     return p.join(storagePath, sanitized);
   }
 
@@ -300,6 +329,234 @@ class LocalCloudStorage extends CloudStorage {
       return true;
     } catch (e) {
       return true;
+    }
+  }
+
+  // ============================================================
+  // Expiration Cleanup Scheduler
+  // ============================================================
+
+  /// Starts a periodic cleanup task that removes expired files.
+  ///
+  /// [interval] specifies how often to run the cleanup. Defaults to 1 hour.
+  ///
+  /// Example:
+  /// ```dart
+  /// final storage = LocalCloudStorage(...);
+  /// storage.startCleanupScheduler(Duration(minutes: 30));
+  /// ```
+  void startCleanupScheduler([
+    Duration interval = const Duration(hours: 1),
+  ]) {
+    stopCleanupScheduler();
+    _cleanupTimer = Timer.periodic(interval, (_) => cleanupExpiredFiles());
+  }
+
+  /// Stops the cleanup scheduler if it is running.
+  void stopCleanupScheduler() {
+    _cleanupTimer?.cancel();
+    _cleanupTimer = null;
+  }
+
+  /// Manually triggers cleanup of expired files.
+  ///
+  /// Returns the number of files that were deleted.
+  ///
+  /// This method walks through the storage directory, checks each `.meta` file
+  /// for expiration timestamps, and deletes files that have expired.
+  Future<int> cleanupExpiredFiles() async {
+    var deletedCount = 0;
+    final now = DateTime.now();
+
+    try {
+      final dir = Directory(storagePath);
+      if (!dir.existsSync()) return 0;
+
+      await for (final entity in dir.list(recursive: true)) {
+        if (entity is! File) continue;
+        if (!entity.path.endsWith('.meta')) continue;
+
+        try {
+          final expiration = await _getExpirationFromMetadata(entity);
+          if (expiration != null && expiration.isBefore(now)) {
+            // Delete the data file
+            final dataFilePath =
+                entity.path.substring(0, entity.path.length - 5);
+            final dataFile = File(dataFilePath);
+            if (dataFile.existsSync()) {
+              await dataFile.delete();
+            }
+
+            // Delete the metadata file
+            await entity.delete();
+            deletedCount++;
+          }
+        } catch (e) {
+          // Skip files that can't be processed
+          continue;
+        }
+      }
+    } catch (e) {
+      // Log error if needed, but don't throw
+    }
+
+    return deletedCount;
+  }
+
+  /// Reads the expiration timestamp from a metadata file.
+  Future<DateTime?> _getExpirationFromMetadata(File metadataFile) async {
+    try {
+      final content = await metadataFile.readAsString();
+      final lines = content.split('\n');
+      for (final line in lines) {
+        final parts = line.split('=');
+        if (parts.length == 2 && parts[0] == 'expiration') {
+          return DateTime.parse(parts[1]);
+        }
+      }
+    } catch (e) {
+      // Ignore parsing errors
+    }
+    return null;
+  }
+
+  // ============================================================
+  // Streaming Support for Large Files
+  // ============================================================
+
+  /// Stores a file from a stream, which is more memory-efficient for large files.
+  ///
+  /// Instead of loading the entire file into memory, this method streams the
+  /// data directly to disk.
+  ///
+  /// [stream] is the source data stream.
+  /// [expectedLength] is optional and can be used for progress tracking.
+  /// [expiration] sets an optional expiration time for the file.
+  /// [verified] marks whether the file upload is complete (default: true).
+  ///
+  /// Example:
+  /// ```dart
+  /// final fileStream = File('large_video.mp4').openRead();
+  /// await storage.storeFileStream(
+  ///   session: session,
+  ///   path: 'videos/upload.mp4',
+  ///   stream: fileStream,
+  /// );
+  /// ```
+  Future<void> storeFileStream({
+    required Session session,
+    required String path,
+    required Stream<List<int>> stream,
+    int? expectedLength,
+    DateTime? expiration,
+    bool verified = true,
+  }) async {
+    try {
+      final fullPath = _getFullPath(path);
+      final file = File(fullPath);
+
+      // Ensure parent directories exist
+      final parentDir = file.parent;
+      if (!parentDir.existsSync()) {
+        await parentDir.create(recursive: true);
+      }
+
+      // Stream directly to file
+      final sink = file.openWrite();
+      try {
+        await for (final chunk in stream) {
+          sink.add(chunk);
+        }
+      } finally {
+        await sink.close();
+      }
+
+      // Store metadata if expiration is set or file is unverified
+      if (expiration != null || !verified) {
+        await _storeMetadata(
+          session: session,
+          path: path,
+          expiration: expiration,
+          verified: verified,
+        );
+      }
+    } catch (e) {
+      throw CloudStorageException('Failed to store file stream: $e');
+    }
+  }
+
+  /// Retrieves a file as a stream, which is more memory-efficient for large files.
+  ///
+  /// Returns `null` if the file does not exist or is not verified.
+  ///
+  /// [chunkSize] controls the size of each chunk read from disk.
+  /// Defaults to 64KB which is a good balance for most use cases.
+  ///
+  /// Example:
+  /// ```dart
+  /// final stream = await storage.retrieveFileStream(
+  ///   session: session,
+  ///   path: 'videos/large_video.mp4',
+  /// );
+  /// if (stream != null) {
+  ///   await for (final chunk in stream) {
+  ///     // Process chunk
+  ///   }
+  /// }
+  /// ```
+  Future<Stream<List<int>>?> retrieveFileStream({
+    required Session session,
+    required String path,
+    int chunkSize = 64 * 1024,
+  }) async {
+    try {
+      final fullPath = _getFullPath(path);
+      final file = File(fullPath);
+
+      if (!file.existsSync()) {
+        return null;
+      }
+
+      // Check if file is verified
+      final isVerified = await _isFileVerified(session: session, path: path);
+      if (!isVerified) {
+        return null;
+      }
+
+      // Return a stream that reads the file in chunks
+      return file.openRead();
+    } catch (e) {
+      throw CloudStorageException('Failed to retrieve file stream: $e');
+    }
+  }
+
+  /// Gets the size of a file in bytes without loading it into memory.
+  ///
+  /// Returns `null` if the file does not exist or is not verified.
+  ///
+  /// This is useful for setting Content-Length headers or progress tracking
+  /// when streaming files.
+  Future<int?> getFileSize({
+    required Session session,
+    required String path,
+  }) async {
+    try {
+      final fullPath = _getFullPath(path);
+      final file = File(fullPath);
+
+      if (!file.existsSync()) {
+        return null;
+      }
+
+      // Check if file is verified
+      final isVerified = await _isFileVerified(session: session, path: path);
+      if (!isVerified) {
+        return null;
+      }
+
+      return await file.length();
+    } catch (e) {
+      throw CloudStorageException('Failed to get file size: $e');
     }
   }
 }

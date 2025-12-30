@@ -9,6 +9,8 @@ A local filesystem storage adapter for Serverpod that allows you to store files 
 - Store files on the local filesystem
 - No external dependencies or cloud provider accounts required
 - Support for public and private storage
+- Streaming support for large files (memory-efficient)
+- Automatic expiration cleanup scheduler
 - Ideal for development, testing, and self-hosted deployments
 
 ## Installation
@@ -88,6 +90,59 @@ Future<void> uploadFile(Session session, String fileName, ByteData data) async {
 ```
 
 If you need direct upload support (where clients POST files directly to a URL), use the built-in `DatabaseCloudStorage` instead.
+
+## Streaming Support for Large Files
+
+For memory-efficient handling of large files, use the streaming methods instead of loading entire files into memory:
+
+```dart
+// Store a file from a stream
+final fileStream = File('large_video.mp4').openRead();
+await storage.storeFileStream(
+  session: session,
+  path: 'videos/upload.mp4',
+  stream: fileStream,
+);
+
+// Retrieve a file as a stream
+final stream = await storage.retrieveFileStream(
+  session: session,
+  path: 'videos/large_video.mp4',
+);
+if (stream != null) {
+  await for (final chunk in stream) {
+    // Process chunk without loading entire file into memory
+  }
+}
+
+// Get file size without loading the file
+final size = await storage.getFileSize(
+  session: session,
+  path: 'videos/large_video.mp4',
+);
+```
+
+## Expiration Cleanup
+
+Files can be stored with an expiration time. To automatically clean up expired files, use the cleanup scheduler:
+
+```dart
+final storage = LocalCloudStorage(
+  serverpod: pod,
+  storageId: 'public',
+  storagePath: '/var/serverpod/uploads/public',
+  public: true,
+);
+
+// Start automatic cleanup every 30 minutes
+storage.startCleanupScheduler(Duration(minutes: 30));
+
+// Or manually trigger cleanup
+final deletedCount = await storage.cleanupExpiredFiles();
+
+// Stop the scheduler when shutting down
+storage.stopCleanupScheduler();
+```
 
 ## Security Considerations
 
