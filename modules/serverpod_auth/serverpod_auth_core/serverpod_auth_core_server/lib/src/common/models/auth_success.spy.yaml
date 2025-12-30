@@ -1,3 +1,5 @@
+### Response model representing a successful authentication result with all
+### relevant authentication information.
 class: AuthSuccess
 fields:
   ### The authentication strategy used for this session.

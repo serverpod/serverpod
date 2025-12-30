@@ -1,3 +1,4 @@
+### DTO for transferring JWT token information between server and client.
 class: JwtTokenInfo
 fields:
   id: UuidValue
