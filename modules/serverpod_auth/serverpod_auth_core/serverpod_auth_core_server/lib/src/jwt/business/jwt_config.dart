@@ -2,6 +2,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 import 'package:serverpod/serverpod.dart';
 
 import '../../common/integrations/token_manager_builder.dart';
+import '../../common/utils/get_passwords_extension.dart';
 import '../jwt.dart';
 
 /// Context provided to the [JwtConfig.extraClaimsProvider].
@@ -197,12 +198,12 @@ class JwtConfigFromPasswords extends JwtConfig {
     super.extraClaimsProvider,
     super.fallbackVerificationAlgorithms,
   }) : super(
-         refreshTokenHashPepper: Serverpod.instance.getPassword(
+         refreshTokenHashPepper: Serverpod.instance.getPasswordOrThrow(
            'jwtRefreshTokenHashPepper',
-         )!,
+         ),
          algorithm: JwtAlgorithm.hmacSha512(
            SecretKey(
-             Serverpod.instance.getPassword('jwtHmacSha512PrivateKey')!,
+             Serverpod.instance.getPasswordOrThrow('jwtHmacSha512PrivateKey'),
            ),
          ),
        );
