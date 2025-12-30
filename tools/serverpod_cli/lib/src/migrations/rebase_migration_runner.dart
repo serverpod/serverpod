@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/commands/create_migration.dart';
 import 'package:serverpod_cli/src/migrations/migration_registry.dart';
+import 'package:serverpod_cli/src/migrations/migration_registry_file.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -14,11 +17,21 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 /// {@endtemplate}
 class RebaseMigrationRunner {
   /// {@macro rebase_migration_impl}
-  const RebaseMigrationRunner({
+  RebaseMigrationRunner({
     this.onto,
     this.check = false,
-    this.force = false,
-  });
+    bool force = false,
+    String tag = '',
+    CreateMigrationRunner? createMigrationRunner,
+  }) : createMigrationRunner =
+           createMigrationRunner ??
+           CreateMigrationRunner(
+             force: force,
+             tag: tag,
+           );
+
+  /// Create migration runner
+  final CreateMigrationRunner createMigrationRunner;
 
   /// onto
   final String? onto;
@@ -26,28 +39,88 @@ class RebaseMigrationRunner {
   /// check
   final bool check;
 
-  /// force
-  final bool force;
-
   /// Default branch
   static const defaultBranch = 'main';
 
   /// Execute the runner
   Future<bool> run(GeneratorConfig config) async {
-    final migrationRegistry = await _getMigrationRegistry(config);
+    final migrationGenerator = await _getMigrationGenerator(config);
+    final migrationRegistry = migrationGenerator.migrationRegistry;
     final baseMigrationId = getBaseMigrationId(migrationRegistry);
     ensureBaseMigration(migrationRegistry, baseMigrationId);
 
     return check
         ? checkMigration(migrationRegistry, baseMigrationId)
-        : rebaseMigration(migrationRegistry, baseMigrationId);
+        : rebaseMigration(
+            generator: migrationGenerator,
+            baseMigrationId: baseMigrationId,
+            config: config,
+          );
   }
 
   /// Rebase the migration
-  Future<bool> rebaseMigration(
-    MigrationRegistry migrationRegistry,
-    String baseMigrationId,
-  ) async {
+  Future<bool> rebaseMigration({
+    required MigrationGenerator generator,
+    required String baseMigrationId,
+    required GeneratorConfig config,
+  }) async {
+    // Get all migrations before and since base migration
+    var registryFile = generator.migrationRegistry.migrationRegistryFile;
+
+    // Split the history into two lists around the base migration
+    final List<List<String>> versions;
+    // If there is a merge conflict, extract the migrations
+    if (registryFile.hasMergeConflict) {
+      // Up to base migration will be the common and incoming migrations
+      // Local migrations will be the migrations after the base migration
+      final (:common, :local, :incoming) = registryFile.extractMigrations();
+      versions = [
+        [...common, ...incoming],
+        local,
+      ];
+    }
+    // Split at base migration, since the history should be linear
+    else {
+      versions = registryFile.migrations
+          .splitBetween((m1, m2) => m1 == baseMigrationId)
+          .toList();
+    }
+
+    // If there are no migrations since base migration, exit with error
+    if (versions.length < 2) {
+      log.error('No migrations since base migration: $baseMigrationId');
+      throw ExitException(ExitException.codeError);
+    }
+    final [toBase, since] = versions;
+
+    // Backup migrations
+    final backupDirectory = backupMigrations(
+      generator,
+      baseMigrationId,
+      since,
+    );
+
+    // Update the migration registry file
+    await generator.migrationRegistry.migrationRegistryFile.update(toBase);
+
+    // Create new migration
+    final newMigration = await createMigrationRunner.createMigration(
+      generator: generator,
+      config: config,
+    );
+
+    // Change the backup folder name to include the new migration name
+    backupDirectory.renameSync(
+      path.join(
+        backupDirectory.parent.path,
+        '.deleted_by_rebase_migration_onto_${baseMigrationId}_with_$newMigration',
+      ),
+    );
+
+    log
+      ..debug('Previous migrations backed up to: ${backupDirectory.path}')
+      ..debug('Rebased unto: $onto with migration: $newMigration')
+      ..info('✅ Rebase complete');
     return true;
   }
 
@@ -65,29 +138,41 @@ class RebaseMigrationRunner {
       migrationGenerator,
       baseMigrationId,
     );
+    final source =
+        migrationGenerator.migrationRegistry.moduleMigrationDirectory;
 
     // Move all migration folders since base migration to backup directory
-    for (final migration in sinceBaseMigration) {
-      final migrationDir = Directory(
-        path.join(
-          migrationGenerator.migrationRegistry.moduleMigrationDirectory.path,
-          migration,
-        ),
-      );
-      final backupMigrationDir = Directory(
-        path.join(backupDirectory.path, migration),
+    moveMigrations(
+      migrations: sinceBaseMigration,
+      source: source,
+      destination: backupDirectory,
+    );
+
+    return backupDirectory;
+  }
+
+  /// Move the migrations [migrations] from [source] to [destination]
+  void moveMigrations({
+    required List<String> migrations,
+    required Directory source,
+    required Directory destination,
+  }) {
+    for (final migration in migrations) {
+      final migrationDir = Directory(path.join(source.path, migration));
+      final destinationMigrationDir = Directory(
+        path.join(destination.path, migration),
       );
       // Ensure back up directory is empty
-      if (backupMigrationDir.existsSync() &&
-          backupMigrationDir.listSync().isNotEmpty) {
-        log.error('Backup directory is not empty: ${backupMigrationDir.path}');
+      if (destinationMigrationDir.existsSync() &&
+          destinationMigrationDir.listSync().isNotEmpty) {
+        log.error(
+          'Backup directory is not empty: ${destinationMigrationDir.path}',
+        );
         throw ExitException(ExitException.codeError);
       }
 
-      migrationDir.renameSync(path.join(backupDirectory.path, migration));
+      migrationDir.renameSync(path.join(destination.path, migration));
     }
-
-    return backupDirectory;
   }
 
   /// Check the migrations to ensure there is only one migration after the base migration
@@ -182,7 +267,7 @@ class RebaseMigrationRunner {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
-    return getIncomingMigration(registryFile);
+    return getLastIncomingMigration(migrationRegistry.migrationRegistryFile);
   }
 
   /// Validate the [migration] using the [migrationRegistry]
@@ -199,7 +284,7 @@ class RebaseMigrationRunner {
   }
 
   /// Get the migration registry for the project
-  Future<MigrationRegistry> _getMigrationRegistry(
+  Future<MigrationGenerator> _getMigrationGenerator(
     GeneratorConfig config,
   ) async {
     // Get server directory
@@ -213,25 +298,17 @@ class RebaseMigrationRunner {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
-    final generator = MigrationGenerator(
+    return MigrationGenerator(
       directory: serverDirectory,
       projectName: projectName,
     );
-
-    return generator.migrationRegistry;
   }
 
-  /// Check if the migration [file] has conflicts
-  bool hasConflicts(File file) {
-    const conflictMarker = '<<<<<<<';
-    final content = file.readAsStringSync();
-    return content.contains(conflictMarker);
-  }
-
-  /// Retrieve the incoming migration in a [registryFile]
-  String getIncomingMigration(File registryFile) {
-    // Check if the registry file has conflicts
-    if (!hasConflicts(registryFile)) {
+  /// Retrieve the last incoming migration in a [registryFile].
+  ///
+  /// Throws [ExitException] if the [registryFile] has no conflicts.
+  String getLastIncomingMigration(MigrationRegistryFile registryFile) {
+    if (!registryFile.hasMergeConflict) {
       log.error(
         'Migration registry file has no conflicts. '
         'Please ensure --onto is provided if you want to rebase onto a specific migration.',
@@ -240,9 +317,18 @@ class RebaseMigrationRunner {
     }
 
     // Get the incoming migration in the conflict marker
-    final content = registryFile.readAsStringSync();
-    final incomingMigration = content.split('=======').last;
-    return incomingMigration.split('>>>>>>>').first.trim();
+    final migrations = registryFile.extractMigrations();
+    final lastIncoming = migrations.incoming.lastOrNull;
+
+    if (lastIncoming == null) {
+      log.error(
+        'Migration registry file has no incoming migrations in the conflict. '
+        'Please ensure --onto is provided if you want to rebase onto a specific migration.',
+      );
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+    }
+
+    return lastIncoming;
   }
 
   /// Create backup directory
