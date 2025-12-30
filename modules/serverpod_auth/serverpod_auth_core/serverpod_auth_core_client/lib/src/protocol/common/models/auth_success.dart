@@ -13,6 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_core_client/src/protocol/protocol.dart' as _i2;
 
+/// Response model representing a successful authentication result with all
+/// relevant authentication information.
 abstract class AuthSuccess implements _i1.SerializableModel {
   AuthSuccess._({
     required this.authStrategy,

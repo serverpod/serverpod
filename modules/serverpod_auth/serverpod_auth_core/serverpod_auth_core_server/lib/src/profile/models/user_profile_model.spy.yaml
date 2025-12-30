@@ -1,3 +1,4 @@
+### DTO for transferring user profile information.
 class: UserProfileModel
 fields:
   ### The [AuthUser]'s ID this profile belongs to.

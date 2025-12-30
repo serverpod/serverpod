@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_core_client/src/protocol/protocol.dart' as _i2;
 
+/// DTO for transferring JWT token information between server and client.
 abstract class JwtTokenInfo implements _i1.SerializableModel {
   JwtTokenInfo._({
     required this.id,

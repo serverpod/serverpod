@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_core_client/src/protocol/protocol.dart' as _i2;
 
+/// DTO for transferring authentication user information.
 abstract class AuthUserModel implements _i1.SerializableModel {
   AuthUserModel._({
     required this.id,
