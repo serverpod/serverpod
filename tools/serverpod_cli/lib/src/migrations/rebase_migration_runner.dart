@@ -119,7 +119,7 @@ class RebaseMigrationRunner {
 
     log
       ..debug('Previous migrations backed up to: ${backupDirectory.path}')
-      ..debug('Rebased unto: $onto with migration: $newMigration')
+      ..debug('Rebased unto: $baseMigrationId with migration: $newMigration')
       ..info('✅ Rebase complete');
     return true;
   }
@@ -162,11 +162,10 @@ class RebaseMigrationRunner {
       final destinationMigrationDir = Directory(
         path.join(destination.path, migration),
       );
-      // Ensure back up directory is empty
-      if (destinationMigrationDir.existsSync() &&
-          destinationMigrationDir.listSync().isNotEmpty) {
+      // Ensure backup directory does not exist
+      if (destinationMigrationDir.existsSync()) {
         log.error(
-          'Backup directory is not empty: ${destinationMigrationDir.path}',
+          'Backup directory already exists: ${destinationMigrationDir.path}',
         );
         throw ExitException(ExitException.codeError);
       }
