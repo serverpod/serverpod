@@ -651,10 +651,10 @@ class LibraryGenerator {
               Method(
                 (m) => m
                   ..annotations.add(refer('override'))
-                  ..name = 'futureCallInitializer'
+                  ..name = 'futureCalls'
                   ..type = MethodType.getter
                   ..returns = refer(
-                    'FutureCallInitializer?',
+                    'FutureCallDispatch?',
                     serverpodUrl(true),
                   )
                   ..body = Block.of([
@@ -2210,6 +2210,6 @@ extension on SerializableModelDefinition {
   /// from generated protocol code. This ensures that only
   /// user defined models are exported.
   bool get shouldExport {
-    return !RegExp(r'^future_calls_models\/.*').hasMatch(fileName);
+    return !RegExp(r'^future_calls_generated_models\/.*').hasMatch(fileName);
   }
 }

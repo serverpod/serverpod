@@ -98,7 +98,10 @@ class FutureCallParameterDefinition {
 
   SerializableModelDefinition toSerializableModel() {
     return ModelClassDefinition(
-      fileName: p.join('future_calls_models', type.className.snakeCase),
+      fileName: p.join(
+        'future_calls_generated_models',
+        type.className.snakeCase,
+      ),
       sourceFileName: '',
       className: type.className,
       fields: [

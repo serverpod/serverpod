@@ -222,7 +222,7 @@ class Serverpod {
 
     _requestReceivingShutdownTasks.addTask(
       'Future Call Manager',
-      () async => _futureCallManager?.stop(),
+      () async => _futureCallManager?.stop(unregisterAll: true),
     );
 
     _internalServicesShutdownTasks.addTask(
@@ -763,7 +763,7 @@ class Serverpod {
 
     if (_futureCallManager != null) {
       logVerbose('Initializing future calls.');
-      endpoints.futureCallInitializer?.initialize(
+      endpoints.futureCalls?.initialize(
         _futureCallManager!,
         serverId,
       );

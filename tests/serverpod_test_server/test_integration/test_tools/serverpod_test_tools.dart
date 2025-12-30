@@ -55,10 +55,10 @@ import 'package:serverpod_test_server/src/generated/session_auth_info.dart'
     as _i28;
 import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
     as _i29;
-import 'package:serverpod_test_server/src/generated/future_calls_models/test_generated_call_hello_model.dart'
+import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_hello_model.dart'
     as _i30;
 import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i31;
-import 'package:serverpod_test_server/src/generated/future_calls_models/test_generated_call_bye_model.dart'
+import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_bye_model.dart'
     as _i32;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';

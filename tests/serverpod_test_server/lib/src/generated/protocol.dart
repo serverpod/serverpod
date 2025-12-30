@@ -90,8 +90,10 @@ import 'explicit_column_name/relations/one_to_many/employee.dart' as _i75;
 import 'explicit_column_name/relations/one_to_one/contractor.dart' as _i76;
 import 'explicit_column_name/relations/one_to_one/service.dart' as _i77;
 import 'explicit_column_name/table_with_explicit_column_names.dart' as _i78;
-import 'future_calls_models/test_generated_call_bye_model.dart' as _i79;
-import 'future_calls_models/test_generated_call_hello_model.dart' as _i80;
+import 'future_calls_generated_models/test_generated_call_bye_model.dart'
+    as _i79;
+import 'future_calls_generated_models/test_generated_call_hello_model.dart'
+    as _i80;
 import 'immutable/immutable_child_object.dart' as _i81;
 import 'immutable/immutable_child_object_with_no_additional_fields.dart'
     as _i82;

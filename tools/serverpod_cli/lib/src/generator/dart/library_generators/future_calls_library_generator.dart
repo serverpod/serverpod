@@ -31,7 +31,10 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
       Class(
         (c) => c
           ..name = 'FutureCalls'
-          ..extend = refer('FutureCallInitializer', serverpodUrl(true))
+          ..extend = refer(
+            'FutureCallDispatch<_FutureCallRef>',
+            serverpodUrl(true),
+          )
           ..constructors.addAll([
             Constructor(
               (c) => c..name = '_',
@@ -115,6 +118,7 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
             Method((m) {
               m
                 ..name = 'callAtTime'
+                ..annotations.add(refer('override'))
                 ..returns = refer('_FutureCallRef')
                 ..requiredParameters.add(
                   Parameter(
@@ -149,6 +153,7 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
             Method((m) {
               m
                 ..name = 'callWithDelay'
+                ..annotations.add(refer('override'))
                 ..returns = refer('_FutureCallRef')
                 ..requiredParameters.add(
                   Parameter(
@@ -177,6 +182,24 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
                         );
                       },
                     );
+                  ''');
+            }),
+
+            Method((m) {
+              m
+                ..name = 'cancel'
+                ..annotations.add(refer('override'))
+                ..returns = refer('Future<void>')
+                ..modifier = MethodModifier.async
+                ..requiredParameters.add(
+                  Parameter(
+                    (p) => p
+                      ..name = 'identifier'
+                      ..type = refer('String'),
+                  ),
+                )
+                ..body = const Code('''
+                     await _effectiveFutureCallManager.cancelFutureCall(identifier);
                   ''');
             }),
           ]),

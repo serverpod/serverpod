@@ -22,7 +22,7 @@ void main() {
     'lib',
     'src',
     'generated',
-    'future_calls_models',
+    'future_calls_generated_models',
     '$modelName.dart',
   );
   var expectedFutureCallsFileName = path.join(

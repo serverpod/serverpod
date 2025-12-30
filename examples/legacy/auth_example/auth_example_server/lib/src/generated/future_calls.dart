@@ -23,7 +23,7 @@ extension ServerpodFutureCallsGetter on _i1.Serverpod {
   FutureCalls get futureCalls => FutureCalls();
 }
 
-class FutureCalls extends _i1.FutureCallInitializer {
+class FutureCalls extends _i1.FutureCallDispatch<_FutureCallRef> {
   FutureCalls._();
 
   factory FutureCalls() {
@@ -65,6 +65,7 @@ class FutureCalls extends _i1.FutureCallInitializer {
     }
   }
 
+  @override
   _FutureCallRef callAtTime(
     DateTime time, {
     String? identifier,
@@ -82,6 +83,7 @@ class FutureCalls extends _i1.FutureCallInitializer {
     );
   }
 
+  @override
   _FutureCallRef callWithDelay(
     Duration delay, {
     String? identifier,
@@ -97,6 +99,11 @@ class FutureCalls extends _i1.FutureCallInitializer {
         );
       },
     );
+  }
+
+  @override
+  Future<void> cancel(String identifier) async {
+    await _effectiveFutureCallManager.cancelFutureCall(identifier);
   }
 }
 

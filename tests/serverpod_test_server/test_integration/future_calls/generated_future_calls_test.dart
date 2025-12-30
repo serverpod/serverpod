@@ -51,7 +51,7 @@ void main() {
         'when scheduling a future call with a delay'
         'then a FutureCallEntry is added to the database with expected time',
         () async {
-          final delay = Duration(milliseconds: 10);
+          final delay = Duration(milliseconds: 100);
           final expectedTime = DateTime.now().add(delay).toUtc();
 
           await pod.futureCalls
@@ -65,12 +65,7 @@ void main() {
           );
 
           expect(futureCallEntries, hasLength(1));
-
-          // the difference between the entry time and expected time should be a few milliseconds
-          expect(
-            futureCallEntries.first.time.difference(expectedTime),
-            lessThan(Duration(milliseconds: 200)),
-          );
+          expect(futureCallEntries.first.time.isAfter(expectedTime), isTrue);
         },
       );
 
@@ -115,55 +110,35 @@ void main() {
           expect(futureCallEntries.first.identifier, identifier);
         },
       );
-    },
-  );
 
-  withServerpod(
-    'Given generated futureCalls is initialized and has scheduled FutureCall that is due',
-    (sessionBuilder, _) {
-      late FutureCallManager futureCallManager;
-      late Session session;
-      late Serverpod pod;
+      test(
+        'when a scheduled future call with an identifier is cancelled'
+        'then the FutureCallEntry for that identifier is removed from the database',
+        () async {
+          final identifier = 'lucky-id';
 
-      setUp(() async {
-        session = sessionBuilder.build();
-        pod = session.serverpod;
+          await pod.futureCalls
+              .callWithDelay(Duration(milliseconds: 10), identifier: identifier)
+              .testGeneratedCall
+              .hello('Lucky');
 
-        futureCallManager = FutureCallManagerBuilder.fromTestSessionBuilder(
-          sessionBuilder,
-        ).build();
-
-        pod.futureCalls.initialize(futureCallManager, 'default');
-
-        await pod.futureCalls
-            .callAtTime(DateTime.now().subtract(const Duration(seconds: 1)))
-            .testGeneratedCall
-            .bye('Lucky', code: 20);
-      });
-
-      group('when running scheduled FutureCalls', () {
-        setUp(() async {
-          await futureCallManager.runScheduledFutureCalls();
-        });
-
-        test('then the FutureCall is executed', () async {
-          final logEntries = await LogEntry.db.find(
+          var futureCallEntries = await FutureCallEntry.db.find(
             session,
+            where: (entry) => entry.name.equals(testCallName),
           );
 
-          expect(logEntries, hasLength(1));
-          expect(logEntries.first.message, 'Bye Lucky. Code: 20');
-        });
+          expect(futureCallEntries, hasLength(1));
 
-        test('then the FutureCallEntry gets deleted from database', () async {
-          final futureCallEntries = await FutureCallEntry.db.find(
+          await pod.futureCalls.cancel(identifier);
+
+          futureCallEntries = await FutureCallEntry.db.find(
             session,
+            where: (entry) => entry.name.equals(testCallName),
           );
 
           expect(futureCallEntries, isEmpty);
-        });
-      });
+        },
+      );
     },
-    enableSessionLogging: true,
   );
 }

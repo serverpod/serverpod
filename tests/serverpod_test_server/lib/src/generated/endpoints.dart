@@ -9367,7 +9367,7 @@ class Endpoints extends _i1.EndpointDispatch {
   }
 
   @override
-  _i1.FutureCallInitializer? get futureCallInitializer {
+  _i1.FutureCallDispatch? get futureCalls {
     return _i70.FutureCalls();
   }
 }

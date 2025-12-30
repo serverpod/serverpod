@@ -185,11 +185,11 @@ class FutureCallManager {
 
   /// Stops the [FutureCallManager], preventing it from monitoring and
   /// executing overdue future calls.
-  Future<void> stop() async {
+  Future<void> stop({bool unregisterAll = false}) async {
     _hasPendingStart = false;
     await _scanner.stop();
     await _scheduler.drain();
-    _futureCalls.clear();
+    if (unregisterAll) _futureCalls.clear();
   }
 
   /// Internal method to dispatch a list of [FutureCallEntry] objects to

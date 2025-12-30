@@ -11,8 +11,10 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'future_calls_models/test_generated_call_hello_model.dart' as _i2;
-import 'future_calls_models/test_generated_call_bye_model.dart' as _i3;
+import 'future_calls_generated_models/test_generated_call_hello_model.dart'
+    as _i2;
+import 'future_calls_generated_models/test_generated_call_bye_model.dart'
+    as _i3;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i4;
 import 'dart:async' as _i5;
 import '../futureCalls/test_generated_call.dart' as _i6;
@@ -26,7 +28,7 @@ extension ServerpodFutureCallsGetter on _i1.Serverpod {
   FutureCalls get futureCalls => FutureCalls();
 }
 
-class FutureCalls extends _i1.FutureCallInitializer {
+class FutureCalls extends _i1.FutureCallDispatch<_FutureCallRef> {
   FutureCalls._();
 
   factory FutureCalls() {
@@ -71,6 +73,7 @@ class FutureCalls extends _i1.FutureCallInitializer {
     }
   }
 
+  @override
   _FutureCallRef callAtTime(
     DateTime time, {
     String? identifier,
@@ -88,6 +91,7 @@ class FutureCalls extends _i1.FutureCallInitializer {
     );
   }
 
+  @override
   _FutureCallRef callWithDelay(
     Duration delay, {
     String? identifier,
@@ -103,6 +107,11 @@ class FutureCalls extends _i1.FutureCallInitializer {
         );
       },
     );
+  }
+
+  @override
+  Future<void> cancel(String identifier) async {
+    await _effectiveFutureCallManager.cancelFutureCall(identifier);
   }
 }
 
