@@ -25,7 +25,7 @@ class MigrationRegistryFile {
   final File file;
 
   /// The start marker for conflicts.
-  static RegExp startMarker = RegExp(r'^<<<<<<<.*$', multiLine: true);
+  static final RegExp startMarker = RegExp(r'^<<<<<<<.*$', multiLine: true);
 
   /// The middle marker for conflicts.
   static const String middleMarker = '=======';
