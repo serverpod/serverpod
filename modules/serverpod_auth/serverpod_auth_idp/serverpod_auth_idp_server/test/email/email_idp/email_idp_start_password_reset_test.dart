@@ -205,6 +205,82 @@ void main() {
   );
 
   withServerpod(
+    'Given pending password reset request that was not verified',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const password = 'Password123!';
+      late UuidValue passwordResetRequestId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture();
+
+        final authUser = await fixture.authUsers.create(session);
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+          password: EmailAccountPassword.fromString(password),
+        );
+
+        passwordResetRequestId = await fixture.emailIdp.startPasswordReset(
+          session,
+          email: email,
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      group('when startPasswordReset is called again with the same email', () {
+        late UuidValue newPasswordResetRequestId;
+        setUp(() async {
+          newPasswordResetRequestId = await fixture.emailIdp.startPasswordReset(
+            session,
+            email: email,
+          );
+        });
+
+        test('then it returns a new request id', () async {
+          expect(
+            newPasswordResetRequestId,
+            isNot(equals(passwordResetRequestId)),
+          );
+        });
+
+        test('then it deletes the existing request', () async {
+          final oldRequest = await EmailAccountPasswordResetRequest.db.findById(
+            session,
+            passwordResetRequestId,
+          );
+          expect(oldRequest, isNull);
+        });
+
+        test('then the new request exists on the database', () async {
+          final newRequest = await EmailAccountPasswordResetRequest.db.findById(
+            session,
+            newPasswordResetRequestId,
+            include: EmailAccountPasswordResetRequest.include(
+              emailAccount: EmailAccount.include(),
+            ),
+          );
+          expect(newRequest, isNotNull);
+          expect(newRequest!.challengeId, isNotNull);
+          final emailAccount = newRequest.emailAccount;
+          expect(emailAccount, isNotNull);
+          expect(emailAccount!.email, equals(email));
+          expect(emailAccount.createdAt, isNotNull);
+        });
+      });
+    },
+  );
+
+  withServerpod(
     'Given maximum allowed password reset requests for non-existing email account',
     rollbackDatabase: RollbackDatabase.disabled,
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
