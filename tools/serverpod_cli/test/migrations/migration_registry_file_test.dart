@@ -1,19 +1,30 @@
 import 'dart:io';
-
+import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/migrations/migration_registry_file.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
+
+import '../test_util/mock_log.dart';
 
 void main() {
   group('MigrationRegistryFile', () {
     late String filePath;
+    late MockLogger testLogger;
+
     const m1 = '20251228100000000';
     const m2 = '20251228100000001';
     const m3 = '20251228100000002';
 
     setUp(() {
+      testLogger = MockLogger();
+      initializeLoggerWith(testLogger);
       filePath = path.join(d.sandbox, 'migration_registry.txt');
+    });
+
+    tearDown(() {
+      resetLogger();
     });
 
     test(
@@ -165,6 +176,87 @@ $m2
           expect(result.common, equals([m1]));
           expect(result.local, equals([m2, m3]));
           expect(result.incoming, equals([m3, m2]));
+        },
+      );
+
+      test(
+        'Given a file with malformed start marker when extracting migrations then an ExitException is thrown and error is logged',
+        () {
+          // Both markers are present, but more than 2 parts are created by split (e.g. multiple start markers)
+          File(filePath).writeAsStringSync('''
+<<<<<<< HEAD
+part1
+<<<<<<< HEAD
+part2
+=======
+part3
+>>>>>>> end
+''');
+          final registryFile = MigrationRegistryFile(filePath);
+
+          expect(
+            () => registryFile.extractMigrations(),
+            throwsA(isA<ExitException>()),
+          );
+          expect(
+            testLogger.output.errorMessages,
+            contains(
+              'FormatException: Malformed merge conflict: invalid start marker',
+            ),
+          );
+        },
+      );
+
+      test(
+        'Given a file with malformed middle marker when extracting migrations then an ExitException is thrown and error is logged',
+        () {
+          File(filePath).writeAsStringSync('''
+<<<<<<< HEAD
+part1
+=======
+part2
+=======
+part3
+>>>>>>> end
+''');
+          final registryFile = MigrationRegistryFile(filePath);
+
+          expect(
+            () => registryFile.extractMigrations(),
+            throwsA(isA<ExitException>()),
+          );
+          expect(
+            testLogger.output.errorMessages,
+            contains(
+              'FormatException: Malformed merge conflict: invalid middle marker',
+            ),
+          );
+        },
+      );
+
+      test(
+        'Given a file with malformed end marker when extracting migrations then an ExitException is thrown and error is logged',
+        () {
+          File(filePath).writeAsStringSync('''
+<<<<<<< HEAD
+part1
+=======
+part2
+>>>>>>> end
+>>>>>>> end
+''');
+          final registryFile = MigrationRegistryFile(filePath);
+
+          expect(
+            () => registryFile.extractMigrations(),
+            throwsA(isA<ExitException>()),
+          );
+          expect(
+            testLogger.output.errorMessages,
+            contains(
+              'FormatException: Malformed merge conflict: invalid end marker',
+            ),
+          );
         },
       );
     });
