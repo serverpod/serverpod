@@ -242,10 +242,6 @@ class MigrationGenerator {
   }
 
   void _validateRepairMigrationVersion(String? migrationVersion) {
-    var migrationRegistry = MigrationRegistry.load(
-      MigrationConstants.migrationsBaseDirectory(directory),
-    );
-
     if (migrationVersion == null ||
         !migrationRegistry.versions.contains(migrationVersion)) {
       throw MigrationRepairTargetNotFoundException(
@@ -292,9 +288,6 @@ class MigrationGenerator {
   }
 
   String? _getLatestMigrationVersion() {
-    var migrationRegistry = MigrationRegistry.load(
-      MigrationConstants.migrationsBaseDirectory(directory),
-    );
     return migrationRegistry.getLatest();
   }
 
