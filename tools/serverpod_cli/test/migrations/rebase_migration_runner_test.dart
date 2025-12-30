@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
+import 'package:serverpod_cli/src/migrations/generator.dart';
 import 'package:serverpod_cli/src/migrations/migration_registry.dart';
 import 'package:serverpod_cli/src/migrations/rebase_migration_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -12,42 +15,68 @@ import '../integration/generator_config/database_feature_config_test.dart'
     hide MockLogger, MockLogOutput;
 import '../test_util/mock_log.dart';
 
-Future<Directory> setupMigrations(
-  List<String> migrations, {
-  String projectName = 'my_project',
-}) async {
-  // Create a mock serverpod project
-  final projectDir = createMockServerpodProject(projectName: projectName);
-  await projectDir.create();
-  Directory.current = Directory(
-    path.join(d.sandbox, 'project', '${projectName}_server'),
-  );
-
-  // Create migrations directory
-  final migrationsDir = Directory(
-    path.join(Directory.current.path, 'migrations', projectName),
-  );
-  await migrationsDir.create(recursive: true);
-
-  // Create migrations
-  for (var migration in migrations) {
-    await Directory(path.join(migrationsDir.path, migration)).create();
-  }
-
-  // Create migration registry file
-  await File(
-    path.join(migrationsDir.path, 'migration_registry.txt'),
-  ).writeAsString(migrations.map((m) => '$m\n').join());
-
-  return migrationsDir;
-}
-
 void main() {
+  late MigrationGenerator generator;
+  late GeneratorConfig config;
   late MockLogger testLogger;
   late Directory originalDir;
   const m1 = '20251228100000000';
   const m2 = '20251228100000001';
   const m3 = '20251228100000002';
+
+  Future<Directory> setupMigrations(
+    List<String> migrations, {
+    String projectName = 'my_project',
+  }) async {
+    // Create a mock serverpod project
+    final projectDir = createMockServerpodProject(
+      projectName: projectName,
+      generatorYamlContent: '''
+type: server
+features:
+  database: true
+''',
+    );
+    await projectDir.create();
+    Directory.current = projectDir.io;
+
+    // Create migrations directory
+    final serverDir = Directory(
+      path.join(Directory.current.path, '${projectName}_server'),
+    );
+    final migrationsDir = Directory(
+      path.join(serverDir.path, 'migrations'),
+    );
+    await migrationsDir.create(recursive: true);
+
+    // Create migration registry file
+    // await File(
+    //   path.join(migrationsDir.path, 'migration_registry.txt'),
+    // ).writeAsString(migrations.map((m) => '$m\n').join());
+
+    generator = MigrationGenerator(
+      directory: serverDir,
+      projectName: projectName,
+    );
+    CommandLineExperimentalFeatures.initialize([]);
+    config = await GeneratorConfig.load(
+      serverRootDir: serverDir.path,
+      interactive: false,
+    );
+
+    // Add migration registry
+    for (var migrationName in migrations) {
+      generator.migrationRegistry.add(migrationName);
+    }
+    await generator.migrationRegistry.write();
+
+    // Create migrations
+    for (var migration in migrations) {
+      await Directory(path.join(migrationsDir.path, migration)).create();
+    }
+
+    return migrationsDir;
+  }
 
   setUp(() async {
     testLogger = MockLogger();
@@ -230,28 +259,6 @@ $m3
     });
 
     group('checkMigration', () {
-      test(
-        'Given a base migration that does not exist when checking migration then an ExitException is thrown',
-        () async {
-          const runner = RebaseMigrationRunner();
-          const baseMigration = m3;
-          const migration2 = m2;
-          final migrationRegistry = MigrationRegistry(
-            Directory('fake'),
-            [migration2],
-          );
-
-          expect(
-            () => runner.checkMigration(migrationRegistry, baseMigration),
-            throwsA(isA<ExitException>()),
-          );
-          expect(
-            testLogger.output.errorMessages,
-            contains('Migration $baseMigration does not exist.'),
-          );
-        },
-      );
-
       test(
         'Given exactly one migration after base migration when checking migration then true is returned',
         () async {
@@ -480,6 +487,83 @@ $m2
               ),
             ),
           );
+        },
+      );
+    });
+
+    group('ensureBaseMigration', () {
+      test(
+        'Given a base migration that does not exist when ensuring base migration then an ExitException is thrown',
+        () async {
+          const runner = RebaseMigrationRunner();
+          const baseMigration = m3;
+          const migration2 = m2;
+          final migrationRegistry = MigrationRegistry(
+            Directory('fake'),
+            [migration2],
+          );
+
+          expect(
+            () => runner.ensureBaseMigration(migrationRegistry, baseMigration),
+            throwsA(isA<ExitException>()),
+          );
+          expect(
+            testLogger.output.errorMessages,
+            contains('Base migration $baseMigration does not exist.'),
+          );
+        },
+      );
+
+      test(
+        'Given a base migration that exists when ensuring base migration then returns normally',
+        () async {
+          const runner = RebaseMigrationRunner();
+          const baseMigration = m1;
+          const migration2 = m2;
+          final migrationRegistry = MigrationRegistry(
+            Directory('fake'),
+            [baseMigration, migration2],
+          );
+
+          expect(
+            () => runner.ensureBaseMigration(migrationRegistry, baseMigration),
+            returnsNormally,
+          );
+        },
+      );
+    });
+
+    group('backupMigrations', () {
+      test(
+        'Given a base migration when backing up migrations then the migrations '
+        'since the base migration are backed up',
+        () async {
+          const runner = RebaseMigrationRunner();
+          const baseMigration = m1;
+          const projectName = 'test_project';
+          final migrationsDir = await setupMigrations(
+            [baseMigration, m2],
+            projectName: projectName,
+          );
+          final backupPath = runner.getBackupDirPath(baseMigration);
+          expect(
+            backupPath,
+            '.dart_tool/migrations/.for_deletion_by_rebase_migration_onto_$m1',
+          );
+
+          final backupDir = runner.backupMigrations(
+            generator,
+            baseMigration,
+            [m2],
+          );
+          expect(
+            backupDir.path,
+            path.join(migrationsDir.parent.path, backupPath),
+          );
+          expect(backupDir.existsSync(), isTrue);
+          final folders = backupDir.listSync();
+          expect(folders.length, 1);
+          expect(path.basename(folders.first.path), m2);
         },
       );
     });
