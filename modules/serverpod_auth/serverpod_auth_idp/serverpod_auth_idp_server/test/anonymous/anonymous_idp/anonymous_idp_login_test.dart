@@ -131,7 +131,7 @@ void main() {
                     final Transaction? transaction,
                   }) async {
                     await Future.delayed(Duration.zero);
-                    throw Exception();
+                    return false;
                   },
             ),
           );
@@ -151,7 +151,7 @@ void main() {
                   final Session session, {
                   final String? token,
                   final Transaction? transaction,
-                }) => throw Exception(),
+                }) => false,
           ),
         );
         await expectLater(
