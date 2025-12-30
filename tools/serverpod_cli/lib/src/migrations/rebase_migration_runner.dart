@@ -57,6 +57,12 @@ class RebaseMigrationRunner {
     MigrationRegistry migrationRegistry,
     String baseMigrationId,
   ) async {
+    // Validate that base migration exists
+    if (!migrationRegistry.versions.contains(baseMigrationId)) {
+      log.error('Migration $baseMigrationId does not exist.');
+      throw ExitException(ExitException.codeError);
+    }
+
     // Get all migrations after base migration
     final baseMigrationIndex = migrationRegistry.versions.indexOf(
       baseMigrationId,
