@@ -36,8 +36,9 @@ class MigrationRegistry {
   /// Returns the list of migration versions in the registry.
   List<String> get versions => _migrationVersions;
 
-  /// [MigrationRegistryFile]
-  MigrationRegistryFile get migrationRegistryFile => MigrationRegistryFile(
+  /// Returns a [MigrationRegistryFile] instance for managing the migration
+  /// registry file in this module's migration directory.
+  late MigrationRegistryFile migrationRegistryFile = MigrationRegistryFile(
     path.join(
       moduleMigrationDirectory.path,
       _migrationRegistryFileName,
