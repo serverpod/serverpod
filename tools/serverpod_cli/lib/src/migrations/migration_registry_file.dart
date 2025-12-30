@@ -1,5 +1,9 @@
 import 'dart:io';
 
+import 'package:cli_tools/cli_tools.dart';
+
+import '../util/serverpod_cli_logger.dart';
+
 /// {@template migration_registry_file}
 /// The [MigrationRegistryFile] class is a wrapper around the migration registry file.
 /// It provides a simple interface to read and write the migration registry file.
@@ -58,15 +62,40 @@ class MigrationRegistryFile {
         content.split(splitter).map((s) => s.trim()).toList();
 
     // The content is split into three parts: common, local, and incoming.
-    final [commonPart, rest] = splitContent(content, startMarker);
-    final [localPart, restIncoming] = splitContent(rest, middleMarker);
-    final [incomingPart, _] = splitContent(restIncoming, endMarker);
+    try {
+      final commonAndRest = splitContent(content, startMarker);
+      if (commonAndRest.length != 2) {
+        throw const FormatException(
+          'Malformed merge conflict: invalid start marker',
+        );
+      }
+      final [commonPart, rest] = commonAndRest;
 
-    return (
-      common: _parseMigrationList(commonPart),
-      local: _parseMigrationList(localPart),
-      incoming: _parseMigrationList(incomingPart),
-    );
+      final localAndRestIncoming = splitContent(rest, middleMarker);
+      if (localAndRestIncoming.length != 2) {
+        throw const FormatException(
+          'Malformed merge conflict: invalid middle marker',
+        );
+      }
+      final [localPart, restIncoming] = localAndRestIncoming;
+
+      final incomingAndEnd = splitContent(restIncoming, endMarker);
+      if (incomingAndEnd.length != 2) {
+        throw const FormatException(
+          'Malformed merge conflict: invalid end marker',
+        );
+      }
+      final [incomingPart, _] = incomingAndEnd;
+
+      return (
+        common: _parseMigrationList(commonPart),
+        local: _parseMigrationList(localPart),
+        incoming: _parseMigrationList(incomingPart),
+      );
+    } on Exception catch (e) {
+      log.error(e.toString());
+      throw ExitException(ExitException.codeError);
+    }
   }
 
   /// True if the file has a merge conflict.
