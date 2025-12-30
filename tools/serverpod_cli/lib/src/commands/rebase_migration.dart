@@ -1,5 +1,6 @@
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
+import 'package:meta/meta.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/migrations/rebase_migration_runner.dart';
@@ -59,7 +60,8 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
   RebaseMigrationCommand({this.rebaseMigrationRunner})
     : super(options: RebaseMigrationOption.values);
 
-  /// Rebase migration implementation
+  /// Rebase migration implementation (for testing)
+  @visibleForTesting
   final RebaseMigrationRunner? rebaseMigrationRunner;
 
   @override
