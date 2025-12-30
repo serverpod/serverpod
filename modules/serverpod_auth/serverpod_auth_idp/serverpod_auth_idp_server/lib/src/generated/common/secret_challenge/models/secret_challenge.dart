@@ -12,6 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Database entity for storing hashed verification codes used in challenge-based
+/// authentication flows.
 abstract class SecretChallenge
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   SecretChallenge._({

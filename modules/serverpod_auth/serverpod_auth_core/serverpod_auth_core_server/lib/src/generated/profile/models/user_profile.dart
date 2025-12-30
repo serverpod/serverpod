@@ -17,6 +17,10 @@ import '../../auth_user/models/auth_user.dart' as _i2;
 import '../../profile/models/user_profile_image.dart' as _i3;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i4;
 
+/// Core database entity representing a user profile in the authentication system.
+///
+/// This class is meant to be used only to interact with the database. To transfer
+/// user profile data, use the [UserProfileModel] DTO.
 abstract class UserProfile
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   UserProfile._({

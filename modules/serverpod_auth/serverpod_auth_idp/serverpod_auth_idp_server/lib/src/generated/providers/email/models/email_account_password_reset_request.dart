@@ -17,6 +17,7 @@ import '../../../providers/email/models/email_account.dart' as _i2;
 import '../../../common/secret_challenge/models/secret_challenge.dart' as _i3;
 import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i4;
 
+/// Pending email account password reset.
 abstract class EmailAccountPasswordResetRequest
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   EmailAccountPasswordResetRequest._({
