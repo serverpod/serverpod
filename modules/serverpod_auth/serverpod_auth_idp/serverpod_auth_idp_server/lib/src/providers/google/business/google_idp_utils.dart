@@ -230,6 +230,19 @@ class GoogleIdpUtils {
       transaction: transaction,
     );
   }
+
+  /// Returns the possible [GoogleAccount] associated with a session.
+  Future<GoogleAccount?> getAccount(final Session session) {
+    return switch (session.authenticated) {
+      null => Future.value(null),
+      _ => GoogleAccount.db.findFirstRow(
+        session,
+        where: (final t) => t.authUserId.equals(
+          session.authenticated!.authUserId,
+        ),
+      ),
+    };
+  }
 }
 
 extension on Session {

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/src/common/business/idp.dart';
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
 import '../../../../core.dart';
@@ -21,7 +22,7 @@ import 'routes/apple_server_notification_route.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class AppleIdp {
+class AppleIdp extends Idp {
   /// The method used when authenticating with the Apple identity provider.
   static const String method = 'apple';
 
@@ -127,6 +128,10 @@ class AppleIdp {
       },
     );
   }
+
+  @override
+  Future<bool> hasAccount(final Session session) async =>
+      await utils.getAccount(session) != null;
 
   /// {@macro apple_idp.revokedNotificationRoute}
   Route revokedNotificationRoute() =>

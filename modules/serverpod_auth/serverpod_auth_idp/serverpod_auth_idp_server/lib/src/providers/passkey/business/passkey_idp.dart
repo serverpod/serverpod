@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:passkeys_server/passkeys_server.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/src/common/business/idp.dart';
 
 import '../../../../../core.dart';
 import 'passkey_idp_admin.dart';
@@ -9,7 +10,7 @@ import 'passkey_idp_config.dart';
 import 'passkey_idp_utils.dart';
 
 /// Passkey account management functions.
-class PasskeyIdp {
+class PasskeyIdp extends Idp {
   /// The method used when authenticating with the Passkey identity provider.
   static const String method = 'passkey';
 
@@ -132,6 +133,10 @@ class PasskeyIdp {
       );
     });
   }
+
+  @override
+  Future<bool> hasAccount(final Session session) async =>
+      await utils.getAccount(session) != null;
 }
 
 /// A challenge to be used for a passkey registration or login.

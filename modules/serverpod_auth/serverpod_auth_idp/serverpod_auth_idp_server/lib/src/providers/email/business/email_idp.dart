@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/src/common/business/idp.dart';
 
 import '../../../../../core.dart';
 import 'email_idp_admin.dart';
@@ -18,7 +19,7 @@ import 'email_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class EmailIdp {
+class EmailIdp extends Idp {
   /// The method used when authenticating with the Email identity provider.
   static const String method = 'email';
 
@@ -299,6 +300,10 @@ class EmailIdp {
       ),
     );
   }
+
+  @override
+  Future<bool> hasAccount(final Session session) async =>
+      await utils.getAccount(session) != null;
 }
 
 /// Extension to get the EmailIdp instance from the AuthServices.

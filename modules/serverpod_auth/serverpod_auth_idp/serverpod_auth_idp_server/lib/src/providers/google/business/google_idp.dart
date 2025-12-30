@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/src/common/business/idp.dart';
 
 import '../../../../../core.dart';
 import 'google_idp_admin.dart';
@@ -17,7 +18,7 @@ import 'google_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class GoogleIdp {
+class GoogleIdp extends Idp {
   /// The method used when authenticating with the Google identity provider.
   static const String method = 'google';
 
@@ -139,6 +140,10 @@ class GoogleIdp {
       },
     );
   }
+
+  @override
+  Future<bool> hasAccount(final Session session) async =>
+      await utils.getAccount(session) != null;
 }
 
 /// Extension to get the GoogleIdp instance from the AuthServices.
