@@ -34,10 +34,15 @@ class MigrationGenerator {
     return versionName;
   }
 
-  /// Returns the [MigrationRegistry] for the project.
-  MigrationRegistry get migrationRegistry => MigrationRegistry.load(
-    MigrationConstants.migrationsBaseDirectory(directory),
-  );
+  /// Cached [MigrationRegistry] for the project.
+  MigrationRegistry? _migrationRegistry;
+
+  /// [MigrationRegistry] for the project.
+  MigrationRegistry get migrationRegistry {
+    return _migrationRegistry ??= MigrationRegistry.load(
+      MigrationConstants.migrationsBaseDirectory(directory),
+    );
+  }
 
   /// Creates a new migration version.
   /// If [tag] is specified, the migration will be tagged with the given name.
