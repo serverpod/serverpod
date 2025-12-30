@@ -606,6 +606,45 @@ $m2
           expect(path.basename(folders.first.path), m2);
         },
       );
+
+      test(
+        'Given an existing backup directory when backing up migrations then an ExitException is thrown',
+        () async {
+          final runner = RebaseMigrationRunner();
+          const baseMigration = m1;
+          const migrationSince = m2;
+          const projectName = 'test_project';
+          final migrationsDir = await setupMigrations(
+            [baseMigration, migrationSince],
+            projectName: projectName,
+          );
+
+          // Create the backup directory manually to simulate a conflict
+          final backupDirPath = runner.getBackupDirPath(baseMigration);
+          final backupDir = Directory(
+            path.join(migrationsDir.parent.path, backupDirPath),
+          );
+          final migrationBackupDir = Directory(
+            path.join(backupDir.path, migrationSince),
+          );
+          await migrationBackupDir.create(recursive: true);
+
+          expect(
+            () => runner.backupMigrations(
+              generator,
+              baseMigration,
+              [migrationSince],
+            ),
+            throwsA(isA<ExitException>()),
+          );
+          expect(
+            testLogger.output.errorMessages,
+            contains(
+              'Backup directory already exists: ${migrationBackupDir.path}',
+            ),
+          );
+        },
+      );
     });
 
     group('rebaseMigration', () {
