@@ -36,6 +36,7 @@ class RebaseMigrationRunner {
   Future<bool> run(GeneratorConfig config) async {
     final migrationRegistry = await _getMigrationRegistry(config);
     final baseMigrationId = getBaseMigrationId(migrationRegistry);
+    ensureBaseMigration(migrationRegistry, baseMigrationId);
 
     return check
         ? checkMigration(migrationRegistry, baseMigrationId)
@@ -50,6 +51,45 @@ class RebaseMigrationRunner {
     return true;
   }
 
+  /// Backup the migrations [sinceBaseMigration] given the [baseMigrationId] and
+  /// the [migrationGenerator]
+  ///
+  /// Returns the backup directory
+  Directory backupMigrations(
+    MigrationGenerator migrationGenerator,
+    String baseMigrationId,
+    List<String> sinceBaseMigration,
+  ) {
+    // Get backup directory
+    final backupDirectory = createBackupDirectory(
+      migrationGenerator,
+      baseMigrationId,
+    );
+
+    // Move all migration folders since base migration to backup directory
+    for (final migration in sinceBaseMigration) {
+      final migrationDir = Directory(
+        path.join(
+          migrationGenerator.migrationRegistry.moduleMigrationDirectory.path,
+          migration,
+        ),
+      );
+      final backupMigrationDir = Directory(
+        path.join(backupDirectory.path, migration),
+      );
+      // Ensure back up directory is empty
+      if (backupMigrationDir.existsSync() &&
+          backupMigrationDir.listSync().isNotEmpty) {
+        log.error('Backup directory is not empty: ${backupMigrationDir.path}');
+        throw ExitException(ExitException.codeError);
+      }
+
+      migrationDir.renameSync(path.join(backupDirectory.path, migration));
+    }
+
+    return backupDirectory;
+  }
+
   /// Check the migrations to ensure there is only one migration after the base migration
   /// If there is more than one migration, exit with error
   ///
@@ -57,12 +97,6 @@ class RebaseMigrationRunner {
     MigrationRegistry migrationRegistry,
     String baseMigrationId,
   ) async {
-    // Validate that base migration exists
-    if (!migrationRegistry.versions.contains(baseMigrationId)) {
-      log.error('Migration $baseMigrationId does not exist.');
-      throw ExitException(ExitException.codeError);
-    }
-
     // Get all migrations after base migration
     final baseMigrationIndex = migrationRegistry.versions.indexOf(
       baseMigrationId,
@@ -97,6 +131,20 @@ class RebaseMigrationRunner {
 
     log.info('There is only one migration after the base migration.');
     return true;
+  }
+
+  /// Ensure that the [baseMigrationId] exists in the [migrationRegistry]
+  ///
+  /// Throws [ExitException] if the [baseMigrationId] does not exist.
+  @visibleForTesting
+  void ensureBaseMigration(
+    MigrationRegistry migrationRegistry,
+    String baseMigrationId,
+  ) {
+    if (!migrationRegistry.versions.contains(baseMigrationId)) {
+      log.error('Base migration $baseMigrationId does not exist.');
+      throw ExitException(ExitException.codeError);
+    }
   }
 
   /// Get the migration timestamp from a migration ID
@@ -197,12 +245,21 @@ class RebaseMigrationRunner {
     return incomingMigration.split('>>>>>>>').first.trim();
   }
 
-  /// Create temp directory
-  Directory createTempDirectory(
-    MigrationGenerator generator,
+  /// Create backup directory
+  Directory createBackupDirectory(
+    MigrationGenerator migrationGenerator,
+    String baseMigrationId,
   ) {
-    final modulePath = generator.directory.path;
-    return Directory(path.join(modulePath, '.dart_tool/migrations'))
-      ..createSync(recursive: true);
+    final modulePath = migrationGenerator.directory.path;
+    return Directory(
+      path.join(
+        modulePath,
+        getBackupDirPath(baseMigrationId),
+      ),
+    )..createSync(recursive: true);
   }
+
+  /// Get the backup directory path given the [baseMigrationId]
+  String getBackupDirPath(String baseMigrationId) =>
+      '.dart_tool/migrations/.for_deletion_by_rebase_migration_onto_$baseMigrationId';
 }
