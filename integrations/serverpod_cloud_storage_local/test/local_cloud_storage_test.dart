@@ -100,10 +100,9 @@ void main() {
 
       // File should be within storage directory
       expect(
-        Directory(tempDir.path)
-            .listSync(recursive: true)
-            .whereType<File>()
-            .isNotEmpty,
+        Directory(
+          tempDir.path,
+        ).listSync(recursive: true).whereType<File>().isNotEmpty,
         isTrue,
       );
     });
@@ -252,7 +251,10 @@ void main() {
 
       // Verify file exists
       expect(
-        await storage.fileExists(session: mockSession, path: 'test/delete_me.bin'),
+        await storage.fileExists(
+          session: mockSession,
+          path: 'test/delete_me.bin',
+        ),
         isTrue,
       );
 
@@ -264,7 +266,10 @@ void main() {
 
       // Verify file is gone
       expect(
-        await storage.fileExists(session: mockSession, path: 'test/delete_me.bin'),
+        await storage.fileExists(
+          session: mockSession,
+          path: 'test/delete_me.bin',
+        ),
         isFalse,
       );
 
@@ -456,13 +461,16 @@ void main() {
       expect(retrieved, isNotNull);
     });
 
-    test('verifyDirectFileUpload returns false for non-existent file', () async {
-      final verified = await storage.verifyDirectFileUpload(
-        session: mockSession,
-        path: 'nonexistent.bin',
-      );
-      expect(verified, isFalse);
-    });
+    test(
+      'verifyDirectFileUpload returns false for non-existent file',
+      () async {
+        final verified = await storage.verifyDirectFileUpload(
+          session: mockSession,
+          path: 'nonexistent.bin',
+        );
+        expect(verified, isFalse);
+      },
+    );
 
     test('file without metadata is considered verified', () async {
       // Create file directly without using storeFile (simulating external creation)
@@ -831,7 +839,10 @@ void main() {
       await storage.cleanupExpiredFiles();
 
       // Both data and metadata files should be gone
-      expect(File('${tempDir.path}/expired_with_meta.bin').existsSync(), isFalse);
+      expect(
+        File('${tempDir.path}/expired_with_meta.bin').existsSync(),
+        isFalse,
+      );
       expect(metaFile.existsSync(), isFalse);
     });
 
@@ -892,7 +903,9 @@ void main() {
     test('storeFileStream stores file from stream', () async {
       final data = createByteData(1024);
       final stream = Stream.value(
-        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes).toList(),
+        data.buffer
+            .asUint8List(data.offsetInBytes, data.lengthInBytes)
+            .toList(),
       );
 
       await storage.storeFileStream(
@@ -949,23 +962,26 @@ void main() {
       expect(metaFile.existsSync(), isTrue);
     });
 
-    test('storeFileStream with verified=false creates unverified file', () async {
-      final stream = Stream.value(<int>[1, 2, 3, 4, 5]);
+    test(
+      'storeFileStream with verified=false creates unverified file',
+      () async {
+        final stream = Stream.value(<int>[1, 2, 3, 4, 5]);
 
-      await storage.storeFileStream(
-        session: mockSession,
-        path: 'unverified_stream.bin',
-        stream: stream,
-        verified: false,
-      );
+        await storage.storeFileStream(
+          session: mockSession,
+          path: 'unverified_stream.bin',
+          stream: stream,
+          verified: false,
+        );
 
-      // File should not be retrievable
-      final retrieved = await storage.retrieveFile(
-        session: mockSession,
-        path: 'unverified_stream.bin',
-      );
-      expect(retrieved, isNull);
-    });
+        // File should not be retrievable
+        final retrieved = await storage.retrieveFile(
+          session: mockSession,
+          path: 'unverified_stream.bin',
+        );
+        expect(retrieved, isNull);
+      },
+    );
 
     test('retrieveFileStream returns stream for existing file', () async {
       await storage.storeFile(
@@ -988,7 +1004,10 @@ void main() {
       }
 
       // Verify total bytes
-      final totalBytes = chunks.fold<int>(0, (sum, chunk) => sum + chunk.length);
+      final totalBytes = chunks.fold<int>(
+        0,
+        (sum, chunk) => sum + chunk.length,
+      );
       expect(totalBytes, equals(256));
     });
 

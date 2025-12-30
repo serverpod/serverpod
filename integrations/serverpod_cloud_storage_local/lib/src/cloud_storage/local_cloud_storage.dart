@@ -65,8 +65,8 @@ class LocalCloudStorage extends CloudStorage {
     this.publicHost,
     this.publicPort,
     this.publicScheme,
-  })  : _serverpod = serverpod,
-        super(storageId) {
+  }) : _serverpod = serverpod,
+       super(storageId) {
     // Ensure the storage directory exists
     final dir = Directory(storagePath);
     if (!dir.existsSync()) {
@@ -380,8 +380,10 @@ class LocalCloudStorage extends CloudStorage {
           final expiration = await _getExpirationFromMetadata(entity);
           if (expiration != null && expiration.isBefore(now)) {
             // Delete the data file
-            final dataFilePath =
-                entity.path.substring(0, entity.path.length - 5);
+            final dataFilePath = entity.path.substring(
+              0,
+              entity.path.length - 5,
+            );
             final dataFile = File(dataFilePath);
             if (dataFile.existsSync()) {
               await dataFile.delete();
