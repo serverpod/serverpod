@@ -86,7 +86,7 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
     bool checkMode = commandConfig.value(RebaseMigrationOption.check);
     if (checkMode) {
       log.info(
-        'Check mode enabled. Only validating that only one migration exists since base migration.',
+        'Check mode enabled. Validating that only one migration exists since base migration.',
       );
     }
 
