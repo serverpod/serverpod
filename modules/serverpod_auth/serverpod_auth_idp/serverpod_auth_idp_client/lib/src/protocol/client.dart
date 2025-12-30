@@ -20,6 +20,26 @@ import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/
 import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/passkey_login_request.dart'
     as _i6;
 
+/// Idp-agnostic authentication endpoints to learn general information about a
+/// given user account.
+/// {@category Endpoint}
+class EndpointIdp extends _i1.EndpointRef {
+  EndpointIdp(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverpod_auth_idp.idp';
+
+  /// Returns the `method` value for each connected [Idp] subclass if the
+  /// current session is authenticated and if the user has an account connected
+  /// to the [Idp].
+  _i2.Future<Set<String>> idpAccounts() =>
+      caller.callServerEndpoint<Set<String>>(
+        'serverpod_auth_idp.idp',
+        'idpAccounts',
+        {},
+      );
+}
+
 /// Endpoint for handling Sign in with Apple.
 ///
 /// To expose these endpoint methods on your server, extend this class in a
@@ -216,8 +236,14 @@ abstract class EndpointPasskeyIdpBase extends _i1.EndpointRef {
 }
 
 class Caller extends _i1.ModuleEndpointCaller {
-  Caller(_i1.ServerpodClientShared client) : super(client) {}
+  Caller(_i1.ServerpodClientShared client) : super(client) {
+    idp = EndpointIdp(this);
+  }
+
+  late final EndpointIdp idp;
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {};
+  Map<String, _i1.EndpointRef> get endpointRefLookup => {
+    'serverpod_auth_idp.idp': idp,
+  };
 }

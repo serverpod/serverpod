@@ -1045,6 +1045,9 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
+    if (t == Set<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
+    }
     if (t == _i1.getType<({_i25.ByteData challenge, _i1.UuidValue id})>()) {
       return (
             challenge: deserialize<_i25.ByteData>(

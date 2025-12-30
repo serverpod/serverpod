@@ -130,6 +130,9 @@ class AppleIdp extends Idp {
   }
 
   @override
+  String getMethod() => method;
+
+  @override
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
 
