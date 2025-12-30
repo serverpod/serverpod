@@ -4,6 +4,8 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:collection/collection.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/commands/rebase_migration.dart';
+import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/migrations/generator.dart';
 import 'package:serverpod_cli/src/migrations/migration_registry.dart';
 import 'package:serverpod_cli/src/migrations/rebase_migration_runner.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
@@ -46,13 +48,15 @@ class MockRebaseMigrationRunner extends RebaseMigrationRunner {
     super.onto,
     super.check,
     super.force,
+    super.tag,
   });
 
   @override
-  Future<bool> rebaseMigration(
-    MigrationRegistry migrationRegistry,
-    String baseMigrationId,
-  ) async {
+  Future<bool> rebaseMigration({
+    required MigrationGenerator generator,
+    required String baseMigrationId,
+    required GeneratorConfig config,
+  }) async {
     rebaseMigrationCallCount++;
     return true;
   }

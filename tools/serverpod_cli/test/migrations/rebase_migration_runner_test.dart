@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/commands/create_migration.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/migrations/generator.dart';
 import 'package:serverpod_cli/src/migrations/migration_registry.dart';
+import 'package:serverpod_cli/src/migrations/migration_registry_file.dart';
 import 'package:serverpod_cli/src/migrations/rebase_migration_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
@@ -94,7 +96,7 @@ features:
       test(
         'Given a migration ID with a tag when getting migration timestamp then the timestamp is correctly parsed',
         () {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           const migrationId = '$m1-tag';
 
           final timestamp = runner.getMigrationTimestamp(migrationId);
@@ -106,7 +108,7 @@ features:
       test(
         'Given a malformed migration ID when getting migration timestamp then an ExitException is thrown',
         () {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           const migrationId = 'malformed';
 
           expect(
@@ -121,7 +123,7 @@ features:
       test(
         'Given a migration that exists in registry when validating migration then the call succeeds',
         () {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           final migrationRegistry = MigrationRegistry(
             Directory('fake'),
             [m1, m2],
@@ -137,7 +139,7 @@ features:
       test(
         'Given a migration that does not exist in registry when validating migration then an ExitException is thrown',
         () async {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           final migrationRegistry = MigrationRegistry(
             Directory('fake'),
             [m1, m2],
@@ -161,7 +163,7 @@ features:
         () async {
           const onto = m1;
           const migration2 = m2;
-          const runner = RebaseMigrationRunner(onto: onto);
+          final runner = RebaseMigrationRunner(onto: onto);
           final migrationsDir = await setupMigrations([onto, migration2]);
 
           final migrationRegistry = MigrationRegistry.load(migrationsDir);
@@ -177,7 +179,7 @@ features:
           const onto = m3;
           const migration1 = m1;
           const migration2 = m2;
-          const runner = RebaseMigrationRunner(onto: onto);
+          final runner = RebaseMigrationRunner(onto: onto);
           final migrationsDir = await setupMigrations([migration1, migration2]);
 
           final migrationRegistry = MigrationRegistry.load(migrationsDir);
@@ -196,7 +198,7 @@ features:
       test(
         'Given registry file does not exist when getting base migration ID then an ExitException is thrown',
         () async {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           final migrationsDir = Directory(path.join(d.sandbox, 'non_existent'));
           final migrationRegistry = MigrationRegistry(migrationsDir, []);
 
@@ -214,7 +216,7 @@ features:
       test(
         'Given no onto and registry has conflicts when getting base migration ID then incoming migration is returned',
         () async {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           final migrationsDir = await setupMigrations([m1, m2]);
           final registryFile = File(
             path.join(migrationsDir.path, 'migration_registry.txt'),
@@ -238,7 +240,7 @@ $m3
       test(
         'Given no onto and registry has no conflicts when getting base migration ID then an ExitException is thrown',
         () async {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           final migrationsDir = await setupMigrations([m1, m2]);
           final migrationRegistry = MigrationRegistry.load(migrationsDir);
 
@@ -262,7 +264,7 @@ $m3
       test(
         'Given exactly one migration after base migration when checking migration then true is returned',
         () async {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           const baseMigration = m1;
           const migration2 = m2;
           final migrationRegistry = MigrationRegistry(
@@ -287,7 +289,7 @@ $m3
       test(
         'Given no migrations after base migration when checking migration then an ExitException is thrown',
         () async {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           const baseMigration = m1;
           final migrationRegistry = MigrationRegistry(
             Directory('fake'),
@@ -308,7 +310,7 @@ $m3
       test(
         'Given more than one migration after base migration when checking migration then an ExitException is thrown',
         () async {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           const baseMigration = m1;
           const migration2 = m2;
           const migration3 = m3;
@@ -333,7 +335,7 @@ $m3
       test(
         'Given migration with timestamp equal to base migration when checking migration then an ExitException is thrown',
         () async {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           const baseMigration = m1;
           const sameTimestamp = m1;
           final migrationRegistry = MigrationRegistry(
@@ -357,7 +359,7 @@ $m3
       test(
         'Given migration with timestamp before base migration when checking migration then an ExitException is thrown',
         () async {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           const baseMigration = m2;
           const earlierTimestamp = m1; // m1 is before m2
           final migrationRegistry = MigrationRegistry(
@@ -379,51 +381,11 @@ $m3
       );
     });
 
-    group('hasConflicts', () {
-      test(
-        'Given a file with conflict markers when checking conflicts then true is returned',
-        () {
-          const runner = RebaseMigrationRunner();
-          final file = File(
-            path.join(d.sandbox, 'registry_with_conflicts.txt'),
-          );
-          file.writeAsStringSync('''
-$m1
-<<<<<<< HEAD
-$m2
-=======
-$m3
->>>>>>> feature-branch
-''');
-
-          final result = runner.hasConflicts(file);
-          expect(result, isTrue);
-        },
-      );
-
-      test(
-        'Given a file without conflict markers when checking conflicts then false is returned',
-        () {
-          const runner = RebaseMigrationRunner();
-          final file = File(
-            path.join(d.sandbox, 'registry_without_conflicts.txt'),
-          );
-          file.writeAsStringSync('''
-$m1
-$m2
-''');
-
-          final result = runner.hasConflicts(file);
-          expect(result, isFalse);
-        },
-      );
-    });
-
-    group('getIncomingMigration', () {
+    group('getLastIncomingMigration', () {
       test(
         'Given a file with conflicts when getting incoming migration then the incoming migration is returned',
         () {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           final file = File(
             path.join(d.sandbox, 'registry_with_conflicts.txt'),
           );
@@ -436,15 +398,17 @@ $m3
 >>>>>>> feature-branch
 ''');
 
-          final result = runner.getIncomingMigration(file);
+          final result = runner.getLastIncomingMigration(
+            MigrationRegistryFile(file.path),
+          );
           expect(result, equals(m3));
         },
       );
 
       test(
-        'Given a file with conflicts and multiple lines when getting incoming migration then the incoming migration is returned',
+        'Given a file with conflicts and multiple lines when getting incoming migration then the last incoming migration is returned',
         () {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           final file = File(
             path.join(d.sandbox, 'registry_with_conflicts.txt'),
           );
@@ -454,19 +418,21 @@ $m1
 $m2
 =======
 $m3
-$m1
+$m2
 >>>>>>> feature-branch
 ''');
 
-          final result = runner.getIncomingMigration(file);
-          expect(result, equals('$m3\n$m1'));
+          final result = runner.getLastIncomingMigration(
+            MigrationRegistryFile(file.path),
+          );
+          expect(result, equals(m2));
         },
       );
 
       test(
         'Given a file without conflicts when getting incoming migration then an ExitException is thrown',
         () {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           final file = File(
             path.join(d.sandbox, 'registry_without_conflicts.txt'),
           );
@@ -476,7 +442,9 @@ $m2
 ''');
 
           expect(
-            () => runner.getIncomingMigration(file),
+            () => runner.getLastIncomingMigration(
+              MigrationRegistryFile(file.path),
+            ),
             throwsA(isA<ExitException>()),
           );
           expect(
@@ -491,11 +459,83 @@ $m2
       );
     });
 
+    group('extractMigrations', () {
+      test(
+        'Given a registry content with conflicts when extracting migrations then the correct record is returned',
+        () {
+          final file = File(path.join(d.sandbox, 'extract_migrations.txt'));
+          const registryContent =
+              '''
+### AUTOMATICALLY GENERATED DO NOT MODIFY
+$m1
+<<<<<<< HEAD
+$m2
+=======
+$m3
+>>>>>>> feature-branch
+''';
+          file.writeAsStringSync(registryContent);
+
+          final result = MigrationRegistryFile(file.path).extractMigrations();
+          expect(result.common, [m1]);
+          expect(result.local, [m2]);
+          expect(result.incoming, [m3]);
+        },
+      );
+
+      test(
+        'Given registry content with multiple migrations in each part when extracting then all migrations are returned',
+        () {
+          final file = File(
+            path.join(d.sandbox, 'extract_migrations_multiple.txt'),
+          );
+          const registryContent =
+              '''
+$m1
+$m2
+<<<<<<< HEAD
+$m3
+$m1
+=======
+$m2
+$m3
+>>>>>>> feature-branch
+''';
+          file.writeAsStringSync(registryContent);
+
+          final result = MigrationRegistryFile(file.path).extractMigrations();
+          expect(result.common, [m1, m2]);
+          expect(result.local, [m3, m1]);
+          expect(result.incoming, [m2, m3]);
+        },
+      );
+
+      test(
+        'Given registry content without conflicts when extracting then the content is returned as common',
+        () {
+          final file = File(
+            path.join(d.sandbox, 'extract_migrations_no_conflicts.txt'),
+          );
+          const registryContent =
+              '''
+$m1
+$m2
+''';
+          file.writeAsStringSync(registryContent);
+
+          final result = MigrationRegistryFile(file.path).extractMigrations();
+          expect(result.common, [m1, m2]);
+          expect(result.local, isEmpty);
+          expect(result.incoming, isEmpty);
+        },
+      );
+    });
+
     group('ensureBaseMigration', () {
       test(
         'Given a base migration that does not exist when ensuring base migration then an ExitException is thrown',
         () async {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           const baseMigration = m3;
           const migration2 = m2;
           final migrationRegistry = MigrationRegistry(
@@ -517,7 +557,7 @@ $m2
       test(
         'Given a base migration that exists when ensuring base migration then returns normally',
         () async {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           const baseMigration = m1;
           const migration2 = m2;
           final migrationRegistry = MigrationRegistry(
@@ -538,7 +578,7 @@ $m2
         'Given a base migration when backing up migrations then the migrations '
         'since the base migration are backed up',
         () async {
-          const runner = RebaseMigrationRunner();
+          final runner = RebaseMigrationRunner();
           const baseMigration = m1;
           const projectName = 'test_project';
           final migrationsDir = await setupMigrations(
@@ -567,5 +607,279 @@ $m2
         },
       );
     });
+
+    group('rebaseMigration', () {
+      test(
+        'Given a base migration with no migrations since then an ExitException is thrown',
+        () async {
+          final runner = RebaseMigrationRunner();
+          const baseMigration = m2;
+          const projectName = 'test_project';
+          await setupMigrations(
+            [m1, baseMigration],
+            projectName: projectName,
+          );
+
+          expect(
+            () => runner.rebaseMigration(
+              generator: generator,
+              baseMigrationId: baseMigration,
+              config: config,
+            ),
+            throwsA(isA<ExitException>()),
+          );
+          expect(
+            testLogger.output.errorMessages,
+            contains('No migrations since base migration: $baseMigration'),
+          );
+        },
+      );
+
+      test(
+        'Given a base migration and one migration after when rebasing then returns true, registry is updated, and backup is created',
+        () async {
+          const baseMigration = m1;
+          const migration2 = m2;
+          const newMigration = m3;
+          final mockCreateRunner = MockCreateMigrationRunner(newMigration);
+          final runner = RebaseMigrationRunner(
+            createMigrationRunner: mockCreateRunner,
+          );
+
+          final migrationsDir = await setupMigrations([
+            baseMigration,
+            migration2,
+          ]);
+
+          final registryFile = File(
+            path.join(migrationsDir.path, 'migration_registry.txt'),
+          );
+
+          final result = await runner.rebaseMigration(
+            generator: generator,
+            baseMigrationId: baseMigration,
+            config: config,
+          );
+
+          expect(result, isTrue);
+
+          // Verify registry file content: base + new
+          final registryFileMigrations = MigrationRegistryFile(
+            registryFile.path,
+          ).migrations;
+          expect(registryFileMigrations, equals([baseMigration, newMigration]));
+
+          // Verify backup
+          final backupDir = Directory(
+            path.join(
+              migrationsDir.parent.path,
+              '.dart_tool/migrations/.deleted_by_rebase_migration_onto_${baseMigration}_with_$newMigration',
+            ),
+          );
+          expect(backupDir.existsSync(), isTrue);
+          expect(
+            Directory(path.join(backupDir.path, migration2)).existsSync(),
+            isTrue,
+          );
+        },
+      );
+
+      test(
+        'Given a registry conflict with one incoming migration when rebasing onto the last incoming then it succeeds',
+        () async {
+          const common = m1;
+          const local = m2;
+          const incoming = m3;
+          const newMigration = '20251228100000003';
+          final mockCreateRunner = MockCreateMigrationRunner(newMigration);
+          final runner = RebaseMigrationRunner(
+            createMigrationRunner: mockCreateRunner,
+          );
+
+          final migrationsDir = await setupMigrations([
+            common,
+            local,
+            incoming,
+          ]);
+          final registryFile = File(
+            path.join(migrationsDir.path, 'migration_registry.txt'),
+          );
+          registryFile.writeAsStringSync('''
+$common
+<<<<<<< HEAD
+$local
+=======
+$incoming
+>>>>>>> incoming
+''');
+
+          // Always rebase unto the last incoming migration
+          final result = await runner.rebaseMigration(
+            generator: generator,
+            baseMigrationId: incoming,
+            config: config,
+          );
+
+          expect(result, isTrue);
+
+          // Verify registry file content: common + incoming + new
+          final registryFileMigrations = MigrationRegistryFile(
+            registryFile.path,
+          ).migrations;
+          expect(
+            registryFileMigrations,
+            equals([common, incoming, newMigration]),
+          );
+
+          // Verify backup contains both local and incoming (since we replaced the whole conflict block)
+          final backupDir = Directory(
+            path.join(
+              migrationsDir.parent.path,
+              '.dart_tool/migrations/.deleted_by_rebase_migration_onto_${incoming}_with_$newMigration',
+            ),
+          );
+          expect(backupDir.existsSync(), isTrue);
+          expect(
+            Directory(path.join(backupDir.path, local)).existsSync(),
+            isTrue,
+          );
+        },
+      );
+
+      test(
+        'Given a registry conflict with two incoming migrations when rebasing onto the last incoming then it succeeds',
+        () async {
+          const common = m1;
+          const local = m2;
+          const incoming1 = m3;
+          const incoming2 = '20251228100000003';
+          const newMigration = '20251228100000004';
+          final mockCreateRunner = MockCreateMigrationRunner(newMigration);
+          final runner = RebaseMigrationRunner(
+            createMigrationRunner: mockCreateRunner,
+          );
+
+          final migrationsDir = await setupMigrations([
+            common,
+            local,
+            incoming1,
+            incoming2,
+          ]);
+          final registryFile = File(
+            path.join(migrationsDir.path, 'migration_registry.txt'),
+          );
+          registryFile.writeAsStringSync('''
+$common
+<<<<<<< HEAD
+$local
+=======
+$incoming1
+$incoming2
+>>>>>>> incoming
+''');
+
+          final result = await runner.rebaseMigration(
+            generator: generator,
+            baseMigrationId: incoming2,
+            config: config,
+          );
+
+          expect(result, isTrue);
+
+          // Verify registry file content: common + incoming1 + incoming2 + new
+          final registryFileMigrations = MigrationRegistryFile(
+            registryFile.path,
+          ).migrations;
+          expect(
+            registryFileMigrations,
+            equals([common, incoming1, incoming2, newMigration]),
+          );
+
+          final backupDir = Directory(
+            path.join(
+              migrationsDir.parent.path,
+              '.dart_tool/migrations/.deleted_by_rebase_migration_onto_${incoming2}_with_$newMigration',
+            ),
+          );
+          expect(backupDir.existsSync(), isTrue);
+          expect(
+            Directory(path.join(backupDir.path, local)).existsSync(),
+            isTrue,
+          );
+        },
+      );
+
+      test(
+        'Given local migration with timestamp before base migration when rebasing then it succeeds and backs up correctly',
+        () async {
+          const baseMigration = m2;
+          const earlyLocal = m1;
+          const newMigration = m3;
+          final mockCreateRunner = MockCreateMigrationRunner(newMigration);
+          final runner = RebaseMigrationRunner(
+            createMigrationRunner: mockCreateRunner,
+          );
+
+          final migrationsDir = await setupMigrations([
+            baseMigration,
+            earlyLocal,
+          ]);
+          final registryFile = File(
+            path.join(migrationsDir.path, 'migration_registry.txt'),
+          );
+          registryFile.writeAsStringSync('$baseMigration\n$earlyLocal\n');
+
+          final result = await runner.rebaseMigration(
+            generator: generator,
+            baseMigrationId: baseMigration,
+            config: config,
+          );
+
+          expect(result, isTrue);
+
+          // Verify registry file content: base + new
+          final registryFileMigrations = MigrationRegistryFile(
+            registryFile.path,
+          ).migrations;
+          expect(registryFileMigrations, equals([baseMigration, newMigration]));
+
+          final backupDir = Directory(
+            path.join(
+              migrationsDir.parent.path,
+              '.dart_tool/migrations/.deleted_by_rebase_migration_onto_${baseMigration}_with_$newMigration',
+            ),
+          );
+          expect(
+            Directory(path.join(backupDir.path, earlyLocal)).existsSync(),
+            isTrue,
+          );
+        },
+      );
+    });
   });
+}
+
+class MockCreateMigrationRunner extends CreateMigrationRunner {
+  final String migrationName;
+
+  MockCreateMigrationRunner(this.migrationName) : super(force: false, tag: '');
+
+  @override
+  Future<String> createMigration({
+    required MigrationGenerator generator,
+    required GeneratorConfig config,
+  }) async {
+    // Create new folder
+    final migrationsDir = generator.migrationRegistry.moduleMigrationDirectory;
+    final newMigrationDir = Directory(
+      path.join(migrationsDir.path, migrationName),
+    );
+    await newMigrationDir.create();
+
+    // Reload registry to pick up the new folder and write it to the registry file
+    final registry = MigrationRegistry.load(migrationsDir);
+    await registry.write();
+
+    return migrationName;
+  }
 }
