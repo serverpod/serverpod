@@ -139,6 +139,17 @@ class CreateMigrationRunner {
       projectName: projectName,
     );
 
+    await createMigration(
+      generator: generator,
+      config: config,
+    );
+  }
+
+  /// Create a new migration with the provided [generator]
+  Future<String?> createMigration({
+    required MigrationGenerator generator,
+    required GeneratorConfig config,
+  }) async {
     MigrationVersion? migration;
     bool migrationAborted = false;
     bool migrationFailed = false;
@@ -184,7 +195,7 @@ class CreateMigrationRunner {
 
     // No changes detected.
     if (migration == null) {
-      return;
+      return null;
     }
 
     // Dart does not infer the type of `migration` to be non-nullable here,
@@ -204,5 +215,7 @@ class CreateMigrationRunner {
       type: TextLogType.bullet,
     );
     log.info('Done.', type: TextLogType.success);
+
+    return migrationName;
   }
 }
