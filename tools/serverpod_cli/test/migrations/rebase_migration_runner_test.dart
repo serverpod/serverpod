@@ -88,41 +88,43 @@ void main() {
       );
     });
 
-    test(
-      'Given a migration that exists in registry when validating migration then the call succeeds',
-      () {
-        const runner = RebaseMigrationRunner();
-        final migrationRegistry = MigrationRegistry(
-          Directory('fake'),
-          [m1, m2],
-        );
+    group('validateMigration', () {
+      test(
+        'Given a migration that exists in registry when validating migration then the call succeeds',
+        () {
+          const runner = RebaseMigrationRunner();
+          final migrationRegistry = MigrationRegistry(
+            Directory('fake'),
+            [m1, m2],
+          );
 
-        expect(
-          () => runner.validateMigration(m1, migrationRegistry),
-          returnsNormally,
-        );
-      },
-    );
+          expect(
+            () => runner.validateMigration(m1, migrationRegistry),
+            returnsNormally,
+          );
+        },
+      );
 
-    test(
-      'Given a migration that does not exist in registry when validating migration then an ExitException is thrown',
-      () async {
-        const runner = RebaseMigrationRunner();
-        final migrationRegistry = MigrationRegistry(
-          Directory('fake'),
-          [m1, m2],
-        );
+      test(
+        'Given a migration that does not exist in registry when validating migration then an ExitException is thrown',
+        () async {
+          const runner = RebaseMigrationRunner();
+          final migrationRegistry = MigrationRegistry(
+            Directory('fake'),
+            [m1, m2],
+          );
 
-        expect(
-          () => runner.validateMigration(m3, migrationRegistry),
-          throwsA(isA<ExitException>()),
-        );
-        expect(
-          testLogger.output.errorMessages,
-          contains('Migration $m3 does not exist.'),
-        );
-      },
-    );
+          expect(
+            () => runner.validateMigration(m3, migrationRegistry),
+            throwsA(isA<ExitException>()),
+          );
+          expect(
+            testLogger.output.errorMessages,
+            contains('Migration $m3 does not exist.'),
+          );
+        },
+      );
+    });
 
     group('getBaseMigrationId', () {
       test(
@@ -228,6 +230,28 @@ $m3
     });
 
     group('checkMigration', () {
+      test(
+        'Given a base migration that does not exist when checking migration then an ExitException is thrown',
+        () async {
+          const runner = RebaseMigrationRunner();
+          const baseMigration = m3;
+          const migration2 = m2;
+          final migrationRegistry = MigrationRegistry(
+            Directory('fake'),
+            [migration2],
+          );
+
+          expect(
+            () => runner.checkMigration(migrationRegistry, baseMigration),
+            throwsA(isA<ExitException>()),
+          );
+          expect(
+            testLogger.output.errorMessages,
+            contains('Migration $baseMigration does not exist.'),
+          );
+        },
+      );
+
       test(
         'Given exactly one migration after base migration when checking migration then true is returned',
         () async {
