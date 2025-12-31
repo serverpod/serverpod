@@ -120,19 +120,9 @@ class RebaseMigrationRunner {
         config: config,
       );
     } on Exception catch (e) {
-      // Rollback the migrations by copying from backup directory to migration directory
-      moveMigrations(
-        migrations: since,
-        source: backupDirectory,
-        destination: generator.migrationRegistry.moduleMigrationDirectory,
-      );
-      backupDirectory.deleteSync(recursive: true);
-      // Rollback the migration registry file
-      registryFile.file.writeAsStringSync(backupRegistryFile);
       log
-        ..error('Rebase failed. Changes reverted.')
+        ..debug('Failed to create migration')
         ..debug(e.toString());
-      throw ExitException(ExitException.codeError);
     }
 
     final migrationCreated = newMigration != null;
@@ -149,6 +139,19 @@ class RebaseMigrationRunner {
         ..debug('Previous migrations backed up to: ${renamedBackupDir.path}')
         ..debug('Rebased unto: $baseMigrationId with migration: $newMigration')
         ..info('✅ Rebase complete');
+    }
+    // Rollback the migrations if no migration was created
+    else {
+      moveMigrations(
+        migrations: since,
+        source: backupDirectory,
+        destination: generator.migrationRegistry.moduleMigrationDirectory,
+      );
+      backupDirectory.deleteSync(recursive: true);
+      // Rollback the migration registry file
+      registryFile.file.writeAsStringSync(backupRegistryFile);
+      log.error('Rebase failed. Changes reverted.');
+      throw ExitException(ExitException.codeError);
     }
     return migrationCreated;
   }
