@@ -140,17 +140,25 @@ class RebaseMigrationRunner {
 
       log
         ..debug('Previous migrations backed up to: ${renamedBackupDir.path}')
-        ..debug('Rebased unto: $baseMigrationId with migration: $newMigration')
+        ..debug('Rebased onto: $baseMigrationId with migration: $newMigration')
         ..info('✅ Rebase complete');
     }
     // Rollback the migrations if no migration was created
     else {
-      moveMigrations(
-        migrations: since,
-        source: backupDirectory,
-        destination: generator.migrationRegistry.moduleMigrationDirectory,
-      );
-      backupDirectory.deleteSync(recursive: true);
+      try {
+        moveMigrations(
+          migrations: since,
+          source: backupDirectory,
+          destination: generator.migrationRegistry.moduleMigrationDirectory,
+        );
+        backupDirectory.deleteSync(recursive: true);
+      } on Exception catch (e) {
+        log
+          ..error(
+            'Failed to restore migrations from backup during rollback: (${backupDirectory.path})',
+          )
+          ..debug(e.toString());
+      }
       // Rollback the migration registry file
       registryFile.file.writeAsStringSync(backupRegistryFile);
       log.error('Rebase failed. Changes reverted.');
@@ -212,7 +220,7 @@ class RebaseMigrationRunner {
       // Ensure backup directory does not exist
       if (destinationMigrationDir.existsSync()) {
         log.error(
-          'Backup directory already exists: ${destinationMigrationDir.path}',
+          'Destination directory already exists: ${destinationMigrationDir.path}',
         );
         throw ExitException(ExitException.codeError);
       }
