@@ -34,10 +34,20 @@ class MigrationGenerator {
     return versionName;
   }
 
+  /// Cached [MigrationRegistry] for the project.
+  MigrationRegistry? _migrationRegistry;
+
   /// [MigrationRegistry] for the project.
-  late final MigrationRegistry migrationRegistry = MigrationRegistry.load(
-    MigrationConstants.migrationsBaseDirectory(directory),
-  );
+  MigrationRegistry get migrationRegistry {
+    return _migrationRegistry ??= MigrationRegistry.load(
+      MigrationConstants.migrationsBaseDirectory(directory),
+    );
+  }
+
+  /// Invalidates the cached registry, forcing a reload on next access.
+  void invalidateMigrationRegistryCache() {
+    _migrationRegistry = null;
+  }
 
   /// Creates a new migration version.
   /// If [tag] is specified, the migration will be tagged with the given name.
@@ -59,6 +69,9 @@ class MigrationGenerator {
     required GeneratorConfig config,
     bool write = true,
   }) async {
+    // Invalidate registry cache to ensure we get the latest registry.
+    invalidateMigrationRegistryCache();
+
     var databaseDefinitionLatest = await _getSourceDatabaseDefinition(
       projectName,
       migrationRegistry.getLatest(),
@@ -139,6 +152,9 @@ class MigrationGenerator {
       );
       migrationRegistry.add(versionName);
       await migrationRegistry.write();
+
+      // Invalidate registry cache to ensure we reload the registry.
+      invalidateMigrationRegistryCache();
     }
 
     return migrationVersion;
