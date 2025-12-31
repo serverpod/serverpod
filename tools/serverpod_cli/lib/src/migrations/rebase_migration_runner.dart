@@ -99,29 +99,50 @@ class RebaseMigrationRunner {
       baseMigrationId,
       since,
     );
+    final backupRegistryFile = registryFile.content;
 
-    // Update the migration registry file
+    // Update the migration registry file with the migrations up to the base migration
     await generator.migrationRegistry.migrationRegistryFile.update(toBase);
 
+    String? newMigration;
     // Create new migration
-    final newMigration = await createMigrationRunner.createMigration(
-      generator: generator,
-      config: config,
-    );
+    try {
+      newMigration = await createMigrationRunner.createMigration(
+        generator: generator,
+        config: config,
+      );
+    } on Exception catch (e) {
+      // Rollback the migrations by copying from backup directory to migration directory
+      moveMigrations(
+        migrations: since,
+        source: backupDirectory,
+        destination: generator.migrationRegistry.moduleMigrationDirectory,
+      );
+      backupDirectory.deleteSync(recursive: true);
+      // Rollback the migration registry file
+      registryFile.file.writeAsStringSync(backupRegistryFile);
+      log
+        ..error('Rebase failed. Changes reverted.')
+        ..debug(e.toString());
+      throw ExitException(ExitException.codeError);
+    }
 
-    // Change the backup folder name to include the new migration name
-    backupDirectory.renameSync(
-      path.join(
-        backupDirectory.parent.path,
-        '.deleted_by_rebase_migration_onto_${baseMigrationId}_with_$newMigration',
-      ),
-    );
+    final migrationCreated = newMigration != null;
+    // If a new migration was created, change the backup folder name to include the new migration name
+    if (migrationCreated) {
+      backupDirectory.renameSync(
+        path.join(
+          backupDirectory.parent.path,
+          '.deleted_by_rebase_migration_onto_${baseMigrationId}_with_$newMigration',
+        ),
+      );
 
-    log
-      ..debug('Previous migrations backed up to: ${backupDirectory.path}')
-      ..debug('Rebased unto: $baseMigrationId with migration: $newMigration')
-      ..info('✅ Rebase complete');
-    return true;
+      log
+        ..debug('Previous migrations backed up to: ${backupDirectory.path}')
+        ..debug('Rebased unto: $baseMigrationId with migration: $newMigration')
+        ..info('✅ Rebase complete');
+    }
+    return migrationCreated;
   }
 
   /// Backup the migrations [sinceBaseMigration] given the [baseMigrationId] and
