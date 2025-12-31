@@ -670,7 +670,7 @@ $m2
           expect(
             testLogger.output.errorMessages,
             contains(
-              'Backup directory already exists: ${migrationBackupDir.path}',
+              'Destination directory already exists: ${migrationBackupDir.path}',
             ),
           );
         },
