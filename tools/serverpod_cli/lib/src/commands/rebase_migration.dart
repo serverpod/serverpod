@@ -75,7 +75,7 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
         ?.trim();
     bool force = commandConfig.value(RebaseMigrationOption.force);
     String? tag = commandConfig
-        .optionalValue(CreateMigrationOption.tag)
+        .optionalValue(RebaseMigrationOption.tag)
         ?.trim();
     bool checkMode = commandConfig.value(RebaseMigrationOption.check);
 
