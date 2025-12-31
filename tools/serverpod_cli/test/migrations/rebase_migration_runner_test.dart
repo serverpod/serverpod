@@ -603,6 +603,41 @@ $m2
       );
 
       test(
+        'Given a non-existent migration directory when backing up migrations then an ExitException is thrown',
+        () async {
+          final runner = RebaseMigrationRunner();
+          const baseMigration = m1;
+          const migrationSince = m2;
+          const projectName = 'test_project';
+          final migrationsDir = await setupMigrations(
+            [baseMigration, migrationSince],
+            projectName: projectName,
+          );
+
+          // Delete the migration directory to simulate it missing
+          final migrationDir = Directory(
+            path.join(migrationsDir.path, migrationSince),
+          );
+          await migrationDir.delete(recursive: true);
+
+          expect(
+            () => runner.backupMigrations(
+              generator,
+              baseMigration,
+              [migrationSince],
+            ),
+            throwsA(isA<ExitException>()),
+          );
+          expect(
+            testLogger.output.errorMessages,
+            contains(
+              'Migration directory does not exist: ${migrationDir.path}',
+            ),
+          );
+        },
+      );
+
+      test(
         'Given an existing backup directory when backing up migrations then an ExitException is thrown',
         () async {
           final runner = RebaseMigrationRunner();
