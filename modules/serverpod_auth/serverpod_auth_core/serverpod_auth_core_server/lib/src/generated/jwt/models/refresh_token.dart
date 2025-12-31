@@ -17,6 +17,7 @@ import '../../auth_user/models/auth_user.dart' as _i2;
 import 'dart:typed_data' as _i3;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i4;
 
+/// Refresh token for JWT-based authentication.
 abstract class RefreshToken
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   RefreshToken._({

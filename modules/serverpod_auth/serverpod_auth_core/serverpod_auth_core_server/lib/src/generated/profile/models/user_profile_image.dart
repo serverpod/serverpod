@@ -16,6 +16,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../profile/models/user_profile.dart' as _i2;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i3;
 
+/// Database entity for storing user profile image information.
 abstract class UserProfileImage
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   UserProfileImage._({

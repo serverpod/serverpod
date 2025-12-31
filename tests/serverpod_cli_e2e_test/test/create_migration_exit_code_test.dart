@@ -1,51 +1,30 @@
 @Timeout(Duration(minutes: 5))
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:uuid/uuid.dart';
 
 void main() async {
-  var rootPath = path.join(Directory.current.path, '..', '..');
-  var cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
-  var cliBinPath = path.join(cliPath, 'bin', 'serverpod_cli.dart');
-
-  setUpAll(() async {
-    // Run pub get to ensure dependencies are available
-    await Process.run(
-      'dart',
-      ['pub', 'get'],
-      workingDirectory: cliPath,
-    );
-  });
-
   group(
     'Given a serverpod project with an initial migration',
     () {
       late String projectName;
       late String serverDir;
-      late Process createProcess;
 
       setUp(() async {
         projectName =
             'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
 
-        createProcess = await Process.start(
-          'dart',
-          ['run', cliBinPath, 'create', projectName, '-v', '--no-analytics'],
+        var result = await runServerpod(
+          ['create', projectName],
           workingDirectory: d.sandbox,
-          environment: {'SERVERPOD_HOME': rootPath},
         );
-
-        createProcess.stdout.transform(const Utf8Decoder()).listen(print);
-        createProcess.stderr.transform(const Utf8Decoder()).listen(print);
-
-        var createProjectExitCode = await createProcess.exitCode;
         assert(
-          createProjectExitCode == 0,
-          'Failed to create the serverpod project.',
+          result.exitCode == 0,
+          'Failed to create the serverpod project.${result.stderr}',
         );
 
         serverDir = path.join(
@@ -55,42 +34,15 @@ void main() async {
         );
       });
 
-      tearDown(() async {
-        createProcess.kill();
-      });
-
       test(
         'when create-migration is called with no changes then exit code is 0.',
         () async {
-          var migrationProcess = await Process.start(
-            'dart',
-            ['run', cliBinPath, 'create-migration', '--no-analytics'],
+          var result = await runServerpod(
+            ['create-migration'],
             workingDirectory: serverDir,
-            environment: {'SERVERPOD_HOME': rootPath},
           );
 
-          var stdout = <String>[];
-          var stderr = <String>[];
-
-          migrationProcess.stdout
-              .transform(const Utf8Decoder())
-              .transform(const LineSplitter())
-              .listen((line) {
-                stdout.add(line);
-                print('stdout: $line');
-              });
-
-          migrationProcess.stderr
-              .transform(const Utf8Decoder())
-              .transform(const LineSplitter())
-              .listen((line) {
-                stderr.add(line);
-                print('stderr: $line');
-              });
-
-          var exitCode = await migrationProcess.exitCode;
-
-          var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
+          var allOutput = '${result.stdout}${result.stderr}'.toLowerCase();
           expect(
             allOutput.contains('no changes detected'),
             isTrue,
@@ -98,7 +50,7 @@ void main() async {
           );
 
           expect(
-            exitCode,
+            result.exitCode,
             equals(0),
             reason: 'Empty migration (no changes) should exit with code 0',
           );
@@ -112,25 +64,17 @@ void main() async {
     () {
       late String projectName;
       late String serverDir;
-      late Process createProcess;
 
       setUp(() async {
         projectName =
             'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
 
-        createProcess = await Process.start(
-          'dart',
-          ['run', cliBinPath, 'create', projectName, '-v', '--no-analytics'],
+        var createResult = await runServerpod(
+          ['create', projectName],
           workingDirectory: d.sandbox,
-          environment: {'SERVERPOD_HOME': rootPath},
         );
-
-        createProcess.stdout.transform(const Utf8Decoder()).listen(print);
-        createProcess.stderr.transform(const Utf8Decoder()).listen(print);
-
-        var createProjectExitCode = await createProcess.exitCode;
         assert(
-          createProjectExitCode == 0,
+          createResult.exitCode == 0,
           'Failed to create the serverpod project.',
         );
 
@@ -154,29 +98,12 @@ fields:
 ''');
 
         // Create initial migration with the column
-        var initialMigrationProcess = await Process.start(
-          'dart',
-          [
-            'run',
-            cliBinPath,
-            'create-migration',
-            '--force',
-            '--no-analytics',
-          ],
+        var initialMigrationResult = await runServerpod(
+          ['create-migration', '--force'],
           workingDirectory: serverDir,
-          environment: {'SERVERPOD_HOME': rootPath},
         );
-
-        initialMigrationProcess.stdout
-            .transform(const Utf8Decoder())
-            .listen(print);
-        initialMigrationProcess.stderr
-            .transform(const Utf8Decoder())
-            .listen(print);
-
-        var initialMigrationExitCode = await initialMigrationProcess.exitCode;
         assert(
-          initialMigrationExitCode == 0,
+          initialMigrationResult.exitCode == 0,
           'Failed to create initial migration.',
         );
 
@@ -189,42 +116,15 @@ fields:
 ''');
       });
 
-      tearDown(() async {
-        createProcess.kill();
-      });
-
       test(
         'when create-migration is called without --force then exit code is 1.',
         () async {
-          var migrationProcess = await Process.start(
-            'dart',
-            ['run', cliBinPath, 'create-migration', '--no-analytics'],
+          var result = await runServerpod(
+            ['create-migration'],
             workingDirectory: serverDir,
-            environment: {'SERVERPOD_HOME': rootPath},
           );
 
-          var stdout = <String>[];
-          var stderr = <String>[];
-
-          migrationProcess.stdout
-              .transform(const Utf8Decoder())
-              .transform(const LineSplitter())
-              .listen((line) {
-                stdout.add(line);
-                print('stdout: $line');
-              });
-
-          migrationProcess.stderr
-              .transform(const Utf8Decoder())
-              .transform(const LineSplitter())
-              .listen((line) {
-                stderr.add(line);
-                print('stderr: $line');
-              });
-
-          var exitCode = await migrationProcess.exitCode;
-
-          var allOutput = [...stdout, ...stderr].join('\n').toLowerCase();
+          var allOutput = '${result.stdout}${result.stderr}'.toLowerCase();
           expect(
             allOutput.contains('warning') || allOutput.contains('aborted'),
             isTrue,
@@ -232,7 +132,7 @@ fields:
           );
 
           expect(
-            exitCode,
+            result.exitCode,
             equals(1),
             reason: 'Aborted migration should exit with code 1',
           );
@@ -242,42 +142,13 @@ fields:
       test(
         'when create-migration is called with --force then exit code is 0.',
         () async {
-          var migrationProcess = await Process.start(
-            'dart',
-            [
-              'run',
-              cliBinPath,
-              'create-migration',
-              '--force',
-              '--no-analytics',
-            ],
+          var result = await runServerpod(
+            ['create-migration', '--force'],
             workingDirectory: serverDir,
-            environment: {'SERVERPOD_HOME': rootPath},
           );
 
-          var stdout = <String>[];
-          var stderr = <String>[];
-
-          migrationProcess.stdout
-              .transform(const Utf8Decoder())
-              .transform(const LineSplitter())
-              .listen((line) {
-                stdout.add(line);
-                print('stdout: $line');
-              });
-
-          migrationProcess.stderr
-              .transform(const Utf8Decoder())
-              .transform(const LineSplitter())
-              .listen((line) {
-                stderr.add(line);
-                print('stderr: $line');
-              });
-
-          var exitCode = await migrationProcess.exitCode;
-
           expect(
-            exitCode,
+            result.exitCode,
             equals(0),
             reason: 'Migration with --force should succeed with exit code 0',
           );

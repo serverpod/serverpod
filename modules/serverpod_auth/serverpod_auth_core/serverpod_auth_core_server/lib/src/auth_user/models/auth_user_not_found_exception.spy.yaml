@@ -1,1 +1,2 @@
+### Exception thrown when attempting to access an [AuthUser] that does not exist.
 exception: AuthUserNotFoundException

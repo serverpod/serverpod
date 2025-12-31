@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// DTO for transferring user profile information.
 abstract class UserProfileModel implements _i1.SerializableModel {
   UserProfileModel._({
     required this.authUserId,

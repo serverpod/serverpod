@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../../common/integrations/token_manager_builder.dart';
+import '../../common/utils/get_passwords_extension.dart';
 import '../session.dart';
 
 /// Configuration options for the session module.
@@ -91,9 +92,9 @@ class ServerSideSessionsConfigFromPasswords extends ServerSideSessionsConfig {
     super.defaultSessionLifetime,
     super.defaultSessionInactivityTimeout,
   }) : super(
-         sessionKeyHashPepper: Serverpod.instance.getPassword(
+         sessionKeyHashPepper: Serverpod.instance.getPasswordOrThrow(
            'serverSideSessionKeyHashPepper',
-         )!,
+         ),
        );
 }
 

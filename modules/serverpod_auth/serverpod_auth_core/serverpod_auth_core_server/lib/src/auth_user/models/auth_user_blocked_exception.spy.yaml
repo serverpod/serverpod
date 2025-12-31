@@ -1,1 +1,2 @@
+### Exception thrown when a user attempts to authenticate but their account is blocked.
 exception: AuthUserBlockedException

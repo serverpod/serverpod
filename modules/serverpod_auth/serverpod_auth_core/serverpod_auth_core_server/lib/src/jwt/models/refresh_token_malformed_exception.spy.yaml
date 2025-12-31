@@ -1,1 +1,2 @@
+### Exception thrown when a refresh token string is malformed or cannot be parsed.
 exception: RefreshTokenMalformedException

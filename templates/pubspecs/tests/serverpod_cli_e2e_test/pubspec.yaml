@@ -14,10 +14,8 @@ dev_dependencies:
   async: ^2.11.0
   collection: ^1.18.0
   lints: '>=3.0.0 <7.0.0'
-  path: ^1.8.3
   serverpod_cli: SERVERPOD_VERSION
   serverpod_lints: SERVERPOD_VERSION
-  test: ^1.25.5
   test_descriptor: ^2.0.2
   uuid: ^4.1.0
 
