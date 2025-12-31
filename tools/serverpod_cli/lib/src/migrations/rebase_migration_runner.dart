@@ -188,6 +188,13 @@ class RebaseMigrationRunner {
   }) {
     for (final migration in migrations) {
       final migrationDir = Directory(path.join(source.path, migration));
+      // Ensure source directory exists
+      if (!migrationDir.existsSync()) {
+        log.error(
+          'Migration directory does not exist: ${migrationDir.path}',
+        );
+        throw ExitException(ExitException.codeError);
+      }
       final destinationMigrationDir = Directory(
         path.join(destination.path, migration),
       );
