@@ -138,7 +138,7 @@ class RebaseMigrationRunner {
     final migrationCreated = newMigration != null;
     // If a new migration was created, change the backup folder name to include the new migration name
     if (migrationCreated) {
-      backupDirectory.renameSync(
+      final renamedBackupDir = backupDirectory.renameSync(
         path.join(
           backupDirectory.parent.path,
           '.deleted_by_rebase_migration_onto_${baseMigrationId}_with_$newMigration',
@@ -146,7 +146,7 @@ class RebaseMigrationRunner {
       );
 
       log
-        ..debug('Previous migrations backed up to: ${backupDirectory.path}')
+        ..debug('Previous migrations backed up to: ${renamedBackupDir.path}')
         ..debug('Rebased unto: $baseMigrationId with migration: $newMigration')
         ..info('✅ Rebase complete');
     }
