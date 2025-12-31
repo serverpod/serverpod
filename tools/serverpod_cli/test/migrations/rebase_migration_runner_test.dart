@@ -670,6 +670,33 @@ $m2
       );
 
       test(
+        'Given a registry with multiple instances of base migration when rebasing then an ExitException is thrown',
+        () async {
+          final runner = RebaseMigrationRunner();
+          const baseMigration = m1;
+          const projectName = 'test_project';
+
+          await setupMigrations(
+            [baseMigration, m2, baseMigration, m3],
+            projectName: projectName,
+          );
+
+          expect(
+            () => runner.rebaseMigration(
+              generator: generator,
+              baseMigrationId: baseMigration,
+              config: config,
+            ),
+            throwsA(isA<ExitException>()),
+          );
+          expect(
+            testLogger.output.errorMessages,
+            contains('Multiple instances of base migration: $baseMigration'),
+          );
+        },
+      );
+
+      test(
         'Given a base migration and one migration after when rebasing then returns true, registry is updated, and backup is created',
         () async {
           const baseMigration = m1;
