@@ -21,7 +21,7 @@ class RebaseMigrationRunner {
     this.onto,
     this.check = false,
     bool force = false,
-    String tag = '',
+    String? tag,
     CreateMigrationRunner? createMigrationRunner,
   }) : createMigrationRunner =
            createMigrationRunner ??

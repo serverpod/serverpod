@@ -2,6 +2,7 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/commands/create_migration.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/migrations/rebase_migration_runner.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
@@ -33,17 +34,10 @@ enum RebaseMigrationOption<V> implements OptionDefinition<V> {
   ),
 
   /// Force
-  force(
-    FlagOption(
-      argName: 'force',
-      argAbbrev: 'f',
-      negatable: false,
-      defaultsTo: false,
-      helpText:
-          'Creates the new migration even if there are warnings or information that '
-          'may be destroyed.',
-    ),
-  );
+  force(CreateMigrationCommand.forceOption),
+
+  /// Tag
+  tag(CreateMigrationCommand.tagOption);
 
   /// {@macro rebase_migration_option}
   const RebaseMigrationOption(this.option);
@@ -78,6 +72,8 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
     // Parse command arguments
     String? onto = commandConfig.optionalValue(RebaseMigrationOption.onto);
     bool force = commandConfig.value(RebaseMigrationOption.force);
+    String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
+    bool checkMode = commandConfig.value(RebaseMigrationOption.check);
 
     // Ensure onto is not empty if specified
     if (onto != null && onto.trim().isEmpty) {
@@ -85,7 +81,6 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
-    bool checkMode = commandConfig.value(RebaseMigrationOption.check);
     if (checkMode) {
       log.info(
         'Check mode enabled. Validating that only one migration exists since base migration.',
@@ -102,6 +97,7 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
           onto: onto?.trim(),
           check: checkMode,
           force: force,
+          tag: tag?.trim(),
         );
 
     // Check migration
