@@ -133,7 +133,7 @@ features:
 
       test(
         'Given a migration that does not exist in registry when validating migration then an ExitException is thrown',
-        () async {
+        () {
           final runner = RebaseMigrationRunner();
           final migrationRegistry = MigrationRegistry(
             Directory('fake'),
