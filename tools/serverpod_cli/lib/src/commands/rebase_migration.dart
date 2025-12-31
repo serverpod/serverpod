@@ -70,13 +70,17 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
     final Configuration<RebaseMigrationOption> commandConfig,
   ) async {
     // Parse command arguments
-    String? onto = commandConfig.optionalValue(RebaseMigrationOption.onto);
+    String? onto = commandConfig
+        .optionalValue(RebaseMigrationOption.onto)
+        ?.trim();
     bool force = commandConfig.value(RebaseMigrationOption.force);
-    String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
+    String? tag = commandConfig
+        .optionalValue(CreateMigrationOption.tag)
+        ?.trim();
     bool checkMode = commandConfig.value(RebaseMigrationOption.check);
 
     // Ensure onto is not empty if specified
-    if (onto != null && onto.trim().isEmpty) {
+    if (onto != null && onto.isEmpty) {
       log.error('Cannot specify empty --onto');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
@@ -94,10 +98,10 @@ class RebaseMigrationCommand extends ServerpodCommand<RebaseMigrationOption> {
     final runner =
         rebaseMigrationRunner ??
         RebaseMigrationRunner(
-          onto: onto?.trim(),
+          onto: onto,
           check: checkMode,
           force: force,
-          tag: tag?.trim(),
+          tag: tag,
         );
 
     // Check migration
