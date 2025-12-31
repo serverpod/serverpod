@@ -853,6 +853,12 @@ $m2
           ).migrations;
           expect(registryFileMigrations, equals([baseMigration, newMigration]));
 
+          // Verify the migration regisry only has the base and new migration
+          expect(
+            generator.migrationRegistry.versions,
+            equals([baseMigration, newMigration]),
+          );
+
           // Verify backup
           final backupDir = Directory(
             path.join(
@@ -1190,9 +1196,10 @@ class MockCreateMigrationRunner extends CreateMigrationRunner {
     );
     await newMigrationDir.create();
 
+    // Invalidate the registry cache
+    generator.invalidateMigrationRegistryCache();
     // Reload registry to pick up the new folder and write it to the registry file
-    final registry = MigrationRegistry.load(migrationsDir);
-    await registry.write();
+    await generator.migrationRegistry.write();
 
     return migrationName;
   }
