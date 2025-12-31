@@ -1666,25 +1666,20 @@ void main() {
               .withClassName('${endpointName.pascalCase}Endpoint')
               .withName(endpointName)
               .withMethods([
-                MethodDefinitionBuilder()
-                    .withName(methodName)
-                    .withParameters([
-                      ParameterDefinitionBuilder()
-                          .withName('deprecatedParam')
-                          .withType(
-                            TypeDefinitionBuilder()
-                                .withClassName('String')
-                                .build(),
-                          )
-                          .withRequired(true)
-                          .withAnnotations([
-                            AnnotationDefinitionBuilder()
-                                .withName('deprecated')
-                                .build(),
-                          ])
-                          .build(),
-                    ])
-                    .buildMethodCallDefinition(),
+                MethodDefinitionBuilder().withName(methodName).withParameters([
+                  ParameterDefinitionBuilder()
+                      .withName('deprecatedParam')
+                      .withType(
+                        TypeDefinitionBuilder().withClassName('String').build(),
+                      )
+                      .withRequired(true)
+                      .withAnnotations([
+                        AnnotationDefinitionBuilder()
+                            .withName('deprecated')
+                            .build(),
+                      ])
+                      .build(),
+                ]).buildMethodCallDefinition(),
               ])
               .build(),
         ],
@@ -1723,26 +1718,21 @@ void main() {
               .withClassName('${endpointName.pascalCase}Endpoint')
               .withName(endpointName)
               .withMethods([
-                MethodDefinitionBuilder()
-                    .withName(methodName)
-                    .withParameters([
-                      ParameterDefinitionBuilder()
-                          .withName('deprecatedParam')
-                          .withType(
-                            TypeDefinitionBuilder()
-                                .withClassName('String')
-                                .build(),
-                          )
-                          .withRequired(true)
-                          .withAnnotations([
-                            AnnotationDefinitionBuilder()
-                                .withName('Deprecated')
-                                .withArguments(["'This parameter is deprecated'"])
-                                .build(),
-                          ])
-                          .build(),
-                    ])
-                    .buildMethodCallDefinition(),
+                MethodDefinitionBuilder().withName(methodName).withParameters([
+                  ParameterDefinitionBuilder()
+                      .withName('deprecatedParam')
+                      .withType(
+                        TypeDefinitionBuilder().withClassName('String').build(),
+                      )
+                      .withRequired(true)
+                      .withAnnotations([
+                        AnnotationDefinitionBuilder()
+                            .withName('Deprecated')
+                            .withArguments(["'This parameter is deprecated'"])
+                            .build(),
+                      ])
+                      .build(),
+                ]).buildMethodCallDefinition(),
               ])
               .build(),
         ],
@@ -1760,12 +1750,17 @@ void main() {
 
       late var testToolsFile = codeMap[expectedFileName];
 
-      test('then test method has @Deprecated annotation with message on parameter.', () {
-        expect(
-          testToolsFile,
-          contains("@Deprecated('This parameter is deprecated') String deprecatedParam"),
-        );
-      });
+      test(
+        'then test method has @Deprecated annotation with message on parameter.',
+        () {
+          expect(
+            testToolsFile,
+            contains(
+              "@Deprecated('This parameter is deprecated') String deprecatedParam",
+            ),
+          );
+        },
+      );
     },
   );
 }

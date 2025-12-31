@@ -56,7 +56,7 @@ class TestEndpoint extends Endpoint {
           var endpoint = endpointDefinitions.firstWhere(
             (e) => e.className == 'TestEndpoint',
           );
-          
+
           var method = endpoint.methods.first;
           var parameter = method.parameters.first;
 
@@ -102,14 +102,17 @@ class TestEndpoint extends Endpoint {
           var endpoint = endpointDefinitions.firstWhere(
             (e) => e.className == 'TestEndpoint',
           );
-          
+
           var method = endpoint.methods.first;
           var parameter = method.parameters.first;
 
           expect(parameter.annotations, hasLength(1));
           expect(parameter.annotations.first.name, 'Deprecated');
           expect(parameter.annotations.first.arguments, isNotNull);
-          expect(parameter.annotations.first.arguments!.first, contains('param is deprecated'));
+          expect(
+            parameter.annotations.first.arguments!.first,
+            contains('param is deprecated'),
+          );
         },
       );
     },

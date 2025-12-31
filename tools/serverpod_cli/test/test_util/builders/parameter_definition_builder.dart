@@ -26,7 +26,9 @@ class ParameterDefinitionBuilder {
     return this;
   }
 
-  ParameterDefinitionBuilder withAnnotations(List<AnnotationDefinition> annotations) {
+  ParameterDefinitionBuilder withAnnotations(
+    List<AnnotationDefinition> annotations,
+  ) {
     _annotations = annotations;
     return this;
   }
