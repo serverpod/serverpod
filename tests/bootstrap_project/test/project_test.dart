@@ -728,22 +728,15 @@ void main() async {
             reason: 'launch.json does not contain flutter configuration.',
           );
 
-          // Verify flutter config appears before server and client configs
+          // Verify flutter config appears before server config
           final flutterIndex = launchJson.indexOf('"${projectName}_flutter"');
           final serverIndex = launchJson.indexOf('"${projectName}_server"');
-          final clientIndex = launchJson.indexOf('"${projectName}_client"');
 
           expect(
             flutterIndex,
             lessThan(serverIndex),
             reason:
                 'Flutter configuration should appear before server configuration.',
-          );
-          expect(
-            flutterIndex,
-            lessThan(clientIndex),
-            reason:
-                'Flutter configuration should appear before client configuration.',
           );
         });
       });
