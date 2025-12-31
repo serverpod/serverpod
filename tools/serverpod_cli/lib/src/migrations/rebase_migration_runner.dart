@@ -68,30 +68,38 @@ class RebaseMigrationRunner {
     var registryFile = generator.migrationRegistry.migrationRegistryFile;
 
     // Split the history into two lists around the base migration
-    final List<List<String>> versions;
+    final List<List<String>> versionPartitions;
     // If there is a merge conflict, extract the migrations
     if (registryFile.hasMergeConflict) {
       // Up to base migration will be the common and incoming migrations
       // Local migrations will be the migrations after the base migration
       final (:common, :local, :incoming) = registryFile.extractMigrations();
-      versions = [
+      versionPartitions = [
         [...common, ...incoming],
         local,
       ];
     }
     // Split at base migration, since the history should be linear
     else {
-      versions = registryFile.migrations
+      versionPartitions = registryFile.migrations
           .splitBetween((m1, m2) => m1 == baseMigrationId)
           .toList();
     }
 
     // If there are no migrations since base migration, exit with error
-    if (versions.length < 2) {
+    if (versionPartitions.length < 2) {
       log.error('No migrations since base migration: $baseMigrationId');
       throw ExitException(ExitException.codeError);
     }
-    final [toBase, since] = versions;
+
+    // If there are more than two version partitions, i.e. multiple instances of base migration
+    // exit with error
+    if (versionPartitions.length > 2) {
+      log.error('Multiple instances of base migration: $baseMigrationId');
+      throw ExitException(ExitException.codeError);
+    }
+
+    final [toBase, since] = versionPartitions;
 
     // Backup migrations
     final backupDirectory = backupMigrations(
