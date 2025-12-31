@@ -156,5 +156,7 @@ class MigrationRegistryFile {
       ..write('\n');
 
     await file.writeAsString(out.toString());
+
+    invalidateCache();
   }
 }
