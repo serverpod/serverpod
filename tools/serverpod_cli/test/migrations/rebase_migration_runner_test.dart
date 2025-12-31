@@ -677,6 +677,94 @@ $m2
       );
     });
 
+    group('moveMigrations', () {
+      test(
+        'Given a list of migrations when moving migrations then the folders are moved to the destination and no longer present in source',
+        () async {
+          final runner = RebaseMigrationRunner();
+          const projectName = 'test_project';
+          final source = await setupMigrations(
+            [m1, m2],
+            projectName: projectName,
+          );
+          final destination = Directory(path.join(d.sandbox, 'destination'));
+          await destination.create();
+
+          runner.moveMigrations(
+            migrations: [m1, m2],
+            source: source,
+            destination: destination,
+          );
+
+          expect(Directory(path.join(source.path, m1)).existsSync(), isFalse);
+          expect(Directory(path.join(source.path, m2)).existsSync(), isFalse);
+          expect(
+            Directory(path.join(destination.path, m1)).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(path.join(destination.path, m2)).existsSync(),
+            isTrue,
+          );
+        },
+      );
+
+      test(
+        'Given a non-existent source migration directory when moving migrations then an ExitException is thrown',
+        () async {
+          final runner = RebaseMigrationRunner();
+          final source = Directory(path.join(d.sandbox, 'source'));
+          await source.create();
+          final destination = Directory(path.join(d.sandbox, 'destination'));
+          await destination.create();
+
+          expect(
+            () => runner.moveMigrations(
+              migrations: [m1],
+              source: source,
+              destination: destination,
+            ),
+            throwsA(isA<ExitException>()),
+          );
+          expect(
+            testLogger.output.errorMessages,
+            contains(
+              'Migration directory does not exist: ${path.join(source.path, m1)}',
+            ),
+          );
+        },
+      );
+
+      test(
+        'Given an existing destination migration directory when moving migrations then an ExitException is thrown',
+        () async {
+          final runner = RebaseMigrationRunner();
+          final source = Directory(path.join(d.sandbox, 'source'));
+          await source.create();
+          await Directory(path.join(source.path, m1)).create();
+
+          final destination = Directory(path.join(d.sandbox, 'destination'));
+          await destination.create();
+          await Directory(path.join(destination.path, m1)).create();
+
+          expect(
+            () => runner.moveMigrations(
+              migrations: [m1],
+              source: source,
+              destination: destination,
+            ),
+            throwsA(isA<ExitException>()),
+          );
+          expect(
+            testLogger.output.errorMessages,
+            contains(
+              'Destination directory already exists: ${path.join(destination.path, m1)}',
+            ),
+          );
+        },
+      );
+    });
+
     group('rebaseMigration', () {
       test(
         'Given a base migration with no migrations since then an ExitException is thrown',
