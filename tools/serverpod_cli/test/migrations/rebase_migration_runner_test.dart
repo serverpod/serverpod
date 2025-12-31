@@ -889,6 +889,136 @@ $incoming2
           );
         },
       );
+
+      test(
+        'Given a failure during createMigration when rebasing then rollback occurs',
+        () async {
+          const baseMigration = m1;
+          const migration2 = m2;
+          final mockCreateRunner = MockFailingCreateMigrationRunner();
+          final runner = RebaseMigrationRunner(
+            createMigrationRunner: mockCreateRunner,
+          );
+
+          final migrationsDir = await setupMigrations([
+            baseMigration,
+            migration2,
+          ]);
+
+          final registryFile = File(
+            path.join(migrationsDir.path, 'migration_registry.txt'),
+          );
+          final originalRegistryContent = registryFile.readAsStringSync();
+
+          await expectLater(
+            runner.rebaseMigration(
+              generator: generator,
+              baseMigrationId: baseMigration,
+              config: config,
+            ),
+            throwsA(isA<ExitException>()),
+          );
+
+          expect(
+            testLogger.output.errorMessages,
+            contains('Rebase failed. Changes reverted.'),
+          );
+
+          // Verify migrations are restored
+          expect(
+            Directory(path.join(migrationsDir.path, migration2)).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(
+              path.join(migrationsDir.path, baseMigration),
+            ).existsSync(),
+            isTrue,
+          );
+
+          // Verify registry is restored
+          expect(registryFile.readAsStringSync(), originalRegistryContent);
+
+          // Verify backup directory is gone (since it was moved back)
+          final backupPath = runner.getBackupDirPath(baseMigration);
+          final backupDir = Directory(
+            path.join(migrationsDir.parent.path, backupPath),
+          );
+          expect(backupDir.existsSync(), isFalse);
+        },
+      );
+
+      test(
+        'Given a registry conflict and a failure during createMigration when rebasing then rollback occurs and restores conflict',
+        () async {
+          const common = m1;
+          const local = m2;
+          const incoming = m3;
+          final mockCreateRunner = MockFailingCreateMigrationRunner();
+          final runner = RebaseMigrationRunner(
+            createMigrationRunner: mockCreateRunner,
+          );
+
+          final migrationsDir = await setupMigrations([
+            common,
+            local,
+            incoming,
+          ]);
+
+          final registryFile = File(
+            path.join(migrationsDir.path, 'migration_registry.txt'),
+          );
+          const conflictedContent =
+              '''
+$common
+<<<<<<< HEAD
+$local
+=======
+$incoming
+>>>>>>> incoming
+''';
+          registryFile.writeAsStringSync(conflictedContent);
+
+          await expectLater(
+            runner.rebaseMigration(
+              generator: generator,
+              baseMigrationId: incoming,
+              config: config,
+            ),
+            throwsA(isA<ExitException>()),
+          );
+
+          expect(
+            testLogger.output.errorMessages,
+            contains('Rebase failed. Changes reverted.'),
+          );
+
+          // Verify migrations are restored
+          expect(
+            Directory(path.join(migrationsDir.path, local)).existsSync(),
+            isTrue,
+          );
+          expect(
+            Directory(path.join(migrationsDir.path, common)).existsSync(),
+            isTrue,
+          );
+
+          // Verify registry is restored to conflicted state
+          var registryFileContents = registryFile.readAsStringSync();
+          expect(registryFileContents, contains('<<<<<<< HEAD'));
+          expect(registryFileContents, contains(local));
+          expect(registryFileContents, contains('======='));
+          expect(registryFileContents, contains(incoming));
+          expect(registryFileContents, contains('>>>>>>> incoming'));
+
+          // Verify backup directory is gone
+          final backupPath = runner.getBackupDirPath(incoming);
+          final backupDir = Directory(
+            path.join(migrationsDir.parent.path, backupPath),
+          );
+          expect(backupDir.existsSync(), isFalse);
+        },
+      );
     });
   });
 }
@@ -915,5 +1045,17 @@ class MockCreateMigrationRunner extends CreateMigrationRunner {
     await registry.write();
 
     return migrationName;
+  }
+}
+
+class MockFailingCreateMigrationRunner extends CreateMigrationRunner {
+  MockFailingCreateMigrationRunner() : super(force: false, tag: '');
+
+  @override
+  Future<String> createMigration({
+    required MigrationGenerator generator,
+    required GeneratorConfig config,
+  }) async {
+    throw Exception('Simulated failure during migration creation');
   }
 }
