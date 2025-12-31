@@ -67,6 +67,9 @@ class RebaseMigrationRunner {
     // Get all migrations before and since base migration
     var registryFile = generator.migrationRegistry.migrationRegistryFile;
 
+    // Cache the registry file content for the duration of the rebase
+    registryFile.cacheContent();
+
     // Split the history into two lists around the base migration
     final List<List<String>> versionPartitions;
     // If there is a merge conflict, extract the migrations
@@ -153,6 +156,11 @@ class RebaseMigrationRunner {
       log.error('Rebase failed. Changes reverted.');
       throw ExitException(ExitException.codeError);
     }
+
+    // Invalidate the registry file cache
+    registryFile.invalidateCache();
+
+    // Return true if a new migration was created
     return migrationCreated;
   }
 
