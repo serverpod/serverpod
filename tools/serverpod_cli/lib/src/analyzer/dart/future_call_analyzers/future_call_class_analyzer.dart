@@ -37,6 +37,26 @@ abstract class FutureCallClassAnalyzer {
     var classDocumentationComment = element.documentationComment;
     var annotations = element.futureCallAnnotations;
 
+    var parentClass = element.supertype?.element;
+    var parentClassName = parentClass?.name;
+
+    if (parentClass is ClassElement &&
+        parentClassName != null &&
+        parentClassName != 'FutureCall') {
+      var parentFilePath = parentClass.library == element.library
+          ? filePath
+          : parentClass.library.identifier;
+
+      parse(
+        parentClass,
+        validationErrors,
+        parentFilePath,
+        futureCallDefinitions,
+        templateRegistry: templateRegistry,
+        parameterValidator: parameterValidator,
+      );
+    }
+
     futureCallDefinitions.add(
       FutureCallDefinition(
         name: futureCallName,
@@ -95,11 +115,11 @@ abstract class FutureCallClassAnalyzer {
     return '{$filePath}_${element.name}';
   }
 
-  /// Returns true if the [ClassElement] is an active future call class that should
+  /// Returns true if the [ClassElement] is a future call class that should
   /// be validated and parsed.
   static bool isFutureCallClass(ClassElement element) {
     if (!element.isConstructable && !element.isAbstract) return false;
-    if (!element.isFutureCallSpec) return false;
+    if (element.isNotFutureCallSpec) return false;
     return isFutureCallInterface(element);
   }
 
@@ -154,7 +174,7 @@ abstract class FutureCallClassAnalyzer {
 }
 
 extension on ClassElement {
-  /// Returns all the methods from the class which are callable as FutureCall.
+  /// Returns all the methods from the [ClassElement] which are callable as FutureCall.
   /// This means only methods with parameter(s) and a return type
   /// of Future will be returned.
   /// Only returns methods that are defined directly on the class
@@ -164,6 +184,7 @@ extension on ClassElement {
     required String filePath,
   }) {
     var futureCallMethods = <MethodElement>[];
+    var handledMethods = <String>{};
 
     for (final method in methods) {
       if (FutureCallMethodAnalyzer.isFutureCallMethod(method) &&
@@ -172,17 +193,45 @@ extension on ClassElement {
           )) {
         futureCallMethods.add(method);
       }
+      handledMethods.add(method.name!);
+    }
+
+    var inheritedMethods = allSupertypes
+        .map((s) => s.element)
+        .whereType<ClassElement>()
+        .where(FutureCallClassAnalyzer.isFutureCallInterface)
+        .expand((s) => s.methods);
+
+    for (var method in inheritedMethods) {
+      if (handledMethods.contains(method.name)) {
+        continue;
+      }
+
+      if (FutureCallMethodAnalyzer.isFutureCallMethod(method)) {
+        futureCallMethods.add(method);
+      }
+
+      handledMethods.add(method.name!);
     }
 
     return futureCallMethods;
   }
 
-  /// Returns true if the generic type argument on this element's
-  /// super type is SerializableModel. Otherwise, returns false.
-  /// This is useful to treat conforming elements as generation specs
-  /// for future calls. It is also useful avoid re-analyzing
-  /// generated FutureCall classes and user-defined ones.
-  bool get isFutureCallSpec =>
-      supertype?.typeArguments.firstOrNull?.element?.name ==
-      Keyword.serializableModelClassName;
+  /// Returns true if the [ClassElement] does not represent a valid future call spec.
+  /// A future call spec must have a FutureCall super type in its heirarchy
+  /// with generic argument of type SerializableModel.
+  /// This is useful to treat conforming elements as generation specs for future calls.
+  /// It is also useful avoid re-analyzing generated FutureCall classes
+  /// and legacy user-defined ones.
+  bool get isNotFutureCallSpec {
+    if (methods.length == 1 && methods.first.name == 'invoke') {
+      return true;
+    }
+    return !allSupertypes.any(
+      (type) =>
+          type.element.name == 'FutureCall' &&
+          type.typeArguments.firstOrNull?.element?.name ==
+              Keyword.serializableModelClassName,
+    );
+  }
 }

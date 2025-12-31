@@ -30,11 +30,9 @@ class FutureCallsAnalyzer {
   /// provided [directory].
   FutureCallsAnalyzer({
     required Directory directory,
-    required Directory generatedDirectory,
     required this.parameterValidator,
   }) : collection = AnalysisContextCollection(
          includedPaths: [directory.absolute.path],
-         excludedPaths: [generatedDirectory.absolute.path],
          resourceProvider: PhysicalResourceProvider.INSTANCE,
          sdkPath: findDartSdk(),
        ),

@@ -152,15 +152,8 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
       modelAnalyzer: modelAnalyzer,
     );
 
-    var generatedDirectory = Directory(
-      path.joinAll([
-        ...config.libSourcePathParts,
-        ...config.generatedServeModelPathParts,
-      ]),
-    );
     var futureCallsAnalyzer = FutureCallsAnalyzer(
       directory: libDirectory,
-      generatedDirectory: generatedDirectory,
       parameterValidator: parameterValidator,
     );
 

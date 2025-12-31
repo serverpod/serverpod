@@ -37,9 +37,6 @@ void main() {
     var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
-    var testGeneratedDirectory = Directory(
-      path.join(testDirectory.path, 'src', 'generated'),
-    );
 
     late List<FutureCallDefinition> futureCallDefinitions;
     late FutureCallsAnalyzer analyzer;
@@ -64,7 +61,6 @@ class ExampleFutureCall extends FutureCall {
 
       analyzer = FutureCallsAnalyzer(
         directory: testDirectory,
-        generatedDirectory: testGeneratedDirectory,
         parameterValidator: parameterValidator,
       );
 
@@ -120,9 +116,6 @@ class ExampleFutureCall extends FutureCall {
     var testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
-    var testGeneratedDirectory = Directory(
-      path.join(testDirectory.path, 'src', 'generated'),
-    );
 
     late List<FutureCallDefinition> futureCallDefinitions;
     late FutureCallsAnalyzer analyzer;
@@ -148,7 +141,6 @@ class ExampleFutureCall extends FutureCall {
 
       analyzer = FutureCallsAnalyzer(
         directory: testDirectory,
-        generatedDirectory: testGeneratedDirectory,
         parameterValidator: parameterValidator,
       );
 
@@ -171,14 +163,59 @@ class ExampleFutureCall extends FutureCall {
   });
 
   group(
-    'Given a future call class that does not extend FutureCall<SerializableModel> ',
+    'Given a future call class that has only the overriden invoke method',
     () {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
-      var testGeneratedDirectory = Directory(
-        path.join(testDirectory.path, 'src', 'generated'),
+
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+      setUpAll(() async {
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  @override
+  Future<void> invoke(Session session, SerializableModel? object) async {
+    session.log('\$object');
+  }
+}
+''');
+
+        final parameterValidator = FutureCallMethodParameterValidator(
+          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
+        );
+
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          parameterValidator: parameterValidator,
+        );
+
+        futureCallDefinitions = await analyzer.analyze(collector: collector);
+      });
+
+      test('then no validation errors are reported.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then no future call definition is created.', () {
+        expect(futureCallDefinitions, isEmpty);
+      });
+    },
+  );
+
+  group(
+    'Given a future call class that does not extend FutureCall<SerializableModel> ',
+    () {
+      var collector = CodeGenerationCollector();
+      var testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
       late List<FutureCallDefinition> futureCallDefinitions;
@@ -206,7 +243,6 @@ class ExampleFutureCall extends FutureCall<SimpleData> {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
-          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -229,9 +265,6 @@ class ExampleFutureCall extends FutureCall<SimpleData> {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-      var testGeneratedDirectory = Directory(
-        path.join(testDirectory.path, 'src', 'generated'),
       );
 
       late List<FutureCallDefinition> futureCallDefinitions;
@@ -257,7 +290,6 @@ class ExampleFutureCall extends FutureCall<SerializableModel> {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
-          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -280,9 +312,6 @@ class ExampleFutureCall extends FutureCall<SerializableModel> {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-      var testGeneratedDirectory = Directory(
-        path.join(testDirectory.path, 'src', 'generated'),
       );
 
       late List<FutureCallDefinition> futureCallDefinitions;
@@ -308,7 +337,6 @@ class ExampleFutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
-          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 
@@ -331,9 +359,6 @@ class ExampleFutureCall {
       var collector = CodeGenerationCollector();
       var testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-      var testGeneratedDirectory = Directory(
-        path.join(testDirectory.path, 'src', 'generated'),
       );
 
       late List<FutureCallDefinition> futureCallDefinitions;
@@ -372,7 +397,6 @@ class ExampleFutureCall extends FutureCall {
 
         analyzer = FutureCallsAnalyzer(
           directory: testDirectory,
-          generatedDirectory: testGeneratedDirectory,
           parameterValidator: parameterValidator,
         );
 

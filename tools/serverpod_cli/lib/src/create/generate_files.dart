@@ -44,16 +44,8 @@ class GenerateFiles {
       modelAnalyzer: modelAnalyzer,
     );
 
-    var generatedDirectory = Directory(
-      p.joinAll([
-        ...config.libSourcePathParts,
-        ...config.generatedServeModelPathParts,
-      ]),
-    );
-
     var futureCallsAnalyzer = FutureCallsAnalyzer(
       directory: libDirectory,
-      generatedDirectory: generatedDirectory,
       parameterValidator: parameterValidator,
     );
 
