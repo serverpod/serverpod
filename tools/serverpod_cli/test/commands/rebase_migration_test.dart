@@ -67,6 +67,12 @@ class MockRebaseMigrationRunner extends RebaseMigrationRunner {
   }
 
   @override
+  void ensureBaseMigration(
+    MigrationRegistry migrationRegistry,
+    String baseMigrationId,
+  ) {}
+
+  @override
   Future<bool> checkMigration(
     MigrationRegistry migrationRegistry,
     String baseMigrationId,
