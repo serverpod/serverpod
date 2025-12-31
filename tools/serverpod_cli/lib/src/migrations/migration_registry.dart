@@ -38,12 +38,13 @@ class MigrationRegistry {
 
   /// Returns a [MigrationRegistryFile] instance for managing the migration
   /// registry file in this module's migration directory.
-  late MigrationRegistryFile migrationRegistryFile = MigrationRegistryFile(
-    path.join(
-      moduleMigrationDirectory.path,
-      _migrationRegistryFileName,
-    ),
-  );
+  late final MigrationRegistryFile migrationRegistryFile =
+      MigrationRegistryFile(
+        path.join(
+          moduleMigrationDirectory.path,
+          _migrationRegistryFileName,
+        ),
+      );
 
   /// Returns the File where migration versions are stored for this module.
   ///
