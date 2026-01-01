@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/migrations/migration_registry_file.dart';
 import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
@@ -11,11 +12,7 @@ import 'package:uuid/uuid.dart';
 void main() {
   late String projectName;
   late String serverDir;
-
-  // We need to match the markers used in MigrationRegistryFile
-  const startMarker = '<<<<<<< search';
-  const middleMarker = '=======';
-  const endMarker = '>>>>>>> replace';
+  late Directory migrationsDir;
 
   Future<void> createProject() async {
     projectName =
@@ -26,9 +23,27 @@ void main() {
     );
     assert(result.exitCode == 0, 'Failed to create project: ${result.stderr}');
     serverDir = path.join(d.sandbox, projectName, '${projectName}_server');
+    migrationsDir = Directory(path.join(serverDir, 'migrations'));
   }
 
-  Future<void> writeModel(String name, String content) async {
+  Future<void> writeModel(String name, List<String> fields) async {
+    var timestamp = DateTime.now().millisecondsSinceEpoch;
+    var className = name
+        .split('_')
+        .map((e) => e.isEmpty ? '' : e[0].toUpperCase() + e.substring(1))
+        .join('');
+    var tableName = '${name}_$timestamp';
+
+    var content =
+        '''
+class: $className
+table: $tableName
+fields:
+''';
+    for (var field in fields) {
+      content += '  $field\n';
+    }
+
     final modelFile = File(
       path.join(serverDir, 'lib', 'src', 'protocol', '$name.yaml'),
     );
@@ -54,7 +69,6 @@ void main() {
   }
 
   List<String> getMigrationNames() {
-    final migrationsDir = Directory(path.join(serverDir, 'migrations'));
     if (!migrationsDir.existsSync()) return [];
     return migrationsDir
         .listSync()
@@ -79,7 +93,7 @@ void main() {
           // 1. First migration (v1) - our base
           await writeModel(
             'example',
-            'class: Example\ntable: example\nfields:\n  name: String',
+            ['name: String'],
           );
           await createMigration();
           final v1 = getMigrationNames().last;
@@ -87,7 +101,7 @@ void main() {
           // 2. Second migration (v2)
           await writeModel(
             'other',
-            'class: Other\ntable: other\nfields:\n  name: String\n  age: int',
+            ['name: String', 'age: int'],
           );
           await createMigration();
           final v2 = getMigrationNames().last;
@@ -95,7 +109,7 @@ void main() {
           // 3. Third migration (v3)
           await writeModel(
             'third',
-            'class: Third\ntable: third\nfields:\n  name: String',
+            ['name: String'],
           );
           await createMigration();
           final v3 = getMigrationNames().last;
@@ -142,7 +156,7 @@ void main() {
           // 1. First migration (v1)
           await writeModel(
             'example',
-            'class: Example\ntable: example\nfields:\n  name: String',
+            ['name: String'],
           );
           await createMigration();
           final v1 = getMigrationNames().last;
@@ -150,7 +164,7 @@ void main() {
           // 2. Second migration (v2)
           await writeModel(
             'other',
-            'class: Other\ntable: other\nfields:\n  name: String',
+            ['name: String'],
           );
           await createMigration();
 
@@ -176,7 +190,7 @@ void main() {
           // 1. v1
           await writeModel(
             'example',
-            'class: Example\ntable: example\nfields:\n  name: String',
+            ['name: String'],
           );
           await createMigration();
           final v1 = getMigrationNames().last;
@@ -184,7 +198,7 @@ void main() {
           // 2. v2 (intermediate)
           await writeModel(
             'other',
-            'class: Other\ntable: other\nfields:\n  name: String',
+            ['name: String'],
           );
           await createMigration();
           final v2 = getMigrationNames().last;
@@ -192,7 +206,7 @@ void main() {
           // 3. v3 (to be collapsed)
           await writeModel(
             'third',
-            'class: Third\ntable: third\nfields:\n  name: String',
+            ['name: String'],
           );
           await createMigration();
           final v3 = getMigrationNames().last;
@@ -200,7 +214,7 @@ void main() {
           // 4. v4 (to be collapsed)
           await writeModel(
             'fourth',
-            'class: Fourth\ntable: fourth\nfields:\n  name: String',
+            ['name: String'],
           );
           await createMigration();
           final v4 = getMigrationNames().last;
@@ -228,7 +242,7 @@ void main() {
             // 1. First migration (v1)
             await writeModel(
               'example',
-              'class: Example\ntable: example\nfields:\n  name: String',
+              ['name: String'],
             );
             await createMigration();
             final v1 = getMigrationNames().last;
@@ -236,7 +250,7 @@ void main() {
             // 2. Second migration (v2)
             await writeModel(
               'other',
-              'class: Other\ntable: other\nfields:\n  name: String',
+              ['name: String'],
             );
             await createMigration();
 
@@ -262,7 +276,7 @@ void main() {
             // 1. First migration (v1)
             await writeModel(
               'example',
-              'class: Example\ntable: example\nfields:\n  name: String',
+              ['name: String'],
             );
             await createMigration();
             final v1 = getMigrationNames().last;
@@ -273,7 +287,7 @@ void main() {
             // 2. Second migration (v2)
             await writeModel(
               'other',
-              'class: Other\ntable: other\nfields:\n  name: String',
+              ['name: String'],
             );
             await createMigration();
 
@@ -283,7 +297,7 @@ void main() {
             // 3. Third migration (v3)
             await writeModel(
               'third',
-              'class: Third\ntable: third\nfields:\n  name: String',
+              ['name: String'],
             );
             await createMigration();
 
@@ -319,7 +333,7 @@ void main() {
             // v1
             await writeModel(
               'example',
-              'class: Example\ntable: example\nfields:\n  name: String',
+              ['name: String'],
             );
             await createMigration();
             final v1 = getMigrationNames().last;
@@ -327,7 +341,7 @@ void main() {
             // v2 (local)
             await writeModel(
               'other',
-              'class: Other\ntable: other\nfields:\n  name: String',
+              ['name: String'],
             );
             await createMigration();
             final v2 = getMigrationNames().last;
@@ -335,7 +349,7 @@ void main() {
             // v3 (simulated incoming)
             await writeModel(
               'third',
-              'class: Third\ntable: third\nfields:\n  name: String',
+              ['name: String'],
             );
             await createMigration();
             final v3 = getMigrationNames().last;
@@ -345,12 +359,13 @@ void main() {
               path.join(serverDir, 'migrations', 'migration_registry.txt'),
             );
             registryFile.writeAsStringSync('''
+${previousMigrations.join('\n')}
 $v1
-$startMarker
+${MigrationRegistryFile.startMarker}
 $v2
-$middleMarker
+${MigrationRegistryFile.middleMarker}
 $v3
-$endMarker
+${MigrationRegistryFile.endMarker} replace
 ''');
 
             // Rebase. Should pick v3 as base.
@@ -366,7 +381,7 @@ $endMarker
 
             // Verify registry is resolved
             final content = registryFile.readAsStringSync();
-            expect(content, isNot(contains(startMarker)));
+            expect(content, isNot(contains(MigrationRegistryFile.startMarker)));
             expect(content, contains(v1));
             expect(content, contains(v3));
             expect(content, isNot(contains(v2)));
@@ -381,7 +396,7 @@ $endMarker
             // v1
             await writeModel(
               'example',
-              'class: Example\ntable: example\nfields:\n  name: String',
+              ['name: String'],
             );
             await createMigration();
             final v1 = getMigrationNames().last;
@@ -389,7 +404,7 @@ $endMarker
             // v2 (local)
             await writeModel(
               'local',
-              'class: Local\ntable: local\nfields:\n  name: String',
+              ['name: String'],
             );
             await createMigration();
             final v2 = getMigrationNames().last;
@@ -397,7 +412,7 @@ $endMarker
             // v3 (incoming 1)
             await writeModel(
               'incoming1',
-              'class: IncomingOne\ntable: incoming_one\nfields:\n  name: String',
+              ['name: String'],
             );
             await createMigration();
             final v3 = getMigrationNames().last;
@@ -405,7 +420,7 @@ $endMarker
             // v4 (incoming 2)
             await writeModel(
               'incoming2',
-              'class: IncomingTwo\ntable: incoming_two\nfields:\n  name: String',
+              ['name: String'],
             );
             await createMigration();
             final v4 = getMigrationNames().last;
@@ -416,12 +431,12 @@ $endMarker
             );
             registryFile.writeAsStringSync('''
 $v1
-$startMarker
+${MigrationRegistryFile.startMarker}
 $v2
-$middleMarker
+${MigrationRegistryFile.middleMarker}
 $v3
 $v4
-$endMarker
+${MigrationRegistryFile.endMarker} replace
 ''');
 
             // Rebase. Should pick v4 as base.
@@ -437,7 +452,7 @@ $endMarker
             expect(postRebase.length, previousMigrations.length + 4);
 
             final content = registryFile.readAsStringSync();
-            expect(content, isNot(contains(startMarker)));
+            expect(content, isNot(contains(MigrationRegistryFile.startMarker)));
             expect(content, contains(v1));
             expect(content, contains(v3));
             expect(content, contains(v4));
@@ -460,7 +475,7 @@ $endMarker
             // v1
             await writeModel(
               'example',
-              'class: Example\ntable: example\nfields:\n  name: String',
+              ['name: String'],
             );
             await createMigration();
             final v1 = getMigrationNames().last;
@@ -468,7 +483,7 @@ $endMarker
             // v2 (destructive: remove name column)
             await writeModel(
               'example',
-              'class: Example\ntable: example\nfields:\n',
+              [],
             ); // Removed name
             await createMigration([
               '--force',
@@ -495,7 +510,7 @@ $endMarker
             // v1
             await writeModel(
               'example',
-              'class: Example\ntable: example\nfields:\n  name: String',
+              ['name: String'],
             );
             await createMigration();
             final v1 = getMigrationNames().last;
@@ -503,7 +518,7 @@ $endMarker
             // v2 (destructive: remove name column)
             await writeModel(
               'example',
-              'class: Example\ntable: example\nfields:\n',
+              [],
             ); // Removed name
             await createMigration([
               '--force',
@@ -530,7 +545,7 @@ $endMarker
             // v1
             await writeModel(
               'example',
-              'class: Example\ntable: example\nfields:\n  name: String',
+              ['name: String'],
             );
             await createMigration();
             final v1 = getMigrationNames().last;
@@ -538,7 +553,7 @@ $endMarker
             // v2 (destructive: remove name column)
             await writeModel(
               'example',
-              'class: Example\ntable: example\nfields:\n',
+              [],
             ); // Removed name
             await createMigration([
               '--force',
