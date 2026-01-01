@@ -117,8 +117,11 @@ features:
 
   /// Runs the rebase migration command with the given arguments
   Future<void> runRebase(_RebaseMigrationArgs args) async {
-    await runner.run(args.args);
-    Directory.current = originalDir;
+    try {
+      await runner.run(args.args);
+    } finally {
+      Directory.current = originalDir;
+    }
   }
 
   tearDown(() {
