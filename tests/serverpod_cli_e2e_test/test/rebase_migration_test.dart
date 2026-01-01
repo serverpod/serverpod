@@ -22,7 +22,11 @@ void main() {
       ['create', projectName],
       workingDirectory: d.sandbox,
     );
-    assert(result.exitCode == 0, 'Failed to create project: ${result.stderr}');
+    expect(
+      result.exitCode,
+      0,
+      reason: 'Failed to create project: ${result.stderr}',
+    );
     serverDir = path.join(d.sandbox, projectName, '${projectName}_server');
     migrationsDir = Directory(path.join(serverDir, 'migrations'));
   }
@@ -328,7 +332,7 @@ fields:
             );
             await createMigration();
 
-            // Pause to ensure v1 is created before v2
+            // Pause to ensure v2 is created before v3
             await Future.delayed(const Duration(milliseconds: 2));
 
             // 4. Run rebase-migration --check --onto v1
