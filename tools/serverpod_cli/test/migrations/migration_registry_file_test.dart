@@ -67,11 +67,11 @@ $m2
         () {
           File(filePath).writeAsStringSync('''
 $m1
-<<<<<<< HEAD
+${MigrationRegistryFile.startMarker}
 $m2
-=======
+${MigrationRegistryFile.middleMarker}
 $m3
->>>>>>> feature-branch
+${MigrationRegistryFile.endMarker} feature-branch
 ''');
           final registryFile = MigrationRegistryFile(filePath);
 
@@ -86,11 +86,11 @@ $m3
         () {
           File(filePath).writeAsStringSync('''
 $m1
-<<<<<<< HEAD
+${MigrationRegistryFile.startMarker}
 $m2
-=======
+${MigrationRegistryFile.middleMarker}
 $m3
->>>>>>> feature-branch
+${MigrationRegistryFile.endMarker} feature-branch
 ''');
           final registryFile = MigrationRegistryFile(filePath);
 
@@ -113,7 +113,7 @@ $m3
         () {
           File(filePath).writeAsStringSync('''
 $m1
-<<<<<<< HEAD
+${MigrationRegistryFile.startMarker}
 $m2
 ''');
           final registryFile = MigrationRegistryFile(filePath);
@@ -142,11 +142,11 @@ $m2
         () {
           File(filePath).writeAsStringSync('''
 $m1
-<<<<<<< HEAD
+${MigrationRegistryFile.startMarker}
 $m2
-=======
+${MigrationRegistryFile.middleMarker}
 $m3
->>>>>>> feature-branch
+${MigrationRegistryFile.endMarker} feature-branch
 ''');
           final registryFile = MigrationRegistryFile(filePath);
 
@@ -162,13 +162,13 @@ $m3
         () {
           File(filePath).writeAsStringSync('''
 $m1
-<<<<<<< HEAD
+${MigrationRegistryFile.startMarker}
 $m2
 $m3
-=======
+${MigrationRegistryFile.middleMarker}
 $m3
 $m2
->>>>>>> feature-branch
+${MigrationRegistryFile.endMarker} feature-branch
 ''');
           final registryFile = MigrationRegistryFile(filePath);
 
@@ -184,13 +184,13 @@ $m2
         () {
           // Both markers are present, but more than 2 parts are created by split (e.g. multiple start markers)
           File(filePath).writeAsStringSync('''
-<<<<<<< HEAD
+${MigrationRegistryFile.startMarker}
 part1
-<<<<<<< HEAD
+${MigrationRegistryFile.startMarker}
 part2
-=======
+${MigrationRegistryFile.middleMarker}
 part3
->>>>>>> end
+${MigrationRegistryFile.endMarker} end
 ''');
           final registryFile = MigrationRegistryFile(filePath);
 
@@ -211,13 +211,13 @@ part3
         'Given a file with malformed middle marker when extracting migrations then an ExitException is thrown and error is logged',
         () {
           File(filePath).writeAsStringSync('''
-<<<<<<< HEAD
+${MigrationRegistryFile.startMarker}
 part1
-=======
+${MigrationRegistryFile.middleMarker}
 part2
-=======
+${MigrationRegistryFile.middleMarker}
 part3
->>>>>>> end
+${MigrationRegistryFile.endMarker} end
 ''');
           final registryFile = MigrationRegistryFile(filePath);
 
@@ -238,12 +238,12 @@ part3
         'Given a file with malformed end marker when extracting migrations then an ExitException is thrown and error is logged',
         () {
           File(filePath).writeAsStringSync('''
-<<<<<<< HEAD
+${MigrationRegistryFile.startMarker}
 part1
-=======
+${MigrationRegistryFile.middleMarker}
 part2
->>>>>>> end
->>>>>>> end
+${MigrationRegistryFile.endMarker} end
+${MigrationRegistryFile.endMarker} end
 ''');
           final registryFile = MigrationRegistryFile(filePath);
 
