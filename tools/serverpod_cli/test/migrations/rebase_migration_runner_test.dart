@@ -30,6 +30,17 @@ void main() {
     List<String> migrations, {
     String projectName = 'my_project',
   }) async {
+    originalDir = Directory.current;
+    // Teardown need to be done using `addTearDown` instead of `tearDownAll`
+    // because the call to `addTearDown` inside `d.sandbox` will add a tear
+    // down that will run before any declared `tearDown` functions. Otherwise,
+    // the tests will fail on Windows because the `d.sandbox` teardown will
+    // try to delete the original directory while `Directory.current` is still
+    // set to it.
+    addTearDown(() async {
+      Directory.current = originalDir;
+    });
+
     // Create a mock serverpod project
     final projectDir = createMockServerpodProject(
       projectName: projectName,
@@ -78,16 +89,6 @@ features:
   setUp(() async {
     testLogger = MockLogger();
     initializeLoggerWith(testLogger);
-    originalDir = Directory.current;
-    // Teardown need to be done using `addTearDown` instead of `tearDown`
-    // because the call to `addTearDown` inside `d.sandbox` will add a tear
-    // down that will run before any declared `tearDown` functions. Otherwise,
-    // the tests will fail on Windows because the `d.sandbox` teardown will
-    // try to delete the original directory while `Directory.current` is still
-    // set to it.
-    addTearDown(() async {
-      Directory.current = originalDir;
-    });
   });
 
   tearDown(() {
