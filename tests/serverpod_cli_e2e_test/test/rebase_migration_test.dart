@@ -3,11 +3,12 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/migrations/migration_registry_file.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:uuid/uuid.dart';
+import 'package:serverpod_cli/src/migrations/migration_registry_file.dart';
 
 void main() {
   late String projectName;
@@ -77,6 +78,32 @@ fields:
         .where((name) => !name.startsWith('.'))
         .toList()
       ..sort();
+  }
+
+  /// Copies the incoming migration to the migrations directory.
+  Future<String?> copyIncomingMigration(int version) async {
+    final incomingDir = Directory(
+      path.join(
+        Directory.current.path,
+        'test',
+        'test_migrations',
+        'incoming_$version',
+      ),
+    );
+    if (!incomingDir.existsSync()) return null;
+    if (!migrationsDir.existsSync()) return null;
+
+    final migrationVersion = MigrationGenerator.createVersionName(null);
+    final migrationDir = Directory(
+      path.join(migrationsDir.path, migrationVersion),
+    );
+    migrationDir.createSync(recursive: true);
+    incomingDir.listSync().forEach((file) {
+      if (file is! File) return;
+      File(path.join(migrationDir.path, path.basename(file.path)))
+        ..writeAsBytesSync(file.readAsBytesSync());
+    });
+    return migrationVersion;
   }
 
   setUp(() async {
@@ -347,12 +374,13 @@ fields:
             final v2 = getMigrationNames().last;
 
             // v3 (simulated incoming)
-            await writeModel(
-              'third',
-              ['name: String'],
+            const incomingVersion = 1;
+            final v3 = await copyIncomingMigration(incomingVersion);
+            expect(
+              v3,
+              isNotNull,
+              reason: 'Failed to copy incoming migration: $incomingVersion',
             );
-            await createMigration();
-            final v3 = getMigrationNames().last;
 
             // Create conflict in registry
             final registryFile = File(
