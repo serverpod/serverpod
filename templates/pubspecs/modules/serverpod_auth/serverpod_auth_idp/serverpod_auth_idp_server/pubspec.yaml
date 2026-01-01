@@ -22,7 +22,6 @@ dependencies:
   serverpod_auth_core_server: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
   sign_in_with_apple_server: ^1.0.0
-  synchronized: ^3.1.0
 
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
