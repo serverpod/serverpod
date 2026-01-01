@@ -1,8 +1,9 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
+import '../../../common/id_token_verifier/id_token_verifier.dart';
+import 'firebase_id_token_config.dart';
 import 'firebase_idp_config.dart';
-import 'firebase_idp_token_verifier.dart';
 
 /// Details of the Firebase Account.
 ///
@@ -126,9 +127,10 @@ class FirebaseIdpUtils {
 
     Map<String, dynamic> data;
     try {
-      data = await FirebaseIdTokenVerifier.verifyIdToken(
+      data = await IdTokenVerifier.verify(
         idToken,
-        projectId: projectId,
+        config: FirebaseIdTokenConfig(projectId: projectId),
+        audience: projectId,
       );
     } catch (e, stackTrace) {
       session.log(
@@ -139,6 +141,8 @@ class FirebaseIdpUtils {
       );
       session.logAndThrow('Failed to verify ID token from Firebase');
     }
+
+    print('data: $data');
 
     FirebaseAccountDetails details;
     try {

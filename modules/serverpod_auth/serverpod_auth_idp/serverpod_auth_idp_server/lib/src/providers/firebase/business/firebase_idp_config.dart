@@ -75,12 +75,13 @@ class FirebaseIdpConfig extends IdentityProviderBuilder<FirebaseIdp> {
 /// entire service account JSON as a string.
 class FirebaseIdpConfigFromPasswords extends FirebaseIdpConfig {
   /// Creates a new [FirebaseIdpConfigFromPasswords] instance.
-  FirebaseIdpConfigFromPasswords()
-    : super(
-        credentials: FirebaseServiceAccountCredentials.fromJsonString(
-          Serverpod.instance.getPassword('firebaseServiceAccountKey')!,
-        ),
-      );
+  FirebaseIdpConfigFromPasswords({
+    super.firebaseAccountDetailsValidation,
+  }) : super(
+         credentials: FirebaseServiceAccountCredentials.fromJsonString(
+           Serverpod.instance.getPassword('firebaseServiceAccountKey')!,
+         ),
+       );
 }
 
 /// Exception thrown when the user info from Firebase is missing required data.
