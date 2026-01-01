@@ -86,7 +86,7 @@ void main() {
   final version = Version(1, 1, 0);
   late MockLogger testLogger;
   late ServerpodCommandRunner runner;
-  late Directory originalDir;
+  final originalDir = Directory.current;
   late MockRebaseMigrationRunner mockRebaseMigrationImpl;
 
   /// Creates a valid project for testing
@@ -113,19 +113,13 @@ features:
       version,
       onBeforeRunCommand: (_) => Future.value(),
     );
-
-    originalDir = Directory.current;
-
-    // Teardown need to be done using `addTearDown` instead of `tearDown`
-    // because the call to `addTearDown` inside `d.sandbox` will add a tear
-    // down that will run before any declared `tearDown` functions. Otherwise,
-    // the tests will fail on Windows because the `d.sandbox` teardown will
-    // try to delete the original directory while `Directory.current` is still
-    // set to it.
-    addTearDown(() async {
-      Directory.current = originalDir;
-    });
   });
+
+  /// Runs the rebase migration command with the given arguments
+  Future<void> runRebase(_RebaseMigrationArgs args) async {
+    await runner.run(args.args);
+    Directory.current = originalDir;
+  }
 
   tearDown(() {
     resetLogger();
@@ -153,7 +147,7 @@ features:
       );
       setupCommand(rebaseArgs);
       await expectLater(
-        runner.run(rebaseArgs.args),
+        runRebase(rebaseArgs),
         throwsA(isA<ExitException>()),
       );
 
@@ -169,7 +163,7 @@ features:
         final rebaseArgs = _RebaseMigrationArgs();
         setupCommand(rebaseArgs);
         await expectLater(
-          runner.run(rebaseArgs.args),
+          runRebase(rebaseArgs),
           throwsA(isA<ExitException>()),
         );
 
@@ -188,7 +182,7 @@ features:
         final rebaseArgs = _RebaseMigrationArgs();
         setupCommand(rebaseArgs);
         await expectLater(
-          runner.run(rebaseArgs.args),
+          runRebase(rebaseArgs),
           throwsA(isA<ExitException>()),
         );
 
@@ -210,7 +204,7 @@ features:
           await createValidProject();
           final rebaseArgs = _RebaseMigrationArgs(check: false);
           setupCommand(rebaseArgs);
-          await runner.run(rebaseArgs.args);
+          await runRebase(rebaseArgs);
           expect(mockRebaseMigrationImpl.rebaseMigrationCallCount, 1);
           expect(mockRebaseMigrationImpl.checkMigrationCallCount, 0);
         },
@@ -222,7 +216,7 @@ features:
           await createValidProject();
           final rebaseArgs = _RebaseMigrationArgs(check: true);
           setupCommand(rebaseArgs);
-          await runner.run(rebaseArgs.args);
+          await runRebase(rebaseArgs);
           expect(mockRebaseMigrationImpl.rebaseMigrationCallCount, 0);
           expect(mockRebaseMigrationImpl.checkMigrationCallCount, 1);
         },
