@@ -171,6 +171,11 @@ class GoogleSignInWidget extends StatefulWidget {
          (controller == null || client == null),
          'Either controller or client must be provided, but not both. When '
          'passing a controller, only the `webButton` parameter is used. ',
+       ),
+       assert(
+         (onAuthenticated == null && onError == null) || controller == null,
+         'Do not provide onAuthenticated or onError when using a controller '
+         'as they will be handled by the controller and will be ignored.',
        );
 
   @override
