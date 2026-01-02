@@ -19,5 +19,14 @@
                 "monolith"
             ]
         }
+    ],
+    "compounds": [
+        {
+            "name": "projectname (full stack)",
+            "configurations": [
+                "projectname_server",
+                "projectname_flutter"
+            ]
+        }
     ]
 }
