@@ -15,6 +15,12 @@ final List<Story> signInStories = [
     builder: (context) => _signInWidgetStory(context),
   ),
   Story(
+    name: 'Sign In/Disabled Anonymous Widget',
+    description: 'Sign in flow suppressing the anonymous sign-in widget.',
+    builder: (context) =>
+        _signInWidgetStory(context, disableAnonymousSignInWidget: true),
+  ),
+  Story(
     name: 'Sign In/Disabled Email Widget',
     description: 'Sign in flow suppressing the email sign-in widget.',
     builder: (context) =>
@@ -32,10 +38,20 @@ final List<Story> signInStories = [
     builder: (context) =>
         _signInWidgetStory(context, disableAppleSignInWidget: true),
   ),
+  Story(
+    name: 'Sign In/Only Email and Anonymous Widget',
+    description: 'Sign in flow with only email and anonymous sign-in widgets.',
+    builder: (context) => _signInWidgetStory(
+      context,
+      disableGoogleSignInWidget: true,
+      disableAppleSignInWidget: true,
+    ),
+  ),
 ];
 
 Widget _signInWidgetStory(
   BuildContext context, {
+  bool disableAnonymousSignInWidget = false,
   bool disableEmailSignInWidget = false,
   bool disableGoogleSignInWidget = false,
   bool disableAppleSignInWidget = false,
@@ -50,6 +66,7 @@ Widget _signInWidgetStory(
       onError: (error) {
         context.showErrorSnackBar(error.toString());
       },
+      disableAnonymousSignInWidget: disableAnonymousSignInWidget,
       disableEmailSignInWidget: disableEmailSignInWidget,
       disableGoogleSignInWidget: disableGoogleSignInWidget,
       disableAppleSignInWidget: disableAppleSignInWidget,

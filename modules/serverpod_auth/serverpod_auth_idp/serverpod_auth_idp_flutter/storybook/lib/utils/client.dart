@@ -6,6 +6,18 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     hide Caller, Protocol;
 
+class AnonymousIdpEndpoint extends EndpointAnonymousIdpBase {
+  AnonymousIdpEndpoint(super.caller);
+
+  final _mockData = MockAuthData();
+
+  @override
+  String get name => 'anonymousIdp';
+
+  @override
+  Future<AuthSuccess> login() => Future.value(_mockData.authSuccess);
+}
+
 class EndpointAuthEmail extends EndpointEmailIdpBase {
   EndpointAuthEmail(super.caller);
 
@@ -164,11 +176,14 @@ class Client extends ServerpodClientShared {
         connectionTimeout: const Duration(seconds: 1),
         streamingConnectionTimeout: const Duration(seconds: 1),
       ) {
+    anonymousIdp = AnonymousIdpEndpoint(this);
     authEmail = EndpointAuthEmail(this);
     googleIdp = GoogleIdpEndpoint(this);
     appleIdp = AppleIdpEndpoint(this);
     modules = Modules(this);
   }
+
+  late final AnonymousIdpEndpoint anonymousIdp;
 
   late final EndpointAuthEmail authEmail;
 
@@ -180,6 +195,7 @@ class Client extends ServerpodClientShared {
 
   @override
   Map<String, EndpointRef> get endpointRefLookup => {
+    'anonymousIdp': anonymousIdp,
     'emailAuth': authEmail,
     'googleIdp': googleIdp,
     'appleIdp': appleIdp,
