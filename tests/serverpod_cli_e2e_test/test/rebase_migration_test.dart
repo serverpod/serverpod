@@ -312,9 +312,6 @@ fields:
             await createMigration();
             final v1 = getMigrationNames().last;
 
-            // Pause to ensure v1 is created before v2
-            await Future.delayed(const Duration(milliseconds: 2));
-
             // 2. Second migration (v2)
             await writeModel(
               'other',
@@ -322,18 +319,12 @@ fields:
             );
             await createMigration();
 
-            // Pause to ensure v1 is created before v2
-            await Future.delayed(const Duration(milliseconds: 2));
-
             // 3. Third migration (v3)
             await writeModel(
               'third',
               ['name: String'],
             );
             await createMigration();
-
-            // Pause to ensure v2 is created before v3
-            await Future.delayed(const Duration(milliseconds: 2));
 
             // 4. Run rebase-migration --check --onto v1
             final result = await rebaseMigration([
