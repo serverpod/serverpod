@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
+
 import 'anonymous_auth_controller.dart';
+import 'anonymous_sign_in_style.dart';
 
 /// A widget that provides anonymous-based authentication functionality.
 ///
@@ -32,6 +34,16 @@ class AnonymousSignInWidget extends StatefulWidget {
   /// Ignored when [controller] is provided.
   final Function(Object error)? onError;
 
+  /// The button size.
+  ///
+  /// For example, small or large.
+  final AnonymousButtonSize size;
+
+  /// The button shape.
+  ///
+  /// For example, rectangular or pill.
+  final AnonymousButtonShape shape;
+
   /// Creates an anonymous sign-in widget.
   const AnonymousSignInWidget({
     super.key,
@@ -39,6 +51,8 @@ class AnonymousSignInWidget extends StatefulWidget {
     this.client,
     this.onAuthenticated,
     this.onError,
+    this.size = AnonymousButtonSize.large,
+    this.shape = AnonymousButtonShape.pill,
   }) : assert(
          (controller == null || client == null),
          'Either controller or client must be provided, but not both. When '
@@ -47,8 +61,8 @@ class AnonymousSignInWidget extends StatefulWidget {
        ),
        assert(
          (onAuthenticated == null && onError == null) || controller == null,
-         'Provided onAuthenticated or onError when using a controller '
-         'as they are handled by the controller and will be ignored.',
+         'Do not provide onAuthenticated or onError when using a controller '
+         'as they will be handled by the controller and will be ignored.',
        );
 
   @override
@@ -80,15 +94,34 @@ class _AnonymousSignInWidgetState extends State<AnonymousSignInWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final buttonStyle = AnonymousSignInStyle.fromConfiguration(
+      shape: widget.shape,
+      size: widget.size,
+      width: 0,
+    );
+
     return ListenableBuilder(
       listenable: _controller,
       builder: (context, _) {
         if (_controller.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-        return TextButton(
-          onPressed: _controller.login,
-          child: const Text('Continue without account'),
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            minWidth: 240,
+            maxWidth: 400,
+            minHeight: buttonStyle.size.height,
+            maxHeight: buttonStyle.size.height,
+          ),
+          child: TextButton(
+            style: TextButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: buttonStyle.borderRadius,
+              ),
+            ),
+            onPressed: _controller.login,
+            child: const Text('Continue without account'),
+          ),
         );
       },
     );
