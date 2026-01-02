@@ -739,6 +739,30 @@ void main() async {
                 'Flutter configuration should appear before server configuration.',
           );
         });
+
+        test('has compound configuration for full stack', () {
+          final launchJson = File(
+            path.join(
+              tempPath,
+              projectName,
+              '.vscode',
+              'launch.json',
+            ),
+          ).readAsStringSync();
+
+          expect(
+            launchJson.contains('"compounds"'),
+            isTrue,
+            reason: 'launch.json does not contain compounds section.',
+          );
+
+          expect(
+            launchJson.contains('"${projectName} (full stack)"'),
+            isTrue,
+            reason:
+                'launch.json does not contain full stack compound configuration.',
+          );
+        });
       });
     });
   });
