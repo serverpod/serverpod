@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Exception thrown when a refresh token cannot be found in the database.
 abstract class RefreshTokenNotFoundException
     implements
         _i1.SerializableException,

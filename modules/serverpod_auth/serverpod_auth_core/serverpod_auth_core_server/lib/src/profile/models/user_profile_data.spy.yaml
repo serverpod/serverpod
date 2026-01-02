@@ -1,3 +1,4 @@
+### Lightweight DTO to be used as specification while creating a new user profile.
 class: UserProfileData
 fields:
   ### The first name of the user or the user's nickname.

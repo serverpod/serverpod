@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Exception thrown when attempting to access an [AuthUser] that does not exist.
 abstract class AuthUserNotFoundException
     implements _i1.SerializableException, _i1.SerializableModel {
   AuthUserNotFoundException._();

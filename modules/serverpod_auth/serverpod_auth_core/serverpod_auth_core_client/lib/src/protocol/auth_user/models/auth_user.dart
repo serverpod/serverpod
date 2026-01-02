@@ -13,6 +13,10 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_core_client/src/protocol/protocol.dart' as _i2;
 
+/// Core database entity representing a user in the authentication system.
+///
+/// This class is meant to be used only to interact with the database. To transfer
+/// user data, use the [AuthUserModel] DTO.
 abstract class AuthUser implements _i1.SerializableModel {
   AuthUser._({
     this.id,

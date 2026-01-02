@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
+/// Exception thrown when a user attempts to authenticate but their account is blocked.
 abstract class AuthUserBlockedException
     implements
         _i1.SerializableException,

@@ -17,10 +17,6 @@ import '../../../common/secret_challenge/models/secret_challenge.dart' as _i2;
 import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i3;
 
 /// Pending email account registration.
-///
-/// There is no user ID stored with the request.
-/// If an existing user should be assigned to this specific request,
-/// store that with the request's `id` and link them up during registration.
 abstract class EmailAccountRequest
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   EmailAccountRequest._({
