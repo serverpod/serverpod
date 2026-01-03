@@ -29,6 +29,10 @@ class EnumYamlDefinition {
         valueRestriction: BooleanValueRestriction().validate,
       ),
       ValidateNode(
+        Keyword.properties,
+        valueRestriction: restrictions.validateEnumProperties,
+      ),
+      ValidateNode(
         Keyword.values,
         isRequired: true,
         valueRestriction: restrictions.validateEnumValues,
