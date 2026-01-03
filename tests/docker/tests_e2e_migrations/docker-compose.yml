@@ -13,7 +13,9 @@ services:
     depends_on:
       - 'serverpod_test_server'
   postgres:
-    image: pgvector/pgvector:pg16
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: serverpod_test

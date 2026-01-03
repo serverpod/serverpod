@@ -3,6 +3,17 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
+/// Filters out PostGIS-related schemas from the search path.
+String _filterPostgisSchemas(String searchPath) {
+  final postgisSchemas = {'topology', 'tiger', 'tiger_data'};
+  final paths = searchPath
+      .split(',')
+      .map((p) => p.trim())
+      .where((p) => !postgisSchemas.contains(p.replaceAll('"', '')))
+      .toList();
+  return paths.join(', ');
+}
+
 void main() async {
   group('Given SearchPathsConfig runtime parameters', () {
     test(
@@ -19,7 +30,10 @@ void main() async {
 
         expect(result.length, 1);
         var row = result.first.toColumnMap();
-        expect(row['search_path'], 'custom_schema, public');
+        expect(
+          _filterPostgisSchemas(row['search_path'] as String),
+          'custom_schema, public',
+        );
       },
     );
 
@@ -47,12 +61,18 @@ void main() async {
           );
           var localRow = localResult.first.toColumnMap();
 
-          expect(localRow['search_path'], 'transaction_schema, temp_schema');
+          expect(
+            _filterPostgisSchemas(localRow['search_path'] as String),
+            'transaction_schema, temp_schema',
+          );
         });
 
         var globalResult = await session.db.unsafeQuery(checkQuery);
         var globalRow = globalResult.first.toColumnMap();
-        expect(globalRow['search_path'], 'custom_schema, public');
+        expect(
+          _filterPostgisSchemas(globalRow['search_path'] as String),
+          'custom_schema, public',
+        );
       },
     );
 
@@ -93,7 +113,10 @@ void main() async {
 
           expect(result.length, 1);
           var row = result.first.toColumnMap();
-          expect(row['search_path'], 'first_path, second_path');
+          expect(
+            _filterPostgisSchemas(row['search_path'] as String),
+            'first_path, second_path',
+          );
         },
       );
 
@@ -112,7 +135,10 @@ void main() async {
 
           expect(result.length, 1);
           var row = result.first.toColumnMap();
-          expect(row['search_path'], 'runtime_schema, runtime_public');
+          expect(
+            _filterPostgisSchemas(row['search_path'] as String),
+            'runtime_schema, runtime_public',
+          );
         },
       );
 
@@ -131,7 +157,10 @@ void main() async {
 
           expect(result.length, 1);
           var row = result.first.toColumnMap();
-          expect(row['search_path'], '"\$user", public');
+          expect(
+            _filterPostgisSchemas(row['search_path'] as String),
+            '"\$user", public',
+          );
         },
       );
     });
