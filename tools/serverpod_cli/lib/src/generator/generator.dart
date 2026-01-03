@@ -9,27 +9,44 @@ Future<bool> performGenerate({
   bool dartFormat = true,
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
+  required FutureCallsAnalyzer futureCallsAnalyzer,
   required StatefulAnalyzer modelAnalyzer,
 }) async {
   bool success = true;
 
   log.debug('Analyzing serializable models in the protocol directory.');
 
-  var models = modelAnalyzer.validateAll();
+  final models = modelAnalyzer.validateAll();
   success &= !modelAnalyzer.hasSevereErrors;
+
+  log.debug('Analyzing the future calls models.');
+
+  var futureCallsModelsAnalyzerCollector = CodeGenerationCollector();
+
+  final futureCallModels = await futureCallsAnalyzer.analyzeModels(
+    futureCallsModelsAnalyzerCollector,
+  );
+
+  success &= !futureCallsModelsAnalyzerCollector.hasSevereErrors;
+  futureCallsModelsAnalyzerCollector.printErrors();
 
   log.debug('Generating files for serializable models.');
 
-  var generatedModelFiles =
+  final allModels = <SerializableModelDefinition>[
+    ...models,
+    ...futureCallModels,
+  ];
+
+  final generatedModelFiles =
       await ServerpodCodeGenerator.generateSerializableModels(
-        models: models,
+        models: allModels,
         config: config,
       );
 
   log.debug('Analyzing the endpoints.');
 
-  var endpointAnalyzerCollector = CodeGenerationCollector();
-  var endpoints = await endpointsAnalyzer.analyze(
+  final endpointAnalyzerCollector = CodeGenerationCollector();
+  final endpoints = await endpointsAnalyzer.analyze(
     collector: endpointAnalyzerCollector,
     changedFiles: generatedModelFiles.toSet(),
   );
@@ -37,11 +54,23 @@ Future<bool> performGenerate({
   success &= !endpointAnalyzerCollector.hasSevereErrors;
   endpointAnalyzerCollector.printErrors();
 
+  log.debug('Analyzing the future calls.');
+
+  var futureCallsAnalyzerCollector = CodeGenerationCollector();
+  var futureCalls = await futureCallsAnalyzer.analyze(
+    collector: futureCallsAnalyzerCollector,
+    changedFiles: generatedModelFiles.toSet(),
+  );
+
+  success &= !futureCallsAnalyzerCollector.hasSevereErrors;
+  futureCallsAnalyzerCollector.printErrors();
+
   log.debug('Generating the protocol.');
 
   var protocolDefinition = ProtocolDefinition(
     endpoints: endpoints,
-    models: models,
+    models: allModels,
+    futureCalls: futureCalls,
   );
 
   var generatedProtocolFiles =

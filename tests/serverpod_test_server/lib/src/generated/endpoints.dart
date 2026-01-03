@@ -88,6 +88,8 @@ import 'package:serverpod_test_server/src/generated/inheritance/polymorphism/con
 import 'package:serverpod_test_server/src/generated/types_record.dart' as _i68;
 import 'package:serverpod_test_server/src/generated/module_datatype.dart'
     as _i69;
+import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i70;
+export 'future_calls.dart' show ServerpodFutureCallsGetter;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -261,10 +263,10 @@ class Endpoints extends _i1.EndpointDispatch {
           'fieldScopes',
           null,
         ),
-      'futureCalls': _i22.FutureCallsEndpoint()
+      'testFutureCalls': _i22.TestFutureCallsEndpoint()
         ..initialize(
           server,
-          'futureCalls',
+          'testFutureCalls',
           null,
         ),
       'listParameters': _i23.ListParametersEndpoint()
@@ -2847,9 +2849,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    connectors['futureCalls'] = _i1.EndpointConnector(
-      name: 'futureCalls',
-      endpoint: endpoints['futureCalls']!,
+    connectors['testFutureCalls'] = _i1.EndpointConnector(
+      name: 'testFutureCalls',
+      endpoint: endpoints['testFutureCalls']!,
       methodConnectors: {
         'makeFutureCall': _i1.MethodConnector(
           name: 'makeFutureCall',
@@ -2864,11 +2866,12 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['futureCalls'] as _i22.FutureCallsEndpoint)
-                  .makeFutureCall(
-                    session,
-                    params['data'],
-                  ),
+              ) async =>
+                  (endpoints['testFutureCalls'] as _i22.TestFutureCallsEndpoint)
+                      .makeFutureCall(
+                        session,
+                        params['data'],
+                      ),
         ),
         'makeFutureCallThatThrows': _i1.MethodConnector(
           name: 'makeFutureCallThatThrows',
@@ -2883,11 +2886,12 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['futureCalls'] as _i22.FutureCallsEndpoint)
-                  .makeFutureCallThatThrows(
-                    session,
-                    params['data'],
-                  ),
+              ) async =>
+                  (endpoints['testFutureCalls'] as _i22.TestFutureCallsEndpoint)
+                      .makeFutureCallThatThrows(
+                        session,
+                        params['data'],
+                      ),
         ),
       },
     );
@@ -9360,5 +9364,10 @@ class Endpoints extends _i1.EndpointDispatch {
     modules['serverpod_auth'] = _i63.Endpoints()..initializeEndpoints(server);
     modules['serverpod_test_module'] = _i64.Endpoints()
       ..initializeEndpoints(server);
+  }
+
+  @override
+  _i1.FutureCallDispatch? get futureCalls {
+    return _i70.FutureCalls();
   }
 }

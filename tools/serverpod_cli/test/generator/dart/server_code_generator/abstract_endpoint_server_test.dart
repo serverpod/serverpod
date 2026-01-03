@@ -41,6 +41,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [abstractEndpoint],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -106,6 +107,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [abstractEndpoint, concreteEndpoint],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -202,6 +204,7 @@ void main() {
           concreteSubclassEndpoint,
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(

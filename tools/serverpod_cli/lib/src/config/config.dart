@@ -160,6 +160,12 @@ class GeneratorConfig implements ModelLoadConfig {
     'endpoints.dart',
   ];
 
+  /// The path parts of the generated future calls class file.
+  List<String> get generatedServerFutureCallFilePathParts => [
+    ...generatedServeModelPathParts,
+    'future_calls.dart',
+  ];
+
   /// The path parts of the generated protocol file.
   List<String> get generatedServerProtocolFilePathParts => [
     ...generatedServeModelPathParts,

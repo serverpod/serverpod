@@ -11,7 +11,6 @@ import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
-import 'package:serverpod/src/server/future_call_manager/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/tasks/tasks.dart';
@@ -223,7 +222,7 @@ class Serverpod {
 
     _requestReceivingShutdownTasks.addTask(
       'Future Call Manager',
-      () async => _futureCallManager?.stop(),
+      () async => _futureCallManager?.stop(unregisterAll: true),
     );
 
     _internalServicesShutdownTasks.addTask(
@@ -760,6 +759,14 @@ class Serverpod {
     if (config.role == ServerpodRole.maintenance && appliedMigrations) {
       logVerbose('Finished applying database migrations.');
       throw ExitException(_exitCode);
+    }
+
+    if (_futureCallManager != null) {
+      logVerbose('Initializing future calls.');
+      endpoints.futureCalls?.initialize(
+        _futureCallManager!,
+        serverId,
+      );
     }
   }
 
