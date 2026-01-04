@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:storybook_toolkit/storybook_toolkit.dart';
 
+import 'stories/anonymous.dart';
 import 'stories/apple.dart';
 import 'stories/email.dart';
 import 'stories/google.dart';
@@ -42,6 +43,7 @@ class MainApp extends StatelessWidget {
           ),
         ),
         stories: [
+          ...anonymousStories,
           ...emailStories,
           ...googleStories,
           ...appleStories,

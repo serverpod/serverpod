@@ -72,6 +72,7 @@ class _MainPageState extends State<MainPage> {
     // NOTE: This is the only required setState to ensure that the  UI gets
     // updated when the auth state changes.
     client.auth.authInfoListenable.addListener(_updateSignedInState);
+    _updateSignedInState();
   }
 
   @override

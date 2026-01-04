@@ -1,3 +1,5 @@
+anonymousIdp:
+  - login:
 appleIdp:
   - login:
 emailIdp:
