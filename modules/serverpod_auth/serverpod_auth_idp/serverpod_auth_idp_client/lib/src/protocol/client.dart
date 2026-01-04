@@ -29,7 +29,7 @@ abstract class EndpointAnonymousIdpBase extends _i1.EndpointRef {
   ///
   /// Invokes the [AnonymousIdp.beforeAnonymousAccount] callback if configured,
   /// which may prevent account creation if the endpoint is protected.
-  _i2.Future<_i3.AuthSuccess> login();
+  _i2.Future<_i3.AuthSuccess> login({String? token});
 }
 
 /// Endpoint for handling Sign in with Apple.

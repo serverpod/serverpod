@@ -17,10 +17,11 @@ Exception? convertToUserFacingException(Object error) {
         'Anonymous sign-in is not allowed at this time.',
         originalException: error,
       ),
-      AnonymousAccountBlockedExceptionReason.throttled => UserFacingException(
-        'Too many sign-in attempts. Please try again later.',
-        originalException: error,
-      ),
+      AnonymousAccountBlockedExceptionReason.tooManyAttempts =>
+        UserFacingException(
+          'Too many sign-in attempts. Please try again later.',
+          originalException: error,
+        ),
     };
   }
 

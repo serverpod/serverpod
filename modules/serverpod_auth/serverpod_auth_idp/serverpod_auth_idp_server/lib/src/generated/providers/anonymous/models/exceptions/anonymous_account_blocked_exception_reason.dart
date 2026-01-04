@@ -20,14 +20,14 @@ enum AnonymousAccountBlockedExceptionReason implements _i1.SerializableModel {
 
   /// Exception to be thrown when the anonymous account creation request
   /// exceeds the configured throttling limits.
-  throttled;
+  tooManyAttempts;
 
   static AnonymousAccountBlockedExceptionReason fromJson(String name) {
     switch (name) {
       case 'denied':
         return AnonymousAccountBlockedExceptionReason.denied;
-      case 'throttled':
-        return AnonymousAccountBlockedExceptionReason.throttled;
+      case 'tooManyAttempts':
+        return AnonymousAccountBlockedExceptionReason.tooManyAttempts;
       default:
         throw ArgumentError(
           'Value "$name" cannot be converted to "AnonymousAccountBlockedExceptionReason"',

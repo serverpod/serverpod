@@ -9,7 +9,7 @@ final class AnonymousIdpTestFixture {
   final AuthUsers authUsers = const AuthUsers();
 
   AnonymousIdpTestFixture({
-    final AnonymousIdpConfig config = const AnonymousIdpConfig(),
+    final AnonymousIdpConfig? config,
     final TokenManager? tokenManager,
   }) {
     this.tokenManager =
@@ -23,7 +23,10 @@ final class AnonymousIdpTestFixture {
           identityProviderBuilders: [],
         ).tokenManager;
 
-    anonymousIdp = AnonymousIdp(config, tokenManager: this.tokenManager);
+    anonymousIdp = AnonymousIdp(
+      config ?? AnonymousIdpConfig.rateLimited(),
+      tokenManager: this.tokenManager,
+    );
   }
 
   Future<void> tearDown(final Session session) async {

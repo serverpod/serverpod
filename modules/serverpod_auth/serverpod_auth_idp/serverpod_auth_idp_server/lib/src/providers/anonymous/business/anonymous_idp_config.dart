@@ -4,17 +4,14 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/src/providers/anonymous/business/anonymous_idp.dart';
 import '../../../../../core.dart';
 
-// Ideally, this should be in a shared package
-import '../../../../providers/email.dart' show RateLimit;
-
 /// {@template before_anonymous_account_created_function}
 /// Function to be called before a new anonymous account is created. This
-/// function should return true if a new anonymous account is allowed to be
-/// created, or false otherwise. This mechanism is how an application would
-/// protect the anonymous account creation process to prevent abuse.
+/// function should throw an exception if a new anonymous account is not allowed
+/// to be created for any reason, or return void otherwise. This mechanism is how
+/// an application would prevent abuse of the anonymous account creation process.
 /// {@endtemplate}
 typedef BeforeAnonymousAccountCreatedFunction =
-    FutureOr<bool> Function(
+    FutureOr<void> Function(
       Session session, {
       String? token,
       required Transaction? transaction,
@@ -44,17 +41,43 @@ class AnonymousIdpConfig extends IdentityProviderBuilder<AnonymousIdp> {
   /// The maximum rate of anonymous accounts that can be created from a single
   /// IP address.
   /// {@endtemplate}
-  final RateLimit? perIpAddressRateLimit;
+  final AnonymousIdpLoginRateLimitingConfig? perIpAddressRateLimitConfig;
 
   /// Creates a new [AnonymousIdpConfig].
-  const AnonymousIdpConfig({
-    this.onBeforeAnonymousAccountCreated,
-    this.onAfterAnonymousAccountCreated,
-    this.perIpAddressRateLimit = const RateLimit(
-      maxAttempts: 100,
-      timeframe: Duration(hours: 1),
-    ),
+  const AnonymousIdpConfig._({
+    required this.onBeforeAnonymousAccountCreated,
+    required this.onAfterAnonymousAccountCreated,
+    required this.perIpAddressRateLimitConfig,
   });
+
+  /// Creates a new [AnonymousIdpConfig] with optional rate limiting. If no
+  /// rate limiting value is provided, none will be used and requests will not
+  /// be throttled.
+  factory AnonymousIdpConfig({
+    final BeforeAnonymousAccountCreatedFunction?
+    onBeforeAnonymousAccountCreated,
+    final AfterAnonymousAccountCreatedFunction? onAfterAnonymousAccountCreated,
+    final AnonymousIdpLoginRateLimitingConfig? perIpAddressRateLimitConfig,
+  }) => AnonymousIdpConfig._(
+    onBeforeAnonymousAccountCreated: onBeforeAnonymousAccountCreated,
+    onAfterAnonymousAccountCreated: onAfterAnonymousAccountCreated,
+    perIpAddressRateLimitConfig: perIpAddressRateLimitConfig,
+  );
+
+  /// Creates a new [AnonymousIdpConfig] with rate limiting enabled. If no
+  /// rate limiting value is provided, a default value will be used.
+  factory AnonymousIdpConfig.rateLimited({
+    final BeforeAnonymousAccountCreatedFunction?
+    onBeforeAnonymousAccountCreated,
+    final AfterAnonymousAccountCreatedFunction? onAfterAnonymousAccountCreated,
+    final AnonymousIdpLoginRateLimitingConfig? perIpAddressRateLimitConfig,
+  }) => AnonymousIdpConfig(
+    onBeforeAnonymousAccountCreated: onBeforeAnonymousAccountCreated,
+    onAfterAnonymousAccountCreated: onAfterAnonymousAccountCreated,
+    perIpAddressRateLimitConfig:
+        perIpAddressRateLimitConfig ??
+        AnonymousIdpLoginRateLimitingConfig.defaultConfig(),
+  );
 
   @override
   AnonymousIdp build({
@@ -68,4 +91,40 @@ class AnonymousIdpConfig extends IdentityProviderBuilder<AnonymousIdp> {
       userProfiles: userProfiles,
     );
   }
+}
+
+/// Rate limiting configuration for anonymous login.
+class AnonymousIdpLoginRateLimitingConfig
+    extends RateLimitedRequestAttemptConfig<String> {
+  /// Creates an instance of [AnonymousIdpLoginRateLimitingConfig].
+  ///
+  /// The parameters `nonceToString` and `nonceFromString` are not accepted
+  /// because the nonce type is `String`.
+  AnonymousIdpLoginRateLimitingConfig({
+    required super.maxAttempts,
+    required super.timeframe,
+    super.defaultExtraData,
+    super.onRateLimitExceeded,
+  }) : super(
+         domain: 'anonymous-idp-login',
+         source: 'account-creation',
+         nonceToString: (final String nonce) => nonce,
+         nonceFromString: (final String nonce) => nonce,
+       );
+
+  /// Creates an instance of [AnonymousIdpLoginRateLimitingConfig] with default
+  /// values.
+  ///
+  /// The parameters `nonceToString` and `nonceFromString` are not accepted
+  /// because the nonce type is `String`.
+  factory AnonymousIdpLoginRateLimitingConfig.defaultConfig({
+    final Map<String, String>? defaultExtraData,
+    final Future<void> Function(Session session, String nonce)?
+    onRateLimitExceeded,
+  }) => AnonymousIdpLoginRateLimitingConfig(
+    maxAttempts: 100,
+    timeframe: const Duration(hours: 1),
+    defaultExtraData: defaultExtraData,
+    onRateLimitExceeded: onRateLimitExceeded,
+  );
 }

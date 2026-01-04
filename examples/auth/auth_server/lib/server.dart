@@ -64,14 +64,7 @@ void run(List<String> args) async {
     hostname: 'localhost',
   );
 
-  final anonymousIdpConfig = AnonymousIdpConfig(
-    // Configure rate limiting to protect the anonymous login endpoint from
-    // unlimited abuse.
-    // perIpAddressRateLimit: RateLimit(
-    //   maxAttempts: 100,
-    //   timeframe: const Duration(hours: 1),
-    // ),
-  );
+  final anonymousIdpConfig = AnonymousIdpConfig();
 
   pod.initializeAuthServices(
     tokenManagerBuilders: [

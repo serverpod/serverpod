@@ -53,13 +53,18 @@ class AnonymousIdp {
       transaction,
       (final transaction) async {
         if (config.onBeforeAnonymousAccountCreated != null) {
-          final canCreateAccount =
-              await config.onBeforeAnonymousAccountCreated!(
-                session,
-                token: token,
-                transaction: transaction,
-              );
-          if (!canCreateAccount) {
+          try {
+            await config.onBeforeAnonymousAccountCreated!(
+              session,
+              token: token,
+              transaction: transaction,
+            );
+          } on Exception catch (e, st) {
+            session.log(
+              'Exception in onBeforeAnonymousAccountCreated',
+              exception: e,
+              stackTrace: st,
+            );
             throw AnonymousAccountBlockedException(
               reason: AnonymousAccountBlockedExceptionReason.denied,
             );

@@ -15,7 +15,8 @@ class AnonymousIdpEndpoint extends EndpointAnonymousIdpBase {
   String get name => 'anonymousIdp';
 
   @override
-  Future<AuthSuccess> login() => Future.value(_mockData.authSuccess);
+  Future<AuthSuccess> login({final String? token}) =>
+      Future.value(_mockData.authSuccess);
 }
 
 class EndpointAuthEmail extends EndpointEmailIdpBase {

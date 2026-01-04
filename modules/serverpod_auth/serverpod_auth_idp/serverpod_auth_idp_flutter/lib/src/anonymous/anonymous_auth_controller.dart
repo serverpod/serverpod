@@ -9,6 +9,13 @@ class AnonymousAuthController extends ChangeNotifier {
   /// The Serverpod client instance.
   final ServerpodClientShared client;
 
+  /// Function to generate the anonymous token supplied to the `login` endpoint.
+  /// This token can fill many roles, including app attestation if the
+  /// onBeforeAnonymousAccountCreated callback is used to prevent abuse. If
+  /// onBeforeAnonymousAccountCreated is not configured on the server, then this
+  /// function and any token it would generate are likely meaningless.
+  final Future<String?> Function()? createAnonymousToken;
+
   /// Callback when authentication is successful.
   final VoidCallback? onAuthenticated;
 
@@ -22,6 +29,7 @@ class AnonymousAuthController extends ChangeNotifier {
   /// Creates a new [AnonymousAuthController] instance.
   AnonymousAuthController({
     required this.client,
+    this.createAnonymousToken,
     this.onAuthenticated,
     this.onError,
   });
@@ -49,7 +57,8 @@ class AnonymousAuthController extends ChangeNotifier {
   /// Initiates the anonymous sign-in process.
   Future<void> login() async {
     await _guarded(() async {
-      final authSuccess = await _anonymousEndpoint.login();
+      final token = await createAnonymousToken!.call();
+      final authSuccess = await _anonymousEndpoint.login(token: token);
       await client.auth.updateSignedInUser(authSuccess);
     });
   }
