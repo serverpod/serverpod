@@ -32,11 +32,11 @@ class EndpointAnonymousIdp extends _i1.EndpointAnonymousIdpBase {
   /// Invokes the [AnonymousIdp.beforeAnonymousAccount] callback if configured,
   /// which may prevent account creation if the endpoint is protected.
   @override
-  _i3.Future<_i4.AuthSuccess> login() =>
+  _i3.Future<_i4.AuthSuccess> login({String? token}) =>
       caller.callServerEndpoint<_i4.AuthSuccess>(
         'anonymousIdp',
         'login',
-        {},
+        {'token': token},
       );
 }
 

@@ -77,13 +77,22 @@ class Endpoints extends _i1.EndpointDispatch {
       methodConnectors: {
         'login': _i1.MethodConnector(
           name: 'login',
-          params: {},
+          params: {
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
           call:
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['anonymousIdp'] as _i2.AnonymousIdpEndpoint)
-                  .login(session),
+              ) async =>
+                  (endpoints['anonymousIdp'] as _i2.AnonymousIdpEndpoint).login(
+                    session,
+                    token: params['token'],
+                  ),
         ),
       },
     );
