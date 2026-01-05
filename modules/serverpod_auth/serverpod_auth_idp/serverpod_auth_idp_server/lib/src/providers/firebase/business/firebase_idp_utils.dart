@@ -24,6 +24,9 @@ typedef FirebaseAccountDetails = ({
 
   /// Whether the email is verified.
   bool? verifiedEmail,
+
+  /// The phone number (only present for phone authentication).
+  String? phone,
 });
 
 /// Result of a successful authentication using Firebase as identity provider.
@@ -142,8 +145,6 @@ class FirebaseIdpUtils {
       session.logAndThrow('Failed to verify ID token from Firebase');
     }
 
-    print('data: $data');
-
     FirebaseAccountDetails details;
     try {
       details = _parseAccountDetails(data);
@@ -160,6 +161,7 @@ class FirebaseIdpUtils {
     final fullName = data['name'] as String?;
     final image = data['picture'] as String?;
     final verifiedEmail = data['email_verified'] as bool?;
+    final phone = data['phone_number'] as String?;
 
     if (userId == null || userId.isEmpty) {
       throw FirebaseUserInfoMissingDataException();
@@ -171,6 +173,7 @@ class FirebaseIdpUtils {
       fullName: fullName,
       image: image != null ? Uri.tryParse(image) : null,
       verifiedEmail: verifiedEmail,
+      phone: phone,
     );
 
     try {
@@ -196,6 +199,7 @@ class FirebaseIdpUtils {
       FirebaseAccount(
         userIdentifier: accountDetails.userIdentifier,
         email: accountDetails.email?.toLowerCase(),
+        phone: accountDetails.phone,
         authUserId: authUserId,
       ),
       transaction: transaction,

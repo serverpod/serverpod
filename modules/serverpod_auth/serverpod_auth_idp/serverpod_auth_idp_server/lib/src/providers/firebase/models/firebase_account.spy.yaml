@@ -19,6 +19,11 @@ fields:
   ### Stored in lower-case.
   email: String?
 
+  ### The phone number of the user, as received from Firebase.
+  ###
+  ### Only populated when using phone authentication.
+  phone: String?
+
   ### The user identifier given by Firebase for this account.
   userIdentifier: String
 
