@@ -1365,11 +1365,22 @@ class LibraryGenerator {
   }
 
   String? _getMethodCallComment(MethodCallDefinition m) {
+    // Check method-level annotations
     for (var a in m.annotations) {
       if (a.methodCallAnalyzerIgnoreRule != null) {
         return '\n// ignore: ${a.methodCallAnalyzerIgnoreRule}\n';
       }
     }
+
+    // Check parameter-level annotations
+    for (var param in m.allParameters) {
+      for (var a in param.annotations) {
+        if (a.methodCallAnalyzerIgnoreRule != null) {
+          return '\n// ignore: ${a.methodCallAnalyzerIgnoreRule}\n';
+        }
+      }
+    }
+
     return null;
   }
 
