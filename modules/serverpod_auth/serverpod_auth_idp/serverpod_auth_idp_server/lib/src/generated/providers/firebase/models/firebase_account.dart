@@ -26,6 +26,7 @@ abstract class FirebaseAccount
     this.authUser,
     DateTime? created,
     this.email,
+    this.phone,
     required this.userIdentifier,
   }) : created = created ?? DateTime.now();
 
@@ -35,6 +36,7 @@ abstract class FirebaseAccount
     _i2.AuthUser? authUser,
     DateTime? created,
     String? email,
+    String? phone,
     required String userIdentifier,
   }) = _FirebaseAccountImpl;
 
@@ -53,6 +55,7 @@ abstract class FirebaseAccount
             ),
       created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       email: jsonSerialization['email'] as String?,
+      phone: jsonSerialization['phone'] as String?,
       userIdentifier: jsonSerialization['userIdentifier'] as String,
     );
   }
@@ -80,6 +83,11 @@ abstract class FirebaseAccount
   /// Stored in lower-case.
   String? email;
 
+  /// The phone number of the user, as received from Firebase.
+  ///
+  /// Only populated when using phone authentication.
+  String? phone;
+
   /// The user identifier given by Firebase for this account.
   String userIdentifier;
 
@@ -95,6 +103,7 @@ abstract class FirebaseAccount
     _i2.AuthUser? authUser,
     DateTime? created,
     String? email,
+    String? phone,
     String? userIdentifier,
   });
   @override
@@ -106,6 +115,7 @@ abstract class FirebaseAccount
       if (authUser != null) 'authUser': authUser?.toJson(),
       'created': created.toJson(),
       if (email != null) 'email': email,
+      if (phone != null) 'phone': phone,
       'userIdentifier': userIdentifier,
     };
   }
@@ -154,6 +164,7 @@ class _FirebaseAccountImpl extends FirebaseAccount {
     _i2.AuthUser? authUser,
     DateTime? created,
     String? email,
+    String? phone,
     required String userIdentifier,
   }) : super._(
          id: id,
@@ -161,6 +172,7 @@ class _FirebaseAccountImpl extends FirebaseAccount {
          authUser: authUser,
          created: created,
          email: email,
+         phone: phone,
          userIdentifier: userIdentifier,
        );
 
@@ -174,6 +186,7 @@ class _FirebaseAccountImpl extends FirebaseAccount {
     Object? authUser = _Undefined,
     DateTime? created,
     Object? email = _Undefined,
+    Object? phone = _Undefined,
     String? userIdentifier,
   }) {
     return FirebaseAccount(
@@ -184,6 +197,7 @@ class _FirebaseAccountImpl extends FirebaseAccount {
           : this.authUser?.copyWith(),
       created: created ?? this.created,
       email: email is String? ? email : this.email,
+      phone: phone is String? ? phone : this.phone,
       userIdentifier: userIdentifier ?? this.userIdentifier,
     );
   }
@@ -210,6 +224,11 @@ class FirebaseAccountUpdateTable extends _i1.UpdateTable<FirebaseAccountTable> {
     value,
   );
 
+  _i1.ColumnValue<String, String> phone(String? value) => _i1.ColumnValue(
+    table.phone,
+    value,
+  );
+
   _i1.ColumnValue<String, String> userIdentifier(String value) =>
       _i1.ColumnValue(
         table.userIdentifier,
@@ -231,6 +250,10 @@ class FirebaseAccountTable extends _i1.Table<_i1.UuidValue?> {
     );
     email = _i1.ColumnString(
       'email',
+      this,
+    );
+    phone = _i1.ColumnString(
+      'phone',
       this,
     );
     userIdentifier = _i1.ColumnString(
@@ -257,6 +280,11 @@ class FirebaseAccountTable extends _i1.Table<_i1.UuidValue?> {
   /// Stored in lower-case.
   late final _i1.ColumnString email;
 
+  /// The phone number of the user, as received from Firebase.
+  ///
+  /// Only populated when using phone authentication.
+  late final _i1.ColumnString phone;
+
   /// The user identifier given by Firebase for this account.
   late final _i1.ColumnString userIdentifier;
 
@@ -279,6 +307,7 @@ class FirebaseAccountTable extends _i1.Table<_i1.UuidValue?> {
     authUserId,
     created,
     email,
+    phone,
     userIdentifier,
   ];
 
