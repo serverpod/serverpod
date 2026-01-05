@@ -204,54 +204,19 @@ Expression _buildFromJson(
   }
 }
 
-/// Helper to check if we need to handle missing keys for fields with defaults
-bool _shouldHandleMissingKeyForDefault(
-  TypeDefinition type,
-  SerializableModelFieldDefinition? field,
-) {
-  return field?.defaultModelValue != null && !type.nullable;
-}
-
-/// Helper to wrap an expression with null check for default value handling
-Expression _wrapWithNullCheckForDefault(
-  Expression valueExpression,
-  Expression wrappedExpression,
-) {
-  return CodeExpression(
-    Block.of([
-      valueExpression.code,
-      const Code(' == null ? null : '),
-      wrappedExpression.code,
-    ]),
-  );
-}
-
 Expression _buildPrimitiveTypeFromJson(
   TypeDefinition type,
   Expression valueExpression,
   SerializableModelFieldDefinition? field,
 ) {
-  // If the field has a default value and is non-nullable, we need to handle missing keys
-  bool hasDefaultValue = field?.defaultModelValue != null;
-  bool isNonNullable = !type.nullable;
-
-  if (hasDefaultValue && isNonNullable) {
-    // Check if value is null before casting, return null to trigger default value
-    return CodeExpression(
-      Block.of([
-        valueExpression.code,
-        const Code(' == null ? null : '),
-        valueExpression.code,
-        Code(' as ${type.className}'),
-      ]),
-    );
-  }
+  final asNullable =
+      type.nullable || _shouldHandleMissingKeyForDefault(type, field);
 
   return CodeExpression(
     Block.of([
       valueExpression.code,
       Code('as ${type.className}'),
-      if (type.nullable) const Code('?'),
+      if (asNullable) const Code('?'),
     ]),
   );
 }
@@ -261,23 +226,13 @@ Expression _buildDoubleTypeFromJson(
   Expression valueExpression,
   SerializableModelFieldDefinition? field,
 ) {
-  if (_shouldHandleMissingKeyForDefault(type, field)) {
-    // Check if value is null before casting, return null to trigger default value
-    return _wrapWithNullCheckForDefault(
-      valueExpression,
-      CodeExpression(
-        Block.of([
-          valueExpression.asA(refer('num')).code,
-          const Code('.toDouble()'),
-        ]),
-      ),
-    );
-  }
+  final asNullable =
+      type.nullable || _shouldHandleMissingKeyForDefault(type, field);
 
   return CodeExpression(
     Block.of([
-      valueExpression.asA(refer('num${type.nullable ? '?' : ''}')).code,
-      Code('${type.nullable ? '?.' : '.'}toDouble()'),
+      valueExpression.asA(refer('num${asNullable ? '?' : ''}')).code,
+      Code('${asNullable ? '?.' : '.'}toDouble()'),
     ]),
   );
 }
@@ -289,7 +244,6 @@ Expression _buildComplexTypeFromJson(
   SerializableModelFieldDefinition? field,
 ) {
   if (_shouldHandleMissingKeyForDefault(type, field)) {
-    // Check if value is null before calling fromJson
     return _wrapWithNullCheckForDefault(
       valueExpression,
       refer(
@@ -334,7 +288,6 @@ Expression _buildEnumTypeFromJson(
   }
 
   if (_shouldHandleMissingKeyForDefault(type, field)) {
-    // Check if value is null before casting, return null to trigger default value
     return _wrapWithNullCheckForDefault(
       valueExpression,
       typeRef.property('fromJson').call([
@@ -398,7 +351,6 @@ Expression _buildClassTypeFromJson(
   }
 
   if (_shouldHandleMissingKeyForDefault(type, field)) {
-    // Check if value is null before calling fromJson
     return _wrapWithNullCheckForDefault(
       valueExpression,
       type.asNonNullable
@@ -469,21 +421,38 @@ Expression _buildRecordTypeFromJson(
   );
 }
 
+/// Helper to check if we need to handle missing keys for fields with defaults.
+///
+/// If the field has a default value and is non-nullable, we need to pass null
+/// if the key is missing for the field to use the default value.
+bool _shouldHandleMissingKeyForDefault(
+  TypeDefinition type,
+  SerializableModelFieldDefinition? field,
+) {
+  return field?.defaultModelValue != null && !type.nullable;
+}
+
+/// Helper to wrap an expression with null check for default value handling.
+Expression _wrapWithNullCheckForDefault(
+  Expression valueExpression,
+  Expression wrappedExpression,
+) {
+  return CodeExpression(
+    Block.of([
+      valueExpression.code,
+      const Code(' == null ? null : '),
+      wrappedExpression.code,
+    ]),
+  );
+}
+
 extension ExpressionExtension on Expression {
   Expression checkIfNull(
     TypeDefinition type, {
     required Expression valueExpression,
   }) {
     if (!type.nullable) return this;
-    return CodeExpression(
-      Block.of(
-        [
-          valueExpression.code,
-          const Code('== null ? null : '),
-          code,
-        ],
-      ),
-    );
+    return _wrapWithNullCheckForDefault(valueExpression, this);
   }
 }
 
