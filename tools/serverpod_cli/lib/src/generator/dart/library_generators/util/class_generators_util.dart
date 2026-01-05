@@ -212,7 +212,7 @@ Expression _buildPrimitiveTypeFromJson(
   // If the field has a default value and is non-nullable, we need to handle missing keys
   bool hasDefaultValue = field?.defaultModelValue != null;
   bool isNonNullable = !type.nullable;
-  
+
   if (hasDefaultValue && isNonNullable) {
     // Check if value is null before casting, return null to trigger default value
     return CodeExpression(
@@ -224,7 +224,7 @@ Expression _buildPrimitiveTypeFromJson(
       ]),
     );
   }
-  
+
   return CodeExpression(
     Block.of([
       valueExpression.code,
@@ -242,7 +242,7 @@ Expression _buildDoubleTypeFromJson(
   // If the field has a default value and is non-nullable, we need to handle missing keys
   bool hasDefaultValue = field?.defaultModelValue != null;
   bool isNonNullable = !type.nullable;
-  
+
   if (hasDefaultValue && isNonNullable) {
     // Check if value is null before casting, return null to trigger default value
     return CodeExpression(
@@ -254,7 +254,7 @@ Expression _buildDoubleTypeFromJson(
       ]),
     );
   }
-  
+
   return CodeExpression(
     Block.of([
       valueExpression.asA(refer('num${type.nullable ? '?' : ''}')).code,
@@ -272,21 +272,21 @@ Expression _buildComplexTypeFromJson(
   // If the field has a default value and is non-nullable, we need to handle missing keys
   bool hasDefaultValue = field?.defaultModelValue != null;
   bool isNonNullable = !type.nullable;
-  
+
   if (hasDefaultValue && isNonNullable) {
     // Check if value is null before calling fromJson
     return CodeExpression(
       Block.of([
         valueExpression.code,
         const Code(' == null ? null : '),
-        refer('${type.className}JsonExtension', serverpodUrl(serverCode))
-            .property('fromJson')
-            .call([valueExpression])
-            .code,
+        refer(
+          '${type.className}JsonExtension',
+          serverpodUrl(serverCode),
+        ).property('fromJson').call([valueExpression]).code,
       ]),
     );
   }
-  
+
   return CodeExpression(
     refer('${type.className}JsonExtension', serverpodUrl(serverCode))
         .property('fromJson')
@@ -324,17 +324,16 @@ Expression _buildEnumTypeFromJson(
   // If the field has a default value and is non-nullable, we need to handle missing keys
   bool hasDefaultValue = field?.defaultModelValue != null;
   bool isNonNullable = !type.nullable;
-  
+
   if (hasDefaultValue && isNonNullable) {
     // Check if value is null before casting, return null to trigger default value
     return CodeExpression(
       Block.of([
         valueExpression.code,
         const Code(' == null ? null : '),
-        typeRef
-            .property('fromJson')
-            .call([valueExpression.asA(asReference)])
-            .code,
+        typeRef.property('fromJson').call([
+          valueExpression.asA(asReference),
+        ]).code,
       ]),
     );
   }
@@ -396,7 +395,7 @@ Expression _buildClassTypeFromJson(
   // If the field has a default value and is non-nullable, we need to handle missing keys
   bool hasDefaultValue = field?.defaultModelValue != null;
   bool isNonNullable = !type.nullable;
-  
+
   if (hasDefaultValue && isNonNullable) {
     // Check if value is null before calling fromJson
     return CodeExpression(
