@@ -204,6 +204,28 @@ Expression _buildFromJson(
   }
 }
 
+/// Helper to check if we need to handle missing keys for fields with defaults
+bool _shouldHandleMissingKeyForDefault(
+  TypeDefinition type,
+  SerializableModelFieldDefinition? field,
+) {
+  return field?.defaultModelValue != null && !type.nullable;
+}
+
+/// Helper to wrap an expression with null check for default value handling
+Expression _wrapWithNullCheckForDefault(
+  Expression valueExpression,
+  Expression wrappedExpression,
+) {
+  return CodeExpression(
+    Block.of([
+      valueExpression.code,
+      const Code(' == null ? null : '),
+      wrappedExpression.code,
+    ]),
+  );
+}
+
 Expression _buildPrimitiveTypeFromJson(
   TypeDefinition type,
   Expression valueExpression,
@@ -239,19 +261,16 @@ Expression _buildDoubleTypeFromJson(
   Expression valueExpression,
   SerializableModelFieldDefinition? field,
 ) {
-  // If the field has a default value and is non-nullable, we need to handle missing keys
-  bool hasDefaultValue = field?.defaultModelValue != null;
-  bool isNonNullable = !type.nullable;
-
-  if (hasDefaultValue && isNonNullable) {
+  if (_shouldHandleMissingKeyForDefault(type, field)) {
     // Check if value is null before casting, return null to trigger default value
-    return CodeExpression(
-      Block.of([
-        valueExpression.code,
-        const Code(' == null ? null : '),
-        valueExpression.asA(refer('num')).code,
-        const Code('.toDouble()'),
-      ]),
+    return _wrapWithNullCheckForDefault(
+      valueExpression,
+      CodeExpression(
+        Block.of([
+          valueExpression.asA(refer('num')).code,
+          const Code('.toDouble()'),
+        ]),
+      ),
     );
   }
 
@@ -269,21 +288,14 @@ Expression _buildComplexTypeFromJson(
   bool serverCode,
   SerializableModelFieldDefinition? field,
 ) {
-  // If the field has a default value and is non-nullable, we need to handle missing keys
-  bool hasDefaultValue = field?.defaultModelValue != null;
-  bool isNonNullable = !type.nullable;
-
-  if (hasDefaultValue && isNonNullable) {
+  if (_shouldHandleMissingKeyForDefault(type, field)) {
     // Check if value is null before calling fromJson
-    return CodeExpression(
-      Block.of([
-        valueExpression.code,
-        const Code(' == null ? null : '),
-        refer(
-          '${type.className}JsonExtension',
-          serverpodUrl(serverCode),
-        ).property('fromJson').call([valueExpression]).code,
-      ]),
+    return _wrapWithNullCheckForDefault(
+      valueExpression,
+      refer(
+        '${type.className}JsonExtension',
+        serverpodUrl(serverCode),
+      ).property('fromJson').call([valueExpression]),
     );
   }
 
@@ -321,19 +333,12 @@ Expression _buildEnumTypeFromJson(
       break;
   }
 
-  // If the field has a default value and is non-nullable, we need to handle missing keys
-  bool hasDefaultValue = field?.defaultModelValue != null;
-  bool isNonNullable = !type.nullable;
-
-  if (hasDefaultValue && isNonNullable) {
+  if (_shouldHandleMissingKeyForDefault(type, field)) {
     // Check if value is null before casting, return null to trigger default value
-    return CodeExpression(
-      Block.of([
-        valueExpression.code,
-        const Code(' == null ? null : '),
-        typeRef.property('fromJson').call([
-          valueExpression.asA(asReference),
-        ]).code,
+    return _wrapWithNullCheckForDefault(
+      valueExpression,
+      typeRef.property('fromJson').call([
+        valueExpression.asA(asReference),
       ]),
     );
   }
@@ -392,31 +397,23 @@ Expression _buildClassTypeFromJson(
     );
   }
 
-  // If the field has a default value and is non-nullable, we need to handle missing keys
-  bool hasDefaultValue = field?.defaultModelValue != null;
-  bool isNonNullable = !type.nullable;
-
-  if (hasDefaultValue && isNonNullable) {
+  if (_shouldHandleMissingKeyForDefault(type, field)) {
     // Check if value is null before calling fromJson
-    return CodeExpression(
-      Block.of([
-        valueExpression.code,
-        const Code(' == null ? null : '),
-        type.asNonNullable
-            .reference(
-              serverCode,
-              subDirParts: subDirParts,
-              config: config,
-            )
-            .property('fromJson')
-            .call([
-              if (type.customClass)
-                valueExpression
-              else
-                valueExpression.asA(refer('Map<String, dynamic>')),
-            ])
-            .code,
-      ]),
+    return _wrapWithNullCheckForDefault(
+      valueExpression,
+      type.asNonNullable
+          .reference(
+            serverCode,
+            subDirParts: subDirParts,
+            config: config,
+          )
+          .property('fromJson')
+          .call([
+            if (type.customClass)
+              valueExpression
+            else
+              valueExpression.asA(refer('Map<String, dynamic>')),
+          ]),
     );
   }
 
