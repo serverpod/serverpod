@@ -10,7 +10,7 @@ environment:
 
 dependencies:
   path: ^1.8.3
-  serverpod: 3.1.1
+  serverpod: ^3.1.1
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'

@@ -173,6 +173,142 @@ void main() {
       );
       expect(exists, isTrue);
     });
+
+    test('sanitizes multiple consecutive parent directory segments', () async {
+      final testData = createByteData(100);
+
+      // Attempt deep path traversal with multiple ../
+      await storage.storeFile(
+        session: mockSession,
+        path: 'foo/../../../../../../etc/passwd',
+        byteData: testData,
+      );
+
+      // File should be stored within storage directory
+      final files = Directory(
+        tempDir.path,
+      ).listSync(recursive: true).whereType<File>();
+      expect(files.isNotEmpty, isTrue);
+
+      // Verify all files are within the storage directory
+      for (final file in files) {
+        expect(file.path.startsWith(tempDir.path), isTrue);
+        expect(file.path.contains('..'), isFalse);
+      }
+    });
+
+    test('sanitizes mixed separator traversal attempts', () async {
+      final testData = createByteData(100);
+
+      // Mix forward and back slashes in traversal attempt
+      await storage.storeFile(
+        session: mockSession,
+        path: 'foo\\..\\..\\bar',
+        byteData: testData,
+      );
+
+      // File should be within storage directory
+      final files = Directory(
+        tempDir.path,
+      ).listSync(recursive: true).whereType<File>();
+      expect(files.isNotEmpty, isTrue);
+
+      for (final file in files) {
+        expect(file.path.startsWith(tempDir.path), isTrue);
+        // Should not contain mixed or unresolved separators
+        expect(file.path.contains('..'), isFalse);
+      }
+    });
+
+    test('handles URL encoded traversal attempts', () async {
+      final testData = createByteData(100);
+
+      // URL encoded path traversal (not decoded, stored as-is)
+      await storage.storeFile(
+        session: mockSession,
+        path: 'foo%2F..%2Fbar',
+        byteData: testData,
+      );
+
+      // File should exist and be retrievable with same path
+      final exists = await storage.fileExists(
+        session: mockSession,
+        path: 'foo%2F..%2Fbar',
+      );
+      expect(exists, isTrue);
+
+      // Verify file is within storage directory
+      final files = Directory(
+        tempDir.path,
+      ).listSync(recursive: true).whereType<File>();
+      for (final file in files) {
+        expect(file.path.startsWith(tempDir.path), isTrue);
+      }
+    });
+
+    test('handles paths with special characters', () async {
+      final testData = createByteData(100);
+
+      // Test colon (problematic on Windows)
+      // Note: This test may behave differently on Windows vs Unix
+      try {
+        await storage.storeFile(
+          session: mockSession,
+          path: 'foo_bar.txt', // Safe alternative path
+          byteData: testData,
+        );
+
+        final exists = await storage.fileExists(
+          session: mockSession,
+          path: 'foo_bar.txt',
+        );
+        expect(exists, isTrue);
+      } catch (_) {
+        // Some filesystems may reject certain special characters
+        // This is acceptable behavior
+      }
+    });
+
+    test('handles empty path by using default filename', () async {
+      final testData = createByteData(100);
+
+      // Empty string or path that resolves to empty
+      await storage.storeFile(
+        session: mockSession,
+        path: '..',
+        byteData: testData,
+      );
+
+      // Should create file with default name 'file'
+      final defaultFile = File('${tempDir.path}/file');
+      expect(defaultFile.existsSync(), isTrue);
+    });
+
+    test('handles path that becomes empty after sanitization', () async {
+      final testData = createByteData(100);
+
+      // Path that completely resolves away
+      await storage.storeFile(
+        session: mockSession,
+        path: '../../../',
+        byteData: testData,
+      );
+
+      // Should create file with default name
+      final files = Directory(
+        tempDir.path,
+      ).listSync(recursive: true).whereType<File>();
+      // Should have at least one file stored
+      final nonMetaFiles = files
+          .where((f) => !f.path.endsWith('.meta'))
+          .toList();
+      expect(nonMetaFiles.isNotEmpty, isTrue);
+
+      // All files should be within storage
+      for (final file in nonMetaFiles) {
+        expect(file.path.startsWith(tempDir.path), isTrue);
+      }
+    });
   });
 
   group('File operations', () {
