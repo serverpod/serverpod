@@ -37,7 +37,9 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
     Map<String, dynamic> jsonSerialization,
   ) {
     return ChildWithInheritedId(
-      id: _i2.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       parent: jsonSerialization['parent'] == null
           ? null

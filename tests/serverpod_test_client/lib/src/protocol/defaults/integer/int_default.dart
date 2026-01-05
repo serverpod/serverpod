@@ -29,7 +29,9 @@ abstract class IntDefault implements _i1.SerializableModel {
   factory IntDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return IntDefault(
       id: jsonSerialization['id'] as int?,
-      intDefault: jsonSerialization['intDefault'] as int,
+      intDefault: jsonSerialization['intDefault'] == null
+          ? null
+          : jsonSerialization['intDefault'] as int,
       intDefaultNull: jsonSerialization['intDefaultNull'] as int?,
     );
   }

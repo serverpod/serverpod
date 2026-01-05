@@ -30,7 +30,9 @@ abstract class DoubleDefault
   factory DoubleDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return DoubleDefault(
       id: jsonSerialization['id'] as int?,
-      doubleDefault: (jsonSerialization['doubleDefault'] as num).toDouble(),
+      doubleDefault: jsonSerialization['doubleDefault'] == null
+          ? null
+          : (jsonSerialization['doubleDefault'] as num).toDouble(),
       doubleDefaultNull: (jsonSerialization['doubleDefaultNull'] as num?)
           ?.toDouble(),
     );

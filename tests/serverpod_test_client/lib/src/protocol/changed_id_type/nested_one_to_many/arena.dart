@@ -29,7 +29,9 @@ abstract class ArenaUuid implements _i1.SerializableModel {
 
   factory ArenaUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return ArenaUuid(
-      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       team: jsonSerialization['team'] == null
           ? null

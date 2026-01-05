@@ -31,7 +31,9 @@ abstract class AddressUuid implements _i1.SerializableModel {
 
   factory AddressUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return AddressUuid(
-      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       street: jsonSerialization['street'] as String,
       inhabitantId: jsonSerialization['inhabitantId'] as int?,
       inhabitant: jsonSerialization['inhabitant'] == null

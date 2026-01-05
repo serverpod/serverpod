@@ -30,7 +30,9 @@ abstract class IntDefault
   factory IntDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return IntDefault(
       id: jsonSerialization['id'] as int?,
-      intDefault: jsonSerialization['intDefault'] as int,
+      intDefault: jsonSerialization['intDefault'] == null
+          ? null
+          : jsonSerialization['intDefault'] as int,
       intDefaultNull: jsonSerialization['intDefaultNull'] as int?,
     );
   }

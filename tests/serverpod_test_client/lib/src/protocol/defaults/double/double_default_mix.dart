@@ -34,13 +34,20 @@ abstract class DoubleDefaultMix implements _i1.SerializableModel {
     return DoubleDefaultMix(
       id: jsonSerialization['id'] as int?,
       doubleDefaultAndDefaultModel:
-          (jsonSerialization['doubleDefaultAndDefaultModel'] as num).toDouble(),
+          jsonSerialization['doubleDefaultAndDefaultModel'] == null
+          ? null
+          : (jsonSerialization['doubleDefaultAndDefaultModel'] as num)
+                .toDouble(),
       doubleDefaultAndDefaultPersist:
-          (jsonSerialization['doubleDefaultAndDefaultPersist'] as num)
-              .toDouble(),
+          jsonSerialization['doubleDefaultAndDefaultPersist'] == null
+          ? null
+          : (jsonSerialization['doubleDefaultAndDefaultPersist'] as num)
+                .toDouble(),
       doubleDefaultModelAndDefaultPersist:
-          (jsonSerialization['doubleDefaultModelAndDefaultPersist'] as num)
-              .toDouble(),
+          jsonSerialization['doubleDefaultModelAndDefaultPersist'] == null
+          ? null
+          : (jsonSerialization['doubleDefaultModelAndDefaultPersist'] as num)
+                .toDouble(),
     );
   }
 

@@ -29,7 +29,9 @@ abstract class StringDefault implements _i1.SerializableModel {
   factory StringDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return StringDefault(
       id: jsonSerialization['id'] as int?,
-      stringDefault: jsonSerialization['stringDefault'] as String,
+      stringDefault: jsonSerialization['stringDefault'] == null
+          ? null
+          : jsonSerialization['stringDefault'] as String,
       stringDefaultNull: jsonSerialization['stringDefaultNull'] as String?,
     );
   }

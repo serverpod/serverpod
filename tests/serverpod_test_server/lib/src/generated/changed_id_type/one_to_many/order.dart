@@ -37,7 +37,9 @@ abstract class OrderUuid
 
   factory OrderUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return OrderUuid(
-      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       description: jsonSerialization['description'] as String,
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization['customer'] == null

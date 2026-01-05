@@ -35,11 +35,17 @@ abstract class BoolDefaultMix
     return BoolDefaultMix(
       id: jsonSerialization['id'] as int?,
       boolDefaultAndDefaultModel:
-          jsonSerialization['boolDefaultAndDefaultModel'] as bool,
+          jsonSerialization['boolDefaultAndDefaultModel'] == null
+          ? null
+          : jsonSerialization['boolDefaultAndDefaultModel'] as bool,
       boolDefaultAndDefaultPersist:
-          jsonSerialization['boolDefaultAndDefaultPersist'] as bool,
+          jsonSerialization['boolDefaultAndDefaultPersist'] == null
+          ? null
+          : jsonSerialization['boolDefaultAndDefaultPersist'] as bool,
       boolDefaultModelAndDefaultPersist:
-          jsonSerialization['boolDefaultModelAndDefaultPersist'] as bool,
+          jsonSerialization['boolDefaultModelAndDefaultPersist'] == null
+          ? null
+          : jsonSerialization['boolDefaultModelAndDefaultPersist'] as bool,
     );
   }
 

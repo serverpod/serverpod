@@ -88,6 +88,7 @@ Expression buildFromJsonForField(
     config,
     fieldName: field.name,
     subDirParts: subDirParts,
+    field: field,
   );
 }
 
@@ -116,6 +117,7 @@ Expression _buildFromJson(
   String? fieldName,
   Expression? mapExpression,
   required List<String> subDirParts,
+  SerializableModelFieldDefinition? field,
 }) {
   Expression valueExpression =
       mapExpression ?? jsonReference.index(literalString(fieldName!));
@@ -128,11 +130,13 @@ Expression _buildFromJson(
       return _buildPrimitiveTypeFromJson(
         type,
         valueExpression,
+        field,
       );
     case ValueType.double:
       return _buildDoubleTypeFromJson(
         type,
         valueExpression,
+        field,
       );
     case ValueType.dateTime:
     case ValueType.duration:
@@ -147,12 +151,14 @@ Expression _buildFromJson(
         type,
         valueExpression,
         serverCode,
+        field,
       );
     case ValueType.bigInt:
       return _buildComplexTypeFromJson(
         type,
         valueExpression,
         serverCode,
+        field,
       );
     case ValueType.isEnum:
       EnumSerialization? enumSerialization = type.enumDefinition?.serialized;
@@ -166,6 +172,7 @@ Expression _buildFromJson(
         serverCode,
         config,
         subDirParts,
+        field,
       );
     case ValueType.list:
     case ValueType.set:
@@ -184,6 +191,7 @@ Expression _buildFromJson(
         serverCode,
         config,
         subDirParts,
+        field,
       );
     case ValueType.record:
       return _buildRecordTypeFromJson(
@@ -199,7 +207,24 @@ Expression _buildFromJson(
 Expression _buildPrimitiveTypeFromJson(
   TypeDefinition type,
   Expression valueExpression,
+  SerializableModelFieldDefinition? field,
 ) {
+  // If the field has a default value and is non-nullable, we need to handle missing keys
+  bool hasDefaultValue = field?.defaultModelValue != null;
+  bool isNonNullable = !type.nullable;
+  
+  if (hasDefaultValue && isNonNullable) {
+    // Check if value is null before casting, return null to trigger default value
+    return CodeExpression(
+      Block.of([
+        valueExpression.code,
+        const Code(' == null ? null : '),
+        valueExpression.code,
+        Code(' as ${type.className}'),
+      ]),
+    );
+  }
+  
   return CodeExpression(
     Block.of([
       valueExpression.code,
@@ -212,7 +237,24 @@ Expression _buildPrimitiveTypeFromJson(
 Expression _buildDoubleTypeFromJson(
   TypeDefinition type,
   Expression valueExpression,
+  SerializableModelFieldDefinition? field,
 ) {
+  // If the field has a default value and is non-nullable, we need to handle missing keys
+  bool hasDefaultValue = field?.defaultModelValue != null;
+  bool isNonNullable = !type.nullable;
+  
+  if (hasDefaultValue && isNonNullable) {
+    // Check if value is null before casting, return null to trigger default value
+    return CodeExpression(
+      Block.of([
+        valueExpression.code,
+        const Code(' == null ? null : '),
+        valueExpression.asA(refer('num')).code,
+        const Code('.toDouble()'),
+      ]),
+    );
+  }
+  
   return CodeExpression(
     Block.of([
       valueExpression.asA(refer('num${type.nullable ? '?' : ''}')).code,
@@ -225,7 +267,26 @@ Expression _buildComplexTypeFromJson(
   TypeDefinition type,
   Expression valueExpression,
   bool serverCode,
+  SerializableModelFieldDefinition? field,
 ) {
+  // If the field has a default value and is non-nullable, we need to handle missing keys
+  bool hasDefaultValue = field?.defaultModelValue != null;
+  bool isNonNullable = !type.nullable;
+  
+  if (hasDefaultValue && isNonNullable) {
+    // Check if value is null before calling fromJson
+    return CodeExpression(
+      Block.of([
+        valueExpression.code,
+        const Code(' == null ? null : '),
+        refer('${type.className}JsonExtension', serverpodUrl(serverCode))
+            .property('fromJson')
+            .call([valueExpression])
+            .code,
+      ]),
+    );
+  }
+  
   return CodeExpression(
     refer('${type.className}JsonExtension', serverpodUrl(serverCode))
         .property('fromJson')
@@ -242,6 +303,7 @@ Expression _buildEnumTypeFromJson(
   bool serverCode,
   GeneratorConfig config,
   List<String> subDirParts,
+  SerializableModelFieldDefinition? field,
 ) {
   Reference typeRef = type.asNonNullable.reference(
     serverCode,
@@ -257,6 +319,24 @@ Expression _buildEnumTypeFromJson(
     case EnumSerialization.byName:
       asReference = refer('String');
       break;
+  }
+
+  // If the field has a default value and is non-nullable, we need to handle missing keys
+  bool hasDefaultValue = field?.defaultModelValue != null;
+  bool isNonNullable = !type.nullable;
+  
+  if (hasDefaultValue && isNonNullable) {
+    // Check if value is null before casting, return null to trigger default value
+    return CodeExpression(
+      Block.of([
+        valueExpression.code,
+        const Code(' == null ? null : '),
+        typeRef
+            .property('fromJson')
+            .call([valueExpression.asA(asReference)])
+            .code,
+      ]),
+    );
   }
 
   return CodeExpression(
@@ -301,6 +381,7 @@ Expression _buildClassTypeFromJson(
   bool serverCode,
   GeneratorConfig config,
   List<String> subDirParts,
+  SerializableModelFieldDefinition? field,
 ) {
   if (!type.customClass) {
     return _buildProtocolDeserialize(
@@ -309,6 +390,34 @@ Expression _buildClassTypeFromJson(
       serverCode,
       config,
       subDirParts,
+    );
+  }
+
+  // If the field has a default value and is non-nullable, we need to handle missing keys
+  bool hasDefaultValue = field?.defaultModelValue != null;
+  bool isNonNullable = !type.nullable;
+  
+  if (hasDefaultValue && isNonNullable) {
+    // Check if value is null before calling fromJson
+    return CodeExpression(
+      Block.of([
+        valueExpression.code,
+        const Code(' == null ? null : '),
+        type.asNonNullable
+            .reference(
+              serverCode,
+              subDirParts: subDirParts,
+              config: config,
+            )
+            .property('fromJson')
+            .call([
+              if (type.customClass)
+                valueExpression
+              else
+                valueExpression.asA(refer('Map<String, dynamic>')),
+            ])
+            .code,
+      ]),
     );
   }
 

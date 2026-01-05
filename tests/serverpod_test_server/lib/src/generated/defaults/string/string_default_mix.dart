@@ -37,11 +37,17 @@ abstract class StringDefaultMix
     return StringDefaultMix(
       id: jsonSerialization['id'] as int?,
       stringDefaultAndDefaultModel:
-          jsonSerialization['stringDefaultAndDefaultModel'] as String,
+          jsonSerialization['stringDefaultAndDefaultModel'] == null
+          ? null
+          : jsonSerialization['stringDefaultAndDefaultModel'] as String,
       stringDefaultAndDefaultPersist:
-          jsonSerialization['stringDefaultAndDefaultPersist'] as String,
+          jsonSerialization['stringDefaultAndDefaultPersist'] == null
+          ? null
+          : jsonSerialization['stringDefaultAndDefaultPersist'] as String,
       stringDefaultModelAndDefaultPersist:
-          jsonSerialization['stringDefaultModelAndDefaultPersist'] as String,
+          jsonSerialization['stringDefaultModelAndDefaultPersist'] == null
+          ? null
+          : jsonSerialization['stringDefaultModelAndDefaultPersist'] as String,
     );
   }
 

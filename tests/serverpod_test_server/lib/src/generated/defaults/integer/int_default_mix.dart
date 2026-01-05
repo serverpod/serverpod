@@ -35,11 +35,17 @@ abstract class IntDefaultMix
     return IntDefaultMix(
       id: jsonSerialization['id'] as int?,
       intDefaultAndDefaultModel:
-          jsonSerialization['intDefaultAndDefaultModel'] as int,
+          jsonSerialization['intDefaultAndDefaultModel'] == null
+          ? null
+          : jsonSerialization['intDefaultAndDefaultModel'] as int,
       intDefaultAndDefaultPersist:
-          jsonSerialization['intDefaultAndDefaultPersist'] as int,
+          jsonSerialization['intDefaultAndDefaultPersist'] == null
+          ? null
+          : jsonSerialization['intDefaultAndDefaultPersist'] as int,
       intDefaultModelAndDefaultPersist:
-          jsonSerialization['intDefaultModelAndDefaultPersist'] as int,
+          jsonSerialization['intDefaultModelAndDefaultPersist'] == null
+          ? null
+          : jsonSerialization['intDefaultModelAndDefaultPersist'] as int,
     );
   }
 
