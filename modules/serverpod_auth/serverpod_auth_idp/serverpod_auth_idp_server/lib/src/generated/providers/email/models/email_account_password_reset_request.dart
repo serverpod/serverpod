@@ -57,9 +57,9 @@ abstract class EmailAccountPasswordResetRequest
           : _i4.Protocol().deserialize<_i2.EmailAccount>(
               jsonSerialization['emailAccount'],
             ),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['createdAt'],
-      ),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       challengeId: _i1.UuidValueJsonExtension.fromJson(
         jsonSerialization['challengeId'],
       ),

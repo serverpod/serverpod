@@ -32,13 +32,9 @@ abstract class ChildWithDefault extends _i1.ParentWithDefault
   factory ChildWithDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChildWithDefault(
       name: jsonSerialization['name'] as String,
-      parentDefault: jsonSerialization['parentDefault'] == null
-          ? null
-          : jsonSerialization['parentDefault'] as int,
+      parentDefault: jsonSerialization['parentDefault'] as int?,
       age: jsonSerialization['age'] as int,
-      childDefault: jsonSerialization['childDefault'] == null
-          ? null
-          : jsonSerialization['childDefault'] as int,
+      childDefault: jsonSerialization['childDefault'] as int?,
     );
   }
 

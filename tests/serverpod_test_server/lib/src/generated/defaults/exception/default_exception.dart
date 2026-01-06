@@ -63,17 +63,13 @@ abstract class DefaultException
 
   factory DefaultException.fromJson(Map<String, dynamic> jsonSerialization) {
     return DefaultException(
-      defaultBoolean: jsonSerialization['defaultBoolean'] == null
-          ? null
-          : jsonSerialization['defaultBoolean'] as bool,
+      defaultBoolean: jsonSerialization['defaultBoolean'] as bool?,
       defaultDateTime: jsonSerialization['defaultDateTime'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(
               jsonSerialization['defaultDateTime'],
             ),
-      defaultDouble: jsonSerialization['defaultDouble'] == null
-          ? null
-          : (jsonSerialization['defaultDouble'] as num).toDouble(),
+      defaultDouble: (jsonSerialization['defaultDouble'] as num?)?.toDouble(),
       defaultDuration: jsonSerialization['defaultDuration'] == null
           ? null
           : _i1.DurationJsonExtension.fromJson(
@@ -84,23 +80,15 @@ abstract class DefaultException
           : _i2.ByNameEnum.fromJson(
               (jsonSerialization['defaultEnum'] as String),
             ),
-      defaultInteger: jsonSerialization['defaultInteger'] == null
-          ? null
-          : jsonSerialization['defaultInteger'] as int,
-      defaultString: jsonSerialization['defaultString'] == null
-          ? null
-          : jsonSerialization['defaultString'] as String,
+      defaultInteger: jsonSerialization['defaultInteger'] as int?,
+      defaultString: jsonSerialization['defaultString'] as String?,
       defaultUuid: jsonSerialization['defaultUuid'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(
               jsonSerialization['defaultUuid'],
             ),
-      defaultModelField: jsonSerialization['defaultModelField'] == null
-          ? null
-          : jsonSerialization['defaultModelField'] as String,
-      defaultMixField: jsonSerialization['defaultMixField'] == null
-          ? null
-          : jsonSerialization['defaultMixField'] as String,
+      defaultModelField: jsonSerialization['defaultModelField'] as String?,
+      defaultMixField: jsonSerialization['defaultMixField'] as String?,
     );
   }
 

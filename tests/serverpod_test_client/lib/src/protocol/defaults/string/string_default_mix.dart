@@ -36,17 +36,11 @@ abstract class StringDefaultMix implements _i1.SerializableModel {
     return StringDefaultMix(
       id: jsonSerialization['id'] as int?,
       stringDefaultAndDefaultModel:
-          jsonSerialization['stringDefaultAndDefaultModel'] == null
-          ? null
-          : jsonSerialization['stringDefaultAndDefaultModel'] as String,
+          jsonSerialization['stringDefaultAndDefaultModel'] as String?,
       stringDefaultAndDefaultPersist:
-          jsonSerialization['stringDefaultAndDefaultPersist'] == null
-          ? null
-          : jsonSerialization['stringDefaultAndDefaultPersist'] as String,
+          jsonSerialization['stringDefaultAndDefaultPersist'] as String?,
       stringDefaultModelAndDefaultPersist:
-          jsonSerialization['stringDefaultModelAndDefaultPersist'] == null
-          ? null
-          : jsonSerialization['stringDefaultModelAndDefaultPersist'] as String,
+          jsonSerialization['stringDefaultModelAndDefaultPersist'] as String?,
     );
   }
 

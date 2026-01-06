@@ -46,9 +46,9 @@ abstract class ChallengeTracker
           : _i3.Protocol().deserialize<_i2.SecretChallenge>(
               jsonSerialization['secretChallenge'],
             ),
-      trackedAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['trackedAt'],
-      ),
+      trackedAt: jsonSerialization['trackedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['trackedAt']),
       notes: jsonSerialization['notes'] as String?,
     );
   }

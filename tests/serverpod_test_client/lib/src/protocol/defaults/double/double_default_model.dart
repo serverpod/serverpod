@@ -29,13 +29,10 @@ abstract class DoubleDefaultModel implements _i1.SerializableModel {
   factory DoubleDefaultModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return DoubleDefaultModel(
       id: jsonSerialization['id'] as int?,
-      doubleDefaultModel: jsonSerialization['doubleDefaultModel'] == null
-          ? null
-          : (jsonSerialization['doubleDefaultModel'] as num).toDouble(),
+      doubleDefaultModel: (jsonSerialization['doubleDefaultModel'] as num?)
+          ?.toDouble(),
       doubleDefaultModelNull:
-          jsonSerialization['doubleDefaultModelNull'] == null
-          ? null
-          : (jsonSerialization['doubleDefaultModelNull'] as num).toDouble(),
+          (jsonSerialization['doubleDefaultModelNull'] as num?)?.toDouble(),
     );
   }
 

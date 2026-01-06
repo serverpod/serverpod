@@ -32,13 +32,9 @@ abstract class StringDefaultModel
   factory StringDefaultModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return StringDefaultModel(
       id: jsonSerialization['id'] as int?,
-      stringDefaultModel: jsonSerialization['stringDefaultModel'] == null
-          ? null
-          : jsonSerialization['stringDefaultModel'] as String,
+      stringDefaultModel: jsonSerialization['stringDefaultModel'] as String?,
       stringDefaultModelNull:
-          jsonSerialization['stringDefaultModelNull'] == null
-          ? null
-          : jsonSerialization['stringDefaultModelNull'] as String,
+          jsonSerialization['stringDefaultModelNull'] as String?,
     );
   }
 

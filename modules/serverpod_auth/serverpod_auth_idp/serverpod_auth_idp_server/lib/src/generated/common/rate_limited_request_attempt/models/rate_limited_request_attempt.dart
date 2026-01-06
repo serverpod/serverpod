@@ -48,9 +48,11 @@ abstract class RateLimitedRequestAttempt
       source: jsonSerialization['source'] as String,
       nonce: jsonSerialization['nonce'] as String,
       ipAddress: jsonSerialization['ipAddress'] as String?,
-      attemptedAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['attemptedAt'],
-      ),
+      attemptedAt: jsonSerialization['attemptedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['attemptedAt'],
+            ),
       extraData: jsonSerialization['extraData'] == null
           ? null
           : _i2.Protocol().deserialize<Map<String, String>>(
