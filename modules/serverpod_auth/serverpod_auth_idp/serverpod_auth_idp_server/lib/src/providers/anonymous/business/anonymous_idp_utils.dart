@@ -33,12 +33,12 @@ class AnonymousIdpUtils {
     final Transaction? transaction,
   }) async {
     // Check rate limit and either throw or proceed.
-    final tooManyAttmpts = await _rateLimitUtil?.hasTooManyAttempts(
+    final tooManyAttempts = await _rateLimitUtil?.hasTooManyAttempts(
       session,
       nonce: session.remoteIpAddress.toString(),
     );
 
-    if (tooManyAttmpts == true) {
+    if (tooManyAttempts == true) {
       throw AnonymousAccountBlockedException(
         reason: AnonymousAccountBlockedExceptionReason.tooManyAttempts,
       );
