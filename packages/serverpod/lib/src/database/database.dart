@@ -94,7 +94,7 @@ class Database {
   /// The maximum number of items can be set by [limit]. If no limit is set,
   /// all items matching the query will be returned.
   ///
-  /// [offset] defines how many items to skip, after with [limit] (or all)
+  /// [offset] defines how many items to skip, after which [limit] (or all)
   /// items are read from the database.
   @internal
   Future<List<RowWithDistance<T>>> findWithDistance<T extends TableRow>({
