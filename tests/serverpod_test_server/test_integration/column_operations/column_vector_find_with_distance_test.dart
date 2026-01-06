@@ -70,170 +70,188 @@ void main() async {
       }
     });
 
-    test('when ordering by distance then closest rows are returned first.',
-        () async {
-      var result = await ObjectWithVector.db.findWithDistance(
-        session,
-        distance: (t) => t.vector.distanceL2(queryVector),
-        orderBy: (t) => t.vector.distanceL2(queryVector),
-      );
-
-      expect(result.length, 3);
-
-      // Distances should be in ascending order
-      for (int i = 0; i < result.length - 1; i++) {
-        expect(
-          result[i].distance,
-          lessThanOrEqualTo(result[i + 1].distance),
+    test(
+      'when ordering by distance then closest rows are returned first.',
+      () async {
+        var result = await ObjectWithVector.db.findWithDistance(
+          session,
+          distance: (t) => t.vector.distanceL2(queryVector),
+          orderBy: (t) => t.vector.distanceL2(queryVector),
         );
-      }
-    });
 
-    test('when filtering by distance then only matching rows are returned.',
-        () async {
-      var result = await ObjectWithVector.db.findWithDistance(
-        session,
-        distance: (t) => t.vector.distanceL2(queryVector),
-        where: (t) => t.vector.distanceL2(queryVector) < 1.0,
-      );
+        expect(result.length, 3);
 
-      expect(result, isNotEmpty);
+        // Distances should be in ascending order
+        for (int i = 0; i < result.length - 1; i++) {
+          expect(
+            result[i].distance,
+            lessThanOrEqualTo(result[i + 1].distance),
+          );
+        }
+      },
+    );
 
-      // All returned items should have distance less than 1.0
-      for (var item in result) {
-        expect(item.distance, lessThan(1.0));
-      }
-    });
-
-    test('when limiting results then only specified number of rows are returned.',
-        () async {
-      var result = await ObjectWithVector.db.findWithDistance(
-        session,
-        distance: (t) => t.vector.distanceL2(queryVector),
-        limit: 2,
-      );
-
-      expect(result.length, 2);
-    });
-
-    test('when using offset then specified number of rows are skipped.',
-        () async {
-      var allResults = await ObjectWithVector.db.findWithDistance(
-        session,
-        distance: (t) => t.vector.distanceL2(queryVector),
-        orderBy: (t) => t.vector.distanceL2(queryVector),
-      );
-
-      var resultWithOffset = await ObjectWithVector.db.findWithDistance(
-        session,
-        distance: (t) => t.vector.distanceL2(queryVector),
-        orderBy: (t) => t.vector.distanceL2(queryVector),
-        offset: 1,
-      );
-
-      expect(resultWithOffset.length, 2);
-      expect(resultWithOffset.first.row.id, allResults[1].row.id);
-    });
-
-    test('when using cosine distance then distances are computed correctly.',
-        () async {
-      var result = await ObjectWithVector.db.findWithDistance(
-        session,
-        distance: (t) => t.vector.distanceCosine(queryVector),
-        orderBy: (t) => t.vector.distanceCosine(queryVector),
-      );
-
-      expect(result.length, 3);
-
-      // Distances should be in ascending order
-      for (int i = 0; i < result.length - 1; i++) {
-        expect(
-          result[i].distance,
-          lessThanOrEqualTo(result[i + 1].distance),
+    test(
+      'when filtering by distance then only matching rows are returned.',
+      () async {
+        var result = await ObjectWithVector.db.findWithDistance(
+          session,
+          distance: (t) => t.vector.distanceL2(queryVector),
+          where: (t) => t.vector.distanceL2(queryVector) < 1.0,
         );
-      }
 
-      // Cosine distance should be between 0 and 2
-      for (var item in result) {
-        expect(item.distance, greaterThanOrEqualTo(0));
-        expect(item.distance, lessThanOrEqualTo(2));
-      }
-    });
+        expect(result, isNotEmpty);
 
-    test('when using inner product distance then distances are computed correctly.',
-        () async {
-      var result = await ObjectWithVector.db.findWithDistance(
-        session,
-        distance: (t) => t.vector.distanceInnerProduct(queryVector),
-        orderBy: (t) => t.vector.distanceInnerProduct(queryVector),
-      );
+        // All returned items should have distance less than 1.0
+        for (var item in result) {
+          expect(item.distance, lessThan(1.0));
+        }
+      },
+    );
 
-      expect(result.length, 3);
-
-      // All distances should be valid numbers
-      for (var item in result) {
-        expect(item.distance, isA<double>());
-        expect(item.distance.isFinite, isTrue);
-      }
-    });
-
-    test('when using L1 distance then distances are computed correctly.',
-        () async {
-      var result = await ObjectWithVector.db.findWithDistance(
-        session,
-        distance: (t) => t.vector.distanceL1(queryVector),
-        orderBy: (t) => t.vector.distanceL1(queryVector),
-      );
-
-      expect(result.length, 3);
-
-      // Distances should be in ascending order
-      for (int i = 0; i < result.length - 1; i++) {
-        expect(
-          result[i].distance,
-          lessThanOrEqualTo(result[i + 1].distance),
+    test(
+      'when limiting results then only specified number of rows are returned.',
+      () async {
+        var result = await ObjectWithVector.db.findWithDistance(
+          session,
+          distance: (t) => t.vector.distanceL2(queryVector),
+          limit: 2,
         );
-      }
 
-      // L1 distance should be non-negative
-      for (var item in result) {
-        expect(item.distance, greaterThanOrEqualTo(0));
-      }
-    });
+        expect(result.length, 2);
+      },
+    );
 
-    test('when ordering descending then farthest rows are returned first.',
-        () async {
-      var result = await ObjectWithVector.db.findWithDistance(
-        session,
-        distance: (t) => t.vector.distanceL2(queryVector),
-        orderBy: (t) => t.vector.distanceL2(queryVector),
-        orderDescending: true,
-      );
-
-      expect(result.length, 3);
-
-      // Distances should be in descending order
-      for (int i = 0; i < result.length - 1; i++) {
-        expect(
-          result[i].distance,
-          greaterThanOrEqualTo(result[i + 1].distance),
+    test(
+      'when using offset then specified number of rows are skipped.',
+      () async {
+        var allResults = await ObjectWithVector.db.findWithDistance(
+          session,
+          distance: (t) => t.vector.distanceL2(queryVector),
+          orderBy: (t) => t.vector.distanceL2(queryVector),
         );
-      }
-    });
 
-    test('when using nullable vector field then null values are handled.',
-        () async {
-      var result = await ObjectWithVector.db.findWithDistance(
-        session,
-        distance: (t) => t.vectorNullable.distanceL2(queryVector),
-        orderBy: (t) => t.vectorNullable.distanceL2(queryVector),
-      );
+        var resultWithOffset = await ObjectWithVector.db.findWithDistance(
+          session,
+          distance: (t) => t.vector.distanceL2(queryVector),
+          orderBy: (t) => t.vector.distanceL2(queryVector),
+          offset: 1,
+        );
 
-      expect(result.length, 3);
+        expect(resultWithOffset.length, 2);
+        expect(resultWithOffset.first.row.id, allResults[1].row.id);
+      },
+    );
 
-      // Result should include rows with null vectors at the end when sorted
-      var lastRow = result.last;
-      expect(lastRow.row.vectorNullable, isNull);
-    });
+    test(
+      'when using cosine distance then distances are computed correctly.',
+      () async {
+        var result = await ObjectWithVector.db.findWithDistance(
+          session,
+          distance: (t) => t.vector.distanceCosine(queryVector),
+          orderBy: (t) => t.vector.distanceCosine(queryVector),
+        );
+
+        expect(result.length, 3);
+
+        // Distances should be in ascending order
+        for (int i = 0; i < result.length - 1; i++) {
+          expect(
+            result[i].distance,
+            lessThanOrEqualTo(result[i + 1].distance),
+          );
+        }
+
+        // Cosine distance should be between 0 and 2
+        for (var item in result) {
+          expect(item.distance, greaterThanOrEqualTo(0));
+          expect(item.distance, lessThanOrEqualTo(2));
+        }
+      },
+    );
+
+    test(
+      'when using inner product distance then distances are computed correctly.',
+      () async {
+        var result = await ObjectWithVector.db.findWithDistance(
+          session,
+          distance: (t) => t.vector.distanceInnerProduct(queryVector),
+          orderBy: (t) => t.vector.distanceInnerProduct(queryVector),
+        );
+
+        expect(result.length, 3);
+
+        // All distances should be valid numbers
+        for (var item in result) {
+          expect(item.distance, isA<double>());
+          expect(item.distance.isFinite, isTrue);
+        }
+      },
+    );
+
+    test(
+      'when using L1 distance then distances are computed correctly.',
+      () async {
+        var result = await ObjectWithVector.db.findWithDistance(
+          session,
+          distance: (t) => t.vector.distanceL1(queryVector),
+          orderBy: (t) => t.vector.distanceL1(queryVector),
+        );
+
+        expect(result.length, 3);
+
+        // Distances should be in ascending order
+        for (int i = 0; i < result.length - 1; i++) {
+          expect(
+            result[i].distance,
+            lessThanOrEqualTo(result[i + 1].distance),
+          );
+        }
+
+        // L1 distance should be non-negative
+        for (var item in result) {
+          expect(item.distance, greaterThanOrEqualTo(0));
+        }
+      },
+    );
+
+    test(
+      'when ordering descending then farthest rows are returned first.',
+      () async {
+        var result = await ObjectWithVector.db.findWithDistance(
+          session,
+          distance: (t) => t.vector.distanceL2(queryVector),
+          orderBy: (t) => t.vector.distanceL2(queryVector),
+          orderDescending: true,
+        );
+
+        expect(result.length, 3);
+
+        // Distances should be in descending order
+        for (int i = 0; i < result.length - 1; i++) {
+          expect(
+            result[i].distance,
+            greaterThanOrEqualTo(result[i + 1].distance),
+          );
+        }
+      },
+    );
+
+    test(
+      'when using nullable vector field then null values are handled.',
+      () async {
+        var result = await ObjectWithVector.db.findWithDistance(
+          session,
+          distance: (t) => t.vectorNullable.distanceL2(queryVector),
+          orderBy: (t) => t.vectorNullable.distanceL2(queryVector),
+        );
+
+        expect(result.length, 3);
+
+        // Result should include rows with null vectors at the end when sorted
+        var lastRow = result.last;
+        expect(lastRow.row.vectorNullable, isNull);
+      },
+    );
   });
 }

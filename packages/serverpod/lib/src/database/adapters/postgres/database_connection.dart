@@ -119,16 +119,19 @@ class DatabaseConnection {
       transaction: transaction,
     );
 
+    // The field query alias for the distance column
+    var distanceFieldAlias = distance.fieldQueryAlias;
+
     return results.map((result) {
-      // Extract distance value (it will be the last column)
-      var distanceValue = result.values.last as num;
-      
+      // Extract distance value using the field alias
+      var distanceValue = result[distanceFieldAlias] as num;
+
       // Remove distance from the map before deserializing the row
       var rowMap = Map<String, dynamic>.from(result);
-      rowMap.remove(distance.fieldName);
-      
+      rowMap.remove(distanceFieldAlias);
+
       var row = _poolManager.serializationManager.deserialize<T>(rowMap);
-      
+
       return RowWithDistance<T>(row, distanceValue.toDouble());
     }).toList();
   }
