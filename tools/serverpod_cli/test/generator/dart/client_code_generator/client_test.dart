@@ -96,6 +96,7 @@ void main() {
                         .withUrl('dart:async')
                         .build(),
                     required: true,
+                    annotations: const [],
                   ),
                 ]).buildMethodStreamDefinition(),
               ])

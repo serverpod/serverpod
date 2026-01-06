@@ -728,6 +728,7 @@ void main() {
                             .withClassName('String')
                             .build(),
                         required: true,
+                        annotations: const [],
                       ),
                     ])
                     .buildMethodStreamDefinition(),
@@ -798,6 +799,7 @@ void main() {
                             .withClassName('String?')
                             .build(),
                         required: false,
+                        annotations: const [],
                       ),
                     ])
                     .buildMethodStreamDefinition(),
@@ -869,6 +871,7 @@ void main() {
                             .withClassName('String?')
                             .build(),
                         required: false,
+                        annotations: const [],
                       ),
                     ])
                     .buildMethodStreamDefinition(),
@@ -938,6 +941,7 @@ void main() {
                         .withStreamOf('String')
                         .build(),
                     required: false,
+                    annotations: const [],
                   ),
                 ]).buildMethodStreamDefinition(),
               ])
@@ -1010,6 +1014,7 @@ void main() {
                             .withStreamOf('String')
                             .build(),
                         required: true,
+                        annotations: const [],
                       ),
                     ])
                     .buildMethodStreamDefinition(),
@@ -1082,6 +1087,7 @@ void main() {
                             .withStreamOf('String')
                             .build(),
                         required: false,
+                        annotations: const [],
                       ),
                     ])
                     .withReturnType(

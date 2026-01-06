@@ -242,6 +242,7 @@ void main() {
                             .withStreamOf('String')
                             .build(),
                         required: false,
+                        annotations: const [],
                       ),
                     ],
                   ).buildMethodStreamDefinition(),

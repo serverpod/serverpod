@@ -137,7 +137,7 @@ class ParameterDefinition {
     required this.name,
     required this.type,
     required this.required,
-    this.annotations = const [],
+    required this.annotations,
   });
 }
 
