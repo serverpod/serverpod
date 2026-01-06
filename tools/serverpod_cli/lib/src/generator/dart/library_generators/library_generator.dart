@@ -590,7 +590,7 @@ class LibraryGenerator {
   Library generateServerEndpointDispatch() {
     var library = LibraryBuilder();
 
-    if (_hasDeprecatedParameters(protocolDefinition.endpoints)) {
+    if (_hasDeprecatedReferences(protocolDefinition.endpoints)) {
       library.ignoreForFile.add('deprecated_member_use_from_same_package');
     }
 
@@ -1367,15 +1367,14 @@ class LibraryGenerator {
   }
 
   /// Checks if any endpoint has parameters with deprecated annotations.
-  bool _hasDeprecatedParameters(List<EndpointDefinition> endpoints) {
+  bool _hasDeprecatedReferences(List<EndpointDefinition> endpoints) {
     for (var endpoint in endpoints) {
       for (var method in endpoint.methods) {
+        if (method.annotations.hasDeprecated()) {
+          return true;
+        }
         for (var param in method.allParameters) {
-          if (param.annotations.any(
-            (a) =>
-                a.methodCallAnalyzerIgnoreRule ==
-                'deprecated_member_use_from_same_package',
-          )) {
+          if (param.annotations.hasDeprecated()) {
             return true;
           }
         }
@@ -2192,5 +2191,15 @@ extension on Iterable<SerializableModelFieldDefinition> {
       yield element;
       visited.add(elementType);
     }
+  }
+}
+
+extension on Iterable<AnnotationDefinition> {
+  bool hasDeprecated() {
+    return any(
+      (a) =>
+          a.methodCallAnalyzerIgnoreRule ==
+          'deprecated_member_use_from_same_package',
+    );
   }
 }
