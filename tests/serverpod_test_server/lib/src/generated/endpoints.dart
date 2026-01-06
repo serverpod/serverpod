@@ -8,6 +8,7 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: deprecated_member_use_from_same_package
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -2167,10 +2168,8 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['deprecation'] as _i12.DeprecationEndpoint).
-                  // ignore: deprecated_member_use_from_same_package
-                  setGlobalDouble(
+              ) async => (endpoints['deprecation'] as _i12.DeprecationEndpoint)
+                  .setGlobalDouble(
                     session,
                     params['value'],
                   ),
@@ -2182,10 +2181,8 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['deprecation'] as _i12.DeprecationEndpoint).
-                  // ignore: deprecated_member_use_from_same_package
-                  getGlobalDouble(session),
+              ) async => (endpoints['deprecation'] as _i12.DeprecationEndpoint)
+                  .getGlobalDouble(session),
         ),
         'methodWithDeprecatedParam': _i1.MethodConnector(
           name: 'methodWithDeprecatedParam',
@@ -2200,10 +2197,8 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['deprecation'] as _i12.DeprecationEndpoint).
-                  // ignore: deprecated_member_use_from_same_package
-                  methodWithDeprecatedParam(
+              ) async => (endpoints['deprecation'] as _i12.DeprecationEndpoint)
+                  .methodWithDeprecatedParam(
                     session,
                     params['deprecatedParam'],
                   ),
@@ -2221,10 +2216,8 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['deprecation'] as _i12.DeprecationEndpoint).
-                  // ignore: deprecated_member_use_from_same_package
-                  methodWithDeprecatedParamMessage(
+              ) async => (endpoints['deprecation'] as _i12.DeprecationEndpoint)
+                  .methodWithDeprecatedParamMessage(
                     session,
                     params['deprecatedParam'],
                   ),
@@ -2247,10 +2240,8 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['deprecation'] as _i12.DeprecationEndpoint).
-                  // ignore: deprecated_member_use_from_same_package
-                  methodWithMixedParams(
+              ) async => (endpoints['deprecation'] as _i12.DeprecationEndpoint)
+                  .methodWithMixedParams(
                     session,
                     params['normalParam'],
                     params['deprecatedParam'],
@@ -2269,10 +2260,8 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['deprecation'] as _i12.DeprecationEndpoint).
-                  // ignore: deprecated_member_use_from_same_package
-                  methodWithOptionalDeprecatedParam(
+              ) async => (endpoints['deprecation'] as _i12.DeprecationEndpoint)
+                  .methodWithOptionalDeprecatedParam(
                     session,
                     params['deprecatedParam'],
                   ),
@@ -2295,10 +2284,8 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['deprecation'] as _i12.DeprecationEndpoint).
-                  // ignore: deprecated_member_use_from_same_package
-                  methodWithNamedDeprecatedParam(
+              ) async => (endpoints['deprecation'] as _i12.DeprecationEndpoint)
+                  .methodWithNamedDeprecatedParam(
                     session,
                     normalParam: params['normalParam'],
                     deprecatedParam: params['deprecatedParam'],

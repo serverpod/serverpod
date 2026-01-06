@@ -1333,9 +1333,7 @@ class LibraryGenerator {
             ..body = refer('endpoints')
                 .index(literalString(endpoint.name))
                 .asA(refer(endpoint.className, _endpointPath(endpoint)))
-                .property(
-                  '${_getMethodCallComment(method) ?? ''}${method.name}',
-                )
+                .property(method.name)
                 .call(
                   [
                     refer('session'),
@@ -1362,26 +1360,6 @@ class LibraryGenerator {
       });
     }
     return methodConnectors;
-  }
-
-  String? _getMethodCallComment(MethodCallDefinition m) {
-    // Check method-level annotations
-    for (var a in m.annotations) {
-      if (a.methodCallAnalyzerIgnoreRule != null) {
-        return '\n// ignore: ${a.methodCallAnalyzerIgnoreRule}\n';
-      }
-    }
-
-    // Check parameter-level annotations
-    for (var param in m.allParameters) {
-      for (var a in param.annotations) {
-        if (a.methodCallAnalyzerIgnoreRule != null) {
-          return '\n// ignore: ${a.methodCallAnalyzerIgnoreRule}\n';
-        }
-      }
-    }
-
-    return null;
   }
 
   Map<Object, Object> _buildMethodStreamConnectors(
