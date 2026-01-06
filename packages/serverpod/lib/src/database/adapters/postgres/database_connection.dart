@@ -9,6 +9,7 @@ import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/exceptions.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
+import 'package:serverpod/src/database/concepts/row_with_distance.dart';
 import 'package:serverpod/src/database/concepts/runtime_parameters.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
@@ -82,6 +83,54 @@ class DatabaseConnection {
       transaction: transaction,
       include: include,
     );
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  /// This method is used internally to support findWithDistance queries.
+  Future<List<RowWithDistance<T>>> findWithDistance<T extends TableRow>(
+    Session session, {
+    required ColumnVectorDistance distance,
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
+    List<Order>? orderByList,
+    Include? include,
+    Transaction? transaction,
+  }) async {
+    var table = _getTableOrAssert<T>(session, operation: 'findWithDistance');
+    orderByList = _resolveOrderBy(orderByList, orderBy, orderDescending);
+
+    var selectFields = [...table.columns, distance];
+
+    var query = SelectQueryBuilder(table: table)
+        .withSelectFields(selectFields)
+        .withWhere(where)
+        .withOrderBy(orderByList)
+        .withLimit(limit)
+        .withOffset(offset)
+        .withInclude(include)
+        .build();
+
+    var results = await _mappedResultsQuery(
+      session,
+      query,
+      transaction: transaction,
+    );
+
+    return results.map((result) {
+      // Extract distance value (it will be the last column)
+      var distanceValue = result.values.last as num;
+      
+      // Remove distance from the map before deserializing the row
+      var rowMap = Map<String, dynamic>.from(result);
+      rowMap.remove(distance.fieldName);
+      
+      var row = _poolManager.serializationManager.deserialize<T>(rowMap);
+      
+      return RowWithDistance<T>(row, distanceValue.toDouble());
+    }).toList();
   }
 
   /// For most cases use the corresponding method in [Database] instead.

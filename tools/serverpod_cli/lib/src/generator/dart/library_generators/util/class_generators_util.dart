@@ -74,6 +74,22 @@ TypeReference typeOrderByListBuilder(
   );
 }
 
+TypeReference typeDistanceBuilder(
+  String className,
+  bool serverCode, {
+  nullable = false,
+}) {
+  return TypeReference(
+    (t) => t
+      ..symbol = 'ColumnVectorDistance'
+      ..url = 'package:serverpod/serverpod.dart'
+      ..types.addAll([
+        refer('dynamic'),
+      ])
+      ..isNullable = nullable,
+  );
+}
+
 Expression buildFromJsonForField(
   SerializableModelFieldDefinition field,
   bool serverCode,

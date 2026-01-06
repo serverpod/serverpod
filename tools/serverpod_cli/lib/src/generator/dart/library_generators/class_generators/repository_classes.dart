@@ -70,6 +70,8 @@ class BuildRepositoryClass {
         ])
         ..methods.addAll([
           _buildFindMethod(className, relationFields),
+          if (_hasVectorFields(fields))
+            _buildFindWithDistanceMethod(className, relationFields),
           _buildFindFirstRow(className, relationFields),
           _buildFindByIdMethod(className, relationFields, idTypeReference),
           _buildInsertMethod(className),
@@ -232,6 +234,10 @@ class BuildRepositoryClass {
     return relation is ObjectRelationDefinition && relation.nullableRelation;
   }
 
+  bool _hasVectorFields(List<SerializableModelFieldDefinition> fields) {
+    return fields.any((field) => field.type.isVectorType);
+  }
+
   Method _buildFindMethod(
     String className,
     Iterable<SerializableModelFieldDefinition> objectRelationFields,
@@ -363,6 +369,183 @@ class BuildRepositoryClass {
             .call(
               [],
               {
+                'where': refer('where').nullSafeProperty('call').call(
+                  [refer(className).property('t')],
+                ),
+                'orderBy': refer('orderBy').nullSafeProperty('call').call(
+                  [refer(className).property('t')],
+                ),
+                'orderByList': refer('orderByList')
+                    .nullSafeProperty('call')
+                    .call(
+                      [refer(className).property('t')],
+                    ),
+                'orderDescending': refer('orderDescending'),
+                'limit': refer('limit'),
+                'offset': refer('offset'),
+                'transaction': refer('transaction'),
+                if (objectRelationFields.isNotEmpty)
+                  'include': refer('include'),
+              },
+              [refer(className)],
+            )
+            .returned
+            .statement,
+    );
+  }
+
+  Method _buildFindWithDistanceMethod(
+    String className,
+    Iterable<SerializableModelFieldDefinition> objectRelationFields,
+  ) {
+    return Method(
+      (m) => m
+        ..docs.add('''
+/// Returns a list of [$className]s with distances matching the given query parameters.
+///
+/// The [distance] parameter is required and specifies the vector distance expression
+/// to compute and return for each row.
+///
+/// Use [where] to specify which items to include in the return value.
+/// If none is specified, all items will be returned.
+///
+/// To specify the order of the items use [orderBy] or [orderByList]
+/// when sorting by multiple columns.
+///
+/// The maximum number of items can be set by [limit]. If no limit is set,
+/// all items matching the query will be returned.
+///
+/// [offset] defines how many items to skip, after which [limit] (or all)
+/// items are read from the database.
+///
+/// ```dart
+/// var docsWithDistance = await Document.db.findWithDistance(
+///   session,
+///   distance: (t) => t.embedding.distanceCosine(queryVector),
+///   where: (t) => t.embedding.distanceCosine(queryVector) < 0.5,
+///   orderBy: (t) => t.embedding.distanceCosine(queryVector),
+///   limit: 10,
+/// );
+/// ```''')
+        ..name = 'findWithDistance'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Future'
+            ..types.add(
+              TypeReference(
+                (r) => r
+                  ..symbol = 'List'
+                  ..types.add(
+                    TypeReference(
+                      (r) => r
+                        ..symbol = 'RowWithDistance'
+                        ..url = 'package:serverpod/serverpod.dart'
+                        ..types.add(
+                          TypeReference(
+                            (r) => r..symbol = className,
+                          ),
+                        ),
+                    ),
+                  ),
+              ),
+            ),
+        )
+        ..requiredParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = refer('Session', 'package:serverpod/serverpod.dart')
+              ..name = 'session',
+          ),
+        ])
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = typeDistanceBuilder(className, serverCode)
+              ..name = 'distance'
+              ..named = true
+              ..required = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = typeWhereExpressionBuilder(
+                className,
+                serverCode,
+              )
+              ..name = 'where'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'int',
+              )
+              ..name = 'limit'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'int',
+              )
+              ..name = 'offset'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = typeOrderByBuilder(className, serverCode)
+              ..name = 'orderBy'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'orderDescending'
+              ..defaultTo = const Code('false')
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = typeOrderByListBuilder(className, serverCode)
+              ..name = 'orderByList'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'Transaction'
+                  ..url = 'package:serverpod/serverpod.dart',
+              )
+              ..name = 'transaction'
+              ..named = true,
+          ),
+          if (objectRelationFields.isNotEmpty)
+            Parameter(
+              (p) => p
+                ..type = TypeReference(
+                  (b) => b
+                    ..isNullable = true
+                    ..symbol = '${className}Include',
+                )
+                ..name = 'include'
+                ..named = true,
+            ),
+        ])
+        ..modifier = MethodModifier.async
+        ..body = refer('session')
+            .property('db')
+            .property('findWithDistance')
+            .call(
+              [],
+              {
+                'distance': refer('distance').call(
+                  [refer(className).property('t')],
+                ),
                 'where': refer('where').nullSafeProperty('call').call(
                   [refer(className).property('t')],
                 ),

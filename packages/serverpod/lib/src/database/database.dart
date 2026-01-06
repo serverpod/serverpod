@@ -6,6 +6,7 @@ import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/database_result.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
+import 'package:serverpod/src/database/concepts/row_with_distance.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/query_parameters.dart';
@@ -67,6 +68,49 @@ class Database {
   }) async {
     return _databaseConnection.find<T>(
       _session,
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
+      include: include,
+    );
+  }
+
+  /// Returns a list of [TableRow]s with computed distances matching the given query parameters.
+  ///
+  /// The [distance] parameter is required and specifies the vector distance expression
+  /// to compute and return for each row.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after with [limit] (or all)
+  /// items are read from the database.
+  @internal
+  Future<List<RowWithDistance<T>>> findWithDistance<T extends TableRow>({
+    required ColumnVectorDistance distance,
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
+    Transaction? transaction,
+    Include? include,
+  }) async {
+    return _databaseConnection.findWithDistance<T>(
+      _session,
+      distance: distance,
       where: where,
       limit: limit,
       offset: offset,
