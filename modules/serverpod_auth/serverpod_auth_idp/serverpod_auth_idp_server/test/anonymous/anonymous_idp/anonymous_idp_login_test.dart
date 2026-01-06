@@ -9,7 +9,7 @@ import '../test_utils/anonymous_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
-    'Given login request with default rate limiting',
+    'Given login request with no previous attempts',
     rollbackDatabase: RollbackDatabase.disabled,
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
@@ -25,20 +25,80 @@ void main() {
       });
 
       test(
-        'when logging in under rate limits, it is allowed',
+        'when logging in, then it is allowed',
         () async {
           final result = await fixture.anonymousIdp.login(session);
           expect(result, isA<AuthSuccess>());
         },
       );
+    },
+  );
+
+  withServerpod(
+    'Given login request within configured rate limit with existing request attempt',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AnonymousIdpTestFixture fixture;
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = AnonymousIdpTestFixture(
+          config: AnonymousIdpConfig(
+            perIpAddressRateLimitConfig: AnonymousIdpLoginRateLimitingConfig(
+              maxAttempts: 2,
+              timeframe: const Duration(minutes: 1),
+            ),
+          ),
+        );
+
+        // Create one existing attempt to simulate a previous login
+        await fixture.anonymousIdp.login(session);
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
 
       test(
-        'when logging in over rate limits, it is blocked',
+        'when logging in, then it is allowed',
         () async {
-          for (int i = 0; i < 100; i++) {
-            final result = await fixture.anonymousIdp.login(session);
-            expect(result, isA<AuthSuccess>());
-          }
+          final result = await fixture.anonymousIdp.login(session);
+          expect(result, isA<AuthSuccess>());
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given login request exceeding configured rate limit',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AnonymousIdpTestFixture fixture;
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = AnonymousIdpTestFixture(
+          config: AnonymousIdpConfig(
+            perIpAddressRateLimitConfig: AnonymousIdpLoginRateLimitingConfig(
+              maxAttempts: 1,
+              timeframe: const Duration(minutes: 1),
+            ),
+          ),
+        );
+
+        // Create one existing attempt to reach the rate limit
+        await fixture.anonymousIdp.login(session);
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when logging in, then it is blocked with too many attempts exception',
+        () async {
           await expectLater(
             () => fixture.anonymousIdp.login(session),
             throwsA(isA<AnonymousAccountBlockedException>()),
@@ -49,15 +109,45 @@ void main() {
   );
 
   withServerpod(
-    'Given login request within specific rate limiting allowance',
+    'Given rate limit of 1 and an existing request attempt with a different IP address',
     rollbackDatabase: RollbackDatabase.disabled,
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;
-      setUp(() {
+      setUp(() async {
         session = sessionBuilder.build();
-        fixture = AnonymousIdpTestFixture();
+        fixture = AnonymousIdpTestFixture(
+          config: AnonymousIdpConfig(
+            perIpAddressRateLimitConfig: AnonymousIdpLoginRateLimitingConfig(
+              maxAttempts: 1,
+              timeframe: const Duration(minutes: 1),
+            ),
+          ),
+        );
+
+        await fixture.anonymousIdp.login(session);
+
+        // NOTE: This test is coupled to the implementation of the rate limiting
+        // due to the impossibility of mocking the IP address.
+        await session.db.transaction((final transaction) async {
+          final loggedAttempt = await RateLimitedRequestAttempt.db.findFirstRow(
+            session,
+            transaction: transaction,
+          );
+
+          // This check ensures that any change to the implementation of the
+          // rate limiting will break the test, so we can be sure that the test
+          // is actually testing the rate limiting.
+          expect(loggedAttempt, isNotNull);
+
+          // Change the stored login attempt to simulate a different IP address.
+          await RateLimitedRequestAttempt.db.updateRow(
+            session,
+            loggedAttempt!.copyWith(nonce: 'different-ip-address'),
+            transaction: transaction,
+          );
+        });
       });
 
       tearDown(() async {
@@ -65,78 +155,9 @@ void main() {
       });
 
       test(
-        'when logging in under rate limits, it is allowed',
+        'when logging in from different IP address, then it is allowed',
         () async {
-          final rateLimitedFixture = AnonymousIdpTestFixture(
-            config: AnonymousIdpConfig(
-              perIpAddressRateLimitConfig: AnonymousIdpLoginRateLimitingConfig(
-                // Limit of 2, but only inserting 1 record
-                maxAttempts: 2,
-                timeframe: const Duration(minutes: 1),
-              ),
-            ),
-          );
-
-          final result = await fixture.anonymousIdp.login(session);
-          expect(result, isA<AuthSuccess>());
-
-          final result2 = await rateLimitedFixture.anonymousIdp.login(session);
-          expect(result2, isA<AuthSuccess>());
-        },
-      );
-
-      test(
-        'when logging in over rate limits, it is blocked',
-        () async {
-          final rateLimitedFixture = AnonymousIdpTestFixture(
-            config: AnonymousIdpConfig(
-              perIpAddressRateLimitConfig: AnonymousIdpLoginRateLimitingConfig(
-                maxAttempts: 1,
-                timeframe: const Duration(minutes: 1),
-              ),
-            ),
-          );
-          final result = await fixture.anonymousIdp.login(session);
-          expect(result, isA<AuthSuccess>());
-
-          await expectLater(
-            () => rateLimitedFixture.anonymousIdp.login(session),
-            throwsA(isA<AnonymousAccountBlockedException>()),
-          );
-        },
-      );
-
-      test(
-        'when logging in over rate limits but from different IP addresses, '
-        'it is allowed',
-        () async {
-          final rateLimitedFixture = AnonymousIdpTestFixture(
-            config: AnonymousIdpConfig(
-              perIpAddressRateLimitConfig: AnonymousIdpLoginRateLimitingConfig(
-                maxAttempts: 1,
-                timeframe: const Duration(minutes: 1),
-              ),
-            ),
-          );
-
-          // Manually insert a row instead of calling `login`, as this is the
-          // only feasible way to create the same side effects of `login`, but
-          // with a different IP address.
-          final attemptedAt = DateTime.now();
-          await RateLimitedRequestAttempt.db.insertRow(
-            session,
-            RateLimitedRequestAttempt(
-              domain: 'anonymous-idp-login',
-              source: 'account-creation',
-              nonce: 'different-ip-address',
-              // The IP address column is not used, so this value is irrelevant.
-              // We check on IP addresses by reusing its value as the `nonce`.
-              ipAddress: 'does-not-matter',
-              attemptedAt: attemptedAt,
-            ),
-          );
-
-          final result = rateLimitedFixture.anonymousIdp.login(session);
+          final result = fixture.anonymousIdp.login(session);
           await expectLater(result, completion(isA<AuthSuccess>()));
         },
       );
@@ -144,15 +165,27 @@ void main() {
   );
 
   withServerpod(
-    'Given login request with onBeforeAnonymousAccountCreated',
+    'Given onBeforeAnonymousAccountCreated callback configured to receive the token',
     rollbackDatabase: RollbackDatabase.disabled,
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late AnonymousIdpTestFixture fixture;
+      String? receivedToken;
       setUp(() {
         session = sessionBuilder.build();
-        fixture = AnonymousIdpTestFixture();
+        fixture = AnonymousIdpTestFixture(
+          config: AnonymousIdpConfig(
+            onBeforeAnonymousAccountCreated:
+                (
+                  final Session session, {
+                  final String? token,
+                  final Transaction? transaction,
+                }) async {
+                  receivedToken = token;
+                },
+          ),
+        );
       });
 
       tearDown(() async {
@@ -160,48 +193,53 @@ void main() {
       });
 
       test(
-        'when logging in without onBeforeAnonymousAccountCreated approval, '
-        'it is blocked',
+        'when logging in with a token, then it is received by the callback.',
         () async {
-          final cannotCreateFixture = AnonymousIdpTestFixture(
-            config: AnonymousIdpConfig(
-              onBeforeAnonymousAccountCreated:
-                  (
-                    final Session session, {
-                    final String? token,
-                    final Transaction? transaction,
-                  }) async {
-                    await Future.delayed(Duration.zero);
-                    throw Exception('Test exception');
-                  },
-            ),
-          );
-          await expectLater(
-            () => cannotCreateFixture.anonymousIdp.login(session),
-            throwsA(isA<AnonymousAccountBlockedException>()),
-          );
+          const token = 'test-token';
+          await fixture.anonymousIdp.login(session, token: token);
+
+          expect(receivedToken, isNotNull);
+          expect(receivedToken, equals(token));
         },
-        timeout: const Timeout(Duration(seconds: 1)),
       );
+    },
+  );
+
+  withServerpod(
+    'Given onBeforeAnonymousAccountCreated configured to block login attempts',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AnonymousIdpTestFixture fixture;
+      setUp(() {
+        session = sessionBuilder.build();
+        fixture = AnonymousIdpTestFixture(
+          config: AnonymousIdpConfig(
+            onBeforeAnonymousAccountCreated:
+                (
+                  final Session session, {
+                  final String? token,
+                  final Transaction? transaction,
+                }) async {
+                  await Future.delayed(Duration.zero);
+                  throw Exception('Test exception');
+                },
+          ),
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
 
       test(
-        'when logging in with onBeforeAnonymousAccountCreated approval, '
-        'it is allowed',
+        'when logging in, then it is blocked with AnonymousAccountBlockedException exception',
         () async {
-          final canCreateFixture = AnonymousIdpTestFixture(
-            config: AnonymousIdpConfig(
-              onBeforeAnonymousAccountCreated:
-                  (
-                    final Session session, {
-                    final String? token,
-                    final Transaction? transaction,
-                  }) async {
-                    await Future.delayed(Duration.zero);
-                  },
-            ),
+          await expectLater(
+            () => fixture.anonymousIdp.login(session),
+            throwsA(isA<AnonymousAccountBlockedException>()),
           );
-          final result = canCreateFixture.anonymousIdp.login(session);
-          await expectLater(result, completion(isA<AuthSuccess>()));
         },
         timeout: const Timeout(Duration(seconds: 1)),
       );
