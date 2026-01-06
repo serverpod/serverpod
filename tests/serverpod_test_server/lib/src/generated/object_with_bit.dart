@@ -377,6 +377,55 @@ class ObjectWithBitRepository {
     );
   }
 
+  /// Returns a list of [ObjectWithBit]s with distances matching the given query parameters.
+  ///
+  /// The [distance] parameter is required and specifies the vector distance expression
+  /// to compute and return for each row.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var docsWithDistance = await Document.db.findWithDistance(
+  ///   session,
+  ///   distance: (t) => t.embedding.distanceCosine(queryVector),
+  ///   where: (t) => t.embedding.distanceCosine(queryVector) < 0.5,
+  ///   orderBy: (t) => t.embedding.distanceCosine(queryVector),
+  ///   limit: 10,
+  /// );
+  /// ```
+  Future<List<_i1.RowWithDistance<ObjectWithBit>>> findWithDistance(
+    _i1.Session session, {
+    required _i1.DistanceBuilder<ObjectWithBitTable> distance,
+    _i1.WhereExpressionBuilder<ObjectWithBitTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findWithDistance<ObjectWithBit>(
+      distance: distance(ObjectWithBit.t),
+      where: where?.call(ObjectWithBit.t),
+      orderBy: orderBy?.call(ObjectWithBit.t),
+      orderByList: orderByList?.call(ObjectWithBit.t),
+      orderDescending: orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+    );
+  }
+
   /// Returns the first matching [ObjectWithBit] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.

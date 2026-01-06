@@ -81,11 +81,11 @@ TypeReference typeDistanceBuilder(
 }) {
   return TypeReference(
     (t) => t
-      ..symbol = 'ColumnVectorDistance'
-      ..url = 'package:serverpod/serverpod.dart'
+      ..symbol = 'DistanceBuilder'
       ..types.addAll([
-        refer('dynamic'),
+        refer('${className}Table'),
       ])
+      ..url = serverpodUrl(serverCode)
       ..isNullable = nullable,
   );
 }
