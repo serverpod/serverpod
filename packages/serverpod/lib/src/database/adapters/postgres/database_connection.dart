@@ -86,7 +86,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  /// This method is used internally to support findWithDistance queries.
+  /// This method is used internally to support [findWithDistance] queries.
   Future<List<RowWithDistance<T>>> findWithDistance<T extends TableRow>(
     Session session, {
     required ColumnVectorDistance distance,
@@ -113,27 +113,44 @@ class DatabaseConnection {
         .withInclude(include)
         .build();
 
-    var results = await _mappedResultsQuery(
+    var result = await _mappedResultsQuery(
       session,
       query,
       transaction: transaction,
     );
 
-    // The field query alias for the distance column
     var distanceFieldAlias = distance.fieldQueryAlias;
+    var distances = result
+        .map((r) => r.remove(distanceFieldAlias) as num)
+        .toList();
 
-    return results.map((result) {
-      // Extract distance value using the field alias
-      var distanceValue = result[distanceFieldAlias] as num;
+    var resolvedListRelations = await _queryIncludedLists(
+      session,
+      table,
+      include,
+      result,
+      transaction,
+    );
 
-      // Remove distance from the map before deserializing the row
-      var rowMap = Map<String, dynamic>.from(result);
-      rowMap.remove(distanceFieldAlias);
+    final deserializedRows = result
+        .map(
+          (rawRow) => resolvePrefixedQueryRow(
+            table,
+            rawRow,
+            resolvedListRelations,
+            include: include,
+          ),
+        )
+        .map(_poolManager.serializationManager.deserialize<T>)
+        .toList();
 
-      var row = _poolManager.serializationManager.deserialize<T>(rowMap);
-
-      return RowWithDistance<T>(row, distanceValue.toDouble());
-    }).toList();
+    return [
+      for (var i = 0; i < result.length; i++)
+        RowWithDistance<T>(
+          deserializedRows[i],
+          distances[i].toDouble(),
+        ),
+    ];
   }
 
   /// For most cases use the corresponding method in [Database] instead.
