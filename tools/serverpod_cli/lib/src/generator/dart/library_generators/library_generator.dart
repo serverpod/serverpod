@@ -590,7 +590,6 @@ class LibraryGenerator {
   Library generateServerEndpointDispatch() {
     var library = LibraryBuilder();
 
-    // Add conditional ignore for deprecated parameter usage
     if (_hasDeprecatedParameters(protocolDefinition.endpoints)) {
       library.ignoreForFile.add('deprecated_member_use_from_same_package');
     }
@@ -1373,7 +1372,9 @@ class LibraryGenerator {
       for (var method in endpoint.methods) {
         for (var param in method.allParameters) {
           if (param.annotations.any(
-            (a) => a.methodCallAnalyzerIgnoreRule == 'deprecated_member_use_from_same_package',
+            (a) =>
+                a.methodCallAnalyzerIgnoreRule ==
+                'deprecated_member_use_from_same_package',
           )) {
             return true;
           }
