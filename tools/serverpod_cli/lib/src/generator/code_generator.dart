@@ -52,7 +52,15 @@ extension GenerateCode on Library {
       return DartFormatter(
         languageVersion: Version(3, 8, 0),
         trailingCommas: TrailingCommas.preserve,
-      ).format('''
+      ).format('$_fileHeader${ignoreForFile.isEmpty ? '\n' : ''}$code');
+    } on FormatterException catch (e) {
+      log.error(e.toString());
+    }
+    return code;
+  }
+}
+
+const _fileHeader = '''
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
@@ -63,12 +71,4 @@ extension GenerateCode on Library {
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
-$code
-''');
-    } on FormatterException catch (e) {
-      log.error(e.toString());
-    }
-    return code;
-  }
-}
+''';
