@@ -74,6 +74,9 @@ class SignInWidget extends StatefulWidget {
   /// Customized widget to use for anonymous sign-in.
   final AnonymousSignInWidget? anonymousSignInWidget;
 
+  /// Whether to disable the GitHub sign-in widget if it is available.
+  final bool disableGitHubSignInWidget;
+
   /// Customized widget to use for email sign-in.
   final EmailSignInWidget? emailSignInWidget;
 
@@ -97,6 +100,7 @@ class SignInWidget extends StatefulWidget {
     this.disableAppleSignInWidget = false,
     this.disableGitHubSignInWidget = false,
     this.anonymousSignInWidget,
+    this.disableGitHubSignInWidget = false,
     this.emailSignInWidget,
     this.googleSignInWidget,
     this.appleSignInWidget,
