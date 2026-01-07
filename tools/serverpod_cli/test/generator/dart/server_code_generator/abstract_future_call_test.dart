@@ -20,65 +20,169 @@ void main() {
     'future_calls.dart',
   );
 
+  var expectedEndpointsFileName = path.join(
+    'lib',
+    'src',
+    'generated',
+    'endpoints.dart',
+  );
+
   group(
     'Given protocol definition with an abstract future call when generating server files',
     () {
-      var abstractFutureCallName = 'abstract';
-      var methodName = 'testMethod';
+      late Map<String, String> codeMap;
+      late String? endpointsFile;
 
-      var abstractFutureCall = FutureCallDefinitionBuilder()
-          .withClassName('${abstractFutureCallName.pascalCase}FutureCall')
-          .withName(abstractFutureCallName)
-          .withIsAbstract()
-          .withMethods([
-            FutureCallMethodDefinitionBuilder()
-                .withName(methodName)
-                .buildMethodCallDefinition(),
-          ])
-          .build();
+      setUpAll(() {
+        var abstractFutureCallName = 'abstract';
+        var methodName = 'testMethod';
 
-      var protocolDefinition = ProtocolDefinition(
-        endpoints: [],
-        models: [],
-        futureCalls: [abstractFutureCall],
-      );
+        var abstractFutureCall = FutureCallDefinitionBuilder()
+            .withClassName('${abstractFutureCallName.pascalCase}FutureCall')
+            .withName(abstractFutureCallName)
+            .withIsAbstract()
+            .withMethods([
+              FutureCallMethodDefinitionBuilder()
+                  .withName(methodName)
+                  .buildMethodCallDefinition(),
+            ])
+            .build();
 
-      late var codeMap = generator.generateProtocolCode(
-        protocolDefinition: protocolDefinition,
-        config: config,
-      );
+        var protocolDefinition = ProtocolDefinition(
+          endpoints: [],
+          models: [],
+          futureCalls: [abstractFutureCall],
+        );
+
+        codeMap = generator.generateProtocolCode(
+          protocolDefinition: protocolDefinition,
+          config: config,
+        );
+
+        endpointsFile = codeMap[expectedEndpointsFileName];
+      });
+
+      test('then future calls file is not created.', () {
+        expect(codeMap[expectedFutureCallsFileName], isNull);
+      });
+
+      group('then endpoints file', () {
+        test('has no export for the Serverpod future calls getter', () {
+          expect(
+            endpointsFile,
+            isNot(
+              matches(
+                r"export \'future_calls.dart\' show ServerpodFutureCallsGetter;",
+              ),
+            ),
+          );
+        });
+
+        test('has no override for FutureCallDispatch', () {
+          expect(
+            endpointsFile,
+            isNot(
+              matches(
+                r'  @override\n'
+                r'  _i\d.FutureCallDispatch\? get futureCalls \{\n'
+                r'    return _i\d.FutureCalls\(\);\n'
+                r'  \}\n',
+              ),
+            ),
+          );
+        });
+      });
+    },
+  );
+
+  group(
+    'Given protocol definition with both concrete and abstract future call when generating server files',
+    () {
+      late Map<String, String> codeMap;
+      late String? endpointsFile;
+      late String? futureCallsFile;
+
+      setUpAll(() {
+        var abstractFutureCallName = 'abstract';
+        var concreteFutureCallName = 'concrete';
+        var methodName = 'testMethod';
+
+        var abstractFutureCall = FutureCallDefinitionBuilder()
+            .withClassName('${abstractFutureCallName.pascalCase}FutureCall')
+            .withName(abstractFutureCallName)
+            .withIsAbstract()
+            .withMethods([
+              FutureCallMethodDefinitionBuilder()
+                  .withName(methodName)
+                  .buildMethodCallDefinition(),
+            ])
+            .build();
+
+        var concreteFutureCall = FutureCallDefinitionBuilder()
+            .withClassName('${concreteFutureCallName.pascalCase}FutureCall')
+            .withName(concreteFutureCallName)
+            .withMethods([
+              FutureCallMethodDefinitionBuilder()
+                  .withName(methodName)
+                  .buildMethodCallDefinition(),
+            ])
+            .build();
+
+        var protocolDefinition = ProtocolDefinition(
+          endpoints: [],
+          models: [],
+          futureCalls: [abstractFutureCall, concreteFutureCall],
+        );
+
+        codeMap = generator.generateProtocolCode(
+          protocolDefinition: protocolDefinition,
+          config: config,
+        );
+
+        endpointsFile = codeMap[expectedEndpointsFileName];
+        futureCallsFile = codeMap[expectedFutureCallsFileName];
+      });
 
       test('then future calls file is created.', () {
         expect(codeMap, contains(expectedFutureCallsFileName));
       });
 
-      group('then generated future calls file', () {
-        late var futureCallsFileContent = codeMap[expectedFutureCallsFileName]!;
-
-        test(
-          'does not contain abstract future call in registered future calls map.',
-          () {
-            expect(
-              futureCallsFileContent,
-              matches(
-                r'  @override\n'
-                r'  void initialize\(\n'
-                r'    _i\d.FutureCallManager futureCallManager,\n'
-                r'    String serverId,\n'
-                r'  \) \{\n'
-                r'    var registeredFutureCalls = <String, _i\d.FutureCall>\{\};\n',
-              ),
-            );
-          },
-        );
-
-        test('does not contain abstract future call implementation.', () {
+      test(
+        'then generated future calls file does not contain abstract future call implementation.',
+        () {
           expect(
-            futureCallsFileContent,
-            isNot(
-              matches(
-                r'class AbstractTestMethodFutureCall extends _i\d.FutureCall \{\n',
-              ),
+            futureCallsFile,
+            matches(
+              r'class _FutureCallRef {\n'
+              r'  _FutureCallRef\(this._invokeFutureCall\);\n'
+              r'\n'
+              r'  final _InvokeFutureCall _invokeFutureCall;\n'
+              r'\n'
+              r'  late final concrete = _ConcreteFutureCallDispatcher\(_invokeFutureCall\);\n'
+              r'}\n',
+            ),
+          );
+        },
+      );
+
+      group('then endpoints file', () {
+        test('has export for the Serverpod future calls getter', () {
+          expect(
+            endpointsFile,
+            matches(
+              r"export \'future_calls.dart\' show ServerpodFutureCallsGetter;",
+            ),
+          );
+        });
+
+        test('has override for FutureCallDispatch', () {
+          expect(
+            endpointsFile,
+            matches(
+              r'  @override\n'
+              r'  _i\d.FutureCallDispatch\? get futureCalls \{\n'
+              r'    return _i\d.FutureCalls\(\);\n'
+              r'  \}\n',
             ),
           );
         });

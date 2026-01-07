@@ -1674,7 +1674,7 @@ void main() {
   );
 
   group(
-    'Given protocol definition with future call when generating test tools file',
+    'Given protocol definition with a concrete future call when generating test tools file',
     () {
       var futureClassName = 'testing';
       var method = 'sayHello';
@@ -1835,11 +1835,91 @@ void main() {
       );
 
       test(
-        'then test tools file has private future call classes defined.',
+        'then test tools file has generated future calls.',
         () {
           expect(
             testToolsFile,
-            contains('class _${futureClassName.pascalCase}FutureCall {'),
+            matches(
+              r'class TestEndpoints \{\n'
+              r'  late final futureCalls = _FutureCalls\(\);\n'
+              r'\}\n',
+            ),
+          );
+
+          expect(
+            testToolsFile,
+            matches(
+              r'class _FutureCalls \{\n'
+              r'  late final testing = _TestingFutureCall\(\);\n'
+              r'\}\n',
+            ),
+          );
+
+          expect(
+            testToolsFile,
+            matches(
+              r'class _TestingFutureCall \{\n'
+              r'  Future<void> sayHello\(\n'
+              r'    _i\d.TestSessionBuilder sessionBuilder,\n'
+              r'    String name,\n'
+              r'  \) async \{\n',
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given protocol definition with an abstract future call when generating test tools file',
+    () {
+      var futureClassName = 'testing';
+      var method = 'sayHello';
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: [],
+        futureCalls: [
+          FutureCallDefinitionBuilder()
+              .withClassName(futureClassName.pascalCase)
+              .withName(futureClassName)
+              .withIsAbstract()
+              .withMethods([
+                FutureCallMethodDefinitionBuilder()
+                    .withName(method)
+                    .withParameters([
+                      ParameterDefinitionBuilder()
+                          .withName('name')
+                          .withType(
+                            TypeDefinitionBuilder()
+                                .withClassName('String')
+                                .build(),
+                          )
+                          .build(),
+                    ])
+                    .buildMethodCallDefinition(),
+              ])
+              .build(),
+        ],
+      );
+
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      late var testToolsFile = codeMap[expectedFileName];
+
+      test('then test tools file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+
+      test(
+        'then test tools file has no generated future call.',
+        () {
+          expect(
+            testToolsFile,
+            matches(r'class TestEndpoints \{\}\n'),
           );
         },
       );

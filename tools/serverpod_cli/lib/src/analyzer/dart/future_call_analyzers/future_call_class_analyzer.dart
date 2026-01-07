@@ -6,7 +6,6 @@ import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/annotation
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_parameter_analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/keywords.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
 abstract class FutureCallClassAnalyzer {
@@ -119,7 +118,7 @@ abstract class FutureCallClassAnalyzer {
   /// be validated and parsed.
   static bool isFutureCallClass(ClassElement element) {
     if (!element.isConstructable && !element.isAbstract) return false;
-    if (element.isNotFutureCallSpec) return false;
+    if (element.isExecutableFutureCall) return false;
     return isFutureCallInterface(element);
   }
 
@@ -217,21 +216,21 @@ extension on ClassElement {
     return futureCallMethods;
   }
 
-  /// Returns true if the [ClassElement] does not represent a valid future call spec.
-  /// A future call spec must have a FutureCall super type in its heirarchy
-  /// with generic argument of type SerializableModel.
-  /// This is useful to treat conforming elements as generation specs for future calls.
-  /// It is also useful avoid re-analyzing generated FutureCall classes
-  /// and legacy user-defined ones.
-  bool get isNotFutureCallSpec {
-    if (methods.length == 1 && methods.first.name == 'invoke') {
-      return true;
-    }
-    return !allSupertypes.any(
-      (type) =>
-          type.element.name == 'FutureCall' &&
-          type.typeArguments.firstOrNull?.element?.name ==
-              Keyword.serializableModelClassName,
+  /// Whether the [ClassElement] represents a future call to be executed.
+  ///
+  /// A [FutureCall] declaration can either be a spec to generate a type-safe
+  /// interface or an executable [FutureCall] to be directly invoked. Executable
+  /// classes extends [FutureCall] directly and overrides only the invoke method.
+  /// These will be generated from the spec classes, but can also be manually
+  /// defined by users and we must not generate code for them.
+  bool get isExecutableFutureCall {
+    final extendsFutureCallDirectly = allSupertypes.any(
+      (type) => type.element.name == 'FutureCall',
     );
+
+    final onlyDeclaresInvokeMethod =
+        methods.length == 1 && methods.first.name == 'invoke';
+
+    return extendsFutureCallDirectly && onlyDeclaresInvokeMethod;
   }
 }

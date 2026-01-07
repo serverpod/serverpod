@@ -8,6 +8,7 @@ import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/endpoint_generators_util.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
+import 'package:serverpod_cli/src/generator/dart/protocol_definition_extension.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -593,7 +594,7 @@ class LibraryGenerator {
   Library generateServerEndpointDispatch() {
     var library = LibraryBuilder();
 
-    if (protocolDefinition.futureCalls.isNotEmpty) {
+    if (protocolDefinition.shouldGenerateFutureCalls) {
       library.directives.add(
         Directive.export(
           'future_calls.dart',
@@ -647,7 +648,7 @@ class LibraryGenerator {
                 ]),
             ),
 
-            if (protocolDefinition.futureCalls.isNotEmpty)
+            if (protocolDefinition.shouldGenerateFutureCalls)
               Method(
                 (m) => m
                   ..annotations.add(refer('override'))

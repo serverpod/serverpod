@@ -1,6 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 
 class FutureCallMethodParameterValidator {
@@ -20,7 +19,7 @@ class FutureCallMethodParameterValidator {
   }
 
   bool _isSerializableModel(TypeDefinition type) {
-    return type.className == Keyword.serializableModelClassName;
+    return type.className == 'SerializableModel';
   }
 
   bool _isModelType(TypeDefinition type) {

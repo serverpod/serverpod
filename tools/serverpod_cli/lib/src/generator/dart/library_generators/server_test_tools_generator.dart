@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/doc_comments/with_serverpod_doc_comment.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/endpoint_generators_util.dart';
+import 'package:serverpod_cli/src/generator/dart/protocol_definition_extension.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -28,7 +29,8 @@ class ServerTestToolsGenerator {
         _buildWithServerpodFunction(),
         _buildPublicTestEndpointsClass(),
         _buildPrivateTestEndpointsClass(),
-        if (protocolDefinition.futureCalls.isNotEmpty) _buildFutureCallClass(),
+        if (protocolDefinition.shouldGenerateFutureCalls)
+          _buildFutureCallClass(),
       ],
     );
 
@@ -632,7 +634,7 @@ class ServerTestToolsGenerator {
     return Class((classBuilder) {
       classBuilder.name = 'TestEndpoints';
 
-      if (protocolDefinition.futureCalls.isNotEmpty) {
+      if (protocolDefinition.shouldGenerateFutureCalls) {
         classBuilder.fields.add(
           Field(
             (fieldBuilder) {
