@@ -1,13 +1,14 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/anonymous.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_idp_server/providers/github.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
 
-import 'src/generated/protocol.dart';
 import 'src/generated/endpoints.dart';
+import 'src/generated/protocol.dart';
 
 // This is the starting point of your Serverpod server. In most cases, you will
 // only need to make additions to this file if you add future calls,  are
@@ -44,6 +45,13 @@ void run(List<String> args) async {
     ),
   );
 
+  final githubIdpConfig = GitHubIdpConfig(
+    oauthCredentials: GitHubOAuthCredentials.fromJson({
+      'clientId': pod.getPassword('githubClientId')!,
+      'clientSecret': pod.getPassword('githubClientSecret')!,
+    }),
+  );
+
   final appleIdpConfig = AppleIdpConfig(
     serviceIdentifier: pod.getPassword('appleServiceIdentifier')!,
     bundleIdentifier: pod.getPassword('appleBundleIdentifier')!,
@@ -74,6 +82,7 @@ void run(List<String> args) async {
     identityProviderBuilders: [
       anonymousIdpConfig,
       googleIdpConfig,
+      githubIdpConfig,
       appleIdpConfig,
       emailIdpConfig,
       passkeyIdpConfig,

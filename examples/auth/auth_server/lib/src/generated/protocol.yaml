@@ -12,6 +12,8 @@ emailIdp:
   - finishPasswordReset:
 firebaseIdp:
   - login:
+gitHubIdp:
+  - login:
 googleIdp:
   - login:
 refreshJwtTokens:
