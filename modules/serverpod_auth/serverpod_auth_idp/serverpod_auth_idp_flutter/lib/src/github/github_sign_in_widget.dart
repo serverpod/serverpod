@@ -19,7 +19,7 @@ export 'github_sign_in_style.dart';
 /// those callbacks are handled by the controller itself.
 ///
 /// Example with managed state:
-/// ```dart
+/// ```
 /// GitHubSignInWidget(
 ///   client: client,
 ///   onAuthenticated: () => Navigator.push(...),
@@ -27,8 +27,6 @@ export 'github_sign_in_style.dart';
 /// )
 /// ```
 ///
-/// Example with external controller:
-/// ```dart
 /// GitHubSignInWidget(
 ///   controller: controller,
 /// )
@@ -103,7 +101,7 @@ class GitHubSignInWidget extends StatefulWidget {
     this.minimumWidth = 240,
     super.key,
   }) : assert(
-         (controller == null) != (client == null),
+         (controller == null || client == null),
          'Either controller or client must be provided, but not both. When '
          'passing a controller, the client parameter is ignored.',
        ),

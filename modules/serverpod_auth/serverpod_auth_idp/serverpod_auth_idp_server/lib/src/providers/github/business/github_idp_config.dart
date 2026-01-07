@@ -11,7 +11,9 @@ import 'github_idp_utils.dart';
 /// Function to be called to check whether a GitHub account details match the
 /// requirements during registration.
 typedef GitHubAccountDetailsValidation =
-    void Function(GitHubAccountDetails accountDetails);
+    void Function(
+      GitHubAccountDetails accountDetails,
+    );
 
 /// Function to be called to extract additional information from GitHub APIs
 /// using the access token. The [session] and [transaction] can be used to
@@ -25,15 +27,9 @@ typedef GetExtraGitHubInfoCallback =
     });
 
 /// Configuration for the GitHub identity provider.
-///
-/// This class implements both [IdentityProviderBuilder] and [OAuth2PkceServerConfig]
-/// for generic OAuth2 PKCE token exchange.
 class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
   /// The OAuth credentials used for GitHub sign-in.
   final GitHubOAuthCredentials oauthCredentials;
-
-  /// OAuth2 PKCE server config for GitHub.
-  late final OAuth2PkceServerConfig oauth2Config;
 
   /// Validation function for GitHub account details.
   ///
@@ -51,38 +47,17 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
   final GitHubAccountDetailsValidation githubAccountDetailsValidation;
 
   /// Callback that can be used with the access token to extract additional
-  /// information from GitHub.
-  ///
-  /// This callback is invoked during [GitHubIdpUtils.fetchAccountDetails],
-  /// before the system determines if the user is new or returning. It runs on
-  /// EVERY authentication attempt.
-  ///
-  /// **CRITICAL - Do NOT create these models in the callback:**
-  /// - [GitHubAccount] - Breaks new account detection
-  /// - [UserProfile] - Interferes with automatic profile creation
-  /// - [AuthUser] - Already handled by the authentication flow
-  ///
-  /// Creating these models will cause the authentication flow in [GitHubIdp.login]
-  /// to fail or skip critical steps like user profile creation.
-  ///
-  /// **Safe usage:** Store data in your own custom tables, linked by
-  /// [GitHubAccountDetails.userIdentifier]. Keep operations lightweight.
+  /// information from GitHub APIs.
   final GetExtraGitHubInfoCallback? getExtraGitHubInfoCallback;
 
   /// Creates a new instance of [GitHubIdpConfig].
-  GitHubIdpConfig({
+  const GitHubIdpConfig({
     required this.oauthCredentials,
     this.githubAccountDetailsValidation = validateGitHubAccountDetails,
     this.getExtraGitHubInfoCallback,
-  }) : oauth2Config = OAuth2PkceServerConfig(
-         tokenEndpointUrl: Uri.https('github.com', '/login/oauth/access_token'),
-         clientId: oauthCredentials.clientId,
-         clientSecret: oauthCredentials.clientSecret,
-         credentialsLocation: OAuth2CredentialsLocation.body,
-         parseAccessToken: parseAccessToken,
-       );
+  });
 
-  /// Default validation function for extracting additional GitHub account details.
+  /// Default validation function for extracted GitHub account details.
   ///
   /// This default implementation accepts all accounts as GitHub's optional
   /// fields (email, name) are intentionally optional for user privacy.
@@ -90,28 +65,8 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
   static void validateGitHubAccountDetails(
     final GitHubAccountDetails accountDetails,
   ) {
-    if (accountDetails.userIdentifier.isEmpty) {
-      throw GitHubUserInfoMissingDataException();
-    }
-  }
-
-  /// Default GitHub access token parser for OAuth2PkceServerConfig.
-  static String parseAccessToken(final Map<String, dynamic> responseBody) {
-    final error = responseBody['error'] as String?;
-    if (error != null) {
-      final errorDescription = responseBody['error_description'] as String?;
-      throw OAuth2InvalidResponseException(
-        'Invalid response from GitHub:'
-        ' $error${errorDescription != null ? ' - $errorDescription' : ''}',
-      );
-    }
-    final accessToken = responseBody['access_token'] as String?;
-    if (accessToken == null) {
-      throw const OAuth2MissingAccessTokenException(
-        'No access token in GitHub response',
-      );
-    }
-    return accessToken;
+    // No validation by default - email and name are optional by design
+    // Users can override this to enforce requirements if needed
   }
 
   @override
@@ -155,8 +110,8 @@ class GitHubIdpConfigFromPasswords extends GitHubIdpConfig {
       );
 }
 
-/// Contains the credentials of GitHub's App.
-/// The GitHub App can be created from GitHub's
+/// Contains information about the OAuth credentials for the server to access
+/// GitHub's APIs. The OAuth App credentials can be created from GitHub's
 /// developer settings at:
 /// https://github.com/settings/developers
 final class GitHubOAuthCredentials {

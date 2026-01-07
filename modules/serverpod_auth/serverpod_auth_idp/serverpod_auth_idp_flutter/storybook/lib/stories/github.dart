@@ -91,3 +91,39 @@ final githubStories = [
 ];
 
 void _nullCallback() {}
+
+extension on List<GitHubButtonStyle> {
+  List<Option<GitHubButtonStyle>> asOptions() {
+    return map((e) => Option(label: e.name, value: e)).toList();
+  }
+}
+
+extension on List<GitHubButtonSize> {
+  List<Option<GitHubButtonSize>> asOptions() {
+    return map((e) => Option(label: e.name, value: e)).toList();
+  }
+}
+
+extension on List<GitHubButtonShape> {
+  List<Option<GitHubButtonShape>> asOptions() {
+    return map((e) => Option(label: e.name, value: e)).toList();
+  }
+}
+
+extension on List<GitHubButtonText> {
+  List<Option<GitHubButtonText>> asOptions() {
+    return map((e) => Option(label: e.name, value: e)).toList();
+  }
+}
+
+extension on List<GitHubButtonLogoAlignment> {
+  List<Option<GitHubButtonLogoAlignment>> asOptions() {
+    return map((e) => Option(label: e.name, value: e)).toList();
+  }
+}
+
+extension on List<GitHubButtonType> {
+  List<Option<GitHubButtonType>> asOptions() {
+    return map((e) => Option(label: e.name, value: e)).toList();
+  }
+}

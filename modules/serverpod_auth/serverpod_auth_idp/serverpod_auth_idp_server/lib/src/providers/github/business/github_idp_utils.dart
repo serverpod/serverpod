@@ -8,8 +8,7 @@ import 'github_idp_config.dart';
 
 /// Details of the GitHub Account.
 ///
-/// All nullable fields are not guaranteed to be available from GitHub's API,
-/// since the user may have a private email or limited profile information.
+/// Email may be null if the user's email is not public or not verified.
 typedef GitHubAccountDetails = ({
   /// GitHub's user identifier for this account.
   String userIdentifier,
@@ -55,29 +54,21 @@ class GitHubIdpUtils {
 
   final AuthUsers _authUsers;
 
-  /// Generic OAuth2 PKCE utility for token exchange.
-  late final OAuth2PkceUtil _oauth2Util;
-
   /// Creates a new instance of [GitHubIdpUtils].
   GitHubIdpUtils({
     required this.config,
     required final AuthUsers authUsers,
-  }) : _authUsers = authUsers {
-    _oauth2Util = OAuth2PkceUtil(config: config.oauth2Config);
-  }
+  }) : _authUsers = authUsers;
 
-  /// Exchanges an `authorization code` for an `access token`.
+  /// Exchanges an authorization code for an access token.
   ///
-  /// This method exchanges the `authorization code` received from GitHub's OAuth
-  /// flow for an `access token` using PKCE. The [code] is the `authorization code`
-  /// from the callback, and [codeVerifier] is the `PKCE code` verifier that was
+  /// This method exchanges the authorization code received from GitHub's OAuth
+  /// flow for an access token using PKCE. The [code] is the authorization code
+  /// from the callback, and [codeVerifier] is the PKCE code verifier that was
   /// used to generate the code challenge.
   ///
   /// The [redirectUri] must match the redirect URI used in the authorization
   /// request.
-  ///
-  /// This method delegates to the generic [OAuth2PkceUtil] for token exchange,
-  /// using GitHub-specific configuration.
   ///
   /// Throws [GitHubAccessTokenVerificationException] if the token exchange fails.
   Future<String> exchangeCodeForToken(
@@ -86,19 +77,52 @@ class GitHubIdpUtils {
     required final String codeVerifier,
     required final String redirectUri,
   }) async {
-    try {
-      return await _oauth2Util.exchangeCodeForToken(
-        code: code,
-        codeVerifier: codeVerifier,
-        redirectUri: redirectUri,
+    final response = await http.post(
+      Uri.https('github.com', '/login/oauth/access_token'),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'client_id': config.oauthCredentials.clientId,
+        'client_secret': config.oauthCredentials.clientSecret,
+        'code': code,
+        'redirect_uri': redirectUri,
+        'code_verifier': codeVerifier,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      session.logAndThrow(
+        'Failed to exchange GitHub code for access token: ${response.statusCode}',
       );
-    } on OAuth2Exception catch (e) {
-      session.log(e.toString(), level: LogLevel.debug);
-      throw GitHubAccessTokenVerificationException();
     }
+
+    Map<String, dynamic> data;
+    try {
+      data = jsonDecode(response.body) as Map<String, dynamic>;
+    } catch (e) {
+      session.logAndThrow('Invalid token response from GitHub: $e');
+    }
+
+    final error = data['error'] as String?;
+    if (error != null) {
+      final errorDescription = data['error_description'] as String?;
+      session.logAndThrow(
+        'GitHub token exchange error: $error'
+        '${errorDescription != null ? ' - $errorDescription' : ''}',
+      );
+    }
+
+    final accessToken = data['access_token'] as String?;
+    if (accessToken == null) {
+      session.logAndThrow('No access token in GitHub response');
+    }
+
+    return accessToken;
   }
 
-  /// Authenticates a user using an `access token`.
+  /// Authenticates a user using an access token.
   ///
   /// If the external user ID is not yet known in the system, a new `AuthUser`
   /// is created for it.
@@ -157,15 +181,17 @@ class GitHubIdpUtils {
 
   /// Returns the account details for the given [accessToken].
   ///
-  /// This method calls GitHub's user API.
+  /// This method verifies the token by calling GitHub's user API.
   ///
-  /// Throws [GitHubAccessTokenVerificationException] if the user info retrieval fails.
+  /// The [transaction] parameter is not passed to the callback to avoid
+  /// potential issues with long-running external API calls.
+  ///
+  /// Throws [GitHubAccessTokenVerificationException] if token verification fails.
   Future<GitHubAccountDetails> fetchAccountDetails(
     final Session session, {
     required final String accessToken,
+    final Transaction? transaction,
   }) async {
-    // More info on the user API:
-    // https://docs.github.com/en/rest/users/users#get-the-authenticated-user
     final response = await http.get(
       Uri.https('api.github.com', '/user'),
       headers: {
@@ -262,6 +288,7 @@ class GitHubIdpUtils {
   }
 }
 
+// Private extension for Session logging and throwing.
 extension on Session {
   Never logAndThrow(final String message) {
     log(message, level: LogLevel.debug);

@@ -139,6 +139,14 @@ class _SignInWidgetState extends State<SignInWidget> {
               onAuthenticated: widget.onAuthenticated,
               onError: widget.onError,
             ),
+
+      if (hasGitHub)
+        widget.githubSignInWidget ??
+            GitHubSignInWidget(
+              client: widget.client,
+              onAuthenticated: widget.onAuthenticated,
+              onError: widget.onError,
+            ),
     ];
 
     if (hasApple) {

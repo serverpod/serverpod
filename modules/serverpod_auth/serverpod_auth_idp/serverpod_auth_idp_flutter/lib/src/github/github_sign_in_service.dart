@@ -1,51 +1,32 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
 
+import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
-
-import '../common/oauth2_pkce/oauth2_pkce_client_config.dart';
-import '../common/oauth2_pkce/oauth2_pkce_util.dart';
-
-/// Result of the GitHub OAuth sign-in flow.
-///
-/// Contains the authorization code and PKCE code verifier that must be sent
-/// to your backend endpoint to complete authentication.
-typedef GitHubSignInResult = ({
-  /// The authorization code received from GitHub after user authorization.
-  String code,
-
-  /// The PKCE code verifier that was used to generate the code challenge.
-  /// Must be sent to the backend along with the code for token exchange.
-  String codeVerifier,
-
-  /// The redirect URI that was used for the OAuth flow.
-  /// Must be sent to the backend along with the code for token exchange.
-  String redirectUri,
-});
 
 /// Service to manage GitHub OAuth sign-in flow.
 ///
-/// Ensure it is only initialized once throughout the app lifetime.
-///
 /// This service handles the OAuth 2.0 authorization code flow with PKCE
-/// (Proof Key for Code Exchange) for GitHub authentication.
+/// (Proof Key for Code Exchange) for GitHub authentication. It is implemented
+/// as a singleton to ensure consistent state management throughout the app
+/// lifetime.
+///
+/// The service automatically handles:
+/// - PKCE generation for enhanced security
+/// - OAuth redirect URI handling
 ///
 /// Example usage:
 /// ```dart
-/// // Initialize service (typically in main or during app startup)
-/// await GitHubSignInService.instance.ensureInitialized(
+/// final service = GitHubSignInService.instance;
+/// await service.ensureInitialized(
 ///   clientId: 'your-github-oauth-client-id',
-///   redirectUri: 'customScheme://github/auth/callback',
+///   redirectUri: 'customScheme://',
 /// );
 ///
-/// // Sign in the user
-/// final result = await GitHubSignInService.instance.signIn();
-///
-/// // Send both code and codeVerifier to your backend
-/// await client.githubIdp.login(
-///   code: result.code,
-///   codeVerifier: result.codeVerifier,
-///   redirectUri: 'customScheme://github/auth/callback',
-/// );
+/// final code = await service.signIn();
 /// ```
 class GitHubSignInService {
   /// Singleton instance of the [GitHubSignInService].
@@ -53,66 +34,139 @@ class GitHubSignInService {
 
   GitHubSignInService._internal();
 
-  OAuth2PkceProviderClientConfig? _config;
+  bool _initialized = false;
+  String? _clientId;
+  String? _redirectUri;
+  String? _codeVerifier;
+  String? _callbackUrlScheme;
   bool? _useWebview;
 
-  OAuth2PkceUtil get _oauth2Util => OAuth2PkceUtil(
-    config: _config!,
-    useWebview: _useWebview,
-  );
+  /// Gets the configured client ID if set.
+  String? get clientId => _clientId;
+
+  /// Gets the configured redirect URI if set.
+  String? get redirectUri => _redirectUri;
+
+  /// Gets the latest PKCE code verifier.
+  ///
+  /// This should be sent to your backend along with the authorization code
+  /// to exchange for an access token.
+  ///
+  /// Returns null if no PKCE code verifier has been generated.
+  String? get codeVerifier => _codeVerifier;
+
+  /// Gets the configured callback URL scheme if set.
+  String? get callbackUrlScheme => _callbackUrlScheme;
 
   /// Ensures that GitHub Sign-In is initialized.
   ///
   /// This method is idempotent and can be called multiple times, but only the
-  /// first call will initialize the configuration.
+  /// first call will initialize the configuration. Subsequent calls with
+  /// different parameters will be ignored.
   ///
   /// The [clientId] is the OAuth client ID from your GitHub OAuth App.
-  ///
   /// The [redirectUri] is the callback URL registered in your GitHub OAuth App.
-  ///
   /// The [callbackUrlScheme] is the URL scheme for the OAuth callback. If not
   /// provided, defaults to the scheme from [redirectUri].
-  ///
   /// The [useWebview] controls the authentication method on Linux and Windows.
-  /// When set to `true`, uses the webview implementation. When set to `false`,
-  /// uses an internal server approach. Defaults to `true`.
+  /// **Only has an effect on Linux and Windows!** When set to `true`, uses the
+  /// webview implementation. When set to `false`, uses the old approach with an
+  /// internal server to fetch the HTTP result.
+  /// See [FlutterWebAuth2Options] documentation for more details.
+  ///
+  /// If [clientId] and [redirectUri] are not provided, will try to load the
+  /// values from environment variables `GITHUB_CLIENT_ID` and
+  /// `GITHUB_REDIRECT_URI` respectively. If the values are not provided by
+  /// any means, an error will be thrown when attempting to sign in.
   Future<void> ensureInitialized({
-    required String clientId,
-    required String redirectUri,
+    String? clientId,
+    String? redirectUri,
     String? callbackUrlScheme,
     bool? useWebview,
   }) async {
-    if (_config != null) return;
+    if (_initialized) return;
 
-    _config = OAuth2PkceProviderClientConfig(
-      authorizationEndpoint: Uri.https('github.com', '/login/oauth/authorize'),
-      clientId: clientId,
-      redirectUri: redirectUri,
-      callbackUrlScheme: callbackUrlScheme ?? Uri.parse(redirectUri).scheme,
-    );
+    _clientId = clientId ?? _getClientIdFromEnvVar();
+    _redirectUri = redirectUri ?? _getRedirectUriFromEnvVar();
+    _callbackUrlScheme = callbackUrlScheme;
     _useWebview = useWebview;
+    _initialized = true;
   }
 
-  /// Starts the GitHub OAuth sign-in flow using PKCE.
+  /// Initiates the GitHub OAuth sign-in flow.
   ///
-  /// Returns authorization code and PKCE code verifier for backend authentication.
-  /// [scopes] allows requesting extra GitHub permissions (optional).
-  Future<GitHubSignInResult> signIn({
-    List<String>? scopes,
-  }) async {
-    if (_config == null) {
+  /// This method:
+  /// 1. Generates a PKCE code verifier and challenge
+  /// 2. Opens the GitHub authorization page in a browser/web view
+  /// 3. Waits for the user to authorize the app
+  /// 4. Extracts the authorization code from the callback
+  ///
+  /// Returns the authorization code that can be exchanged for an access token
+  /// on backend server.
+  ///
+  /// Throws an exception if:
+  /// - The service is not initialized
+  /// - The user cancels the authorization
+  /// - The authorization fails for any reason
+  ///
+  /// The [scopes] parameter allows requesting additional GitHub permissions.
+  /// By default, only basic profile information is requested.
+  Future<String> signIn({List<String> scopes = const []}) async {
+    if (_clientId == null || _redirectUri == null) {
       throw StateError(
-        'GitHubSignInService is not initialized. Call ensureInitialized() first.',
+        'GitHubSignInService is not initialized. '
+        'Call ensureInitialized() first.',
       );
     }
 
-    final result = await _oauth2Util.authorize(scopes: scopes);
+    // Generate PKCE code verifier and challenge
+    _codeVerifier = _generateCodeVerifier();
+    final codeChallenge = _generateCodeChallenge(_codeVerifier!);
 
-    return (
-      code: result.code,
-      codeVerifier: result.codeVerifier!,
-      redirectUri: _config!.redirectUri,
+    // Build GitHub authorization URL
+    final queryParameters = {
+      'client_id': _clientId!,
+      'redirect_uri': _redirectUri!,
+      'state': _generateState(),
+      'code_challenge': codeChallenge,
+      'code_challenge_method': 'S256',
+    };
+
+    // Add scope only if specified - GitHub defaults to empty list if omitted
+    if (scopes.isNotEmpty) {
+      queryParameters['scope'] = scopes.join(' ');
+    }
+
+    final authorizationUrl = Uri.https(
+      'github.com',
+      '/login/oauth/authorize',
+      queryParameters,
     );
+
+    try {
+      // Launch the authorization URL
+      final result = await FlutterWebAuth2.authenticate(
+        url: authorizationUrl.toString(),
+        callbackUrlScheme:
+            _callbackUrlScheme ?? Uri.parse(_redirectUri!).scheme,
+        options: FlutterWebAuth2Options(
+          useWebview: _useWebview,
+        ),
+      );
+
+      // Extract the authorization code from the callback URL
+      final uri = Uri.parse(result);
+      final code = uri.queryParameters['code'];
+
+      if (code == null) {
+        throw Exception('Authorization code not found in callback URL');
+      }
+
+      return code;
+    } catch (e) {
+      debugPrint('GitHub sign-in failed: ${e.toString()}');
+      rethrow;
+    }
   }
 }
 
@@ -124,45 +178,53 @@ extension GitHubSignInServiceExtension on FlutterAuthSessionManager {
   /// first call will initialize the GitHub Sign-In configuration.
   ///
   /// The [clientId] is the OAuth client ID from your GitHub OAuth App.
-  /// If not provided, will try to load from `GITHUB_CLIENT_ID` environment variable.
-  ///
   /// The [redirectUri] is the callback URL registered in your GitHub OAuth App.
-  /// If not provided, will try to load from `GITHUB_REDIRECT_URI` environment variable.
-  ///
   /// The [callbackUrlScheme] is the URL scheme for the OAuth callback. If not
   /// provided, defaults to the scheme from [redirectUri].
-  ///
   /// The [useWebview] controls the authentication method on Linux and Windows.
+  /// **Only has an effect on Linux and Windows!** When set to `true`, uses the
+  /// webview implementation. When set to `false`, uses the old approach with an
+  /// internal server to fetch the HTTP result.
+  /// See [FlutterWebAuth2Options] documentation for more details.
+  ///
+  /// If [clientId] and [redirectUri] are not provided, will try to load the
+  /// values from `GITHUB_CLIENT_ID` and `GITHUB_REDIRECT_URI` environment
+  /// variables, respectively. If the values are not provided by any means, an
+  /// error will be thrown when attempting to sign in.
   Future<void> initializeGitHubSignIn({
     String? clientId,
     String? redirectUri,
     String? callbackUrlScheme,
     bool? useWebview,
   }) async {
-    final effectiveClientId = clientId ?? _getClientIdFromEnvVar();
-    final effectiveRedirectUri = redirectUri ?? _getRedirectUriFromEnvVar();
-
-    if (effectiveClientId == null) {
-      throw ArgumentError(
-        'GitHub client ID is required. '
-        'Provide clientId parameter or set GITHUB_CLIENT_ID environment variable.',
-      );
-    }
-
-    if (effectiveRedirectUri == null) {
-      throw ArgumentError(
-        'GitHub redirect URI is required. '
-        'Provide redirectUri parameter or set GITHUB_REDIRECT_URI environment variable.',
-      );
-    }
-
     await GitHubSignInService.instance.ensureInitialized(
-      clientId: effectiveClientId,
-      redirectUri: effectiveRedirectUri,
+      clientId: clientId,
+      redirectUri: redirectUri,
       callbackUrlScheme: callbackUrlScheme,
       useWebview: useWebview,
     );
   }
+}
+
+/// Generates a cryptographically secure random string for the PKCE code verifier.
+String _generateCodeVerifier() {
+  final random = Random.secure();
+  final bytes = List<int>.generate(32, (i) => random.nextInt(256));
+  return base64UrlEncode(bytes).replaceAll('=', '');
+}
+
+/// Generates the PKCE code challenge from the code verifier using SHA-256.
+String _generateCodeChallenge(String codeVerifier) {
+  final bytes = utf8.encode(codeVerifier);
+  final digest = sha256.convert(bytes);
+  return base64UrlEncode(digest.bytes).replaceAll('=', '');
+}
+
+/// Generates a random state parameter for CSRF protection.
+String _generateState() {
+  final random = Random.secure();
+  final bytes = List<int>.generate(16, (i) => random.nextInt(256));
+  return base64UrlEncode(bytes).replaceAll('=', '');
 }
 
 String? _getClientIdFromEnvVar() {

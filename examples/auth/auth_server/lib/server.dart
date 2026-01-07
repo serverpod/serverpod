@@ -45,6 +45,13 @@ void run(List<String> args) async {
     ),
   );
 
+  final githubIdpConfig = GitHubIdpConfig(
+    oauthCredentials: GitHubOAuthCredentials.fromJson({
+      'clientId': pod.getPassword('githubClientId')!,
+      'clientSecret': pod.getPassword('githubClientSecret')!,
+    }),
+  );
+
   final appleIdpConfig = AppleIdpConfig(
     serviceIdentifier: pod.getPassword('appleServiceIdentifier')!,
     bundleIdentifier: pod.getPassword('appleBundleIdentifier')!,
@@ -82,6 +89,7 @@ void run(List<String> args) async {
     identityProviderBuilders: [
       anonymousIdpConfig,
       googleIdpConfig,
+      githubIdpConfig,
       appleIdpConfig,
       emailIdpConfig,
       githubIdpConfig,

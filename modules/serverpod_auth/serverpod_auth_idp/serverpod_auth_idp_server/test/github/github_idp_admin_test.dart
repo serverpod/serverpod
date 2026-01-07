@@ -111,6 +111,7 @@ void main() {
           expect(githubAccount.userIdentifier, equals('54321'));
           expect(githubAccount.email, equals('newuser@example.com'));
 
+          // Verify it was persisted
           final foundAccount = await GitHubAccount.db.findFirstRow(
             session,
             where: (final t) => t.userIdentifier.equals('54321'),
@@ -120,6 +121,30 @@ void main() {
           expect(foundAccount!.authUserId, equals(authUserId));
         },
       );
+    },
+  );
+
+  withServerpod(
+    'Given an auth user with GitHub authentication,',
+    (final sessionBuilder, final _) {
+      late Session session;
+      late UuidValue authUserId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        final authUser = await authUsers.create(session);
+        authUserId = authUser.id;
+
+        await GitHubAccount.db.insertRow(
+          session,
+          GitHubAccount(
+            userIdentifier: '67890',
+            email: 'linked@example.com',
+            authUserId: authUserId,
+          ),
+        );
+      });
     },
   );
 }
