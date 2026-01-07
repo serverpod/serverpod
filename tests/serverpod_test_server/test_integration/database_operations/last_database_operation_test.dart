@@ -9,8 +9,13 @@ void main() async {
     sessionBuilder,
     endpoints,
   ) {
-    final session = sessionBuilder.build();
-    final serverpod = session.serverpod;
+    late Session session;
+    late Serverpod serverpod;
+
+    setUp(() {
+      session = sessionBuilder.build();
+      serverpod = session.serverpod;
+    });
 
     test('when server starts '
         'then lastDatabaseOperationTime is set due to startup routines', () {
