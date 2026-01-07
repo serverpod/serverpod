@@ -77,6 +77,7 @@ class GitHubIdpUtils {
     required final String codeVerifier,
     required final String redirectUri,
   }) async {
+    // Reference: https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps#2-users-are-redirected-back-to-your-site-by-github
     final response = await http.post(
       Uri.https('github.com', '/login/oauth/access_token'),
       headers: {
@@ -192,6 +193,7 @@ class GitHubIdpUtils {
     required final String accessToken,
     final Transaction? transaction,
   }) async {
+    // Reference: https://docs.github.com/en/rest/users/users#get-the-authenticated-user
     final response = await http.get(
       Uri.https('api.github.com', '/user'),
       headers: {

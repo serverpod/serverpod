@@ -137,6 +137,7 @@ class GitHubSignInService {
       queryParameters['scope'] = scopes.join(' ');
     }
 
+    // Reference: https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps#1-request-a-users-github-identity
     final authorizationUrl = Uri.https(
       'github.com',
       '/login/oauth/authorize',
