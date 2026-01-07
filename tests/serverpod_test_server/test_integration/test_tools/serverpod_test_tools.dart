@@ -8,7 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -3333,6 +3332,175 @@ class _DeprecationEndpoint {
                   _localCallContext.arguments,
                 )
                 as _i3.Future<double>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<String> methodWithDeprecatedParam(
+    _i1.TestSessionBuilder sessionBuilder,
+    @deprecated String deprecatedParam,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'deprecation',
+            method: 'methodWithDeprecatedParam',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'deprecation',
+          methodName: 'methodWithDeprecatedParam',
+          parameters: _i1.testObjectToJson({
+            'deprecatedParam': deprecatedParam,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<String> methodWithDeprecatedParamMessage(
+    _i1.TestSessionBuilder sessionBuilder,
+    @Deprecated('This parameter is deprecated') String deprecatedParam,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'deprecation',
+            method: 'methodWithDeprecatedParamMessage',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'deprecation',
+          methodName: 'methodWithDeprecatedParamMessage',
+          parameters: _i1.testObjectToJson({
+            'deprecatedParam': deprecatedParam,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<String> methodWithMixedParams(
+    _i1.TestSessionBuilder sessionBuilder,
+    String normalParam,
+    @deprecated String deprecatedParam,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'deprecation',
+            method: 'methodWithMixedParams',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'deprecation',
+          methodName: 'methodWithMixedParams',
+          parameters: _i1.testObjectToJson({
+            'normalParam': normalParam,
+            'deprecatedParam': deprecatedParam,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<String> methodWithOptionalDeprecatedParam(
+    _i1.TestSessionBuilder sessionBuilder, [
+    @deprecated String? deprecatedParam,
+  ]) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'deprecation',
+            method: 'methodWithOptionalDeprecatedParam',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'deprecation',
+          methodName: 'methodWithOptionalDeprecatedParam',
+          parameters: _i1.testObjectToJson({
+            'deprecatedParam': deprecatedParam,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<String> methodWithNamedDeprecatedParam(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String normalParam,
+    @deprecated String? deprecatedParam,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'deprecation',
+            method: 'methodWithNamedDeprecatedParam',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'deprecation',
+          methodName: 'methodWithNamedDeprecatedParam',
+          parameters: _i1.testObjectToJson({
+            'normalParam': normalParam,
+            'deprecatedParam': deprecatedParam,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

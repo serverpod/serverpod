@@ -590,6 +590,10 @@ class LibraryGenerator {
   Library generateServerEndpointDispatch() {
     var library = LibraryBuilder();
 
+    if (_hasDeprecatedReferences(protocolDefinition.endpoints)) {
+      library.ignoreForFile.add('deprecated_member_use_from_same_package');
+    }
+
     // Endpoint class
     library.body.add(
       Class(
@@ -743,6 +747,9 @@ class LibraryGenerator {
                           ..type = parameterDef.type.reference(
                             false,
                             config: config,
+                          )
+                          ..annotations.addAll(
+                            buildParameterAnnotations(parameterDef),
                           ),
                       ),
                   ])
@@ -755,6 +762,9 @@ class LibraryGenerator {
                           ..type = parameterDef.type.reference(
                             false,
                             config: config,
+                          )
+                          ..annotations.addAll(
+                            buildParameterAnnotations(parameterDef),
                           ),
                       ),
                     for (var parameterDef in namedParameters)
@@ -766,6 +776,9 @@ class LibraryGenerator {
                           ..type = parameterDef.type.reference(
                             false,
                             config: config,
+                          )
+                          ..annotations.addAll(
+                            buildParameterAnnotations(parameterDef),
                           ),
                       ),
                   ])
@@ -1324,9 +1337,7 @@ class LibraryGenerator {
             ..body = refer('endpoints')
                 .index(literalString(endpoint.name))
                 .asA(refer(endpoint.className, _endpointPath(endpoint)))
-                .property(
-                  '${_getMethodCallComment(method) ?? ''}${method.name}',
-                )
+                .property(method.name)
                 .call(
                   [
                     refer('session'),
@@ -1355,13 +1366,21 @@ class LibraryGenerator {
     return methodConnectors;
   }
 
-  String? _getMethodCallComment(MethodCallDefinition m) {
-    for (var a in m.annotations) {
-      if (a.methodCallAnalyzerIgnoreRule != null) {
-        return '\n// ignore: ${a.methodCallAnalyzerIgnoreRule}\n';
+  /// Checks if any endpoint has parameters with deprecated annotations.
+  bool _hasDeprecatedReferences(List<EndpointDefinition> endpoints) {
+    for (var endpoint in endpoints) {
+      for (var method in endpoint.methods) {
+        if (method.annotations.hasDeprecated()) {
+          return true;
+        }
+        for (var param in method.allParameters) {
+          if (param.annotations.hasDeprecated()) {
+            return true;
+          }
+        }
       }
     }
-    return null;
+    return false;
   }
 
   Map<Object, Object> _buildMethodStreamConnectors(
@@ -2172,5 +2191,15 @@ extension on Iterable<SerializableModelFieldDefinition> {
       yield element;
       visited.add(elementType);
     }
+  }
+}
+
+extension on Iterable<AnnotationDefinition> {
+  bool hasDeprecated() {
+    return any(
+      (a) =>
+          a.methodCallAnalyzerIgnoreRule ==
+          'deprecated_member_use_from_same_package',
+    );
   }
 }

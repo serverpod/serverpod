@@ -5,9 +5,11 @@ import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
+import '../../../test_util/builders/annotation_definition_builder.dart';
 import '../../../test_util/builders/endpoint_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
 import '../../../test_util/builders/method_definition_builder.dart';
+import '../../../test_util/builders/parameter_definition_builder.dart';
 import '../../../test_util/builders/type_definition_builder.dart';
 
 const projectName = 'example_project';
@@ -726,6 +728,7 @@ void main() {
                             .withClassName('String')
                             .build(),
                         required: true,
+                        annotations: const [],
                       ),
                     ])
                     .buildMethodStreamDefinition(),
@@ -796,6 +799,7 @@ void main() {
                             .withClassName('String?')
                             .build(),
                         required: false,
+                        annotations: const [],
                       ),
                     ])
                     .buildMethodStreamDefinition(),
@@ -867,6 +871,7 @@ void main() {
                             .withClassName('String?')
                             .build(),
                         required: false,
+                        annotations: const [],
                       ),
                     ])
                     .buildMethodStreamDefinition(),
@@ -936,6 +941,7 @@ void main() {
                         .withStreamOf('String')
                         .build(),
                     required: false,
+                    annotations: const [],
                   ),
                 ]).buildMethodStreamDefinition(),
               ])
@@ -1008,6 +1014,7 @@ void main() {
                             .withStreamOf('String')
                             .build(),
                         required: true,
+                        annotations: const [],
                       ),
                     ])
                     .buildMethodStreamDefinition(),
@@ -1080,6 +1087,7 @@ void main() {
                             .withStreamOf('String')
                             .build(),
                         required: false,
+                        annotations: const [],
                       ),
                     ])
                     .withReturnType(
@@ -1649,6 +1657,116 @@ void main() {
           contains("@Deprecated('This method is deprecated')"),
         );
       });
+    },
+  );
+
+  group(
+    'Given protocol definition with method with a parameter annotated with @deprecated when generating test tools file',
+    () {
+      var endpointName = 'example';
+      var methodName = 'testMethod';
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+                MethodDefinitionBuilder().withName(methodName).withParameters([
+                  ParameterDefinitionBuilder()
+                      .withName('deprecatedParam')
+                      .withType(
+                        TypeDefinitionBuilder().withClassName('String').build(),
+                      )
+                      .withRequired(true)
+                      .withAnnotations([
+                        AnnotationDefinitionBuilder()
+                            .withName('deprecated')
+                            .build(),
+                      ])
+                      .build(),
+                ]).buildMethodCallDefinition(),
+              ])
+              .build(),
+        ],
+        models: [],
+      );
+
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test('then test tools file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+
+      late var testToolsFile = codeMap[expectedFileName];
+
+      test('then test method has @deprecated annotation on parameter.', () {
+        expect(
+          testToolsFile,
+          contains('@deprecated String deprecatedParam'),
+        );
+      });
+    },
+  );
+
+  group(
+    'Given protocol definition with method with a parameter annotated with @Deprecated when generating test tools file',
+    () {
+      var endpointName = 'example';
+      var methodName = 'testMethod';
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+                MethodDefinitionBuilder().withName(methodName).withParameters([
+                  ParameterDefinitionBuilder()
+                      .withName('deprecatedParam')
+                      .withType(
+                        TypeDefinitionBuilder().withClassName('String').build(),
+                      )
+                      .withRequired(true)
+                      .withAnnotations([
+                        AnnotationDefinitionBuilder()
+                            .withName('Deprecated')
+                            .withArguments(["'This parameter is deprecated'"])
+                            .build(),
+                      ])
+                      .build(),
+                ]).buildMethodCallDefinition(),
+              ])
+              .build(),
+        ],
+        models: [],
+      );
+
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test('then test tools file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+
+      late var testToolsFile = codeMap[expectedFileName];
+
+      test(
+        'then test method has @Deprecated annotation with message on parameter.',
+        () {
+          expect(
+            testToolsFile,
+            contains(
+              "@Deprecated('This parameter is deprecated') String deprecatedParam",
+            ),
+          );
+        },
+      );
     },
   );
 }
