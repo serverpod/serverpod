@@ -5,6 +5,8 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
+import '../test_tags.dart';
+
 void main() {
   final portZeroConfig = ServerConfig(
     port: 0,
@@ -13,7 +15,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given missing core passwords', () {
+  group('Given missing core passwords', tags: TestTags.concurrencyOneTestTags, () {
     late Directory originalDir;
 
     setUpAll(() async {
@@ -76,80 +78,88 @@ void main() {
     );
   });
 
-  group('Given JWT passwords are present', () {
-    late Directory originalDir;
+  group(
+    'Given JWT passwords are present',
+    tags: TestTags.concurrencyOneTestTags,
+    () {
+      late Directory originalDir;
 
-    setUpAll(() async {
-      originalDir = Directory.current;
-      await d.dir('config', [
-        d.file(
-          'passwords.yaml',
-          '''
+      setUpAll(() async {
+        originalDir = Directory.current;
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
 test:
   database: 'test'
   jwtRefreshTokenHashPepper: 'xK9#mP2\$vL5nQ8wR3jF6hY1cT4bN7zA0'
   jwtHmacSha512PrivateKey: 'super-secret-key-for-hmac-sha512-signing'
 ''',
-        ),
-      ]).create();
-      Directory.current = d.sandbox;
+          ),
+        ]).create();
+        Directory.current = d.sandbox;
 
-      Serverpod(
-        ['-m', 'test'],
-        Protocol(),
-        Endpoints(),
-        config: ServerpodConfig(apiServer: portZeroConfig),
-      );
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+        );
 
-      addTearDown(() async {
-        Directory.current = originalDir;
+        addTearDown(() async {
+          Directory.current = originalDir;
+        });
       });
-    });
 
-    test(
-      'when constructing JwtConfigFromPasswords then succeeds.',
-      () {
-        final config = JwtConfigFromPasswords();
-        expect(config, isA<JwtConfig>());
-      },
-    );
-  });
+      test(
+        'when constructing JwtConfigFromPasswords then succeeds.',
+        () {
+          final config = JwtConfigFromPasswords();
+          expect(config, isA<JwtConfig>());
+        },
+      );
+    },
+  );
 
-  group('Given serverSideSessionKeyHashPepper password is present', () {
-    late Directory originalDir;
+  group(
+    'Given serverSideSessionKeyHashPepper password is present',
+    tags: TestTags.concurrencyOneTestTags,
+    () {
+      late Directory originalDir;
 
-    setUpAll(() async {
-      originalDir = Directory.current;
-      await d.dir('config', [
-        d.file(
-          'passwords.yaml',
-          '''
+      setUpAll(() async {
+        originalDir = Directory.current;
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
 test:
   database: 'test'
   serverSideSessionKeyHashPepper: 'xK9#mP2\$vL5nQ8wR3jF6hY1cT4bN7zA0'
 ''',
-        ),
-      ]).create();
-      Directory.current = d.sandbox;
+          ),
+        ]).create();
+        Directory.current = d.sandbox;
 
-      Serverpod(
-        ['-m', 'test'],
-        Protocol(),
-        Endpoints(),
-        config: ServerpodConfig(apiServer: portZeroConfig),
-      );
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+        );
 
-      addTearDown(() async {
-        Directory.current = originalDir;
+        addTearDown(() async {
+          Directory.current = originalDir;
+        });
       });
-    });
 
-    test(
-      'when constructing ServerSideSessionsConfigFromPasswords then succeeds.',
-      () {
-        final config = ServerSideSessionsConfigFromPasswords();
-        expect(config, isA<ServerSideSessionsConfig>());
-      },
-    );
-  });
+      test(
+        'when constructing ServerSideSessionsConfigFromPasswords then succeeds.',
+        () {
+          final config = ServerSideSessionsConfigFromPasswords();
+          expect(config, isA<ServerSideSessionsConfig>());
+        },
+      );
+    },
+  );
 }

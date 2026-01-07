@@ -93,6 +93,11 @@ transactionsDatabase:
 deprecation:
   - setGlobalDouble:
   - getGlobalDouble:
+  - methodWithDeprecatedParam:
+  - methodWithDeprecatedParamMessage:
+  - methodWithMixedParams:
+  - methodWithOptionalDeprecatedParam:
+  - methodWithNamedDeprecatedParam:
 diagnosticEventTest:
   - submitExceptionEvent:
 echoRequest:

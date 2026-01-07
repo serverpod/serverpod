@@ -8,7 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
 // ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -63,9 +62,11 @@ abstract class AppleAccount
       refreshTokenRequestedWithBundleIdentifier:
           jsonSerialization['refreshTokenRequestedWithBundleIdentifier']
               as bool,
-      lastRefreshedAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['lastRefreshedAt'],
-      ),
+      lastRefreshedAt: jsonSerialization['lastRefreshedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['lastRefreshedAt'],
+            ),
       authUserId: _i1.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
@@ -74,9 +75,9 @@ abstract class AppleAccount
           : _i3.Protocol().deserialize<_i2.AuthUser>(
               jsonSerialization['authUser'],
             ),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['createdAt'],
-      ),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       email: jsonSerialization['email'] as String?,
       isEmailVerified: jsonSerialization['isEmailVerified'] as bool?,
       isPrivateEmail: jsonSerialization['isPrivateEmail'] as bool?,

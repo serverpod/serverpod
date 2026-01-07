@@ -8,7 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
 // ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -17,6 +16,7 @@ import '../../auth_user/models/auth_user.dart' as _i2;
 import 'dart:typed_data' as _i3;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i4;
 
+/// Server-side authentication session.
 abstract class ServerSideSession
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   ServerSideSession._({
@@ -64,12 +64,12 @@ abstract class ServerSideSession
       scopeNames: _i4.Protocol().deserialize<Set<String>>(
         jsonSerialization['scopeNames'],
       ),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['createdAt'],
-      ),
-      lastUsedAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['lastUsedAt'],
-      ),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      lastUsedAt: jsonSerialization['lastUsedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUsedAt']),
       expiresAt: jsonSerialization['expiresAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiresAt']),

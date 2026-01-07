@@ -33,9 +33,9 @@ abstract class UriDefaultModel
   factory UriDefaultModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return UriDefaultModel(
       id: jsonSerialization['id'] as int?,
-      uriDefaultModel: _i1.UriJsonExtension.fromJson(
-        jsonSerialization['uriDefaultModel'],
-      ),
+      uriDefaultModel: jsonSerialization['uriDefaultModel'] == null
+          ? null
+          : _i1.UriJsonExtension.fromJson(jsonSerialization['uriDefaultModel']),
       uriDefaultModelNull: jsonSerialization['uriDefaultModelNull'] == null
           ? null
           : _i1.UriJsonExtension.fromJson(

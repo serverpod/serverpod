@@ -255,11 +255,15 @@ class ParameterDefinition {
   /// The default value of this parameter, if any.
   final String? defaultValue;
 
+  /// The annotations of this parameter.
+  final List<AnnotationDefinition> annotations;
+
   /// Create a new [ParameterDefinition].
   const ParameterDefinition({
     required this.name,
     required this.type,
     required this.required,
+    required this.annotations,
     this.defaultValue,
   });
 }

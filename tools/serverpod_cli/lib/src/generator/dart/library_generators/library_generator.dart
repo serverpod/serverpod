@@ -589,7 +589,7 @@ class LibraryGenerator {
   }
 
   /// Generates the EndpointDispatch for the server side.
-  /// Executing this only makes sens for the server code
+  /// Executing this only makes sense for the server code
   /// (if [serverCode] is `true`).
   Library generateServerEndpointDispatch() {
     var library = LibraryBuilder();
@@ -601,6 +601,10 @@ class LibraryGenerator {
           show: const ['ServerpodFutureCallsGetter'],
         ),
       );
+    }
+
+    if (_hasDeprecatedReferences(protocolDefinition.endpoints)) {
+      library.ignoreForFile.add('deprecated_member_use_from_same_package');
     }
 
     // Endpoint class
@@ -774,6 +778,9 @@ class LibraryGenerator {
                           ..type = parameterDef.type.reference(
                             false,
                             config: config,
+                          )
+                          ..annotations.addAll(
+                            buildParameterAnnotations(parameterDef),
                           ),
                       ),
                   ])
@@ -786,6 +793,9 @@ class LibraryGenerator {
                           ..type = parameterDef.type.reference(
                             false,
                             config: config,
+                          )
+                          ..annotations.addAll(
+                            buildParameterAnnotations(parameterDef),
                           ),
                       ),
                     for (var parameterDef in namedParameters)
@@ -797,6 +807,9 @@ class LibraryGenerator {
                           ..type = parameterDef.type.reference(
                             false,
                             config: config,
+                          )
+                          ..annotations.addAll(
+                            buildParameterAnnotations(parameterDef),
                           ),
                       ),
                   ])
@@ -1355,9 +1368,7 @@ class LibraryGenerator {
             ..body = refer('endpoints')
                 .index(literalString(endpoint.name))
                 .asA(refer(endpoint.className, _endpointPath(endpoint)))
-                .property(
-                  '${_getMethodCallComment(method) ?? ''}${method.name}',
-                )
+                .property(method.name)
                 .call(
                   [
                     refer('session'),
@@ -1386,13 +1397,21 @@ class LibraryGenerator {
     return methodConnectors;
   }
 
-  String? _getMethodCallComment(MethodCallDefinition m) {
-    for (var a in m.annotations) {
-      if (a.methodCallAnalyzerIgnoreRule != null) {
-        return '\n// ignore: ${a.methodCallAnalyzerIgnoreRule}\n';
+  /// Checks if any endpoint has parameters with deprecated annotations.
+  bool _hasDeprecatedReferences(List<EndpointDefinition> endpoints) {
+    for (var endpoint in endpoints) {
+      for (var method in endpoint.methods) {
+        if (method.annotations.hasDeprecated()) {
+          return true;
+        }
+        for (var param in method.allParameters) {
+          if (param.annotations.hasDeprecated()) {
+            return true;
+          }
+        }
       }
     }
-    return null;
+    return false;
   }
 
   Map<Object, Object> _buildMethodStreamConnectors(
@@ -2212,5 +2231,15 @@ extension on SerializableModelDefinition {
   /// user defined models are exported.
   bool get shouldExport {
     return !RegExp(r'^future_calls_generated_models\/.*').hasMatch(fileName);
+  }
+}
+
+extension on Iterable<AnnotationDefinition> {
+  bool hasDeprecated() {
+    return any(
+      (a) =>
+          a.methodCallAnalyzerIgnoreRule ==
+          'deprecated_member_use_from_same_package',
+    );
   }
 }

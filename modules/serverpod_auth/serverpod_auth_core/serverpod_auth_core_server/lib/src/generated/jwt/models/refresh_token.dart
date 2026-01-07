@@ -8,7 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
 // ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -17,6 +16,7 @@ import '../../auth_user/models/auth_user.dart' as _i2;
 import 'dart:typed_data' as _i3;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i4;
 
+/// Refresh token for JWT-based authentication.
 abstract class RefreshToken
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   RefreshToken._({
@@ -68,12 +68,14 @@ abstract class RefreshToken
         jsonSerialization['fixedSecret'],
       ),
       rotatingSecretHash: jsonSerialization['rotatingSecretHash'] as String,
-      lastUpdatedAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['lastUpdatedAt'],
-      ),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['createdAt'],
-      ),
+      lastUpdatedAt: jsonSerialization['lastUpdatedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['lastUpdatedAt'],
+            ),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
     );
   }
 

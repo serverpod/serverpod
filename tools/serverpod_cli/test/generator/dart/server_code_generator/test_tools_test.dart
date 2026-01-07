@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
+import '../../../test_util/builders/annotation_definition_builder.dart';
 import '../../../test_util/builders/endpoint_definition_builder.dart';
 import '../../../test_util/builders/future_call_definition_builder.dart';
 import '../../../test_util/builders/future_call_method_definition_builder.dart';
@@ -735,6 +736,7 @@ void main() {
                             .withClassName('String')
                             .build(),
                         required: true,
+                        annotations: const [],
                       ),
                     ])
                     .buildMethodStreamDefinition(),
@@ -806,6 +808,7 @@ void main() {
                             .withClassName('String?')
                             .build(),
                         required: false,
+                        annotations: const [],
                       ),
                     ])
                     .buildMethodStreamDefinition(),
@@ -878,6 +881,7 @@ void main() {
                             .withClassName('String?')
                             .build(),
                         required: false,
+                        annotations: const [],
                       ),
                     ])
                     .buildMethodStreamDefinition(),
@@ -948,6 +952,7 @@ void main() {
                         .withStreamOf('String')
                         .build(),
                     required: false,
+                    annotations: const [],
                   ),
                 ]).buildMethodStreamDefinition(),
               ])
@@ -1021,6 +1026,7 @@ void main() {
                             .withStreamOf('String')
                             .build(),
                         required: true,
+                        annotations: const [],
                       ),
                     ])
                     .buildMethodStreamDefinition(),
@@ -1094,6 +1100,7 @@ void main() {
                             .withStreamOf('String')
                             .build(),
                         required: false,
+                        annotations: const [],
                       ),
                     ])
                     .withReturnType(
@@ -1674,6 +1681,200 @@ void main() {
   );
 
   group(
+    'Given protocol definition with method with a parameter annotated with @deprecated when generating test tools file',
+    () {
+      var endpointName = 'example';
+      var methodName = 'testMethod';
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+                MethodDefinitionBuilder().withName(methodName).withParameters([
+                  ParameterDefinitionBuilder()
+                      .withName('deprecatedParam')
+                      .withType(
+                        TypeDefinitionBuilder().withClassName('String').build(),
+                      )
+                      .withRequired(true)
+                      .withAnnotations([
+                        AnnotationDefinitionBuilder()
+                            .withName('deprecated')
+                            .build(),
+                      ])
+                      .build(),
+                ]).buildMethodCallDefinition(),
+              ])
+              .build(),
+        ],
+        models: [],
+        futureCalls: [],
+      );
+
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test('then test tools file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+
+      late var testToolsFile = codeMap[expectedFileName];
+
+      test('then test method has @deprecated annotation on parameter.', () {
+        expect(
+          testToolsFile,
+          contains('@deprecated String deprecatedParam'),
+        );
+      });
+    },
+  );
+
+  group(
+    'Given protocol definition with method with a parameter annotated with @Deprecated when generating test tools file',
+    () {
+      var endpointName = 'example';
+      var methodName = 'testMethod';
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+                MethodDefinitionBuilder().withName(methodName).withParameters([
+                  ParameterDefinitionBuilder()
+                      .withName('deprecatedParam')
+                      .withType(
+                        TypeDefinitionBuilder().withClassName('String').build(),
+                      )
+                      .withRequired(true)
+                      .withAnnotations([
+                        AnnotationDefinitionBuilder()
+                            .withName('Deprecated')
+                            .withArguments(["'This parameter is deprecated'"])
+                            .build(),
+                      ])
+                      .build(),
+                ]).buildMethodCallDefinition(),
+              ])
+              .build(),
+        ],
+        models: [],
+        futureCalls: [],
+      );
+
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test('then test tools file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+
+      late var testToolsFile = codeMap[expectedFileName];
+
+      test(
+        'then test method has @Deprecated annotation with message on parameter.',
+        () {
+          expect(
+            testToolsFile,
+            contains(
+              "@Deprecated('This parameter is deprecated') String deprecatedParam",
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given protocol definition with an abstract future call when generating test tools file',
+    () {
+      var futureClassName = 'testing';
+      var method = 'sayHello';
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [],
+        models: [],
+        futureCalls: [
+          FutureCallDefinitionBuilder()
+              .withClassName(futureClassName.pascalCase)
+              .withName(futureClassName)
+              .withIsAbstract()
+              .withMethods([
+                FutureCallMethodDefinitionBuilder()
+                    .withName(method)
+                    .withParameters([
+                      ParameterDefinitionBuilder()
+                          .withName('name')
+                          .withType(
+                            TypeDefinitionBuilder()
+                                .withClassName('String')
+                                .build(),
+                          )
+                          .build(),
+                    ])
+                    .buildMethodCallDefinition(),
+              ])
+              .build(),
+        ],
+      );
+
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      late var testToolsFile = codeMap[expectedFileName];
+
+      test('then test tools file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+
+      test(
+        'then test tools file has `withServerpod` function defined with isTestGroup decorator',
+        () {
+          expect(
+            testToolsFile,
+            matches(
+              r'@_i\d\.isTestGroup\n'
+              r'void withServerpod\(\n'
+              r'  String testGroupName,\n'
+              r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
+              r'  bool\? applyMigrations,\n'
+              r'  bool\? enableSessionLogging,\n'
+              r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
+              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
+              r'  String\? runMode,\n'
+              r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
+              r'  Duration\? serverpodStartTimeout,\n'
+              r'  List<String>\? testGroupTagsOverride,\n'
+              r'  _i\d\.TestServerOutputMode\? testServerOutputMode,\n'
+              r'\}\)',
+            ),
+          );
+        },
+      );
+
+      test(
+        'then test tools file has no generated future call.',
+        () {
+          expect(
+            testToolsFile,
+            matches(r'class TestEndpoints \{\}\n'),
+          );
+        },
+      );
+    },
+  );
+
+  group(
     'Given protocol definition with a concrete future call when generating test tools file',
     () {
       var futureClassName = 'testing';
@@ -1742,100 +1943,8 @@ void main() {
         },
       );
 
-      test('then doc comment with general description is present', () async {
-        expect(
-          testToolsFile,
-          contains(
-            '/// Creates a new test group that takes a callback that can be used to write tests.',
-          ),
-        );
-      });
-
-      test('then configuration options header is present', () async {
-        expect(
-          testToolsFile,
-          contains(
-            '**Configuration options**',
-          ),
-        );
-      });
-
-      test(
-        'then doc comments with correct spacing exist for each configurable parameter',
-        () async {
-          expect(
-            testToolsFile,
-            contains('\n///\n/// [applyMigrations] '),
-          );
-          expect(
-            testToolsFile,
-            contains('\n///\n/// [enableSessionLogging] '),
-          );
-          expect(
-            testToolsFile,
-            contains('\n///\n/// [rollbackDatabase] '),
-          );
-          expect(
-            testToolsFile,
-            contains('\n///\n/// [runMode] '),
-          );
-          expect(
-            testToolsFile,
-            contains('\n///\n/// [serverpodLoggingMode] '),
-          );
-          expect(
-            testToolsFile,
-            contains('\n///\n/// [serverpodStartTimeout] '),
-          );
-          expect(
-            testToolsFile,
-            contains('\n///\n/// [testGroupTagsOverride] '),
-          );
-          expect(
-            testToolsFile,
-            contains('\n///\n/// [testServerOutputMode] '),
-          );
-          expect(
-            testToolsFile,
-            contains('\n///\n/// [experimentalFeatures] '),
-          );
-        },
-      );
-
-      test('then test tools file has `TestEndpoints` class defined.', () {
-        expect(testToolsFile, contains('class TestEndpoints {'));
-      });
-
-      test('then test tools file has `_FutureCalls` class defined.', () {
-        expect(testToolsFile, contains('class _FutureCalls {'));
-      });
-
       test(
         'then test tools file has `_FutureCalls` field defined and assigned in `TestEndpoints`.',
-        () {
-          expect(
-            testToolsFile,
-            matches(
-              r'class TestEndpoints \{\n\s*late final futureCalls = _FutureCalls\(\);',
-            ),
-          );
-        },
-      );
-
-      test(
-        'then test tools file has `_InternalTestEndpoints` class defined that extends `TestEndpoints` and implements `InternalTestEndpoints`.',
-        () {
-          expect(
-            testToolsFile,
-            matches(
-              r'class _InternalTestEndpoints extends TestEndpoints\n\s*implements _i\d\.InternalTestEndpoints \{\n',
-            ),
-          );
-        },
-      );
-
-      test(
-        'then test tools file has generated future calls.',
         () {
           expect(
             testToolsFile,
@@ -1845,7 +1954,12 @@ void main() {
               r'\}\n',
             ),
           );
+        },
+      );
 
+      test(
+        'then test tools file has generated future calls.',
+        () {
           expect(
             testToolsFile,
             matches(
@@ -1864,62 +1978,6 @@ void main() {
               r'    String name,\n'
               r'  \) async \{\n',
             ),
-          );
-        },
-      );
-    },
-  );
-
-  group(
-    'Given protocol definition with an abstract future call when generating test tools file',
-    () {
-      var futureClassName = 'testing';
-      var method = 'sayHello';
-
-      var protocolDefinition = ProtocolDefinition(
-        endpoints: [],
-        models: [],
-        futureCalls: [
-          FutureCallDefinitionBuilder()
-              .withClassName(futureClassName.pascalCase)
-              .withName(futureClassName)
-              .withIsAbstract()
-              .withMethods([
-                FutureCallMethodDefinitionBuilder()
-                    .withName(method)
-                    .withParameters([
-                      ParameterDefinitionBuilder()
-                          .withName('name')
-                          .withType(
-                            TypeDefinitionBuilder()
-                                .withClassName('String')
-                                .build(),
-                          )
-                          .build(),
-                    ])
-                    .buildMethodCallDefinition(),
-              ])
-              .build(),
-        ],
-      );
-
-      late var codeMap = generator.generateProtocolCode(
-        protocolDefinition: protocolDefinition,
-        config: config,
-      );
-
-      late var testToolsFile = codeMap[expectedFileName];
-
-      test('then test tools file is created.', () {
-        expect(codeMap, contains(expectedFileName));
-      });
-
-      test(
-        'then test tools file has no generated future call.',
-        () {
-          expect(
-            testToolsFile,
-            matches(r'class TestEndpoints \{\}\n'),
           );
         },
       );

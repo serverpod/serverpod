@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Lightweight DTO to be used as specification while creating a new user profile.
 abstract class UserProfileData implements _i1.SerializableModel {
   UserProfileData._({
     this.userName,

@@ -57,15 +57,24 @@ abstract class DurationDefaultMix
   factory DurationDefaultMix.fromJson(Map<String, dynamic> jsonSerialization) {
     return DurationDefaultMix(
       id: jsonSerialization['id'] as int?,
-      durationDefaultAndDefaultModel: _i1.DurationJsonExtension.fromJson(
-        jsonSerialization['durationDefaultAndDefaultModel'],
-      ),
-      durationDefaultAndDefaultPersist: _i1.DurationJsonExtension.fromJson(
-        jsonSerialization['durationDefaultAndDefaultPersist'],
-      ),
-      durationDefaultModelAndDefaultPersist: _i1.DurationJsonExtension.fromJson(
-        jsonSerialization['durationDefaultModelAndDefaultPersist'],
-      ),
+      durationDefaultAndDefaultModel:
+          jsonSerialization['durationDefaultAndDefaultModel'] == null
+          ? null
+          : _i1.DurationJsonExtension.fromJson(
+              jsonSerialization['durationDefaultAndDefaultModel'],
+            ),
+      durationDefaultAndDefaultPersist:
+          jsonSerialization['durationDefaultAndDefaultPersist'] == null
+          ? null
+          : _i1.DurationJsonExtension.fromJson(
+              jsonSerialization['durationDefaultAndDefaultPersist'],
+            ),
+      durationDefaultModelAndDefaultPersist:
+          jsonSerialization['durationDefaultModelAndDefaultPersist'] == null
+          ? null
+          : _i1.DurationJsonExtension.fromJson(
+              jsonSerialization['durationDefaultModelAndDefaultPersist'],
+            ),
     );
   }
 

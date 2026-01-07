@@ -4,8 +4,8 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/annotation.dart';
 import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
-
 import 'package:serverpod_cli/src/generator/types.dart';
 
 abstract class EndpointParameterAnalyzer {
@@ -24,6 +24,7 @@ abstract class EndpointParameterAnalyzer {
         name: parameter.name!,
         required: _isRequired(parameter),
         type: TypeDefinition.fromDartType(parameter.type),
+        annotations: parameter.endpointAnnotations,
       );
 
       if (parameter.isRequiredPositional) {

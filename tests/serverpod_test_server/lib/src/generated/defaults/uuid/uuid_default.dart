@@ -43,20 +43,26 @@ abstract class UuidDefault
   factory UuidDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return UuidDefault(
       id: jsonSerialization['id'] as int?,
-      uuidDefaultRandom: _i1.UuidValueJsonExtension.fromJson(
-        jsonSerialization['uuidDefaultRandom'],
-      ),
-      uuidDefaultRandomV7: _i1.UuidValueJsonExtension.fromJson(
-        jsonSerialization['uuidDefaultRandomV7'],
-      ),
+      uuidDefaultRandom: jsonSerialization['uuidDefaultRandom'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidDefaultRandom'],
+            ),
+      uuidDefaultRandomV7: jsonSerialization['uuidDefaultRandomV7'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidDefaultRandomV7'],
+            ),
       uuidDefaultRandomNull: jsonSerialization['uuidDefaultRandomNull'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultRandomNull'],
             ),
-      uuidDefaultStr: _i1.UuidValueJsonExtension.fromJson(
-        jsonSerialization['uuidDefaultStr'],
-      ),
+      uuidDefaultStr: jsonSerialization['uuidDefaultStr'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidDefaultStr'],
+            ),
       uuidDefaultStrNull: jsonSerialization['uuidDefaultStrNull'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(

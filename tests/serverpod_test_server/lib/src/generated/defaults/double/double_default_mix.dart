@@ -35,13 +35,14 @@ abstract class DoubleDefaultMix
     return DoubleDefaultMix(
       id: jsonSerialization['id'] as int?,
       doubleDefaultAndDefaultModel:
-          (jsonSerialization['doubleDefaultAndDefaultModel'] as num).toDouble(),
+          (jsonSerialization['doubleDefaultAndDefaultModel'] as num?)
+              ?.toDouble(),
       doubleDefaultAndDefaultPersist:
-          (jsonSerialization['doubleDefaultAndDefaultPersist'] as num)
-              .toDouble(),
+          (jsonSerialization['doubleDefaultAndDefaultPersist'] as num?)
+              ?.toDouble(),
       doubleDefaultModelAndDefaultPersist:
-          (jsonSerialization['doubleDefaultModelAndDefaultPersist'] as num)
-              .toDouble(),
+          (jsonSerialization['doubleDefaultModelAndDefaultPersist'] as num?)
+              ?.toDouble(),
     );
   }
 

@@ -152,4 +152,67 @@ void main() {
       });
     },
   );
+
+  withServerpod(
+    'Given pending email account request that was not verified',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const email = 'newuser@serverpod.dev';
+      late UuidValue accountRequestId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture();
+
+        accountRequestId = await fixture.emailIdp.startRegistration(
+          session,
+          email: email,
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      group('when startRegistration is called again with the same email', () {
+        late UuidValue newAccountRequestId;
+        setUp(() async {
+          newAccountRequestId = await fixture.emailIdp.startRegistration(
+            session,
+            email: email,
+          );
+        });
+
+        test('then it returns a new request id', () async {
+          expect(newAccountRequestId, isNot(equals(accountRequestId)));
+        });
+
+        test('then it deletes the existing request', () async {
+          final oldRequest = await EmailAccountRequest.db.findById(
+            session,
+            accountRequestId,
+          );
+          expect(oldRequest, isNull);
+        });
+
+        test(
+          'then the new request exists on the database',
+          () async {
+            final newRequest = await EmailAccountRequest.db.findById(
+              session,
+              newAccountRequestId,
+            );
+            expect(newRequest, isNotNull);
+            expect(newRequest!.id, equals(newAccountRequestId));
+            expect(newRequest.email, equals(email));
+            expect(newRequest.challengeId, isNotNull);
+            expect(newRequest.createdAt, isNotNull);
+          },
+        );
+      });
+    },
+  );
 }

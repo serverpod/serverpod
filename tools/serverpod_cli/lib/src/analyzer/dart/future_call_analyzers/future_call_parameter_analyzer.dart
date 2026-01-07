@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/annotation.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
 
@@ -24,6 +25,7 @@ abstract class FutureCallParameterAnalyzer {
         required: _isRequired(parameter),
         type: TypeDefinition.fromDartType(parameter.type),
         defaultValue: parameter.defaultValueCode,
+        annotations: parameter.futureCallAnnotations,
       );
 
       if (parameter.isRequiredPositional) {

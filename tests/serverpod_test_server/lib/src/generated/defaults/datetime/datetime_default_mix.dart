@@ -39,15 +39,24 @@ abstract class DateTimeDefaultMix
   factory DateTimeDefaultMix.fromJson(Map<String, dynamic> jsonSerialization) {
     return DateTimeDefaultMix(
       id: jsonSerialization['id'] as int?,
-      dateTimeDefaultAndDefaultModel: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['dateTimeDefaultAndDefaultModel'],
-      ),
-      dateTimeDefaultAndDefaultPersist: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['dateTimeDefaultAndDefaultPersist'],
-      ),
-      dateTimeDefaultModelAndDefaultPersist: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['dateTimeDefaultModelAndDefaultPersist'],
-      ),
+      dateTimeDefaultAndDefaultModel:
+          jsonSerialization['dateTimeDefaultAndDefaultModel'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['dateTimeDefaultAndDefaultModel'],
+            ),
+      dateTimeDefaultAndDefaultPersist:
+          jsonSerialization['dateTimeDefaultAndDefaultPersist'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['dateTimeDefaultAndDefaultPersist'],
+            ),
+      dateTimeDefaultModelAndDefaultPersist:
+          jsonSerialization['dateTimeDefaultModelAndDefaultPersist'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['dateTimeDefaultModelAndDefaultPersist'],
+            ),
     );
   }
 
