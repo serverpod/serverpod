@@ -33,9 +33,11 @@ abstract class BigIntDefaultModel implements _i1.SerializableModel {
   factory BigIntDefaultModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return BigIntDefaultModel(
       id: jsonSerialization['id'] as int?,
-      bigIntDefaultModelStr: _i1.BigIntJsonExtension.fromJson(
-        jsonSerialization['bigIntDefaultModelStr'],
-      ),
+      bigIntDefaultModelStr: jsonSerialization['bigIntDefaultModelStr'] == null
+          ? null
+          : _i1.BigIntJsonExtension.fromJson(
+              jsonSerialization['bigIntDefaultModelStr'],
+            ),
       bigIntDefaultModelStrNull:
           jsonSerialization['bigIntDefaultModelStrNull'] == null
           ? null

@@ -50,7 +50,9 @@ abstract class GoogleAccount
           : _i3.Protocol().deserialize<_i2.AuthUser>(
               jsonSerialization['authUser'],
             ),
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      created: jsonSerialization['created'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       email: jsonSerialization['email'] as String,
       userIdentifier: jsonSerialization['userIdentifier'] as String,
     );

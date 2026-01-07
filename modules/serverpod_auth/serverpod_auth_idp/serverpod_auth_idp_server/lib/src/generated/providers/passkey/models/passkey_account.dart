@@ -57,9 +57,9 @@ abstract class PasskeyAccount
           : _i4.Protocol().deserialize<_i2.AuthUser>(
               jsonSerialization['authUser'],
             ),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['createdAt'],
-      ),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       keyId: _i1.ByteDataJsonExtension.fromJson(jsonSerialization['keyId']),
       keyIdBase64: jsonSerialization['keyIdBase64'] as String,
       clientDataJSON: _i1.ByteDataJsonExtension.fromJson(

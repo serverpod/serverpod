@@ -62,9 +62,9 @@ abstract class UserProfile
       userName: jsonSerialization['userName'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
       email: jsonSerialization['email'] as String?,
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['createdAt'],
-      ),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       imageId: jsonSerialization['imageId'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['imageId']),

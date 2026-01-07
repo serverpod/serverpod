@@ -68,12 +68,14 @@ abstract class RefreshToken
         jsonSerialization['fixedSecret'],
       ),
       rotatingSecretHash: jsonSerialization['rotatingSecretHash'] as String,
-      lastUpdatedAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['lastUpdatedAt'],
-      ),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['createdAt'],
-      ),
+      lastUpdatedAt: jsonSerialization['lastUpdatedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['lastUpdatedAt'],
+            ),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
     );
   }
 

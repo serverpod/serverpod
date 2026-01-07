@@ -64,12 +64,12 @@ abstract class ServerSideSession
       scopeNames: _i4.Protocol().deserialize<Set<String>>(
         jsonSerialization['scopeNames'],
       ),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['createdAt'],
-      ),
-      lastUsedAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['lastUsedAt'],
-      ),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      lastUsedAt: jsonSerialization['lastUsedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUsedAt']),
       expiresAt: jsonSerialization['expiresAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiresAt']),

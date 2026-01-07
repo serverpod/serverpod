@@ -50,9 +50,9 @@ abstract class EmailAccount
           : _i3.Protocol().deserialize<_i2.AuthUser>(
               jsonSerialization['authUser'],
             ),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['createdAt'],
-      ),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       email: jsonSerialization['email'] as String,
       passwordHash: jsonSerialization['passwordHash'] as String,
     );

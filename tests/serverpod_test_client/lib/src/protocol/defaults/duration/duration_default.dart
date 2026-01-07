@@ -45,9 +45,11 @@ abstract class DurationDefault implements _i1.SerializableModel {
   factory DurationDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return DurationDefault(
       id: jsonSerialization['id'] as int?,
-      durationDefault: _i1.DurationJsonExtension.fromJson(
-        jsonSerialization['durationDefault'],
-      ),
+      durationDefault: jsonSerialization['durationDefault'] == null
+          ? null
+          : _i1.DurationJsonExtension.fromJson(
+              jsonSerialization['durationDefault'],
+            ),
       durationDefaultNull: jsonSerialization['durationDefaultNull'] == null
           ? null
           : _i1.DurationJsonExtension.fromJson(

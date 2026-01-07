@@ -51,9 +51,9 @@ abstract class UserProfileImage
           : _i3.Protocol().deserialize<_i2.UserProfile>(
               jsonSerialization['userProfile'],
             ),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['createdAt'],
-      ),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
       url: _i1.UriJsonExtension.fromJson(jsonSerialization['url']),
