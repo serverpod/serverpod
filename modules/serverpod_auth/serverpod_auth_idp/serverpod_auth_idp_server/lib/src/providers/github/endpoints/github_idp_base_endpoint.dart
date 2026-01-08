@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 
-import '../../../../../core.dart';
 import '../business/github_idp.dart';
 
 /// Base endpoint for GitHub Account-based authentication.
