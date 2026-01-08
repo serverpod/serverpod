@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
+import '../../../utils/get_passwords_extension.dart';
 import 'firebase_idp.dart';
 import 'firebase_idp_utils.dart';
 import 'firebase_service_account_credentials.dart';
@@ -79,7 +80,7 @@ class FirebaseIdpConfigFromPasswords extends FirebaseIdpConfig {
     super.firebaseAccountDetailsValidation,
   }) : super(
          credentials: FirebaseServiceAccountCredentials.fromJsonString(
-           Serverpod.instance.getPassword('firebaseServiceAccountKey')!,
+           Serverpod.instance.getPasswordOrThrow('firebaseServiceAccountKey'),
          ),
        );
 }
