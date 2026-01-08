@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
-import 'google_auth_controller.dart';
 import 'common/button.dart';
 import 'common/style.dart';
+import 'google_auth_controller.dart';
 import 'native/button.dart';
 import 'web/button.dart';
 
@@ -168,7 +168,7 @@ class GoogleSignInWidget extends StatefulWidget {
     this.buttonWrapper = GoogleSignInBaseButton.wrapAsOutline,
     super.key,
   }) : assert(
-         (controller == null || client == null),
+         (controller == null) != (client == null),
          'Either controller or client must be provided, but not both. When '
          'passing a controller, only the `webButton` parameter is used. ',
        ),
