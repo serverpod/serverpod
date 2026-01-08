@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
-import 'config/app_config.dart';
 import 'screens/greetings_screen.dart';
 
 /// Sets up a global client object that can be used to talk to the server from

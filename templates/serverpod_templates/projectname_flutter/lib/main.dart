@@ -2,8 +2,6 @@ import 'package:projectname_client/projectname_client.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 
-import 'config/app_config.dart';
-
 /// Sets up a global client object that can be used to talk to the server from
 /// anywhere in our app. The client is generated from your server code
 /// and is set up to connect to a Serverpod running on a local server on
@@ -25,7 +23,7 @@ void main() async {
   // You can set the variable when running or building your app like this:
   // E.g. `flutter run --dart-define=SERVER_URL=https://api.example.com/`.
   //
-  // Otherwise, the server URL is fetched from the assets/config.json file or
+  // Otherwise, the server URL is fetched from the `assets/config.json` file or
   // defaults to http://$localhost:8080/ if not found.
   final serverUrl = await getServerUrl();
 
