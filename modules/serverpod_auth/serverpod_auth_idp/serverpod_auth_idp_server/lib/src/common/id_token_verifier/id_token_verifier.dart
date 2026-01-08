@@ -37,7 +37,7 @@ class IdTokenVerifier {
   ///
   /// Throws an exception created by the config in case of any validation
   /// failures.
-  static Future<Map<String, dynamic>> verify(
+  static Future<Map<String, dynamic>> verifyOAuth2Token(
     final String idToken, {
     required final IdTokenVerifierConfig config,
     final String? audience,

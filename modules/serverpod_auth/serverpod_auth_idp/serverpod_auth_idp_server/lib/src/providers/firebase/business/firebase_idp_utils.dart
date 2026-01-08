@@ -130,7 +130,7 @@ class FirebaseIdpUtils {
 
     Map<String, dynamic> data;
     try {
-      data = await IdTokenVerifier.verify(
+      data = await IdTokenVerifier.verifyOAuth2Token(
         idToken,
         config: FirebaseIdTokenConfig(projectId: projectId),
         audience: projectId,

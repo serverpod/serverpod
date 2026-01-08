@@ -137,7 +137,7 @@ class GoogleIdpUtils {
 
     Map<String, dynamic> data;
     try {
-      data = await IdTokenVerifier.verify(
+      data = await IdTokenVerifier.verifyOAuth2Token(
         idToken,
         config: const GoogleIdTokenConfig(),
         audience: clientId,
