@@ -123,28 +123,4 @@ void main() {
       );
     },
   );
-
-  withServerpod(
-    'Given an auth user with GitHub authentication,',
-    (final sessionBuilder, final _) {
-      late Session session;
-      late UuidValue authUserId;
-
-      setUp(() async {
-        session = sessionBuilder.build();
-
-        final authUser = await authUsers.create(session);
-        authUserId = authUser.id;
-
-        await GitHubAccount.db.insertRow(
-          session,
-          GitHubAccount(
-            userIdentifier: '67890',
-            email: 'linked@example.com',
-            authUserId: authUserId,
-          ),
-        );
-      });
-    },
-  );
 }
