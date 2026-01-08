@@ -35,6 +35,7 @@ class GitHubSignInService {
   GitHubSignInService._internal();
 
   bool _initialized = false;
+  String? _state;
   String? _clientId;
   String? _redirectUri;
   String? _codeVerifier;
@@ -122,12 +123,13 @@ class GitHubSignInService {
     // Generate PKCE code verifier and challenge
     _codeVerifier = _generateCodeVerifier();
     final codeChallenge = _generateCodeChallenge(_codeVerifier!);
+    _state = _generateState();
 
     // Build GitHub authorization URL
     final queryParameters = {
       'client_id': _clientId!,
       'redirect_uri': _redirectUri!,
-      'state': _generateState(),
+      'state': _state!,
       'code_challenge': codeChallenge,
       'code_challenge_method': 'S256',
     };
@@ -150,17 +152,26 @@ class GitHubSignInService {
         url: authorizationUrl.toString(),
         callbackUrlScheme:
             _callbackUrlScheme ?? Uri.parse(_redirectUri!).scheme,
-        options: FlutterWebAuth2Options(
-          useWebview: _useWebview,
-        ),
+        options: FlutterWebAuth2Options(useWebview: _useWebview),
       );
 
-      // Extract the authorization code from the callback URL
       final uri = Uri.parse(result);
-      final code = uri.queryParameters['code'];
+      final queryParams = uri.queryParameters;
 
-      if (code == null) {
-        throw Exception('Authorization code not found in callback URL');
+      // 1. Validate State (Security check)
+      final returnedState = queryParams['state'];
+      if (returnedState == null || returnedState != _state) {
+        throw Exception(
+          'Security validation failed: State mismatch or missing.',
+        );
+      }
+
+      // 2. Extract Code
+      final code = queryParams['code'];
+      if (code == null || code.isEmpty) {
+        throw Exception(
+          'Authorization failed: No code returned from provider.',
+        );
       }
 
       return code;
