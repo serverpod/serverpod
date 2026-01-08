@@ -1,3 +1,5 @@
+import 'package:serverpod/serverpod.dart';
+
 import '../../../../core.dart';
 import 'email_idp_config.dart';
 import 'email_idp_server_exceptions.dart';
@@ -62,6 +64,19 @@ class EmailIdpUtils {
       hashUtil: hashUtil,
       failedLoginRateLimit: config.failedLoginRateLimit,
     );
+  }
+
+  /// Returns the possible [EmailAccount] associated with a session.
+  Future<EmailAccount?> getAccount(final Session session) {
+    return switch (session.authenticated) {
+      null => Future.value(null),
+      _ => EmailAccount.db.findFirstRow(
+        session,
+        where: (final t) => t.authUserId.equals(
+          session.authenticated!.authUserId,
+        ),
+      ),
+    };
   }
 
   /// Replaces server-side exceptions by client-side exceptions, hiding details

@@ -190,6 +190,19 @@ class PasskeyIdpUtils {
         )
         .toList();
   }
+
+  /// Returns the possible [PasskeyAccount] associated with an session.
+  Future<PasskeyAccount?> getAccount(final Session session) {
+    return switch (session.authenticated) {
+      null => Future.value(null),
+      _ => PasskeyAccount.db.findFirstRow(
+        session,
+        where: (final t) => t.authUserId.equals(
+          session.authenticated!.authUserId,
+        ),
+      ),
+    };
+  }
 }
 
 /// A tuple of (auth user ID, passkey account ID) representing a deleted
