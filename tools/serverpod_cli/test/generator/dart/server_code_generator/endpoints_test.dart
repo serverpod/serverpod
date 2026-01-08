@@ -30,6 +30,7 @@ void main() {
         var protocolDefinition = const ProtocolDefinition(
           endpoints: [],
           models: [],
+          futureCalls: [],
         );
 
         codeMap = generator.generateProtocolCode(
@@ -73,6 +74,7 @@ void main() {
                 .build(),
           ],
           models: [],
+          futureCalls: [],
         );
 
         codeMap = generator.generateProtocolCode(
@@ -123,6 +125,7 @@ void main() {
                 .build(),
           ],
           models: [],
+          futureCalls: [],
         );
 
         codeMap = generator.generateProtocolCode(
@@ -186,6 +189,7 @@ void main() {
                 .build(),
           ],
           models: [],
+          futureCalls: [],
         );
 
         codeMap = generator.generateProtocolCode(
@@ -250,6 +254,7 @@ void main() {
                 .build(),
           ],
           models: [],
+          futureCalls: [],
         );
 
         codeMap = generator.generateProtocolCode(
@@ -331,6 +336,7 @@ void main() {
                 .build(),
           ],
           models: [],
+          futureCalls: [],
         );
 
         codeMap = generator.generateProtocolCode(
@@ -376,6 +382,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(

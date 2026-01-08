@@ -28,5 +28,7 @@ abstract class FutureCall<T extends SerializableModel> {
   }
 
   /// Override this method to do any custom work in a [FutureCall].
-  Future<void> invoke(Session session, T? object);
+  Future<void> invoke(Session session, T? object) {
+    return Future.value();
+  }
 }

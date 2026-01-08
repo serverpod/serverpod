@@ -124,6 +124,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [endpoint],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -185,6 +186,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [endpoint],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -246,6 +248,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [endpoint],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(
@@ -307,6 +310,7 @@ void main() {
       var protocolDefinition = ProtocolDefinition(
         endpoints: [endpoint],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(

@@ -8,8 +8,11 @@ import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/endpoint_generators_util.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
+import 'package:serverpod_cli/src/generator/dart/protocol_definition_extension.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+
+part 'future_calls_library_generator.dart';
 
 const mapRecordToJsonFuncName = 'mapRecordToJson';
 const mapContainerToJsonFunctionName = 'mapContainerToJson';
@@ -58,7 +61,8 @@ class LibraryGenerator {
     // exports
     library.directives.addAll([
       for (var classInfo in topLevelModels)
-        Directive.export(TypeDefinition.getRef(classInfo)),
+        if (classInfo.shouldExport)
+          Directive.export(TypeDefinition.getRef(classInfo)),
       if (!serverCode) Directive.export('client.dart'),
     ]);
 
@@ -582,10 +586,19 @@ class LibraryGenerator {
   }
 
   /// Generates the EndpointDispatch for the server side.
-  /// Executing this only makes sens for the server code
+  /// Executing this only makes sense for the server code
   /// (if [serverCode] is `true`).
   Library generateServerEndpointDispatch() {
     var library = LibraryBuilder();
+
+    if (protocolDefinition.shouldGenerateFutureCalls) {
+      library.directives.add(
+        Directive.export(
+          'future_calls.dart',
+          show: const ['ServerpodFutureCallsGetter'],
+        ),
+      );
+    }
 
     if (_hasDeprecatedReferences(protocolDefinition.endpoints)) {
       library.ignoreForFile.add('deprecated_member_use_from_same_package');
@@ -597,8 +610,8 @@ class LibraryGenerator {
         (c) => c
           ..name = 'Endpoints'
           ..extend = refer('EndpointDispatch', serverpodUrl(true))
-          // Init method
-          ..methods.add(
+          ..methods.addAll([
+            // Init method
             Method.returnsVoid(
               (m) => m
                 ..name = 'initializeEndpoints'
@@ -635,7 +648,25 @@ class LibraryGenerator {
                         .statement,
                 ]),
             ),
-          ),
+
+            if (protocolDefinition.shouldGenerateFutureCalls)
+              Method(
+                (m) => m
+                  ..annotations.add(refer('override'))
+                  ..name = 'futureCalls'
+                  ..type = MethodType.getter
+                  ..returns = refer(
+                    'FutureCallDispatch?',
+                    serverpodUrl(true),
+                  )
+                  ..body = Block.of([
+                    refer(
+                      'FutureCalls',
+                      'package:${config.serverPackage}/src/generated/future_calls.dart',
+                    ).call([]).returned.statement,
+                  ]),
+              ),
+          ]),
       ),
     );
 
@@ -2204,6 +2235,15 @@ extension on Iterable<SerializableModelFieldDefinition> {
       yield element;
       visited.add(elementType);
     }
+  }
+}
+
+extension on SerializableModelDefinition {
+  /// Prevent generated future call models from being exported
+  /// from generated protocol code. This ensures that only
+  /// user defined models are exported.
+  bool get shouldExport {
+    return !RegExp(r'^future_calls_generated_models\/.*').hasMatch(fileName);
   }
 }
 

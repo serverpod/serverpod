@@ -221,7 +221,7 @@ void main() {
       );
       await serviceClient.insights.setRuntimeSettings(settings);
 
-      await client.futureCalls.makeFutureCall(SimpleData(num: 42));
+      await client.testFutureCalls.makeFutureCall(SimpleData(num: 42));
 
       // Make sure that the future call has been executed
       // The check for future calls is made very 5 s and future call is set for
