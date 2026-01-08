@@ -1,5 +1,8 @@
 ## 3.1.1
 
+- feat: Add local filesystem cloud storage adapter (`serverpod_cloud_storage_local`).
+- feat: Add streaming support for memory-efficient large file handling in local cloud storage.
+- feat: Add automatic expiration cleanup scheduler in local cloud storage.
 - fix: Fixes unkonwn encodings crashing the CLI when creating a new project.
 - fix: Fixes template web server serving the Flutter app config on the wrong path.
 
