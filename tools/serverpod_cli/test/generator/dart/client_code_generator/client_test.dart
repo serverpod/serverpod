@@ -9,6 +9,7 @@ import '../../../test_util/builders/annotation_definition_builder.dart';
 import '../../../test_util/builders/endpoint_definition_builder.dart';
 import '../../../test_util/builders/generator_config_builder.dart';
 import '../../../test_util/builders/method_definition_builder.dart';
+import '../../../test_util/builders/parameter_definition_builder.dart';
 import '../../../test_util/builders/type_definition_builder.dart';
 
 const projectName = 'example_project';
@@ -49,6 +50,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -95,12 +97,14 @@ void main() {
                         .withUrl('dart:async')
                         .build(),
                     required: true,
+                    annotations: const [],
                   ),
                 ]).buildMethodStreamDefinition(),
               ])
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -149,6 +153,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -193,6 +198,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -240,6 +246,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -259,6 +266,119 @@ void main() {
             endpointsFile,
             contains(
               "@TestCustomAnnotation('a string literal argument', 42)",
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a protocol definition with a method with a parameter annotated with "@deprecated" when generating client file',
+    () {
+      var endpointName = 'testing';
+      var methodName = 'methodWithDeprecatedParam';
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+                MethodDefinitionBuilder().withName(methodName).withParameters([
+                  ParameterDefinitionBuilder()
+                      .withName('deprecatedParam')
+                      .withType(
+                        TypeDefinitionBuilder().withClassName('String').build(),
+                      )
+                      .withRequired(true)
+                      .withAnnotations([
+                        AnnotationDefinitionBuilder()
+                            .withName('deprecated')
+                            .build(),
+                      ])
+                      .build(),
+                ]).buildMethodCallDefinition(),
+              ])
+              .build(),
+        ],
+        models: [],
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test('then client file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+      var endpointsFile = codeMap[expectedFileName];
+
+      test(
+        'then client file contains "@deprecated" annotation for parameter.',
+        () {
+          expect(
+            endpointsFile,
+            contains(
+              '@deprecated String deprecatedParam',
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a protocol definition with a method with a parameter annotated with "@Deprecated(..)" when generating client file',
+    () {
+      var endpointName = 'testing';
+      var methodName = 'methodWithDeprecatedParamMessage';
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [
+          EndpointDefinitionBuilder()
+              .withClassName('${endpointName.pascalCase}Endpoint')
+              .withName(endpointName)
+              .withMethods([
+                MethodDefinitionBuilder().withName(methodName).withParameters([
+                  ParameterDefinitionBuilder()
+                      .withName('deprecatedParam')
+                      .withType(
+                        TypeDefinitionBuilder().withClassName('String').build(),
+                      )
+                      .withRequired(true)
+                      .withAnnotations([
+                        AnnotationDefinitionBuilder()
+                            .withName('Deprecated')
+                            .withArguments(["'This parameter is deprecated'"])
+                            .build(),
+                      ])
+                      .build(),
+                ]).buildMethodCallDefinition(),
+              ])
+              .build(),
+        ],
+        models: [],
+        futureCalls: [],
+      );
+
+      var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      test('then client file is created.', () {
+        expect(codeMap, contains(expectedFileName));
+      });
+      var endpointsFile = codeMap[expectedFileName];
+
+      test(
+        'then client file contains "@Deprecated(..)" annotation for parameter.',
+        () {
+          expect(
+            endpointsFile,
+            contains(
+              "@Deprecated('This parameter is deprecated') String deprecatedParam",
             ),
           );
         },

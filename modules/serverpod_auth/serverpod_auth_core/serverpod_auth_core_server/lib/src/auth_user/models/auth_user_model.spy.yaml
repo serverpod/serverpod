@@ -1,3 +1,4 @@
+### DTO for transferring authentication user information.
 class: AuthUserModel
 fields:
   id: UuidValue

@@ -1,6 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-
-import 'password_not_found_exception.dart';
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 
 /// Convenience helpers for retrieving passwords with clearer errors.
 extension GetPasswordsExtension on Serverpod {

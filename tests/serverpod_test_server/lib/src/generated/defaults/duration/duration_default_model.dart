@@ -48,9 +48,11 @@ abstract class DurationDefaultModel
   ) {
     return DurationDefaultModel(
       id: jsonSerialization['id'] as int?,
-      durationDefaultModel: _i1.DurationJsonExtension.fromJson(
-        jsonSerialization['durationDefaultModel'],
-      ),
+      durationDefaultModel: jsonSerialization['durationDefaultModel'] == null
+          ? null
+          : _i1.DurationJsonExtension.fromJson(
+              jsonSerialization['durationDefaultModel'],
+            ),
       durationDefaultModelNull:
           jsonSerialization['durationDefaultModelNull'] == null
           ? null

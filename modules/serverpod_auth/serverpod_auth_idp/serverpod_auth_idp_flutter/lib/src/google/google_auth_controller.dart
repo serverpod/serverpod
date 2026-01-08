@@ -109,6 +109,8 @@ class GoogleAuthController extends ChangeNotifier {
 
   /// Initializes the Google Sign-In service and sets up auth event listeners.
   Future<void> _initialize() async {
+    if (_isInitialized) return;
+
     try {
       final signIn = await GoogleSignInService.instance.ensureInitialized(
         auth: client.auth,
@@ -119,7 +121,7 @@ class GoogleAuthController extends ChangeNotifier {
         onError: _handleAuthenticationError,
       );
 
-      if (attemptLightweightSignIn) {
+      if (!isAuthenticated && attemptLightweightSignIn) {
         unawaited(signIn.attemptLightweightAuthentication());
       }
 

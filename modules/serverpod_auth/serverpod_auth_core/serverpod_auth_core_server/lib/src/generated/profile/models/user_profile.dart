@@ -8,7 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
 // ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -17,6 +16,10 @@ import '../../auth_user/models/auth_user.dart' as _i2;
 import '../../profile/models/user_profile_image.dart' as _i3;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i4;
 
+/// Core database entity representing a user profile in the authentication system.
+///
+/// This class is meant to be used only to interact with the database. To transfer
+/// user profile data, use the [UserProfileModel] DTO.
 abstract class UserProfile
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   UserProfile._({
@@ -59,9 +62,9 @@ abstract class UserProfile
       userName: jsonSerialization['userName'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
       email: jsonSerialization['email'] as String?,
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['createdAt'],
-      ),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       imageId: jsonSerialization['imageId'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['imageId']),

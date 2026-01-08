@@ -30,7 +30,7 @@ abstract class StringDefault
   factory StringDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return StringDefault(
       id: jsonSerialization['id'] as int?,
-      stringDefault: jsonSerialization['stringDefault'] as String,
+      stringDefault: jsonSerialization['stringDefault'] as String?,
       stringDefaultNull: jsonSerialization['stringDefaultNull'] as String?,
     );
   }

@@ -179,6 +179,7 @@ void main() {
         protocolDefinition: const ProtocolDefinition(
           endpoints: [],
           models: [],
+          futureCalls: [],
         ),
         config: configWithTestToolsPath,
       );
@@ -217,6 +218,7 @@ void main() {
         protocolDefinition: const ProtocolDefinition(
           endpoints: [],
           models: [],
+          futureCalls: [],
         ),
         config: configWithTestToolsPath,
       );
@@ -251,6 +253,7 @@ void main() {
         protocolDefinition: const ProtocolDefinition(
           endpoints: [],
           models: [],
+          futureCalls: [],
         ),
         config: configWithTestToolsPath,
       );

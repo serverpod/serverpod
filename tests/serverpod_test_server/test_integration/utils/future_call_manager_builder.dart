@@ -1,6 +1,5 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
-import 'package:serverpod/src/server/future_call_manager/future_call_manager.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
 import '../test_tools/serverpod_test_tools.dart';

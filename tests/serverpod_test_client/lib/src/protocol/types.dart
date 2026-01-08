@@ -229,7 +229,7 @@ abstract class Types implements _i1.SerializableModel {
       if (aList != null) 'aList': aList?.toJson(),
       if (aMap != null) 'aMap': aMap?.toJson(),
       if (aSet != null) 'aSet': aSet?.toJson(),
-      if (aRecord != null) 'aRecord': _i5.mapRecordToJson(aRecord),
+      if (aRecord != null) 'aRecord': _i5.Protocol().mapRecordToJson(aRecord),
     };
   }
 

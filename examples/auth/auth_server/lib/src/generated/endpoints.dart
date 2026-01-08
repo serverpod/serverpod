@@ -385,7 +385,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['passkeyIdp'] as _i7.PasskeyIdpEndpoint)
                   .createChallenge(session)
-                  .then((record) => _i9.mapRecordToJson(record)),
+                  .then((record) => _i9.Protocol().mapRecordToJson(record)),
         ),
         'register': _i1.MethodConnector(
           name: 'register',

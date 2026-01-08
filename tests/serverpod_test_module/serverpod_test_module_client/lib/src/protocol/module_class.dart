@@ -58,7 +58,7 @@ abstract class ModuleClass implements _i1.SerializableModel {
       '__className__': 'serverpod_test_module.ModuleClass',
       'name': name,
       'data': data,
-      if (record != null) 'record': _i2.mapRecordToJson(record),
+      if (record != null) 'record': _i2.Protocol().mapRecordToJson(record),
     };
   }
 

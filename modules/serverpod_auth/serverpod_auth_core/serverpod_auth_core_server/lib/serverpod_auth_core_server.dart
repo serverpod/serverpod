@@ -13,6 +13,7 @@ export 'src/common/integrations/provider_builder.dart';
 export 'src/common/integrations/token_manager.dart';
 export 'src/common/integrations/token_manager_builder.dart';
 export 'src/common/utils/argon2_hash_util.dart';
+export 'src/common/utils/password_not_found_exception.dart';
 export 'src/generated/endpoints.dart';
 export 'src/generated/protocol.dart';
 export 'src/jwt/jwt.dart';

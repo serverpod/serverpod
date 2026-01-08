@@ -66,13 +66,17 @@ class _FirebaseSignInScreenState extends State<FirebaseSignInScreen> {
       ],
       actions: [
         // Handle successful sign-in: sync the Firebase user with Serverpod.
-        firebase_ui.AuthStateChangeAction<firebase_ui.SignedIn>(
-            (context, state) async {
+        firebase_ui.AuthStateChangeAction<firebase_ui.SignedIn>((
+          context,
+          state,
+        ) async {
           await _controller.login(state.user);
         }),
         // Handle new user registration: also sync with Serverpod.
-        firebase_ui.AuthStateChangeAction<firebase_ui.UserCreated>(
-            (context, state) async {
+        firebase_ui.AuthStateChangeAction<firebase_ui.UserCreated>((
+          context,
+          state,
+        ) async {
           await _controller.login(state.credential.user);
         }),
         // Handle cancelled sign-in: pop back to previous screen.

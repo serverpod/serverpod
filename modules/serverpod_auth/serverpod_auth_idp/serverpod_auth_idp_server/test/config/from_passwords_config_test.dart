@@ -10,6 +10,8 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
+import '../test_tags.dart';
+
 void main() {
   final portZeroConfig = ServerConfig(
     port: 0,
@@ -18,7 +20,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given missing IDP passwords', () {
+  group('Given missing IDP passwords', tags: TestTags.concurrencyOneTestTags, () {
     late Directory originalDir;
 
     setUpAll(() async {
@@ -113,91 +115,102 @@ void main() {
     );
   });
 
-  group('Given emailSecretHashPepper password is present', () {
-    late Directory originalDir;
+  group(
+    'Given emailSecretHashPepper password is present',
+    tags: TestTags.concurrencyOneTestTags,
+    () {
+      late Directory originalDir;
 
-    setUpAll(() async {
-      originalDir = Directory.current;
-      await d.dir('config', [
-        d.file(
-          'passwords.yaml',
-          '''
+      setUpAll(() async {
+        originalDir = Directory.current;
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
 test:
   database: 'test'
   emailSecretHashPepper: 'xK9#mP2\$vL5nQ8wR3jF6hY1cT4bN7zA0'
 ''',
-        ),
-      ]).create();
-      Directory.current = d.sandbox;
+          ),
+        ]).create();
+        Directory.current = d.sandbox;
 
-      Serverpod(
-        ['-m', 'test'],
-        Protocol(),
-        Endpoints(),
-        config: ServerpodConfig(apiServer: portZeroConfig),
-      );
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+        );
 
-      addTearDown(() async {
-        Directory.current = originalDir;
+        addTearDown(() async {
+          Directory.current = originalDir;
+        });
       });
-    });
 
-    test(
-      'when constructing EmailIdpConfigFromPasswords then succeeds.',
-      () {
-        final config = EmailIdpConfigFromPasswords();
-        expect(config, isA<EmailIdpConfig>());
-      },
-    );
-  });
+      test(
+        'when constructing EmailIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = EmailIdpConfigFromPasswords();
+          expect(config, isA<EmailIdpConfig>());
+        },
+      );
+    },
+  );
 
-  group('Given googleClientSecret password is present', () {
-    late Directory originalDir;
+  group(
+    'Given googleClientSecret password is present',
+    tags: TestTags.concurrencyOneTestTags,
+    () {
+      late Directory originalDir;
 
-    setUpAll(() async {
-      originalDir = Directory.current;
-      await d.dir('config', [
-        d.file(
-          'passwords.yaml',
-          '''
+      setUpAll(() async {
+        originalDir = Directory.current;
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
 test:
   database: 'test'
   googleClientSecret: '{"web":{"client_id":"123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com","client_secret":"GOCSPX-abc123def456ghi789jkl012mno","redirect_uris":["http://localhost:8080/auth/google/callback"]}}'
 ''',
-        ),
-      ]).create();
-      Directory.current = d.sandbox;
+          ),
+        ]).create();
+        Directory.current = d.sandbox;
 
-      Serverpod(
-        ['-m', 'test'],
-        Protocol(),
-        Endpoints(),
-        config: ServerpodConfig(apiServer: portZeroConfig),
-      );
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+        );
 
-      addTearDown(() async {
-        Directory.current = originalDir;
+        addTearDown(() async {
+          Directory.current = originalDir;
+        });
       });
-    });
 
-    test(
-      'when constructing GoogleIdpConfigFromPasswords then succeeds.',
-      () {
-        final config = GoogleIdpConfigFromPasswords();
-        expect(config, isA<GoogleIdpConfig>());
-      },
-    );
-  });
+      test(
+        'when constructing GoogleIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = GoogleIdpConfigFromPasswords();
+          expect(config, isA<GoogleIdpConfig>());
+        },
+      );
+    },
+  );
 
-  group('Given all apple passwords are present', () {
-    late Directory originalDir;
+  group(
+    'Given all apple passwords are present',
+    tags: TestTags.concurrencyOneTestTags,
+    () {
+      late Directory originalDir;
 
-    setUpAll(() async {
-      originalDir = Directory.current;
-      await d.dir('config', [
-        d.file(
-          'passwords.yaml',
-          '''
+      setUpAll(() async {
+        originalDir = Directory.current;
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
 test:
   database: 'test'
   appleServiceIdentifier: 'com.example.service.auth'
@@ -212,66 +225,71 @@ test:
     abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
     -----END PRIVATE KEY-----
 ''',
-        ),
-      ]).create();
-      Directory.current = d.sandbox;
+          ),
+        ]).create();
+        Directory.current = d.sandbox;
 
-      Serverpod(
-        ['-m', 'test'],
-        Protocol(),
-        Endpoints(),
-        config: ServerpodConfig(apiServer: portZeroConfig),
-      );
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+        );
 
-      addTearDown(() async {
-        Directory.current = originalDir;
+        addTearDown(() async {
+          Directory.current = originalDir;
+        });
       });
-    });
 
-    test(
-      'when constructing AppleIdpConfigFromPasswords then succeeds.',
-      () {
-        final config = AppleIdpConfigFromPasswords();
-        expect(config, isA<AppleIdpConfig>());
-      },
-    );
-  });
+      test(
+        'when constructing AppleIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = AppleIdpConfigFromPasswords();
+          expect(config, isA<AppleIdpConfig>());
+        },
+      );
+    },
+  );
 
-  group('Given passkeyHostname password is present', () {
-    late Directory originalDir;
+  group(
+    'Given passkeyHostname password is present',
+    tags: TestTags.concurrencyOneTestTags,
+    () {
+      late Directory originalDir;
 
-    setUpAll(() async {
-      originalDir = Directory.current;
-      await d.dir('config', [
-        d.file(
-          'passwords.yaml',
-          '''
+      setUpAll(() async {
+        originalDir = Directory.current;
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
 test:
   database: 'test'
   passkeyHostname: 'auth.example.com'
 ''',
-        ),
-      ]).create();
-      Directory.current = d.sandbox;
+          ),
+        ]).create();
+        Directory.current = d.sandbox;
 
-      Serverpod(
-        ['-m', 'test'],
-        Protocol(),
-        Endpoints(),
-        config: ServerpodConfig(apiServer: portZeroConfig),
-      );
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+        );
 
-      addTearDown(() async {
-        Directory.current = originalDir;
+        addTearDown(() async {
+          Directory.current = originalDir;
+        });
       });
-    });
 
-    test(
-      'when constructing PasskeyIdpConfigFromPasswords then succeeds.',
-      () {
-        final config = PasskeyIdpConfigFromPasswords();
-        expect(config, isA<PasskeyIdpConfig>());
-      },
-    );
-  });
+      test(
+        'when constructing PasskeyIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = PasskeyIdpConfigFromPasswords();
+          expect(config, isA<PasskeyIdpConfig>());
+        },
+      );
+    },
+  );
 }

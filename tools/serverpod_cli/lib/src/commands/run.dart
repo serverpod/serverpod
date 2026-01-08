@@ -2,15 +2,14 @@ import 'dart:io';
 
 import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
+import 'package:cli_tools/execute.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
-import 'package:serverpod_cli/src/scripts/script_executor.dart';
+import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/scripts/scripts.dart';
 import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
-
-import '../runner/serverpod_command_runner.dart';
 
 /// Options for the `run` command.
 enum RunOption<V> implements OptionDefinition<V> {
@@ -76,7 +75,7 @@ class RunCommand extends ServerpodCommand<RunOption> {
     final Scripts scripts;
     try {
       scripts = Scripts.fromPubspecFile(pubspecFile);
-    } on ScriptsParseException catch (e) {
+    } on ScriptParseException catch (e) {
       log.error('Error parsing "serverpod/scripts":\n$e');
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
@@ -103,12 +102,18 @@ class RunCommand extends ServerpodCommand<RunOption> {
       throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
     }
 
+    if (!script.supportsCurrentPlatform) {
+      log.error(
+        'Script "$scriptName" is not available on ${Platform.operatingSystem}.',
+      );
+      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+    }
+
     log.info('Running "${script.name}": ${script.command}');
 
-    final workingDirectory = pubspecFile.parent;
-    final exitCode = await ScriptExecutor.executeScript(
-      script,
-      workingDirectory,
+    final exitCode = await execute(
+      script.command,
+      workingDirectory: pubspecFile.parent,
       stdout: stdout,
       stderr: stderr,
       stdin: stdin,
@@ -122,7 +127,13 @@ class RunCommand extends ServerpodCommand<RunOption> {
   void _listScripts(Scripts scripts) {
     log.info('Available scripts:');
     for (final script in scripts.values) {
-      log.info('  ${script.name}: ${script.command}');
+      if (script.supportsCurrentPlatform) {
+        log.info('  ${script.name}: ${script.command}');
+      } else {
+        log.info(
+          '  ${script.name}: (not available on ${Platform.operatingSystem})',
+        );
+      }
     }
   }
 }

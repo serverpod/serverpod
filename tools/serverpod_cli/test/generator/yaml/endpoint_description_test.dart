@@ -24,6 +24,7 @@ void main() {
       var protocolDefinition = const ProtocolDefinition(
         endpoints: [],
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -48,6 +49,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -76,6 +78,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -109,6 +112,7 @@ example2:
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -145,6 +149,7 @@ example:
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -196,6 +201,7 @@ example:
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -234,6 +240,7 @@ example3:
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -274,6 +281,7 @@ example3:
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -319,6 +327,7 @@ concrete:
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
@@ -394,6 +403,7 @@ subclass:
           concreteSubclassEndpoint,
         ],
         models: [],
+        futureCalls: [],
       );
 
       var codeMap = generator.generateProtocolCode(
