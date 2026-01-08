@@ -73,7 +73,7 @@ abstract class ModuleDatatype implements _i1.SerializableModel {
       'model': model.toJson(),
       'list': list.toJson(valueToJson: (v) => v.toJson()),
       'map': map.toJson(valueToJson: (v) => v.toJson()),
-      if (record != null) 'record': _i3.mapRecordToJson(record),
+      if (record != null) 'record': _i3.Protocol().mapRecordToJson(record),
     };
   }
 

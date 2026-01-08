@@ -223,9 +223,10 @@ abstract class TypesSet implements _i1.SerializableModel {
         'aList': aList?.toJson(
           valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
         ),
-      if (aRecord != null) 'aRecord': _i6.mapContainerToJson(aRecord!),
+      if (aRecord != null)
+        'aRecord': _i6.Protocol().mapContainerToJson(aRecord!),
       if (aNullableRecord != null)
-        'aNullableRecord': _i6.mapContainerToJson(aNullableRecord!),
+        'aNullableRecord': _i6.Protocol().mapContainerToJson(aNullableRecord!),
     };
   }
 

@@ -3870,7 +3870,10 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['map'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then(
+                        (container) =>
+                            _i61.Protocol().mapContainerToJson(container),
+                      ),
         ),
         'returnNestedIntIntMap': _i1.MethodConnector(
           name: 'returnNestedIntIntMap',
@@ -3891,7 +3894,10 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['map'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then(
+                        (container) =>
+                            _i61.Protocol().mapContainerToJson(container),
+                      ),
         ),
         'returnEnumIntMap': _i1.MethodConnector(
           name: 'returnEnumIntMap',
@@ -3912,7 +3918,10 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['map'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then(
+                        (container) =>
+                            _i61.Protocol().mapContainerToJson(container),
+                      ),
         ),
         'returnEnumMap': _i1.MethodConnector(
           name: 'returnEnumMap',
@@ -4275,7 +4284,8 @@ class Endpoints extends _i1.EndpointDispatch {
                             params['map'],
                           )
                           .then(
-                            (container) => _i61.mapContainerToJson(container),
+                            (container) =>
+                                _i61.Protocol().mapContainerToJson(container),
                           ),
             ),
         'returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap':
@@ -4299,7 +4309,8 @@ class Endpoints extends _i1.EndpointDispatch {
                             params['map'],
                           )
                           .then(
-                            (container) => _i61.mapContainerToJson(container),
+                            (container) =>
+                                _i61.Protocol().mapContainerToJson(container),
                           ),
             ),
         'returnDateTimeBoolMap': _i1.MethodConnector(
@@ -4321,7 +4332,10 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['map'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then(
+                        (container) =>
+                            _i61.Protocol().mapContainerToJson(container),
+                      ),
         ),
         'returnDateTimeBoolMapNullable': _i1.MethodConnector(
           name: 'returnDateTimeBoolMapNullable',
@@ -4345,7 +4359,7 @@ class Endpoints extends _i1.EndpointDispatch {
                       .then(
                         (container) => container == null
                             ? null
-                            : _i61.mapContainerToJson(container),
+                            : _i61.Protocol().mapContainerToJson(container),
                       ),
         ),
         'returnIntStringMap': _i1.MethodConnector(
@@ -4367,7 +4381,10 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['map'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then(
+                        (container) =>
+                            _i61.Protocol().mapContainerToJson(container),
+                      ),
         ),
         'returnIntStringMapNullable': _i1.MethodConnector(
           name: 'returnIntStringMapNullable',
@@ -4391,7 +4408,7 @@ class Endpoints extends _i1.EndpointDispatch {
                       .then(
                         (container) => container == null
                             ? null
-                            : _i61.mapContainerToJson(container),
+                            : _i61.Protocol().mapContainerToJson(container),
                       ),
         ),
       },
@@ -5716,7 +5733,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['value'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'echoContainer': _i1.MethodConnector(
           name: 'echoContainer',
@@ -5813,7 +5832,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         params['value'],
                         params['multiplier'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'echoContainer': _i1.MethodConnector(
           name: 'echoContainer',
@@ -5883,7 +5904,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['value'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'echoContainer': _i1.MethodConnector(
           name: 'echoContainer',
@@ -6007,7 +6030,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['value'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'echoContainer': _i1.MethodConnector(
           name: 'echoContainer',
@@ -6226,7 +6251,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['parent'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'polymorphicContainerRoundtrip': _i1.MethodConnector(
           name: 'polymorphicContainerRoundtrip',
@@ -6319,7 +6346,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnNullableRecordOfInt': _i1.MethodConnector(
           name: 'returnNullableRecordOfInt',
@@ -6341,7 +6370,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnRecordOfNullableInt': _i1.MethodConnector(
           name: 'returnRecordOfNullableInt',
@@ -6363,7 +6394,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnNullableRecordOfNullableInt': _i1.MethodConnector(
           name: 'returnNullableRecordOfNullableInt',
@@ -6385,7 +6418,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnIntStringRecord': _i1.MethodConnector(
           name: 'returnIntStringRecord',
@@ -6407,7 +6442,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnNullableIntStringRecord': _i1.MethodConnector(
           name: 'returnNullableIntStringRecord',
@@ -6429,7 +6466,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnIntSimpleDataRecord': _i1.MethodConnector(
           name: 'returnIntSimpleDataRecord',
@@ -6451,7 +6490,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnNullableIntSimpleDataRecord': _i1.MethodConnector(
           name: 'returnNullableIntSimpleDataRecord',
@@ -6473,7 +6514,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnStringKeyedMapRecord': _i1.MethodConnector(
           name: 'returnStringKeyedMapRecord',
@@ -6495,7 +6538,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnNonStringKeyedMapRecord': _i1.MethodConnector(
           name: 'returnNonStringKeyedMapRecord',
@@ -6517,7 +6562,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnSetWithNestedRecordRecord': _i1.MethodConnector(
           name: 'returnSetWithNestedRecordRecord',
@@ -6539,7 +6586,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnNamedIntStringRecord': _i1.MethodConnector(
           name: 'returnNamedIntStringRecord',
@@ -6561,7 +6610,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnNamedNullableIntStringRecord': _i1.MethodConnector(
           name: 'returnNamedNullableIntStringRecord',
@@ -6583,7 +6634,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnRecordOfNamedIntAndObject': _i1.MethodConnector(
           name: 'returnRecordOfNamedIntAndObject',
@@ -6605,7 +6658,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnNullableRecordOfNamedIntAndObject': _i1.MethodConnector(
           name: 'returnNullableRecordOfNamedIntAndObject',
@@ -6627,7 +6682,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnRecordOfNamedNullableIntAndNullableObject': _i1.MethodConnector(
           name: 'returnRecordOfNamedNullableIntAndNullableObject',
@@ -6649,7 +6706,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnNamedNonStringKeyedMapRecord': _i1.MethodConnector(
           name: 'returnNamedNonStringKeyedMapRecord',
@@ -6671,7 +6730,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnNamedSetWithNestedRecordRecord': _i1.MethodConnector(
           name: 'returnNamedSetWithNestedRecordRecord',
@@ -6693,7 +6754,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord':
             _i1.MethodConnector(
@@ -6718,7 +6781,9 @@ class Endpoints extends _i1.EndpointDispatch {
                             session,
                             params['map'],
                           )
-                          .then((record) => _i61.mapRecordToJson(record)),
+                          .then(
+                            (record) => _i61.Protocol().mapRecordToJson(record),
+                          ),
             ),
         'returnRecordTypedef': _i1.MethodConnector(
           name: 'returnRecordTypedef',
@@ -6740,7 +6805,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnNullableRecordTypedef': _i1.MethodConnector(
           name: 'returnNullableRecordTypedef',
@@ -6762,7 +6829,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnListOfIntSimpleDataRecord': _i1.MethodConnector(
           name: 'returnListOfIntSimpleDataRecord',
@@ -6784,7 +6853,10 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['recordList'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then(
+                        (container) =>
+                            _i61.Protocol().mapContainerToJson(container),
+                      ),
         ),
         'returnListOfNullableIntSimpleDataRecord': _i1.MethodConnector(
           name: 'returnListOfNullableIntSimpleDataRecord',
@@ -6806,7 +6878,10 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then(
+                        (container) =>
+                            _i61.Protocol().mapContainerToJson(container),
+                      ),
         ),
         'returnSetOfIntSimpleDataRecord': _i1.MethodConnector(
           name: 'returnSetOfIntSimpleDataRecord',
@@ -6828,7 +6903,10 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['recordSet'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then(
+                        (container) =>
+                            _i61.Protocol().mapContainerToJson(container),
+                      ),
         ),
         'returnSetOfNullableIntSimpleDataRecord': _i1.MethodConnector(
           name: 'returnSetOfNullableIntSimpleDataRecord',
@@ -6850,7 +6928,10 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['set'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then(
+                        (container) =>
+                            _i61.Protocol().mapContainerToJson(container),
+                      ),
         ),
         'returnNullableSetOfIntSimpleDataRecord': _i1.MethodConnector(
           name: 'returnNullableSetOfIntSimpleDataRecord',
@@ -6875,7 +6956,7 @@ class Endpoints extends _i1.EndpointDispatch {
                       .then(
                         (container) => container == null
                             ? null
-                            : _i61.mapContainerToJson(container),
+                            : _i61.Protocol().mapContainerToJson(container),
                       ),
         ),
         'returnStringMapOfIntSimpleDataRecord': _i1.MethodConnector(
@@ -6898,7 +6979,10 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['map'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then(
+                        (container) =>
+                            _i61.Protocol().mapContainerToJson(container),
+                      ),
         ),
         'returnStringMapOfNullableIntSimpleDataRecord': _i1.MethodConnector(
           name: 'returnStringMapOfNullableIntSimpleDataRecord',
@@ -6920,7 +7004,10 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['map'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then(
+                        (container) =>
+                            _i61.Protocol().mapContainerToJson(container),
+                      ),
         ),
         'returnRecordMapOfIntSimpleDataRecord': _i1.MethodConnector(
           name: 'returnRecordMapOfIntSimpleDataRecord',
@@ -6942,7 +7029,10 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['map'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then(
+                        (container) =>
+                            _i61.Protocol().mapContainerToJson(container),
+                      ),
         ),
         'returnStringMapOfListOfRecord': _i1.MethodConnector(
           name: 'returnStringMapOfListOfRecord',
@@ -6964,7 +7054,10 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['input'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then(
+                        (container) =>
+                            _i61.Protocol().mapContainerToJson(container),
+                      ),
         ),
         'returnNestedNamedRecord': _i1.MethodConnector(
           name: 'returnNestedNamedRecord',
@@ -6986,7 +7079,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnNestedNullableNamedRecord': _i1.MethodConnector(
           name: 'returnNestedNullableNamedRecord',
@@ -7009,7 +7104,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnNestedPositionalAndNamedRecord': _i1.MethodConnector(
           name: 'returnNestedPositionalAndNamedRecord',
@@ -7034,7 +7131,9 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['record'],
                       )
-                      .then((record) => _i61.mapRecordToJson(record)),
+                      .then(
+                        (record) => _i61.Protocol().mapRecordToJson(record),
+                      ),
         ),
         'returnListOfNestedPositionalAndNamedRecord': _i1.MethodConnector(
           name: 'returnListOfNestedPositionalAndNamedRecord',
@@ -7064,7 +7163,10 @@ class Endpoints extends _i1.EndpointDispatch {
                         session,
                         params['recordList'],
                       )
-                      .then((container) => _i61.mapContainerToJson(container)),
+                      .then(
+                        (container) =>
+                            _i61.Protocol().mapContainerToJson(container),
+                      ),
         ),
         'echoModelClassWithRecordField': _i1.MethodConnector(
           name: 'echoModelClassWithRecordField',
@@ -8516,7 +8618,7 @@ class Endpoints extends _i1.EndpointDispatch {
                     session,
                     params['record'],
                   )
-                  .then((record) => _i61.mapRecordToJson(record)),
+                  .then((record) => _i61.Protocol().mapRecordToJson(record)),
         ),
         'echoRecords': _i1.MethodConnector(
           name: 'echoRecords',
@@ -8536,7 +8638,10 @@ class Endpoints extends _i1.EndpointDispatch {
                     session,
                     params['records'],
                   )
-                  .then((container) => _i61.mapContainerToJson(container)),
+                  .then(
+                    (container) =>
+                        _i61.Protocol().mapContainerToJson(container),
+                  ),
         ),
         'returnRecordWithSerializableObject': _i1.MethodConnector(
           name: 'returnRecordWithSerializableObject',
@@ -8562,7 +8667,7 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['number'],
                     params['data'],
                   )
-                  .then((record) => _i61.mapRecordToJson(record)),
+                  .then((record) => _i61.Protocol().mapRecordToJson(record)),
         ),
         'logMessageWithSession': _i1.MethodConnector(
           name: 'logMessageWithSession',

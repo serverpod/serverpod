@@ -234,7 +234,7 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       if (aList != null) 'aList': aList?.toJson(),
       if (aMap != null) 'aMap': aMap?.toJson(),
       if (aSet != null) 'aSet': aSet?.toJson(),
-      if (aRecord != null) 'aRecord': _i5.mapRecordToJson(aRecord),
+      if (aRecord != null) 'aRecord': _i5.Protocol().mapRecordToJson(aRecord),
     };
   }
 
@@ -263,7 +263,7 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       if (aList != null) 'aList': aList?.toJson(),
       if (aMap != null) 'aMap': aMap?.toJson(),
       if (aSet != null) 'aSet': aSet?.toJson(),
-      if (aRecord != null) 'aRecord': _i5.mapRecordToJson(aRecord),
+      if (aRecord != null) 'aRecord': _i5.Protocol().mapRecordToJson(aRecord),
     };
   }
 
@@ -539,7 +539,7 @@ class TypesUpdateTable extends _i1.UpdateTable<TypesTable> {
     (String, {Uri? optionalUri})? value,
   ) => _i1.ColumnValue(
     table.aRecord,
-    _i5.mapRecordToJson(value),
+    _i5.Protocol().mapRecordToJson(value),
   );
 }
 

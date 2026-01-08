@@ -224,9 +224,10 @@ abstract class TypesSet
         'aList': aList?.toJson(
           valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
         ),
-      if (aRecord != null) 'aRecord': _i6.mapContainerToJson(aRecord!),
+      if (aRecord != null)
+        'aRecord': _i6.Protocol().mapContainerToJson(aRecord!),
       if (aNullableRecord != null)
-        'aNullableRecord': _i6.mapContainerToJson(aNullableRecord!),
+        'aNullableRecord': _i6.Protocol().mapContainerToJson(aNullableRecord!),
     };
   }
 
@@ -265,9 +266,10 @@ abstract class TypesSet
           valueToJson: (v) =>
               v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
         ),
-      if (aRecord != null) 'aRecord': _i6.mapContainerToJson(aRecord!),
+      if (aRecord != null)
+        'aRecord': _i6.Protocol().mapContainerToJson(aRecord!),
       if (aNullableRecord != null)
-        'aNullableRecord': _i6.mapContainerToJson(aNullableRecord!),
+        'aNullableRecord': _i6.Protocol().mapContainerToJson(aNullableRecord!),
     };
   }
 
