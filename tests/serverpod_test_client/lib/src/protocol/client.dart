@@ -1390,22 +1390,22 @@ class EndpointFieldScopes extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointFutureCalls extends _i1.EndpointRef {
-  EndpointFutureCalls(_i1.EndpointCaller caller) : super(caller);
+class EndpointTestFutureCalls extends _i1.EndpointRef {
+  EndpointTestFutureCalls(_i1.EndpointCaller caller) : super(caller);
 
   @override
-  String get name => 'futureCalls';
+  String get name => 'testFutureCalls';
 
   _i2.Future<void> makeFutureCall(_i9.SimpleData? data) =>
       caller.callServerEndpoint<void>(
-        'futureCalls',
+        'testFutureCalls',
         'makeFutureCall',
         {'data': data},
       );
 
   _i2.Future<void> makeFutureCallThatThrows(_i9.SimpleData? data) =>
       caller.callServerEndpoint<void>(
-        'futureCalls',
+        'testFutureCalls',
         'makeFutureCallThatThrows',
         {'data': data},
       );
@@ -4445,7 +4445,7 @@ class Client extends _i1.ServerpodClientShared {
     exceptionTest = EndpointExceptionTest(this);
     failedCalls = EndpointFailedCalls(this);
     fieldScopes = EndpointFieldScopes(this);
-    futureCalls = EndpointFutureCalls(this);
+    testFutureCalls = EndpointTestFutureCalls(this);
     listParameters = EndpointListParameters(this);
     logging = EndpointLogging(this);
     streamLogging = EndpointStreamLogging(this);
@@ -4549,7 +4549,7 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointFieldScopes fieldScopes;
 
-  late final EndpointFutureCalls futureCalls;
+  late final EndpointTestFutureCalls testFutureCalls;
 
   late final EndpointListParameters listParameters;
 
@@ -4663,7 +4663,7 @@ class Client extends _i1.ServerpodClientShared {
     'exceptionTest': exceptionTest,
     'failedCalls': failedCalls,
     'fieldScopes': fieldScopes,
-    'futureCalls': futureCalls,
+    'testFutureCalls': testFutureCalls,
     'listParameters': listParameters,
     'logging': logging,
     'streamLogging': streamLogging,

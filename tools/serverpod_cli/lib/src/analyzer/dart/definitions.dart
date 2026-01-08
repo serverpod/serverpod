@@ -1,4 +1,127 @@
+import 'package:path/path.dart' as p;
+import 'package:recase/recase.dart';
 import '../../generator/types.dart';
+import '../models/definitions.dart';
+
+/// Describes a single future call.
+class FutureCallDefinition {
+  /// Create a new [FutureCallDefinition].
+  const FutureCallDefinition({
+    required this.name,
+    required this.documentationComment,
+    required this.methods,
+    required this.className,
+    required this.filePath,
+    required this.annotations,
+    required this.isAbstract,
+  });
+
+  /// The name of the future call.
+  final String name;
+
+  /// The documentation of the future call.
+  final String? documentationComment;
+
+  /// The actual class name of the future call.
+  final String className;
+
+  /// The file path, the future call is stored in.
+  final String filePath;
+
+  /// The methods this future call defines.
+  final List<FutureCallMethodDefinition> methods;
+
+  /// The annotations of this future call.
+  final List<AnnotationDefinition> annotations;
+
+  /// Whether this future call is abstract.
+  final bool isAbstract;
+
+  /// The name of the external package where this future call is defined. Will
+  /// return null if the future call comes from the project under generation.
+  String? get packageName => filePath.startsWith('package:')
+      ? filePath.split('/').first.split(':').last
+      : null;
+}
+
+/// Describes a single callable method in a [FutureCallDefinition].
+final class FutureCallMethodDefinition extends MethodDefinition {
+  /// The optional parameter that will be generated from other
+  /// valid Dart types to implement [SerializableModel] interface.
+  final FutureCallParameterDefinition? futureCallMethodParameter;
+
+  /// Creates a new [FutureCallMethodDefinition].
+  const FutureCallMethodDefinition({
+    required super.name,
+    required super.documentationComment,
+    required super.annotations,
+    required super.parameters,
+    required super.parametersPositional,
+    required super.parametersNamed,
+    required super.returnType,
+    required this.futureCallMethodParameter,
+  });
+}
+
+/// Describes parameters of a [FutureCallMethodDefinition]
+/// which should be used to generate [SerializableModel] interfaces.
+class FutureCallParameterDefinition {
+  /// The variable name of the parameter.
+  final String name;
+
+  /// The type of the parameter.
+  final TypeDefinition type;
+
+  /// The required positional parameters of this method.
+  final List<ParameterDefinition> parameters;
+
+  /// The optional positional parameters of this method.
+  final List<ParameterDefinition> parametersPositional;
+
+  /// The named parameters of this method.
+  final List<ParameterDefinition> parametersNamed;
+
+  List<ParameterDefinition> get allParameters => [
+    ...parameters,
+    ...parametersPositional,
+    ...parametersNamed,
+  ];
+
+  /// Create a new [FutureCallParameterDefinition].
+  const FutureCallParameterDefinition({
+    required this.name,
+    required this.type,
+    required this.parameters,
+    required this.parametersPositional,
+    required this.parametersNamed,
+  });
+
+  SerializableModelDefinition toSerializableModel() {
+    return ModelClassDefinition(
+      fileName: p.join(
+        'future_calls_generated_models',
+        type.className.snakeCase,
+      ),
+      sourceFileName: '',
+      className: type.className,
+      fields: [
+        for (final parameter in allParameters)
+          SerializableModelFieldDefinition(
+            name: parameter.name,
+            isRequired: true,
+            type: parameter.type,
+            scope: ModelFieldScopeDefinition.serverOnly,
+            shouldPersist: false,
+          ),
+      ],
+      serverOnly: true,
+      manageMigration: false,
+      type: type,
+      isSealed: false,
+      isImmutable: false,
+    );
+  }
+}
 
 /// Describes a single endpoint.
 ///
@@ -129,6 +252,9 @@ class ParameterDefinition {
   /// Whether this parameter is required.
   final bool required;
 
+  /// The default value of this parameter, if any.
+  final String? defaultValue;
+
   /// The annotations of this parameter.
   final List<AnnotationDefinition> annotations;
 
@@ -138,6 +264,7 @@ class ParameterDefinition {
     required this.type,
     required this.required,
     required this.annotations,
+    this.defaultValue,
   });
 }
 

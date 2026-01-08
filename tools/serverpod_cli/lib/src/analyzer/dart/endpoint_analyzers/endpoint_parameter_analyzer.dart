@@ -5,8 +5,7 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/annotation.dart';
-import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/extension/endpoint_parameters_extension.dart';
-
+import 'package:serverpod_cli/src/analyzer/dart/parameters.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
 abstract class EndpointParameterAnalyzer {
@@ -25,7 +24,7 @@ abstract class EndpointParameterAnalyzer {
         name: parameter.name!,
         required: _isRequired(parameter),
         type: TypeDefinition.fromDartType(parameter.type),
-        annotations: AnnotationAnalyzer.parseAnnotations(parameter),
+        annotations: parameter.endpointAnnotations,
       );
 
       if (parameter.isRequiredPositional) {
@@ -138,16 +137,4 @@ abstract class EndpointParameterAnalyzer {
 
     return false;
   }
-}
-
-class Parameters {
-  final List<ParameterDefinition> required;
-  final List<ParameterDefinition> positional;
-  final List<ParameterDefinition> named;
-
-  Parameters({
-    required this.required,
-    required this.positional,
-    required this.named,
-  });
 }
