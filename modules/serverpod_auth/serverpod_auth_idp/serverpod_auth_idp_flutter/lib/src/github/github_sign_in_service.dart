@@ -55,6 +55,7 @@ class GitHubSignInService {
   GitHubSignInService._internal();
 
   bool _initialized = false;
+  String? _state;
   String? _clientId;
   String? _redirectUri;
   String? _callbackUrlScheme;
