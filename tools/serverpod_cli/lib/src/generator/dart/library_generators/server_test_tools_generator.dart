@@ -194,18 +194,16 @@ class ServerTestToolsGenerator {
     EndpointDefinition endpoint,
     MethodDefinition method,
   ) {
-    var mapRecordToJsonRef = refer(
-      mapRecordToJsonFuncName,
-      'package:${config.serverPackage}/src/generated/protocol.dart',
-    );
-    var mapRecordContainingContainerToJsonRef = refer(
-      mapContainerToJsonFunctionName,
+    var protocolRef = refer(
+      'Protocol',
       'package:${config.serverPackage}/src/generated/protocol.dart',
     );
 
     Spec handleParameter(ParameterDefinition parameterDef) {
       if (parameterDef.type.isRecordType) {
-        return mapRecordToJsonRef.call([refer(parameterDef.name)]).code;
+        return protocolRef.call([]).property(mapRecordToJsonFuncName).call([
+          refer(parameterDef.name),
+        ]).code;
       }
 
       if (parameterDef.type.returnsRecordInContainer ||
@@ -213,7 +211,7 @@ class ServerTestToolsGenerator {
         return Block.of([
           if (parameterDef.type.nullable)
             Code('${parameterDef.name} == null ? null :'),
-          mapRecordContainingContainerToJsonRef.call([
+          protocolRef.call([]).property(mapContainerToJsonFunctionName).call([
             refer(parameterDef.name),
           ]).code,
         ]);
@@ -642,12 +640,8 @@ extension on ParameterDefinition {
   /// Records and record-containing containers need to be mapped to their JSON (Map) representation,
   /// whereas models and primitives can be returned verbatim.
   Code methodArgumentSerializationCode({required GeneratorConfig config}) {
-    var mapRecordToJsonRef = refer(
-      mapRecordToJsonFuncName,
-      'package:${config.serverPackage}/src/generated/protocol.dart',
-    );
-    var mapRecordContainingContainerToJsonRef = refer(
-      mapContainerToJsonFunctionName,
+    var protocolRef = refer(
+      'Protocol',
       'package:${config.serverPackage}/src/generated/protocol.dart',
     );
 
@@ -657,7 +651,9 @@ extension on ParameterDefinition {
           'SerializationManager',
           serverpodUrl(true),
         ).property('encode').call([
-          mapRecordToJsonRef.call([refer(name)]),
+          protocolRef.call([]).property(mapRecordToJsonFuncName).call([
+            refer(name),
+          ]),
         ]),
       ]).code;
     } else if (type.returnsRecordInContainer) {
@@ -668,7 +664,9 @@ extension on ParameterDefinition {
             'SerializationManager',
             serverpodUrl(true),
           ).property('encode').call([
-            mapRecordContainingContainerToJsonRef.call([refer(name)]),
+            protocolRef.call([]).property(mapContainerToJsonFunctionName).call([
+              refer(name),
+            ]),
           ]),
         ]).code,
       ]);
