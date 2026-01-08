@@ -815,38 +815,25 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         ),
         _i2.IndexDefinition(
-          indexName: 'serverpod_auth_idp_rate_limited_request_attempt_domain',
+          indexName:
+              'serverpod_auth_idp_rate_limited_request_attempt_composite',
           tableSpace: null,
           elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'domain',
             ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'serverpod_auth_idp_rate_limited_request_attempt_source',
-          tableSpace: null,
-          elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'source',
             ),
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'serverpod_auth_idp_rate_limited_request_attempt_nonce',
-          tableSpace: null,
-          elements: [
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'nonce',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'attemptedAt',
             ),
           ],
           type: 'btree',

@@ -8,7 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
 // ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -34,7 +33,9 @@ abstract class AddressUuid
 
   factory AddressUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return AddressUuid(
-      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       street: jsonSerialization['street'] as String,
       inhabitantId: jsonSerialization['inhabitantId'] as int?,
       inhabitant: jsonSerialization['inhabitant'] == null

@@ -799,6 +799,59 @@ class EndpointDeprecation extends _i1.EndpointRef {
     'getGlobalDouble',
     {},
   );
+
+  /// A method with a deprecated parameter using "@deprecated" annotation.
+  _i2.Future<String> methodWithDeprecatedParam(
+    @deprecated String deprecatedParam,
+  ) => caller.callServerEndpoint<String>(
+    'deprecation',
+    'methodWithDeprecatedParam',
+    {'deprecatedParam': deprecatedParam},
+  );
+
+  /// A method with a deprecated parameter using "@Deprecated(..)" annotation.
+  _i2.Future<String> methodWithDeprecatedParamMessage(
+    @Deprecated('This parameter is deprecated') String deprecatedParam,
+  ) => caller.callServerEndpoint<String>(
+    'deprecation',
+    'methodWithDeprecatedParamMessage',
+    {'deprecatedParam': deprecatedParam},
+  );
+
+  /// A method with both deprecated and non-deprecated parameters.
+  _i2.Future<String> methodWithMixedParams(
+    String normalParam,
+    @deprecated String deprecatedParam,
+  ) => caller.callServerEndpoint<String>(
+    'deprecation',
+    'methodWithMixedParams',
+    {
+      'normalParam': normalParam,
+      'deprecatedParam': deprecatedParam,
+    },
+  );
+
+  /// A method with deprecated optional positional parameter.
+  _i2.Future<String> methodWithOptionalDeprecatedParam([
+    @deprecated String? deprecatedParam,
+  ]) => caller.callServerEndpoint<String>(
+    'deprecation',
+    'methodWithOptionalDeprecatedParam',
+    {'deprecatedParam': deprecatedParam},
+  );
+
+  /// A method with deprecated named parameter.
+  _i2.Future<String> methodWithNamedDeprecatedParam({
+    required String normalParam,
+    @deprecated String? deprecatedParam,
+  }) => caller.callServerEndpoint<String>(
+    'deprecation',
+    'methodWithNamedDeprecatedParam',
+    {
+      'normalParam': normalParam,
+      'deprecatedParam': deprecatedParam,
+    },
+  );
 }
 
 /// {@category Endpoint}
@@ -1337,22 +1390,22 @@ class EndpointFieldScopes extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointFutureCalls extends _i1.EndpointRef {
-  EndpointFutureCalls(_i1.EndpointCaller caller) : super(caller);
+class EndpointTestFutureCalls extends _i1.EndpointRef {
+  EndpointTestFutureCalls(_i1.EndpointCaller caller) : super(caller);
 
   @override
-  String get name => 'futureCalls';
+  String get name => 'testFutureCalls';
 
   _i2.Future<void> makeFutureCall(_i9.SimpleData? data) =>
       caller.callServerEndpoint<void>(
-        'futureCalls',
+        'testFutureCalls',
         'makeFutureCall',
         {'data': data},
       );
 
   _i2.Future<void> makeFutureCallThatThrows(_i9.SimpleData? data) =>
       caller.callServerEndpoint<void>(
-        'futureCalls',
+        'testFutureCalls',
         'makeFutureCallThatThrows',
         {'data': data},
       );
@@ -4392,7 +4445,7 @@ class Client extends _i1.ServerpodClientShared {
     exceptionTest = EndpointExceptionTest(this);
     failedCalls = EndpointFailedCalls(this);
     fieldScopes = EndpointFieldScopes(this);
-    futureCalls = EndpointFutureCalls(this);
+    testFutureCalls = EndpointTestFutureCalls(this);
     listParameters = EndpointListParameters(this);
     logging = EndpointLogging(this);
     streamLogging = EndpointStreamLogging(this);
@@ -4496,7 +4549,7 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointFieldScopes fieldScopes;
 
-  late final EndpointFutureCalls futureCalls;
+  late final EndpointTestFutureCalls testFutureCalls;
 
   late final EndpointListParameters listParameters;
 
@@ -4610,7 +4663,7 @@ class Client extends _i1.ServerpodClientShared {
     'exceptionTest': exceptionTest,
     'failedCalls': failedCalls,
     'fieldScopes': fieldScopes,
-    'futureCalls': futureCalls,
+    'testFutureCalls': testFutureCalls,
     'listParameters': listParameters,
     'logging': logging,
     'streamLogging': streamLogging,

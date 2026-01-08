@@ -39,15 +39,24 @@ abstract class UriDefaultMix
   factory UriDefaultMix.fromJson(Map<String, dynamic> jsonSerialization) {
     return UriDefaultMix(
       id: jsonSerialization['id'] as int?,
-      uriDefaultAndDefaultModel: _i1.UriJsonExtension.fromJson(
-        jsonSerialization['uriDefaultAndDefaultModel'],
-      ),
-      uriDefaultAndDefaultPersist: _i1.UriJsonExtension.fromJson(
-        jsonSerialization['uriDefaultAndDefaultPersist'],
-      ),
-      uriDefaultModelAndDefaultPersist: _i1.UriJsonExtension.fromJson(
-        jsonSerialization['uriDefaultModelAndDefaultPersist'],
-      ),
+      uriDefaultAndDefaultModel:
+          jsonSerialization['uriDefaultAndDefaultModel'] == null
+          ? null
+          : _i1.UriJsonExtension.fromJson(
+              jsonSerialization['uriDefaultAndDefaultModel'],
+            ),
+      uriDefaultAndDefaultPersist:
+          jsonSerialization['uriDefaultAndDefaultPersist'] == null
+          ? null
+          : _i1.UriJsonExtension.fromJson(
+              jsonSerialization['uriDefaultAndDefaultPersist'],
+            ),
+      uriDefaultModelAndDefaultPersist:
+          jsonSerialization['uriDefaultModelAndDefaultPersist'] == null
+          ? null
+          : _i1.UriJsonExtension.fromJson(
+              jsonSerialization['uriDefaultModelAndDefaultPersist'],
+            ),
     );
   }
 

@@ -165,6 +165,12 @@ class TypeDefinition {
 
   bool get isColumnSerializable => columnType == 'ColumnSerializable';
 
+  bool get isSerializableDartType => ![
+    ValueType.record,
+    ValueType.isEnum,
+    ValueType.classType,
+  ].contains(valueType);
+
   String? get moduleAlias {
     if (url == defaultModuleAlias) return url;
     if (url == 'serverpod') return url;
@@ -384,6 +390,8 @@ class TypeDefinition {
                   'package:${module.serverPackage}',
                   'package:${module.dartClientPackage}',
                 );
+        } else if (className == 'SerializableModel') {
+          t.url = serverpodUrl(serverCode);
         } else {
           t.url = url;
         }

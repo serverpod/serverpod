@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -39,6 +40,15 @@ class GenerateFiles {
       }
     });
 
+    var parameterValidator = FutureCallMethodParameterValidator(
+      modelAnalyzer: modelAnalyzer,
+    );
+
+    var futureCallsAnalyzer = FutureCallsAnalyzer(
+      directory: libDirectory,
+      parameterValidator: parameterValidator,
+    );
+
     if (hasErrors) {
       log.error(
         'There were errors parsing the models. Please fix them and try again.',
@@ -50,6 +60,7 @@ class GenerateFiles {
       config: config,
       endpointsAnalyzer: endpointsAnalyzer,
       modelAnalyzer: modelAnalyzer,
+      futureCallsAnalyzer: futureCallsAnalyzer,
     );
   }
 }

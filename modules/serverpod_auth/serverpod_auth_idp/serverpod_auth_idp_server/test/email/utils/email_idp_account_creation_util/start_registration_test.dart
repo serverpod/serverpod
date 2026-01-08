@@ -1,4 +1,3 @@
-import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
@@ -245,12 +244,13 @@ void main() {
   );
 
   withServerpod(
-    'Given pending account request within verification code lifetime',
+    'Given pending account request',
     rollbackDatabase: RollbackDatabase.disabled,
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
+      late UuidValue accountRequestId;
       const email = 'test@serverpod.dev';
 
       setUp(() async {
@@ -259,7 +259,7 @@ void main() {
         fixture = EmailIdpTestFixture();
 
         // Create initial account request
-        await session.db.transaction(
+        accountRequestId = await session.db.transaction(
           (final transaction) => fixture.accountCreationUtil.startRegistration(
             session,
             email: email,
@@ -272,10 +272,10 @@ void main() {
         await fixture.tearDown(session);
       });
 
-      test(
-        'when starting account creation with same email then it throws email account request already exists exception',
-        () async {
-          final startAccountCreationFuture = session.db.transaction(
+      group('when starting another account creation with same email', () {
+        late UuidValue newAccountRequestId;
+        setUp(() async {
+          newAccountRequestId = await session.db.transaction(
             (final transaction) =>
                 fixture.accountCreationUtil.startRegistration(
                   session,
@@ -283,77 +283,32 @@ void main() {
                   transaction: transaction,
                 ),
           );
+        });
 
-          await expectLater(
-            startAccountCreationFuture,
-            throwsA(isA<EmailAccountRequestAlreadyExistsException>()),
+        test('then it returns a new request id', () async {
+          expect(accountRequestId, isNot(equals(newAccountRequestId)));
+        });
+
+        test('then it deletes the existing request', () async {
+          final oldRequest = await EmailAccountRequest.db.findById(
+            session,
+            accountRequestId,
           );
-        },
-      );
-    },
-  );
+          expect(oldRequest, isNull);
+        });
 
-  withServerpod(
-    'Given expired pending account request',
-    rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
-    (final sessionBuilder, final endpoints) {
-      late Session session;
-      late EmailIdpTestFixture fixture;
-      const email = 'test@serverpod.dev';
-      const registrationVerificationCodeLifetime = Duration(hours: 1);
-
-      setUp(() async {
-        session = sessionBuilder.build();
-
-        fixture = EmailIdpTestFixture(
-          config: const EmailIdpConfig(
-            secretHashPepper: 'pepper',
-            registrationVerificationCodeLifetime:
-                registrationVerificationCodeLifetime,
-          ),
-        );
-
-        // Create initial account request in the past
-        await withClock(
-          Clock.fixed(
-            DateTime.now().subtract(
-              registrationVerificationCodeLifetime + const Duration(minutes: 1),
-            ),
-          ),
-          () => session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.startRegistration(
-                  session,
-                  email: email,
-                  transaction: transaction,
-                ),
-          ),
-        );
+        test('then the new request exists on the database', () async {
+          final newRequest = await EmailAccountRequest.db.findById(
+            session,
+            newAccountRequestId,
+          );
+          expect(newRequest, isNotNull);
+          expect(newRequest!.id, equals(newAccountRequestId));
+          expect(newRequest.email, equals(email));
+          expect(newRequest.challengeId, isNotNull);
+          expect(newRequest.createdAt, isNotNull);
+        });
       });
-
-      tearDown(() async {
-        await fixture.tearDown(session);
-      });
-
-      test(
-        'when starting account creation with same email then a new account request is created',
-        () async {
-          final startAccountCreationFuture = session.db.transaction(
-            (final transaction) =>
-                fixture.accountCreationUtil.startRegistration(
-                  session,
-                  email: email,
-                  transaction: transaction,
-                ),
-          );
-
-          await expectLater(
-            startAccountCreationFuture,
-            completion(isA<UuidValue>()),
-          );
-        },
-      );
     },
   );
 }
