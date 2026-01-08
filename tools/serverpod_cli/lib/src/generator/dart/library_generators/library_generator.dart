@@ -544,11 +544,10 @@ class LibraryGenerator {
 
     library.body.add(protocol.build());
 
+    library.body.add(_mapRecordToJsonMethod(recordTypesToDeserialize));
     if (recordTypesToDeserialize.isNotEmpty ||
         allTypesToDeserialize.any((type) => type.containsNonStringKeyedMap)) {
-      library.body.addAll(
-        _containerDeserializationMethods(recordTypesToDeserialize),
-      );
+      library.body.add(_mapContainerToJsonMethod());
     }
 
     return library.build();
@@ -1529,37 +1528,37 @@ class LibraryGenerator {
     }
   }
 
-  Iterable<Method> _containerDeserializationMethods(
-    List<TypeDefinition> recordTypesToDeserialize,
-  ) {
-    return [
-      Method(
-        (m) => m
-          ..docs.add('''
+  Method _mapRecordToJsonMethod(List<TypeDefinition> recordTypesToDeserialize) {
+    return Method(
+      (m) => m
+        ..docs.add('''
             /// Maps any `Record`s known to this [Protocol] to their JSON representation
             ///
             /// Throws in case the record type is not known.
             ///
             /// This method will return `null` (only) for `null` inputs.''')
-          ..name = mapRecordToJsonFuncName
-          ..returns = refer('Map<String, dynamic>?')
-          ..requiredParameters.add(
-            Parameter(
-              (p) => p
-                ..name = 'record'
-                ..type = refer('Record?'),
-            ),
-          )
-          ..body = _buildRecordEncode(
-            recordTypesToDeserialize,
-            'record',
-            serverCode: serverCode,
-            config: config,
+        ..name = mapRecordToJsonFuncName
+        ..returns = refer('Map<String, dynamic>?')
+        ..requiredParameters.add(
+          Parameter(
+            (p) => p
+              ..name = 'record'
+              ..type = refer('Record?'),
           ),
-      ),
-      Method(
-        (m) => m
-          ..docs.add('''
+        )
+        ..body = _buildRecordEncode(
+          recordTypesToDeserialize,
+          'record',
+          serverCode: serverCode,
+          config: config,
+        ),
+    );
+  }
+
+  Method _mapContainerToJsonMethod() {
+    return Method(
+      (m) => m
+        ..docs.add('''
           /// Maps container types (like [List], [Map], [Set]) containing
           /// [Record]s or non-String-keyed [Map]s to their JSON representation.
           ///
@@ -1571,16 +1570,16 @@ class LibraryGenerator {
           /// Returns either a `List<dynamic>` (for List, Sets, and Maps with
           /// non-String keys) or a `Map<String, dynamic>` in case the input was
           /// a `Map<String, …>`.''')
-          ..name = mapContainerToJsonFunctionName
-          ..returns = refer('Object?')
-          ..requiredParameters.add(
-            Parameter(
-              (p) => p
-                ..name = 'obj'
-                ..type = refer('Object'),
-            ),
-          )
-          ..body = const Code('''
+        ..name = mapContainerToJsonFunctionName
+        ..returns = refer('Object?')
+        ..requiredParameters.add(
+          Parameter(
+            (p) => p
+              ..name = 'obj'
+              ..type = refer('Object'),
+          ),
+        )
+        ..body = const Code('''
           if (obj is! Iterable && obj is! Map) {
             throw ArgumentError.value(
               obj, 'obj',
@@ -1620,8 +1619,7 @@ class LibraryGenerator {
           }
 
           return obj;'''),
-      ),
-    ];
+    );
   }
 }
 
