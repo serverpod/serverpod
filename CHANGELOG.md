@@ -1,3 +1,32 @@
+## 3.2.0
+
+Serverpod 3.2 brings a completely reworked experience for future calls, enhanced platform support on `serverpod run`, the new Firebase identity provider and several minor improvements.
+
+### Core
+
+- feat: Adds new `FutureCall` experience with scheduling from generated type-safe classes ([@Crazelu](https://github.com/Crazelu)).
+- feat: Propagates deprecated annotations from endpoint parameters to generated client code.
+- feat: Adds a convenience `getServerUrl` function to the `serverpod_flutter` package.
+- fix: Fixes default values not being applied on models when the JSON key is missing.
+- fix: Fixes module-declared records not being encoded or decoded from the project.
+- chore: Marks legacy future call interaction methods of the `Serverpod` class as deprecated in favor of the new type-safe API.
+
+### Authentication
+
+- feat: Adds the `Firebase` identity provider to the authentication module.
+- feat: Improves performance of rate limit control tables for authentication IDP providers.
+- fix: Throws `PasswordNotFoundException` instead of null assertion in `JWT` and `ServerSideSessions` token managers.
+- fix: Fixes not being able to issue new verification codes for emails with pending registration.
+- fix: Fixes Google lightweight sign-in being invoked when user is already authenticated.
+- fix: Changes verification code default generation to use only numbers for a better UX.
+- fix: Changes `EmailSignInWidget` default start screen to favor user conversion.
+- docs: Clarifies the purpose of each `UserProfile` and `AuthUser` model variants.
+
+### Developer tooling
+
+- feat: Adds support for platform specific scripts in `serverpod run` command.
+- fix: Fixes wrong Dart SDK path on the CLI when invoked from compiled code (like when installed with `dart install`).
+
 ## 3.1.1
 
 - fix: Fixes unknown encodings crashing the CLI when creating a new project.
