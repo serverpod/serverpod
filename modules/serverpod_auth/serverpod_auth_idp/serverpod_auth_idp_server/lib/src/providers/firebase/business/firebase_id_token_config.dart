@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
-
 import '../../../common/id_token_verifier/id_token_verifier_config.dart';
 import '../../../common/id_token_verifier/id_token_verifier_exception.dart';
 
@@ -21,14 +19,14 @@ class FirebaseIdTokenConfig implements IdTokenVerifierConfig {
       'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com';
 
   @override
-  Iterable<dart_jsonwebtoken.JWTKey> parseKeys(final String responseBody) {
+  Iterable<JWTKey> parseKeys(final String responseBody) {
     final certsJson = jsonDecode(responseBody) as Map<String, dynamic>;
-    final keys = <dart_jsonwebtoken.JWTKey>[];
+    final keys = <JWTKey>[];
 
     for (final entry in certsJson.entries) {
       try {
         final pem = entry.value as String;
-        final key = dart_jsonwebtoken.RSAPublicKey.cert(pem);
+        final key = RSAPublicKey.cert(pem);
         keys.add(key);
       } catch (e) {
         continue;

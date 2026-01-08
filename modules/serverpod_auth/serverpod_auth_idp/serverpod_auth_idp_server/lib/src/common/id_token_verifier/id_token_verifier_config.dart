@@ -1,5 +1,8 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' as dart_jsonwebtoken;
 
+export 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart'
+    show JWTKey, RSAPublicKey;
+
 /// Abstract configuration for ID token verification.
 ///
 /// Implementations of this class define provider-specific behavior for
