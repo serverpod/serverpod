@@ -1,8 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:auth_client/auth_client.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
+import 'firebase_options.dart';
+import 'screens/firebase_sign_in_screen.dart';
 import 'widgets/profile_info.dart';
 
 /// Sets up a global client object that can be used to talk to the server from
@@ -16,7 +19,10 @@ late final Client client;
 
 late String serverUrl;
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   // When you are running the app on a physical device, you need to set the
   // server URL to the IP address of your computer. You can find the IP
   // address by running `ipconfig` on Windows or `ifconfig` on Mac/Linux.
@@ -98,19 +104,42 @@ class SignInScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SignInWidget(
-        client: client,
-        // NOTE: No need to call navigation here if it gets done on the
-        // client.auth.authInfo listener.
-        onAuthenticated: () => onAuthenticated(context),
-        onError: (error) => onError(context, error),
-        // NOTE: To customize widgets, pass the desired widget here.
-        // googleSignInWidget: GoogleSignInWidget(
-        //   client: client,
-        //   onAuthenticated: () => onAuthenticated(context),
-        //   onError: (error) => onError(context, error),
-        //   scopes: const [],
-        // ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SignInWidget(
+            client: client,
+            // NOTE: No need to call navigation here if it gets done on the
+            // client.auth.authInfo listener.
+            onAuthenticated: () => onAuthenticated(context),
+            onError: (error) => onError(context, error),
+            // NOTE: To customize widgets, pass the desired widget here.
+            // googleSignInWidget: GoogleSignInWidget(
+            //   client: client,
+            //   onAuthenticated: () => onAuthenticated(context),
+            //   onError: (error) => onError(context, error),
+            //   scopes: const [],
+            // ),
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => FirebaseSignInScreen(client: client),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.local_fire_department),
+                label: const Text('Sign in with Firebase'),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
