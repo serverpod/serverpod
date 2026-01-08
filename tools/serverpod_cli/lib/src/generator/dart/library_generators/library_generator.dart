@@ -1824,6 +1824,35 @@ Code _buildRecordEncode(
     ]);
   }
 
+  // Delegate to modules' mapRecordToJson before throwing
+  for (var module in config.modules) {
+    codes.add(
+      Code.scope(
+        (a) =>
+            '''
+try {
+  return ${a(refer(mapRecordToJsonFuncName, module.dartImportUrl(serverCode)))}(record);
+} catch (_) {}''',
+      ),
+    );
+  }
+
+  // Delegate to base serverpod protocol if not serverpod itself
+  // Skip if there are modules, as they will already delegate to serverpod
+  if (config.modules.isEmpty &&
+      config.name != 'serverpod' &&
+      (serverCode || config.dartClientDependsOnServiceClient)) {
+    codes.add(
+      Code.scope(
+        (a) =>
+            '''
+try {
+  return ${a(refer(mapRecordToJsonFuncName, serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}(record);
+} catch (_) {}''',
+      ),
+    );
+  }
+
   codes.add(
     const Code(
       "throw Exception('Unsupported record type \${record.runtimeType}');",
