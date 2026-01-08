@@ -8,6 +8,8 @@ emailIdp:
   - startPasswordReset:
   - verifyPasswordResetCode:
   - finishPasswordReset:
+firebaseIdp:
+  - login:
 googleIdp:
   - login:
 refreshJwtTokens:
