@@ -3265,6 +3265,20 @@ class EndpointRecordParameters extends _i1.EndpointRef {
         {'values': values},
       );
 
+  _i2.Stream<(int?, _i15.ProjectStreamingClass?)>
+  streamOfNullableIntAndModuleClass(
+    _i2.Stream<(int?, _i15.ProjectStreamingClass?)> values,
+  ) =>
+      caller.callStreamingServerEndpoint<
+        _i2.Stream<(int?, _i15.ProjectStreamingClass?)>,
+        (int?, _i15.ProjectStreamingClass?)
+      >(
+        'recordParameters',
+        'streamOfNullableIntAndModuleClass',
+        {},
+        {'values': values},
+      );
+
   _i2.Future<int> recordParametersWithCustomNames(
     (int,) positionalRecord, {
     required (int,) namedRecord,

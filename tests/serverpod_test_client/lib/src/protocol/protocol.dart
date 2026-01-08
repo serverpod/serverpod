@@ -4721,6 +4721,17 @@ class Protocol extends _i1.SerializationManager {
                 )
                 as T;
     }
+    if (t == _i1.getType<(int?, _i193.ProjectStreamingClass?)>()) {
+      return (
+            ((data as Map)['p'] as List)[0] == null
+                ? null
+                : deserialize<int>(data['p'][0]),
+            ((data)['p'] as List)[1] == null
+                ? null
+                : deserialize<_i193.ProjectStreamingClass>(data['p'][1]),
+          )
+          as T;
+    }
     if (t == Set<Set<int>>) {
       return (data as List).map((e) => deserialize<Set<int>>(e)).toSet() as T;
     }
@@ -5495,6 +5506,17 @@ class Protocol extends _i1.SerializationManager {
                 )
                 as T;
     }
+    if (t == _i1.getType<(int?, _i193.ProjectStreamingClass?)>()) {
+      return (
+            ((data as Map)['p'] as List)[0] == null
+                ? null
+                : deserialize<int>(data['p'][0]),
+            ((data)['p'] as List)[1] == null
+                ? null
+                : deserialize<_i193.ProjectStreamingClass>(data['p'][1]),
+          )
+          as T;
+    }
     if (t ==
         _i1
             .getType<
@@ -6242,6 +6264,9 @@ class Protocol extends _i1.SerializationManager {
         >?) {
       return 'List<((int,String),{(SimpleData,double) namedSubRecord})?>?';
     }
+    if (data is (int?, _i193.ProjectStreamingClass?)) {
+      return '(int?,serverpod_test_module.ProjectStreamingClass?)';
+    }
     if (data
         is (
           String,
@@ -6927,6 +6952,10 @@ class Protocol extends _i1.SerializationManager {
       >(data['data']);
     }
     if (dataClassName ==
+        '(int?,serverpod_test_module.ProjectStreamingClass?)') {
+      return deserialize<(int?, _i193.ProjectStreamingClass?)>(data['data']);
+    }
+    if (dataClassName ==
         '(String,(Map<String,int>,{bool flag,SimpleData simpleData}))') {
       return deserialize<
         (String, (Map<String, int>, {bool flag, _i196.SimpleData simpleData}))
@@ -7154,6 +7183,14 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       "n": {
         "namedSubRecord": mapRecordToJson(record.namedSubRecord),
       },
+    };
+  }
+  if (record is (int?, _i193.ProjectStreamingClass?)) {
+    return {
+      "p": [
+        record.$1,
+        record.$2?.toJson(),
+      ],
     };
   }
   if (record is (String, (int, bool))) {
@@ -7409,6 +7446,7 @@ Map<String, dynamic>? mapRecordToJson(Record? record) {
       ],
     };
   }
+
   throw Exception('Unsupported record type ${record.runtimeType}');
 }
 

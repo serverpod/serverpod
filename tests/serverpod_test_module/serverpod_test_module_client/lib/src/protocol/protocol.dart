@@ -16,11 +16,17 @@ import 'generated/polymorphism/child.dart' as _i3;
 import 'generated/polymorphism/parent.dart' as _i4;
 import 'module_class.dart' as _i5;
 import 'module_feature/models/my_feature_model.dart' as _i6;
+import 'module_streaming_class.dart' as _i7;
+import 'project_streaming_class.dart' as _i8;
+import 'package:serverpod_test_module_client/src/protocol/module_streaming_class.dart'
+    as _i9;
 export 'generated/polymorphism/grandchild.dart';
 export 'generated/polymorphism/child.dart';
 export 'generated/polymorphism/parent.dart';
 export 'module_class.dart';
 export 'module_feature/models/my_feature_model.dart';
+export 'module_streaming_class.dart';
+export 'project_streaming_class.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -74,6 +80,12 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i6.MyModuleFeatureModel) {
       return _i6.MyModuleFeatureModel.fromJson(data) as T;
     }
+    if (t == _i7.ModuleStreamingClass) {
+      return _i7.ModuleStreamingClass.fromJson(data) as T;
+    }
+    if (t == _i8.ProjectStreamingClass) {
+      return _i8.ProjectStreamingClass.fromJson(data) as T;
+    }
     if (t == _i1.getType<_i2.ModulePolymorphicGrandChild?>()) {
       return (data != null
               ? _i2.ModulePolymorphicGrandChild.fromJson(data)
@@ -95,15 +107,45 @@ class Protocol extends _i1.SerializationManager {
       return (data != null ? _i6.MyModuleFeatureModel.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<(bool,)?>()) {
-      return (data == null)
-          ? null as T
-          : (deserialize<bool>(((data as Map)['p'] as List)[0]),) as T;
+    if (t == _i1.getType<_i7.ModuleStreamingClass?>()) {
+      return (data != null ? _i7.ModuleStreamingClass.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i8.ProjectStreamingClass?>()) {
+      return (data != null ? _i8.ProjectStreamingClass.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<(bool,)?>()) {
       return (data == null)
           ? null as T
           : (deserialize<bool>(((data as Map)['p'] as List)[0]),) as T;
+    }
+    if (t == _i1.getType<(int?, _i9.ModuleStreamingClass?)>()) {
+      return (
+            ((data as Map)['p'] as List)[0] == null
+                ? null
+                : deserialize<int>(data['p'][0]),
+            ((data)['p'] as List)[1] == null
+                ? null
+                : deserialize<_i9.ModuleStreamingClass>(data['p'][1]),
+          )
+          as T;
+    }
+    if (t == _i1.getType<(bool,)?>()) {
+      return (data == null)
+          ? null as T
+          : (deserialize<bool>(((data as Map)['p'] as List)[0]),) as T;
+    }
+    if (t == _i1.getType<(int?, _i9.ModuleStreamingClass?)>()) {
+      return (
+            ((data as Map)['p'] as List)[0] == null
+                ? null
+                : deserialize<int>(data['p'][0]),
+            ((data)['p'] as List)[1] == null
+                ? null
+                : deserialize<_i9.ModuleStreamingClass>(data['p'][1]),
+          )
+          as T;
     }
     return super.deserialize<T>(data, t);
   }
@@ -115,6 +157,8 @@ class Protocol extends _i1.SerializationManager {
       _i4.ModulePolymorphicParent => 'ModulePolymorphicParent',
       _i5.ModuleClass => 'ModuleClass',
       _i6.MyModuleFeatureModel => 'MyModuleFeatureModel',
+      _i7.ModuleStreamingClass => 'ModuleStreamingClass',
+      _i8.ProjectStreamingClass => 'ProjectStreamingClass',
       _ => null,
     };
   }
@@ -142,6 +186,13 @@ class Protocol extends _i1.SerializationManager {
         return 'ModuleClass';
       case _i6.MyModuleFeatureModel():
         return 'MyModuleFeatureModel';
+      case _i7.ModuleStreamingClass():
+        return 'ModuleStreamingClass';
+      case _i8.ProjectStreamingClass():
+        return 'ProjectStreamingClass';
+    }
+    if (data is (int?, _i9.ModuleStreamingClass?)) {
+      return '(int?,ModuleStreamingClass?)';
     }
     return null;
   }
@@ -167,7 +218,38 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'MyModuleFeatureModel') {
       return deserialize<_i6.MyModuleFeatureModel>(data['data']);
     }
+    if (dataClassName == 'ModuleStreamingClass') {
+      return deserialize<_i7.ModuleStreamingClass>(data['data']);
+    }
+    if (dataClassName == 'ProjectStreamingClass') {
+      return deserialize<_i8.ProjectStreamingClass>(data['data']);
+    }
+    if (dataClassName == '(int?,ModuleStreamingClass?)') {
+      return deserialize<(int?, _i9.ModuleStreamingClass?)>(data['data']);
+    }
     return super.deserializeByClassName(data);
+  }
+
+  /// Wraps serialized data with its class name so that it can be deserialized
+  /// with [deserializeByClassName].
+  ///
+  /// Records and containers containing records will be return in their JSON representation in the returned map.
+  @override
+  Map<String, dynamic> wrapWithClassName(Object? data) {
+    /// In case the value (to be streamed) contains a record or potentially empty non-String-keyed Map, we need to map it before it reaches the underlying JSON encode
+    if (data != null && (data is Iterable || data is Map)) {
+      return {
+        'className': getClassNameForObject(data)!,
+        'data': mapContainerToJson(data),
+      };
+    } else if (data is Record) {
+      return {
+        'className': getClassNameForObject(data)!,
+        'data': mapRecordToJson(data),
+      };
+    }
+
+    return super.wrapWithClassName(data);
   }
 }
 
@@ -179,6 +261,14 @@ class Protocol extends _i1.SerializationManager {
 Map<String, dynamic>? mapRecordToJson(Record? record) {
   if (record == null) {
     return null;
+  }
+  if (record is (int?, _i9.ModuleStreamingClass?)) {
+    return {
+      "p": [
+        record.$1,
+        record.$2?.toJson(),
+      ],
+    };
   }
   if (record is (bool,)) {
     return {

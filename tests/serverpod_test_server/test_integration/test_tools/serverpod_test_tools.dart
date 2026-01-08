@@ -11757,6 +11757,40 @@ class _RecordParametersEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
+  _i3.Stream<(int?, _i19.ProjectStreamingClass?)>
+  streamOfNullableIntAndModuleClass(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<(int?, _i19.ProjectStreamingClass?)> values,
+  ) {
+    var _localTestStreamManager =
+        _i1.TestStreamManager<(int?, _i19.ProjectStreamingClass?)>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+              endpoint: 'recordParameters',
+              method: 'streamOfNullableIntAndModuleClass',
+            );
+        var _localCallContext = await _endpointDispatch
+            .getMethodStreamCallContext(
+              createSessionCallback: (_) => _localUniqueSession,
+              endpointPath: 'recordParameters',
+              methodName: 'streamOfNullableIntAndModuleClass',
+              arguments: {},
+              requestedInputStreams: ['values'],
+              serializationManager: _serializationManager,
+            );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'values': values},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
   _i3.Future<int> recordParametersWithCustomNames(
     _i1.TestSessionBuilder sessionBuilder,
     (int,) positionalRecord, {

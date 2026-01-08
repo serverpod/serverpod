@@ -7328,6 +7328,33 @@ class Endpoints extends _i1.EndpointDispatch {
                             streamParams['values']!.cast<_i64.ModuleClass?>(),
                           ),
             ),
+        'streamOfNullableIntAndModuleClass': _i1.MethodStreamConnector(
+          name: 'streamOfNullableIntAndModuleClass',
+          params: {},
+          streamParams: {
+            'values':
+                _i1.StreamParameterDescription<
+                  (int?, _i64.ProjectStreamingClass?)
+                >(
+                  name: 'values',
+                  nullable: false,
+                ),
+          },
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) =>
+                  (endpoints['recordParameters']
+                          as _i34.RecordParametersEndpoint)
+                      .streamOfNullableIntAndModuleClass(
+                        session,
+                        streamParams['values']!
+                            .cast<(int?, _i64.ProjectStreamingClass?)>(),
+                      ),
+        ),
       },
     );
     connectors['redis'] = _i1.EndpointConnector(
