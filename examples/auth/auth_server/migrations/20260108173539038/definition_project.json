@@ -11,7 +11,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod_auth_idp",
-      "version": "20251221193923091"
+      "version": "20260108173120582"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",

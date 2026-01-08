@@ -57,7 +57,7 @@ class AnonymousAuthController extends ChangeNotifier {
   /// Initiates the anonymous sign-in process.
   Future<void> login() async {
     await _guarded(() async {
-      final token = await createAnonymousToken!.call();
+      final token = await createAnonymousToken?.call();
       final authSuccess = await _anonymousEndpoint.login(token: token);
       await client.auth.updateSignedInUser(authSuccess);
     });

@@ -878,40 +878,27 @@
           },
           {
             "__className__": "serverpod.IndexDefinition",
-            "indexName": "serverpod_auth_idp_rate_limited_request_attempt_domain",
+            "indexName": "serverpod_auth_idp_rate_limited_request_attempt_composite",
             "elements": [
               {
                 "__className__": "serverpod.IndexElementDefinition",
                 "type": 0,
                 "definition": "domain"
-              }
-            ],
-            "type": "btree",
-            "isUnique": false,
-            "isPrimary": false
-          },
-          {
-            "__className__": "serverpod.IndexDefinition",
-            "indexName": "serverpod_auth_idp_rate_limited_request_attempt_source",
-            "elements": [
+              },
               {
                 "__className__": "serverpod.IndexElementDefinition",
                 "type": 0,
                 "definition": "source"
-              }
-            ],
-            "type": "btree",
-            "isUnique": false,
-            "isPrimary": false
-          },
-          {
-            "__className__": "serverpod.IndexDefinition",
-            "indexName": "serverpod_auth_idp_rate_limited_request_attempt_nonce",
-            "elements": [
+              },
               {
                 "__className__": "serverpod.IndexElementDefinition",
                 "type": 0,
                 "definition": "nonce"
+              },
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "attemptedAt"
               }
             ],
             "type": "btree",
