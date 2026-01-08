@@ -38,7 +38,8 @@ abstract class Record implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'Record',
-      if (aBoolRecord != null) 'aBoolRecord': _i2.mapRecordToJson(aBoolRecord),
+      if (aBoolRecord != null)
+        'aBoolRecord': _i2.Protocol().mapRecordToJson(aBoolRecord),
     };
   }
 

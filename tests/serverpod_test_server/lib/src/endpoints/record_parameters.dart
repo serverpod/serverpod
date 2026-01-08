@@ -237,7 +237,7 @@ class RecordParametersEndpoint extends Endpoint {
   /// Returns the first and only input value mapped into the return structure (basically reversed)
   Future<Map<String, List<Set<(int,)>>>> returnStringMapOfListOfRecord(
     Session session,
-    // This type is only used in a parameter postion, ensuring that we generate those as well
+    // This type is only used in a parameter position, ensuring that we generate those as well
     Set<List<Map<String, (int,)>>> input,
   ) async {
     var key = input.single.single.keys.single;
@@ -354,6 +354,15 @@ class RecordParametersEndpoint extends Endpoint {
   ) async* {
     yield initialValue;
 
+    await for (var value in values) {
+      yield value;
+    }
+  }
+
+  Stream<(int?, ProjectStreamingClass?)> streamOfNullableIntAndModuleClass(
+    Session session,
+    Stream<(int?, ProjectStreamingClass?)> values,
+  ) async* {
     await for (var value in values) {
       yield value;
     }

@@ -411,7 +411,8 @@ abstract class TypesMap
         'aListKey': aListKey?.toJson(
           keyToJson: (k) => k.toJson(valueToJson: (v) => v.toJson()),
         ),
-      if (aRecordKey != null) 'aRecordKey': _i6.mapContainerToJson(aRecordKey!),
+      if (aRecordKey != null)
+        'aRecordKey': _i6.Protocol().mapContainerToJson(aRecordKey!),
       if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
       if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
       if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
@@ -451,11 +452,15 @@ abstract class TypesMap
           valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
         ),
       if (aRecordValue != null)
-        'aRecordValue': _i6.mapContainerToJson(aRecordValue!),
+        'aRecordValue': _i6.Protocol().mapContainerToJson(aRecordValue!),
       if (aNullableRecordValue != null)
-        'aNullableRecordValue': _i6.mapContainerToJson(aNullableRecordValue!),
+        'aNullableRecordValue': _i6.Protocol().mapContainerToJson(
+          aNullableRecordValue!,
+        ),
       if (aNullableRecordKey != null)
-        'aNullableRecordKey': _i6.mapContainerToJson(aNullableRecordKey!),
+        'aNullableRecordKey': _i6.Protocol().mapContainerToJson(
+          aNullableRecordKey!,
+        ),
     };
   }
 
@@ -497,7 +502,8 @@ abstract class TypesMap
         'aListKey': aListKey?.toJson(
           keyToJson: (k) => k.toJson(valueToJson: (v) => v.toJsonForProtocol()),
         ),
-      if (aRecordKey != null) 'aRecordKey': _i6.mapContainerToJson(aRecordKey!),
+      if (aRecordKey != null)
+        'aRecordKey': _i6.Protocol().mapContainerToJson(aRecordKey!),
       if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
       if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
       if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
@@ -541,11 +547,15 @@ abstract class TypesMap
               v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
         ),
       if (aRecordValue != null)
-        'aRecordValue': _i6.mapContainerToJson(aRecordValue!),
+        'aRecordValue': _i6.Protocol().mapContainerToJson(aRecordValue!),
       if (aNullableRecordValue != null)
-        'aNullableRecordValue': _i6.mapContainerToJson(aNullableRecordValue!),
+        'aNullableRecordValue': _i6.Protocol().mapContainerToJson(
+          aNullableRecordValue!,
+        ),
       if (aNullableRecordKey != null)
-        'aNullableRecordKey': _i6.mapContainerToJson(aNullableRecordKey!),
+        'aNullableRecordKey': _i6.Protocol().mapContainerToJson(
+          aNullableRecordKey!,
+        ),
     };
   }
 
