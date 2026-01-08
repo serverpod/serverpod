@@ -80,6 +80,7 @@ cp CHANGELOG.md modules/legacy/serverpod_chat/serverpod_chat_flutter/CHANGELOG.m
 
 cp CHANGELOG.md integrations/serverpod_cloud_storage_s3/CHANGELOG.md
 cp CHANGELOG.md integrations/serverpod_cloud_storage_gcp/CHANGELOG.md
+cp CHANGELOG.md integrations/serverpod_cloud_storage_local/CHANGELOG.md
 
 echo "Copying README.md"
 cp README.md packages/serverpod/README.md
@@ -131,3 +132,4 @@ cp README_subpackage.md modules/legacy/serverpod_chat/serverpod_chat_flutter/REA
 
 cp README_subpackage.md integrations/serverpod_cloud_storage_s3/README.md
 cp README_subpackage.md integrations/serverpod_cloud_storage_gcp/README.md
+cp README_subpackage.md integrations/serverpod_cloud_storage_local/README.md

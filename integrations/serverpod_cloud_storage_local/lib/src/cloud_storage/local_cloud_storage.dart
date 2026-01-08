@@ -77,25 +77,30 @@ class LocalCloudStorage extends CloudStorage {
   /// Gets the full file path for a given storage path.
   ///
   /// Sanitizes the path to prevent directory traversal attacks by:
-  /// 1. Normalizing the path (resolving . and ..)
-  /// 2. Removing any leading slashes to prevent absolute paths
-  /// 3. Removing any remaining .. segments
-  /// 4. Ensuring the final path is within the storage directory
+  /// 1. Normalizing separators (handles both / and \ for cross-platform safety)
+  /// 2. Normalizing the path (resolving . and ..)
+  /// 3. Removing any root prefix to prevent absolute paths
+  /// 4. Filtering out any remaining .. segments for security
+  /// 5. Ensuring the final path is within the storage directory
   String _getFullPath(String path) {
-    // First normalize the path to handle . and ..
-    var sanitized = p.normalize(path);
+    // Normalize separators to handle both / and \ (cross-platform security)
+    var sanitized = path.replaceAll('\\', '/');
 
-    // Remove any leading slashes to treat all paths as relative
-    while (sanitized.startsWith('/') || sanitized.startsWith('\\')) {
-      sanitized = sanitized.substring(1);
-    }
+    // Normalize the path to handle . and ..
+    sanitized = p.normalize(sanitized);
 
-    // Remove any .. segments that might remain after normalization
-    final segments = sanitized.split(RegExp(r'[/\\]'));
+    // Remove any root prefix to treat all paths as relative
+    final root = p.rootPrefix(sanitized);
+    if (root.isNotEmpty) sanitized = p.relative(sanitized, from: root);
+
+    // Filter out any remaining .. segments for security
+    // (normalize doesn't remove leading .. in relative paths)
+    final segments = p.split(sanitized);
     final cleanSegments = segments.where((s) => s != '..' && s.isNotEmpty);
-    sanitized = cleanSegments.join(p.separator);
+    sanitized = p.joinAll(cleanSegments);
 
-    // If empty after cleaning, use a default
+    // If the path becomes empty after sanitization (e.g., input was just ".." or "/"),
+    // use a safe default filename to prevent storing at the storage root level.
     if (sanitized.isEmpty) {
       sanitized = 'file';
     }
@@ -122,12 +127,7 @@ class LocalCloudStorage extends CloudStorage {
       }
 
       // Write file
-      await file.writeAsBytes(
-        byteData.buffer.asUint8List(
-          byteData.offsetInBytes,
-          byteData.lengthInBytes,
-        ),
-      );
+      await file.writeAsBytes(Uint8List.sublistView(byteData));
 
       // Store metadata if expiration is set or file is unverified
       if (expiration != null || !verified) {
@@ -152,7 +152,7 @@ class LocalCloudStorage extends CloudStorage {
       final fullPath = _getFullPath(path);
       final file = File(fullPath);
 
-      if (!file.existsSync()) {
+      if (!await file.exists()) {
         return null;
       }
 
@@ -202,7 +202,7 @@ class LocalCloudStorage extends CloudStorage {
       final fullPath = _getFullPath(path);
       final file = File(fullPath);
 
-      if (!file.existsSync()) {
+      if (!await file.exists()) {
         return false;
       }
 
@@ -222,13 +222,13 @@ class LocalCloudStorage extends CloudStorage {
       final fullPath = _getFullPath(path);
       final file = File(fullPath);
 
-      if (file.existsSync()) {
+      if (await file.exists()) {
         await file.delete();
       }
 
       // Also delete metadata file if it exists
       final metadataFile = File('$fullPath.meta');
-      if (metadataFile.existsSync()) {
+      if (await metadataFile.exists()) {
         await metadataFile.delete();
       }
     } catch (e) {
@@ -267,13 +267,13 @@ class LocalCloudStorage extends CloudStorage {
     final fullPath = _getFullPath(path);
     final file = File(fullPath);
 
-    if (!file.existsSync()) {
+    if (!await file.exists()) {
       return false;
     }
 
     // Remove any unverified metadata if present
     final metadataFile = File('$fullPath.meta');
-    if (metadataFile.existsSync()) {
+    if (await metadataFile.exists()) {
       try {
         await metadataFile.delete();
       } catch (_) {
@@ -313,7 +313,7 @@ class LocalCloudStorage extends CloudStorage {
     final metadataFile = File('$fullPath.meta');
 
     // If no metadata file exists, the file is considered verified
-    if (!metadataFile.existsSync()) {
+    if (!await metadataFile.exists()) {
       return true;
     }
 
@@ -370,7 +370,7 @@ class LocalCloudStorage extends CloudStorage {
 
     try {
       final dir = Directory(storagePath);
-      if (!dir.existsSync()) return 0;
+      if (!await dir.exists()) return 0;
 
       await for (final entity in dir.list(recursive: true)) {
         if (entity is! File) continue;
@@ -385,7 +385,7 @@ class LocalCloudStorage extends CloudStorage {
               entity.path.length - 5,
             );
             final dataFile = File(dataFilePath);
-            if (dataFile.existsSync()) {
+            if (await dataFile.exists()) {
               await dataFile.delete();
             }
 
@@ -459,7 +459,7 @@ class LocalCloudStorage extends CloudStorage {
 
       // Ensure parent directories exist
       final parentDir = file.parent;
-      if (!parentDir.existsSync()) {
+      if (!await parentDir.exists()) {
         await parentDir.create(recursive: true);
       }
 
@@ -515,7 +515,7 @@ class LocalCloudStorage extends CloudStorage {
       final fullPath = _getFullPath(path);
       final file = File(fullPath);
 
-      if (!file.existsSync()) {
+      if (!await file.exists()) {
         return null;
       }
 
@@ -546,7 +546,7 @@ class LocalCloudStorage extends CloudStorage {
       final fullPath = _getFullPath(path);
       final file = File(fullPath);
 
-      if (!file.existsSync()) {
+      if (!await file.exists()) {
         return null;
       }
 
