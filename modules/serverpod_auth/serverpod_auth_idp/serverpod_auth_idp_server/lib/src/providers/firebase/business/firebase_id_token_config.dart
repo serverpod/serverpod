@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import '../../../common/id_token_verifier/id_token_verifier_config.dart';
-import '../../../common/id_token_verifier/id_token_verifier_exception.dart';
 
 /// Firebase-specific configuration for ID token verification.
 ///
@@ -93,8 +92,10 @@ class FirebaseIdTokenConfig implements IdTokenVerifierConfig {
 }
 
 /// Exception thrown when the Firebase ID token validation fails.
-class FirebaseIdTokenValidationServerException
-    extends IdTokenValidationException {
+class FirebaseIdTokenValidationServerException implements Exception {
+  /// The exception message.
+  final String message;
+
   /// Creates a new instance.
-  FirebaseIdTokenValidationServerException(super.message);
+  FirebaseIdTokenValidationServerException(this.message);
 }

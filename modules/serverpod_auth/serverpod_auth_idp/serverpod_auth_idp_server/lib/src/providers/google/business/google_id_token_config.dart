@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import '../../../common/id_token_verifier/id_token_verifier_config.dart';
-import '../../../common/id_token_verifier/id_token_verifier_exception.dart';
 
 /// Google-specific configuration for ID token verification.
 ///
@@ -78,8 +77,10 @@ class GoogleIdTokenConfig implements IdTokenVerifierConfig {
 }
 
 /// Exception thrown when the Google ID token validation fails.
-class GoogleIdTokenValidationServerException
-    extends IdTokenValidationException {
+class GoogleIdTokenValidationServerException implements Exception {
+  /// The exception message.
+  final String message;
+
   /// Creates a new instance.
-  GoogleIdTokenValidationServerException(super.message);
+  GoogleIdTokenValidationServerException(this.message);
 }
