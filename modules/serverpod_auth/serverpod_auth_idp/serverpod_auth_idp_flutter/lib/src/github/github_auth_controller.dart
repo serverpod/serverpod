@@ -104,6 +104,7 @@ class GitHubAuthController extends ChangeNotifier {
   /// On success, calls [onAuthenticated]. On failure, transitions to error
   /// state and calls [onError].
   Future<void> signIn() async {
+    if (_state == GitHubAuthState.loading) return;
     _setState(GitHubAuthState.loading);
 
     try {
