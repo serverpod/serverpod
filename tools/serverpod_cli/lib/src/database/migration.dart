@@ -106,7 +106,7 @@ DatabaseMigration generateDatabaseMigration({
           ),
         );
       }
-      
+
       var diff = generateTableMigration(srcTable, dstTable, warnings);
       if (diff == null) {
         // Table was modified, but cannot be migrated. Recreate the table.

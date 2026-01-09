@@ -82,7 +82,9 @@ void main() {
           );
           expect(
             sql,
-            contains('ALTER TABLE "public"."$tableName" SET SCHEMA "custom_schema"'),
+            contains(
+              'ALTER TABLE "public"."$tableName" SET SCHEMA "custom_schema"',
+            ),
           );
         },
         skip: migration.actions.length != 1,
@@ -178,7 +180,9 @@ void main() {
           );
           expect(
             sql,
-            contains('ALTER TABLE "schema_a"."$tableName" SET SCHEMA "schema_b"'),
+            contains(
+              'ALTER TABLE "schema_a"."$tableName" SET SCHEMA "schema_b"',
+            ),
           );
         },
         skip: migration.actions.length != 1,

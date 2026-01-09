@@ -130,7 +130,7 @@ List<ForeignKeyDefinition> _createForeignKeys(
   for (var i = 0; i < fields.length; i++) {
     var field = fields[i];
     var relation = field.relation as ForeignRelationDefinition;
-    
+
     // Find the schema of the referenced table
     var referencedSchema = defaultSchema;
     for (var model in allModels) {
@@ -140,7 +140,7 @@ List<ForeignKeyDefinition> _createForeignKeys(
         break;
       }
     }
-    
+
     foreignKeys.add(
       ForeignKeyDefinition(
         constraintName: '${classDefinition.tableName!}_fk_$i',
