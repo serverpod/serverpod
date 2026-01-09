@@ -82,3 +82,69 @@ needed for Android and web platforms.
 
 > For more information on how to configure Apple Sign-In credentials, see the
 > [Sign in with Apple documentation](https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_js/incorporating_sign_in_with_apple_into_other_platforms).
+
+## Sign-In With Firebase Setup
+
+Firebase Authentication allows you to use Firebase's authentication system with
+Serverpod. This enables you to leverage Firebase's various sign-in providers
+(email/password, phone, social providers, etc.) while syncing the authenticated
+user with Serverpod's auth system.
+
+### 1. Create a Firebase Project
+
+1. Go to the [Firebase Console](https://console.firebase.google.com/)
+2. Create a new project or select an existing one
+3. Enable the Authentication providers you want to use (e.g., Email/Password)
+
+### 2. Configure FlutterFire
+
+Install the FlutterFire CLI and configure your Flutter app:
+
+```bash
+# Install FlutterFire CLI
+dart pub global activate flutterfire_cli
+
+# Configure your Flutter app (run from the auth_flutter directory)
+flutterfire configure
+```
+
+This will generate the `lib/firebase_options.dart` file with your Firebase
+configuration.
+
+### 3. Enable Firebase in the App
+
+In `lib/firebase.dart`, uncomment the import and options line:
+
+```dart
+// Uncomment this import:
+import 'firebase_options.dart';
+
+Future<void> initializeFirebase() async {
+  await Firebase.initializeApp(
+    // Uncomment this line:
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+}
+```
+
+### 4. Server Configuration
+
+On the server side, you need to configure the Firebase service account key for
+ID token verification. In your server's `config/passwords.yaml`, add your
+Firebase service account JSON:
+
+```yaml
+firebase:
+  serviceAccountKey: |
+    {
+      "type": "service_account",
+      "project_id": "your-project-id",
+      ...
+    }
+```
+
+You can download the service account key from the Firebase Console under
+**Project Settings > Service Accounts > Generate New Private Key**.
+
+> For more information on Firebase Authentication, see the
+> [Firebase Authentication documentation](https://firebase.google.com/docs/auth/flutter/start)
