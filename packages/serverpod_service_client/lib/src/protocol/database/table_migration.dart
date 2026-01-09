@@ -24,6 +24,7 @@ abstract class TableMigration implements _i1.SerializableModel {
     this.dartName,
     this.module,
     required this.schema,
+    this.newSchema,
     required this.addColumns,
     required this.deleteColumns,
     required this.modifyColumns,
@@ -39,6 +40,7 @@ abstract class TableMigration implements _i1.SerializableModel {
     String? dartName,
     String? module,
     required String schema,
+    String? newSchema,
     required List<_i2.ColumnDefinition> addColumns,
     required List<String> deleteColumns,
     required List<_i3.ColumnMigration> modifyColumns,
@@ -55,6 +57,7 @@ abstract class TableMigration implements _i1.SerializableModel {
       dartName: jsonSerialization['dartName'] as String?,
       module: jsonSerialization['module'] as String?,
       schema: jsonSerialization['schema'] as String,
+      newSchema: jsonSerialization['newSchema'] as String?,
       addColumns: _i7.Protocol().deserialize<List<_i2.ColumnDefinition>>(
         jsonSerialization['addColumns'],
       ),
@@ -91,6 +94,8 @@ abstract class TableMigration implements _i1.SerializableModel {
 
   String schema;
 
+  String? newSchema;
+
   List<_i2.ColumnDefinition> addColumns;
 
   List<String> deleteColumns;
@@ -115,6 +120,7 @@ abstract class TableMigration implements _i1.SerializableModel {
     String? dartName,
     String? module,
     String? schema,
+    String? newSchema,
     List<_i2.ColumnDefinition>? addColumns,
     List<String>? deleteColumns,
     List<_i3.ColumnMigration>? modifyColumns,
@@ -132,6 +138,7 @@ abstract class TableMigration implements _i1.SerializableModel {
       if (dartName != null) 'dartName': dartName,
       if (module != null) 'module': module,
       'schema': schema,
+      if (newSchema != null) 'newSchema': newSchema,
       'addColumns': addColumns.toJson(valueToJson: (v) => v.toJson()),
       'deleteColumns': deleteColumns.toJson(),
       'modifyColumns': modifyColumns.toJson(valueToJson: (v) => v.toJson()),
@@ -157,6 +164,7 @@ class _TableMigrationImpl extends TableMigration {
     String? dartName,
     String? module,
     required String schema,
+    String? newSchema,
     required List<_i2.ColumnDefinition> addColumns,
     required List<String> deleteColumns,
     required List<_i3.ColumnMigration> modifyColumns,
@@ -170,6 +178,7 @@ class _TableMigrationImpl extends TableMigration {
          dartName: dartName,
          module: module,
          schema: schema,
+         newSchema: newSchema,
          addColumns: addColumns,
          deleteColumns: deleteColumns,
          modifyColumns: modifyColumns,
@@ -189,6 +198,7 @@ class _TableMigrationImpl extends TableMigration {
     Object? dartName = _Undefined,
     Object? module = _Undefined,
     String? schema,
+    Object? newSchema = _Undefined,
     List<_i2.ColumnDefinition>? addColumns,
     List<String>? deleteColumns,
     List<_i3.ColumnMigration>? modifyColumns,
@@ -203,6 +213,7 @@ class _TableMigrationImpl extends TableMigration {
       dartName: dartName is String? ? dartName : this.dartName,
       module: module is String? ? module : this.module,
       schema: schema ?? this.schema,
+      newSchema: newSchema is String? ? newSchema : this.newSchema,
       addColumns:
           addColumns ?? this.addColumns.map((e0) => e0.copyWith()).toList(),
       deleteColumns:
