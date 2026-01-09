@@ -8,7 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -57,6 +56,11 @@ import 'package:serverpod_test_server/src/generated/session_auth_info.dart'
     as _i29;
 import 'package:serverpod_test_server/src/generated/my_feature/models/my_feature_model.dart'
     as _i30;
+import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_hello_model.dart'
+    as _i31;
+import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i32;
+import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_bye_model.dart'
+    as _i33;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -164,6 +168,8 @@ void withServerpod(
 }
 
 class TestEndpoints {
+  late final futureCalls = _FutureCalls();
+
   late final _AsyncTasksEndpoint asyncTasks;
 
   late final _AuthenticationEndpoint authentication;
@@ -221,7 +227,7 @@ class TestEndpoints {
 
   late final _FieldScopesEndpoint fieldScopes;
 
-  late final _FutureCallsEndpoint futureCalls;
+  late final _TestFutureCallsEndpoint testFutureCalls;
 
   late final _ListParametersEndpoint listParameters;
 
@@ -423,7 +429,7 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
-    futureCalls = _FutureCallsEndpoint(
+    testFutureCalls = _TestFutureCallsEndpoint(
       endpoints,
       serializationManager,
     );
@@ -584,6 +590,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
   }
+}
+
+class _FutureCalls {
+  late final testGeneratedCall = _TestGeneratedCallFutureCall();
 }
 
 class _AsyncTasksEndpoint {
@@ -3403,6 +3413,175 @@ class _DeprecationEndpoint {
       }
     });
   }
+
+  _i3.Future<String> methodWithDeprecatedParam(
+    _i1.TestSessionBuilder sessionBuilder,
+    @deprecated String deprecatedParam,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'deprecation',
+            method: 'methodWithDeprecatedParam',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'deprecation',
+          methodName: 'methodWithDeprecatedParam',
+          parameters: _i1.testObjectToJson({
+            'deprecatedParam': deprecatedParam,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<String> methodWithDeprecatedParamMessage(
+    _i1.TestSessionBuilder sessionBuilder,
+    @Deprecated('This parameter is deprecated') String deprecatedParam,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'deprecation',
+            method: 'methodWithDeprecatedParamMessage',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'deprecation',
+          methodName: 'methodWithDeprecatedParamMessage',
+          parameters: _i1.testObjectToJson({
+            'deprecatedParam': deprecatedParam,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<String> methodWithMixedParams(
+    _i1.TestSessionBuilder sessionBuilder,
+    String normalParam,
+    @deprecated String deprecatedParam,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'deprecation',
+            method: 'methodWithMixedParams',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'deprecation',
+          methodName: 'methodWithMixedParams',
+          parameters: _i1.testObjectToJson({
+            'normalParam': normalParam,
+            'deprecatedParam': deprecatedParam,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<String> methodWithOptionalDeprecatedParam(
+    _i1.TestSessionBuilder sessionBuilder, [
+    @deprecated String? deprecatedParam,
+  ]) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'deprecation',
+            method: 'methodWithOptionalDeprecatedParam',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'deprecation',
+          methodName: 'methodWithOptionalDeprecatedParam',
+          parameters: _i1.testObjectToJson({
+            'deprecatedParam': deprecatedParam,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<String> methodWithNamedDeprecatedParam(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String normalParam,
+    @deprecated String? deprecatedParam,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'deprecation',
+            method: 'methodWithNamedDeprecatedParam',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'deprecation',
+          methodName: 'methodWithNamedDeprecatedParam',
+          parameters: _i1.testObjectToJson({
+            'normalParam': normalParam,
+            'deprecatedParam': deprecatedParam,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 }
 
 class _DiagnosticEventTestEndpoint {
@@ -4828,8 +5007,8 @@ class _FieldScopesEndpoint {
   }
 }
 
-class _FutureCallsEndpoint {
-  _FutureCallsEndpoint(
+class _TestFutureCallsEndpoint {
+  _TestFutureCallsEndpoint(
     this._endpointDispatch,
     this._serializationManager,
   );
@@ -4845,13 +5024,13 @@ class _FutureCallsEndpoint {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'futureCalls',
+            endpoint: 'testFutureCalls',
             method: 'makeFutureCall',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'futureCalls',
+          endpointPath: 'testFutureCalls',
           methodName: 'makeFutureCall',
           parameters: _i1.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
@@ -4876,13 +5055,13 @@ class _FutureCallsEndpoint {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'futureCalls',
+            endpoint: 'testFutureCalls',
             method: 'makeFutureCallThatThrows',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'futureCalls',
+          endpointPath: 'testFutureCalls',
           methodName: 'makeFutureCallThatThrows',
           parameters: _i1.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
@@ -6309,7 +6488,7 @@ class _MapParametersEndpoint {
           endpointPath: 'mapParameters',
           methodName: 'returnIntIntMap',
           parameters: _i1.testObjectToJson({
-            'map': _i18.mapContainerToJson(map),
+            'map': _i18.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -6342,7 +6521,7 @@ class _MapParametersEndpoint {
           endpointPath: 'mapParameters',
           methodName: 'returnNestedIntIntMap',
           parameters: _i1.testObjectToJson({
-            'map': _i18.mapContainerToJson(map),
+            'map': _i18.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -6375,7 +6554,7 @@ class _MapParametersEndpoint {
           endpointPath: 'mapParameters',
           methodName: 'returnEnumIntMap',
           parameters: _i1.testObjectToJson({
-            'map': _i18.mapContainerToJson(map),
+            'map': _i18.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -6941,7 +7120,7 @@ class _MapParametersEndpoint {
           endpointPath: 'mapParameters',
           methodName: 'returnNestedNonStringKeyedMapInsideRecordInsideMap',
           parameters: _i1.testObjectToJson({
-            'map': _i18.mapContainerToJson(map),
+            'map': _i18.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -6979,7 +7158,7 @@ class _MapParametersEndpoint {
           methodName:
               'returnDeeplyNestedNonStringKeyedMapInsideRecordInsideMap',
           parameters: _i1.testObjectToJson({
-            'map': _i18.mapContainerToJson(map),
+            'map': _i18.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -7015,7 +7194,7 @@ class _MapParametersEndpoint {
           endpointPath: 'mapParameters',
           methodName: 'returnDateTimeBoolMap',
           parameters: _i1.testObjectToJson({
-            'map': _i18.mapContainerToJson(map),
+            'map': _i18.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -7050,7 +7229,7 @@ class _MapParametersEndpoint {
           endpointPath: 'mapParameters',
           methodName: 'returnDateTimeBoolMapNullable',
           parameters: _i1.testObjectToJson({
-            'map': map == null ? null : _i18.mapContainerToJson(map),
+            'map': map == null ? null : _i18.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -7085,7 +7264,7 @@ class _MapParametersEndpoint {
           endpointPath: 'mapParameters',
           methodName: 'returnIntStringMap',
           parameters: _i1.testObjectToJson({
-            'map': _i18.mapContainerToJson(map),
+            'map': _i18.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -7118,7 +7297,7 @@ class _MapParametersEndpoint {
           endpointPath: 'mapParameters',
           methodName: 'returnIntStringMapNullable',
           parameters: _i1.testObjectToJson({
-            'map': map == null ? null : _i18.mapContainerToJson(map),
+            'map': map == null ? null : _i18.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -9209,7 +9388,7 @@ class _ModuleEndpointSubclass {
           endpointPath: 'moduleEndpointSubclass',
           methodName: 'echoRecord',
           parameters: _i1.testObjectToJson({
-            'value': _i18.mapRecordToJson(value),
+            'value': _i18.Protocol().mapRecordToJson(value),
           }),
           serializationManager: _serializationManager,
         );
@@ -9349,7 +9528,7 @@ class _ModuleEndpointAdaptation {
           endpointPath: 'moduleEndpointAdaptation',
           methodName: 'echoRecord',
           parameters: _i1.testObjectToJson({
-            'value': _i18.mapRecordToJson(value),
+            'value': _i18.Protocol().mapRecordToJson(value),
             'multiplier': multiplier,
           }),
           serializationManager: _serializationManager,
@@ -9458,7 +9637,7 @@ class _ModuleEndpointReduction {
           endpointPath: 'moduleEndpointReduction',
           methodName: 'echoRecord',
           parameters: _i1.testObjectToJson({
-            'value': _i18.mapRecordToJson(value),
+            'value': _i18.Protocol().mapRecordToJson(value),
           }),
           serializationManager: _serializationManager,
         );
@@ -9656,7 +9835,7 @@ class _ModuleEndpointExtension {
           endpointPath: 'moduleEndpointExtension',
           methodName: 'echoRecord',
           parameters: _i1.testObjectToJson({
-            'value': _i18.mapRecordToJson(value),
+            'value': _i18.Protocol().mapRecordToJson(value),
           }),
           serializationManager: _serializationManager,
         );
@@ -10134,7 +10313,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnRecordOfInt',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10167,7 +10346,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnNullableRecordOfInt',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10200,7 +10379,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnRecordOfNullableInt',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10233,7 +10412,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnNullableRecordOfNullableInt',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10298,7 +10477,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnIntStringRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10333,7 +10512,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnNullableIntStringRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10368,7 +10547,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnIntSimpleDataRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10404,7 +10583,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnNullableIntSimpleDataRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10440,7 +10619,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnStringKeyedMapRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10476,7 +10655,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnNonStringKeyedMapRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10511,7 +10690,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnSetWithNestedRecordRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10546,7 +10725,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnNamedIntStringRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10582,7 +10761,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnNamedNullableIntStringRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10619,7 +10798,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnRecordOfNamedIntAndObject',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10656,7 +10835,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnNullableRecordOfNamedIntAndObject',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10693,7 +10872,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnRecordOfNamedNullableIntAndNullableObject',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10729,7 +10908,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnNamedNonStringKeyedMapRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10765,7 +10944,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnNamedSetWithNestedRecordRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10803,7 +10982,9 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName:
               'returnNestedNonStringKeyedMapInsideRecordInsideMapInsideRecord',
-          parameters: _i1.testObjectToJson({'map': _i18.mapRecordToJson(map)}),
+          parameters: _i1.testObjectToJson({
+            'map': _i18.Protocol().mapRecordToJson(map),
+          }),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await _localCallContext.method
@@ -10840,7 +11021,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnRecordTypedef',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10876,7 +11057,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnNullableRecordTypedef',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10912,7 +11093,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnListOfIntSimpleDataRecord',
           parameters: _i1.testObjectToJson({
-            'recordList': _i18.mapContainerToJson(recordList),
+            'recordList': _i18.Protocol().mapContainerToJson(recordList),
           }),
           serializationManager: _serializationManager,
         );
@@ -10949,7 +11130,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnListOfNullableIntSimpleDataRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapContainerToJson(record),
+            'record': _i18.Protocol().mapContainerToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -10985,7 +11166,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnSetOfIntSimpleDataRecord',
           parameters: _i1.testObjectToJson({
-            'recordSet': _i18.mapContainerToJson(recordSet),
+            'recordSet': _i18.Protocol().mapContainerToJson(recordSet),
           }),
           serializationManager: _serializationManager,
         );
@@ -11022,7 +11203,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnSetOfNullableIntSimpleDataRecord',
           parameters: _i1.testObjectToJson({
-            'set': _i18.mapContainerToJson(set),
+            'set': _i18.Protocol().mapContainerToJson(set),
           }),
           serializationManager: _serializationManager,
         );
@@ -11061,7 +11242,7 @@ class _RecordParametersEndpoint {
           parameters: _i1.testObjectToJson({
             'recordSet': recordSet == null
                 ? null
-                : _i18.mapContainerToJson(recordSet),
+                : _i18.Protocol().mapContainerToJson(recordSet),
           }),
           serializationManager: _serializationManager,
         );
@@ -11098,7 +11279,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnStringMapOfIntSimpleDataRecord',
           parameters: _i1.testObjectToJson({
-            'map': _i18.mapContainerToJson(map),
+            'map': _i18.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -11135,7 +11316,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnStringMapOfNullableIntSimpleDataRecord',
           parameters: _i1.testObjectToJson({
-            'map': _i18.mapContainerToJson(map),
+            'map': _i18.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -11172,7 +11353,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnRecordMapOfIntSimpleDataRecord',
           parameters: _i1.testObjectToJson({
-            'map': _i18.mapContainerToJson(map),
+            'map': _i18.Protocol().mapContainerToJson(map),
           }),
           serializationManager: _serializationManager,
         );
@@ -11210,7 +11391,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnStringMapOfListOfRecord',
           parameters: _i1.testObjectToJson({
-            'input': _i18.mapContainerToJson(input),
+            'input': _i18.Protocol().mapContainerToJson(input),
           }),
           serializationManager: _serializationManager,
         );
@@ -11247,7 +11428,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnNestedNamedRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -11286,7 +11467,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnNestedNullableNamedRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -11325,7 +11506,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnNestedPositionalAndNamedRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -11365,7 +11546,7 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'returnListOfNestedPositionalAndNamedRecord',
           parameters: _i1.testObjectToJson({
-            'recordList': _i18.mapContainerToJson(recordList),
+            'recordList': _i18.Protocol().mapContainerToJson(recordList),
           }),
           serializationManager: _serializationManager,
         );
@@ -11427,7 +11608,7 @@ class _RecordParametersEndpoint {
                     ? null
                     : _i25.jsonDecode(
                         _i2.SerializationManager.encode(
-                          _i18.mapContainerToJson(initialValue),
+                          _i18.Protocol().mapContainerToJson(initialValue),
                         ),
                       ),
               },
@@ -11653,6 +11834,40 @@ class _RecordParametersEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
+  _i3.Stream<(int?, _i20.ProjectStreamingClass?)>
+  streamOfNullableIntAndModuleClass(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<(int?, _i20.ProjectStreamingClass?)> values,
+  ) {
+    var _localTestStreamManager =
+        _i1.TestStreamManager<(int?, _i20.ProjectStreamingClass?)>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+              endpoint: 'recordParameters',
+              method: 'streamOfNullableIntAndModuleClass',
+            );
+        var _localCallContext = await _endpointDispatch
+            .getMethodStreamCallContext(
+              createSessionCallback: (_) => _localUniqueSession,
+              endpointPath: 'recordParameters',
+              methodName: 'streamOfNullableIntAndModuleClass',
+              arguments: {},
+              requestedInputStreams: ['values'],
+              serializationManager: _serializationManager,
+            );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'values': values},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
+  }
+
   _i3.Future<int> recordParametersWithCustomNames(
     _i1.TestSessionBuilder sessionBuilder,
     (int,) positionalRecord, {
@@ -11670,8 +11885,10 @@ class _RecordParametersEndpoint {
           endpointPath: 'recordParameters',
           methodName: 'recordParametersWithCustomNames',
           parameters: _i1.testObjectToJson({
-            'positionalRecord': _i18.mapRecordToJson(positionalRecord),
-            'namedRecord': _i18.mapRecordToJson(namedRecord),
+            'positionalRecord': _i18.Protocol().mapRecordToJson(
+              positionalRecord,
+            ),
+            'namedRecord': _i18.Protocol().mapRecordToJson(namedRecord),
           }),
           serializationManager: _serializationManager,
         );
@@ -14111,7 +14328,7 @@ class _TestToolsEndpoint {
           endpointPath: 'testTools',
           methodName: 'echoRecord',
           parameters: _i1.testObjectToJson({
-            'record': _i18.mapRecordToJson(record),
+            'record': _i18.Protocol().mapRecordToJson(record),
           }),
           serializationManager: _serializationManager,
         );
@@ -14147,7 +14364,7 @@ class _TestToolsEndpoint {
           endpointPath: 'testTools',
           methodName: 'echoRecords',
           parameters: _i1.testObjectToJson({
-            'records': _i18.mapContainerToJson(records),
+            'records': _i18.Protocol().mapContainerToJson(records),
           }),
           serializationManager: _serializationManager,
         );
@@ -14236,7 +14453,7 @@ class _TestToolsEndpoint {
               arguments: {
                 'initialValue': _i25.jsonDecode(
                   _i2.SerializationManager.encode(
-                    _i18.mapRecordToJson(initialValue),
+                    _i18.Protocol().mapRecordToJson(initialValue),
                   ),
                 ),
               },
@@ -14275,7 +14492,7 @@ class _TestToolsEndpoint {
               arguments: {
                 'initialValue': _i25.jsonDecode(
                   _i2.SerializationManager.encode(
-                    _i18.mapContainerToJson(initialValue),
+                    _i18.Protocol().mapContainerToJson(initialValue),
                   ),
                 ),
               },
@@ -14324,7 +14541,7 @@ class _TestToolsEndpoint {
               arguments: {
                 'initialValue': _i25.jsonDecode(
                   _i2.SerializationManager.encode(
-                    _i18.mapRecordToJson(initialValue),
+                    _i18.Protocol().mapRecordToJson(initialValue),
                   ),
                 ),
               },
@@ -14365,7 +14582,7 @@ class _TestToolsEndpoint {
                     ? null
                     : _i25.jsonDecode(
                         _i2.SerializationManager.encode(
-                          _i18.mapContainerToJson(initialValue),
+                          _i18.Protocol().mapContainerToJson(initialValue),
                         ),
                       ),
               },
@@ -15346,5 +15563,61 @@ class _MyFeatureEndpoint {
         await _localUniqueSession.close();
       }
     });
+  }
+}
+
+class _TestGeneratedCallFutureCall {
+  Future<void> hello(
+    _i1.TestSessionBuilder sessionBuilder,
+    String name,
+  ) async {
+    var object = _i31.TestGeneratedCallHelloModel(name: name);
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      await _i32.TestGeneratedCallHelloFutureCall().invoke(
+        _localUniqueSession,
+        object,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
+  }
+
+  Future<void> bye(
+    _i1.TestSessionBuilder sessionBuilder,
+    String name, {
+    int code = 0,
+  }) async {
+    var object = _i33.TestGeneratedCallByeModel(
+      name: name,
+      code: code,
+    );
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      await _i32.TestGeneratedCallByeFutureCall().invoke(
+        _localUniqueSession,
+        object,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
+  }
+
+  Future<void> logData(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i10.SimpleData data,
+  ) async {
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      await _i32.TestGeneratedCallLogDataFutureCall().invoke(
+        _localUniqueSession,
+        data,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
   }
 }
