@@ -1,7 +1,19 @@
 import 'package:auth_client/auth_client.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart' as firebase_ui;
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
+
+// After configuring your project according to the README.md instructions,
+// uncomment the import and the below "options" line to use Firebase auth.
+// import 'firebase_options.dart';
+
+/// Initializes Firebase authentication.
+Future<void> initializeFirebase() async {
+  await Firebase.initializeApp(
+    // options: DefaultFirebaseOptions.currentPlatform,
+  );
+}
 
 /// Example screen demonstrating how to integrate Firebase Authentication
 /// with Serverpod using `firebase_ui_auth` and [FirebaseAuthController].
