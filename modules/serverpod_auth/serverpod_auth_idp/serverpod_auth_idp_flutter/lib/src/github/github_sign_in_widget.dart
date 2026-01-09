@@ -19,7 +19,7 @@ export 'github_sign_in_style.dart';
 /// those callbacks are handled by the controller itself.
 ///
 /// Example with managed state:
-/// ```
+/// ```dart
 /// GitHubSignInWidget(
 ///   client: client,
 ///   onAuthenticated: () => Navigator.push(...),
@@ -28,7 +28,7 @@ export 'github_sign_in_style.dart';
 /// ```
 ///
 /// Example with external controller:
-/// ```
+/// ```dart
 /// GitHubSignInWidget(
 ///   controller: controller,
 /// )

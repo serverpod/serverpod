@@ -55,12 +55,12 @@ ALTER TABLE ONLY "serverpod_auth_idp_github_account"
 
 
 --
--- MIGRATION VERSION FOR serverpod_auth_migration
+-- MIGRATION VERSION FOR auth
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_migration', '20260109122701861', now())
+    VALUES ('auth', '20260109165411500', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260109122701861', "timestamp" = now();
+    DO UPDATE SET "version" = '20260109165411500', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -71,22 +71,6 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     DO UPDATE SET "version" = '20251208110333922-v3-0-0', "timestamp" = now();
 
 --
--- MIGRATION VERSION FOR serverpod_auth_bridge
---
-INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_bridge', '20260109122655259', now())
-    ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260109122655259', "timestamp" = now();
-
---
--- MIGRATION VERSION FOR serverpod_auth_core
---
-INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_core', '20251208110412389-v3-0-0', now())
-    ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20251208110412389-v3-0-0', "timestamp" = now();
-
---
 -- MIGRATION VERSION FOR serverpod_auth_idp
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
@@ -95,12 +79,12 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     DO UPDATE SET "version" = '20260109122326396', "timestamp" = now();
 
 --
--- MIGRATION VERSION FOR serverpod_auth
+-- MIGRATION VERSION FOR serverpod_auth_core
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth', '20250825102351908-v3-0-0', now())
+    VALUES ('serverpod_auth_core', '20251208110412389-v3-0-0', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250825102351908-v3-0-0', "timestamp" = now();
+    DO UPDATE SET "version" = '20251208110412389-v3-0-0', "timestamp" = now();
 
 
 COMMIT;
