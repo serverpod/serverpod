@@ -72,10 +72,14 @@ Future<Process> startProcess(
 
   process.stderr
       .transform(utf8.decoder)
-      .listen((e) => print('COMMAND "$command" stderr: $e'));
+      .listen(
+        (e) => print('COMMAND "$command ${arguments.join(' ')}" stderr: $e'),
+      );
   process.stdout
       .transform(utf8.decoder)
-      .listen((e) => print('COMMAND "$command" stdout: $e'));
+      .listen(
+        (e) => print('COMMAND "$command ${arguments.join(' ')}" stdout: $e'),
+      );
 
   return process;
 }

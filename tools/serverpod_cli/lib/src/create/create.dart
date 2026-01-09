@@ -219,6 +219,9 @@ Future<bool> performCreate(
           stderr: toErrorLog,
         );
 
+        await toDebugLog.flush();
+        await toErrorLog.flush();
+
         return exitCode == 0;
       },
     );
