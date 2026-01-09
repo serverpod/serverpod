@@ -117,6 +117,7 @@ class GitHubIdpUtils {
     final accountDetails = await fetchAccountDetails(
       session,
       accessToken: accessToken,
+      transaction: transaction,
     );
 
     var githubAccount = await GitHubAccount.db.findFirstRow(
@@ -206,7 +207,7 @@ class GitHubIdpUtils {
           session,
           accountDetails: details,
           accessToken: accessToken,
-          transaction: null,
+          transaction: transaction,
         );
       }
     } catch (e) {
