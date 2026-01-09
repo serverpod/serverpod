@@ -5,7 +5,7 @@ import '../business/github_idp.dart';
 
 /// Base endpoint for GitHub Account-based authentication.
 ///
-/// This endpoint exposes methods for logging in users using GitHub access tokens.
+/// This endpoint exposes methods for logging in users using GitHub authorization codes.
 /// If you would like modify the authentication flow, consider extending this
 /// class and overriding the relevant methods.
 abstract class GitHubIdpBaseEndpoint extends Endpoint {

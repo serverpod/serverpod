@@ -182,7 +182,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod_auth_bridge",
-      "version": "20260108214852502"
+      "version": "20260109162302565"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
@@ -192,12 +192,12 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod_auth_idp",
-      "version": "20260107154918295"
+      "version": "20260109122326396"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod_auth_migration",
-      "version": "20260108214858636"
+      "version": "20260109122701861"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
