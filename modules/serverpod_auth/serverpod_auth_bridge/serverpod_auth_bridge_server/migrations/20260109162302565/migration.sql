@@ -55,12 +55,12 @@ ALTER TABLE ONLY "serverpod_auth_idp_github_account"
 
 
 --
--- MIGRATION VERSION FOR serverpod_auth_test
+-- MIGRATION VERSION FOR serverpod_auth_bridge
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_test', '20260108214929054', now())
+    VALUES ('serverpod_auth_bridge', '20260109162302565', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260108214929054', "timestamp" = now();
+    DO UPDATE SET "version" = '20260109162302565', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -69,14 +69,6 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     VALUES ('serverpod', '20251208110333922-v3-0-0', now())
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '20251208110333922-v3-0-0', "timestamp" = now();
-
---
--- MIGRATION VERSION FOR serverpod_auth_bridge
---
-INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_bridge', '20260108214852502', now())
-    ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260108214852502', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_core
@@ -90,25 +82,9 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
 -- MIGRATION VERSION FOR serverpod_auth_idp
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_idp', '20260107154918295', now())
+    VALUES ('serverpod_auth_idp', '20260109122326396', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260107154918295', "timestamp" = now();
-
---
--- MIGRATION VERSION FOR serverpod_auth_migration
---
-INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_migration', '20260108214858636', now())
-    ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260108214858636', "timestamp" = now();
-
---
--- MIGRATION VERSION FOR serverpod_auth
---
-INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth', '20250825102351908-v3-0-0', now())
-    ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250825102351908-v3-0-0', "timestamp" = now();
+    DO UPDATE SET "version" = '20260109122326396', "timestamp" = now();
 
 
 COMMIT;
