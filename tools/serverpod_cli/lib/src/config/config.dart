@@ -84,6 +84,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.extraClasses,
     required this.enabledFeatures,
     this.experimentalFeatures = const [],
+    this.defaultDatabaseSchema = 'public',
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
        _modules = modules;
@@ -249,6 +250,10 @@ class GeneratorConfig implements ModelLoadConfig {
   bool isExperimentalFeatureEnabled(ExperimentalFeature feature) =>
       experimentalFeatures.contains(feature) ||
       experimentalFeatures.contains(ExperimentalFeature.all);
+
+  /// The default database schema to use for tables.
+  /// Can be overridden per-model in the model YAML file.
+  final String defaultDatabaseSchema;
 
   /// All the modules defined in the config (of type module).
   List<ModuleConfig> get modules => _modules
@@ -430,6 +435,8 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
+    var defaultDatabaseSchema = _parseDatabaseConfig(generatorConfig);
+
     return GeneratorConfig(
       name: name,
       type: type,
@@ -443,6 +450,7 @@ class GeneratorConfig implements ModelLoadConfig {
       extraClasses: extraClasses,
       enabledFeatures: enabledFeatures,
       experimentalFeatures: enabledExperimentalFeatures,
+      defaultDatabaseSchema: defaultDatabaseSchema,
     );
   }
 
@@ -504,6 +512,16 @@ class GeneratorConfig implements ModelLoadConfig {
     return ExperimentalFeature.values
         .where((feature) => features[feature.name.toString()] == true)
         .toList();
+  }
+
+  static String _parseDatabaseConfig(Map config) {
+    var databaseConfig = config['database'];
+    if (databaseConfig is! Map) return 'public';
+
+    var defaultSchema = databaseConfig['default_schema'];
+    if (defaultSchema is! String) return 'public';
+
+    return defaultSchema;
   }
 
   static PackageType getPackageType(Map<dynamic, dynamic> generatorConfig) {

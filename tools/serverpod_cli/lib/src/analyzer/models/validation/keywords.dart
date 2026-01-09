@@ -11,6 +11,7 @@ class Keyword {
 
   static const String serverOnly = 'serverOnly';
   static const String table = 'table';
+  static const String schema = 'schema';
   static const String managedMigration = 'managedMigration';
   static const String fields = 'fields';
   static const String indexes = 'indexes';

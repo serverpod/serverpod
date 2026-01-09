@@ -195,7 +195,8 @@ extension DatabaseDiffComparisons on DatabaseMigration {
 
 extension TableDiffComparisons on TableMigration {
   bool get isEmpty {
-    return addColumns.isEmpty &&
+    return (newSchema == null || newSchema == schema) &&
+        addColumns.isEmpty &&
         deleteColumns.isEmpty &&
         modifyColumns.isEmpty &&
         addIndexes.isEmpty &&
@@ -629,6 +630,12 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
 extension TableMigrationPgSqlGenerator on TableMigration {
   String toPgSql() {
     var out = '';
+
+    // Handle schema change first if present
+    final newSchemaValue = newSchema;
+    if (newSchemaValue != null && newSchemaValue != schema) {
+      out += 'ALTER TABLE "$schema"."$name" SET SCHEMA "$newSchemaValue";\n';
+    }
 
     // Drop indexes
     for (var deleteIndex in deleteIndexes) {

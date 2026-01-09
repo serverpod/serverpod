@@ -118,6 +118,7 @@ class LibraryGenerator {
                   allModels,
                   config.name,
                   config.modulesAll,
+                  defaultSchema: config.defaultDatabaseSchema,
                 ).toCode(
                   config: config,
                   serverCode: serverCode,
