@@ -8,7 +8,8 @@ import 'github_idp_config.dart';
 
 /// Details of the GitHub Account.
 ///
-/// Email may be null if the user's email is not public or not verified.
+/// All nullable fields are not guaranteed to be available from GitHub's API,
+/// since the user may have a private email or limited profile information.
 typedef GitHubAccountDetails = ({
   /// GitHub's user identifier for this account.
   String userIdentifier,
@@ -60,11 +61,11 @@ class GitHubIdpUtils {
     required final AuthUsers authUsers,
   }) : _authUsers = authUsers;
 
-  /// Exchanges an authorization code for an access token.
+  /// Exchanges an `authorization code` for an `access token`.
   ///
-  /// This method exchanges the authorization code received from GitHub's OAuth
-  /// flow for an access token using PKCE. The [code] is the authorization code
-  /// from the callback, and [codeVerifier] is the PKCE code verifier that was
+  /// This method exchanges the `authorization code` received from GitHub's OAuth
+  /// flow for an `access token` using PKCE. The [code] is the `authorization code`
+  /// from the callback, and [codeVerifier] is the `PKCE code` verifier that was
   /// used to generate the code challenge.
   ///
   /// The [redirectUri] must match the redirect URI used in the authorization
@@ -77,7 +78,8 @@ class GitHubIdpUtils {
     required final String codeVerifier,
     required final String redirectUri,
   }) async {
-    // Reference: https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps#2-users-are-redirected-back-to-your-site-by-github
+    // More info on the token exchange process:
+    // https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps#2-users-are-redirected-back-to-your-site-by-github
     final response = await http.post(
       Uri.https('github.com', '/login/oauth/access_token'),
       headers: {
@@ -123,7 +125,7 @@ class GitHubIdpUtils {
     return accessToken;
   }
 
-  /// Authenticates a user using an access token.
+  /// Authenticates a user using an `access token`.
   ///
   /// If the external user ID is not yet known in the system, a new `AuthUser`
   /// is created for it.
@@ -138,6 +140,7 @@ class GitHubIdpUtils {
     final accountDetails = await fetchAccountDetails(
       session,
       accessToken: accessToken,
+      transaction: transaction,
     );
 
     var githubAccount = await GitHubAccount.db.findFirstRow(
@@ -182,18 +185,16 @@ class GitHubIdpUtils {
 
   /// Returns the account details for the given [accessToken].
   ///
-  /// This method verifies the token by calling GitHub's user API.
+  /// This method calls GitHub's user API.
   ///
-  /// The [transaction] parameter is not passed to the callback to avoid
-  /// potential issues with long-running external API calls.
-  ///
-  /// Throws [GitHubAccessTokenVerificationException] if token verification fails.
+  /// Throws [GitHubAccessTokenVerificationException] if the user info retrieval fails.
   Future<GitHubAccountDetails> fetchAccountDetails(
     final Session session, {
     required final String accessToken,
     final Transaction? transaction,
   }) async {
-    // Reference: https://docs.github.com/en/rest/users/users#get-the-authenticated-user
+    // More info on the user API:
+    // https://docs.github.com/en/rest/users/users#get-the-authenticated-user
     final response = await http.get(
       Uri.https('api.github.com', '/user'),
       headers: {
@@ -230,7 +231,7 @@ class GitHubIdpUtils {
           session,
           accountDetails: details,
           accessToken: accessToken,
-          transaction: null,
+          transaction: transaction,
         );
       }
     } catch (e) {

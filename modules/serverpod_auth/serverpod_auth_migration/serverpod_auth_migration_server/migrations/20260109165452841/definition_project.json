@@ -118,7 +118,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod_auth_bridge",
-      "version": "20260109122655259"
+      "version": "20260109162302565"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",

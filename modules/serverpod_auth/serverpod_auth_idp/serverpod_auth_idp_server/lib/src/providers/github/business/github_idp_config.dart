@@ -57,7 +57,7 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
     this.getExtraGitHubInfoCallback,
   });
 
-  /// Default validation function for extracted GitHub account details.
+  /// Default validation function for extracting additional GitHub account details.
   ///
   /// This default implementation accepts all accounts as GitHub's optional
   /// fields (email, name) are intentionally optional for user privacy.
@@ -110,8 +110,8 @@ class GitHubIdpConfigFromPasswords extends GitHubIdpConfig {
       );
 }
 
-/// Contains information about the OAuth credentials for the server to access
-/// GitHub's APIs. The OAuth App credentials can be created from GitHub's
+/// Contains the credentials of GitHub's App.
+/// The GitHub App can be created from GitHub's
 /// developer settings at:
 /// https://github.com/settings/developers
 final class GitHubOAuthCredentials {
