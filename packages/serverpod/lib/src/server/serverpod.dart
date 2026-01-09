@@ -983,6 +983,7 @@ class Serverpod {
 
   /// Calls a [FutureCall] by its name after the specified delay, optionally
   /// passing a [SerializableModel] object as parameter.
+  @Deprecated('Use generated future call methods instead.')
   Future<void> futureCallWithDelay(
     String callName,
     SerializableModel? object,
@@ -1008,6 +1009,7 @@ class Serverpod {
 
   /// Calls a [FutureCall] by its name at the specified time, optionally passing
   /// a [SerializableModel] object as parameter.
+  @Deprecated('Use generated future call methods instead.')
   Future<void> futureCallAtTime(
     String callName,
     SerializableModel? object,
@@ -1034,6 +1036,7 @@ class Serverpod {
 
   /// Cancels a [FutureCall] with the specified identifier. If no future call
   /// with the specified identifier is found, this call will have no effect.
+  @Deprecated('Use generated future call methods instead.')
   Future<void> cancelFutureCall(String identifier) async {
     var futureCallManager = _futureCallManager;
     if (futureCallManager == null) {
@@ -1320,7 +1323,7 @@ class ExperimentalApi {
 
   /// Application method for submitting a diagnostic event
   /// to registered event handlers.
-  /// They will execute asynchrously.
+  /// They will execute asynchronously.
   ///
   /// This method is for application (user space) use.
   void submitDiagnosticEvent(
@@ -1346,7 +1349,7 @@ extension ServerpodInternalMethods on Serverpod {
   Session get internalSession => _internalSession;
 
   /// Submits an event to registered event handlers.
-  /// They will execute asynchrously.
+  /// They will execute asynchronously.
   /// This method is for internal framework use only.
   void internalSubmitEvent(
     DiagnosticEvent event, {
