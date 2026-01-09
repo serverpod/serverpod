@@ -127,6 +127,28 @@ database:
       expect(config.defaultDatabaseSchema, equals('public'));
     },
   );
+
+  test(
+    'Given a generator.yaml with database default_schema set to whitespace-only when loading GeneratorConfig then default schema is "public".',
+    () async {
+      var projectDir = createMockServerpodProject(
+        projectName: 'my_project',
+        generatorYamlContent: '''
+type: server
+database:
+  default_schema: "   "
+''',
+      );
+      await projectDir.create();
+
+      var config = await GeneratorConfig.load(
+        serverRootDir: path.join(d.sandbox, 'project', 'my_project_server'),
+        interactive: false,
+      );
+
+      expect(config.defaultDatabaseSchema, equals('public'));
+    },
+  );
 }
 
 d.DirectoryDescriptor createMockServerpodProject({

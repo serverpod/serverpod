@@ -520,6 +520,9 @@ class GeneratorConfig implements ModelLoadConfig {
 
     var defaultSchema = databaseConfig['default_schema'];
     if (defaultSchema is! String) return 'public';
+    
+    // Validate that the schema name is not empty or whitespace-only
+    if (defaultSchema.trim().isEmpty) return 'public';
 
     return defaultSchema;
   }
