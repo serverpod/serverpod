@@ -13,15 +13,16 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/apple_idp_endpoint.dart' as _i2;
 import '../endpoints/email_idp_endpoint.dart' as _i3;
-import '../endpoints/google_idp_endpoint.dart' as _i4;
-import '../endpoints/jwt_refresh_endpoint.dart' as _i5;
-import '../endpoints/passkey_idp_endpoint.dart' as _i6;
-import '../greeting_endpoint.dart' as _i7;
-import 'package:auth_server/src/generated/protocol.dart' as _i8;
+import '../endpoints/firebase_idp_endpoint.dart' as _i4;
+import '../endpoints/google_idp_endpoint.dart' as _i5;
+import '../endpoints/jwt_refresh_endpoint.dart' as _i6;
+import '../endpoints/passkey_idp_endpoint.dart' as _i7;
+import '../greeting_endpoint.dart' as _i8;
+import 'package:auth_server/src/generated/protocol.dart' as _i9;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i9;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i10;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _i11;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -39,25 +40,31 @@ class Endpoints extends _i1.EndpointDispatch {
           'emailIdp',
           null,
         ),
-      'googleIdp': _i4.GoogleIdpEndpoint()
+      'firebaseIdp': _i4.FirebaseIdpEndpoint()
+        ..initialize(
+          server,
+          'firebaseIdp',
+          null,
+        ),
+      'googleIdp': _i5.GoogleIdpEndpoint()
         ..initialize(
           server,
           'googleIdp',
           null,
         ),
-      'refreshJwtTokens': _i5.RefreshJwtTokensEndpoint()
+      'refreshJwtTokens': _i6.RefreshJwtTokensEndpoint()
         ..initialize(
           server,
           'refreshJwtTokens',
           null,
         ),
-      'passkeyIdp': _i6.PasskeyIdpEndpoint()
+      'passkeyIdp': _i7.PasskeyIdpEndpoint()
         ..initialize(
           server,
           'passkeyIdp',
           null,
         ),
-      'greeting': _i7.GreetingEndpoint()
+      'greeting': _i8.GreetingEndpoint()
         ..initialize(
           server,
           'greeting',
@@ -282,6 +289,31 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['firebaseIdp'] = _i1.EndpointConnector(
+      name: 'firebaseIdp',
+      endpoint: endpoints['firebaseIdp']!,
+      methodConnectors: {
+        'login': _i1.MethodConnector(
+          name: 'login',
+          params: {
+            'idToken': _i1.ParameterDescription(
+              name: 'idToken',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['firebaseIdp'] as _i4.FirebaseIdpEndpoint).login(
+                    session,
+                    idToken: params['idToken'],
+                  ),
+        ),
+      },
+    );
     connectors['googleIdp'] = _i1.EndpointConnector(
       name: 'googleIdp',
       endpoint: endpoints['googleIdp']!,
@@ -305,7 +337,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['googleIdp'] as _i4.GoogleIdpEndpoint).login(
+                  (endpoints['googleIdp'] as _i5.GoogleIdpEndpoint).login(
                     session,
                     idToken: params['idToken'],
                     accessToken: params['accessToken'],
@@ -332,7 +364,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['refreshJwtTokens']
-                          as _i5.RefreshJwtTokensEndpoint)
+                          as _i6.RefreshJwtTokensEndpoint)
                       .refreshAccessToken(
                         session,
                         refreshToken: params['refreshToken'],
@@ -351,16 +383,16 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['passkeyIdp'] as _i6.PasskeyIdpEndpoint)
+              ) async => (endpoints['passkeyIdp'] as _i7.PasskeyIdpEndpoint)
                   .createChallenge(session)
-                  .then((record) => _i8.Protocol().mapRecordToJson(record)),
+                  .then((record) => _i9.Protocol().mapRecordToJson(record)),
         ),
         'register': _i1.MethodConnector(
           name: 'register',
           params: {
             'registrationRequest': _i1.ParameterDescription(
               name: 'registrationRequest',
-              type: _i1.getType<_i9.PasskeyRegistrationRequest>(),
+              type: _i1.getType<_i10.PasskeyRegistrationRequest>(),
               nullable: false,
             ),
           },
@@ -369,7 +401,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['passkeyIdp'] as _i6.PasskeyIdpEndpoint).register(
+                  (endpoints['passkeyIdp'] as _i7.PasskeyIdpEndpoint).register(
                     session,
                     registrationRequest: params['registrationRequest'],
                   ),
@@ -379,7 +411,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'loginRequest': _i1.ParameterDescription(
               name: 'loginRequest',
-              type: _i1.getType<_i9.PasskeyLoginRequest>(),
+              type: _i1.getType<_i10.PasskeyLoginRequest>(),
               nullable: false,
             ),
           },
@@ -388,7 +420,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['passkeyIdp'] as _i6.PasskeyIdpEndpoint).login(
+                  (endpoints['passkeyIdp'] as _i7.PasskeyIdpEndpoint).login(
                     session,
                     loginRequest: params['loginRequest'],
                   ),
@@ -412,16 +444,16 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['greeting'] as _i7.GreetingEndpoint).hello(
+              ) async => (endpoints['greeting'] as _i8.GreetingEndpoint).hello(
                 session,
                 params['name'],
               ),
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i9.Endpoints()
+    modules['serverpod_auth_idp'] = _i10.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i10.Endpoints()
+    modules['serverpod_auth_core'] = _i11.Endpoints()
       ..initializeEndpoints(server);
   }
 }

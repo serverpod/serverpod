@@ -15,6 +15,8 @@ export 'src/apple/apple_sign_in_style.dart';
 export 'src/apple/apple_sign_in_widget.dart';
 export 'src/email/email_auth_controller.dart';
 export 'src/email/email_sign_in_widget.dart';
+export 'src/firebase/firebase_auth_controller.dart';
+export 'src/firebase/firebase_sign_in_service.dart';
 export 'src/google/common/style.dart';
 export 'src/google/google_auth_controller.dart';
 export 'src/google/google_sign_in_service.dart';
