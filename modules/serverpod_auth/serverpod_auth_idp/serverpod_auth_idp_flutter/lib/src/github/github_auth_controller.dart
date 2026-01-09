@@ -47,7 +47,7 @@ class GitHubAuthController extends ChangeNotifier {
 
   /// Scopes to request from GitHub.
   ///
-  /// The default scopes are `user`, `read:user` and `user:email`, which will give access to
+  /// The default scopes are [`user`, `read:user`, `user:email`], which will give access to
   /// retrieving the user's profile data and user's emails automatically.
   ///
   /// Reference: https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps
@@ -99,7 +99,7 @@ class GitHubAuthController extends ChangeNotifier {
   /// Initiates the GitHub Sign-In flow.
   ///
   /// Opens the GitHub authorization page, waits for user authorization, and
-  /// exchanges the authorization code for an access token on the server.
+  /// exchanges the `authorization code` for an `access token` on the server.
   ///
   /// On success, calls [onAuthenticated]. On failure, transitions to error
   /// state and calls [onError].
@@ -108,27 +108,23 @@ class GitHubAuthController extends ChangeNotifier {
     _setState(GitHubAuthState.loading);
 
     try {
-      // Get the authorization code from GitHub OAuth flow
-      final code = await GitHubSignInService.instance.signIn(
+      // Get the authorization code and code verifier from GitHub OAuth flow
+      final signInResult = await GitHubSignInService.instance.signIn(
         scopes: scopes,
       );
 
       // Exchange the code for an access token on the server
-      await _handleServerSideSignIn(code);
+      await _handleServerSideSignIn(signInResult);
     } catch (error) {
       _handleAuthenticationError(error);
     }
   }
 
   /// Handles the server-side sign-in process.
-  Future<void> _handleServerSideSignIn(String code) async {
+  Future<void> _handleServerSideSignIn(
+    GitHubSignInResult signInResult,
+  ) async {
     try {
-      // Get the code verifier for PKCE
-      final codeVerifier = GitHubSignInService.instance.codeVerifier;
-      if (codeVerifier == null) {
-        throw StateError('Code verifier not found in sign-in session');
-      }
-
       // Get the redirect URI from service (needed for token exchange)
       final redirectUri = GitHubSignInService.instance.redirectUri;
       if (redirectUri == null) {
@@ -137,8 +133,8 @@ class GitHubAuthController extends ChangeNotifier {
 
       final endpoint = client.getEndpointOfType<EndpointGitHubIdpBase>();
       final authSuccess = await endpoint.login(
-        code: code,
-        codeVerifier: codeVerifier,
+        code: signInResult.code,
+        codeVerifier: signInResult.codeVerifier,
         redirectUri: redirectUri,
       );
 

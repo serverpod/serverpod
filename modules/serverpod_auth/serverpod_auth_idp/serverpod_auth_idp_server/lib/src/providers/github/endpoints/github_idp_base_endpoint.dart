@@ -21,8 +21,8 @@ abstract class GitHubIdpBaseEndpoint extends Endpoint {
   /// user or creates a new user account if the GitHub account ID is not yet
   /// known.
   ///
-  /// This method exchanges the authorization code for an access token using
-  /// PKCE, then authenticates the user.
+  /// This method exchanges the `authorization code` for an `access token` using
+  /// `PKCE`, then authenticates the user.
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   /// {@endtemplate}
