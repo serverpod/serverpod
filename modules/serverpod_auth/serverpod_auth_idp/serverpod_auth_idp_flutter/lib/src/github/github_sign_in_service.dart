@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
+
+import '../common/utils.dart';
 
 /// Service to manage GitHub OAuth sign-in flow.
 ///
@@ -41,6 +42,9 @@ class GitHubSignInService {
   String? _codeVerifier;
   String? _callbackUrlScheme;
   bool? _useWebview;
+
+  /// Returns whether the service has been initialized.
+  bool get isInitialized => _initialized;
 
   /// Gets the configured client ID if set.
   String? get clientId => _clientId;
@@ -78,7 +82,7 @@ class GitHubSignInService {
   /// If [clientId] and [redirectUri] are not provided, will try to load the
   /// values from environment variables `GITHUB_CLIENT_ID` and
   /// `GITHUB_REDIRECT_URI` respectively. If the values are not provided by
-  /// any means, an error will be thrown when attempting to sign in.
+  /// any means, an error will be thrown in the [signIn] method.
   Future<void> ensureInitialized({
     String? clientId,
     String? redirectUri,
@@ -106,17 +110,33 @@ class GitHubSignInService {
   /// on backend server.
   ///
   /// Throws an exception if:
-  /// - The service is not initialized
+  /// - The service is not initialized with valid clientId and redirectUri
   /// - The user cancels the authorization
   /// - The authorization fails for any reason
   ///
   /// The [scopes] parameter allows requesting additional GitHub permissions.
   /// By default, only basic profile information is requested.
   Future<String> signIn({List<String> scopes = const []}) async {
-    if (_clientId == null || _redirectUri == null) {
+    if (!isInitialized) {
       throw StateError(
         'GitHubSignInService is not initialized. '
         'Call ensureInitialized() first.',
+      );
+    }
+
+    if (_clientId == null || _clientId!.isEmpty) {
+      throw StateError(
+        'GitHub client ID is not configured. '
+        'Provide clientId to ensureInitialized() or set GITHUB_CLIENT_ID '
+        'environment variable.',
+      );
+    }
+
+    if (_redirectUri == null || _redirectUri!.isEmpty) {
+      throw StateError(
+        'GitHub redirect URI is not configured. '
+        'Provide redirectUri to ensureInitialized() or set '
+        'GITHUB_REDIRECT_URI environment variable.',
       );
     }
 
@@ -139,6 +159,7 @@ class GitHubSignInService {
       queryParameters['scope'] = scopes.join(' ');
     }
 
+    // Create the full authorization URL
     // Reference: https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps#1-request-a-users-github-identity
     final authorizationUrl = Uri.https(
       'github.com',
@@ -202,7 +223,7 @@ extension GitHubSignInServiceExtension on FlutterAuthSessionManager {
   /// If [clientId] and [redirectUri] are not provided, will try to load the
   /// values from `GITHUB_CLIENT_ID` and `GITHUB_REDIRECT_URI` environment
   /// variables, respectively. If the values are not provided by any means, an
-  /// error will be thrown when attempting to sign in.
+  /// error will be thrown in the sign-in method.
   Future<void> initializeGitHubSignIn({
     String? clientId,
     String? redirectUri,
@@ -219,24 +240,16 @@ extension GitHubSignInServiceExtension on FlutterAuthSessionManager {
 }
 
 /// Generates a cryptographically secure random string for the PKCE code verifier.
-String _generateCodeVerifier() {
-  final random = Random.secure();
-  final bytes = List<int>.generate(32, (i) => random.nextInt(256));
-  return base64UrlEncode(bytes).replaceAll('=', '');
-}
+String _generateCodeVerifier() => generateSecureRandomString(32);
+
+/// Generates a random state parameter for CSRF protection.
+String _generateState() => generateSecureRandomString(16);
 
 /// Generates the PKCE code challenge from the code verifier using SHA-256.
 String _generateCodeChallenge(String codeVerifier) {
   final bytes = utf8.encode(codeVerifier);
   final digest = sha256.convert(bytes);
   return base64UrlEncode(digest.bytes).replaceAll('=', '');
-}
-
-/// Generates a random state parameter for CSRF protection.
-String _generateState() {
-  final random = Random.secure();
-  final bytes = List<int>.generate(16, (i) => random.nextInt(256));
-  return base64UrlEncode(bytes).replaceAll('=', '');
 }
 
 String? _getClientIdFromEnvVar() {
