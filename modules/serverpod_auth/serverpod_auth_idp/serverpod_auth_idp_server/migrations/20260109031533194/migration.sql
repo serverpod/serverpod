@@ -56,12 +56,12 @@ ALTER TABLE ONLY "serverpod_auth_idp_firebase_account"
 
 
 --
--- MIGRATION VERSION FOR serverpod_auth_migration
+-- MIGRATION VERSION FOR serverpod_auth_idp
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_migration', '20260108212138198', now())
+    VALUES ('serverpod_auth_idp', '20260109031533194', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260108212138198', "timestamp" = now();
+    DO UPDATE SET "version" = '20260109031533194', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -72,36 +72,12 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     DO UPDATE SET "version" = '20251208110333922-v3-0-0', "timestamp" = now();
 
 --
--- MIGRATION VERSION FOR serverpod_auth_bridge
---
-INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_bridge', '20260108212127847', now())
-    ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260108212127847', "timestamp" = now();
-
---
 -- MIGRATION VERSION FOR serverpod_auth_core
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     VALUES ('serverpod_auth_core', '20251208110412389-v3-0-0', now())
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '20251208110412389-v3-0-0', "timestamp" = now();
-
---
--- MIGRATION VERSION FOR serverpod_auth_idp
---
-INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_idp', '20260108212118509', now())
-    ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260108212118509', "timestamp" = now();
-
---
--- MIGRATION VERSION FOR serverpod_auth
---
-INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth', '20250825102351908-v3-0-0', now())
-    ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250825102351908-v3-0-0', "timestamp" = now();
 
 
 COMMIT;

@@ -3036,40 +3036,27 @@
         },
         {
           "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_auth_idp_rate_limited_request_attempt_domain",
+          "indexName": "serverpod_auth_idp_rate_limited_request_attempt_composite",
           "elements": [
             {
               "__className__": "serverpod.IndexElementDefinition",
               "type": 0,
               "definition": "domain"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        },
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_auth_idp_rate_limited_request_attempt_source",
-          "elements": [
+            },
             {
               "__className__": "serverpod.IndexElementDefinition",
               "type": 0,
               "definition": "source"
-            }
-          ],
-          "type": "btree",
-          "isUnique": false,
-          "isPrimary": false
-        },
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_auth_idp_rate_limited_request_attempt_nonce",
-          "elements": [
+            },
             {
               "__className__": "serverpod.IndexElementDefinition",
               "type": 0,
               "definition": "nonce"
+            },
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "attemptedAt"
             }
           ],
           "type": "btree",
@@ -3761,7 +3748,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod_auth_migration",
-      "version": "20260108212138198"
+      "version": "20260109031551805"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
@@ -3771,7 +3758,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod_auth_bridge",
-      "version": "20260108212127847"
+      "version": "20260109031542220"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
@@ -3781,7 +3768,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod_auth_idp",
-      "version": "20260108212118509"
+      "version": "20260109031533194"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
