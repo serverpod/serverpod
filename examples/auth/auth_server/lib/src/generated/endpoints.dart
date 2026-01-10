@@ -11,9 +11,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/anonymous_idp_endpoint.dart' as _i2;
-import '../endpoints/apple_idp_endpoint.dart' as _i3;
-import '../endpoints/email_idp_endpoint.dart' as _i4;
+import '../endpoints/apple_idp_endpoint.dart' as _i2;
+import '../endpoints/email_idp_endpoint.dart' as _i3;
+import '../endpoints/firebase_idp_endpoint.dart' as _i4;
 import '../endpoints/google_idp_endpoint.dart' as _i5;
 import '../endpoints/jwt_refresh_endpoint.dart' as _i6;
 import '../endpoints/passkey_idp_endpoint.dart' as _i7;
@@ -44,6 +44,12 @@ class Endpoints extends _i1.EndpointDispatch {
         ..initialize(
           server,
           'emailIdp',
+          null,
+        ),
+      'firebaseIdp': _i4.FirebaseIdpEndpoint()
+        ..initialize(
+          server,
+          'firebaseIdp',
           null,
         ),
       'googleIdp': _i5.GoogleIdpEndpoint()
@@ -314,6 +320,31 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['firebaseIdp'] = _i1.EndpointConnector(
+      name: 'firebaseIdp',
+      endpoint: endpoints['firebaseIdp']!,
+      methodConnectors: {
+        'login': _i1.MethodConnector(
+          name: 'login',
+          params: {
+            'idToken': _i1.ParameterDescription(
+              name: 'idToken',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['firebaseIdp'] as _i4.FirebaseIdpEndpoint).login(
+                    session,
+                    idToken: params['idToken'],
+                  ),
+        ),
+      },
+    );
     connectors['googleIdp'] = _i1.EndpointConnector(
       name: 'googleIdp',
       endpoint: endpoints['googleIdp']!,
@@ -385,7 +416,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['passkeyIdp'] as _i7.PasskeyIdpEndpoint)
                   .createChallenge(session)
-                  .then((record) => _i9.mapRecordToJson(record)),
+                  .then((record) => _i9.Protocol().mapRecordToJson(record)),
         ),
         'register': _i1.MethodConnector(
           name: 'register',

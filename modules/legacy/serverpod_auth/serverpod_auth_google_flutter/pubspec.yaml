@@ -3,7 +3,7 @@
 
 name: serverpod_auth_google_flutter
 description: Sign in with Google for the Serverpod auth module.
-version: 3.1.1
+version: 3.2.0
 repository: https://github.com/serverpod/serverpod
 
 environment:
@@ -14,14 +14,14 @@ dependencies:
   flutter:
     sdk: flutter
   google_sign_in: ^6.1.0
-  serverpod_auth_client: 3.1.1
-  serverpod_auth_shared_flutter: 3.1.1
+  serverpod_auth_client: 3.2.0
+  serverpod_auth_shared_flutter: 3.2.0
   web: '>=0.3.0 <2.0.0'
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: 3.1.1
+  serverpod_lints: 3.2.0
 
 dependency_overrides:
   serverpod_auth_client:

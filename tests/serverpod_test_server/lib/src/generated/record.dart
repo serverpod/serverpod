@@ -39,7 +39,8 @@ abstract class Record
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'Record',
-      if (aBoolRecord != null) 'aBoolRecord': _i2.mapRecordToJson(aBoolRecord),
+      if (aBoolRecord != null)
+        'aBoolRecord': _i2.Protocol().mapRecordToJson(aBoolRecord),
     };
   }
 
@@ -47,7 +48,8 @@ abstract class Record
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'Record',
-      if (aBoolRecord != null) 'aBoolRecord': _i2.mapRecordToJson(aBoolRecord),
+      if (aBoolRecord != null)
+        'aBoolRecord': _i2.Protocol().mapRecordToJson(aBoolRecord),
     };
   }
 

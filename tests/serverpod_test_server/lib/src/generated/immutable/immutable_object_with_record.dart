@@ -65,7 +65,7 @@ abstract class ImmutableObjectWithRecord
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ImmutableObjectWithRecord',
-      'recordVariable': _i2.mapRecordToJson(recordVariable),
+      'recordVariable': _i2.Protocol().mapRecordToJson(recordVariable),
     };
   }
 
@@ -73,7 +73,7 @@ abstract class ImmutableObjectWithRecord
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ImmutableObjectWithRecord',
-      'recordVariable': _i2.mapRecordToJson(recordVariable),
+      'recordVariable': _i2.Protocol().mapRecordToJson(recordVariable),
     };
   }
 

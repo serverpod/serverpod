@@ -175,76 +175,82 @@ class Protocol extends _i1.SerializationManagerServer {
 
   @override
   String getModuleName() => 'auth';
-}
 
-/// Maps any `Record`s known to this [Protocol] to their JSON representation
-///
-/// Throws in case the record type is not known.
-///
-/// This method will return `null` (only) for `null` inputs.
-Map<String, dynamic>? mapRecordToJson(Record? record) {
-  if (record == null) {
-    return null;
-  }
-  if (record is ({_i6.ByteData challenge, _i1.UuidValue id})) {
-    return {
-      "n": {
-        "challenge": record.challenge,
-        "id": record.id,
-      },
-    };
-  }
-  throw Exception('Unsupported record type ${record.runtimeType}');
-}
-
-/// Maps container types (like [List], [Map], [Set]) containing
-/// [Record]s or non-String-keyed [Map]s to their JSON representation.
-///
-/// It should not be called for [SerializableModel] types. These
-/// handle the "[Record] in container" mapping internally already.
-///
-/// It is only supposed to be called from generated protocol code.
-///
-/// Returns either a `List<dynamic>` (for List, Sets, and Maps with
-/// non-String keys) or a `Map<String, dynamic>` in case the input was
-/// a `Map<String, …>`.
-Object? mapContainerToJson(Object obj) {
-  if (obj is! Iterable && obj is! Map) {
-    throw ArgumentError.value(
-      obj,
-      'obj',
-      'The object to serialize should be of type List, Map, or Set',
-    );
-  }
-
-  dynamic mapIfNeeded(Object? obj) {
-    return switch (obj) {
-      Record record => mapRecordToJson(record),
-      Iterable iterable => mapContainerToJson(iterable),
-      Map map => mapContainerToJson(map),
-      Object? value => value,
-    };
-  }
-
-  switch (obj) {
-    case Map<String, dynamic>():
+  /// Maps any `Record`s known to this [Protocol] to their JSON representation
+  ///
+  /// Throws in case the record type is not known.
+  ///
+  /// This method will return `null` (only) for `null` inputs.
+  Map<String, dynamic>? mapRecordToJson(Record? record) {
+    if (record == null) {
+      return null;
+    }
+    if (record is ({_i6.ByteData challenge, _i1.UuidValue id})) {
       return {
-        for (var entry in obj.entries) entry.key: mapIfNeeded(entry.value),
+        "n": {
+          "challenge": record.challenge,
+          "id": record.id,
+        },
       };
-    case Map():
-      return [
-        for (var entry in obj.entries)
-          {
-            'k': mapIfNeeded(entry.key),
-            'v': mapIfNeeded(entry.value),
-          },
-      ];
-
-    case Iterable():
-      return [
-        for (var e in obj) mapIfNeeded(e),
-      ];
+    }
+    try {
+      return _i3.Protocol().mapRecordToJson(record);
+    } catch (_) {}
+    try {
+      return _i4.Protocol().mapRecordToJson(record);
+    } catch (_) {}
+    throw Exception('Unsupported record type ${record.runtimeType}');
   }
 
-  return obj;
+  /// Maps container types (like [List], [Map], [Set]) containing
+  /// [Record]s or non-String-keyed [Map]s to their JSON representation.
+  ///
+  /// It should not be called for [SerializableModel] types. These
+  /// handle the "[Record] in container" mapping internally already.
+  ///
+  /// It is only supposed to be called from generated protocol code.
+  ///
+  /// Returns either a `List<dynamic>` (for List, Sets, and Maps with
+  /// non-String keys) or a `Map<String, dynamic>` in case the input was
+  /// a `Map<String, …>`.
+  Object? mapContainerToJson(Object obj) {
+    if (obj is! Iterable && obj is! Map) {
+      throw ArgumentError.value(
+        obj,
+        'obj',
+        'The object to serialize should be of type List, Map, or Set',
+      );
+    }
+
+    dynamic mapIfNeeded(Object? obj) {
+      return switch (obj) {
+        Record record => mapRecordToJson(record),
+        Iterable iterable => mapContainerToJson(iterable),
+        Map map => mapContainerToJson(map),
+        Object? value => value,
+      };
+    }
+
+    switch (obj) {
+      case Map<String, dynamic>():
+        return {
+          for (var entry in obj.entries) entry.key: mapIfNeeded(entry.value),
+        };
+      case Map():
+        return [
+          for (var entry in obj.entries)
+            {
+              'k': mapIfNeeded(entry.key),
+              'v': mapIfNeeded(entry.value),
+            },
+        ];
+
+      case Iterable():
+        return [
+          for (var e in obj) mapIfNeeded(e),
+        ];
+    }
+
+    return obj;
+  }
 }

@@ -102,7 +102,7 @@ class EmailSignInWidget extends StatefulWidget {
   const EmailSignInWidget({
     this.controller,
     this.client,
-    this.startScreen = EmailFlowScreen.login,
+    this.startScreen = EmailFlowScreen.startRegistration,
     this.verificationCodeConfig = const VerificationCodeConfig(),
     this.emailValidation,
     this.passwordRequirements,

@@ -249,6 +249,26 @@ class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
 }
 
 /// {@category Endpoint}
+class EndpointFirebaseIdp extends _i1.EndpointFirebaseIdpBase {
+  EndpointFirebaseIdp(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'firebaseIdp';
+
+  /// Validates a Firebase ID token and either logs in the associated user or
+  /// creates a new user account if the Firebase account ID is not yet known.
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  @override
+  _i3.Future<_i4.AuthSuccess> login({required String idToken}) =>
+      caller.callServerEndpoint<_i4.AuthSuccess>(
+        'firebaseIdp',
+        'login',
+        {'idToken': idToken},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointGoogleIdp extends _i1.EndpointGoogleIdpBase {
   EndpointGoogleIdp(_i2.EndpointCaller caller) : super(caller);
 
@@ -411,6 +431,7 @@ class Client extends _i2.ServerpodClientShared {
     anonymousIdp = EndpointAnonymousIdp(this);
     appleIdp = EndpointAppleIdp(this);
     emailIdp = EndpointEmailIdp(this);
+    firebaseIdp = EndpointFirebaseIdp(this);
     googleIdp = EndpointGoogleIdp(this);
     refreshJwtTokens = EndpointRefreshJwtTokens(this);
     passkeyIdp = EndpointPasskeyIdp(this);
@@ -423,6 +444,8 @@ class Client extends _i2.ServerpodClientShared {
   late final EndpointAppleIdp appleIdp;
 
   late final EndpointEmailIdp emailIdp;
+
+  late final EndpointFirebaseIdp firebaseIdp;
 
   late final EndpointGoogleIdp googleIdp;
 
@@ -439,6 +462,7 @@ class Client extends _i2.ServerpodClientShared {
     'anonymousIdp': anonymousIdp,
     'appleIdp': appleIdp,
     'emailIdp': emailIdp,
+    'firebaseIdp': firebaseIdp,
     'googleIdp': googleIdp,
     'refreshJwtTokens': refreshJwtTokens,
     'passkeyIdp': passkeyIdp,

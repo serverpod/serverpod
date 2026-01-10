@@ -19,7 +19,10 @@ import 'google_sign_in_service.dart';
 /// final controller = GoogleAuthController(
 ///   client: client,
 ///   onAuthenticated: () {
-///     // Navigate to home screen
+///     // Do something when the user is authenticated.
+///     //
+///     // NOTE: You should not navigate to the home screen here, otherwise
+///     // the user will have to sign in again every time they open the app.
 ///   },
 /// );
 ///

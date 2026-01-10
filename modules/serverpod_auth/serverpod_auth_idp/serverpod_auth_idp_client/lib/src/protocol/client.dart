@@ -187,6 +187,22 @@ abstract class EndpointEmailIdpBase extends _i1.EndpointRef {
   });
 }
 
+/// Base endpoint for Firebase Account-based authentication.
+///
+/// This endpoint exposes methods for logging in users using Firebase ID tokens.
+/// If you would like modify the authentication flow, consider extending this
+/// class and overriding the relevant methods.
+/// {@category Endpoint}
+abstract class EndpointFirebaseIdpBase extends _i1.EndpointRef {
+  EndpointFirebaseIdpBase(_i1.EndpointCaller caller) : super(caller);
+
+  /// Validates a Firebase ID token and either logs in the associated user or
+  /// creates a new user account if the Firebase account ID is not yet known.
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  _i2.Future<_i3.AuthSuccess> login({required String idToken});
+}
+
 /// Base endpoint for Google Account-based authentication.
 ///
 /// This endpoint exposes methods for logging in users using Google ID tokens.

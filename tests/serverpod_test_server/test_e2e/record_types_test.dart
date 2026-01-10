@@ -859,7 +859,7 @@ void main() {
                   )
                   .having(
                     (r) => r.namedSubRecord.$1,
-                    'named subrecord SimpleData',
+                    'named sub-record SimpleData',
                     isA<SimpleData>().having((s) => s.num, 'num', 3),
                   )
                   .having(
@@ -869,7 +869,7 @@ void main() {
                   )
                   .having(
                     (r) => r.namedSubRecord.$2,
-                    'named subrecord double',
+                    'named sub-record double',
                     4.5,
                   ),
               isNull,
@@ -979,6 +979,44 @@ void main() {
             isNull,
           ],
         ),
+      );
+    },
+  );
+
+  test(
+    'Given a streaming endpoint that returns a stream of records with nullable int and nullable module class, '
+    'when the stream is listened to, '
+    'then the records are returned verbatim',
+    () async {
+      final values = [
+        (1, ProjectStreamingClass(name: 'test')),
+        (null, ProjectStreamingClass(name: 'test')),
+        (3, null),
+        (null, null),
+      ];
+
+      var result = client.recordParameters.streamOfNullableIntAndModuleClass(
+        Stream.fromIterable(values),
+      );
+
+      expect(
+        result,
+        emitsInOrder([
+          isA<(int, ProjectStreamingClass)>(),
+          isA<(int?, ProjectStreamingClass?)>().having(
+            (e) => e.$1,
+            'int',
+            isNull,
+          ),
+          isA<(int, ProjectStreamingClass?)>().having(
+            (e) => e.$2,
+            'object',
+            isNull,
+          ),
+          isA<(int?, ProjectStreamingClass?)>()
+              .having((e) => e.$1, 'int', isNull)
+              .having((e) => e.$2, 'object', isNull),
+        ]),
       );
     },
   );

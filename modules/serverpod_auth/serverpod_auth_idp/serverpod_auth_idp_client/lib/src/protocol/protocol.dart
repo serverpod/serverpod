@@ -23,31 +23,28 @@ import 'providers/email/models/exceptions/email_account_password_reset_exception
     as _i6;
 import 'providers/email/models/exceptions/email_account_password_reset_exception_reason.dart'
     as _i7;
-import 'providers/email/models/exceptions/email_account_request_exception.dart'
+import 'providers/firebase/models/firebase_id_token_verification_exception.dart'
     as _i8;
-import 'providers/email/models/exceptions/email_account_request_exception_reason.dart'
-    as _i9;
 import 'providers/google/models/google_id_token_verification_exception.dart'
-    as _i10;
+    as _i9;
 import 'providers/passkey/models/passkey_challenge_expired_exception.dart'
-    as _i11;
+    as _i10;
 import 'providers/passkey/models/passkey_challenge_not_found_exception.dart'
-    as _i12;
-import 'providers/passkey/models/passkey_login_request.dart' as _i13;
+    as _i11;
+import 'providers/passkey/models/passkey_login_request.dart' as _i12;
 import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
-    as _i14;
-import 'providers/passkey/models/passkey_registration_request.dart' as _i15;
-import 'dart:typed_data' as _i16;
+    as _i13;
+import 'providers/passkey/models/passkey_registration_request.dart' as _i14;
+import 'dart:typed_data' as _i15;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i17;
-export 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception.dart';
-export 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception_reason.dart';
+    as _i16;
 export 'providers/email/models/exceptions/email_account_login_exception.dart';
 export 'providers/email/models/exceptions/email_account_login_exception_reason.dart';
 export 'providers/email/models/exceptions/email_account_password_reset_exception.dart';
 export 'providers/email/models/exceptions/email_account_password_reset_exception_reason.dart';
 export 'providers/email/models/exceptions/email_account_request_exception.dart';
 export 'providers/email/models/exceptions/email_account_request_exception_reason.dart';
+export 'providers/firebase/models/firebase_id_token_verification_exception.dart';
 export 'providers/google/models/google_id_token_verification_exception.dart';
 export 'providers/passkey/models/passkey_challenge_expired_exception.dart';
 export 'providers/passkey/models/passkey_challenge_not_found_exception.dart';
@@ -110,23 +107,26 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i7.EmailAccountPasswordResetExceptionReason) {
       return _i7.EmailAccountPasswordResetExceptionReason.fromJson(data) as T;
     }
-    if (t == _i8.EmailAccountRequestException) {
-      return _i8.EmailAccountRequestException.fromJson(data) as T;
+    if (t == _i8.FirebaseIdTokenVerificationException) {
+      return _i8.FirebaseIdTokenVerificationException.fromJson(data) as T;
     }
-    if (t == _i9.EmailAccountRequestExceptionReason) {
-      return _i9.EmailAccountRequestExceptionReason.fromJson(data) as T;
+    if (t == _i9.GoogleIdTokenVerificationException) {
+      return _i9.GoogleIdTokenVerificationException.fromJson(data) as T;
     }
-    if (t == _i10.GoogleIdTokenVerificationException) {
-      return _i10.GoogleIdTokenVerificationException.fromJson(data) as T;
+    if (t == _i10.PasskeyChallengeExpiredException) {
+      return _i10.PasskeyChallengeExpiredException.fromJson(data) as T;
     }
-    if (t == _i11.PasskeyChallengeExpiredException) {
-      return _i11.PasskeyChallengeExpiredException.fromJson(data) as T;
+    if (t == _i11.PasskeyChallengeNotFoundException) {
+      return _i11.PasskeyChallengeNotFoundException.fromJson(data) as T;
     }
-    if (t == _i12.PasskeyChallengeNotFoundException) {
-      return _i12.PasskeyChallengeNotFoundException.fromJson(data) as T;
+    if (t == _i12.PasskeyLoginRequest) {
+      return _i12.PasskeyLoginRequest.fromJson(data) as T;
     }
-    if (t == _i13.PasskeyLoginRequest) {
-      return _i13.PasskeyLoginRequest.fromJson(data) as T;
+    if (t == _i13.PasskeyPublicKeyNotFoundException) {
+      return _i13.PasskeyPublicKeyNotFoundException.fromJson(data) as T;
+    }
+    if (t == _i14.PasskeyRegistrationRequest) {
+      return _i14.PasskeyRegistrationRequest.fromJson(data) as T;
     }
     if (t == _i14.PasskeyPublicKeyNotFoundException) {
       return _i14.PasskeyPublicKeyNotFoundException.fromJson(data) as T;
@@ -170,55 +170,49 @@ class Protocol extends _i1.SerializationManager {
               : null)
           as T;
     }
-    if (t == _i1.getType<_i8.EmailAccountRequestException?>()) {
+    if (t == _i1.getType<_i8.FirebaseIdTokenVerificationException?>()) {
       return (data != null
-              ? _i8.EmailAccountRequestException.fromJson(data)
+              ? _i8.FirebaseIdTokenVerificationException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i9.EmailAccountRequestExceptionReason?>()) {
+    if (t == _i1.getType<_i9.GoogleIdTokenVerificationException?>()) {
       return (data != null
-              ? _i9.EmailAccountRequestExceptionReason.fromJson(data)
+              ? _i9.GoogleIdTokenVerificationException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i10.GoogleIdTokenVerificationException?>()) {
+    if (t == _i1.getType<_i10.PasskeyChallengeExpiredException?>()) {
       return (data != null
-              ? _i10.GoogleIdTokenVerificationException.fromJson(data)
+              ? _i10.PasskeyChallengeExpiredException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i11.PasskeyChallengeExpiredException?>()) {
+    if (t == _i1.getType<_i11.PasskeyChallengeNotFoundException?>()) {
       return (data != null
-              ? _i11.PasskeyChallengeExpiredException.fromJson(data)
+              ? _i11.PasskeyChallengeNotFoundException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i12.PasskeyChallengeNotFoundException?>()) {
+    if (t == _i1.getType<_i12.PasskeyLoginRequest?>()) {
+      return (data != null ? _i12.PasskeyLoginRequest.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i13.PasskeyPublicKeyNotFoundException?>()) {
       return (data != null
-              ? _i12.PasskeyChallengeNotFoundException.fromJson(data)
+              ? _i13.PasskeyPublicKeyNotFoundException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i13.PasskeyLoginRequest?>()) {
-      return (data != null ? _i13.PasskeyLoginRequest.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i14.PasskeyPublicKeyNotFoundException?>()) {
+    if (t == _i1.getType<_i14.PasskeyRegistrationRequest?>()) {
       return (data != null
-              ? _i14.PasskeyPublicKeyNotFoundException.fromJson(data)
+              ? _i14.PasskeyRegistrationRequest.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i15.PasskeyRegistrationRequest?>()) {
-      return (data != null
-              ? _i15.PasskeyRegistrationRequest.fromJson(data)
-              : null)
-          as T;
-    }
-    if (t == _i1.getType<({_i16.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<({_i15.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i16.ByteData>(
+            challenge: deserialize<_i15.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -226,7 +220,7 @@ class Protocol extends _i1.SerializationManager {
           as T;
     }
     try {
-      return _i17.Protocol().deserialize<T>(data, t);
+      return _i16.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -247,16 +241,18 @@ class Protocol extends _i1.SerializationManager {
       _i8.EmailAccountRequestException => 'EmailAccountRequestException',
       _i9.EmailAccountRequestExceptionReason =>
         'EmailAccountRequestExceptionReason',
-      _i10.GoogleIdTokenVerificationException =>
+      _i8.FirebaseIdTokenVerificationException =>
+        'FirebaseIdTokenVerificationException',
+      _i9.GoogleIdTokenVerificationException =>
         'GoogleIdTokenVerificationException',
-      _i11.PasskeyChallengeExpiredException =>
+      _i10.PasskeyChallengeExpiredException =>
         'PasskeyChallengeExpiredException',
-      _i12.PasskeyChallengeNotFoundException =>
+      _i11.PasskeyChallengeNotFoundException =>
         'PasskeyChallengeNotFoundException',
-      _i13.PasskeyLoginRequest => 'PasskeyLoginRequest',
-      _i14.PasskeyPublicKeyNotFoundException =>
+      _i12.PasskeyLoginRequest => 'PasskeyLoginRequest',
+      _i13.PasskeyPublicKeyNotFoundException =>
         'PasskeyPublicKeyNotFoundException',
-      _i15.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
+      _i14.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
       _ => null,
     };
   }
@@ -290,20 +286,22 @@ class Protocol extends _i1.SerializationManager {
         return 'EmailAccountRequestException';
       case _i9.EmailAccountRequestExceptionReason():
         return 'EmailAccountRequestExceptionReason';
-      case _i10.GoogleIdTokenVerificationException():
+      case _i8.FirebaseIdTokenVerificationException():
+        return 'FirebaseIdTokenVerificationException';
+      case _i9.GoogleIdTokenVerificationException():
         return 'GoogleIdTokenVerificationException';
-      case _i11.PasskeyChallengeExpiredException():
+      case _i10.PasskeyChallengeExpiredException():
         return 'PasskeyChallengeExpiredException';
-      case _i12.PasskeyChallengeNotFoundException():
+      case _i11.PasskeyChallengeNotFoundException():
         return 'PasskeyChallengeNotFoundException';
-      case _i13.PasskeyLoginRequest():
+      case _i12.PasskeyLoginRequest():
         return 'PasskeyLoginRequest';
-      case _i14.PasskeyPublicKeyNotFoundException():
+      case _i13.PasskeyPublicKeyNotFoundException():
         return 'PasskeyPublicKeyNotFoundException';
-      case _i15.PasskeyRegistrationRequest():
+      case _i14.PasskeyRegistrationRequest():
         return 'PasskeyRegistrationRequest';
     }
-    className = _i17.Protocol().getClassNameForObject(data);
+    className = _i16.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -344,100 +342,108 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'EmailAccountRequestExceptionReason') {
       return deserialize<_i9.EmailAccountRequestExceptionReason>(data['data']);
     }
+    if (dataClassName == 'FirebaseIdTokenVerificationException') {
+      return deserialize<_i8.FirebaseIdTokenVerificationException>(
+        data['data'],
+      );
+    }
     if (dataClassName == 'GoogleIdTokenVerificationException') {
-      return deserialize<_i10.GoogleIdTokenVerificationException>(data['data']);
+      return deserialize<_i9.GoogleIdTokenVerificationException>(data['data']);
     }
     if (dataClassName == 'PasskeyChallengeExpiredException') {
-      return deserialize<_i11.PasskeyChallengeExpiredException>(data['data']);
+      return deserialize<_i10.PasskeyChallengeExpiredException>(data['data']);
     }
     if (dataClassName == 'PasskeyChallengeNotFoundException') {
-      return deserialize<_i12.PasskeyChallengeNotFoundException>(data['data']);
+      return deserialize<_i11.PasskeyChallengeNotFoundException>(data['data']);
     }
     if (dataClassName == 'PasskeyLoginRequest') {
-      return deserialize<_i13.PasskeyLoginRequest>(data['data']);
+      return deserialize<_i12.PasskeyLoginRequest>(data['data']);
     }
     if (dataClassName == 'PasskeyPublicKeyNotFoundException') {
-      return deserialize<_i14.PasskeyPublicKeyNotFoundException>(data['data']);
+      return deserialize<_i13.PasskeyPublicKeyNotFoundException>(data['data']);
     }
     if (dataClassName == 'PasskeyRegistrationRequest') {
-      return deserialize<_i15.PasskeyRegistrationRequest>(data['data']);
+      return deserialize<_i14.PasskeyRegistrationRequest>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i17.Protocol().deserializeByClassName(data);
+      return _i16.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
-}
 
-/// Maps any `Record`s known to this [Protocol] to their JSON representation
-///
-/// Throws in case the record type is not known.
-///
-/// This method will return `null` (only) for `null` inputs.
-Map<String, dynamic>? mapRecordToJson(Record? record) {
-  if (record == null) {
-    return null;
-  }
-  if (record is ({_i16.ByteData challenge, _i1.UuidValue id})) {
-    return {
-      "n": {
-        "challenge": record.challenge,
-        "id": record.id,
-      },
-    };
-  }
-  throw Exception('Unsupported record type ${record.runtimeType}');
-}
-
-/// Maps container types (like [List], [Map], [Set]) containing
-/// [Record]s or non-String-keyed [Map]s to their JSON representation.
-///
-/// It should not be called for [SerializableModel] types. These
-/// handle the "[Record] in container" mapping internally already.
-///
-/// It is only supposed to be called from generated protocol code.
-///
-/// Returns either a `List<dynamic>` (for List, Sets, and Maps with
-/// non-String keys) or a `Map<String, dynamic>` in case the input was
-/// a `Map<String, …>`.
-Object? mapContainerToJson(Object obj) {
-  if (obj is! Iterable && obj is! Map) {
-    throw ArgumentError.value(
-      obj,
-      'obj',
-      'The object to serialize should be of type List, Map, or Set',
-    );
-  }
-
-  dynamic mapIfNeeded(Object? obj) {
-    return switch (obj) {
-      Record record => mapRecordToJson(record),
-      Iterable iterable => mapContainerToJson(iterable),
-      Map map => mapContainerToJson(map),
-      Object? value => value,
-    };
-  }
-
-  switch (obj) {
-    case Map<String, dynamic>():
+  /// Maps any `Record`s known to this [Protocol] to their JSON representation
+  ///
+  /// Throws in case the record type is not known.
+  ///
+  /// This method will return `null` (only) for `null` inputs.
+  Map<String, dynamic>? mapRecordToJson(Record? record) {
+    if (record == null) {
+      return null;
+    }
+    if (record is ({_i15.ByteData challenge, _i1.UuidValue id})) {
       return {
-        for (var entry in obj.entries) entry.key: mapIfNeeded(entry.value),
+        "n": {
+          "challenge": record.challenge,
+          "id": record.id,
+        },
       };
-    case Map():
-      return [
-        for (var entry in obj.entries)
-          {
-            'k': mapIfNeeded(entry.key),
-            'v': mapIfNeeded(entry.value),
-          },
-      ];
-
-    case Iterable():
-      return [
-        for (var e in obj) mapIfNeeded(e),
-      ];
+    }
+    try {
+      return _i16.Protocol().mapRecordToJson(record);
+    } catch (_) {}
+    throw Exception('Unsupported record type ${record.runtimeType}');
   }
 
-  return obj;
+  /// Maps container types (like [List], [Map], [Set]) containing
+  /// [Record]s or non-String-keyed [Map]s to their JSON representation.
+  ///
+  /// It should not be called for [SerializableModel] types. These
+  /// handle the "[Record] in container" mapping internally already.
+  ///
+  /// It is only supposed to be called from generated protocol code.
+  ///
+  /// Returns either a `List<dynamic>` (for List, Sets, and Maps with
+  /// non-String keys) or a `Map<String, dynamic>` in case the input was
+  /// a `Map<String, …>`.
+  Object? mapContainerToJson(Object obj) {
+    if (obj is! Iterable && obj is! Map) {
+      throw ArgumentError.value(
+        obj,
+        'obj',
+        'The object to serialize should be of type List, Map, or Set',
+      );
+    }
+
+    dynamic mapIfNeeded(Object? obj) {
+      return switch (obj) {
+        Record record => mapRecordToJson(record),
+        Iterable iterable => mapContainerToJson(iterable),
+        Map map => mapContainerToJson(map),
+        Object? value => value,
+      };
+    }
+
+    switch (obj) {
+      case Map<String, dynamic>():
+        return {
+          for (var entry in obj.entries) entry.key: mapIfNeeded(entry.value),
+        };
+      case Map():
+        return [
+          for (var entry in obj.entries)
+            {
+              'k': mapIfNeeded(entry.key),
+              'v': mapIfNeeded(entry.value),
+            },
+        ];
+
+      case Iterable():
+        return [
+          for (var e in obj) mapIfNeeded(e),
+        ];
+    }
+
+    return obj;
+  }
 }

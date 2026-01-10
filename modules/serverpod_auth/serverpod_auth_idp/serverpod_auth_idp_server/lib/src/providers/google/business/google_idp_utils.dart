@@ -4,8 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
+import '../../../common/id_token_verifier/id_token_verifier.dart';
+import 'google_id_token_config.dart';
 import 'google_idp_config.dart';
-import 'google_idp_token_verifier.dart';
 
 /// Details of the Google Account.
 ///
@@ -136,8 +137,9 @@ class GoogleIdpUtils {
 
     Map<String, dynamic> data;
     try {
-      data = await GoogleIdTokenVerifier.verifyOAuth2Token(
+      data = await IdTokenVerifier.verifyOAuth2Token(
         idToken,
+        config: const GoogleIdTokenConfig(),
         audience: clientId,
       );
     } catch (e) {
