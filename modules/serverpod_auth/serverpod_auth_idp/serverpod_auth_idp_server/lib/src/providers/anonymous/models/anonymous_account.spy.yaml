@@ -1,0 +1,14 @@
+### A shell account. Persists as long as the user remains logged in,
+### but can never restore this session if the user logs out or loses access
+### to their device.
+class: AnonymousAccount
+serverOnly: true
+table: serverpod_auth_idp_anonymous_account
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### The [AuthUser] this profile belongs to
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  ### The time when this authentication was created.
+  createdAt: DateTime, defaultModel=now

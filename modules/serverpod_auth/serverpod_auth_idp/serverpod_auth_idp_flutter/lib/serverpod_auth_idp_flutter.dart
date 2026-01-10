@@ -8,6 +8,8 @@ library;
 // Convenience export of the core auth package.
 export 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
+export 'src/anonymous/anonymous_auth_controller.dart';
+export 'src/anonymous/anonymous_sign_in_widget.dart';
 export 'src/apple/apple_auth_controller.dart';
 export 'src/apple/apple_sign_in_button.dart';
 export 'src/apple/apple_sign_in_service.dart';

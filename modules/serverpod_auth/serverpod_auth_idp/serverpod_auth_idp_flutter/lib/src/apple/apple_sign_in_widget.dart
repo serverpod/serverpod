@@ -113,6 +113,11 @@ class AppleSignInWidget extends StatefulWidget {
          'passing a controller, the client parameter is ignored.',
        ),
        assert(
+         (onAuthenticated == null && onError == null) || controller == null,
+         'Do not provide onAuthenticated or onError when using a controller '
+         'as they will be handled by the controller and will be ignored.',
+       ),
+       assert(
          minimumWidth > 0 && minimumWidth <= 400,
          'Invalid minimumWidth. Must be between 0 and 400.',
        );

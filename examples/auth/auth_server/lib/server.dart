@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/providers/anonymous.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
@@ -63,12 +64,15 @@ void run(List<String> args) async {
     hostname: 'localhost',
   );
 
+  final anonymousIdpConfig = AnonymousIdpConfig();
+
   pod.initializeAuthServices(
     tokenManagerBuilders: [
       serverSideSessionsConfig,
       jwtTokenConfig,
     ],
     identityProviderBuilders: [
+      anonymousIdpConfig,
       googleIdpConfig,
       appleIdpConfig,
       emailIdpConfig,
