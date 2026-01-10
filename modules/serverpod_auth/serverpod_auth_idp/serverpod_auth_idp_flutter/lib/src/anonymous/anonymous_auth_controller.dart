@@ -9,11 +9,13 @@ class AnonymousAuthController extends ChangeNotifier {
   /// The Serverpod client instance.
   final ServerpodClientShared client;
 
+  /// {@template create_anonymous_token}
   /// Function to generate the anonymous token supplied to the `login` endpoint.
   /// This token can fill many roles, including app attestation if the
   /// onBeforeAnonymousAccountCreated callback is used to prevent abuse. If
   /// onBeforeAnonymousAccountCreated is not configured on the server, then this
   /// function and any token it would generate are likely meaningless.
+  /// {@endtemplate}
   final Future<String?> Function()? createAnonymousToken;
 
   /// Callback when authentication is successful.

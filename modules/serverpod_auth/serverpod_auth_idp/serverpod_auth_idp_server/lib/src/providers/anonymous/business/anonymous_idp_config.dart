@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/src/providers/anonymous/business/anonymous_idp.dart';
 
 import '../../../../../core.dart';
@@ -58,26 +59,30 @@ class AnonymousIdpConfig extends IdentityProviderBuilder<AnonymousIdp> {
     final BeforeAnonymousAccountCreatedFunction?
     onBeforeAnonymousAccountCreated,
     final AfterAnonymousAccountCreatedFunction? onAfterAnonymousAccountCreated,
-    final AnonymousIdpLoginRateLimitingConfig? perIpAddressRateLimitConfig,
+    final RateLimit? perIpAddressRateLimit,
+  }) => AnonymousIdpConfig._(
+    onBeforeAnonymousAccountCreated: onBeforeAnonymousAccountCreated,
+    onAfterAnonymousAccountCreated: onAfterAnonymousAccountCreated,
+    perIpAddressRateLimitConfig:
+        AnonymousIdpLoginRateLimitingConfig.fromRateLimit(
+          rateLimit:
+              perIpAddressRateLimit ??
+              AnonymousIdpLoginRateLimitingConfig.defaultRateLimit,
+        ),
+  );
+
+  /// Creates a new [AnonymousIdpConfig] with completely customized rate
+  /// limiting.
+  factory AnonymousIdpConfig.customRateLimiting({
+    required final AnonymousIdpLoginRateLimitingConfig
+    perIpAddressRateLimitConfig,
+    final BeforeAnonymousAccountCreatedFunction?
+    onBeforeAnonymousAccountCreated,
+    final AfterAnonymousAccountCreatedFunction? onAfterAnonymousAccountCreated,
   }) => AnonymousIdpConfig._(
     onBeforeAnonymousAccountCreated: onBeforeAnonymousAccountCreated,
     onAfterAnonymousAccountCreated: onAfterAnonymousAccountCreated,
     perIpAddressRateLimitConfig: perIpAddressRateLimitConfig,
-  );
-
-  /// Creates a new [AnonymousIdpConfig] with rate limiting enabled. If no
-  /// rate limiting value is provided, a default value will be used.
-  factory AnonymousIdpConfig.rateLimited({
-    final BeforeAnonymousAccountCreatedFunction?
-    onBeforeAnonymousAccountCreated,
-    final AfterAnonymousAccountCreatedFunction? onAfterAnonymousAccountCreated,
-    final AnonymousIdpLoginRateLimitingConfig? perIpAddressRateLimitConfig,
-  }) => AnonymousIdpConfig(
-    onBeforeAnonymousAccountCreated: onBeforeAnonymousAccountCreated,
-    onAfterAnonymousAccountCreated: onAfterAnonymousAccountCreated,
-    perIpAddressRateLimitConfig:
-        perIpAddressRateLimitConfig ??
-        AnonymousIdpLoginRateLimitingConfig.defaultConfig(),
   );
 
   @override
@@ -97,13 +102,25 @@ class AnonymousIdpConfig extends IdentityProviderBuilder<AnonymousIdp> {
 /// Rate limiting configuration for anonymous login.
 class AnonymousIdpLoginRateLimitingConfig
     extends RateLimitedRequestAttemptConfig<String> {
+  /// Default maximum number of attempts within [defaultTimeframe].
+  static const defaultMaxAttempts = 100;
+
+  /// Default window for which attempts are capped to [defaultMaxAttempts].
+  static const defaultTimeframe = Duration(hours: 1);
+
+  /// Default [RateLimit].
+  static const defaultRateLimit = RateLimit(
+    maxAttempts: defaultMaxAttempts,
+    timeframe: defaultTimeframe,
+  );
+
   /// Creates an instance of [AnonymousIdpLoginRateLimitingConfig].
   ///
   /// The parameters `nonceToString` and `nonceFromString` are not accepted
   /// because the nonce type is `String`.
   AnonymousIdpLoginRateLimitingConfig({
-    required super.maxAttempts,
-    required super.timeframe,
+    super.maxAttempts = defaultMaxAttempts,
+    super.timeframe = defaultTimeframe,
     super.defaultExtraData,
     super.onRateLimitExceeded,
   }) : super(
@@ -113,18 +130,19 @@ class AnonymousIdpLoginRateLimitingConfig
          nonceFromString: (final String nonce) => nonce,
        );
 
-  /// Creates an instance of [AnonymousIdpLoginRateLimitingConfig] with default
-  /// values.
+  /// Creates an instance of [AnonymousIdpLoginRateLimitingConfig] from a
+  /// [RateLimit] value.
   ///
   /// The parameters `nonceToString` and `nonceFromString` are not accepted
   /// because the nonce type is `String`.
-  factory AnonymousIdpLoginRateLimitingConfig.defaultConfig({
+  factory AnonymousIdpLoginRateLimitingConfig.fromRateLimit({
+    required final RateLimit rateLimit,
     final Map<String, String>? defaultExtraData,
     final Future<void> Function(Session session, String nonce)?
     onRateLimitExceeded,
   }) => AnonymousIdpLoginRateLimitingConfig(
-    maxAttempts: 100,
-    timeframe: const Duration(hours: 1),
+    maxAttempts: rateLimit.maxAttempts,
+    timeframe: rateLimit.timeframe,
     defaultExtraData: defaultExtraData,
     onRateLimitExceeded: onRateLimitExceeded,
   );

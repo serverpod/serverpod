@@ -19,6 +19,9 @@ class AnonymousSignInWidget extends StatefulWidget {
   /// and [client], [onAuthenticated], and [onError] are ignored.
   final AnonymousAuthController? controller;
 
+  /// {@macro create_anonymous_token}
+  final Future<String?> Function()? createAnonymousToken;
+
   /// The Serverpod client instance.
   ///
   /// Required when [controller] is null, ignored otherwise.
@@ -50,6 +53,7 @@ class AnonymousSignInWidget extends StatefulWidget {
     this.controller,
     this.client,
     this.onAuthenticated,
+    this.createAnonymousToken,
     this.onError,
     this.size = AnonymousButtonSize.large,
     this.shape = AnonymousButtonShape.pill,
@@ -80,6 +84,7 @@ class _AnonymousSignInWidgetState extends State<AnonymousSignInWidget> {
         AnonymousAuthController(
           client: widget.client!,
           onAuthenticated: widget.onAuthenticated,
+          createAnonymousToken: widget.createAnonymousToken,
           onError: widget.onError,
         );
   }

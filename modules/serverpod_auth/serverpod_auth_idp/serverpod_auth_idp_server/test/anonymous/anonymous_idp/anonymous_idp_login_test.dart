@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/anonymous.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
 import '../../test_tags.dart';
@@ -45,9 +46,9 @@ void main() {
         session = sessionBuilder.build();
         fixture = AnonymousIdpTestFixture(
           config: AnonymousIdpConfig(
-            perIpAddressRateLimitConfig: AnonymousIdpLoginRateLimitingConfig(
+            perIpAddressRateLimit: const RateLimit(
               maxAttempts: 2,
-              timeframe: const Duration(minutes: 1),
+              timeframe: Duration(minutes: 1),
             ),
           ),
         );
@@ -81,9 +82,9 @@ void main() {
         session = sessionBuilder.build();
         fixture = AnonymousIdpTestFixture(
           config: AnonymousIdpConfig(
-            perIpAddressRateLimitConfig: AnonymousIdpLoginRateLimitingConfig(
+            perIpAddressRateLimit: const RateLimit(
               maxAttempts: 1,
-              timeframe: const Duration(minutes: 1),
+              timeframe: Duration(minutes: 1),
             ),
           ),
         );
@@ -119,9 +120,9 @@ void main() {
         session = sessionBuilder.build();
         fixture = AnonymousIdpTestFixture(
           config: AnonymousIdpConfig(
-            perIpAddressRateLimitConfig: AnonymousIdpLoginRateLimitingConfig(
+            perIpAddressRateLimit: const RateLimit(
               maxAttempts: 1,
-              timeframe: const Duration(minutes: 1),
+              timeframe: Duration(minutes: 1),
             ),
           ),
         );
