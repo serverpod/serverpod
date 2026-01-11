@@ -140,7 +140,6 @@ class GitHubIdpUtils {
     final accountDetails = await fetchAccountDetails(
       session,
       accessToken: accessToken,
-      transaction: transaction,
     );
 
     var githubAccount = await GitHubAccount.db.findFirstRow(
@@ -191,7 +190,6 @@ class GitHubIdpUtils {
   Future<GitHubAccountDetails> fetchAccountDetails(
     final Session session, {
     required final String accessToken,
-    final Transaction? transaction,
   }) async {
     // More info on the user API:
     // https://docs.github.com/en/rest/users/users#get-the-authenticated-user
@@ -231,7 +229,7 @@ class GitHubIdpUtils {
           session,
           accountDetails: details,
           accessToken: accessToken,
-          transaction: transaction,
+          transaction: null,
         );
       }
     } catch (e) {
