@@ -47,7 +47,22 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
   final GitHubAccountDetailsValidation githubAccountDetailsValidation;
 
   /// Callback that can be used with the access token to extract additional
-  /// information from GitHub APIs.
+  /// information from GitHub.
+  ///
+  /// This callback is invoked during [GitHubIdpUtils.fetchAccountDetails],
+  /// before the system determines if the user is new or returning. It runs on
+  /// EVERY authentication attempt.
+  ///
+  /// **CRITICAL - Do NOT create these models in the callback:**
+  /// - [GitHubAccount] - Breaks new account detection
+  /// - [UserProfile] - Interferes with automatic profile creation
+  /// - [AuthUser] - Already handled by the authentication flow
+  ///
+  /// Creating these models will cause the authentication flow in [GitHubIdp.login]
+  /// to fail or skip critical steps like user profile creation.
+  ///
+  /// **Safe usage:** Store data in your own custom tables, linked by
+  /// [GitHubAccountDetails.userIdentifier]. Keep operations lightweight.
   final GetExtraGitHubInfoCallback? getExtraGitHubInfoCallback;
 
   /// Creates a new instance of [GitHubIdpConfig].
