@@ -22,9 +22,13 @@ import 'providers.dart';
 /// Currently supports:
 /// - Email authentication (via [EndpointEmailIdpBase])
 /// - Google Sign-In (via [EndpointGoogleIdpBase])
+/// - Apple Sign-In (via [EndpointAppleIdpBase])
 ///
 /// The widget separates email authentication from other providers with a
 /// visual divider showing "Or continue with" text.
+///
+/// The widget coordinates loading states across all sign-in methods to
+/// prevent multiple simultaneous authentication attempts.
 ///
 /// Example usage:
 /// ```dart
@@ -95,6 +99,32 @@ class _SignInWidgetState extends State<SignInWidget> {
   bool get hasGoogle => auth.idp.hasGoogle && !widget.disableGoogleSignInWidget;
   bool get hasApple => auth.idp.hasApple && !widget.disableAppleSignInWidget;
 
+  /// Tracks whether any sign-in method is currently in progress.
+  ///
+  /// This prevents users from initiating multiple simultaneous authentication
+  /// attempts, which commonly occurs when switching between development and
+  /// production environments or when users click multiple buttons quickly.
+  bool _isAnySignInInProgress = false;
+
+  /// Updates the sign-in progress state and disables/enables the interface.
+  void _setSignInProgress(bool inProgress) {
+    if (mounted) {
+      setState(() => _isAnySignInInProgress = inProgress);
+    }
+  }
+
+  /// Wraps the onAuthenticated callback to reset the loading state.
+  void _handleAuthenticated() {
+    _setSignInProgress(false);
+    widget.onAuthenticated?.call();
+  }
+
+  /// Wraps the onError callback to reset the loading state.
+  void _handleError(Object error) {
+    _setSignInProgress(false);
+    widget.onError?.call(error);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!auth.idp.hasAny) {
@@ -113,8 +143,8 @@ class _SignInWidgetState extends State<SignInWidget> {
         widget.googleSignInWidget ??
             GoogleSignInWidget(
               client: widget.client,
-              onAuthenticated: widget.onAuthenticated,
-              onError: widget.onError,
+              onAuthenticated: _handleAuthenticated,
+              onError: _handleError,
             ),
     ];
 
@@ -123,8 +153,8 @@ class _SignInWidgetState extends State<SignInWidget> {
           widget.appleSignInWidget ??
           AppleSignInWidget(
             client: widget.client,
-            onAuthenticated: widget.onAuthenticated,
-            onError: widget.onError,
+            onAuthenticated: _handleAuthenticated,
+            onError: _handleError,
           );
 
       // On Apple platforms, display the Apple sign-in widget first.
@@ -135,20 +165,27 @@ class _SignInWidgetState extends State<SignInWidget> {
       }
     }
 
-    // TODO: Make this adaptative.
-    return SignInWidgetsColumn(
-      spacing: 12,
-      children: [
-        if (hasEmail)
-          widget.emailSignInWidget ??
-              EmailSignInWidget(
-                client: widget.client,
-                onAuthenticated: widget.onAuthenticated,
-                onError: widget.onError,
-              ),
-        if (socialProviders.isNotEmpty && hasEmail) const _SignInSeparator(),
-        ...socialProviders,
-      ],
+    // Disable all sign-in methods when any authentication is in progress
+    return IgnorePointer(
+      ignoring: _isAnySignInInProgress,
+      child: Opacity(
+        opacity: _isAnySignInInProgress ? 0.5 : 1.0,
+        child: SignInWidgetsColumn(
+          spacing: 12,
+          children: [
+            if (hasEmail)
+              widget.emailSignInWidget ??
+                  EmailSignInWidget(
+                    client: widget.client,
+                    onAuthenticated: _handleAuthenticated,
+                    onError: _handleError,
+                  ),
+            if (socialProviders.isNotEmpty && hasEmail)
+              const _SignInSeparator(),
+            ...socialProviders,
+          ],
+        ),
+      ),
     );
   }
 }
