@@ -133,8 +133,8 @@ Directory? _returnCandidates(List<Directory> candidates) {
   // Remove duplicates by normalized path
   var uniquePaths = <String>{};
   candidates = candidates.where((dir) {
-    var canonicalized = p.canonicalize(dir.resolveSymbolicLinksSync());
-    if (uniquePaths.contains(canonicalized)) {
+    var canonicalized = dir.canonicalPath;
+    if (canonicalized == null || uniquePaths.contains(canonicalized)) {
       return false;
     }
     uniquePaths.add(canonicalized);
@@ -322,24 +322,38 @@ class ServerDirectoryFinder {
       var homeDir =
           Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
 
-      final parentPath = p.canonicalize(dir.parent.resolveSymbolicLinksSync());
+      final parentPath = dir.parent.canonicalPath;
+      if (parentPath == null) return true;
 
       // Stop at first level within top-level directories to prevent
       // cross-contamination between concurrent or leftover of previous tests
       // Paths must be resolved first to avoid legacy DOS Windows paths.
       final topLevelDirectories = {
         p.rootPrefix(parentPath),
-        p.canonicalize(Directory.systemTemp.path),
-        if (homeDir != null)
-          p.canonicalize(Directory(homeDir).resolveSymbolicLinksSync()),
+        Directory.systemTemp.canonicalPath,
+        if (homeDir != null) Directory(homeDir).canonicalPath,
       };
-      if (topLevelDirectories.any((d) => d == parentPath)) {
+      if (topLevelDirectories.any((d) => d != null && d == parentPath)) {
         return true;
       }
 
       return false;
     } on FileSystemException catch (_) {
       return true;
+    }
+  }
+}
+
+extension on Directory {
+  /// Try to get the resolved canonical path of the directory.
+  ///
+  /// The resolve step is necessary to deal with legacy DOS 8.3 file names.
+  /// Returns null if the directory cannot be accessed.
+  String? get canonicalPath {
+    try {
+      return p.canonicalize(resolveSymbolicLinksSync());
+    } catch (_) {
+      return null;
     }
   }
 }
