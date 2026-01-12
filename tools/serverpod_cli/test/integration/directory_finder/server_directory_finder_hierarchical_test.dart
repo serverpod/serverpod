@@ -11,7 +11,7 @@ import '../../test_util/test_tags.dart';
 void main() {
   group(
     'ServerDirectoryFinder.search hierarchical order and early returns',
-    tags: [TestTags.concurrencyOne],
+    tags: [TestTags.concurrencyOneOnlyOnWindows],
     () {
       test(
         'Given server in both child and parent directories, '

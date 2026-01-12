@@ -12,7 +12,7 @@ import '../../test_util/test_tags.dart';
 void main() {
   group(
     'ServerDirectoryFinder.findOrPrompt with interactive flag',
-    tags: [TestTags.concurrencyOne],
+    tags: [TestTags.concurrencyOneOnlyOnWindows],
     () {
       test(
         'Given multiple server directories exist, '

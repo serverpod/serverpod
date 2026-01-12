@@ -11,7 +11,7 @@ import '../../test_util/test_tags.dart';
 void main() {
   group(
     'ServerDirectoryFinder.search',
-    tags: [TestTags.concurrencyOne],
+    tags: [TestTags.concurrencyOneOnlyOnWindows],
     () {
       test(
         'Given current directory is a server directory, '
