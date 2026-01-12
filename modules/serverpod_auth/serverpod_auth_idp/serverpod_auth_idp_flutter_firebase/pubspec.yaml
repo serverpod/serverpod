@@ -1,8 +1,8 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
 
-name: serverpod_auth_idp_flutter
-description: Flutter package for the next version of the Serverpod authentication module.
+name: serverpod_auth_idp_flutter_firebase
+description: Firebase-specific Flutter package for the Serverpod authentication module.
 version: 3.2.0
 repository: https://github.com/serverpod/serverpod
 
@@ -11,21 +11,11 @@ environment:
   flutter: '^3.32.0'
 
 dependencies:
-  animations: ^2.1.0
-  email_validator: '>=2.1.17 <4.0.0'
+  firebase_auth: ^6.1.3
   flutter:
     sdk: flutter
-  flutter_localizations:
-    sdk: flutter
-  flutter_svg: ^2.2.1
-  google_fonts: ">=6.3.2 <8.0.0"
-  google_sign_in: ^7.2.0
-  google_sign_in_web: ^1.1.0
-  pinput: '>=5.0.2 <7.0.0'
-  provider: ^6.1.5
-  serverpod_auth_core_flutter: 3.2.0
   serverpod_auth_idp_client: 3.2.0
-  sign_in_with_apple: ^7.0.1
+  serverpod_auth_idp_flutter: 3.2.0
 
 dev_dependencies:
   flutter_test:
@@ -35,18 +25,13 @@ dev_dependencies:
 dependency_overrides:
   serverpod_auth_core_client:
     path: ../../serverpod_auth_core/serverpod_auth_core_client
-  serverpod_auth_core_flutter:
-    path: ../../serverpod_auth_core/serverpod_auth_core_flutter
   serverpod_auth_idp_client:
     path: ../serverpod_auth_idp_client
+  serverpod_auth_idp_flutter:
+    path: ../serverpod_auth_idp_flutter
   serverpod_client:
     path: ../../../../packages/serverpod_client
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:
     path: ../../../../packages/serverpod_serialization
-
-flutter:
-  uses-material-design: true
-  assets:
-    - assets/images/

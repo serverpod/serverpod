@@ -59,6 +59,8 @@ declare -a projectPaths=(
     "modules/serverpod_auth/serverpod_auth_migration/serverpod_auth_migration_client"
     "modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server"
     "modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client"
+    "modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter"
+    "modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter_firebase"
     "modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server"
     "modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_flutter"
     "modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_client"

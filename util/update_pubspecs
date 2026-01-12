@@ -68,6 +68,7 @@ cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_s
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server/CHANGELOG.md
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client/CHANGELOG.md
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter/CHANGELOG.md
+cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter_firebase/CHANGELOG.md
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_client/CHANGELOG.md
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_flutter/CHANGELOG.md
 cp CHANGELOG.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server/CHANGELOG.md
@@ -119,6 +120,7 @@ cp README_subpackage.md modules/serverpod_auth/serverpod_auth_core/serverpod_aut
 cp README_subpackage.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server/README.md
 cp README_subpackage.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client/README.md
 cp README_subpackage.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter/README.md
+cp README_subpackage.md modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter_firebase/README.md
 # cp README_subpackage.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_client/README.md
 # cp README_subpackage.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_flutter/README.md
 # cp README_subpackage.md modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server/README.md
