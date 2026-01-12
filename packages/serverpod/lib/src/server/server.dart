@@ -46,6 +46,18 @@ class Server implements RouterInjectable {
   /// Current database configuration.
   final DatabasePoolManager? _databasePoolManager;
 
+  /// JWT validation exception class names that should be logged at debug level.
+  ///
+  /// These represent expected client-side errors (e.g., expired or invalid tokens)
+  /// rather than server-side issues, and commonly occur during development when
+  /// switching between environments.
+  static const Set<String> _jwtValidationExceptions = {
+    'RefreshTokenNotFoundException',
+    'RefreshTokenExpiredException',
+    'RefreshTokenMalformedException',
+    'RefreshTokenInvalidSecretException',
+  };
+
   /// Creates a new [Database] object with a connection to the configured
   /// database.
   Database createDatabase(Session session) {
@@ -460,12 +472,53 @@ class Server implements RouterInjectable {
           space: OriginSpace.application,
           context: contextFromSession(session, request: request),
         );
-        await session.close(error: e, stackTrace: stackTrace);
+
+        await _handleEndpointException(session, e, stackTrace);
         rethrow;
       }
     } finally {
       await maybeSession?.close(); // safe to close twice
     }
+  }
+
+  /// Handles exceptions thrown during endpoint method execution.
+  ///
+  /// JWT validation exceptions are logged at debug level as they represent
+  /// expected client-side errors (e.g., expired tokens, invalid tokens).
+  /// All other exceptions are logged at error level as they indicate
+  /// unexpected server-side issues.
+  Future<void> _handleEndpointException(
+    MethodCallSession session,
+    Object exception,
+    StackTrace stackTrace,
+  ) async {
+    if (_isJwtValidationException(exception)) {
+      session.log(
+        'JWT validation failed: ${exception.toString()}',
+        level: LogLevel.debug,
+        exception: exception,
+        stackTrace: stackTrace,
+      );
+      await session.close();
+    } else {
+      await session.close(error: exception, stackTrace: stackTrace);
+    }
+  }
+
+  /// Determines if an exception is a JWT validation exception.
+  ///
+  /// JWT validation exceptions are expected client-side errors that occur
+  /// when clients provide invalid, expired, or malformed tokens. These are
+  /// common during development when switching between environments.
+  bool _isJwtValidationException(Object exception) {
+    if (exception is! SerializableException) {
+      return false;
+    }
+
+    final exceptionString = exception.toString();
+    return _jwtValidationExceptions.any(
+      (exceptionName) => exceptionString.contains(exceptionName),
+    );
   }
 
   static Response _toResponse(dynamic value) {
