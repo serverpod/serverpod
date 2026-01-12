@@ -59,16 +59,8 @@ do
      continue
    fi
 
-   echo "==== Running concurrent unit tests in $i ===="
-   dart test -x integration -x concurrency_one --reporter=failures-only
-   last_exit_code=$?
-
-  if [ $last_exit_code != 0 ] && [ $last_exit_code != 79 ]; then
-    exit_code=1
-   fi
-
-   echo "==== Running non-concurrent unit tests in $i ===="
-   dart test -x integration -t concurrency_one --concurrency=1 --reporter=failures-only
+   echo "==== Running tests in $i ===="
+   dart test -x integration --reporter=failures-only
    last_exit_code=$?
 
   if [ $last_exit_code != 0 ] && [ $last_exit_code != 79 ]; then

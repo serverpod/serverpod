@@ -6,12 +6,10 @@ import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
 import '../../test_util/server_directory_finder_helpers.dart';
-import '../../test_util/test_tags.dart';
 
 void main() {
   group(
     'ServerDirectoryFinder.search hierarchical order and early returns',
-    tags: [TestTags.concurrencyOneOnlyOnWindows],
     () {
       test(
         'Given server in both child and parent directories, '
