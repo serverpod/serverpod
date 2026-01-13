@@ -1850,7 +1850,7 @@ class Restrictions {
     if (content is! YamlList) {
       return [
         SourceSpanSeverityException(
-          'The "values" property must be a list.',
+          'Enum "values" key must be a list of strings or maps with property values.',
           span,
         ),
       ];
