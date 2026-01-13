@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/foundation.dart';
-import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
+import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
 import 'firebase_sign_in_service.dart';
@@ -23,6 +23,7 @@ import 'firebase_sign_in_service.dart';
 ///   },
 /// );
 ///
+/// // Firebase UI Auth SignInScreen widget
 /// SignInScreen(
 ///   providers: [EmailAuthProvider()],
 ///   actions: [
