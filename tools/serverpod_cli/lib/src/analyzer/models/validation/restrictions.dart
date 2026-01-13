@@ -1983,7 +1983,7 @@ class Restrictions {
 
       // Invalid format
       return SourceSpanSeverityException(
-        'Enum values must be strings or maps with property values.',
+        'The "values" key must contain a list of either strings or maps with property values.',
         node.span,
       );
     });

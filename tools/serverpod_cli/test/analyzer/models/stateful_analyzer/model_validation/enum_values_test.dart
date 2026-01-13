@@ -130,7 +130,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'Enum values must be strings or maps with property values.',
+        'The "values" key must contain a list of either strings or maps with property values.',
       );
     },
   );
@@ -164,7 +164,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'Enum values must be strings or maps with property values.',
+        'The "values" key must contain a list of either strings or maps with property values.',
       );
     },
   );
