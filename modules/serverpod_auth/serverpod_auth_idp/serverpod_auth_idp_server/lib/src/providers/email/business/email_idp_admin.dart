@@ -290,23 +290,6 @@ class EmailIdpAdmin {
   /// - [EmailAccountNotFoundException] if no account exists for [oldEmail]
   /// - [EmailAlreadyInUseException] if [newEmail] is already registered
   ///
-  /// **Example Usage:**
-  /// ```dart
-  /// // Update user's email address
-  /// await AuthServices.instance.emailIdp.admin.updateEmail(
-  ///   session,
-  ///   oldEmail: 'user@olddomain.com',
-  ///   newEmail: 'user@newdomain.com',
-  /// );
-  /// ```
-  ///
-  /// **Best Practices:**
-  /// - Always verify the user's ownership of the new email before calling this method
-  /// - Consider sending verification emails to both old and new addresses
-  /// - Implement rate limiting to prevent abuse
-  /// - Log email changes for security audit trails
-  ///
-  /// **Security Considerations:**
   /// This method should only be called after proper authentication and
   /// authorization checks. Ensure the requesting user has permission to
   /// change the email address (typically the account owner or an administrator).
