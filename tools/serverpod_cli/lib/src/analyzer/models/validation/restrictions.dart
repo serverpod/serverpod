@@ -1955,7 +1955,7 @@ class Restrictions {
           }
 
           for (final property in enumDef.properties) {
-            if (property.required &&
+            if (property.isRequired &&
                 !providedProperties.contains(property.name)) {
               return SourceSpanSeverityException(
                 'Required property "${property.name}" is missing for enum value "$enumValueName".',

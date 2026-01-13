@@ -22,12 +22,12 @@ void main() {
             EnumPropertyDefinition(
               name: 'statusCode',
               type: 'int',
-              required: true,
+              isRequired: true,
             ),
             EnumPropertyDefinition(
               name: 'message',
               type: 'String',
-              required: true,
+              isRequired: true,
             ),
           ])
           .withValues([

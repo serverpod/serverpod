@@ -754,7 +754,7 @@ class ModelParser {
         EnumPropertyDefinition(
           name: propertyName,
           type: type,
-          required: required,
+          isRequired: required,
           defaultValue: defaultValue,
           documentation: propDocumentation,
         ),

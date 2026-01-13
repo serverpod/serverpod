@@ -419,7 +419,7 @@ class EnumPropertyDefinition {
   final String type;
 
   /// Whether this property is required (no default value).
-  final bool required;
+  final bool isRequired;
 
   /// Default value if property is optional.
   final dynamic defaultValue;
@@ -430,7 +430,7 @@ class EnumPropertyDefinition {
   EnumPropertyDefinition({
     required this.name,
     required this.type,
-    this.required = true,
+    this.isRequired = true,
     this.defaultValue,
     this.documentation,
   });

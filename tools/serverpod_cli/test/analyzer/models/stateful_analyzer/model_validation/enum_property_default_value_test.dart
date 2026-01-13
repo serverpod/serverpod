@@ -57,7 +57,7 @@ void main() {
         var descriptionProperty = definition.properties.firstWhere(
           (p) => p.name == 'description',
         );
-        expect(descriptionProperty.required, isFalse);
+        expect(descriptionProperty.isRequired, isFalse);
       });
 
       test('then the default value is parsed correctly.', () {
