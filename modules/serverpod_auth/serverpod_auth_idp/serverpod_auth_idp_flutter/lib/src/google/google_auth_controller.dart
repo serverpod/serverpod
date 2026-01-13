@@ -72,7 +72,7 @@ class GoogleAuthController extends ChangeNotifier {
     required this.client,
     this.onAuthenticated,
     this.onError,
-    this.attemptLightweightSignIn = true,
+    this.attemptLightweightSignIn = false,
     this.scopes = defaultScopes,
   }) {
     unawaited(_initialize());
