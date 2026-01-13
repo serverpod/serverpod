@@ -260,6 +260,117 @@ class EmailIdpAdmin {
       },
     );
   }
+
+  /// Updates the email address for an existing email authentication account.
+  ///
+  /// This method performs an atomic update of both the [EmailAccount] and the
+  /// associated [UserProfile] to ensure data consistency across the authentication
+  /// system. All operations are executed within a database transaction.
+  ///
+  /// **Email Normalization:**
+  /// Both [oldEmail] and [newEmail] are automatically normalized using the
+  /// [normalizedEmail] extension (typically converts to lowercase and trims
+  /// whitespace) to ensure consistent email matching and storage.
+  ///
+  /// **Data Updates:**
+  /// 1. Updates the email field in the [EmailAccount] table
+  /// 2. Updates the email field in the [UserProfile] table (if profile exists)
+  ///
+  /// **Validation:**
+  /// - Verifies that an account exists for [oldEmail]
+  /// - Ensures [newEmail] is not already associated with another account
+  ///
+  /// **Parameters:**
+  /// - [session]: The current database session
+  /// - [oldEmail]: The existing email address to be updated
+  /// - [newEmail]: The new email address to set
+  /// - [transaction]: Optional transaction context for atomic operations
+  ///
+  /// **Throws:**
+  /// - [EmailAccountNotFoundException] if no account exists for [oldEmail]
+  /// - [EmailAlreadyInUseException] if [newEmail] is already registered
+  ///
+  /// **Example Usage:**
+  /// ```dart
+  /// // Update user's email address
+  /// await AuthServices.instance.emailIdp.admin.updateEmail(
+  ///   session,
+  ///   oldEmail: 'user@olddomain.com',
+  ///   newEmail: 'user@newdomain.com',
+  /// );
+  /// ```
+  ///
+  /// **Best Practices:**
+  /// - Always verify the user's ownership of the new email before calling this method
+  /// - Consider sending verification emails to both old and new addresses
+  /// - Implement rate limiting to prevent abuse
+  /// - Log email changes for security audit trails
+  ///
+  /// **Security Considerations:**
+  /// This method should only be called after proper authentication and
+  /// authorization checks. Ensure the requesting user has permission to
+  /// change the email address (typically the account owner or an administrator).
+  Future<void> updateEmail(
+    final Session session, {
+    required String oldEmail,
+    required String newEmail,
+    final Transaction? transaction,
+  }) async {
+    return DatabaseUtil.runInTransactionOrSavepoint(
+      session.db,
+      transaction,
+      (final transaction) async {
+        // Normalize email addresses to ensure consistent matching
+        oldEmail = oldEmail.normalizedEmail;
+        newEmail = newEmail.normalizedEmail;
+
+        // Locate the existing email account
+        final account = (await _utils.account.listAccounts(
+          session,
+          email: oldEmail,
+          transaction: transaction,
+        )).singleOrNull;
+
+        // Validate that the old email account exists
+        if (account == null) {
+          throw EmailAccountNotFoundException();
+        }
+
+        // Verify the new email is not already registered
+        final existingAccount = await findAccount(
+          session,
+          email: newEmail,
+          transaction: transaction,
+        );
+
+        if (existingAccount != null) {
+          throw EmailAlreadyInUseException();
+        }
+
+        // Update the email account record
+        await EmailAccount.db.updateRow(
+          session,
+          account.copyWith(email: newEmail),
+          transaction: transaction,
+        );
+
+        // Update the associated user profile if it exists
+        final profile = await UserProfile.db.findFirstRow(
+          session,
+          where: (final t) => t.authUserId.equals(account.authUserId),
+          transaction: transaction,
+        );
+
+        if (profile != null) {
+          await UserProfile.db.updateRow(
+            session,
+            profile.copyWith(email: newEmail),
+            transaction: transaction,
+          );
+        }
+      },
+    );
+  }
 }
 
 /// Extension methods for [EmailAccount].
