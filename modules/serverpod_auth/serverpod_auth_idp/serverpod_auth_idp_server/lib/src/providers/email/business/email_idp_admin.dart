@@ -5,6 +5,8 @@ import '../util/email_string_extension.dart';
 import 'email_idp_server_exceptions.dart';
 import 'email_idp_utils.dart';
 
+// UserProfile and EmailAccount are imported from core.dart above
+
 /// Collection of email-account admin methods.
 class EmailIdpAdmin {
   final EmailIdpUtils _utils;
@@ -263,36 +265,13 @@ class EmailIdpAdmin {
 
   /// Updates the email address for an existing email authentication account.
   ///
-  /// This method performs an atomic update of both the [EmailAccount] and the
-  /// associated [UserProfile] to ensure data consistency across the authentication
-  /// system. All operations are executed within a database transaction.
+  /// Atomically updates both the [EmailAccount] and associated [UserProfile]
+  /// to ensure data consistency. Both [oldEmail] and [newEmail] are normalized
+  /// before processing.
   ///
-  /// **Email Normalization:**
-  /// Both [oldEmail] and [newEmail] are automatically normalized using the
-  /// [normalizedEmail] extension (typically converts to lowercase and trims
-  /// whitespace) to ensure consistent email matching and storage.
-  ///
-  /// **Data Updates:**
-  /// 1. Updates the email field in the [EmailAccount] table
-  /// 2. Updates the email field in the [UserProfile] table (if profile exists)
-  ///
-  /// **Validation:**
-  /// - Verifies that an account exists for [oldEmail]
-  /// - Ensures [newEmail] is not already associated with another account
-  ///
-  /// **Parameters:**
-  /// - [session]: The current database session
-  /// - [oldEmail]: The existing email address to be updated
-  /// - [newEmail]: The new email address to set
-  /// - [transaction]: Optional transaction context for atomic operations
-  ///
-  /// **Throws:**
-  /// - [EmailAccountNotFoundException] if no account exists for [oldEmail]
-  /// - [EmailAlreadyInUseException] if [newEmail] is already registered
-  ///
-  /// This method should only be called after proper authentication and
-  /// authorization checks. Ensure the requesting user has permission to
-  /// change the email address (typically the account owner or an administrator).
+  /// Throws [EmailAccountNotFoundException] if no account exists for [oldEmail]
+  /// and [EmailAuthenticationInvalidCredentialsException] if [newEmail] is
+  /// already registered.
   Future<void> updateEmail(
     final Session session, {
     required String oldEmail,
@@ -303,23 +282,19 @@ class EmailIdpAdmin {
       session.db,
       transaction,
       (final transaction) async {
-        // Normalize email addresses to ensure consistent matching
         oldEmail = oldEmail.normalizedEmail;
         newEmail = newEmail.normalizedEmail;
 
-        // Locate the existing email account
         final account = (await _utils.account.listAccounts(
           session,
           email: oldEmail,
           transaction: transaction,
         )).singleOrNull;
 
-        // Validate that the old email account exists
         if (account == null) {
           throw EmailAccountNotFoundException();
         }
 
-        // Verify the new email is not already registered
         final existingAccount = await findAccount(
           session,
           email: newEmail,
@@ -327,17 +302,15 @@ class EmailIdpAdmin {
         );
 
         if (existingAccount != null) {
-          throw EmailAlreadyInUseException();
+          throw EmailAuthenticationInvalidCredentialsException();
         }
 
-        // Update the email account record
         await EmailAccount.db.updateRow(
           session,
           account.copyWith(email: newEmail),
           transaction: transaction,
         );
 
-        // Update the associated user profile if it exists
         final profile = await UserProfile.db.findFirstRow(
           session,
           where: (final t) => t.authUserId.equals(account.authUserId),

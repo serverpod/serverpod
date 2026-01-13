@@ -1,9 +1,6 @@
 /// Exception thrown for operations on an email address that is not registered.
 final class EmailAccountNotFoundException extends EmailLoginServerException {}
 
-/// Exception thrown when trying to update to an email address that is already in use.
-final class EmailAlreadyInUseException extends EmailLoginServerException {}
-
 /// Exception thrown when trying to verify an email account with an invalid
 /// verification code.
 final class EmailAccountRequestInvalidVerificationCodeException
