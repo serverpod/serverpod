@@ -1,6 +1,9 @@
 class: ObjectWithEnumEnhanced
 table: object_with_enum_enhanced
 fields:
-  testEnumEnhanced: TestEnumEnhanced
-  nullableEnumEnhanced: TestEnumEnhanced?
-  enumEnhancedList: List<TestEnumEnhanced>
+  byIndex: TestEnumEnhanced
+  nullableByIndex: TestEnumEnhanced?
+  byIndexList: List<TestEnumEnhanced>
+  byName: TestEnumEnhancedByName
+  nullableByName: TestEnumEnhancedByName?
+  byNameList: List<TestEnumEnhancedByName>

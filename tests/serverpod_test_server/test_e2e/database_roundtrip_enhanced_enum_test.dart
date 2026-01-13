@@ -5,107 +5,104 @@ import 'package:test/test.dart';
 import 'object_with_enum_enhanced_builder.dart';
 
 void main() {
-  var client = Client(serverUrl);
+  final client = Client(serverUrl);
 
-  group('Given an enhanced enum with custom properties', () {
+  group('Given an enhanced enum serialized by index', () {
     test(
-      'when sending and writing it to the database then the returned value contains an ID',
+      'when roundtripping through database then enum value is preserved',
       () async {
-        var object = ObjectWithEnumEnhancedBuilder()
-            .withTestEnumEnhanced(TestEnumEnhanced.two)
+        final object = ObjectWithEnumEnhancedBuilder()
+            .withByIndex(TestEnumEnhanced.two)
             .build();
 
-        var result = await client.basicDatabase.storeObjectWithEnumEnhanced(
+        final result = await client.basicDatabase.storeObjectWithEnumEnhanced(
           object,
         );
 
-        expect(result.id, isNotNull);
+        expect(result.byIndex, equals(TestEnumEnhanced.two));
+        expect(result.byIndex.shortName, equals('2'));
       },
     );
 
     test(
-      'when sending and writing it to the database then the enum value is preserved',
+      'when roundtripping nullable enum as null then null is preserved',
       () async {
-        var object = ObjectWithEnumEnhancedBuilder()
-            .withTestEnumEnhanced(TestEnumEnhanced.two)
-            .build();
+        final object = ObjectWithEnumEnhancedBuilder().build();
 
-        var result = await client.basicDatabase.storeObjectWithEnumEnhanced(
+        final result = await client.basicDatabase.storeObjectWithEnumEnhanced(
           object,
         );
 
-        expect(result.testEnumEnhanced, equals(TestEnumEnhanced.two));
+        expect(result.nullableByIndex, isNull);
       },
     );
 
     test(
-      'when roundtripping through database then enhanced enum properties are accessible',
+      'when roundtripping enum list then all values are preserved',
       () async {
-        var object = ObjectWithEnumEnhancedBuilder()
-            .withTestEnumEnhanced(TestEnumEnhanced.one)
-            .build();
-
-        var result = await client.basicDatabase.storeObjectWithEnumEnhanced(
-          object,
-        );
-
-        expect(result.testEnumEnhanced.shortName, equals('1'));
-        expect(result.testEnumEnhanced.description, equals('The first value'));
-        expect(result.testEnumEnhanced.priority, equals(10));
-      },
-    );
-
-    test(
-      'when roundtripping enum with default property value then default is preserved',
-      () async {
-        var object = ObjectWithEnumEnhancedBuilder()
-            .withTestEnumEnhanced(TestEnumEnhanced.three)
-            .build();
-
-        var result = await client.basicDatabase.storeObjectWithEnumEnhanced(
-          object,
-        );
-
-        expect(result.testEnumEnhanced.priority, equals(0)); // default value
-      },
-    );
-
-    test(
-      'when nullable enhanced enum is null then the returned value is null',
-      () async {
-        var object = ObjectWithEnumEnhancedBuilder().build();
-
-        var result = await client.basicDatabase.storeObjectWithEnumEnhanced(
-          object,
-        );
-
-        expect(result.nullableEnumEnhanced, isNull);
-      },
-    );
-
-    test(
-      'when enhanced enum list is roundtripped then all values are preserved',
-      () async {
-        var object = ObjectWithEnumEnhancedBuilder().withEnumEnhancedList([
+        final object = ObjectWithEnumEnhancedBuilder().withByIndexList([
           TestEnumEnhanced.one,
           TestEnumEnhanced.two,
           TestEnumEnhanced.three,
         ]).build();
 
-        var result = await client.basicDatabase.storeObjectWithEnumEnhanced(
+        final result = await client.basicDatabase.storeObjectWithEnumEnhanced(
           object,
         );
 
-        expect(
-          result.enumEnhancedList,
-          equals([
-            TestEnumEnhanced.one,
-            TestEnumEnhanced.two,
-            TestEnumEnhanced.three,
-          ]),
+        expect(result.byIndexList.length, equals(3));
+        expect(result.byIndexList[0].priority, equals(10));
+        expect(result.byIndexList[1].priority, equals(0)); // default
+      },
+    );
+  });
+
+  group('Given an enhanced enum serialized by name', () {
+    test(
+      'when roundtripping through database then enum value is preserved',
+      () async {
+        final object = ObjectWithEnumEnhancedBuilder()
+            .withByName(TestEnumEnhancedByName.two)
+            .build();
+
+        final result = await client.basicDatabase.storeObjectWithEnumEnhanced(
+          object,
         );
-        expect(result.enumEnhancedList[0].priority, equals(10));
-        expect(result.enumEnhancedList[1].priority, equals(0));
+
+        expect(result.byName, equals(TestEnumEnhancedByName.two));
+        expect(result.byName.shortName, equals('2'));
+      },
+    );
+
+    test(
+      'when roundtripping nullable enum as null then null is preserved',
+      () async {
+        final object = ObjectWithEnumEnhancedBuilder().build();
+
+        final result = await client.basicDatabase.storeObjectWithEnumEnhanced(
+          object,
+        );
+
+        expect(result.nullableByName, isNull);
+      },
+    );
+
+    test(
+      'when roundtripping enum list then all values are preserved',
+      () async {
+        final object = ObjectWithEnumEnhancedBuilder().withByNameList([
+          TestEnumEnhancedByName.one,
+          TestEnumEnhancedByName.two,
+          TestEnumEnhancedByName.three,
+        ]).build();
+
+        final result = await client.basicDatabase.storeObjectWithEnumEnhanced(
+          object,
+        );
+
+        expect(result.byNameList.length, equals(3));
+        expect(result.byNameList[0].priority, equals(10));
+        expect(result.byNameList[1].priority, equals(0)); // default
       },
     );
   });

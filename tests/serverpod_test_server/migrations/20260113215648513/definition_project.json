@@ -4419,24 +4419,45 @@
         },
         {
           "__className__": "serverpod.ColumnDefinition",
-          "name": "testEnumEnhanced",
+          "name": "byIndex",
           "columnType": 6,
           "isNullable": false,
           "dartType": "protocol:TestEnumEnhanced"
         },
         {
           "__className__": "serverpod.ColumnDefinition",
-          "name": "nullableEnumEnhanced",
+          "name": "nullableByIndex",
           "columnType": 6,
           "isNullable": true,
           "dartType": "protocol:TestEnumEnhanced?"
         },
         {
           "__className__": "serverpod.ColumnDefinition",
-          "name": "enumEnhancedList",
+          "name": "byIndexList",
           "columnType": 8,
           "isNullable": false,
           "dartType": "List<protocol:TestEnumEnhanced>"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byName",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "protocol:TestEnumEnhancedByName"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "nullableByName",
+          "columnType": 0,
+          "isNullable": true,
+          "dartType": "protocol:TestEnumEnhancedByName?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "byNameList",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "List<protocol:TestEnumEnhancedByName>"
         }
       ],
       "foreignKeys": [],

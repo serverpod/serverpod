@@ -5,9 +5,12 @@ BEGIN;
 --
 CREATE TABLE "object_with_enum_enhanced" (
     "id" bigserial PRIMARY KEY,
-    "testEnumEnhanced" bigint NOT NULL,
-    "nullableEnumEnhanced" bigint,
-    "enumEnhancedList" json NOT NULL
+    "byIndex" bigint NOT NULL,
+    "nullableByIndex" bigint,
+    "byIndexList" json NOT NULL,
+    "byName" text NOT NULL,
+    "nullableByName" text,
+    "byNameList" json NOT NULL
 );
 
 
@@ -15,9 +18,9 @@ CREATE TABLE "object_with_enum_enhanced" (
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20251223142045597', now())
+    VALUES ('serverpod_test', '20260113215648513', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20251223142045597', "timestamp" = now();
+    DO UPDATE SET "version" = '20260113215648513', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

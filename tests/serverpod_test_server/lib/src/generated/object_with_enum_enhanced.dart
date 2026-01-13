@@ -12,22 +12,29 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'test_enum_enhanced.dart' as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'test_enum_enhanced_by_name.dart' as _i3;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
 
 abstract class ObjectWithEnumEnhanced
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   ObjectWithEnumEnhanced._({
     this.id,
-    required this.testEnumEnhanced,
-    this.nullableEnumEnhanced,
-    required this.enumEnhancedList,
+    required this.byIndex,
+    this.nullableByIndex,
+    required this.byIndexList,
+    required this.byName,
+    this.nullableByName,
+    required this.byNameList,
   });
 
   factory ObjectWithEnumEnhanced({
     int? id,
-    required _i2.TestEnumEnhanced testEnumEnhanced,
-    _i2.TestEnumEnhanced? nullableEnumEnhanced,
-    required List<_i2.TestEnumEnhanced> enumEnhancedList,
+    required _i2.TestEnumEnhanced byIndex,
+    _i2.TestEnumEnhanced? nullableByIndex,
+    required List<_i2.TestEnumEnhanced> byIndexList,
+    required _i3.TestEnumEnhancedByName byName,
+    _i3.TestEnumEnhancedByName? nullableByName,
+    required List<_i3.TestEnumEnhancedByName> byNameList,
   }) = _ObjectWithEnumEnhancedImpl;
 
   factory ObjectWithEnumEnhanced.fromJson(
@@ -35,16 +42,27 @@ abstract class ObjectWithEnumEnhanced
   ) {
     return ObjectWithEnumEnhanced(
       id: jsonSerialization['id'] as int?,
-      testEnumEnhanced: _i2.TestEnumEnhanced.fromJson(
-        (jsonSerialization['testEnumEnhanced'] as int),
+      byIndex: _i2.TestEnumEnhanced.fromJson(
+        (jsonSerialization['byIndex'] as int),
       ),
-      nullableEnumEnhanced: jsonSerialization['nullableEnumEnhanced'] == null
+      nullableByIndex: jsonSerialization['nullableByIndex'] == null
           ? null
           : _i2.TestEnumEnhanced.fromJson(
-              (jsonSerialization['nullableEnumEnhanced'] as int),
+              (jsonSerialization['nullableByIndex'] as int),
             ),
-      enumEnhancedList: _i3.Protocol().deserialize<List<_i2.TestEnumEnhanced>>(
-        jsonSerialization['enumEnhancedList'],
+      byIndexList: _i4.Protocol().deserialize<List<_i2.TestEnumEnhanced>>(
+        jsonSerialization['byIndexList'],
+      ),
+      byName: _i3.TestEnumEnhancedByName.fromJson(
+        (jsonSerialization['byName'] as String),
+      ),
+      nullableByName: jsonSerialization['nullableByName'] == null
+          ? null
+          : _i3.TestEnumEnhancedByName.fromJson(
+              (jsonSerialization['nullableByName'] as String),
+            ),
+      byNameList: _i4.Protocol().deserialize<List<_i3.TestEnumEnhancedByName>>(
+        jsonSerialization['byNameList'],
       ),
     );
   }
@@ -56,11 +74,17 @@ abstract class ObjectWithEnumEnhanced
   @override
   int? id;
 
-  _i2.TestEnumEnhanced testEnumEnhanced;
+  _i2.TestEnumEnhanced byIndex;
 
-  _i2.TestEnumEnhanced? nullableEnumEnhanced;
+  _i2.TestEnumEnhanced? nullableByIndex;
 
-  List<_i2.TestEnumEnhanced> enumEnhancedList;
+  List<_i2.TestEnumEnhanced> byIndexList;
+
+  _i3.TestEnumEnhancedByName byName;
+
+  _i3.TestEnumEnhancedByName? nullableByName;
+
+  List<_i3.TestEnumEnhancedByName> byNameList;
 
   @override
   _i1.Table<int?> get table => t;
@@ -70,21 +94,24 @@ abstract class ObjectWithEnumEnhanced
   @_i1.useResult
   ObjectWithEnumEnhanced copyWith({
     int? id,
-    _i2.TestEnumEnhanced? testEnumEnhanced,
-    _i2.TestEnumEnhanced? nullableEnumEnhanced,
-    List<_i2.TestEnumEnhanced>? enumEnhancedList,
+    _i2.TestEnumEnhanced? byIndex,
+    _i2.TestEnumEnhanced? nullableByIndex,
+    List<_i2.TestEnumEnhanced>? byIndexList,
+    _i3.TestEnumEnhancedByName? byName,
+    _i3.TestEnumEnhancedByName? nullableByName,
+    List<_i3.TestEnumEnhancedByName>? byNameList,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ObjectWithEnumEnhanced',
       if (id != null) 'id': id,
-      'testEnumEnhanced': testEnumEnhanced.toJson(),
-      if (nullableEnumEnhanced != null)
-        'nullableEnumEnhanced': nullableEnumEnhanced?.toJson(),
-      'enumEnhancedList': enumEnhancedList.toJson(
-        valueToJson: (v) => v.toJson(),
-      ),
+      'byIndex': byIndex.toJson(),
+      if (nullableByIndex != null) 'nullableByIndex': nullableByIndex?.toJson(),
+      'byIndexList': byIndexList.toJson(valueToJson: (v) => v.toJson()),
+      'byName': byName.toJson(),
+      if (nullableByName != null) 'nullableByName': nullableByName?.toJson(),
+      'byNameList': byNameList.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
@@ -93,12 +120,12 @@ abstract class ObjectWithEnumEnhanced
     return {
       '__className__': 'ObjectWithEnumEnhanced',
       if (id != null) 'id': id,
-      'testEnumEnhanced': testEnumEnhanced.toJson(),
-      if (nullableEnumEnhanced != null)
-        'nullableEnumEnhanced': nullableEnumEnhanced?.toJson(),
-      'enumEnhancedList': enumEnhancedList.toJson(
-        valueToJson: (v) => v.toJson(),
-      ),
+      'byIndex': byIndex.toJson(),
+      if (nullableByIndex != null) 'nullableByIndex': nullableByIndex?.toJson(),
+      'byIndexList': byIndexList.toJson(valueToJson: (v) => v.toJson()),
+      'byName': byName.toJson(),
+      if (nullableByName != null) 'nullableByName': nullableByName?.toJson(),
+      'byNameList': byNameList.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
@@ -137,14 +164,20 @@ class _Undefined {}
 class _ObjectWithEnumEnhancedImpl extends ObjectWithEnumEnhanced {
   _ObjectWithEnumEnhancedImpl({
     int? id,
-    required _i2.TestEnumEnhanced testEnumEnhanced,
-    _i2.TestEnumEnhanced? nullableEnumEnhanced,
-    required List<_i2.TestEnumEnhanced> enumEnhancedList,
+    required _i2.TestEnumEnhanced byIndex,
+    _i2.TestEnumEnhanced? nullableByIndex,
+    required List<_i2.TestEnumEnhanced> byIndexList,
+    required _i3.TestEnumEnhancedByName byName,
+    _i3.TestEnumEnhancedByName? nullableByName,
+    required List<_i3.TestEnumEnhancedByName> byNameList,
   }) : super._(
          id: id,
-         testEnumEnhanced: testEnumEnhanced,
-         nullableEnumEnhanced: nullableEnumEnhanced,
-         enumEnhancedList: enumEnhancedList,
+         byIndex: byIndex,
+         nullableByIndex: nullableByIndex,
+         byIndexList: byIndexList,
+         byName: byName,
+         nullableByName: nullableByName,
+         byNameList: byNameList,
        );
 
   /// Returns a shallow copy of this [ObjectWithEnumEnhanced]
@@ -153,18 +186,25 @@ class _ObjectWithEnumEnhancedImpl extends ObjectWithEnumEnhanced {
   @override
   ObjectWithEnumEnhanced copyWith({
     Object? id = _Undefined,
-    _i2.TestEnumEnhanced? testEnumEnhanced,
-    Object? nullableEnumEnhanced = _Undefined,
-    List<_i2.TestEnumEnhanced>? enumEnhancedList,
+    _i2.TestEnumEnhanced? byIndex,
+    Object? nullableByIndex = _Undefined,
+    List<_i2.TestEnumEnhanced>? byIndexList,
+    _i3.TestEnumEnhancedByName? byName,
+    Object? nullableByName = _Undefined,
+    List<_i3.TestEnumEnhancedByName>? byNameList,
   }) {
     return ObjectWithEnumEnhanced(
       id: id is int? ? id : this.id,
-      testEnumEnhanced: testEnumEnhanced ?? this.testEnumEnhanced,
-      nullableEnumEnhanced: nullableEnumEnhanced is _i2.TestEnumEnhanced?
-          ? nullableEnumEnhanced
-          : this.nullableEnumEnhanced,
-      enumEnhancedList:
-          enumEnhancedList ?? this.enumEnhancedList.map((e0) => e0).toList(),
+      byIndex: byIndex ?? this.byIndex,
+      nullableByIndex: nullableByIndex is _i2.TestEnumEnhanced?
+          ? nullableByIndex
+          : this.nullableByIndex,
+      byIndexList: byIndexList ?? this.byIndexList.map((e0) => e0).toList(),
+      byName: byName ?? this.byName,
+      nullableByName: nullableByName is _i3.TestEnumEnhancedByName?
+          ? nullableByName
+          : this.nullableByName,
+      byNameList: byNameList ?? this.byNameList.map((e0) => e0).toList(),
     );
   }
 }
@@ -173,22 +213,44 @@ class ObjectWithEnumEnhancedUpdateTable
     extends _i1.UpdateTable<ObjectWithEnumEnhancedTable> {
   ObjectWithEnumEnhancedUpdateTable(super.table);
 
-  _i1.ColumnValue<_i2.TestEnumEnhanced, _i2.TestEnumEnhanced> testEnumEnhanced(
+  _i1.ColumnValue<_i2.TestEnumEnhanced, _i2.TestEnumEnhanced> byIndex(
     _i2.TestEnumEnhanced value,
   ) => _i1.ColumnValue(
-    table.testEnumEnhanced,
+    table.byIndex,
     value,
   );
 
-  _i1.ColumnValue<_i2.TestEnumEnhanced, _i2.TestEnumEnhanced>
-  nullableEnumEnhanced(_i2.TestEnumEnhanced? value) => _i1.ColumnValue(
-    table.nullableEnumEnhanced,
+  _i1.ColumnValue<_i2.TestEnumEnhanced, _i2.TestEnumEnhanced> nullableByIndex(
+    _i2.TestEnumEnhanced? value,
+  ) => _i1.ColumnValue(
+    table.nullableByIndex,
     value,
   );
 
   _i1.ColumnValue<List<_i2.TestEnumEnhanced>, List<_i2.TestEnumEnhanced>>
-  enumEnhancedList(List<_i2.TestEnumEnhanced> value) => _i1.ColumnValue(
-    table.enumEnhancedList,
+  byIndexList(List<_i2.TestEnumEnhanced> value) => _i1.ColumnValue(
+    table.byIndexList,
+    value,
+  );
+
+  _i1.ColumnValue<_i3.TestEnumEnhancedByName, _i3.TestEnumEnhancedByName>
+  byName(_i3.TestEnumEnhancedByName value) => _i1.ColumnValue(
+    table.byName,
+    value,
+  );
+
+  _i1.ColumnValue<_i3.TestEnumEnhancedByName, _i3.TestEnumEnhancedByName>
+  nullableByName(_i3.TestEnumEnhancedByName? value) => _i1.ColumnValue(
+    table.nullableByName,
+    value,
+  );
+
+  _i1.ColumnValue<
+    List<_i3.TestEnumEnhancedByName>,
+    List<_i3.TestEnumEnhancedByName>
+  >
+  byNameList(List<_i3.TestEnumEnhancedByName> value) => _i1.ColumnValue(
+    table.byNameList,
     value,
   );
 }
@@ -197,37 +259,60 @@ class ObjectWithEnumEnhancedTable extends _i1.Table<int?> {
   ObjectWithEnumEnhancedTable({super.tableRelation})
     : super(tableName: 'object_with_enum_enhanced') {
     updateTable = ObjectWithEnumEnhancedUpdateTable(this);
-    testEnumEnhanced = _i1.ColumnEnum(
-      'testEnumEnhanced',
+    byIndex = _i1.ColumnEnum(
+      'byIndex',
       this,
       _i1.EnumSerialization.byIndex,
     );
-    nullableEnumEnhanced = _i1.ColumnEnum(
-      'nullableEnumEnhanced',
+    nullableByIndex = _i1.ColumnEnum(
+      'nullableByIndex',
       this,
       _i1.EnumSerialization.byIndex,
     );
-    enumEnhancedList = _i1.ColumnSerializable<List<_i2.TestEnumEnhanced>>(
-      'enumEnhancedList',
+    byIndexList = _i1.ColumnSerializable<List<_i2.TestEnumEnhanced>>(
+      'byIndexList',
+      this,
+    );
+    byName = _i1.ColumnEnum(
+      'byName',
+      this,
+      _i1.EnumSerialization.byName,
+    );
+    nullableByName = _i1.ColumnEnum(
+      'nullableByName',
+      this,
+      _i1.EnumSerialization.byName,
+    );
+    byNameList = _i1.ColumnSerializable<List<_i3.TestEnumEnhancedByName>>(
+      'byNameList',
       this,
     );
   }
 
   late final ObjectWithEnumEnhancedUpdateTable updateTable;
 
-  late final _i1.ColumnEnum<_i2.TestEnumEnhanced> testEnumEnhanced;
+  late final _i1.ColumnEnum<_i2.TestEnumEnhanced> byIndex;
 
-  late final _i1.ColumnEnum<_i2.TestEnumEnhanced> nullableEnumEnhanced;
+  late final _i1.ColumnEnum<_i2.TestEnumEnhanced> nullableByIndex;
 
-  late final _i1.ColumnSerializable<List<_i2.TestEnumEnhanced>>
-  enumEnhancedList;
+  late final _i1.ColumnSerializable<List<_i2.TestEnumEnhanced>> byIndexList;
+
+  late final _i1.ColumnEnum<_i3.TestEnumEnhancedByName> byName;
+
+  late final _i1.ColumnEnum<_i3.TestEnumEnhancedByName> nullableByName;
+
+  late final _i1.ColumnSerializable<List<_i3.TestEnumEnhancedByName>>
+  byNameList;
 
   @override
   List<_i1.Column> get columns => [
     id,
-    testEnumEnhanced,
-    nullableEnumEnhanced,
-    enumEnhancedList,
+    byIndex,
+    nullableByIndex,
+    byIndexList,
+    byName,
+    nullableByName,
+    byNameList,
   ];
 }
 
