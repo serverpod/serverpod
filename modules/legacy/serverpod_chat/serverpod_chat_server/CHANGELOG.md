@@ -1,3 +1,9 @@
+## 3.2.1
+
+- fix: Moves the `Firebase` IDP into a separate package to avoid unexpected compilation issues for non-users of the IDP.
+- fix: Prevents Google lightweight sign-in from automatically shadowing other identity providers.
+- fix: Fixes the CLI directory search failing when trying to access removed folders on Windows.
+
 ## 3.2.0
 
 Serverpod 3.2 brings a completely reworked experience for future calls, enhanced platform support on `serverpod run`, the new Firebase identity provider and several minor improvements.
