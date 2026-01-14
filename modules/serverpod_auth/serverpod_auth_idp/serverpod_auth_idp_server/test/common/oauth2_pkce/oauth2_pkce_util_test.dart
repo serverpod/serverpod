@@ -164,7 +164,7 @@ void main() {
               redirectUri: 'https://example.com/callback',
               httpClient: mockClient,
             ),
-            throwsA(isA<TestOAuth2Exception>()),
+            throwsA(isA<OAuth2Exception>()),
           );
         },
       );
@@ -187,7 +187,7 @@ void main() {
               redirectUri: 'https://example.com/callback',
               httpClient: mockClient,
             ),
-            throwsA(isA<TestOAuth2Exception>()),
+            throwsA(isA<OAuth2Exception>()),
           );
         },
       );
@@ -207,7 +207,7 @@ void main() {
               redirectUri: 'https://example.com/callback',
               httpClient: mockClient,
             ),
-            throwsA(isA<TestOAuth2Exception>()),
+            throwsA(isA<OAuth2Exception>()),
           );
         },
       );
@@ -227,7 +227,7 @@ void main() {
               redirectUri: 'https://example.com/callback',
               httpClient: mockClient,
             ),
-            throwsA(isA<TestOAuth2Exception>()),
+            throwsA(isA<OAuth2Exception>()),
           );
         },
       );
@@ -251,7 +251,7 @@ void main() {
               redirectUri: 'https://example.com/callback',
               httpClient: mockClient,
             ),
-            throwsA(isA<TestOAuth2Exception>()),
+            throwsA(isA<OAuth2Exception>()),
           );
         },
       );

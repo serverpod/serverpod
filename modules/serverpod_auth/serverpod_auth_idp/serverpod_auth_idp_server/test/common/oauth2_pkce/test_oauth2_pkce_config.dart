@@ -75,37 +75,24 @@ class TestOAuth2PkceConfig implements OAuth2PkceConfig {
 
   @override
   String parseAccessToken(final Map<String, dynamic> responseBody) {
-    // Check for error in response (if configured to do so)
+    // Check for error in response
     if (testShouldThrowOnError) {
       final error = responseBody['error'] as String?;
       if (error != null) {
-        throw createException('OAuth2 error: $error');
+        final errorDescription = responseBody['error_description'] as String?;
+        throw OAuth2Exception(error, errorDescription: errorDescription);
       }
     }
 
     // Extract access token
     final accessToken = responseBody['access_token'] as String?;
     if (accessToken == null) {
-      throw createException('No access token in response');
+      throw OAuth2Exception(
+        'missing_token',
+        errorDescription: 'No access token in response',
+      );
     }
 
     return accessToken;
   }
-
-  @override
-  Exception createException(final String message) {
-    return TestOAuth2Exception(message);
-  }
-}
-
-/// Test exception for OAuth2 errors.
-class TestOAuth2Exception implements Exception {
-  /// Creates a test exception with the given message.
-  const TestOAuth2Exception(this.message);
-
-  /// The error message.
-  final String message;
-
-  @override
-  String toString() => 'TestOAuth2Exception: $message';
 }

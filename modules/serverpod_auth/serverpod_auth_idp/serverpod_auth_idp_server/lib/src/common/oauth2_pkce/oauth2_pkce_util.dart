@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'oauth2_exception.dart';
 import 'oauth2_pkce_config.dart';
 
 /// Generic utility class for OAuth2 PKCE (Proof Key for Code Exchange) token
@@ -71,73 +72,79 @@ class OAuth2PkceUtil {
     required final String redirectUri,
     http.Client? httpClient,
   }) async {
-    //  Use provided client or create a new one
+    // Track if the client was provided to avoid closing it.
+    final clientProvidedByUser = httpClient != null;
     httpClient ??= http.Client();
-    // Build request body with standard OAuth2 parameters
-    final Map<String, dynamic> bodyParams = {
-      'grant_type': 'authorization_code',
-      'code': code,
-      'redirect_uri': redirectUri,
-      'code_verifier': codeVerifier,
-      ...config.tokenRequestParams, // Add provider-specific params
-    };
 
-    // Build headers
-    final headers = Map<String, String>.from(config.tokenRequestHeaders);
+    try {
+      // Build request body with standard OAuth2 parameters
+      final Map<String, dynamic> bodyParams = {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': redirectUri,
+        'code_verifier': codeVerifier,
+        ...config.tokenRequestParams, // Add provider-specific params
+      };
 
-    // Handle credentials based on configuration
-    switch (config.credentialsLocation) {
-      case OAuth2CredentialsLocation.header:
-        // Send credentials in Authorization header (preferred method)
-        final credentials = base64Encode(
-          utf8.encode('${config.clientId}:${config.clientSecret}'),
+      // Build headers
+      final headers = Map<String, String>.from(config.tokenRequestHeaders);
+
+      // Handle credentials based on configuration
+      switch (config.credentialsLocation) {
+        case OAuth2CredentialsLocation.header:
+          // Send credentials in Authorization header (preferred method)
+          final credentials = base64Encode(
+            utf8.encode('${config.clientId}:${config.clientSecret}'),
+          );
+          headers['Authorization'] = 'Basic $credentials';
+          break;
+
+        case OAuth2CredentialsLocation.body:
+          // Send credentials in request body
+          bodyParams[config.clientIdKey] = config.clientId;
+          bodyParams[config.clientSecretKey] = config.clientSecret;
+          break;
+      }
+
+      // Convert body params to URL-encoded format
+      final body = bodyParams.entries
+          .map(
+            (final e) =>
+                '${Uri.encodeQueryComponent(e.key)}=${Uri.encodeQueryComponent(e.value.toString())}',
+          )
+          .join('&');
+
+      final response = await httpClient.post(
+        config.tokenEndpointUrl,
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode != 200) {
+        throw OAuth2Exception(
+          'http_error',
+          errorDescription:
+              'Failed to exchange authorization code for access token: '
+              'HTTP ${response.statusCode}',
         );
-        headers['Authorization'] = 'Basic $credentials';
-        break;
+      }
 
-      case OAuth2CredentialsLocation.body:
-        // Send credentials in request body
-        bodyParams[config.clientIdKey] = config.clientId;
-        bodyParams[config.clientSecretKey] = config.clientSecret;
-        break;
-    }
+      Map<String, dynamic> responseBody;
+      try {
+        responseBody = jsonDecode(response.body) as Map<String, dynamic>;
+      } catch (e) {
+        throw OAuth2Exception(
+          'invalid_response',
+          errorDescription: 'Failed to parse token response: $e',
+        );
+      }
 
-    // Convert body params to URL-encoded format
-    final body = bodyParams.entries
-        .map(
-          (final e) =>
-              '${Uri.encodeQueryComponent(e.key)}=${Uri.encodeQueryComponent(e.value.toString())}',
-        )
-        .join('&');
-
-    final response = await httpClient.post(
-      config.tokenEndpointUrl,
-      headers: headers,
-      body: body,
-    );
-
-    if (response.statusCode != 200) {
-      throw config.createException(
-        'Failed to exchange authorization code for access token: '
-        'HTTP ${response.statusCode}',
-      );
-    }
-
-    Map<String, dynamic> responseBody;
-    try {
-      responseBody = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (e) {
-      throw config.createException(
-        'Failed to parse token response: $e',
-      );
-    }
-
-    try {
       return config.parseAccessToken(responseBody);
-    } catch (e) {
-      throw config.createException(
-        'Failed to extract access token from response: $e',
-      );
+    } finally {
+      // Close the client only if we created it internally
+      if (!clientProvidedByUser) {
+        httpClient.close();
+      }
     }
   }
 }
