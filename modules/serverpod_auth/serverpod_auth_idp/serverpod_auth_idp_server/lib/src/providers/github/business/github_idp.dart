@@ -78,7 +78,6 @@ class GitHubIdp {
       transaction,
       (final transaction) async {
         final accessToken = await utils.exchangeCodeForToken(
-          session,
           code: code,
           codeVerifier: codeVerifier,
           redirectUri: redirectUri,

@@ -55,11 +55,16 @@ class GitHubIdpUtils {
 
   final AuthUsers _authUsers;
 
+  /// Generic OAuth2 PKCE utility for token exchange.
+  late final OAuth2PkceUtil _oauth2Util;
+
   /// Creates a new instance of [GitHubIdpUtils].
   GitHubIdpUtils({
     required this.config,
     required final AuthUsers authUsers,
-  }) : _authUsers = authUsers;
+  }) : _authUsers = authUsers {
+    _oauth2Util = OAuth2PkceUtil(config: config);
+  }
 
   /// Exchanges an `authorization code` for an `access token`.
   ///
@@ -71,58 +76,20 @@ class GitHubIdpUtils {
   /// The [redirectUri] must match the redirect URI used in the authorization
   /// request.
   ///
+  /// This method delegates to the generic [OAuth2PkceUtil] for token exchange,
+  /// using GitHub-specific configuration.
+  ///
   /// Throws [GitHubAccessTokenVerificationException] if the token exchange fails.
-  Future<String> exchangeCodeForToken(
-    final Session session, {
+  Future<String> exchangeCodeForToken({
     required final String code,
     required final String codeVerifier,
     required final String redirectUri,
   }) async {
-    // More info on the token exchange process:
-    // https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps#2-users-are-redirected-back-to-your-site-by-github
-    final response = await http.post(
-      Uri.https('github.com', '/login/oauth/access_token'),
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'client_id': config.oauthCredentials.clientId,
-        'client_secret': config.oauthCredentials.clientSecret,
-        'code': code,
-        'redirect_uri': redirectUri,
-        'code_verifier': codeVerifier,
-      }),
+    return _oauth2Util.exchangeCodeForToken(
+      code: code,
+      codeVerifier: codeVerifier,
+      redirectUri: redirectUri,
     );
-
-    if (response.statusCode != 200) {
-      session.logAndThrow(
-        'Failed to exchange GitHub code for access token: ${response.statusCode}',
-      );
-    }
-
-    Map<String, dynamic> data;
-    try {
-      data = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (e) {
-      session.logAndThrow('Invalid token response from GitHub: $e');
-    }
-
-    final error = data['error'] as String?;
-    if (error != null) {
-      final errorDescription = data['error_description'] as String?;
-      session.logAndThrow(
-        'GitHub token exchange error: $error'
-        '${errorDescription != null ? ' - $errorDescription' : ''}',
-      );
-    }
-
-    final accessToken = data['access_token'] as String?;
-    if (accessToken == null) {
-      session.logAndThrow('No access token in GitHub response');
-    }
-
-    return accessToken;
   }
 
   /// Authenticates a user using an `access token`.
