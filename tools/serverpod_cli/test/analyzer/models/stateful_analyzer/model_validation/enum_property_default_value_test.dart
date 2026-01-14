@@ -66,16 +66,82 @@ void main() {
         );
         expect(descriptionProperty.defaultValue, "''");
       });
+    },
+  );
 
-      test('then enum values without the property get the default value.', () {
-        var firstValue = definition.values.first;
-        // When enum value doesn't provide a value, the default is used
-        expect(firstValue.propertyValues['description'], "''");
+  group(
+    'Given an enum value that does not declare a property that has a default when parsing',
+    () {
+      late EnumDefinition definition;
+
+      setUp(() {
+        var modelSources = [
+          ModelSourceBuilder().withYaml(
+            '''
+          enum: ExampleEnum
+          properties:
+            id: int
+            description: String, default=''
+          values:
+            - first:
+                id: 1
+          ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        var analyzer = StatefulAnalyzer(
+          config,
+          modelSources,
+          onErrorsCollector(collector),
+        );
+
+        var definitions = analyzer.validateAll();
+        definition = definitions.first as EnumDefinition;
       });
 
-      test('then enum values with the property have it parsed.', () {
-        var secondValue = definition.values[1];
-        expect(secondValue.propertyValues['description'], "'Has description'");
+      test('then the enum value gets the default value.', () {
+        var firstValue = definition.values.first;
+        expect(firstValue.propertyValues['description'], "''");
+      });
+    },
+  );
+
+  group(
+    'Given an enum value that declares a property that has a default when parsing',
+    () {
+      late EnumDefinition definition;
+
+      setUp(() {
+        var modelSources = [
+          ModelSourceBuilder().withYaml(
+            '''
+          enum: ExampleEnum
+          properties:
+            id: int
+            description: String, default=''
+          values:
+            - first:
+                id: 1
+                description: 'Has description'
+          ''',
+          ).build(),
+        ];
+
+        var collector = CodeGenerationCollector();
+        var analyzer = StatefulAnalyzer(
+          config,
+          modelSources,
+          onErrorsCollector(collector),
+        );
+
+        var definitions = analyzer.validateAll();
+        definition = definitions.first as EnumDefinition;
+      });
+
+      test('then the enum value gets its declared value.', () {
+        var firstValue = definition.values.first;
+        expect(firstValue.propertyValues['description'], "'Has description'");
       });
     },
   );
