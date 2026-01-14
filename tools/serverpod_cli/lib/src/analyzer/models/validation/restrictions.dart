@@ -2013,7 +2013,7 @@ class Restrictions {
     if (content is! YamlMap) {
       return [
         SourceSpanSeverityException(
-          'The "properties" property must be a map.',
+          'The value of the "properties" key must be a map.',
           span,
         ),
       ];
@@ -2021,93 +2021,145 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    // Use nodes to access YamlNode objects with spans
     for (var entry in content.nodes.entries) {
-      var keyNode = entry.key;
-      var valueNode = entry.value;
-      if (keyNode is! YamlScalar || valueNode is! YamlScalar) {
+      var entryErrors = _validateEnumPropertyEntry(entry, span);
+      errors.addAll(entryErrors);
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> _validateEnumPropertyEntry(
+    MapEntry<dynamic, YamlNode> entry,
+    SourceSpan? fallbackSpan,
+  ) {
+    var keyNode = entry.key;
+    var valueNode = entry.value;
+
+    if (keyNode is! YamlScalar || valueNode is! YamlScalar) {
+      return [
+        SourceSpanSeverityException(
+          'Property entries must be scalar values.',
+          fallbackSpan,
+        ),
+      ];
+    }
+
+    var errors = <SourceSpanSeverityException>[];
+
+    var nameErrors = _validateEnumPropertyName(keyNode);
+    errors.addAll(nameErrors);
+
+    if (keyNode.value is! String) return errors;
+
+    var valueErrors = _validateEnumPropertyValue(valueNode);
+    errors.addAll(valueErrors);
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> _validateEnumPropertyName(
+    YamlScalar keyNode,
+  ) {
+    var propertyName = keyNode.value;
+    var errors = <SourceSpanSeverityException>[];
+
+    if (propertyName is! String) {
+      errors.add(
+        SourceSpanSeverityException(
+          'Property names must be strings.',
+          keyNode.span,
+        ),
+      );
+      return errors;
+    }
+
+    if (!StringValidators.isValidFieldName(propertyName)) {
+      errors.add(
+        SourceSpanSeverityException(
+          'Property names must be valid Dart variable names (e.g. camelCaseString).',
+          keyNode.span,
+        ),
+      );
+    }
+
+    if (_globallyRestrictedKeywords.contains(propertyName)) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The property name "$propertyName" is reserved and cannot be used.',
+          keyNode.span,
+        ),
+      );
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> _validateEnumPropertyValue(
+    YamlScalar valueNode,
+  ) {
+    var propertyValue = valueNode.value;
+    var errors = <SourceSpanSeverityException>[];
+
+    if (propertyValue is! String) {
+      errors.add(
+        SourceSpanSeverityException(
+          'Property values must be a type string (e.g. "int" or "String, default=\'value\'").',
+          valueNode.span,
+        ),
+      );
+      return errors;
+    }
+
+    var typeError = _validateEnumPropertyType(propertyValue, valueNode.span);
+    if (typeError != null) errors.add(typeError);
+
+    var modifierErrors = _validateEnumPropertyModifiers(
+      propertyValue,
+      valueNode.span,
+    );
+    errors.addAll(modifierErrors);
+
+    return errors;
+  }
+
+  static const _supportedPropertyTypes = ['int', 'double', 'bool', 'String'];
+
+  SourceSpanSeverityException? _validateEnumPropertyType(
+    String propertyValue,
+    SourceSpan? span,
+  ) {
+    var type = propertyValue.split(',').first.trim();
+    var baseType = type.endsWith('?')
+        ? type.substring(0, type.length - 1)
+        : type;
+
+    if (!_supportedPropertyTypes.contains(baseType)) {
+      return SourceSpanSeverityException(
+        'The property type "$type" is not supported. Supported types are: ${_supportedPropertyTypes.join(', ')}.',
+        span,
+      );
+    }
+
+    return null;
+  }
+
+  List<SourceSpanSeverityException> _validateEnumPropertyModifiers(
+    String propertyValue,
+    SourceSpan? span,
+  ) {
+    var parts = propertyValue.split(',').map((s) => s.trim()).toList();
+    var errors = <SourceSpanSeverityException>[];
+
+    for (var i = 1; i < parts.length; i++) {
+      var modifier = parts[i];
+      if (!modifier.startsWith('default=')) {
         errors.add(
           SourceSpanSeverityException(
-            'Property entries must be scalar values.',
+            'Invalid property modifier "$modifier". Only "default=value" is supported.',
             span,
           ),
         );
-        continue;
-      }
-
-      var propertyName = keyNode.value;
-      var propertyValue = valueNode.value;
-
-      // Validate property name
-      if (propertyName is! String) {
-        errors.add(
-          SourceSpanSeverityException(
-            'Property names must be strings.',
-            keyNode.span,
-          ),
-        );
-        continue;
-      }
-
-      if (!StringValidators.isValidFieldName(propertyName)) {
-        errors.add(
-          SourceSpanSeverityException(
-            'Property names must be valid Dart variable names (e.g. camelCaseString).',
-            keyNode.span,
-          ),
-        );
-      }
-
-      if (_globallyRestrictedKeywords.contains(propertyName)) {
-        errors.add(
-          SourceSpanSeverityException(
-            'The property name "$propertyName" is reserved and cannot be used.',
-            keyNode.span,
-          ),
-        );
-      }
-
-      // Validate property value (should be a string like "int" or "String, default='value'")
-      if (propertyValue is! String) {
-        errors.add(
-          SourceSpanSeverityException(
-            'Property values must be a type string (e.g. "int" or "String, default=\'value\'").',
-            valueNode.span,
-          ),
-        );
-        continue;
-      }
-
-      // Parse and validate the property type
-      var parts = propertyValue.split(',').map((s) => s.trim()).toList();
-      var type = parts[0];
-
-      // Validate type is a supported primitive type
-      var supportedPropertyTypes = ['int', 'double', 'bool', 'String'];
-      var baseType = type.endsWith('?')
-          ? type.substring(0, type.length - 1)
-          : type;
-
-      if (!supportedPropertyTypes.contains(baseType)) {
-        errors.add(
-          SourceSpanSeverityException(
-            'The property type "$type" is not supported. Supported types are: ${supportedPropertyTypes.join(', ')}.',
-            valueNode.span,
-          ),
-        );
-      }
-
-      // Validate modifiers (default=value)
-      for (var i = 1; i < parts.length; i++) {
-        var modifier = parts[i];
-        if (!modifier.startsWith('default=')) {
-          errors.add(
-            SourceSpanSeverityException(
-              'Invalid property modifier "$modifier". Only "default=value" is supported.',
-              valueNode.span,
-            ),
-          );
-        }
       }
     }
 
