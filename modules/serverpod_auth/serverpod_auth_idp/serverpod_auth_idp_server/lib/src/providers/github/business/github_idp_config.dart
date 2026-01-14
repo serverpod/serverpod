@@ -123,23 +123,21 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp>
     final error = responseBody['error'] as String?;
     if (error != null) {
       final errorDescription = responseBody['error_description'] as String?;
-      throw createException(
-        'GitHub token exchange error: $error'
-        '${errorDescription != null ? ' - $errorDescription' : ''}',
+      throw OAuth2Exception(
+        error,
+        errorDescription: errorDescription,
       );
     }
 
     final accessToken = responseBody['access_token'] as String?;
     if (accessToken == null) {
-      throw createException('No access token in GitHub response');
+      throw OAuth2Exception(
+        'missing_token',
+        errorDescription: 'No access token in GitHub response',
+      );
     }
 
     return accessToken;
-  }
-
-  @override
-  Exception createException(final String message) {
-    return GitHubAccessTokenVerificationException();
   }
 
   // Serverpod IDP implementation

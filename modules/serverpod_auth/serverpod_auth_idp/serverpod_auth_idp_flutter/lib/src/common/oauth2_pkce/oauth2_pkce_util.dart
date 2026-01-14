@@ -177,7 +177,6 @@ class OAuth2PkceUtil {
       'response_type': 'code',
       'code_challenge': codeChallenge,
       'code_challenge_method': 'S256',
-      'grant_type': 'authorization_code',
       ...config.additionalAuthParams,
     };
 

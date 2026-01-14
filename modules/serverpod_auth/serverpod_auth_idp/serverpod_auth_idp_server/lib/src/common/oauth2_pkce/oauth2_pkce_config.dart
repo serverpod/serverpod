@@ -103,9 +103,9 @@ abstract class OAuth2PkceConfig {
   /// Different providers may structure their responses differently.
   ///
   /// This method should:
-  /// - Check for error fields and throw [createException] if present
+  /// - Check for error fields and throw [OAuth2Exception] if present
   /// - Extract and return the access token string
-  /// - Throw [createException] if the access token is missing or invalid
+  /// - Throw [OAuth2Exception] if the access token is missing or invalid
   ///
   /// Example success response:
   /// ```json
@@ -124,10 +124,4 @@ abstract class OAuth2PkceConfig {
   /// }
   /// ```
   String parseAccessToken(final Map<String, dynamic> responseBody);
-
-  /// Creates a provider-specific exception for OAuth2 errors.
-  ///
-  /// Return an exception type specific to your provider to enable precise
-  /// error handling. The [message] contains details about what went wrong.
-  Exception createException(final String message);
 }

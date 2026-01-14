@@ -80,16 +80,26 @@ class GitHubIdpUtils {
   /// using GitHub-specific configuration.
   ///
   /// Throws [GitHubAccessTokenVerificationException] if the token exchange fails.
-  Future<String> exchangeCodeForToken({
+  Future<String> exchangeCodeForToken(
+    final Session session, {
     required final String code,
     required final String codeVerifier,
     required final String redirectUri,
   }) async {
-    return _oauth2Util.exchangeCodeForToken(
-      code: code,
-      codeVerifier: codeVerifier,
-      redirectUri: redirectUri,
-    );
+    try {
+      return await _oauth2Util.exchangeCodeForToken(
+        code: code,
+        codeVerifier: codeVerifier,
+        redirectUri: redirectUri,
+      );
+    } on OAuth2Exception catch (e) {
+      session.log(
+        'GitHub token exchange failed: ${e.error}'
+        '${e.errorDescription != null ? ' - ${e.errorDescription}' : ''}',
+        level: LogLevel.debug,
+      );
+      throw GitHubAccessTokenVerificationException();
+    }
   }
 
   /// Authenticates a user using an `access token`.
