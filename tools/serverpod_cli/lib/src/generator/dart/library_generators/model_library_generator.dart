@@ -3165,7 +3165,9 @@ class SerializableModelLibraryGenerator {
       return literalNull;
     }
 
-    var baseType = type.endsWith('?') ? type.substring(0, type.length - 1) : type;
+    var baseType = type.endsWith('?')
+        ? type.substring(0, type.length - 1)
+        : type;
 
     switch (baseType) {
       case 'int':
