@@ -1856,132 +1856,17 @@ class Restrictions {
       ];
     }
 
-    // Extract enum value names for duplicate checking (supports both simple and enhanced)
-    var enumNames = <String>[];
-    for (var node in content.nodes) {
-      if (node is YamlScalar && node.value is String) {
-        // Simple enum value
-        enumNames.add(node.value as String);
-      } else if (node is YamlMap && node.nodes.isNotEmpty) {
-        // Enhanced enum value - first key is the enum name
-        var firstKey = node.nodes.keys.first;
-        if (firstKey is YamlScalar && firstKey.value is String) {
-          enumNames.add(firstKey.value as String);
-        }
-      }
-    }
-    var enumCount = _duplicatesCount(enumNames);
+    var enumCount = _countEnumNames(content);
 
     var nodeExceptions = content.nodes.map((node) {
-      // Handle simple enum value (string)
       if (node is YamlScalar && node.value is String) {
-        var enumValue = node.value as String;
-
-        if (!StringValidators.isValidEnumName(enumValue)) {
-          return SourceSpanSeverityException(
-            'Enum values must be valid dart enums.',
-            node.span,
-          );
-        }
-
-        if (enumCount[enumValue] != 1) {
-          return SourceSpanSeverityException(
-            'Enum values must be unique.',
-            node.span,
-          );
-        }
-
-        if (_globallyRestrictedKeywords.contains(enumValue)) {
-          return SourceSpanSeverityException(
-            'The enum value "$enumValue" is reserved and cannot be used.',
-            node.span,
-          );
-        }
-
-        return null;
+        return _validateSimpleEnumValue(node, enumCount);
       }
 
-      // Handle enhanced enum value (map with properties)
       if (node is YamlMap && node.nodes.isNotEmpty) {
-        var firstEntry = node.nodes.entries.first;
-        var keyNode = firstEntry.key;
-        if (keyNode is! YamlScalar) {
-          return SourceSpanSeverityException(
-            'Enum value name must be a string.',
-            node.span,
-          );
-        }
-
-        var enumValueName = keyNode.value;
-        if (enumValueName is! String) {
-          return SourceSpanSeverityException(
-            'Enum value name must be a string.',
-            keyNode.span,
-          );
-        }
-
-        if (!StringValidators.isValidEnumName(enumValueName)) {
-          return SourceSpanSeverityException(
-            'Enum values must be valid dart enums.',
-            keyNode.span,
-          );
-        }
-
-        if (enumCount[enumValueName] != 1) {
-          return SourceSpanSeverityException(
-            'Enum values must be unique.',
-            keyNode.span,
-          );
-        }
-
-        if (_globallyRestrictedKeywords.contains(enumValueName)) {
-          return SourceSpanSeverityException(
-            'The enum value "$enumValueName" is reserved and cannot be used.',
-            keyNode.span,
-          );
-        }
-
-        // Validate required properties have values
-        final enumDef = documentDefinition;
-        if (enumDef is EnumDefinition) {
-          final valueNode = firstEntry.value;
-          final providedProperties = <String>{};
-          if (valueNode is YamlMap) {
-            for (final key in valueNode.keys) {
-              if (key is String) {
-                providedProperties.add(key);
-              }
-            }
-          }
-
-          for (final property in enumDef.properties) {
-            if (property.isRequired &&
-                !providedProperties.contains(property.name)) {
-              return SourceSpanSeverityException(
-                'Required property "${property.name}" is missing for enum value "$enumValueName".',
-                keyNode.span,
-              );
-            }
-          }
-
-          // Validate that all provided properties are defined
-          final definedPropertyNames = enumDef.properties
-              .map((p) => p.name)
-              .toSet();
-          for (final providedProperty in providedProperties) {
-            if (!definedPropertyNames.contains(providedProperty)) {
-              return SourceSpanSeverityException(
-                'Property "$providedProperty" is not defined for enum "${enumDef.className}".',
-                keyNode.span,
-              );
-            }
-          }
-        }
-
-        return null;
+        return _validateEnhancedEnumValue(node, enumCount);
       }
 
-      // Invalid format
       return SourceSpanSeverityException(
         'The "values" key must contain a list of either strings or maps with property values.',
         node.span,
@@ -1989,6 +1874,135 @@ class Restrictions {
     });
 
     return nodeExceptions.whereType<SourceSpanSeverityException>().toList();
+  }
+
+  Map<String, int> _countEnumNames(YamlList content) {
+    var enumNames = <String>[];
+    for (var node in content.nodes) {
+      if (node is YamlScalar && node.value is String) {
+        enumNames.add(node.value as String);
+      } else if (node is YamlMap && node.nodes.isNotEmpty) {
+        var firstKey = node.nodes.keys.first;
+        if (firstKey is YamlScalar && firstKey.value is String) {
+          enumNames.add(firstKey.value as String);
+        }
+      }
+    }
+    return _duplicatesCount(enumNames).cast<String, int>();
+  }
+
+  SourceSpanSeverityException? _validateEnumValueName(
+    String enumValue,
+    SourceSpan? span,
+    Map<String, int> enumCount,
+  ) {
+    if (!StringValidators.isValidEnumName(enumValue)) {
+      return SourceSpanSeverityException(
+        'Enum values must be valid dart enums.',
+        span,
+      );
+    }
+
+    if (enumCount[enumValue] != 1) {
+      return SourceSpanSeverityException(
+        'Enum values must be unique.',
+        span,
+      );
+    }
+
+    if (_globallyRestrictedKeywords.contains(enumValue)) {
+      return SourceSpanSeverityException(
+        'The enum value "$enumValue" is reserved and cannot be used.',
+        span,
+      );
+    }
+
+    return null;
+  }
+
+  SourceSpanSeverityException? _validateSimpleEnumValue(
+    YamlScalar node,
+    Map<String, int> enumCount,
+  ) {
+    return _validateEnumValueName(node.value as String, node.span, enumCount);
+  }
+
+  SourceSpanSeverityException? _validateEnhancedEnumValue(
+    YamlMap node,
+    Map<String, int> enumCount,
+  ) {
+    var firstEntry = node.nodes.entries.first;
+    var keyNode = firstEntry.key;
+
+    if (keyNode is! YamlScalar) {
+      return SourceSpanSeverityException(
+        'Enum value name must be a string.',
+        node.span,
+      );
+    }
+
+    var enumValueName = keyNode.value;
+    if (enumValueName is! String) {
+      return SourceSpanSeverityException(
+        'Enum value name must be a string.',
+        keyNode.span,
+      );
+    }
+
+    var nameError = _validateEnumValueName(
+      enumValueName,
+      keyNode.span,
+      enumCount,
+    );
+    if (nameError != null) return nameError;
+
+    return _validateEnumValueProperties(
+      enumValueName,
+      firstEntry,
+      keyNode.span,
+    );
+  }
+
+  SourceSpanSeverityException? _validateEnumValueProperties(
+    String enumValueName,
+    MapEntry<dynamic, YamlNode> entry,
+    SourceSpan? span,
+  ) {
+    final enumDef = documentDefinition;
+    if (enumDef is! EnumDefinition) return null;
+
+    final valueNode = entry.value;
+    final providedProperties = <String>{};
+    if (valueNode is YamlMap) {
+      for (final key in valueNode.keys) {
+        if (key is String) {
+          providedProperties.add(key);
+        }
+      }
+    }
+
+    // Check for missing required properties
+    for (final property in enumDef.properties) {
+      if (property.isRequired && !providedProperties.contains(property.name)) {
+        return SourceSpanSeverityException(
+          'Required property "${property.name}" is missing for enum value "$enumValueName".',
+          span,
+        );
+      }
+    }
+
+    // Check for undefined properties
+    final definedPropertyNames = enumDef.properties.map((p) => p.name).toSet();
+    for (final providedProperty in providedProperties) {
+      if (!definedPropertyNames.contains(providedProperty)) {
+        return SourceSpanSeverityException(
+          'Property "$providedProperty" is not defined for enum "${enumDef.className}".',
+          span,
+        );
+      }
+    }
+
+    return null;
   }
 
   List<SourceSpanSeverityException> validateEnumProperties(
@@ -2070,7 +2084,9 @@ class Restrictions {
 
       // Validate type is a supported primitive type
       var supportedPropertyTypes = ['int', 'double', 'bool', 'String'];
-      var baseType = type.endsWith('?') ? type.substring(0, type.length - 1) : type;
+      var baseType = type.endsWith('?')
+          ? type.substring(0, type.length - 1)
+          : type;
 
       if (!supportedPropertyTypes.contains(baseType)) {
         errors.add(
