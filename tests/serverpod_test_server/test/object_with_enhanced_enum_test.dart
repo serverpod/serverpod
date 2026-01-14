@@ -4,54 +4,64 @@ import 'package:test/test.dart';
 void main() {
   group('Given a model with enhanced enum fields', () {
     test(
-      'when serializing and deserializing then enhanced enum properties are preserved',
+      'when deserializing then enhanced enum properties are preserved',
       () {
-        var object = ObjectWithEnumEnhanced(
-          testEnumEnhanced: TestEnumEnhanced.one,
-          enumEnhancedList: [TestEnumEnhanced.two, TestEnumEnhanced.three],
+        final object = ObjectWithEnumEnhanced(
+          byIndex: TestEnumEnhanced.one,
+          byName: TestEnumEnhancedByName.one,
+          byIndexList: [TestEnumEnhanced.two, TestEnumEnhanced.three],
+          byNameList: [],
         );
 
-        var json = object.toJson();
-        var restored = ObjectWithEnumEnhanced.fromJson(json);
+        final json = object.toJson();
+        final restored = ObjectWithEnumEnhanced.fromJson(json);
 
-        expect(restored.testEnumEnhanced, TestEnumEnhanced.one);
-        expect(restored.testEnumEnhanced.shortName, '1');
-        expect(restored.testEnumEnhanced.priority, 10);
-        expect(restored.enumEnhancedList.length, 2);
-        expect(restored.enumEnhancedList[0].priority, 0);
+        expect(restored.byIndex, TestEnumEnhanced.one);
+        expect(restored.byIndex.shortName, '1');
+        expect(restored.byIndex.priority, 10);
+        expect(restored.byIndexList.length, 2);
+        expect(restored.byIndexList[0].priority, 0); // default value
       },
     );
+  });
 
+  group('Given a model with nullable enhanced enum field set to null', () {
     test(
-      'when nullable enhanced enum is null then it deserializes as null',
+      'when deserializing then it deserializes as null',
       () {
-        var object = ObjectWithEnumEnhanced(
-          testEnumEnhanced: TestEnumEnhanced.one,
-          nullableEnumEnhanced: null,
-          enumEnhancedList: [],
+        final object = ObjectWithEnumEnhanced(
+          byIndex: TestEnumEnhanced.one,
+          byName: TestEnumEnhancedByName.one,
+          nullableByIndex: null,
+          byIndexList: [],
+          byNameList: [],
         );
 
-        var json = object.toJson();
-        var restored = ObjectWithEnumEnhanced.fromJson(json);
+        final json = object.toJson();
+        final restored = ObjectWithEnumEnhanced.fromJson(json);
 
-        expect(restored.nullableEnumEnhanced, isNull);
+        expect(restored.nullableByIndex, isNull);
       },
     );
+  });
 
+  group('Given a model with nullable enhanced enum field set to a value', () {
     test(
-      'when nullable enhanced enum has value then properties are accessible',
+      'when deserializing then properties are accessible',
       () {
-        var object = ObjectWithEnumEnhanced(
-          testEnumEnhanced: TestEnumEnhanced.one,
-          nullableEnumEnhanced: TestEnumEnhanced.three,
-          enumEnhancedList: [],
+        final object = ObjectWithEnumEnhanced(
+          byIndex: TestEnumEnhanced.one,
+          byName: TestEnumEnhancedByName.one,
+          nullableByIndex: TestEnumEnhanced.three,
+          byIndexList: [],
+          byNameList: [],
         );
 
-        var json = object.toJson();
-        var restored = ObjectWithEnumEnhanced.fromJson(json);
+        final json = object.toJson();
+        final restored = ObjectWithEnumEnhanced.fromJson(json);
 
-        expect(restored.nullableEnumEnhanced, TestEnumEnhanced.three);
-        expect(restored.nullableEnumEnhanced?.description, 'The third value');
+        expect(restored.nullableByIndex, TestEnumEnhanced.three);
+        expect(restored.nullableByIndex?.description, 'The third value');
       },
     );
   });
