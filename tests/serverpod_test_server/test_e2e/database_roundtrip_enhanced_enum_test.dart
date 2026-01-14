@@ -60,9 +60,9 @@ void main() {
     );
   });
 
-  group('Given a nullable enhanced enum field', () {
+  group('Given a nullable enhanced enum field set to null', () {
     test(
-      'when storing null value then null is preserved after roundtrip',
+      'when storing then null is preserved after roundtrip',
       () async {
         final object = ObjectWithEnumEnhancedBuilder().build();
 
