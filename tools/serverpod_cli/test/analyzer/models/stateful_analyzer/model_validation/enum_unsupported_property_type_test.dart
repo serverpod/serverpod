@@ -46,7 +46,7 @@ void main() {
       expect(
         error.message,
         'The property type "List<String>" is not supported. '
-        'Supported types are: int, int?, double, double?, bool, bool?, String, String?.',
+        'Supported types are: int, double, bool, String.',
       );
     });
   });

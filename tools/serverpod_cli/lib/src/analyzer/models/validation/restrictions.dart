@@ -2069,18 +2069,10 @@ class Restrictions {
       var type = parts[0];
 
       // Validate type is a supported primitive type
-      var supportedPropertyTypes = [
-        'int',
-        'int?',
-        'double',
-        'double?',
-        'bool',
-        'bool?',
-        'String',
-        'String?',
-      ];
+      var supportedPropertyTypes = ['int', 'double', 'bool', 'String'];
+      var baseType = type.endsWith('?') ? type.substring(0, type.length - 1) : type;
 
-      if (!supportedPropertyTypes.contains(type)) {
+      if (!supportedPropertyTypes.contains(baseType)) {
         errors.add(
           SourceSpanSeverityException(
             'The property type "$type" is not supported. Supported types are: ${supportedPropertyTypes.join(', ')}.',
