@@ -808,55 +808,18 @@ class ModelParser {
 
     var values = valuesNode.nodes.map((node) {
       var value = node.value;
-      var start = node.span.start;
+      var docLocation = _calculateDocLocation(node.span.start);
 
-      // Calculate documentation offset (2 is the length of '- ')
-      var docLocation = SourceLocation(
-        start.offset - 2,
-        column: start.column - 2,
-        line: start.line,
-        sourceUrl: start.sourceUrl,
-      );
-
-      // Handle simple enum value (string)
       if (value is String) {
-        var valueDocumentation = docsExtractor.getDocumentation(docLocation);
-        return ProtocolEnumValueDefinition(value, valueDocumentation);
+        return _parseSimpleEnumValue(value, docsExtractor, docLocation);
       }
 
-      // Handle enhanced enum value (map with properties)
       if (value is YamlMap) {
-        var entries = value.entries.toList();
-        if (entries.isEmpty) return null;
-
-        // First entry is the enum value name and its properties
-        var enumValueName = entries[0].key.toString();
-        var propertyValuesMap = entries[0].value;
-
-        var valueDocumentation = docsExtractor.getDocumentation(docLocation);
-        var propertyValues = <String, dynamic>{};
-
-        // Extract property values if properties are defined
-        if (propertyValuesMap is YamlMap && properties.isNotEmpty) {
-          for (var property in properties) {
-            var propertyValue = propertyValuesMap[property.name];
-            if (propertyValue != null) {
-              // Parse the property value based on its type
-              propertyValues[property.name] = _parseEnumPropertyValue(
-                propertyValue,
-                property.type,
-              );
-            } else if (property.defaultValue != null) {
-              // Use default value if property not specified
-              propertyValues[property.name] = property.defaultValue;
-            }
-          }
-        }
-
-        return ProtocolEnumValueDefinition(
-          enumValueName,
-          valueDocumentation,
-          propertyValues,
+        return _parseEnhancedEnumValue(
+          value,
+          docsExtractor,
+          docLocation,
+          properties,
         );
       }
 
@@ -867,6 +830,71 @@ class ModelParser {
         .where((value) => value != null)
         .cast<ProtocolEnumValueDefinition>()
         .toList();
+  }
+
+  static SourceLocation _calculateDocLocation(SourceLocation start) {
+    // Offset by 2 for the '- ' prefix in YAML list items
+    return SourceLocation(
+      start.offset - 2,
+      column: start.column - 2,
+      line: start.line,
+      sourceUrl: start.sourceUrl,
+    );
+  }
+
+  static ProtocolEnumValueDefinition _parseSimpleEnumValue(
+    String value,
+    YamlDocumentationExtractor docsExtractor,
+    SourceLocation docLocation,
+  ) {
+    var documentation = docsExtractor.getDocumentation(docLocation);
+    return ProtocolEnumValueDefinition(value, documentation);
+  }
+
+  static ProtocolEnumValueDefinition? _parseEnhancedEnumValue(
+    YamlMap valueMap,
+    YamlDocumentationExtractor docsExtractor,
+    SourceLocation docLocation,
+    List<EnumPropertyDefinition> properties,
+  ) {
+    var entries = valueMap.entries.toList();
+    if (entries.isEmpty) return null;
+
+    var enumValueName = entries[0].key.toString();
+    var propertyValuesMap = entries[0].value;
+    var documentation = docsExtractor.getDocumentation(docLocation);
+    var propertyValues = _extractPropertyValues(propertyValuesMap, properties);
+
+    return ProtocolEnumValueDefinition(
+      enumValueName,
+      documentation,
+      propertyValues,
+    );
+  }
+
+  static Map<String, dynamic> _extractPropertyValues(
+    dynamic propertyValuesMap,
+    List<EnumPropertyDefinition> properties,
+  ) {
+    var propertyValues = <String, dynamic>{};
+
+    if (propertyValuesMap is! YamlMap || properties.isEmpty) {
+      return propertyValues;
+    }
+
+    for (var property in properties) {
+      var propertyValue = propertyValuesMap[property.name];
+      if (propertyValue != null) {
+        propertyValues[property.name] = _parseEnumPropertyValue(
+          propertyValue,
+          property.type,
+        );
+      } else if (property.defaultValue != null) {
+        propertyValues[property.name] = property.defaultValue;
+      }
+    }
+
+    return propertyValues;
   }
 
   /// Parses a property value from YAML to the appropriate Dart type
