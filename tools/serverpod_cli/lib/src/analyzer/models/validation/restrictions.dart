@@ -2039,7 +2039,7 @@ class Restrictions {
     if (keyNode is! YamlScalar || valueNode is! YamlScalar) {
       return [
         SourceSpanSeverityException(
-          'Property entries must be scalar values.',
+          'Enum property entries must be scalar values.',
           fallbackSpan,
         ),
       ];
@@ -2067,7 +2067,7 @@ class Restrictions {
     if (propertyName is! String) {
       errors.add(
         SourceSpanSeverityException(
-          'Property names must be strings.',
+          'Enum property names must be strings.',
           keyNode.span,
         ),
       );
@@ -2077,7 +2077,7 @@ class Restrictions {
     if (!StringValidators.isValidFieldName(propertyName)) {
       errors.add(
         SourceSpanSeverityException(
-          'Property names must be valid Dart variable names (e.g. camelCaseString).',
+          'Enum property names must be valid Dart variable names (e.g. camelCaseString).',
           keyNode.span,
         ),
       );
@@ -2086,7 +2086,7 @@ class Restrictions {
     if (_globallyRestrictedKeywords.contains(propertyName)) {
       errors.add(
         SourceSpanSeverityException(
-          'The property name "$propertyName" is reserved and cannot be used.',
+          'The enum property name "$propertyName" is reserved and cannot be used.',
           keyNode.span,
         ),
       );
@@ -2104,7 +2104,7 @@ class Restrictions {
     if (propertyValue is! String) {
       errors.add(
         SourceSpanSeverityException(
-          'Property values must be a type string (e.g. "int" or "String, default=\'value\'").',
+          'Enum property values must be a type and can optionally contain a default key (e.g. "int" or "String, default=\'value\'").',
           valueNode.span,
         ),
       );

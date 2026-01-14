@@ -3058,9 +3058,7 @@ class SerializableModelLibraryGenerator {
             refer('SerializableModel', serverpodUrl(serverCode)),
           );
 
-          // Generate enhanced enum with properties
           if (enumDefinition.isEnhanced) {
-            // Add enum values with property assignments
             e.values.addAll([
               for (final value in enumDefinition.values)
                 EnumValue((v) {
@@ -3068,7 +3066,6 @@ class SerializableModelLibraryGenerator {
                     ..name = value.name
                     ..docs.addAll(value.documentation ?? []);
 
-                  // Add property arguments for all properties
                   final args = <Expression>[];
                   for (final property in enumDefinition.properties) {
                     final propertyValue = value.propertyValues[property.name];
@@ -3092,7 +3089,6 @@ class SerializableModelLibraryGenerator {
                 }),
             ]);
 
-            // Add constructor
             e.constructors.add(
               Constructor((c) {
                 c.constant = true;
@@ -3108,7 +3104,6 @@ class SerializableModelLibraryGenerator {
               }),
             );
 
-            // Add property fields
             for (final property in enumDefinition.properties) {
               e.fields.add(
                 Field((f) {
@@ -3121,7 +3116,6 @@ class SerializableModelLibraryGenerator {
               );
             }
           } else {
-            // Simple enum values (no properties)
             e.values.addAll([
               for (final value in enumDefinition.values)
                 EnumValue((v) {
@@ -3132,7 +3126,6 @@ class SerializableModelLibraryGenerator {
             ]);
           }
 
-          // Check if the enum has a value named "name"
           bool hasValueNamedName = enumDefinition.values.any(
             (v) => v.name == 'name',
           );

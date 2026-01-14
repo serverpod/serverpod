@@ -47,7 +47,7 @@ void main() {
         var error = collector.errors.first;
         expect(
           error.message,
-          'The property name "class" is reserved and cannot be used.',
+          'The enum property name "class" is reserved and cannot be used.',
         );
       });
     },
