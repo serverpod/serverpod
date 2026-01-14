@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:serverpod_auth_idp_server/core.dart';
@@ -13,7 +12,6 @@ class MockHttpClient extends http.BaseClient {
   MockHttpClient({
     required this.statusCode,
     required this.responseBody,
-    this.throwError = false,
   });
 
   /// The HTTP status code to return.
@@ -21,9 +19,6 @@ class MockHttpClient extends http.BaseClient {
 
   /// The response body to return.
   final String responseBody;
-
-  /// Whether to simulate an error during the request.
-  final bool throwError;
 
   /// Captured request for verification.
   http.BaseRequest? capturedRequest;
@@ -36,10 +31,6 @@ class MockHttpClient extends http.BaseClient {
 
   @override
   Future<http.StreamedResponse> send(final http.BaseRequest request) async {
-    if (throwError) {
-      throw const SocketException('No Internet');
-    }
-
     capturedRequest = request;
     capturedHeaders = Map.from(request.headers);
 
@@ -56,205 +47,139 @@ class MockHttpClient extends http.BaseClient {
 }
 
 void main() {
-  late TestOAuth2PkceServerConfig config;
-  late OAuth2PkceUtil oauth2Util;
-
-  setUp(() {
-    config = TestOAuth2PkceServerConfig();
-    oauth2Util = OAuth2PkceUtil(config: config.oauth2Config);
-  });
-
-  group('Given OAuth2PkceUtil receiving valid authorization code', () {
-    late MockHttpClient mockClient;
+  group('Given OAuth2PkceUtil with test configuration', () {
+    late TestOAuth2PkceConfig config;
+    late OAuth2PkceUtil oauth2Util;
 
     setUp(() {
-      const accessToken = 'test_access_token_12345';
-      mockClient = MockHttpClient(
-        statusCode: 200,
-        responseBody: jsonEncode({
-          'access_token': accessToken,
-          'token_type': 'Bearer',
-          'expires_in': 3600,
-        }),
-      );
+      config = TestOAuth2PkceConfig();
+      oauth2Util = OAuth2PkceUtil(config: config);
     });
 
-    group('when exchanging code for token', () {
-      late String result;
+    group('when exchanging authorization code for token', () {
+      test(
+        'Given valid authorization code when exchanged then returns access token.',
+        () async {
+          const accessToken = 'test_access_token_12345';
+          const responseBody = {
+            'access_token': accessToken,
+            'token_type': 'Bearer',
+            'expires_in': 3600,
+          };
 
-      setUp(() async {
-        result = await oauth2Util.exchangeCodeForToken(
-          code: 'auth_code_123',
-          codeVerifier: 'code_verifier_xyz',
-          redirectUri: 'https://example.com/callback',
-          httpClient: mockClient,
-        );
-      });
+          final mockClient = MockHttpClient(
+            statusCode: 200,
+            responseBody: jsonEncode(responseBody),
+          );
 
-      test('then it returns an access token', () {
-        expect(result, equals('test_access_token_12345'));
-      });
-    });
-  });
-
-  group('Given OAuth2PkceUtil with credentials in header mode', () {
-    late MockHttpClient mockClient;
-
-    setUp(() {
-      config = TestOAuth2PkceServerConfig(
-        testCredentialsLocation: OAuth2CredentialsLocation.header,
-      );
-      oauth2Util = OAuth2PkceUtil(config: config.oauth2Config);
-
-      mockClient = MockHttpClient(
-        statusCode: 200,
-        responseBody: jsonEncode({
-          'access_token': 'token',
-          'token_type': 'Bearer',
-        }),
-      );
-    });
-
-    group('when exchanging code for token', () {
-      setUp(() async {
-        await oauth2Util.exchangeCodeForToken(
-          code: 'auth_code',
-          codeVerifier: 'verifier',
-          redirectUri: 'https://example.com/callback',
-          httpClient: mockClient,
-        );
-      });
-
-      test('then it sends Authorization header', () {
-        expect(
-          mockClient.capturedHeaders,
-          containsPair('Authorization', startsWith('Basic ')),
-        );
-      });
-
-      test('then it does not send credentials in body', () {
-        expect(mockClient.capturedBody, isNot(contains('client_id=')));
-        expect(mockClient.capturedBody, isNot(contains('client_secret=')));
-      });
-    });
-  });
-
-  group('Given OAuth2PkceUtil with credentials in body mode', () {
-    late MockHttpClient mockClient;
-
-    setUp(() {
-      config = TestOAuth2PkceServerConfig(
-        testCredentialsLocation: OAuth2CredentialsLocation.body,
-      );
-      oauth2Util = OAuth2PkceUtil(config: config.oauth2Config);
-
-      mockClient = MockHttpClient(
-        statusCode: 200,
-        responseBody: jsonEncode({
-          'access_token': 'token',
-          'token_type': 'Bearer',
-        }),
-      );
-    });
-
-    group('when exchanging code for token', () {
-      setUp(() async {
-        await oauth2Util.exchangeCodeForToken(
-          code: 'auth_code',
-          codeVerifier: 'verifier',
-          redirectUri: 'https://example.com/callback',
-          httpClient: mockClient,
-        );
-      });
-
-      test('then it sends credentials in body', () {
-        expect(mockClient.capturedBody, contains('client_id='));
-        expect(mockClient.capturedBody, contains('client_secret='));
-      });
-
-      test('then it does not send Authorization header', () {
-        expect(
-          mockClient.capturedHeaders,
-          isNot(containsPair('Authorization', startsWith('Basic '))),
-        );
-      });
-    });
-  });
-
-  group('Given OAuth2PkceUtil receiving 400 Bad Request response', () {
-    late MockHttpClient mockClient;
-
-    setUp(() {
-      mockClient = MockHttpClient(
-        statusCode: 400,
-        responseBody: jsonEncode({
-          'error': 'invalid_request',
-          'error_description': 'The request is malformed',
-        }),
-      );
-    });
-
-    test(
-      'when exchanging code for token then it throws OAuth2InvalidResponseException',
-      () {
-        expect(
-          () => oauth2Util.exchangeCodeForToken(
-            code: 'invalid_code',
-            codeVerifier: 'verifier',
+          final result = await oauth2Util.exchangeCodeForToken(
+            code: 'auth_code_123',
+            codeVerifier: 'code_verifier_xyz',
             redirectUri: 'https://example.com/callback',
             httpClient: mockClient,
-          ),
-          throwsA(isA<OAuth2InvalidResponseException>()),
-        );
-      },
-    );
-  });
+          );
 
-  group('Given OAuth2PkceUtil receiving 401 Unauthorized response', () {
-    late MockHttpClient mockClient;
-
-    setUp(() {
-      mockClient = MockHttpClient(
-        statusCode: 401,
-        responseBody: jsonEncode({
-          'error': 'invalid_client',
-          'error_description': 'Client authentication failed',
-        }),
+          expect(result, equals(accessToken));
+        },
       );
-    });
 
-    test(
-      'when exchanging code for token then it throws OAuth2InvalidResponseException',
-      () {
-        expect(
-          () => oauth2Util.exchangeCodeForToken(
+      test(
+        'Given credentials in header mode when token is exchanged then Authorization header is sent.',
+        () async {
+          config.testCredentialsLocation = OAuth2CredentialsLocation.header;
+
+          final mockClient = MockHttpClient(
+            statusCode: 200,
+            responseBody: jsonEncode({
+              'access_token': 'token',
+              'token_type': 'Bearer',
+            }),
+          );
+
+          await oauth2Util.exchangeCodeForToken(
             code: 'auth_code',
             codeVerifier: 'verifier',
             redirectUri: 'https://example.com/callback',
             httpClient: mockClient,
-          ),
-          throwsA(isA<OAuth2InvalidResponseException>()),
-        );
-      },
-    );
-  });
+          );
 
-  group(
-    'Given OAuth2PkceUtil encountering a network failure',
-    () {
-      late MockHttpClient mockClient;
+          expect(
+            mockClient.capturedHeaders,
+            containsPair('Authorization', startsWith('Basic ')),
+          );
 
-      setUp(() {
-        mockClient = MockHttpClient(
-          throwError: true,
-          statusCode: 500,
-          responseBody: 'Network Exception',
-        );
-      });
+          // Verify client ID and secret are NOT in body when using header mode
+          expect(mockClient.capturedBody, isNot(contains('client_id=')));
+          expect(mockClient.capturedBody, isNot(contains('client_secret=')));
+        },
+      );
 
       test(
-        'when exchanging code for token then it throws OAuth2NetworkErrorException',
+        'Given credentials in body mode when token is exchanged then credentials are in body.',
         () async {
+          config.testCredentialsLocation = OAuth2CredentialsLocation.body;
+
+          final mockClient = MockHttpClient(
+            statusCode: 200,
+            responseBody: jsonEncode({
+              'access_token': 'token',
+              'token_type': 'Bearer',
+            }),
+          );
+
+          await oauth2Util.exchangeCodeForToken(
+            code: 'auth_code',
+            codeVerifier: 'verifier',
+            redirectUri: 'https://example.com/callback',
+            httpClient: mockClient,
+          );
+
+          // Verify credentials are in body
+          expect(mockClient.capturedBody, contains('client_id='));
+          expect(mockClient.capturedBody, contains('client_secret='));
+
+          // Verify no Basic auth header
+          expect(
+            mockClient.capturedHeaders,
+            isNot(containsPair('Authorization', startsWith('Basic '))),
+          );
+        },
+      );
+
+      test(
+        'Given 400 Bad Request when token is exchanged then throws OAuth2Exception.',
+        () async {
+          final mockClient = MockHttpClient(
+            statusCode: 400,
+            responseBody: jsonEncode({
+              'error': 'invalid_request',
+              'error_description': 'The request is malformed',
+            }),
+          );
+
+          expect(
+            () => oauth2Util.exchangeCodeForToken(
+              code: 'invalid_code',
+              codeVerifier: 'verifier',
+              redirectUri: 'https://example.com/callback',
+              httpClient: mockClient,
+            ),
+            throwsA(isA<TestOAuth2Exception>()),
+          );
+        },
+      );
+
+      test(
+        'Given 401 Unauthorized when token is exchanged then throws OAuth2Exception.',
+        () async {
+          final mockClient = MockHttpClient(
+            statusCode: 401,
+            responseBody: jsonEncode({
+              'error': 'invalid_client',
+              'error_description': 'Client authentication failed',
+            }),
+          );
+
           expect(
             () => oauth2Util.exchangeCodeForToken(
               code: 'auth_code',
@@ -262,66 +187,74 @@ void main() {
               redirectUri: 'https://example.com/callback',
               httpClient: mockClient,
             ),
-            throwsA(isA<OAuth2NetworkErrorException>()),
+            throwsA(isA<TestOAuth2Exception>()),
           );
         },
       );
-    },
-  );
 
-  group('Given OAuth2PkceUtil receiving invalid JSON response', () {
-    late MockHttpClient mockClient;
+      test(
+        'Given 500 Internal Server Error when token is exchanged then throws OAuth2Exception.',
+        () async {
+          final mockClient = MockHttpClient(
+            statusCode: 500,
+            responseBody: 'Internal Server Error',
+          );
 
-    setUp(() {
-      mockClient = MockHttpClient(
-        statusCode: 200,
-        responseBody: 'not a valid json',
+          expect(
+            () => oauth2Util.exchangeCodeForToken(
+              code: 'auth_code',
+              codeVerifier: 'verifier',
+              redirectUri: 'https://example.com/callback',
+              httpClient: mockClient,
+            ),
+            throwsA(isA<TestOAuth2Exception>()),
+          );
+        },
+      );
+
+      test(
+        'Given response with invalid JSON when token is exchanged then throws OAuth2Exception.',
+        () async {
+          final mockClient = MockHttpClient(
+            statusCode: 200,
+            responseBody: 'not a valid json',
+          );
+
+          expect(
+            () => oauth2Util.exchangeCodeForToken(
+              code: 'auth_code',
+              codeVerifier: 'verifier',
+              redirectUri: 'https://example.com/callback',
+              httpClient: mockClient,
+            ),
+            throwsA(isA<TestOAuth2Exception>()),
+          );
+        },
+      );
+
+      test(
+        'Given response without access token field when token is exchanged then throws OAuth2Exception.',
+        () async {
+          final mockClient = MockHttpClient(
+            statusCode: 200,
+            responseBody: jsonEncode({
+              'token_type': 'Bearer',
+              'expires_in': 3600,
+              // Missing access_token field
+            }),
+          );
+
+          expect(
+            () => oauth2Util.exchangeCodeForToken(
+              code: 'auth_code',
+              codeVerifier: 'verifier',
+              redirectUri: 'https://example.com/callback',
+              httpClient: mockClient,
+            ),
+            throwsA(isA<TestOAuth2Exception>()),
+          );
+        },
       );
     });
-
-    test(
-      'when exchanging code for token then it throws OAuth2InvalidResponseException',
-      () {
-        expect(
-          () => oauth2Util.exchangeCodeForToken(
-            code: 'auth_code',
-            codeVerifier: 'verifier',
-            redirectUri: 'https://example.com/callback',
-            httpClient: mockClient,
-          ),
-          throwsA(isA<OAuth2InvalidResponseException>()),
-        );
-      },
-    );
-  });
-
-  group('Given OAuth2PkceUtil receiving response missing access token', () {
-    late MockHttpClient mockClient;
-
-    setUp(() {
-      mockClient = MockHttpClient(
-        statusCode: 200,
-        responseBody: jsonEncode({
-          'token_type': 'Bearer',
-          'expires_in': 3600,
-          // Missing access_token field
-        }),
-      );
-    });
-
-    test(
-      'when exchanging code for token then it throws OAuth2MissingAccessTokenException',
-      () {
-        expect(
-          () => oauth2Util.exchangeCodeForToken(
-            code: 'auth_code',
-            codeVerifier: 'verifier',
-            redirectUri: 'https://example.com/callback',
-            httpClient: mockClient,
-          ),
-          throwsA(isA<OAuth2MissingAccessTokenException>()),
-        );
-      },
-    );
   });
 }

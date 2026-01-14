@@ -11,9 +11,7 @@ import 'github_idp_utils.dart';
 /// Function to be called to check whether a GitHub account details match the
 /// requirements during registration.
 typedef GitHubAccountDetailsValidation =
-    void Function(
-      GitHubAccountDetails accountDetails,
-    );
+    void Function(GitHubAccountDetails accountDetails);
 
 /// Function to be called to extract additional information from GitHub APIs
 /// using the access token. The [session] and [transaction] can be used to
@@ -27,7 +25,11 @@ typedef GetExtraGitHubInfoCallback =
     });
 
 /// Configuration for the GitHub identity provider.
-class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
+///
+/// This class implements both [IdentityProviderBuilder] and [OAuth2PkceConfig]
+/// for generic OAuth2 PKCE token exchange.
+class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp>
+    implements OAuth2PkceConfig {
   /// The OAuth credentials used for GitHub sign-in.
   final GitHubOAuthCredentials oauthCredentials;
 
@@ -80,9 +82,67 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
   static void validateGitHubAccountDetails(
     final GitHubAccountDetails accountDetails,
   ) {
-    // No validation by default - email and name are optional by design
-    // Users can override this to enforce requirements if needed
+    if (accountDetails.userIdentifier.isEmpty) {
+      throw GitHubUserInfoMissingDataException();
+    }
   }
+
+  // OAuth2PkceConfig implementation
+
+  @override
+  Uri get tokenEndpointUrl =>
+      Uri.https('github.com', '/login/oauth/access_token');
+
+  @override
+  String get clientId => oauthCredentials.clientId;
+
+  @override
+  String get clientSecret => oauthCredentials.clientSecret;
+
+  @override
+  OAuth2CredentialsLocation get credentialsLocation =>
+      OAuth2CredentialsLocation.body;
+
+  @override
+  String get clientIdKey => 'client_id';
+
+  @override
+  String get clientSecretKey => 'client_secret';
+
+  @override
+  Map<String, String> get tokenRequestHeaders => const {
+    'Accept': 'application/json',
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
+
+  @override
+  Map<String, String> get tokenRequestParams => const {};
+
+  @override
+  String parseAccessToken(final Map<String, dynamic> responseBody) {
+    final error = responseBody['error'] as String?;
+    if (error != null) {
+      final errorDescription = responseBody['error_description'] as String?;
+      throw createException(
+        'GitHub token exchange error: $error'
+        '${errorDescription != null ? ' - $errorDescription' : ''}',
+      );
+    }
+
+    final accessToken = responseBody['access_token'] as String?;
+    if (accessToken == null) {
+      throw createException('No access token in GitHub response');
+    }
+
+    return accessToken;
+  }
+
+  @override
+  Exception createException(final String message) {
+    return GitHubAccessTokenVerificationException();
+  }
+
+  // Serverpod IDP implementation
 
   @override
   GitHubIdp build({

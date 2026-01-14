@@ -108,7 +108,7 @@ class GitHubAuthController extends ChangeNotifier {
     _setState(GitHubAuthState.loading);
 
     try {
-      // Get the authorization code and code verifier from GitHub OAuth flow
+      // Get the authorization code, code verifier, and redirect URI from GitHub OAuth flow
       final signInResult = await GitHubSignInService.instance.signIn(
         scopes: scopes,
       );
@@ -125,17 +125,11 @@ class GitHubAuthController extends ChangeNotifier {
     GitHubSignInResult signInResult,
   ) async {
     try {
-      // Get the redirect URI from service (needed for token exchange)
-      final redirectUri = GitHubSignInService.instance.redirectUri;
-      if (redirectUri == null) {
-        throw StateError('Redirect URI not configured');
-      }
-
       final endpoint = client.getEndpointOfType<EndpointGitHubIdpBase>();
       final authSuccess = await endpoint.login(
         code: signInResult.code,
         codeVerifier: signInResult.codeVerifier,
-        redirectUri: redirectUri,
+        redirectUri: signInResult.redirectUri,
       );
 
       await client.auth.updateSignedInUser(authSuccess);
