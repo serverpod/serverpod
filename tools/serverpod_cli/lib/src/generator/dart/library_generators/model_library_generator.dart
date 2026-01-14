@@ -3160,29 +3160,28 @@ class SerializableModelLibraryGenerator {
     return library;
   }
 
-  /// Formats a property value as an Expression for code generation.
   Expression _formatPropertyValueForExpression(dynamic value, String type) {
-    // Handle null values for nullable types
     if (value == null) {
       return literalNull;
     }
 
-    if (type == 'int' || type == 'int?') {
-      return literalNum(value);
-    } else if (type == 'double' || type == 'double?') {
-      return literalNum(value);
-    } else if (type == 'bool' || type == 'bool?') {
-      return literalBool(value);
-    } else if (type == 'String' || type == 'String?') {
-      // value already has quotes from parsing, remove them for literal
-      var str = value.toString();
-      if (str.startsWith("'") && str.endsWith("'")) {
-        str = str.substring(1, str.length - 1);
-      }
-      return literalString(str);
+    var baseType = type.endsWith('?') ? type.substring(0, type.length - 1) : type;
+
+    switch (baseType) {
+      case 'int':
+        return literalNum(value);
+      case 'double':
+        return literalNum(value);
+      case 'bool':
+        return literalBool(value);
+      case 'String':
+      default:
+        var str = value.toString();
+        if (str.startsWith("'") && str.endsWith("'")) {
+          str = str.substring(1, str.length - 1);
+        }
+        return literalString(str);
     }
-    // Default fallback - treat as string
-    return literalString(value.toString());
   }
 
   /// Parses a property type string to a Reference

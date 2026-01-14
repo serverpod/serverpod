@@ -801,8 +801,6 @@ class ModelParser {
         if (lower == 'false') return false;
         return null;
       case 'String':
-        var escaped = valueStr.replaceAll("'", r"\'");
-        return "'$escaped'";
       default:
         var escaped = valueStr.replaceAll("'", r"\'");
         return "'$escaped'";
