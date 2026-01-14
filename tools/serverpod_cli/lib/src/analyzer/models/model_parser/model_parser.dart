@@ -764,38 +764,49 @@ class ModelParser {
     return properties;
   }
 
-  /// Parse default value based on type
+  /// Parse default value based on type (handles quoted strings from YAML)
   static dynamic _parseEnumPropertyDefaultValue(String valueStr, String type) {
-    var unquotedValue = valueStr;
+    var unquotedValue = _removeQuotes(valueStr);
 
-    // Remove quotes if present
-    if (unquotedValue.startsWith("'") && unquotedValue.endsWith("'")) {
-      unquotedValue = unquotedValue.substring(1, unquotedValue.length - 1);
-    }
-    if (unquotedValue.startsWith('"') && unquotedValue.endsWith('"')) {
-      unquotedValue = unquotedValue.substring(1, unquotedValue.length - 1);
-    }
-
-    // Parse based on type
-    if (type == 'int' || type == 'int?') {
-      return int.tryParse(unquotedValue);
-    } else if (type == 'double' || type == 'double?') {
-      return double.tryParse(unquotedValue);
-    } else if (type == 'bool' || type == 'bool?') {
-      if (unquotedValue.toLowerCase() == 'true') return true;
-      if (unquotedValue.toLowerCase() == 'false') return false;
-      return null;
-    } else if (type == 'String' || type == 'String?') {
-      // Escape single quotes and wrap in quotes for code generation
-      final escaped = unquotedValue.replaceAll("'", r"\'");
-      return "'$escaped'";
-    } else if (unquotedValue == 'null') {
+    if (unquotedValue == 'null') {
       return null;
     }
 
-    // Default: treat as string with quotes (escape single quotes)
-    final escaped = unquotedValue.replaceAll("'", r"\'");
-    return "'$escaped'";
+    return _parseTypedValue(unquotedValue, type);
+  }
+
+  static String _removeQuotes(String value) {
+    if (value.startsWith("'") && value.endsWith("'")) {
+      return value.substring(1, value.length - 1);
+    }
+    if (value.startsWith('"') && value.endsWith('"')) {
+      return value.substring(1, value.length - 1);
+    }
+    return value;
+  }
+
+  static dynamic _parseTypedValue(String valueStr, String type) {
+    var baseType = type.endsWith('?')
+        ? type.substring(0, type.length - 1)
+        : type;
+
+    switch (baseType) {
+      case 'int':
+        return int.tryParse(valueStr);
+      case 'double':
+        return double.tryParse(valueStr);
+      case 'bool':
+        var lower = valueStr.toLowerCase();
+        if (lower == 'true') return true;
+        if (lower == 'false') return false;
+        return null;
+      case 'String':
+        var escaped = valueStr.replaceAll("'", r"\'");
+        return "'$escaped'";
+      default:
+        var escaped = valueStr.replaceAll("'", r"\'");
+        return "'$escaped'";
+    }
   }
 
   static List<ProtocolEnumValueDefinition> _parseEnumValues(
@@ -900,26 +911,6 @@ class ModelParser {
   /// Parses a property value from YAML to the appropriate Dart type
   static dynamic _parseEnumPropertyValue(dynamic value, String type) {
     if (value == null) return null;
-
-    final valueStr = value.toString();
-
-    // Parse based on type
-    if (type == 'int' || type == 'int?') {
-      return int.tryParse(valueStr);
-    } else if (type == 'double' || type == 'double?') {
-      return double.tryParse(valueStr);
-    } else if (type == 'bool' || type == 'bool?') {
-      if (valueStr.toLowerCase() == 'true') return true;
-      if (valueStr.toLowerCase() == 'false') return false;
-      return null;
-    } else if (type == 'String' || type == 'String?') {
-      // Escape single quotes and wrap in quotes for code generation
-      final escaped = valueStr.replaceAll("'", r"\'");
-      return "'$escaped'";
-    }
-
-    // Default: treat as string with quotes (escape single quotes)
-    final escaped = valueStr.replaceAll("'", r"\'");
-    return "'$escaped'";
+    return _parseTypedValue(value.toString(), type);
   }
 }
