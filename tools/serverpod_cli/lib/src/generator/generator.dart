@@ -19,6 +19,9 @@ Future<bool> performGenerate({
   final models = modelAnalyzer.validateAll();
   success &= !modelAnalyzer.hasSevereErrors;
 
+  // Yield to allow UI updates (progress animation)
+  await Future<void>.delayed(Duration.zero);
+
   log.debug('Analyzing the future calls models.');
 
   var futureCallsModelsAnalyzerCollector = CodeGenerationCollector();
@@ -29,6 +32,9 @@ Future<bool> performGenerate({
 
   success &= !futureCallsModelsAnalyzerCollector.hasSevereErrors;
   futureCallsModelsAnalyzerCollector.printErrors();
+
+  // Yield to allow UI updates (progress animation)
+  await Future<void>.delayed(Duration.zero);
 
   log.debug('Generating files for serializable models.');
 
@@ -43,6 +49,9 @@ Future<bool> performGenerate({
         config: config,
       );
 
+  // Yield to allow UI updates (progress animation)
+  await Future<void>.delayed(Duration.zero);
+
   log.debug('Analyzing the endpoints.');
 
   final endpointAnalyzerCollector = CodeGenerationCollector();
@@ -54,6 +63,9 @@ Future<bool> performGenerate({
   success &= !endpointAnalyzerCollector.hasSevereErrors;
   endpointAnalyzerCollector.printErrors();
 
+  // Yield to allow UI updates (progress animation)
+  await Future<void>.delayed(Duration.zero);
+
   log.debug('Analyzing the future calls.');
 
   var futureCallsAnalyzerCollector = CodeGenerationCollector();
@@ -64,6 +76,9 @@ Future<bool> performGenerate({
 
   success &= !futureCallsAnalyzerCollector.hasSevereErrors;
   futureCallsAnalyzerCollector.printErrors();
+
+  // Yield to allow UI updates (progress animation)
+  await Future<void>.delayed(Duration.zero);
 
   log.debug('Generating the protocol.');
 
@@ -78,6 +93,9 @@ Future<bool> performGenerate({
         protocolDefinition: protocolDefinition,
         config: config,
       );
+
+  // Yield to allow UI updates (progress animation)
+  await Future<void>.delayed(Duration.zero);
 
   log.debug('Cleaning old files.');
 
