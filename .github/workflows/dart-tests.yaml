@@ -121,7 +121,9 @@ jobs:
         run: melos bootstrap
       - name: Run serverpod generate
         shell: bash
-        run: util/run_tests_serverpod_generate
+        run: |
+          git config core.safecrlf false
+          util/run_tests_serverpod_generate
 
   update_pubspecs:
     name: update pubspecs

@@ -6,12 +6,12 @@ if [ ! -f util/.serverpod_util_root ]; then
     exit 1
 fi
 
-if [[ $(git status -s) ]]
+if ! git diff --ignore-cr-at-eol --exit-code --quiet
 then
     echo "Files have been changed while running this test. Diff:"
-    git diff
+    git diff --ignore-cr-at-eol
 
     echo "List of changed files:"
-    git status -s
+    git diff --ignore-cr-at-eol --name-status
     exit 1
 fi
