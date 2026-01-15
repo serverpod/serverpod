@@ -116,7 +116,7 @@ class GitHubSignInService {
 
     return (
       code: result.code,
-      codeVerifier: result.codeVerifier,
+      codeVerifier: result.codeVerifier!,
       redirectUri: _redirectUri!,
     );
   }
