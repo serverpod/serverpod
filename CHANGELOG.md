@@ -1,6 +1,6 @@
 ## 3.2.2
 
-- fix: Fixes generated future calls producing import paths with backlashes on Windows.
+- fix: Fixes generated future calls producing import paths with backslashes on Windows.
 
 ## 3.2.1
 
