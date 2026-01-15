@@ -9,18 +9,18 @@ import '../utils.dart';
 import 'oauth2_pkce_config.dart';
 import 'oauth2_pkce_result.dart';
 
-/// Generic utility for OAuth2 PKCE (Proof Key for Code Exchange) authorization.
+/// Generic utility for OAuth2 authorization with optional PKCE support.
 ///
-/// Handles the client-side OAuth2 authorization code flow with PKCE for any
-/// OAuth2 provider. Automatically manages:
-/// - PKCE code generation (verifier and challenge) for security
+/// Handles the client-side OAuth2 authorization code flow for any OAuth2
+/// provider. Automatically manages:
+/// - Optional PKCE code generation (verifier and challenge) for security
 /// - State parameter generation for CSRF protection
 /// - Authorization URL construction with provider-specific parameters
 /// - Browser/web view launching and callback handling
 ///
 /// {@template oauth2_pkce_util}
-/// The OAuth2 PKCE flow:
-/// 1. Generate a random code verifier
+/// The OAuth2 flow with PKCE:
+/// 1. Generate a random code verifier (if PKCE enabled)
 /// 2. Generate a code challenge from the verifier (SHA-256 hash, base64url encoded)
 /// 3. Redirect user to provider's authorization page with code challenge
 /// 4. User authorizes the application
@@ -28,8 +28,9 @@ import 'oauth2_pkce_result.dart';
 /// 6. Return both the code and code verifier to be sent to the backend
 /// 7. Backend exchanges code + verifier for access token
 ///
-/// PKCE ensures that even if an attacker intercepts the authorization code,
-/// they cannot exchange it for an access token without the code verifier.
+/// PKCE (when enabled) ensures that even if an attacker intercepts the
+/// authorization code, they cannot exchange it for an access token without
+/// the code verifier.
 /// {@endtemplate}
 ///
 /// ## Usage Example
@@ -106,8 +107,10 @@ class OAuth2PkceUtil {
   }) async {
     // Generate random state and PKCE parameters
     final state = config.enableState ? _generateState() : null;
-    final codeVerifier = _generateCodeVerifier();
-    final codeChallenge = _generateCodeChallenge(codeVerifier);
+    final codeVerifier = config.enablePKCE ? _generateCodeVerifier() : null;
+    final codeChallenge = codeVerifier != null
+        ? _generateCodeChallenge(codeVerifier)
+        : null;
 
     // Build the authorization URL
     final authorizationUrl = _buildAuthorizationUrl(
@@ -167,7 +170,7 @@ class OAuth2PkceUtil {
   /// Builds the authorization URL with all required parameters.
   Uri _buildAuthorizationUrl({
     required String? state,
-    required String codeChallenge,
+    required String? codeChallenge,
     required List<String> scopes,
     Map<String, String>? authCodeParams,
   }) {
@@ -175,10 +178,14 @@ class OAuth2PkceUtil {
       'client_id': config.clientId,
       'redirect_uri': config.redirectUri,
       'response_type': 'code',
-      'code_challenge': codeChallenge,
-      'code_challenge_method': 'S256',
       ...config.additionalAuthParams,
     };
+
+    // Add PKCE parameters if enabled
+    if (codeChallenge != null) {
+      queryParameters['code_challenge'] = codeChallenge;
+      queryParameters['code_challenge_method'] = 'S256';
+    }
 
     // Add state parameter if enabled
     if (config.enableState && state != null && state.isNotEmpty) {
