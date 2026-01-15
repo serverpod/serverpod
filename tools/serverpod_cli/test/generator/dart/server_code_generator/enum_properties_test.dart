@@ -13,71 +13,74 @@ const generator = DartServerCodeGenerator();
 void main() {
   var expectedFileName = path.join('lib', 'src', 'generated', 'example.dart');
 
-  group('Given an enhanced enum with custom properties', () {
-    var models = [
-      EnumDefinitionBuilder()
-          .withClassName('HttpStatus')
-          .withFileName('example')
-          .withProperties([
-            EnumPropertyDefinition(
-              name: 'statusCode',
-              type: 'int',
-              isRequired: true,
-            ),
-            EnumPropertyDefinition(
-              name: 'message',
-              type: 'String',
-              isRequired: true,
-            ),
-          ])
-          .withValues([
-            ProtocolEnumValueDefinition('ok', null, {
-              'statusCode': 200,
-              'message': "'OK'",
-            }),
-            ProtocolEnumValueDefinition('notFound', null, {
-              'statusCode': 404,
-              'message': "'Not Found'",
-            }),
-          ])
-          .build(),
-    ];
+  group(
+    'Given an enhanced enum with custom properties when generating code',
+    () {
+      var models = [
+        EnumDefinitionBuilder()
+            .withClassName('HttpStatus')
+            .withFileName('example')
+            .withProperties([
+              EnumPropertyDefinition(
+                name: 'statusCode',
+                type: 'int',
+                isRequired: true,
+              ),
+              EnumPropertyDefinition(
+                name: 'message',
+                type: 'String',
+                isRequired: true,
+              ),
+            ])
+            .withValues([
+              ProtocolEnumValueDefinition('ok', null, {
+                'statusCode': 200,
+                'message': "'OK'",
+              }),
+              ProtocolEnumValueDefinition('notFound', null, {
+                'statusCode': 404,
+                'message': "'Not Found'",
+              }),
+            ])
+            .build(),
+      ];
 
-    var codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
 
-    test(
-      'when generating code then enum has final fields for each property',
-      () {
-        expect(codeMap[expectedFileName], contains('final int statusCode;'));
-        expect(codeMap[expectedFileName], contains('final String message;'));
-      },
-    );
+      test(
+        'then enum has final fields for each property',
+        () {
+          expect(codeMap[expectedFileName], contains('final int statusCode;'));
+          expect(codeMap[expectedFileName], contains('final String message;'));
+        },
+      );
 
-    test(
-      'when generating code then enum has const constructor with property parameters',
-      () {
-        expect(codeMap[expectedFileName], contains('const HttpStatus('));
-        expect(codeMap[expectedFileName], contains('this.statusCode,'));
-        expect(codeMap[expectedFileName], contains('this.message,'));
-      },
-    );
+      test(
+        'then enum has const constructor with property parameters',
+        () {
+          expect(codeMap[expectedFileName], contains('const HttpStatus('));
+          expect(codeMap[expectedFileName], contains('this.statusCode,'));
+          expect(codeMap[expectedFileName], contains('this.message,'));
+        },
+      );
 
-    test(
-      'when generating code then enum values include property arguments',
-      () {
-        expect(codeMap[expectedFileName], contains("ok(200, 'OK')"));
-        expect(
-          codeMap[expectedFileName],
-          contains("notFound(404, 'Not Found')"),
-        );
-      },
-    );
-  });
+      test(
+        'then enum values include property arguments',
+        () {
+          expect(codeMap[expectedFileName], contains("ok(200, 'OK')"));
+          expect(
+            codeMap[expectedFileName],
+            contains("notFound(404, 'Not Found')"),
+          );
+        },
+      );
+    },
+  );
 
-  group('Given a simple enum without properties', () {
+  group('Given a simple enum without properties when generating code', () {
     var models = [
       EnumDefinitionBuilder()
           .withClassName('SimpleEnum')
@@ -95,7 +98,7 @@ void main() {
     );
 
     test(
-      'when generating code then enum has no custom constructor',
+      'then enum has no custom constructor',
       () {
         expect(
           codeMap[expectedFileName],
@@ -105,7 +108,7 @@ void main() {
     );
 
     test(
-      'when generating code then enum values are simple without arguments',
+      'then enum values are simple without arguments',
       () {
         expect(codeMap[expectedFileName], contains('first,'));
         expect(codeMap[expectedFileName], contains('second;'));

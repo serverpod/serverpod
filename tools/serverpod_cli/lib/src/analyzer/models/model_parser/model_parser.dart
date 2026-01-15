@@ -734,13 +734,13 @@ class ModelParser {
       var type = parts[0];
 
       dynamic defaultValue;
-      var required = true;
+      var isRequired = true;
 
       // Parse modifiers
       for (var i = 1; i < parts.length; i++) {
         var modifier = parts[i];
         if (modifier.startsWith('default=')) {
-          required = false;
+          isRequired = false;
           var defaultStr = modifier.substring('default='.length);
           defaultValue = _parseEnumPropertyDefaultValue(defaultStr, type);
         }
@@ -754,7 +754,7 @@ class ModelParser {
         EnumPropertyDefinition(
           name: propertyName,
           type: type,
-          isRequired: required,
+          isRequired: isRequired,
           defaultValue: defaultValue,
           documentation: propDocumentation,
         ),

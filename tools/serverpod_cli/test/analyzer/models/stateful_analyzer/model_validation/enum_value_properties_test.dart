@@ -9,8 +9,6 @@ import '../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  // Happy path tests
-
   group('Given an enum with valid properties when parsing', () {
     late CodeGenerationCollector collector;
     late List<SerializableModelDefinition> definitions;
@@ -113,8 +111,6 @@ void main() {
       expect(definition.properties, isEmpty);
     });
   });
-
-  // Error cases
 
   group('Given an enum value missing a required property when parsing', () {
     late CodeGenerationCollector collector;
