@@ -33,7 +33,7 @@ void main() {
 
       var yamlModels = <ModelSource>[];
       modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
-        // No-op error handler for test
+        // No-op error handler - errors are not relevant for event loop timing tests
       });
 
       var parameterValidator = FutureCallMethodParameterValidator(
@@ -80,7 +80,7 @@ void main() {
         }
 
         // If the event loop is not blocked, the timer should have ticked
-        // multiple times during generation (at least 2-3 times for a simple project)
+        // multiple times during generation
         expect(
           maxTicks,
           greaterThan(1),

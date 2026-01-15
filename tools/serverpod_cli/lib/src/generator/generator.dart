@@ -19,7 +19,7 @@ Future<bool> performGenerate({
   final models = modelAnalyzer.validateAll();
   success &= !modelAnalyzer.hasSevereErrors;
 
-  // Yield to allow UI updates (progress animation)
+  // Yield to allow timer callbacks and other async operations to execute
   await Future<void>.delayed(Duration.zero);
 
   log.debug('Analyzing the future calls models.');
@@ -33,7 +33,7 @@ Future<bool> performGenerate({
   success &= !futureCallsModelsAnalyzerCollector.hasSevereErrors;
   futureCallsModelsAnalyzerCollector.printErrors();
 
-  // Yield to allow UI updates (progress animation)
+  // Yield to allow timer callbacks and other async operations to execute
   await Future<void>.delayed(Duration.zero);
 
   log.debug('Generating files for serializable models.');
@@ -49,7 +49,7 @@ Future<bool> performGenerate({
         config: config,
       );
 
-  // Yield to allow UI updates (progress animation)
+  // Yield to allow timer callbacks and other async operations to execute
   await Future<void>.delayed(Duration.zero);
 
   log.debug('Analyzing the endpoints.');
@@ -63,7 +63,7 @@ Future<bool> performGenerate({
   success &= !endpointAnalyzerCollector.hasSevereErrors;
   endpointAnalyzerCollector.printErrors();
 
-  // Yield to allow UI updates (progress animation)
+  // Yield to allow timer callbacks and other async operations to execute
   await Future<void>.delayed(Duration.zero);
 
   log.debug('Analyzing the future calls.');
@@ -77,7 +77,7 @@ Future<bool> performGenerate({
   success &= !futureCallsAnalyzerCollector.hasSevereErrors;
   futureCallsAnalyzerCollector.printErrors();
 
-  // Yield to allow UI updates (progress animation)
+  // Yield to allow timer callbacks and other async operations to execute
   await Future<void>.delayed(Duration.zero);
 
   log.debug('Generating the protocol.');
@@ -94,7 +94,7 @@ Future<bool> performGenerate({
         config: config,
       );
 
-  // Yield to allow UI updates (progress animation)
+  // Yield to allow timer callbacks and other async operations to execute
   await Future<void>.delayed(Duration.zero);
 
   log.debug('Cleaning old files.');
