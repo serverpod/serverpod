@@ -1,3 +1,8 @@
+## 3.2.2
+
+- fix: Fixes generated future calls producing import paths with backslashes on Windows.
+- fix: Fixes `serverpod generate` timer frozen while command is running.
+
 ## 3.2.1
 
 - fix: Moves the `Firebase` IDP into a separate package to avoid unexpected compilation issues for non-users of the IDP.
