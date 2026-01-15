@@ -17,13 +17,13 @@ enum OAuth2CredentialsLocation {
   body,
 }
 
-/// Configuration for OAuth2 PKCE token exchange.
+/// Configuration for OAuth2 token exchange with optional PKCE support.
 ///
-/// Defines provider-specific settings for OAuth2 authentication flows using
-/// PKCE (Proof Key for Code Exchange). Implementations specify the token
-/// endpoint URL, client credentials, request format, and response parsing logic.
+/// Defines provider-specific settings for OAuth2 authentication flows.
+/// Implementations specify the token endpoint URL, client credentials,
+/// request format, and response parsing logic.
 ///
-/// The OAuth2 PKCE flow is handled by [OAuth2PkceUtil], which uses this
+/// The OAuth2 flow is handled by [OAuth2PkceUtil], which uses this
 /// configuration to make provider-specific token requests.
 abstract class OAuth2PkceConfig {
   /// The OAuth2 token endpoint URL for exchanging authorization codes.

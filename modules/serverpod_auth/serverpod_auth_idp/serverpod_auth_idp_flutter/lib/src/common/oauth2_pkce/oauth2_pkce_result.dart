@@ -1,7 +1,11 @@
-/// Result of the OAuth2 PKCE sign-in flow.
+/// Result of the OAuth2 sign-in flow.
 ///
-/// Contains the authorization code and PKCE code verifier that must be sent
-/// to the backend to complete authentication.
+/// Contains the authorization code and optionally the PKCE code verifier that
+/// must be sent to the backend to complete authentication.
+///
+/// The [codeVerifier] is null when the OAuth2 provider doesn't use PKCE
+/// (Proof Key for Code Exchange). PKCE is an extension to OAuth2 that
+/// provides additional security, particularly for mobile and public clients.
 typedef OAuth2PkceResult = ({
   /// The authorization code received from the OAuth2 provider after user
   /// authorization.
@@ -10,10 +14,8 @@ typedef OAuth2PkceResult = ({
   /// the backend within a short time (typically 10 minutes).
   String code,
 
-  /// The PKCE code verifier that was used to generate the code challenge.
+  /// The PKCE code verifier used to generate the code challenge.
   ///
-  /// This must be sent to the backend along with the authorization code.
-  /// The backend will use this to verify that the token request is coming
-  /// from the same client that initiated the authorization flow.
-  String codeVerifier,
+  /// Optional. This is `null` when the OAuth2 provider doesn't use PKCE.
+  String? codeVerifier,
 });

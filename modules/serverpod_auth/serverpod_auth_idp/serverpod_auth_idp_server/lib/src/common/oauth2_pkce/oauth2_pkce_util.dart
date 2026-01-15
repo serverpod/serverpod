@@ -5,16 +5,15 @@ import 'package:http/http.dart' as http;
 import 'oauth2_exception.dart';
 import 'oauth2_pkce_config.dart';
 
-/// Generic utility class for OAuth2 PKCE (Proof Key for Code Exchange) token
-/// exchange.
+/// Generic utility class for OAuth2 token exchange with optional PKCE support.
 ///
 /// This class provides the core logic for exchanging an authorization code
-/// for an access token using the PKCE flow. It follows the same pattern
-/// keeping the core logic generic and reusable.
+/// for an access token. It follows a generic pattern keeping the core logic
+/// reusable across different OAuth2 providers.
 ///
 /// {@template oauth2_pkce_util}
-/// The OAuth2 PKCE flow involves:
-/// 1. Client generates a code verifier and code challenge
+/// The OAuth2 flow involves:
+/// 1. Client generates a code verifier and code challenge (if using PKCE)
 /// 2. Client initiates authorization with the code challenge
 /// 3. User authorizes the application
 /// 4. Client receives an authorization code
@@ -33,7 +32,6 @@ import 'oauth2_pkce_config.dart';
 ///
 /// final accessToken = await oauth2Util.exchangeCodeForToken(
 ///   code: authorizationCode,
-///   codeVerifier: pkceCodeVerifier,
 ///   redirectUri: 'https://example.com/callback',
 /// );
 /// ```
@@ -44,16 +42,17 @@ class OAuth2PkceUtil {
   /// Creates a new [OAuth2PkceUtil] with the given configuration.
   OAuth2PkceUtil({required this.config});
 
-  /// Exchanges an authorization code for an access token using PKCE.
+  /// Exchanges an authorization code for an access token.
   ///
   /// Implements the OAuth2 token exchange flow per
   /// [RFC 6749](https://tools.ietf.org/html/rfc6749#section-4.1.3) with
-  /// PKCE extension from [RFC 7636](https://tools.ietf.org/html/rfc7636).
+  /// optional PKCE extension from [RFC 7636](https://tools.ietf.org/html/rfc7636).
   ///
   /// Parameters:
   /// - [code]: Authorization code received after user authorizes the application
-  /// - [codeVerifier]: PKCE code verifier used to generate the code challenge.
-  ///   Proves the client making this request initiated the authorization flow
+  /// - [codeVerifier]: Optional PKCE code verifier used to generate the code
+  ///   challenge. Required only if the OAuth2 provider uses PKCE. When provided,
+  ///   proves the client making this request initiated the authorization flow.
   /// - [redirectUri]: Must exactly match the redirect URI from the authorization
   ///   request (required by OAuth2 specification for security)
   /// - [httpClient]: Optional HTTP client for testing with mocks. If not provided,
@@ -68,7 +67,7 @@ class OAuth2PkceUtil {
   /// - The access token field is missing from the response
   Future<String> exchangeCodeForToken({
     required final String code,
-    required final String codeVerifier,
+    final String? codeVerifier,
     required final String redirectUri,
     http.Client? httpClient,
   }) async {
@@ -82,9 +81,13 @@ class OAuth2PkceUtil {
         'grant_type': 'authorization_code',
         'code': code,
         'redirect_uri': redirectUri,
-        'code_verifier': codeVerifier,
         ...config.tokenRequestParams, // Add provider-specific params
       };
+
+      // Add PKCE code_verifier only if provided
+      if (codeVerifier != null) {
+        bodyParams['code_verifier'] = codeVerifier;
+      }
 
       // Build headers
       final headers = Map<String, String>.from(config.tokenRequestHeaders);

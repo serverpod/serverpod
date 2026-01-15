@@ -1,12 +1,12 @@
-/// Abstract configuration for an OAuth2 PKCE provider.
+/// Abstract configuration for an OAuth2 provider.
 ///
 /// Implementations of this class define provider-specific settings for the
-/// OAuth2 authorization flow with PKCE (Proof Key for Code Exchange). This
-/// includes the authorization endpoint, client configuration, and any
+/// OAuth2 authorization flow with optional PKCE (Proof Key for Code Exchange).
+/// This includes the authorization endpoint, client configuration, and any
 /// provider-specific parameters.
 ///
 /// This configuration pattern allows the [OAuth2PkceUtil] to handle the
-/// generic OAuth2 PKCE flow while delegating provider-specific details to
+/// generic OAuth2 flow while delegating provider-specific details to
 /// the configuration.
 abstract class OAuth2PkceProviderConfig {
   /// The OAuth2 authorization endpoint URL.
@@ -74,4 +74,11 @@ abstract class OAuth2PkceProviderConfig {
   /// validated upon callback. Set to `false` only if the provider doesn't
   /// support the state parameter (non-standard).
   bool get enableState => true;
+
+  /// Whether to use PKCE (Proof Key for Code Exchange) for this OAuth2 flow.
+  ///
+  /// Defaults to `true`. When enabled, a code verifier and code challenge are
+  /// generated and used in the authorization flow. Set to `false` if the
+  /// provider doesn't support PKCE.
+  bool get enablePKCE => true;
 }
