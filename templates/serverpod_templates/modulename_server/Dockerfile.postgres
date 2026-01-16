@@ -1,0 +1,15 @@
+FROM pgvector/pgvector:pg16
+
+# Install PostGIS alongside pgvector
+RUN apt-get update && apt-get install -y \
+    --no-install-recommends \
+    postgresql-16-postgis-3 \
+    postgresql-16-postgis-3-scripts \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create initialization script to enable both extensions
+RUN mkdir -p /docker-entrypoint-initdb.d
+
+COPY init-extensions.sql /docker-entrypoint-initdb.d/01-extensions.sql
+
+RUN chmod 644 /docker-entrypoint-initdb.d/01-extensions.sql

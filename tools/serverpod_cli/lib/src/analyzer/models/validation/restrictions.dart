@@ -1578,6 +1578,8 @@ class Restrictions {
       );
 
       var index = definition.indexes.where((e) => e.name == parentNodeName);
+
+      // Check for SparseVector - only hnsw is supported
       if (indexFields.any((e) => e.type.className == 'SparseVector') &&
           index.first.type != 'hnsw') {
         return [
@@ -1588,6 +1590,20 @@ class Restrictions {
         ];
       }
 
+      // Check for Geography types - only gist is supported
+      if (indexFields.any((e) => e.type.isGeographyType)) {
+        if (content is! String || content != 'gist') {
+          return [
+            SourceSpanSeverityException(
+              'Only "gist" index type is supported for geography fields (GeographyPoint, GeographyPolygon, GeographyMultiPolygon, GeographyLineString).',
+              span,
+            ),
+          ];
+        }
+        return [];
+      }
+
+      // For vector types, restrict to vector index types
       if (indexFields.any((e) => e.type.isVectorType)) {
         validIndexTypes = VectorIndexType.values.map((e) => e.name).toSet();
       }

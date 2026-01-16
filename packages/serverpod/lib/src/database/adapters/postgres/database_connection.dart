@@ -15,7 +15,7 @@ import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/postgres_error_codes.dart';
 import 'package:serverpod/src/database/sql_query_builder.dart';
 import 'package:serverpod/src/generated/database/enum_serialization.dart';
-import 'package:uuid/uuid.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../../../server/session.dart';
 import '../../concepts/expressions.dart';
@@ -265,8 +265,37 @@ class DatabaseConnection {
 
     var setClause = columnValues
         .map((cv) {
-          var value = DatabasePoolManager.encoder.convert(cv.value);
-          return '"${cv.column.columnName}" = $value::${_convertToPostgresType(cv.column)}';
+          var value = cv.value;
+
+          // Handle geography types specially - convert JSON to geography objects
+          if (value != null) {
+            if (cv.column is ColumnGeographyPoint) {
+              if (value is Map) {
+                value = GeographyPoint.fromJson(value as Map<String, dynamic>);
+              }
+            } else if (cv.column is ColumnGeographyPolygon) {
+              if (value is Map) {
+                value = GeographyPolygon.fromJson(
+                  value as Map<String, dynamic>,
+                );
+              }
+            } else if (cv.column is ColumnGeographyMultiPolygon) {
+              if (value is Map) {
+                value = GeographyMultiPolygon.fromJson(
+                  value as Map<String, dynamic>,
+                );
+              }
+            } else if (cv.column is ColumnGeographyLineString) {
+              if (value is Map) {
+                value = GeographyLineString.fromJson(
+                  value as Map<String, dynamic>,
+                );
+              }
+            }
+          }
+
+          var encodedValue = DatabasePoolManager.encoder.convert(value);
+          return '"${cv.column.columnName}" = $encodedValue::${_convertToPostgresType(cv.column)}';
         })
         .join(', ');
 
@@ -320,8 +349,37 @@ class DatabaseConnection {
 
     var setClause = columnValues
         .map((cv) {
-          var value = DatabasePoolManager.encoder.convert(cv.value);
-          return '"${cv.column.columnName}" = $value::${_convertToPostgresType(cv.column)}';
+          var value = cv.value;
+
+          // Handle geography types specially - convert JSON to geography objects
+          if (value != null) {
+            if (cv.column is ColumnGeographyPoint) {
+              if (value is Map) {
+                value = GeographyPoint.fromJson(value as Map<String, dynamic>);
+              }
+            } else if (cv.column is ColumnGeographyPolygon) {
+              if (value is Map) {
+                value = GeographyPolygon.fromJson(
+                  value as Map<String, dynamic>,
+                );
+              }
+            } else if (cv.column is ColumnGeographyMultiPolygon) {
+              if (value is Map) {
+                value = GeographyMultiPolygon.fromJson(
+                  value as Map<String, dynamic>,
+                );
+              }
+            } else if (cv.column is ColumnGeographyLineString) {
+              if (value is Map) {
+                value = GeographyLineString.fromJson(
+                  value as Map<String, dynamic>,
+                );
+              }
+            }
+          }
+
+          var encodedValue = DatabasePoolManager.encoder.convert(value);
+          return '"${cv.column.columnName}" = $encodedValue::${_convertToPostgresType(cv.column)}';
         })
         .join(', ');
 
@@ -859,18 +917,57 @@ class DatabaseConnection {
 
   String _createQueryValueList(
     Iterable<TableRow> rows,
-    Iterable<Column> column,
+    Iterable<Column> columns,
   ) {
     return rows
         .map((row) => row.toJsonForDatabase() as Map<String, dynamic>)
         .map((row) {
-          var values = column
+          var values = columns
               .map((column) {
-                var unformattedValue = row[column.columnName];
+                var value = row[column.columnName];
+
+                // Handle geography types specially - convert JSON back to geography objects
+                // then let the encoder handle them
+                if (value != null) {
+                  if (column is ColumnGeographyPoint) {
+                    if (value is Map) {
+                      value = GeographyPoint.fromJson(
+                        value as Map<String, dynamic>,
+                      );
+                    }
+                  } else if (column is ColumnGeographyPolygon) {
+                    if (value is Map) {
+                      value = GeographyPolygon.fromJson(
+                        value as Map<String, dynamic>,
+                      );
+                    }
+                  } else if (column is ColumnGeographyMultiPolygon) {
+                    if (value is Map) {
+                      value = GeographyMultiPolygon.fromJson(
+                        value as Map<String, dynamic>,
+                      );
+                    }
+                  } else if (column is ColumnGeographyLineString) {
+                    if (value is Map) {
+                      value = GeographyLineString.fromJson(
+                        value as Map<String, dynamic>,
+                      );
+                    }
+                  }
+                }
 
                 var formattedValue = DatabasePoolManager.encoder.convert(
-                  unformattedValue,
+                  value,
                 );
+
+                // For geography types, we need to explicitly cast to geography type
+                // because VALUES clause doesn't preserve type information
+                if (column is ColumnGeographyPoint ||
+                    column is ColumnGeographyPolygon ||
+                    column is ColumnGeographyMultiPolygon ||
+                    column is ColumnGeographyLineString) {
+                  return '$formattedValue::geography';
+                }
 
                 return '$formattedValue::${_convertToPostgresType(column)}';
               })
@@ -896,6 +993,26 @@ class DatabaseConnection {
     if (column is ColumnHalfVector) return 'halfvec(${column.dimension})';
     if (column is ColumnSparseVector) return 'sparsevec(${column.dimension})';
     if (column is ColumnBit) return 'bit(${column.dimension})';
+    // PostGIS geometry column types — use specific geometry subtype so DDL
+    // and casts are more explicit. If a column-level SRID is provided we
+    // include it in the type (e.g. `geometry(Point,4326)`), otherwise we
+    // return the subtype without SRID.
+    if (column is ColumnGeographyPoint) {
+      return 'geography(Point,${column.srid})';
+    }
+
+    if (column is ColumnGeographyPolygon) {
+      return 'geography(Polygon,${column.srid})';
+    }
+
+    if (column is ColumnGeographyMultiPolygon) {
+      return 'geography(MultiPolygon,${column.srid})';
+    }
+
+    if (column is ColumnGeographyLineString) {
+      return 'geography(LINESTRING,${column.srid})';
+    }
+
     if (column is ColumnSerializable) return 'json';
     if (column is ColumnEnumExtended) {
       switch (column.serialized) {
@@ -915,15 +1032,37 @@ class DatabaseConnection {
   _mergeResultsWithNonPersistedFields<T extends TableRow>(
     List<T> rows,
   ) {
-    return (Iterable<Map<String, dynamic>> dbResults) =>
-        List<Map<String, dynamic>>.generate(dbResults.length, (i) {
-          return {
-            // Add non-persisted fields from the original object
-            ...rows[i].toJson(),
-            // Override with database fields (common fields)
-            ...dbResults.elementAt(i),
-          };
-        });
+    return (
+      Iterable<Map<String, dynamic>> dbResults,
+    ) => List<Map<String, dynamic>>.generate(dbResults.length, (i) {
+      var originalRow = rows[i];
+      var originalJson = originalRow.toJson() as Map<String, dynamic>;
+      var dbResult = dbResults.elementAt(i);
+
+      // Get the table definition to identify geography columns
+      var table = originalRow.table;
+      var geographyColumnNames = <String>{};
+      for (var column in table.columns) {
+        if (column is ColumnGeographyPoint ||
+            column is ColumnGeographyLineString ||
+            column is ColumnGeographyPolygon ||
+            column is ColumnGeographyMultiPolygon) {
+          geographyColumnNames.add(column.columnName);
+        }
+      }
+
+      // Merge results, but exclude geography columns from database results
+      // since they come back as binary data and we want the original serialized form
+      var merged = {...originalJson};
+      for (var entry in dbResult.entries) {
+        // Skip geography columns from database - keep the original serialized version
+        if (!geographyColumnNames.contains(entry.key)) {
+          merged[entry.key] = entry.value;
+        }
+      }
+
+      return merged;
+    });
   }
 }
 

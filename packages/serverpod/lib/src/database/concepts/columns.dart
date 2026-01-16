@@ -449,6 +449,911 @@ class ColumnBit extends _ValueOperatorColumn<Bit>
   }
 }
 
+/// Column holding a PostGIS Point.
+class ColumnGeographyPoint extends _ValueOperatorColumn<GeographyPoint> {
+  /// SRID for the column. Defaults to `4326`. DDL and casts will include the
+  /// SRID (e.g. `geometry(Point,4326)`).
+  final int srid;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnGeographyPoint(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+    super.fieldName,
+    this.srid = 4326,
+  });
+
+  @override
+  Expression _encodeValueForQuery(GeographyPoint value) =>
+      EscapedExpression(value.toWktWithSrid());
+
+  /// Check if this point intersects a LineString.
+  Expression intersects(GeographyLineString line) {
+    return _GeometryFunctionColumnExpression<GeographyPoint>(
+      this,
+      EscapedExpression(line.toWktWithSrid()),
+      'ST_Intersects',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this point intersects a Polygon.
+  Expression intersectsPolygon(GeographyPolygon polygon) {
+    return _GeometryFunctionColumnExpression<GeographyPoint>(
+      this,
+      EscapedExpression(polygon.toWktWithSrid()),
+      'ST_Intersects',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this point intersects a MultiPolygon.
+  Expression intersectsMultiPolygon(GeographyMultiPolygon multiPolygon) {
+    return _GeometryFunctionColumnExpression<GeographyPoint>(
+      this,
+      EscapedExpression(multiPolygon.toWktWithSrid()),
+      'ST_Intersects',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this point is within a Polygon.
+  Expression within(GeographyPolygon polygon) {
+    return _GeometryFunctionColumnExpression<GeographyPoint>(
+      this,
+      EscapedExpression(polygon.toWktWithSrid()),
+      'ST_Within',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this point is within a MultiPolygon.
+  Expression withinMultiPolygon(GeographyMultiPolygon multiPolygon) {
+    return _GeometryFunctionColumnExpression<GeographyPoint>(
+      this,
+      EscapedExpression(multiPolygon.toWktWithSrid()),
+      'ST_Within',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Returns the distance between this point and another point.
+  ColumnDouble distanceTo(GeographyPoint other) {
+    return ColumnGeometryDistance<GeographyPoint>(
+      GeometryDistanceExpression<GeographyPoint>(
+        this,
+        _encodeValueForQuery(other),
+        otherIsWkt: true,
+      ),
+    );
+  }
+
+  /// Returns the distance between this point and a LineString.
+  ColumnDouble distanceToLineString(GeographyLineString line) {
+    return ColumnGeometryDistance<GeographyPoint>(
+      GeometryDistanceExpression<GeographyPoint>(
+        this,
+        EscapedExpression(line.toWktWithSrid()),
+        otherIsWkt: true,
+      ),
+    );
+  }
+
+  /// Returns the distance between this point and a Polygon.
+  ColumnDouble distanceToPolygon(GeographyPolygon polygon) {
+    return ColumnGeometryDistance<GeographyPoint>(
+      GeometryDistanceExpression<GeographyPoint>(
+        this,
+        EscapedExpression(polygon.toWktWithSrid()),
+        otherIsWkt: true,
+      ),
+    );
+  }
+
+  /// Check if this point is within the specified bounding box bounds.
+  Expression isWithinBounds(
+    double minLon,
+    double minLat,
+    double maxLon,
+    double maxLat,
+  ) {
+    return _BoundingBoxExpression(this, minLon, minLat, maxLon, maxLat);
+  }
+
+  /// Check if this point is empty.
+  Expression isEmpty() {
+    return _UnaryGeometryFunctionExpression<GeographyPoint>(this, 'ST_IsEmpty');
+  }
+}
+
+/// Column holding a PostGIS Polygon.
+class ColumnGeographyPolygon extends _ValueOperatorColumn<GeographyPolygon> {
+  /// SRID for the column. Defaults to `4326`. DDL and casts will include the
+  /// SRID (e.g. `geometry(Polygon,4326)`).
+  final int srid;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnGeographyPolygon(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+    super.fieldName,
+    this.srid = 4326,
+  });
+
+  @override
+  Expression _encodeValueForQuery(GeographyPolygon value) =>
+      EscapedExpression(value.toWktWithSrid());
+
+  /// Check if this polygon intersects a LineString.
+  Expression intersectsLineString(GeographyLineString line) {
+    return _GeometryFunctionColumnExpression<GeographyPolygon>(
+      this,
+      EscapedExpression(line.toWktWithSrid()),
+      'ST_Intersects',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this polygon intersects another Polygon.
+  Expression intersects(GeographyPolygon other) {
+    return _GeometryFunctionColumnExpression<GeographyPolygon>(
+      this,
+      _encodeValueForQuery(other),
+      'ST_Intersects',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this polygon intersects a MultiPolygon.
+  Expression intersectsMultiPolygon(GeographyMultiPolygon multiPolygon) {
+    return _GeometryFunctionColumnExpression<GeographyPolygon>(
+      this,
+      EscapedExpression(multiPolygon.toWktWithSrid()),
+      'ST_Intersects',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this polygon overlaps another Polygon.
+  Expression overlaps(GeographyPolygon other) {
+    return _GeometryFunctionColumnExpression<GeographyPolygon>(
+      this,
+      _encodeValueForQuery(other),
+      'ST_Overlaps',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this polygon overlaps a MultiPolygon.
+  Expression overlapsMultiPolygon(GeographyMultiPolygon multiPolygon) {
+    return _GeometryFunctionColumnExpression<GeographyPolygon>(
+      this,
+      EscapedExpression(multiPolygon.toWktWithSrid()),
+      'ST_Overlaps',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this polygon touches another Polygon.
+  Expression touches(GeographyPolygon other) {
+    return _GeometryFunctionColumnExpression<GeographyPolygon>(
+      this,
+      _encodeValueForQuery(other),
+      'ST_Touches',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this polygon touches a LineString.
+  Expression touchesLineString(GeographyLineString line) {
+    return _GeometryFunctionColumnExpression<GeographyPolygon>(
+      this,
+      EscapedExpression(line.toWktWithSrid()),
+      'ST_Touches',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this polygon touches a MultiPolygon.
+  Expression touchesMultiPolygon(GeographyMultiPolygon multiPolygon) {
+    return _GeometryFunctionColumnExpression<GeographyPolygon>(
+      this,
+      EscapedExpression(multiPolygon.toWktWithSrid()),
+      'ST_Touches',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this polygon contains a Point.
+  Expression contains(GeographyPoint point) {
+    return _GeometryFunctionColumnExpression<GeographyPolygon>(
+      this,
+      EscapedExpression(point.toWktWithSrid()),
+      'ST_Contains',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this polygon contains a LineString.
+  Expression containsLineString(GeographyLineString line) {
+    return _GeometryFunctionColumnExpression<GeographyPolygon>(
+      this,
+      EscapedExpression(line.toWktWithSrid()),
+      'ST_Contains',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this polygon contains another Polygon.
+  Expression containsPolygon(GeographyPolygon other) {
+    return _GeometryFunctionColumnExpression<GeographyPolygon>(
+      this,
+      _encodeValueForQuery(other),
+      'ST_Contains',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this polygon is within another Polygon.
+  Expression within(GeographyPolygon other) {
+    return _GeometryFunctionColumnExpression<GeographyPolygon>(
+      this,
+      _encodeValueForQuery(other),
+      'ST_Within',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this polygon is within a MultiPolygon.
+  Expression withinMultiPolygon(GeographyMultiPolygon multiPolygon) {
+    return _GeometryFunctionColumnExpression<GeographyPolygon>(
+      this,
+      EscapedExpression(multiPolygon.toWktWithSrid()),
+      'ST_Within',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Returns the area of this polygon.
+  ColumnDouble area() {
+    return ColumnGeometryArea<GeographyPolygon>(
+      GeometryAreaExpression<GeographyPolygon>(this),
+    );
+  }
+
+  /// Returns the perimeter of this polygon.
+  ColumnDouble perimeter() {
+    return ColumnGeometryPerimeter<GeographyPolygon>(
+      GeometryPerimeterExpression<GeographyPolygon>(this),
+    );
+  }
+
+  /// Returns the distance between this polygon and a Point.
+  ColumnDouble distanceTo(GeographyPoint point) {
+    return ColumnGeometryDistance<GeographyPolygon>(
+      GeometryDistanceExpression<GeographyPolygon>(
+        this,
+        EscapedExpression(point.toWktWithSrid()),
+        otherIsWkt: true,
+      ),
+    );
+  }
+
+  /// Returns the distance between this polygon and another Polygon.
+  ColumnDouble distanceToPolygon(GeographyPolygon other) {
+    return ColumnGeometryDistance<GeographyPolygon>(
+      GeometryDistanceExpression<GeographyPolygon>(
+        this,
+        _encodeValueForQuery(other),
+        otherIsWkt: true,
+      ),
+    );
+  }
+
+  /// Check if this polygon is empty.
+  Expression isEmpty() {
+    return _UnaryGeometryFunctionExpression<GeographyPolygon>(
+      this,
+      'ST_IsEmpty',
+    );
+  }
+
+  /// Check if this polygon is valid.
+  Expression isValid() {
+    return _UnaryGeometryFunctionExpression<GeographyPolygon>(
+      this,
+      'ST_IsValid',
+    );
+  }
+
+  /// Check if this polygon is simple (no self-intersections).
+  Expression isSimple() {
+    return _UnaryGeometryFunctionExpression<GeographyPolygon>(
+      this,
+      'ST_IsSimple',
+    );
+  }
+
+  /// Check if this polygon is within the specified bounding box bounds.
+  Expression isWithinBounds(
+    double minLon,
+    double minLat,
+    double maxLon,
+    double maxLat,
+  ) {
+    return _BoundingBoxExpression(this, minLon, minLat, maxLon, maxLat);
+  }
+}
+
+/// Column holding a PostGIS MultiPolygon.
+class ColumnGeographyMultiPolygon
+    extends _ValueOperatorColumn<GeographyMultiPolygon> {
+  /// SRID for the column. Defaults to `4326`. DDL and casts will include the
+  /// SRID (e.g. `geometry(MultiPolygon,4326)`).
+  final int srid;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnGeographyMultiPolygon(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+    super.fieldName,
+    this.srid = 4326,
+  });
+
+  @override
+  Expression _encodeValueForQuery(GeographyMultiPolygon value) =>
+      EscapedExpression(value.toWktWithSrid());
+
+  /// Check if this multipolygon intersects a LineString.
+  Expression intersectsLineString(GeographyLineString line) {
+    return _GeometryFunctionColumnExpression<GeographyMultiPolygon>(
+      this,
+      EscapedExpression(line.toWktWithSrid()),
+      'ST_Intersects',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this multipolygon intersects a Polygon.
+  Expression intersectsPolygon(GeographyPolygon polygon) {
+    return _GeometryFunctionColumnExpression<GeographyMultiPolygon>(
+      this,
+      EscapedExpression(polygon.toWktWithSrid()),
+      'ST_Intersects',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this multipolygon intersects another MultiPolygon.
+  Expression intersects(GeographyMultiPolygon other) {
+    return _GeometryFunctionColumnExpression<GeographyMultiPolygon>(
+      this,
+      _encodeValueForQuery(other),
+      'ST_Intersects',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this multipolygon overlaps a Polygon.
+  Expression overlapsPolygon(GeographyPolygon polygon) {
+    return _GeometryFunctionColumnExpression<GeographyMultiPolygon>(
+      this,
+      EscapedExpression(polygon.toWktWithSrid()),
+      'ST_Overlaps',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this multipolygon overlaps another MultiPolygon.
+  Expression overlaps(GeographyMultiPolygon other) {
+    return _GeometryFunctionColumnExpression<GeographyMultiPolygon>(
+      this,
+      _encodeValueForQuery(other),
+      'ST_Overlaps',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this multipolygon touches a Polygon.
+  Expression touchesPolygon(GeographyPolygon polygon) {
+    return _GeometryFunctionColumnExpression<GeographyMultiPolygon>(
+      this,
+      EscapedExpression(polygon.toWktWithSrid()),
+      'ST_Touches',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this multipolygon touches a LineString.
+  Expression touchesLineString(GeographyLineString line) {
+    return _GeometryFunctionColumnExpression<GeographyMultiPolygon>(
+      this,
+      EscapedExpression(line.toWktWithSrid()),
+      'ST_Touches',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this multipolygon touches another MultiPolygon.
+  Expression touches(GeographyMultiPolygon other) {
+    return _GeometryFunctionColumnExpression<GeographyMultiPolygon>(
+      this,
+      _encodeValueForQuery(other),
+      'ST_Touches',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this multipolygon contains a Point.
+  Expression contains(GeographyPoint point) {
+    return _GeometryFunctionColumnExpression<GeographyMultiPolygon>(
+      this,
+      EscapedExpression(point.toWktWithSrid()),
+      'ST_Contains',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this multipolygon contains a LineString.
+  Expression containsLineString(GeographyLineString line) {
+    return _GeometryFunctionColumnExpression<GeographyMultiPolygon>(
+      this,
+      EscapedExpression(line.toWktWithSrid()),
+      'ST_Contains',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this multipolygon contains a Polygon.
+  Expression containsPolygon(GeographyPolygon polygon) {
+    return _GeometryFunctionColumnExpression<GeographyMultiPolygon>(
+      this,
+      EscapedExpression(polygon.toWktWithSrid()),
+      'ST_Contains',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this multipolygon is within another MultiPolygon.
+  Expression within(GeographyMultiPolygon other) {
+    return _GeometryFunctionColumnExpression<GeographyMultiPolygon>(
+      this,
+      _encodeValueForQuery(other),
+      'ST_Within',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Returns the area of this multipolygon.
+  ColumnDouble area() {
+    return ColumnGeometryArea<GeographyMultiPolygon>(
+      GeometryAreaExpression<GeographyMultiPolygon>(this),
+    );
+  }
+
+  /// Returns the perimeter of this multipolygon.
+  ColumnDouble perimeter() {
+    return ColumnGeometryPerimeter<GeographyMultiPolygon>(
+      GeometryPerimeterExpression<GeographyMultiPolygon>(this),
+    );
+  }
+
+  /// Returns the distance between this multipolygon and a Point.
+  ColumnDouble distanceTo(GeographyPoint point) {
+    return ColumnGeometryDistance<GeographyMultiPolygon>(
+      GeometryDistanceExpression<GeographyMultiPolygon>(
+        this,
+        EscapedExpression(point.toWktWithSrid()),
+        otherIsWkt: true,
+      ),
+    );
+  }
+
+  /// Check if this multipolygon is empty.
+  Expression isEmpty() {
+    return _UnaryGeometryFunctionExpression<GeographyMultiPolygon>(
+      this,
+      'ST_IsEmpty',
+    );
+  }
+
+  /// Check if this multipolygon is valid.
+  Expression isValid() {
+    return _UnaryGeometryFunctionExpression<GeographyMultiPolygon>(
+      this,
+      'ST_IsValid',
+    );
+  }
+
+  /// Check if this multipolygon is within the specified bounding box bounds.
+  Expression isWithinBounds(
+    double minLon,
+    double minLat,
+    double maxLon,
+    double maxLat,
+  ) {
+    return _BoundingBoxExpression(this, minLon, minLat, maxLon, maxLat);
+  }
+}
+
+/// Column holding a PostGIS LineString.
+class ColumnGeographyLineString
+    extends _ValueOperatorColumn<GeographyLineString> {
+  /// SRID for the column. Defaults to `4326`. DDL and casts will include the
+  /// SRID (e.g. `geometry(LineString,4326)`).
+  final int srid;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnGeographyLineString(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+    super.fieldName,
+    this.srid = 4326,
+  });
+
+  @override
+  Expression _encodeValueForQuery(GeographyLineString value) =>
+      EscapedExpression(value.toWktWithSrid());
+
+  /// Check if this linestring intersects another LineString.
+  Expression intersects(GeographyLineString other) {
+    return _GeometryFunctionColumnExpression<GeographyLineString>(
+      this,
+      _encodeValueForQuery(other),
+      'ST_Intersects',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this linestring intersects a Polygon.
+  Expression intersectsPolygon(GeographyPolygon polygon) {
+    return _GeometryFunctionColumnExpression<GeographyLineString>(
+      this,
+      EscapedExpression(polygon.toWktWithSrid()),
+      'ST_Intersects',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this linestring intersects a MultiPolygon.
+  Expression intersectsMultiPolygon(GeographyMultiPolygon multiPolygon) {
+    return _GeometryFunctionColumnExpression<GeographyLineString>(
+      this,
+      EscapedExpression(multiPolygon.toWktWithSrid()),
+      'ST_Intersects',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this linestring crosses another LineString.
+  Expression crosses(GeographyLineString other) {
+    return _GeometryFunctionColumnExpression<GeographyLineString>(
+      this,
+      _encodeValueForQuery(other),
+      'ST_Crosses',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this linestring crosses a Polygon.
+  Expression crossesPolygon(GeographyPolygon polygon) {
+    return _GeometryFunctionColumnExpression<GeographyLineString>(
+      this,
+      EscapedExpression(polygon.toWktWithSrid()),
+      'ST_Crosses',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Check if this linestring is within a Polygon.
+  Expression within(GeographyPolygon polygon) {
+    return _GeometryFunctionColumnExpression<GeographyLineString>(
+      this,
+      EscapedExpression(polygon.toWktWithSrid()),
+      'ST_Within',
+      otherIsWkt: true,
+    );
+  }
+
+  /// Returns the length of this linestring.
+  ColumnDouble length() {
+    return ColumnGeometryLength<GeographyLineString>(
+      GeometryLengthExpression<GeographyLineString>(this),
+    );
+  }
+
+  /// Returns the distance between this linestring and a Point.
+  ColumnDouble distanceTo(GeographyPoint point) {
+    return ColumnGeometryDistance<GeographyLineString>(
+      GeometryDistanceExpression<GeographyLineString>(
+        this,
+        EscapedExpression(point.toWktWithSrid()),
+        otherIsWkt: true,
+      ),
+    );
+  }
+
+  /// Returns the distance between this linestring and another LineString.
+  ColumnDouble distanceToLineString(GeographyLineString other) {
+    return ColumnGeometryDistance<GeographyLineString>(
+      GeometryDistanceExpression<GeographyLineString>(
+        this,
+        _encodeValueForQuery(other),
+        otherIsWkt: true,
+      ),
+    );
+  }
+
+  /// Check if this linestring is empty.
+  Expression isEmpty() {
+    return _UnaryGeometryFunctionExpression<GeographyLineString>(
+      this,
+      'ST_IsEmpty',
+    );
+  }
+
+  /// Check if this linestring forms a ring (closed linestring).
+  Expression isRing() {
+    return _UnaryGeometryFunctionExpression<GeographyLineString>(
+      this,
+      'ST_IsRing',
+    );
+  }
+
+  /// Check if this linestring is closed.
+  Expression isClosed() {
+    return _UnaryGeometryFunctionExpression<GeographyLineString>(
+      this,
+      'ST_IsClosed',
+    );
+  }
+
+  /// Check if this linestring is simple (no self-intersections).
+  Expression isSimple() {
+    return _UnaryGeometryFunctionExpression<GeographyLineString>(
+      this,
+      'ST_IsSimple',
+    );
+  }
+
+  /// Check if this linestring is within the specified bounding box bounds.
+  Expression isWithinBounds(
+    double minLon,
+    double minLat,
+    double maxLon,
+    double maxLat,
+  ) {
+    return _BoundingBoxExpression(this, minLon, minLat, maxLon, maxLat);
+  }
+}
+
+/// Expression that calls a PostGIS function with this column as the first argument
+/// and another expression as the second. If [otherIsWkt] is true the other
+/// expression is treated as EWKT/WKT and wrapped with `ST_GeogFromText(...)` for
+/// geography columns or `ST_GeomFromEWKT(...)` for geometry columns.
+class _GeometryFunctionColumnExpression<T> extends ColumnExpression<T> {
+  final Expression other;
+  final String functionName;
+  final bool otherIsWkt;
+
+  _GeometryFunctionColumnExpression(
+    super.column,
+    this.other,
+    this.functionName, {
+    this.otherIsWkt = false,
+  });
+
+  @override
+  List<Column> get columns => [...super.columns, ...other.columns];
+
+  @override
+  String get operator => functionName;
+
+  @override
+  String toString() {
+    var otherStr = other.toString();
+    if (otherIsWkt) {
+      final isGeography =
+          column is ColumnGeographyPoint ||
+          column is ColumnGeographyLineString ||
+          column is ColumnGeographyPolygon ||
+          column is ColumnGeographyMultiPolygon;
+      if (isGeography) {
+        otherStr = 'ST_GeogFromText($otherStr)';
+      } else {
+        otherStr = 'ST_GeomFromEWKT($otherStr)';
+      }
+    }
+    return '$functionName($_getColumnName, $otherStr)';
+  }
+}
+
+/// Expression that returns ST_Distance(column, other)
+class GeometryDistanceExpression<T> extends ColumnExpression<T> {
+  /// The other geometry expression to compute the distance to.
+  final Expression other;
+
+  /// Whether [other] is a WKT/EWKT representation that needs to be wrapped
+  /// with `ST_GeogFromText(...)` for geography columns or `ST_GeomFromEWKT(...)` for geometry columns.
+  final bool otherIsWkt;
+
+  /// Creates a new [GeometryDistanceExpression].
+  GeometryDistanceExpression(
+    super.column,
+    this.other, {
+    this.otherIsWkt = false,
+  });
+
+  @override
+  List<Column> get columns => [...super.columns, ...other.columns];
+
+  @override
+  String get operator => 'ST_Distance';
+
+  @override
+  String toString() {
+    var otherStr = other.toString();
+    if (otherIsWkt) {
+      final isGeography =
+          column is ColumnGeographyPoint ||
+          column is ColumnGeographyLineString ||
+          column is ColumnGeographyPolygon ||
+          column is ColumnGeographyMultiPolygon;
+      if (isGeography) {
+        otherStr = 'ST_GeogFromText($otherStr)';
+      } else {
+        otherStr = 'ST_GeomFromEWKT($otherStr)';
+      }
+    }
+    return 'ST_Distance($_getColumnName, $otherStr)';
+  }
+}
+
+/// A [Column] holding the result of a geometry distance operation.
+/// For example ST_Distance between two geometries.
+class ColumnGeometryDistance<T> extends ColumnDouble {
+  final GeometryDistanceExpression<T> _expression;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnGeometryDistance(this._expression)
+    : super(_expression.column.columnName, _expression.column.table);
+
+  @override
+  String toString() => _expression.toString();
+}
+
+/// A [Column] holding the result of a geometry area operation.
+class ColumnGeometryArea<T> extends ColumnDouble {
+  final GeometryAreaExpression<T> _expression;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnGeometryArea(this._expression)
+    : super(_expression.column.columnName, _expression.column.table);
+
+  @override
+  String toString() => _expression.toString();
+}
+
+/// Expression that returns ST_Area(column)
+class GeometryAreaExpression<T> extends ColumnExpression<T> {
+  /// Creates a new [GeometryAreaExpression].
+  GeometryAreaExpression(super.column);
+
+  @override
+  String get operator => 'ST_Area';
+
+  @override
+  String toString() {
+    return 'ST_Area($_getColumnName)';
+  }
+}
+
+/// Expression that returns ST_Length(column) for LineString geometries.
+class GeometryLengthExpression<T> extends ColumnExpression<T> {
+  /// Creates a new [GeometryLengthExpression].
+  GeometryLengthExpression(super.column);
+
+  @override
+  String get operator => 'ST_Length';
+
+  @override
+  String toString() {
+    return 'ST_Length($_getColumnName)';
+  }
+}
+
+/// A [Column] holding the result of a geometry length operation.
+class ColumnGeometryLength<T> extends ColumnDouble {
+  final GeometryLengthExpression<T> _expression;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnGeometryLength(this._expression)
+    : super(_expression.column.columnName, _expression.column.table);
+
+  @override
+  String toString() => _expression.toString();
+}
+
+/// Expression that returns ST_Perimeter(column) for Polygon geometries.
+class GeometryPerimeterExpression<T> extends ColumnExpression<T> {
+  /// Creates a new [GeometryPerimeterExpression].
+  GeometryPerimeterExpression(super.column);
+
+  @override
+  String get operator => 'ST_Perimeter';
+
+  @override
+  String toString() {
+    return 'ST_Perimeter($_getColumnName)';
+  }
+}
+
+/// A [Column] holding the result of a geometry perimeter operation.
+class ColumnGeometryPerimeter<T> extends ColumnDouble {
+  final GeometryPerimeterExpression<T> _expression;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnGeometryPerimeter(this._expression)
+    : super(_expression.column.columnName, _expression.column.table);
+
+  @override
+  String toString() => _expression.toString();
+}
+
+/// Expression that returns a unary geometry function like ST_IsEmpty, ST_IsValid, etc.
+class _UnaryGeometryFunctionExpression<T> extends ColumnExpression<T> {
+  final String functionName;
+
+  _UnaryGeometryFunctionExpression(super.column, this.functionName);
+
+  @override
+  String get operator => functionName;
+
+  @override
+  String toString() {
+    return '$functionName($_getColumnName)';
+  }
+}
+
+/// Expression that checks if a geometry is within bounding box bounds.
+class _BoundingBoxExpression<T> extends ColumnExpression<T> {
+  final double minLon;
+  final double minLat;
+  final double maxLon;
+  final double maxLat;
+
+  _BoundingBoxExpression(
+    super.column,
+    this.minLon,
+    this.minLat,
+    this.maxLon,
+    this.maxLat,
+  );
+
+  @override
+  String get operator => '&&';
+
+  @override
+  String toString() {
+    var srid = 4326; // Default SRID
+    if (column is ColumnGeographyPoint) {
+      srid = (column as ColumnGeographyPoint).srid;
+    } else if (column is ColumnGeographyLineString) {
+      srid = (column as ColumnGeographyLineString).srid;
+    } else if (column is ColumnGeographyPolygon) {
+      srid = (column as ColumnGeographyPolygon).srid;
+    } else if (column is ColumnGeographyMultiPolygon) {
+      srid = (column as ColumnGeographyMultiPolygon).srid;
+    }
+    var bbox = 'ST_MakeEnvelope($minLon, $minLat, $maxLon, $maxLat, $srid)';
+    return '$_getColumnName && $bbox';
+  }
+}
+
 /// A [Column] holding the result of a vector distance operation.
 class ColumnVectorDistance<T> extends ColumnDouble {
   final VectorDistanceExpression<T> _expression;
