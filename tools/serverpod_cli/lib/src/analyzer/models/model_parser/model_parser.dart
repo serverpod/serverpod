@@ -30,6 +30,7 @@ class ModelParser {
     var manageMigration = _parseBool(migrationValue) ?? true;
 
     var tableName = _parseTableName(documentContents);
+    var schema = _parseSchemaName(documentContents);
 
     return _initializeFromClassFields(
       documentTypeName: documentTypeName,
@@ -56,6 +57,7 @@ class ModelParser {
               extendsClass: extendsClass,
               sourceFileName: protocolSource.yamlSourceUri.path,
               tableName: tableName,
+              schema: schema,
               manageMigration: manageMigration,
               fileName: outFileName,
               fields: fields,
@@ -251,6 +253,13 @@ class ModelParser {
     if (tableName is! String) return null;
 
     return tableName;
+  }
+
+  static String? _parseSchemaName(YamlMap documentContents) {
+    var schemaName = documentContents.nodes[Keyword.schema]?.value;
+    if (schemaName is! String) return null;
+
+    return schemaName;
   }
 
   static List<SerializableModelFieldDefinition> _parseClassFields(

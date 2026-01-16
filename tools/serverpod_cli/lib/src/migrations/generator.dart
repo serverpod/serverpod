@@ -78,6 +78,7 @@ class MigrationGenerator {
       modelDefinitions,
       config.name,
       config.modulesAll,
+      defaultSchema: config.defaultDatabaseSchema,
     );
 
     var databaseDefinitions = await _loadModuleDatabaseDefinitions(
