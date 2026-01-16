@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "projectname_flutter",
+            "cwd": "projectname_flutter",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "projectname_server",
+            "cwd": "projectname_server",
+            "request": "launch",
+            "type": "dart",
+            "program": "bin/main.dart",
+            "args": [
+                "--role",
+                "monolith"
+            ]
+        }
+    ],
+    "compounds": [
+        {
+            "name": "projectname (full stack)",
+            "configurations": [
+                "projectname_server",
+                "projectname_flutter"
+            ]
+        }
+    ]
+}
