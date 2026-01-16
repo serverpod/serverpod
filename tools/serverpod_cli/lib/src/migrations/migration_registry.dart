@@ -62,6 +62,8 @@ class MigrationRegistry {
   /// Loads the migration versions from the migrations directory and
   /// creates a registry.
   /// Returns an empty registry if no migrations are found for the module.
+  /// Empty migration directories (directories without the required definition
+  /// files) are automatically skipped.
   static MigrationRegistry load(Directory migrationsDirectory) {
     if (!migrationsDirectory.existsSync()) {
       return MigrationRegistry(
@@ -72,10 +74,21 @@ class MigrationRegistry {
 
     var migrationPaths = migrationsDirectory.listSync().whereType<Directory>();
     var migrationVersions = migrationPaths
+        .where((dir) => _isValidMigrationDirectory(dir))
         .map((d) => path.basename(d.path))
         .toList();
     migrationVersions.sort();
 
     return MigrationRegistry(migrationsDirectory, migrationVersions);
+  }
+
+  /// Checks if a directory contains the required migration files.
+  /// A valid migration directory must contain at least the
+  /// 'definition_project.json' file.
+  static bool _isValidMigrationDirectory(Directory dir) {
+    var definitionProjectFile = File(
+      path.join(dir.path, 'definition_project.json'),
+    );
+    return definitionProjectFile.existsSync();
   }
 }
