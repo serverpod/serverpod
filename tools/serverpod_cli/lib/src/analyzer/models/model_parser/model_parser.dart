@@ -180,7 +180,8 @@ class ModelParser {
 
     var serverOnly = _parseServerOnly(documentContents);
     var serializeAs = _parseSerializedAs(documentContents);
-    var values = _parseEnumValues(documentContents, docsExtractor);
+    var properties = _parseEnumProperties(documentContents, docsExtractor);
+    var values = _parseEnumValues(documentContents, docsExtractor, properties);
     var enumType = parseType(
       '${protocolSource.moduleAlias}:$className',
       extraClasses: [],
@@ -201,6 +202,7 @@ class ModelParser {
       subDirParts: protocolSource.subDirPathParts,
       serverOnly: serverOnly,
       type: enumType,
+      properties: properties,
     );
     enumDef.type.enumDefinition = enumDef;
     return enumDef;
@@ -703,34 +705,210 @@ class ModelParser {
     return values.where((value) => value.name == defaultValue).firstOrNull;
   }
 
+  /// Parse enum properties from YAML
+  static List<EnumPropertyDefinition> _parseEnumProperties(
+    YamlMap documentContents,
+    YamlDocumentationExtractor docsExtractor,
+  ) {
+    var propertiesNode = documentContents.nodes[Keyword.properties];
+    if (propertiesNode == null) return [];
+
+    var propertiesMap = propertiesNode.value;
+    if (propertiesMap is! YamlMap) return [];
+
+    var properties = <EnumPropertyDefinition>[];
+
+    for (var entry in propertiesMap.nodes.entries) {
+      var keyNode = entry.key;
+      var valueNode = entry.value;
+      if (keyNode is! YamlScalar) continue;
+      if (valueNode is! YamlScalar) continue;
+
+      var propertyName = keyNode.value;
+      var propertyValue = valueNode.value;
+      if (propertyName is! String) continue;
+      if (propertyValue is! String) continue;
+
+      // Parse "Type, default=value" syntax
+      var parts = propertyValue.split(',').map((s) => s.trim()).toList();
+      var type = parts[0];
+
+      dynamic defaultValue;
+      var isRequired = true;
+
+      // Parse modifiers
+      for (var i = 1; i < parts.length; i++) {
+        var modifier = parts[i];
+        if (modifier.startsWith('default=')) {
+          isRequired = false;
+          var defaultStr = modifier.substring('default='.length);
+          defaultValue = _parseEnumPropertyDefaultValue(defaultStr, type);
+        }
+      }
+
+      var propDocumentation = docsExtractor.getDocumentation(
+        keyNode.span.start,
+      );
+
+      properties.add(
+        EnumPropertyDefinition(
+          name: propertyName,
+          type: type,
+          isRequired: isRequired,
+          defaultValue: defaultValue,
+          documentation: propDocumentation,
+        ),
+      );
+    }
+
+    return properties;
+  }
+
+  /// Parse default value based on type (handles quoted strings from YAML)
+  static dynamic _parseEnumPropertyDefaultValue(String valueStr, String type) {
+    var unquotedValue = _removeQuotes(valueStr);
+
+    if (unquotedValue == 'null') {
+      return null;
+    }
+
+    return _parseTypedValue(unquotedValue, type);
+  }
+
+  static String _removeQuotes(String value) {
+    if (value.startsWith("'") && value.endsWith("'")) {
+      return value.substring(1, value.length - 1);
+    }
+    if (value.startsWith('"') && value.endsWith('"')) {
+      return value.substring(1, value.length - 1);
+    }
+    return value;
+  }
+
+  static dynamic _parseTypedValue(String valueStr, String type) {
+    var baseType = type.endsWith('?')
+        ? type.substring(0, type.length - 1)
+        : type;
+
+    switch (baseType) {
+      case 'int':
+        return int.tryParse(valueStr);
+      case 'double':
+        return double.tryParse(valueStr);
+      case 'bool':
+        var lower = valueStr.toLowerCase();
+        if (lower == 'true') return true;
+        if (lower == 'false') return false;
+        return null;
+      case 'String':
+      default:
+        var escaped = valueStr.replaceAll("'", r"\'");
+        return "'$escaped'";
+    }
+  }
+
   static List<ProtocolEnumValueDefinition> _parseEnumValues(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
+    List<EnumPropertyDefinition> properties,
   ) {
     var valuesNode = documentContents.nodes[Keyword.values];
     if (valuesNode is! YamlList) return [];
 
     var values = valuesNode.nodes.map((node) {
       var value = node.value;
-      if (value is! String) return null;
+      var docLocation = _calculateDocLocation(node.span.start);
 
-      var start = node.span.start;
-      // 2 is the length of '- ' in '- enumValue'
-      var valueDocumentation = docsExtractor.getDocumentation(
-        SourceLocation(
-          start.offset - 2,
-          column: start.column - 2,
-          line: start.line,
-          sourceUrl: start.sourceUrl,
-        ),
-      );
+      if (value is String) {
+        return _parseSimpleEnumValue(value, docsExtractor, docLocation);
+      }
 
-      return ProtocolEnumValueDefinition(value, valueDocumentation);
+      if (value is YamlMap) {
+        return _parseEnhancedEnumValue(
+          value,
+          docsExtractor,
+          docLocation,
+          properties,
+        );
+      }
+
+      return null;
     });
 
     return values
         .where((value) => value != null)
         .cast<ProtocolEnumValueDefinition>()
         .toList();
+  }
+
+  static SourceLocation _calculateDocLocation(SourceLocation start) {
+    // Offset by 2 for the '- ' prefix in YAML list items
+    return SourceLocation(
+      start.offset - 2,
+      column: start.column - 2,
+      line: start.line,
+      sourceUrl: start.sourceUrl,
+    );
+  }
+
+  static ProtocolEnumValueDefinition _parseSimpleEnumValue(
+    String value,
+    YamlDocumentationExtractor docsExtractor,
+    SourceLocation docLocation,
+  ) {
+    var documentation = docsExtractor.getDocumentation(docLocation);
+    return ProtocolEnumValueDefinition(value, documentation);
+  }
+
+  static ProtocolEnumValueDefinition? _parseEnhancedEnumValue(
+    YamlMap valueMap,
+    YamlDocumentationExtractor docsExtractor,
+    SourceLocation docLocation,
+    List<EnumPropertyDefinition> properties,
+  ) {
+    var entries = valueMap.entries.toList();
+    if (entries.isEmpty) return null;
+
+    var enumValueName = entries[0].key.toString();
+    var propertyValuesMap = entries[0].value;
+    var documentation = docsExtractor.getDocumentation(docLocation);
+    var propertyValues = _extractPropertyValues(propertyValuesMap, properties);
+
+    return ProtocolEnumValueDefinition(
+      enumValueName,
+      documentation,
+      propertyValues,
+    );
+  }
+
+  static Map<String, dynamic> _extractPropertyValues(
+    dynamic propertyValuesMap,
+    List<EnumPropertyDefinition> properties,
+  ) {
+    var propertyValues = <String, dynamic>{};
+
+    if (propertyValuesMap is! YamlMap || properties.isEmpty) {
+      return propertyValues;
+    }
+
+    for (var property in properties) {
+      var propertyValue = propertyValuesMap[property.name];
+      if (propertyValue != null) {
+        propertyValues[property.name] = _parseEnumPropertyValue(
+          propertyValue,
+          property.type,
+        );
+      } else if (property.defaultValue != null) {
+        propertyValues[property.name] = property.defaultValue;
+      }
+    }
+
+    return propertyValues;
+  }
+
+  /// Parses a property value from YAML to the appropriate Dart type
+  static dynamic _parseEnumPropertyValue(dynamic value, String type) {
+    if (value == null) return null;
+    return _parseTypedValue(value.toString(), type);
   }
 }

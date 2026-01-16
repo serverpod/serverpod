@@ -3057,16 +3057,75 @@ class SerializableModelLibraryGenerator {
           e.implements.add(
             refer('SerializableModel', serverpodUrl(serverCode)),
           );
-          e.values.addAll([
-            for (var value in enumDefinition.values)
-              EnumValue((v) {
-                v
-                  ..name = value.name
-                  ..docs.addAll(value.documentation ?? []);
-              }),
-          ]);
 
-          // Check if the enum has a value named "name"
+          if (enumDefinition.isEnhanced) {
+            e.values.addAll([
+              for (final value in enumDefinition.values)
+                EnumValue((v) {
+                  v
+                    ..name = value.name
+                    ..docs.addAll(value.documentation ?? []);
+
+                  final args = <Expression>[];
+                  for (final property in enumDefinition.properties) {
+                    final propertyValue = value.propertyValues[property.name];
+                    if (propertyValue != null) {
+                      args.add(
+                        _formatPropertyValueForExpression(
+                          propertyValue,
+                          property.type,
+                        ),
+                      );
+                    } else if (property.defaultValue != null) {
+                      args.add(
+                        _formatPropertyValueForExpression(
+                          property.defaultValue,
+                          property.type,
+                        ),
+                      );
+                    }
+                  }
+                  v.arguments.addAll(args);
+                }),
+            ]);
+
+            e.constructors.add(
+              Constructor((c) {
+                c.constant = true;
+                for (final property in enumDefinition.properties) {
+                  c.requiredParameters.add(
+                    Parameter(
+                      (p) => p
+                        ..name = property.name
+                        ..toThis = true,
+                    ),
+                  );
+                }
+              }),
+            );
+
+            for (final property in enumDefinition.properties) {
+              e.fields.add(
+                Field((f) {
+                  f
+                    ..name = property.name
+                    ..modifier = FieldModifier.final$
+                    ..type = _parsePropertyType(property.type)
+                    ..docs.addAll(property.documentation ?? []);
+                }),
+              );
+            }
+          } else {
+            e.values.addAll([
+              for (final value in enumDefinition.values)
+                EnumValue((v) {
+                  v
+                    ..name = value.name
+                    ..docs.addAll(value.documentation ?? []);
+                }),
+            ]);
+          }
+
           bool hasValueNamedName = enumDefinition.values.any(
             (v) => v.name == 'name',
           );
@@ -3099,6 +3158,48 @@ class SerializableModelLibraryGenerator {
       );
     });
     return library;
+  }
+
+  Expression _formatPropertyValueForExpression(dynamic value, String type) {
+    if (value == null) {
+      return literalNull;
+    }
+
+    var baseType = type.endsWith('?')
+        ? type.substring(0, type.length - 1)
+        : type;
+
+    switch (baseType) {
+      case 'int':
+        return literalNum(value);
+      case 'double':
+        return literalNum(value);
+      case 'bool':
+        return literalBool(value);
+      case 'String':
+      default:
+        var str = value.toString();
+        if (str.startsWith("'") && str.endsWith("'")) {
+          str = str.substring(1, str.length - 1);
+        }
+        return literalString(str);
+    }
+  }
+
+  /// Parses a property type string to a Reference
+  Reference _parsePropertyType(String type) {
+    // Handle nullable types
+    var isNullable = type.endsWith('?');
+    var baseType = isNullable ? type.substring(0, type.length - 1) : type;
+
+    var typeRef = refer(baseType);
+    return isNullable
+        ? TypeReference(
+            (t) => t
+              ..symbol = baseType
+              ..isNullable = true,
+          )
+        : typeRef;
   }
 
   List<Method> enumSerializationMethodsByIndex(EnumDefinition enumDefinition) {

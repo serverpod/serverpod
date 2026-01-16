@@ -186,6 +186,20 @@ class BasicDatabase extends Endpoint {
     return await ObjectWithEnum.db.findById(session, id);
   }
 
+  Future<ObjectWithEnumEnhanced> storeObjectWithEnumEnhanced(
+    Session session,
+    ObjectWithEnumEnhanced object,
+  ) async {
+    return await ObjectWithEnumEnhanced.db.insertRow(session, object);
+  }
+
+  Future<ObjectWithEnumEnhanced?> getObjectWithEnumEnhanced(
+    Session session,
+    int id,
+  ) async {
+    return await ObjectWithEnumEnhanced.db.findById(session, id);
+  }
+
   Future<ObjectWithObject> storeObjectWithObject(
     Session session,
     ObjectWithObject object,
