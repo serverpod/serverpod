@@ -8,6 +8,9 @@ class MigrationRegistry {
   /// Filename of the migration registry.
   static const _migrationRegistryFileName = 'migration_registry.txt';
 
+  /// Filename of the project database definition file in migration directories.
+  static const _definitionProjectFileName = 'definition_project.json';
+
   /// List of migrations versions for the module.
   final List<String> _migrationVersions;
 
@@ -86,9 +89,8 @@ class MigrationRegistry {
   /// A valid migration directory must contain at least the
   /// 'definition_project.json' file.
   static bool _isValidMigrationDirectory(Directory dir) {
-    const definitionProjectFileName = 'definition_project.json';
     var definitionProjectFile = File(
-      path.join(dir.path, definitionProjectFileName),
+      path.join(dir.path, _definitionProjectFileName),
     );
     return definitionProjectFile.existsSync();
   }
