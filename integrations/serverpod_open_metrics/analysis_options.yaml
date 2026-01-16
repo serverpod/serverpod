@@ -1,0 +1,12 @@
+include: package:serverpod_lints/public.yaml
+
+analyzer:
+  exclude:
+    - lib/src/generated/**
+
+linter:
+  rules:
+    unnecessary_parenthesis: true
+
+formatter:
+  trailing_commas: preserve

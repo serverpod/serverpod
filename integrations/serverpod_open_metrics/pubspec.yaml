@@ -1,0 +1,30 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+name: serverpod_open_metrics
+description: OpenMetrics middleware and metrics collection for Serverpod servers.
+version: 3.3.0
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: '^3.8.0'
+
+dependencies:
+  serverpod: 3.3.0
+
+dev_dependencies:
+  serverpod_lints: 3.3.0
+  serverpod_test: 3.3.0
+  test: ^1.25.5
+
+dependency_overrides:
+  serverpod:
+    path: ../../../packages/serverpod
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../../packages/serverpod_shared
+  serverpod_test:
+    path: ../../../packages/serverpod_test
