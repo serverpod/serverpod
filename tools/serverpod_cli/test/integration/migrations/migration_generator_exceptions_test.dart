@@ -17,8 +17,6 @@ const _projectName = 'test_project';
 const _migrationVersion = '00000000000000';
 
 void main() {
-  var config = GeneratorConfigBuilder().build();
-
   var testAssetsPath = path.join(
     'test',
     'integration',
