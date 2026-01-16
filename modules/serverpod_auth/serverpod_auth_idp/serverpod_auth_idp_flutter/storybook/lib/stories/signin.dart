@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:storybook_toolkit/storybook_toolkit.dart';
 import 'package:provider/provider.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
+import 'package:storybook_toolkit/storybook_toolkit.dart';
 
 import '../utils/client.dart';
 import '../utils/notification.dart';
@@ -32,6 +32,12 @@ final List<Story> signInStories = [
     builder: (context) =>
         _signInWidgetStory(context, disableAppleSignInWidget: true),
   ),
+  Story(
+    name: 'Sign In/Disabled GitHub Widget',
+    description: 'Sign in flow suppressing the GitHub sign-in widget.',
+    builder: (context) =>
+        _signInWidgetStory(context, disableGitHubSignInWidget: true),
+  ),
 ];
 
 Widget _signInWidgetStory(
@@ -39,6 +45,7 @@ Widget _signInWidgetStory(
   bool disableEmailSignInWidget = false,
   bool disableGoogleSignInWidget = false,
   bool disableAppleSignInWidget = false,
+  bool disableGitHubSignInWidget = false,
 }) {
   return SizedBox(
     width: 400,
@@ -53,6 +60,7 @@ Widget _signInWidgetStory(
       disableEmailSignInWidget: disableEmailSignInWidget,
       disableGoogleSignInWidget: disableGoogleSignInWidget,
       disableAppleSignInWidget: disableAppleSignInWidget,
+      disableGitHubSignInWidget: disableGitHubSignInWidget,
     ),
   );
 }
