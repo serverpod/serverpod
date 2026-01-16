@@ -86,8 +86,9 @@ class MigrationRegistry {
   /// A valid migration directory must contain at least the
   /// 'definition_project.json' file.
   static bool _isValidMigrationDirectory(Directory dir) {
+    const definitionProjectFileName = 'definition_project.json';
     var definitionProjectFile = File(
-      path.join(dir.path, 'definition_project.json'),
+      path.join(dir.path, definitionProjectFileName),
     );
     return definitionProjectFile.existsSync();
   }
