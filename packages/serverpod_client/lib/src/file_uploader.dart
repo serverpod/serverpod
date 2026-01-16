@@ -43,11 +43,18 @@ class FileUploader {
     try {
       switch (_uploadDescription.type) {
         case _UploadType.binary:
-          final request = http.StreamedRequest('POST', _uploadDescription.url);
-          request.headers.addAll({
+          final request = http.StreamedRequest(_uploadDescription.method, _uploadDescription.url);
+          
+          // Set default headers
+          final defaultHeaders = {
             'Content-Type': 'application/octet-stream',
             'Accept': '*/*',
-          });
+          };
+          
+          // Add default headers first, then override with custom headers
+          request.headers.addAll(defaultHeaders);
+          request.headers.addAll(_uploadDescription.headers);
+          
           request.contentLength = length;
           final (_, response) = await (
             stream.pipe(request.sink),
@@ -55,7 +62,7 @@ class FileUploader {
           ).wait;
           await response.stream.drain();
 
-          return response.statusCode == 200;
+          return response.statusCode == 200 || response.statusCode == 204;
 
         case _UploadType.multipart:
           var multipartFile = switch (length) {
@@ -72,7 +79,7 @@ class FileUploader {
             ),
           };
 
-          var request = http.MultipartRequest('POST', _uploadDescription.url);
+          var request = http.MultipartRequest(_uploadDescription.method, _uploadDescription.url);
           request.files.add(multipartFile);
           for (var key in _uploadDescription.requestFields.keys) {
             request.fields[key] = _uploadDescription.requestFields[key]!;
@@ -80,7 +87,7 @@ class FileUploader {
 
           var response = await request.send();
 
-          return response.statusCode == 204;
+          return response.statusCode == 200 || response.statusCode == 204;
       }
     } catch (e) {
       return false;
@@ -96,9 +103,11 @@ enum _UploadType {
 class _UploadDescription {
   late _UploadType type;
   late Uri url;
+  late String method;
   String? field;
   String? fileName;
   Map<String, String> requestFields = {};
+  Map<String, String> headers = {};
 
   _UploadDescription(String description) {
     var data = jsonDecode(description);
@@ -114,6 +123,12 @@ class _UploadDescription {
     }
 
     url = Uri.parse(data['url']);
+    method = data['method'] ?? 'POST'; // Default to POST for backward compatibility
+    
+    // Parse headers if provided
+    if (data['headers'] != null) {
+      headers = (data['headers'] as Map).cast<String, String>();
+    }
 
     if (type == _UploadType.multipart) {
       field = data['field'];
