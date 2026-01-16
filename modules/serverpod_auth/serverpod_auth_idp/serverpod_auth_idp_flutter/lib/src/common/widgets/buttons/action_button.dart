@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../loading_indicator.dart';
 
@@ -28,7 +29,10 @@ class ActionButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8),
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         backgroundColor: Theme.of(context).colorScheme.primary,
-        textStyle: Theme.of(context).textTheme.bodyLarge,
+        textStyle: GoogleFonts.roboto(
+          fontSize: 14,
+          letterSpacing: 0.7,
+        ),
         shape: const StadiumBorder(),
         fixedSize: const Size(double.infinity, 48),
       ),
