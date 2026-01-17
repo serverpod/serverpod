@@ -45,8 +45,8 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
         fixture = AnonymousIdpTestFixture(
-          config: AnonymousIdpConfig(
-            perIpAddressRateLimit: const RateLimit(
+          config: const AnonymousIdpConfig(
+            perIpAddressRateLimit: RateLimit(
               maxAttempts: 2,
               timeframe: Duration(minutes: 1),
             ),
@@ -81,8 +81,8 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
         fixture = AnonymousIdpTestFixture(
-          config: AnonymousIdpConfig(
-            perIpAddressRateLimit: const RateLimit(
+          config: const AnonymousIdpConfig(
+            perIpAddressRateLimit: RateLimit(
               maxAttempts: 1,
               timeframe: Duration(minutes: 1),
             ),
@@ -119,8 +119,8 @@ void main() {
       setUp(() async {
         session = sessionBuilder.build();
         fixture = AnonymousIdpTestFixture(
-          config: AnonymousIdpConfig(
-            perIpAddressRateLimit: const RateLimit(
+          config: const AnonymousIdpConfig(
+            perIpAddressRateLimit: RateLimit(
               maxAttempts: 1,
               timeframe: Duration(minutes: 1),
             ),

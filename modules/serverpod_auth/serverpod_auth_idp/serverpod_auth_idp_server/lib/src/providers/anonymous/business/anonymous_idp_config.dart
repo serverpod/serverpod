@@ -43,47 +43,17 @@ class AnonymousIdpConfig extends IdentityProviderBuilder<AnonymousIdp> {
   /// The maximum rate of anonymous accounts that can be created from a single
   /// IP address.
   /// {@endtemplate}
-  final AnonymousIdpLoginRateLimitingConfig? perIpAddressRateLimitConfig;
+  final RateLimit? perIpAddressRateLimit;
 
   /// Creates a new [AnonymousIdpConfig].
-  const AnonymousIdpConfig._({
-    required this.onBeforeAnonymousAccountCreated,
-    required this.onAfterAnonymousAccountCreated,
-    required this.perIpAddressRateLimitConfig,
+  const AnonymousIdpConfig({
+    this.onBeforeAnonymousAccountCreated,
+    this.onAfterAnonymousAccountCreated,
+    this.perIpAddressRateLimit = const RateLimit(
+      maxAttempts: 100,
+      timeframe: Duration(hours: 1),
+    ),
   });
-
-  /// Creates a new [AnonymousIdpConfig] with optional rate limiting. If no
-  /// rate limiting value is provided, none will be used and requests will not
-  /// be throttled.
-  factory AnonymousIdpConfig({
-    final BeforeAnonymousAccountCreatedFunction?
-    onBeforeAnonymousAccountCreated,
-    final AfterAnonymousAccountCreatedFunction? onAfterAnonymousAccountCreated,
-    final RateLimit? perIpAddressRateLimit,
-  }) => AnonymousIdpConfig._(
-    onBeforeAnonymousAccountCreated: onBeforeAnonymousAccountCreated,
-    onAfterAnonymousAccountCreated: onAfterAnonymousAccountCreated,
-    perIpAddressRateLimitConfig:
-        AnonymousIdpLoginRateLimitingConfig.fromRateLimit(
-          rateLimit:
-              perIpAddressRateLimit ??
-              AnonymousIdpLoginRateLimitingConfig.defaultRateLimit,
-        ),
-  );
-
-  /// Creates a new [AnonymousIdpConfig] with completely customized rate
-  /// limiting.
-  factory AnonymousIdpConfig.customRateLimiting({
-    required final AnonymousIdpLoginRateLimitingConfig
-    perIpAddressRateLimitConfig,
-    final BeforeAnonymousAccountCreatedFunction?
-    onBeforeAnonymousAccountCreated,
-    final AfterAnonymousAccountCreatedFunction? onAfterAnonymousAccountCreated,
-  }) => AnonymousIdpConfig._(
-    onBeforeAnonymousAccountCreated: onBeforeAnonymousAccountCreated,
-    onAfterAnonymousAccountCreated: onAfterAnonymousAccountCreated,
-    perIpAddressRateLimitConfig: perIpAddressRateLimitConfig,
-  );
 
   @override
   AnonymousIdp build({
@@ -97,53 +67,4 @@ class AnonymousIdpConfig extends IdentityProviderBuilder<AnonymousIdp> {
       userProfiles: userProfiles,
     );
   }
-}
-
-/// Rate limiting configuration for anonymous login.
-class AnonymousIdpLoginRateLimitingConfig
-    extends RateLimitedRequestAttemptConfig<String> {
-  /// Default maximum number of attempts within [defaultTimeframe].
-  static const defaultMaxAttempts = 100;
-
-  /// Default window for which attempts are capped to [defaultMaxAttempts].
-  static const defaultTimeframe = Duration(hours: 1);
-
-  /// Default [RateLimit].
-  static const defaultRateLimit = RateLimit(
-    maxAttempts: defaultMaxAttempts,
-    timeframe: defaultTimeframe,
-  );
-
-  /// Creates an instance of [AnonymousIdpLoginRateLimitingConfig].
-  ///
-  /// The parameters `nonceToString` and `nonceFromString` are not accepted
-  /// because the nonce type is `String`.
-  AnonymousIdpLoginRateLimitingConfig({
-    super.maxAttempts = defaultMaxAttempts,
-    super.timeframe = defaultTimeframe,
-    super.defaultExtraData,
-    super.onRateLimitExceeded,
-  }) : super(
-         domain: 'anonymous-idp-login',
-         source: 'account-creation',
-         nonceToString: (final String nonce) => nonce,
-         nonceFromString: (final String nonce) => nonce,
-       );
-
-  /// Creates an instance of [AnonymousIdpLoginRateLimitingConfig] from a
-  /// [RateLimit] value.
-  ///
-  /// The parameters `nonceToString` and `nonceFromString` are not accepted
-  /// because the nonce type is `String`.
-  factory AnonymousIdpLoginRateLimitingConfig.fromRateLimit({
-    required final RateLimit rateLimit,
-    final Map<String, String>? defaultExtraData,
-    final Future<void> Function(Session session, String nonce)?
-    onRateLimitExceeded,
-  }) => AnonymousIdpLoginRateLimitingConfig(
-    maxAttempts: rateLimit.maxAttempts,
-    timeframe: rateLimit.timeframe,
-    defaultExtraData: defaultExtraData,
-    onRateLimitExceeded: onRateLimitExceeded,
-  );
 }

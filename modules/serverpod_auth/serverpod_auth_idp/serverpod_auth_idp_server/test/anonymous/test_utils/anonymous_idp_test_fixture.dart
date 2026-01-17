@@ -24,7 +24,7 @@ final class AnonymousIdpTestFixture {
         ).tokenManager;
 
     anonymousIdp = AnonymousIdp(
-      config ?? AnonymousIdpConfig(),
+      config ?? const AnonymousIdpConfig(),
       tokenManager: this.tokenManager,
     );
   }
