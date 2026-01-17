@@ -154,7 +154,7 @@ class GoogleSignInWidget extends StatefulWidget {
     this.client,
     this.onAuthenticated,
     this.onError,
-    this.attemptLightweightSignIn = true,
+    this.attemptLightweightSignIn = false,
     this.scopes = GoogleAuthController.defaultScopes,
     this.type = GSIButtonType.standard,
     this.theme = GSIButtonTheme.outline,

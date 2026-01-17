@@ -23,9 +23,11 @@ sealed class SerializableModelDefinition {
 
   /// Generate the file reference [String] to this file.
   String fileRef() {
-    return p.posix
-    // ignore: prefer_interpolation_to_compose_strings
-    .joinAll([...subDirParts, '$fileName.dart']);
+    var path = p.posix.joinAll([...subDirParts, '$fileName.dart']);
+
+    // If on Windows, paths could appear with backslashes in the import clause.
+    // Normalize to forward slashes.
+    return p.split(path).join('/');
   }
 }
 

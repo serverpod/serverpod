@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_cli
-version: 3.2.0
+version: 3.2.2
 description: Command line tools for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
@@ -10,7 +10,7 @@ environment:
   sdk: '^3.8.0'
 
 dependencies:
-  analyzer: '>=8.1.0 <10.0.0'
+  analyzer: ">=8.1.0 <11.0.0"
   archive: '>=3.3.7 <5.0.0'
   args: ^2.7.0
   async: ^2.11.0
@@ -32,9 +32,9 @@ dependencies:
   pub_semver: ^2.1.4
   pubspec_parse: ^1.4.0
   recase: ^4.1.0
-  serverpod_serialization: 3.2.0
-  serverpod_service_client: 3.2.0
-  serverpod_shared: 3.2.0
+  serverpod_serialization: 3.2.2
+  serverpod_service_client: 3.2.2
+  serverpod_shared: 3.2.2
   source_span: ^1.10.0
   stream_channel: ^2.1.1
   super_string: ^1.0.3
@@ -44,7 +44,7 @@ dependencies:
   yaml_edit: ^2.2.2
 
 dev_dependencies:
-  serverpod_lints: 3.2.0
+  serverpod_lints: 3.2.2
   term_glyph: ^1.2.2
   test: ^1.25.5
   test_descriptor: ^2.0.2

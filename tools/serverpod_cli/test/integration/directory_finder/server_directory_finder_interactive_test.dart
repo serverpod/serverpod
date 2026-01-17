@@ -6,7 +6,7 @@ import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
-import 'server_directory_finder_test_utils.dart';
+import '../../test_util/server_directory_finder_helpers.dart';
 
 void main() {
   group('ServerDirectoryFinder.findOrPrompt with interactive flag', () {
