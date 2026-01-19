@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
-import 'package:relic/io_adapter.dart';
 import 'dart:typed_data';
 
+import 'package:relic/io_adapter.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/database/database.dart';
@@ -14,6 +14,8 @@ import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
+
+import 'health/health_response.dart';
 
 /// Handling incoming calls and routing them to the correct [Endpoint]
 /// methods.
@@ -138,6 +140,9 @@ class Server implements RouterInjectable {
       ..use('/', _headers)
       ..use('/', _reportException)
       ..get('/', _health)
+      ..get('/livez', _livez)
+      ..get('/readyz', _readyz)
+      ..get('/startupz', _startupz)
       ..get(
         '/websocket',
         _dispatchWebSocket(EndpointWebsocketRequestHandler.handleWebsocket),
@@ -267,6 +272,69 @@ class Server implements RouterInjectable {
         }
       }()),
     );
+  }
+
+  /// Liveness probe - always returns healthy if server can respond.
+  Future<Result> _livez(Request request) async {
+    final response = await serverpod.healthCheckService.checkLiveness();
+    return _healthResponse(request, response);
+  }
+
+  /// Readiness probe - checks all readiness indicators.
+  Future<Result> _readyz(Request request) async {
+    final response = await serverpod.healthCheckService.checkReadiness();
+    return _healthResponse(request, response);
+  }
+
+  /// Startup probe - checks if startup is complete.
+  Future<Result> _startupz(Request request) async {
+    final response = await serverpod.healthCheckService.checkStartup();
+    return _healthResponse(request, response);
+  }
+
+  /// Builds the appropriate response based on authentication status.
+  Future<Result> _healthResponse(
+    Request request,
+    HealthResponse response,
+  ) async {
+    final isAuthenticated = await _isAuthenticatedHealthRequest(request);
+
+    if (isAuthenticated) {
+      return Response(
+        response.httpStatusCode,
+        body: Body.fromString(
+          jsonEncode(response.toJson()),
+          mimeType: MimeType.json,
+        ),
+      );
+    } else {
+      // Unauthenticated: status code only, no body
+      return Response(response.httpStatusCode);
+    }
+  }
+
+  /// Checks if the request has valid authentication for detailed health info.
+  Future<bool> _isAuthenticatedHealthRequest(Request request) async {
+    final authHeader = request.getAuthorizationHeaderValue(
+      serverpod.config.validateHeaders,
+    );
+    if (authHeader == null) return false;
+
+    final authKey = unwrapAuthHeaderValue(authHeader);
+    if (authKey == null) return false;
+
+    final handler = serverpod.authenticationHandler;
+    if (handler == null) return false;
+
+    try {
+      final authInfo = await handler(
+        serverpod.internalSession,
+        authKey,
+      );
+      return authInfo != null;
+    } catch (e) {
+      return false;
+    }
   }
 
   Handler _headers(Handler next) {
