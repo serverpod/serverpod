@@ -2,9 +2,6 @@
   "scopeName": "source.serverpod",
   "patterns": [
     {
-      "include": "#strings"
-    },
-    {
       "include": "#fields"
     },
     {
@@ -40,18 +37,6 @@
     }
   ],
   "repository": {
-    "strings": {
-      "patterns": [
-        {
-          "name": "string.quoted.single.yaml",
-          "match": "'(?:[^'\\\\]|\\\\.)*'"
-        },
-        {
-          "name": "string.quoted.double.yaml",
-          "match": "\"(?:[^\"\\\\]|\\\\.)*\""
-        }
-      ]
-    },
     "basic_value_types": {
       "patterns": [
         {
@@ -69,7 +54,7 @@
       ]
     },
     "fields": {
-      "begin": "(fields)(:)(\\s*$)",
+      "begin": "(fields|properties)(:)(\\s*$)",
       "beginCaptures": {
         "1": {
           "name": "entity.name.tag.yaml"
@@ -80,9 +65,6 @@
       },
       "end": "(?=^\\S)",
       "patterns": [
-        {
-          "include": "#strings"
-        },
         {
           "include": "#comments"
         },
@@ -163,6 +145,41 @@
         }
       ]
     },
+    "values": {
+      "begin": "(values)(:)(\\s*$)",
+      "beginCaptures": {
+        "1": {
+          "name": "entity.name.tag.yaml"
+        },
+        "2": {
+          "name": "punctuation.separator.mapping.key-value.yaml"
+        }
+      },
+      "end": "(?=^\\S)",
+      "patterns": [
+        {
+          "include": "#params"
+        },
+        {
+          "include": "#comments"
+        },
+        {
+          "include": "#basic_value_types"
+        },
+        {
+          "name": "basic_value_types",
+          "match": "(?<=^\\s*-\\s*)([a-zA-Z0-9_-]+)(?=\\s*:?)"
+        },
+        {
+          "name": "entity.name.variable.yaml",
+          "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
+        },
+        {
+          "name": "string.unquoted.yaml",
+          "match": "\\b(?<=:\\s*|,\\s*)([a-zA-Z0-9_-]+)\\b"
+        }
+      ]
+    },
     "indexes": {
       "begin": "(indexes)(:)(\\s*$)",
       "beginCaptures": {
@@ -191,97 +208,6 @@
         {
           "name": "string.unquoted.yaml",
           "match": "\\b(?<=:\\s*|,\\s*)([a-zA-Z0-9_-]+)\\b"
-        }
-      ]
-    },
-    "properties": {
-      "begin": "(properties)(:)(\\s*$)",
-      "beginCaptures": {
-        "1": {
-          "name": "entity.name.tag.yaml"
-        },
-        "2": {
-          "name": "punctuation.separator.mapping.key-value.yaml"
-        }
-      },
-      "end": "(?=^\\S)",
-      "patterns": [
-        {
-          "name": "string.quoted.single.yaml",
-          "match": "'[^']*'"
-        },
-        {
-          "name": "string.quoted.double.yaml",
-          "match": "\"[^\"]*\""
-        },
-        {
-          "include": "#comments"
-        },
-        {
-          "name": "keyword.operator.assignment.yaml",
-          "match": "="
-        },
-        {
-          "name": "punctuation.separator.comma.yaml",
-          "match": ","
-        },
-        {
-          "include": "#basic_value_types"
-        },
-        {
-          "name": "entity.name.tag.yaml",
-          "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
-        },
-        {
-          "match": "(:\\s*)([^,<\\s?'\"]+)",
-          "captures": {
-            "1": {
-              "name": "punctuation.separator.mapping.key-value.yaml"
-            },
-            "2": {
-              "name": "entity.name.type.yaml"
-            }
-          }
-        }
-      ]
-    },
-    "values": {
-      "begin": "(values)(:)(\\s*$)",
-      "beginCaptures": {
-        "1": {
-          "name": "entity.name.tag.yaml"
-        },
-        "2": {
-          "name": "punctuation.separator.mapping.key-value.yaml"
-        }
-      },
-      "end": "(?=^\\S)",
-      "patterns": [
-        {
-          "name": "string.quoted.single.yaml",
-          "match": "'[^']*'"
-        },
-        {
-          "name": "string.quoted.double.yaml",
-          "match": "\"[^\"]*\""
-        },
-        {
-          "include": "#comments"
-        },
-        {
-          "include": "#basic_value_types"
-        },
-        {
-          "name": "entity.name.tag.yaml",
-          "match": "(?<=^\\s*-\\s*)([a-zA-Z0-9_-]+)(?=\\s*:|\\s*$)"
-        },
-        {
-          "name": "entity.name.tag.yaml",
-          "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
-        },
-        {
-          "name": "punctuation.definition.list.begin.yaml",
-          "match": "-"
         }
       ]
     },
