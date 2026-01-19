@@ -21,6 +21,7 @@ import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
+import 'health/health.dart';
 
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler =
@@ -76,7 +77,16 @@ class Serverpod {
   /// [HealthCheckHandler] for any custom health checks. This can be used to
   /// check remotely if all services the server is depending on is up and
   /// running.
+  @Deprecated(
+    'Use healthConfig with custom HealthIndicator implementations instead. '
+    'This will be removed in a future version.',
+  )
   final HealthCheckHandler? healthCheckHandler;
+
+  /// Configuration for the health check system.
+  final HealthConfig _healthConfig;
+
+  late final HealthCheckService _healthCheckService;
 
   final ExperimentalApi _experimental;
 
@@ -368,7 +378,11 @@ class Serverpod {
     this.endpoints, {
     ServerpodConfig? config,
     this.authenticationHandler,
+    @Deprecated(
+      'Use healthConfig with custom HealthIndicator implementations instead.',
+    )
     this.healthCheckHandler,
+    HealthConfig? healthConfig,
     Headers? httpResponseHeaders,
     Headers? httpOptionsResponseHeaders,
     SecurityContextConfig? securityContextConfig,
@@ -378,6 +392,7 @@ class Serverpod {
        httpOptionsResponseHeaders =
            httpOptionsResponseHeaders ?? _defaultHttpOptionsResponseHeaders,
        _securityContextConfig = securityContextConfig,
+       _healthConfig = healthConfig ?? const HealthConfig(),
        _experimental = ExperimentalApi._(
          config: config,
          experimentalFeatures: experimentalFeatures,
@@ -544,6 +559,8 @@ class Serverpod {
     endpoints.initializeEndpoints(server);
 
     _internalSession = InternalSession(server: server, enableLogging: false);
+
+    _healthCheckService = HealthCheckService(this, _healthConfig);
 
     if (Features.enableFutureCalls) {
       _futureCallManager = FutureCallManager(
@@ -1347,6 +1364,27 @@ extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the global internal session used by the Serverpod.
   /// Logging is turned off.
   Session get internalSession => _internalSession;
+
+  /// The health check service for orchestrator probes.
+  ///
+  /// Provides access to the service that manages `/livez`, `/readyz`,
+  /// and `/startupz` endpoints.
+  HealthCheckService get healthCheckService => _healthCheckService;
+
+  /// Signal that server startup is complete.
+  ///
+  /// Call this after migrations and any custom initialization are done.
+  /// This affects the `/startupz` endpoint response.
+  ///
+  /// Example:
+  /// ```dart
+  /// await pod.start();
+  /// // Custom initialization...
+  /// pod.markStartupComplete();
+  /// ```
+  void markStartupComplete() {
+    _healthCheckService.markStartupComplete();
+  }
 
   /// Submits an event to registered event handlers.
   /// They will execute asynchronously.
