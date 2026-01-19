@@ -21,7 +21,6 @@ import '../authentication/service_authentication.dart';
 import '../cache/caches.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
-import 'health/health.dart';
 
 /// Performs a set of custom health checks on a [Serverpod].
 typedef HealthCheckHandler =
