@@ -1,3 +1,7 @@
+## 3.2.3
+
+- fix: Fixes `flutter_build` script on the template project for Windows.
+
 ## 3.2.2
 
 - fix: Fixes generated future calls producing import paths with backslashes on Windows.
