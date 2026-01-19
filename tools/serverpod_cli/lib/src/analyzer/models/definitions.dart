@@ -321,8 +321,8 @@ class SerializableModelFieldDefinition {
     this.isRequired = false,
     String? columnNameOverride,
     String? jsonKeyOverride,
-  })  : _columnNameOverride = columnNameOverride,
-        _jsonKeyOverride = jsonKeyOverride;
+  }) : _columnNameOverride = columnNameOverride,
+       _jsonKeyOverride = jsonKeyOverride;
 
   /// Returns true, if classes should include this field.
   /// [serverCode] specifies if it's a code on the server or client side.

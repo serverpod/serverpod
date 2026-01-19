@@ -69,9 +69,9 @@ void main() {
       test('uses jsonKey value for field with jsonKey set', () {
         var fromJsonConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
-          maybeClassNamedExample!,
-          name: 'fromJson',
-        );
+              maybeClassNamedExample!,
+              name: 'fromJson',
+            );
 
         var fromJsonCode = fromJsonConstructor!.toSource();
 
@@ -85,9 +85,9 @@ void main() {
       test('uses field name for field without jsonKey set', () {
         var fromJsonConstructor =
             CompilationUnitHelpers.tryFindConstructorDeclaration(
-          maybeClassNamedExample!,
-          name: 'fromJson',
-        );
+              maybeClassNamedExample!,
+              name: 'fromJson',
+            );
 
         var fromJsonCode = fromJsonConstructor!.toSource();
 
@@ -135,26 +135,25 @@ void main() {
       test('uses jsonKey value for field with jsonKey set', () {
         var toJsonForProtocolMethod =
             CompilationUnitHelpers.tryFindMethodDeclaration(
-          maybeClassNamedExample!,
-          name: 'toJsonForProtocol',
-        );
+              maybeClassNamedExample!,
+              name: 'toJsonForProtocol',
+            );
 
         var toJsonForProtocolCode = toJsonForProtocolMethod!.toSource();
 
         expect(
           toJsonForProtocolCode,
           contains("'$jsonKeyValue'"),
-          reason:
-              'toJsonForProtocol should use the jsonKey value for the key.',
+          reason: 'toJsonForProtocol should use the jsonKey value for the key.',
         );
       });
 
       test('uses field name for field without jsonKey set', () {
         var toJsonForProtocolMethod =
             CompilationUnitHelpers.tryFindMethodDeclaration(
-          maybeClassNamedExample!,
-          name: 'toJsonForProtocol',
-        );
+              maybeClassNamedExample!,
+              name: 'toJsonForProtocol',
+            );
 
         var toJsonForProtocolCode = toJsonForProtocolMethod!.toSource();
 
