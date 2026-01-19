@@ -1062,6 +1062,32 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateJsonKey(
+    String parentNodeName,
+    dynamic jsonKey,
+    SourceSpan? span,
+  ) {
+    if (jsonKey is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.jsonKey}" value must be a String.',
+          span,
+        ),
+      ];
+    }
+
+    if (jsonKey.isEmpty) {
+      return [
+        SourceSpanSeverityException(
+          'The "${Keyword.jsonKey}" value cannot be empty.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> _validateTableInheritedIdField(
     SourceSpan? span,
   ) {

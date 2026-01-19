@@ -14,6 +14,7 @@ class FieldDefinitionBuilder {
   dynamic _defaultPersistValue;
   bool _isRequired;
   String? _columnNameOverride;
+  String? _jsonKeyOverride;
 
   FieldDefinitionBuilder()
     : _name = 'name',
@@ -26,7 +27,8 @@ class FieldDefinitionBuilder {
       _defaultModelValue = null,
       _defaultPersistValue = null,
       _isRequired = false,
-      _columnNameOverride = null;
+      _columnNameOverride = null,
+      _jsonKeyOverride = null;
 
   FieldDefinitionBuilder withName(String name) {
     _name = name;
@@ -145,6 +147,11 @@ class FieldDefinitionBuilder {
     return this;
   }
 
+  FieldDefinitionBuilder withJsonKeyOverride(String jsonKey) {
+    _jsonKeyOverride = jsonKey;
+    return this;
+  }
+
   SerializableModelFieldDefinition build() {
     return SerializableModelFieldDefinition(
       name: _name,
@@ -157,6 +164,7 @@ class FieldDefinitionBuilder {
       defaultPersistValue: _defaultPersistValue,
       isRequired: _isRequired,
       columnNameOverride: _columnNameOverride,
+      jsonKeyOverride: _jsonKeyOverride,
     );
   }
 }
