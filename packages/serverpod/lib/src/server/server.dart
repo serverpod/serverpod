@@ -15,8 +15,6 @@ import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/endpoint_websocket_request_handler.dart';
 import 'package:serverpod/src/server/websocket_request_handlers/method_websocket_request_handler.dart';
 
-import 'health/health_response.dart';
-
 /// Handling incoming calls and routing them to the correct [Endpoint]
 /// methods.
 class Server implements RouterInjectable {
