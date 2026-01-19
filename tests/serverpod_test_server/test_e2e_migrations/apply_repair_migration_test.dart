@@ -5,6 +5,42 @@ import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
 import 'package:serverpod_test_server/test_util/test_service_key_manager.dart';
 import 'package:test/test.dart';
 
+bool _isPostGisTable(String tableName, {String? schema}) {
+  const postgisTables = {
+    'spatial_ref_sys',
+    'geometry_columns',
+    'geography_columns',
+    'raster_columns',
+    'raster_overviews',
+    'layer',
+    'raster_overviews_table',
+    'raster_overviews_rid',
+  };
+
+  // Filter out PostGIS system tables
+  if (postgisTables.contains(tableName)) {
+    return true;
+  }
+
+  // Filter out PostgreSQL system tables
+  if (tableName.startsWith('pg_')) {
+    return true;
+  }
+
+  // Filter out Serverpod system tables
+  if (tableName.startsWith('serverpod_')) {
+    return true;
+  }
+
+  // Also filter tables in system schemas
+  if (schema != null &&
+      (schema.startsWith('pg_') || schema == 'information_schema')) {
+    return true;
+  }
+
+  return false;
+}
+
 void main() {
   var serviceClient = Client(
     serviceServerUrl,
@@ -65,7 +101,7 @@ fields:
       'when creating and applying repair migration then database matches latest migration',
       () async {
         var createRepairMigrationExitCode =
-            await MigrationTestUtils.runCreateRepairMigration();
+            await MigrationTestUtils.runCreateRepairMigration(force: true);
         expect(
           createRepairMigrationExitCode,
           0,
@@ -82,7 +118,10 @@ fields:
 
         var liveDefinition = await serviceClient.insights
             .getLiveDatabaseDefinition();
-        var databaseTables = liveDefinition.tables.map((t) => t.name);
+        var databaseTables = liveDefinition.tables
+            .where((t) => !_isPostGisTable(t.name, schema: t.schema))
+            .map((t) => t.name)
+            .toList();
         expect(
           databaseTables,
           contains('migrated_table_2'),
@@ -163,7 +202,10 @@ fields:
 
         var liveDefinition = await serviceClient.insights
             .getLiveDatabaseDefinition();
-        var databaseTables = liveDefinition.tables.map((t) => t.name);
+        var databaseTables = liveDefinition.tables
+            .where((t) => !_isPostGisTable(t.name, schema: t.schema))
+            .map((t) => t.name)
+            .toList();
         expect(
           databaseTables,
           isNot(contains('migrated_table_2')),
@@ -192,11 +234,12 @@ fields:
   anInt: int
 ''',
         };
-        assert(
-          0 ==
-              await MigrationTestUtils.createMigrationFromProtocols(
-                protocols: firstMigrationProtocols,
-              ),
+
+        // Initialize the database with the first migration applied.
+        await MigrationTestUtils.createInitialState(
+          migrationProtocols: [
+            firstMigrationProtocols,
+          ],
         );
 
         var secondMigrationProtocols = {
@@ -251,7 +294,10 @@ fields:
 
           var liveDefinition = await serviceClient.insights
               .getLiveDatabaseDefinition();
-          var databaseTables = liveDefinition.tables.map((t) => t.name);
+          var databaseTables = liveDefinition.tables
+              .where((t) => !_isPostGisTable(t.name, schema: t.schema))
+              .map((t) => t.name)
+              .toList();
           expect(
             databaseTables,
             contains('migrated_table'),

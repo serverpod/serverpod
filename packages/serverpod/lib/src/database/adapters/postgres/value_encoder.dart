@@ -3,6 +3,7 @@ import 'dart:typed_data';
 // ignore: implementation_imports
 import 'package:postgres/src/types/text_codec.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Overrides the [PostgresTextEncoder] to add support for [ByteData].
 class ValueEncoder extends PostgresTextEncoder {
@@ -48,6 +49,26 @@ class ValueEncoder extends PostgresTextEncoder {
       return '\'${input.toString()}\'';
     } else if (input is Bit) {
       return '\'${input.toString()}\'';
+    } else if (input is GeographyPoint) {
+      // Handle PostGIS GeographyPoint: convert to ST_GeomFromText with WKT and SRID
+      var wkt = input.toWkt();
+      var srid = input.srid ?? 4326;
+      return "ST_GeomFromText('$wkt', $srid)";
+    } else if (input is GeographyPolygon) {
+      // Handle PostGIS GeographyPolygon: convert to ST_GeomFromText with WKT and SRID
+      var wkt = input.toWkt();
+      var srid = input.srid ?? 4326;
+      return "ST_GeomFromText('$wkt', $srid)";
+    } else if (input is GeographyMultiPolygon) {
+      // Handle PostGIS GeographyMultiPolygon: convert to ST_GeomFromText with WKT and SRID
+      var wkt = input.toWkt();
+      var srid = input.srid ?? 4326;
+      return "ST_GeomFromText('$wkt', $srid)";
+    } else if (input is GeographyLineString) {
+      // Handle PostGIS GeographyLineString: convert to ST_GeomFromText with WKT and SRID
+      var wkt = input.toWkt();
+      var srid = input.srid ?? 4326;
+      return "ST_GeomFromText('$wkt', $srid)";
     } else if (input is SerializableModel && input is Enum) {
       return super.convert(
         input.toJson(),

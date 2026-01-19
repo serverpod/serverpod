@@ -103,6 +103,18 @@ abstract class SerializationManager {
     } else if (_isNullableType<BigInt>(t)) {
       if (data == null) return null as T;
       return BigInt.parse(data) as T;
+    } else if (_isNullableType<GeographyPoint>(t)) {
+      if (data == null) return null as T;
+      return GeographyPointJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<GeographyLineString>(t)) {
+      if (data == null) return null as T;
+      return GeographyLineStringJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<GeographyPolygon>(t)) {
+      if (data == null) return null as T;
+      return GeographyPolygonJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<GeographyMultiPolygon>(t)) {
+      if (data == null) return null as T;
+      return GeographyMultiPolygonJsonExtension.fromJson(data) as T;
     }
 
     throw DeserializationTypeNotFoundException(
@@ -142,6 +154,14 @@ abstract class SerializationManager {
       return 'SparseVector';
     } else if (data is Bit) {
       return 'Bit';
+    } else if (data is GeographyPoint) {
+      return 'GeographyPoint';
+    } else if (data is GeographyPolygon) {
+      return 'GeographyPolygon';
+    } else if (data is GeographyLineString) {
+      return 'GeographyLineString';
+    } else if (data is GeographyMultiPolygon) {
+      return 'GeographyMultiPolygon';
     }
 
     return null;
@@ -181,6 +201,14 @@ abstract class SerializationManager {
         return deserialize<SparseVector>(data['data']);
       case 'Bit':
         return deserialize<Bit>(data['data']);
+      case 'GeographyPoint':
+        return deserialize<GeographyPoint>(data['data']);
+      case 'GeographyPolygon':
+        return deserialize<GeographyPolygon>(data['data']);
+      case 'GeographyLineString':
+        return deserialize<GeographyLineString>(data['data']);
+      case 'GeographyMultiPolygon':
+        return deserialize<GeographyMultiPolygon>(data['data']);
     }
     throw FormatException('No deserialization found for type named $className');
   }
@@ -331,6 +359,10 @@ const extensionSerializedTypes = [
   'Map',
   'List',
   'Set',
+  'GeographyPoint',
+  'GeographyLineString',
+  'GeographyMultiPolygon',
+  'GeographyPolygon',
 ];
 
 extension<K, V> on Map<K, V> {
