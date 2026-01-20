@@ -31,3 +31,16 @@ fields:
 
   ### The duration in seconds for a query to be considered slow.
   slowQueryDuration: double
+
+  ### The retention period in days for log data. Logs older than this will be
+  ### automatically deleted. If null, time-based cleanup is disabled.
+  logRetentionPeriodDays: int?
+
+  ### The maximum number of log entries to keep. If the number of entries exceeds
+  ### this count, the oldest entries will be deleted. If null, count-based cleanup
+  ### is disabled.
+  logRetentionCount: int?
+
+  ### The interval in hours between log cleanup operations. If null, automatic
+  ### cleanup is disabled.
+  logCleanupIntervalHours: int?

@@ -144,6 +144,15 @@ enum ServerpodEnv {
   /// The format for the console log.
   sessionConsoleLogFormat,
 
+  /// The retention period in days for log data.
+  sessionLogRetentionPeriodDays,
+
+  /// The maximum number of log entries to keep.
+  sessionLogRetentionCount,
+
+  /// The interval in hours between log cleanup operations.
+  sessionLogCleanupIntervalHours,
+
   /// The run mode of the server.
   runMode,
 
@@ -206,6 +215,11 @@ enum ServerpodEnv {
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
       (ServerpodEnv.sessionConsoleLogEnabled) => 'consoleEnabled',
       (ServerpodEnv.sessionConsoleLogFormat) => 'consoleLogFormat',
+      (ServerpodEnv.sessionLogRetentionPeriodDays) =>
+        'retentionPeriodDays',
+      (ServerpodEnv.sessionLogRetentionCount) => 'retentionCount',
+      (ServerpodEnv.sessionLogCleanupIntervalHours) =>
+        'cleanupIntervalHours',
       (ServerpodEnv.runMode) => 'mode',
       (ServerpodEnv.role) => 'role',
       (ServerpodEnv.loggingMode) => 'logging',
@@ -262,6 +276,12 @@ enum ServerpodEnv {
         'SERVERPOD_SESSION_CONSOLE_LOG_ENABLED',
       (ServerpodEnv.sessionConsoleLogFormat) =>
         'SERVERPOD_SESSION_CONSOLE_LOG_FORMAT',
+      (ServerpodEnv.sessionLogRetentionPeriodDays) =>
+        'SERVERPOD_SESSION_LOG_RETENTION_PERIOD_DAYS',
+      (ServerpodEnv.sessionLogRetentionCount) =>
+        'SERVERPOD_SESSION_LOG_RETENTION_COUNT',
+      (ServerpodEnv.sessionLogCleanupIntervalHours) =>
+        'SERVERPOD_SESSION_LOG_CLEANUP_INTERVAL_HOURS',
       (ServerpodEnv.runMode) => 'SERVERPOD_RUN_MODE',
       (ServerpodEnv.role) => 'SERVERPOD_SERVER_ROLE',
       (ServerpodEnv.loggingMode) => 'SERVERPOD_LOGGING_MODE',

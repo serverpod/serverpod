@@ -709,11 +709,23 @@ class SessionLogConfig {
   /// The format for the console log.
   final ConsoleLogFormat consoleLogFormat;
 
+  /// The retention period in days for log data. If null, time-based cleanup is disabled.
+  final int? retentionPeriodDays;
+
+  /// The maximum number of log entries to keep. If null, count-based cleanup is disabled.
+  final int? retentionCount;
+
+  /// The interval in hours between log cleanup operations. If null, automatic cleanup is disabled.
+  final int? cleanupIntervalHours;
+
   /// Creates a new [SessionLogConfig].
   SessionLogConfig({
     required this.persistentEnabled,
     required this.consoleEnabled,
     ConsoleLogFormat? consoleLogFormat,
+    this.retentionPeriodDays,
+    this.retentionCount,
+    this.cleanupIntervalHours,
   }) : consoleLogFormat = consoleLogFormat ?? ConsoleLogFormat.defaultFormat;
 
   /// Creates a new default [SessionLogConfig] based on the run mode and
@@ -728,6 +740,9 @@ class SessionLogConfig {
       consoleLogFormat: runMode == _developmentRunMode
           ? ConsoleLogFormat.text
           : ConsoleLogFormat.defaultFormat,
+      retentionPeriodDays: 90,
+      retentionCount: 10000,
+      cleanupIntervalHours: null,
     );
   }
 
@@ -756,6 +771,18 @@ class SessionLogConfig {
               .configKey] ??
           false,
       consoleLogFormat: logFormat,
+      retentionPeriodDays:
+          sessionLogConfigJson[ServerpodEnv
+              .sessionLogRetentionPeriodDays
+              .configKey],
+      retentionCount:
+          sessionLogConfigJson[ServerpodEnv
+              .sessionLogRetentionCount
+              .configKey],
+      cleanupIntervalHours:
+          sessionLogConfigJson[ServerpodEnv
+              .sessionLogCleanupIntervalHours
+              .configKey],
     );
   }
 
@@ -853,6 +880,9 @@ Map? _buildSessionLogsConfigMap(
     (ServerpodEnv.sessionPersistentLogEnabled, bool.parse),
     (ServerpodEnv.sessionConsoleLogEnabled, bool.parse),
     (ServerpodEnv.sessionConsoleLogFormat, null),
+    (ServerpodEnv.sessionLogRetentionPeriodDays, int.parse),
+    (ServerpodEnv.sessionLogRetentionCount, int.parse),
+    (ServerpodEnv.sessionLogCleanupIntervalHours, int.parse),
   ]);
 }
 

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
+import 'package:serverpod/src/server/log_manager/log_cleanup.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -26,6 +27,8 @@ class SessionLogManager {
   final LogSettings Function(Session) _settingsForSession;
 
   final _FutureTaskManager _logTasks;
+
+  LogCleanupManager? _logCleanup;
 
   int _numberOfQueries;
 
@@ -55,7 +58,24 @@ class SessionLogManager {
     var settings = _settingsForSession(session);
     if (!settings.logAllSessions) return;
 
+    _initializeLogCleanup();
     unawaited(_openLog(session));
+  }
+
+  void _initializeLogCleanup() {
+    try {
+      final db = _session.db;
+      final config = _session.server.serverpod.config.sessionLogs;
+
+      if (config.cleanupIntervalHours != null) {
+        _logCleanup = LogCleanupManager(
+          database: db,
+          config: config,
+        );
+      }
+    } catch (e) {
+      // Database or config not available - cleanup will not be initialized
+    }
   }
 
   bool _shouldLogQuery({
@@ -244,6 +264,12 @@ class SessionLogManager {
 
     try {
       _logTasks.addTask(() => writeLog(entry));
+
+      // Trigger cleanup if configured
+      final cleanup = _logCleanup;
+      if (cleanup != null) {
+        unawaited(cleanup.maybePerformCleanup());
+      }
     } catch (exception, stackTrace) {
       stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG $type');
       stderr.write('ENDPOINT: ${session.endpoint}');
