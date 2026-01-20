@@ -228,12 +228,12 @@ class JsonStdOutLogWriter extends LogWriter {
 class TextStdOutLogWriter extends LogWriter {
   static bool headersWritten = false;
 
-  /// Formats a duration value expressed in milliseconds so that it is easy to
+  /// Formats a duration value expressed in seconds so that it is easy to
   /// read in logs. Very short durations will be printed using microseconds
   /// while longer ones will switch to milliseconds or seconds.
-  static String _printDuration(double? milliseconds) {
-    if (milliseconds == null) return 'n/a';
-    var micros = (milliseconds * Duration.microsecondsPerMillisecond).round();
+  static String _printDuration(double? seconds) {
+    if (seconds == null) return 'n/a';
+    var micros = (seconds * Duration.microsecondsPerSecond).round();
     if (micros < 1000) {
       // Ignore required because dart does not understand that "µ" is a valid
       // character in a string.
