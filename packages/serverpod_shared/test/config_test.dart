@@ -1918,4 +1918,38 @@ websocketPingInterval: 15
       expect(config.websocketPingInterval, const Duration(seconds: 30));
     },
   );
+
+  test(
+    'Given a Serverpod config with zero websocketPingInterval in environment variable when loading from Map then default value is used.',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {},
+        environment: {
+          'SERVERPOD_WEBSOCKET_PING_INTERVAL': '0',
+        },
+      );
+
+      expect(config.websocketPingInterval, const Duration(seconds: 30));
+    },
+  );
+
+  test(
+    'Given a Serverpod config with negative websocketPingInterval in environment variable when loading from Map then default value is used.',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {},
+        environment: {
+          'SERVERPOD_WEBSOCKET_PING_INTERVAL': '-5',
+        },
+      );
+
+      expect(config.websocketPingInterval, const Duration(seconds: 30));
+    },
+  );
 }

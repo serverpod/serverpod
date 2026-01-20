@@ -1172,10 +1172,10 @@ Duration _readWebsocketPingInterval(
 
   if (websocketPingInterval is String) {
     var seconds = int.tryParse(websocketPingInterval);
-    if (seconds != null) {
+    if (seconds != null && seconds > 0) {
       return Duration(seconds: seconds);
     }
-  } else if (websocketPingInterval is int) {
+  } else if (websocketPingInterval is int && websocketPingInterval > 0) {
     return Duration(seconds: websocketPingInterval);
   }
 
