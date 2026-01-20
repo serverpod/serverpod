@@ -119,8 +119,8 @@ class EmailSignInWidget extends StatefulWidget {
        ),
        assert(
          (onAuthenticated == null && onError == null) || controller == null,
-         'Provide onAuthenticated or onError when using a controller '
-         'as they are handled by the controller and will be ignored.',
+         'Do not provide onAuthenticated or onError when using a controller '
+         'as they will be handled by the controller and will be ignored.',
        );
 
   @override
