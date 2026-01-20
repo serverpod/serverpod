@@ -53,6 +53,15 @@ final List<Story> signInStories = [
     builder: (context) =>
         _signInWidgetStory(context, disableGitHubSignInWidget: true),
   ),
+  Story(
+    name: 'Sign In/Only Email and Anonymous Widget',
+    description: 'Sign in flow with only email and anonymous sign-in widgets.',
+    builder: (context) => _signInWidgetStory(
+      context,
+      disableGoogleSignInWidget: true,
+      disableAppleSignInWidget: true,
+    ),
+  ),
 ];
 
 Widget _signInWidgetStory(
