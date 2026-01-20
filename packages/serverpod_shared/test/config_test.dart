@@ -1821,4 +1821,101 @@ serverId: configFileServerId
       expect(config.validateHeaders, isFalse);
     },
   );
+
+  test(
+    'Given a Serverpod config with no websocketPingInterval when loading from Map then default value of 30 seconds is used.',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {},
+      );
+
+      expect(config.websocketPingInterval, const Duration(seconds: 30));
+    },
+  );
+
+  test(
+    'Given a Serverpod config with websocketPingInterval in YAML when loading from Map then the YAML value is used.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+websocketPingInterval: 15
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.websocketPingInterval, const Duration(seconds: 15));
+    },
+  );
+
+  test(
+    'Given a Serverpod config with websocketPingInterval in environment variable when loading from Map then environment value overrides config.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+websocketPingInterval: 15
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+        environment: {
+          'SERVERPOD_WEBSOCKET_PING_INTERVAL': '20',
+        },
+      );
+
+      expect(config.websocketPingInterval, const Duration(seconds: 20));
+    },
+  );
+
+  test(
+    'Given a Serverpod config with websocketPingInterval only in environment variable when loading from Map then environment value is used.',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {},
+        environment: {
+          'SERVERPOD_WEBSOCKET_PING_INTERVAL': '10',
+        },
+      );
+
+      expect(config.websocketPingInterval, const Duration(seconds: 10));
+    },
+  );
+
+  test(
+    'Given a Serverpod config with invalid websocketPingInterval in environment variable when loading from Map then default value is used.',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        {},
+        environment: {
+          'SERVERPOD_WEBSOCKET_PING_INTERVAL': 'invalid',
+        },
+      );
+
+      expect(config.websocketPingInterval, const Duration(seconds: 30));
+    },
+  );
 }
