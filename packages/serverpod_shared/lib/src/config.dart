@@ -83,6 +83,10 @@ class ServerpodConfig {
   /// Defaults to true.
   final bool validateHeaders;
 
+  /// The interval between websocket ping messages.
+  /// Default is 30 seconds.
+  final Duration websocketPingInterval;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -104,6 +108,7 @@ class ServerpodConfig {
     this.futureCall = const FutureCallConfig(),
     this.futureCallExecutionEnabled = true,
     this.validateHeaders = true,
+    this.websocketPingInterval = const Duration(seconds: 30),
   }) : sessionLogs =
            sessionLogs ??
            SessionLogConfig.buildDefault(
@@ -238,6 +243,11 @@ class ServerpodConfig {
       environment,
     );
 
+    var websocketPingInterval = _readWebsocketPingInterval(
+      configMap,
+      environment,
+    );
+
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
@@ -256,6 +266,7 @@ class ServerpodConfig {
       futureCall: futureCallConfig,
       futureCallExecutionEnabled: futureCallExecutionEnabled,
       validateHeaders: validateHeaders,
+      websocketPingInterval: websocketPingInterval,
     );
   }
 
@@ -1147,6 +1158,28 @@ bool _readValidateHeaders(
 
   validateHeaders ??= true;
   return validateHeaders;
+}
+
+Duration _readWebsocketPingInterval(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  var websocketPingInterval =
+      configMap[ServerpodEnv.websocketPingInterval.configKey];
+  websocketPingInterval =
+      environment[ServerpodEnv.websocketPingInterval.envVariable] ??
+      websocketPingInterval;
+
+  if (websocketPingInterval is String) {
+    var seconds = int.tryParse(websocketPingInterval);
+    if (seconds != null) {
+      return Duration(seconds: seconds);
+    }
+  } else if (websocketPingInterval is int) {
+    return Duration(seconds: websocketPingInterval);
+  }
+
+  return const Duration(seconds: 30);
 }
 
 /// Validates that a JSON configuration contains all required keys, and that
