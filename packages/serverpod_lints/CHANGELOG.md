@@ -1,3 +1,79 @@
+## 3.2.1
+
+- fix: Moves the `Firebase` IDP into a separate package to avoid unexpected compilation issues for non-users of the IDP.
+- fix: Prevents Google lightweight sign-in from automatically shadowing other identity providers.
+- fix: Fixes the CLI directory search failing when trying to access removed folders on Windows.
+
+## 3.2.0
+
+Serverpod 3.2 brings a completely reworked experience for future calls, enhanced platform support on `serverpod run`, the new Firebase identity provider and several minor improvements.
+
+### Core
+
+- feat: Adds new `FutureCall` experience with scheduling from generated type-safe classes ([@Crazelu](https://github.com/Crazelu)).
+- feat: Propagates deprecated annotations from endpoint parameters to generated client code.
+- feat: Adds a convenience `getServerUrl` function to the `serverpod_flutter` package.
+- fix: Fixes default values not being applied on models when the JSON key is missing.
+- fix: Fixes module-declared records not being encoded or decoded from the project.
+- chore: Marks legacy future call interaction methods of the `Serverpod` class as deprecated in favor of the new type-safe API.
+
+### Authentication
+
+- feat: Adds the `Firebase` identity provider to the authentication module.
+- feat: Improves performance of rate limit control tables for authentication IDP providers.
+- fix: Throws `PasswordNotFoundException` instead of null assertion in `JWT` and `ServerSideSessions` token managers.
+- fix: Fixes not being able to issue new verification codes for emails with pending registration.
+- fix: Fixes Google lightweight sign-in being invoked when user is already authenticated.
+- fix: Changes verification code default generation to use only numbers for a better UX.
+- fix: Changes `EmailSignInWidget` default start screen to favor user conversion.
+- docs: Clarifies the purpose of each `UserProfile` and `AuthUser` model variants.
+
+### Developer tooling
+
+- feat: Adds support for platform specific scripts in `serverpod run` command.
+- fix: Fixes wrong Dart SDK path on the CLI when invoked from compiled code (like when installed with `dart install`).
+
+## 3.1.1
+
+- fix: Fixes unknown encodings crashing the CLI when creating a new project.
+- fix: Fixes template web server serving the Flutter app config on the wrong path.
+
+## 3.1.0
+
+Serverpod 3.1 focuses on improving the developer experience with new tooling, enhanced Flutter web support, and important bug fixes.
+
+### Flutter web integration
+- feat: Serves a Flutter app for new project templates.
+- feat: Prevents caching of critical Flutter web files in `FlutterRoute`.
+
+### Developer tooling
+- feat: Adds `serverpod run` command for running scripts.
+- feat: Adds Serverpod script for starting the server and building flutter app.
+
+### Web server enhancements
+- feat: Adds HTTP methods support to `WidgetRoute`.
+
+### Model improvements
+- feat: Allows setting column name explicitly on models ([@jwelmac](https://github.com/jwelmac)).
+
+### Additional changes
+- feat: Prevents database operations on health check when the database is idle.
+- feat: Adds `validateHeaders` config option for backward compatibility with Serverpod 2 clients.
+
+### Bug fixes
+- fix: Fixes email sign in button not re-enabling after changing the password.
+- fix: Enforces only lowercase characters on email text field.
+- fix: Fixes email action button not following the material theme.
+- fix: Fixes consistency between spacing of sign in widget components.
+- fix: Improves project templates with easier structure to digest.
+- fix: Throws `PasswordNotFoundException` instead of null assertion in IDP `*FromPassword` config classes.
+- fix: Uses resolved server directory in migration commands.
+- fix: Ensures tailmatch (`/**`) is the default for `StaticRoute.directory`.
+- fix: Fixes deserialization of collections of `serverOnly` models.
+- fix: Prevents unnecessary table drops when removing foreign keys with constraint name collisions.
+- fix: Fixes incorrect import generation for modules with `serverpod` prefix.
+- fix: Stops Google Sign-In button spinner when authentication is canceled.
+
 ## 3.0.1
 - fix: Allows the server address to be specified without trailing slash on the client.
 - fix: Fixes allowed `indexes` key on non-table base models to allow inheritance of indexes.

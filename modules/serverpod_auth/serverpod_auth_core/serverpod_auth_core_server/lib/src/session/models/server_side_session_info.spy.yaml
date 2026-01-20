@@ -1,3 +1,4 @@
+### DTO for transferring server-side session information between server and client.
 class: ServerSideSessionInfo
 fields:
   id: UuidValue

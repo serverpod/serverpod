@@ -21,7 +21,7 @@ class ParentWithDefault implements _i1.SerializableModel {
   factory ParentWithDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return ParentWithDefault(
       name: jsonSerialization['name'] as String,
-      parentDefault: jsonSerialization['parentDefault'] as int,
+      parentDefault: jsonSerialization['parentDefault'] as int?,
     );
   }
 

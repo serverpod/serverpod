@@ -88,6 +88,7 @@ Expression buildFromJsonForField(
     config,
     fieldName: field.name,
     subDirParts: subDirParts,
+    field: field,
   );
 }
 
@@ -116,6 +117,7 @@ Expression _buildFromJson(
   String? fieldName,
   Expression? mapExpression,
   required List<String> subDirParts,
+  SerializableModelFieldDefinition? field,
 }) {
   Expression valueExpression =
       mapExpression ?? jsonReference.index(literalString(fieldName!));
@@ -128,11 +130,13 @@ Expression _buildFromJson(
       return _buildPrimitiveTypeFromJson(
         type,
         valueExpression,
+        field,
       );
     case ValueType.double:
       return _buildDoubleTypeFromJson(
         type,
         valueExpression,
+        field,
       );
     case ValueType.dateTime:
     case ValueType.duration:
@@ -147,12 +151,14 @@ Expression _buildFromJson(
         type,
         valueExpression,
         serverCode,
+        field,
       );
     case ValueType.bigInt:
       return _buildComplexTypeFromJson(
         type,
         valueExpression,
         serverCode,
+        field,
       );
     case ValueType.isEnum:
       EnumSerialization? enumSerialization = type.enumDefinition?.serialized;
@@ -166,6 +172,7 @@ Expression _buildFromJson(
         serverCode,
         config,
         subDirParts,
+        field,
       );
     case ValueType.list:
     case ValueType.set:
@@ -184,6 +191,7 @@ Expression _buildFromJson(
         serverCode,
         config,
         subDirParts,
+        field,
       );
     case ValueType.record:
       return _buildRecordTypeFromJson(
@@ -199,12 +207,16 @@ Expression _buildFromJson(
 Expression _buildPrimitiveTypeFromJson(
   TypeDefinition type,
   Expression valueExpression,
+  SerializableModelFieldDefinition? field,
 ) {
+  final asNullable =
+      type.nullable || _shouldHandleMissingKeyForDefault(type, field);
+
   return CodeExpression(
     Block.of([
       valueExpression.code,
       Code('as ${type.className}'),
-      if (type.nullable) const Code('?'),
+      if (asNullable) const Code('?'),
     ]),
   );
 }
@@ -212,11 +224,15 @@ Expression _buildPrimitiveTypeFromJson(
 Expression _buildDoubleTypeFromJson(
   TypeDefinition type,
   Expression valueExpression,
+  SerializableModelFieldDefinition? field,
 ) {
+  final asNullable =
+      type.nullable || _shouldHandleMissingKeyForDefault(type, field);
+
   return CodeExpression(
     Block.of([
-      valueExpression.asA(refer('num${type.nullable ? '?' : ''}')).code,
-      Code('${type.nullable ? '?.' : '.'}toDouble()'),
+      valueExpression.asA(refer('num${asNullable ? '?' : ''}')).code,
+      Code('${asNullable ? '?.' : '.'}toDouble()'),
     ]),
   );
 }
@@ -225,7 +241,18 @@ Expression _buildComplexTypeFromJson(
   TypeDefinition type,
   Expression valueExpression,
   bool serverCode,
+  SerializableModelFieldDefinition? field,
 ) {
+  if (_shouldHandleMissingKeyForDefault(type, field)) {
+    return _wrapWithNullCheckForDefault(
+      valueExpression,
+      refer(
+        '${type.className}JsonExtension',
+        serverpodUrl(serverCode),
+      ).property('fromJson').call([valueExpression]),
+    );
+  }
+
   return CodeExpression(
     refer('${type.className}JsonExtension', serverpodUrl(serverCode))
         .property('fromJson')
@@ -242,6 +269,7 @@ Expression _buildEnumTypeFromJson(
   bool serverCode,
   GeneratorConfig config,
   List<String> subDirParts,
+  SerializableModelFieldDefinition? field,
 ) {
   Reference typeRef = type.asNonNullable.reference(
     serverCode,
@@ -257,6 +285,15 @@ Expression _buildEnumTypeFromJson(
     case EnumSerialization.byName:
       asReference = refer('String');
       break;
+  }
+
+  if (_shouldHandleMissingKeyForDefault(type, field)) {
+    return _wrapWithNullCheckForDefault(
+      valueExpression,
+      typeRef.property('fromJson').call([
+        valueExpression.asA(asReference),
+      ]),
+    );
   }
 
   return CodeExpression(
@@ -301,6 +338,7 @@ Expression _buildClassTypeFromJson(
   bool serverCode,
   GeneratorConfig config,
   List<String> subDirParts,
+  SerializableModelFieldDefinition? field,
 ) {
   if (!type.customClass) {
     return _buildProtocolDeserialize(
@@ -309,6 +347,25 @@ Expression _buildClassTypeFromJson(
       serverCode,
       config,
       subDirParts,
+    );
+  }
+
+  if (_shouldHandleMissingKeyForDefault(type, field)) {
+    return _wrapWithNullCheckForDefault(
+      valueExpression,
+      type.asNonNullable
+          .reference(
+            serverCode,
+            subDirParts: subDirParts,
+            config: config,
+          )
+          .property('fromJson')
+          .call([
+            if (type.customClass)
+              valueExpression
+            else
+              valueExpression.asA(refer('Map<String, dynamic>')),
+          ]),
     );
   }
 
@@ -364,21 +421,38 @@ Expression _buildRecordTypeFromJson(
   );
 }
 
+/// Helper to check if we need to handle missing keys for fields with defaults.
+///
+/// If the field has a default value and is non-nullable, we need to pass null
+/// if the key is missing for the field to use the default value.
+bool _shouldHandleMissingKeyForDefault(
+  TypeDefinition type,
+  SerializableModelFieldDefinition? field,
+) {
+  return field?.defaultModelValue != null && !type.nullable;
+}
+
+/// Helper to wrap an expression with null check for default value handling.
+Expression _wrapWithNullCheckForDefault(
+  Expression valueExpression,
+  Expression wrappedExpression,
+) {
+  return CodeExpression(
+    Block.of([
+      valueExpression.code,
+      const Code(' == null ? null : '),
+      wrappedExpression.code,
+    ]),
+  );
+}
+
 extension ExpressionExtension on Expression {
   Expression checkIfNull(
     TypeDefinition type, {
     required Expression valueExpression,
   }) {
     if (!type.nullable) return this;
-    return CodeExpression(
-      Block.of(
-        [
-          valueExpression.code,
-          const Code('== null ? null : '),
-          code,
-        ],
-      ),
-    );
+    return _wrapWithNullCheckForDefault(valueExpression, this);
   }
 }
 

@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
+import '../../../utils/get_passwords_extension.dart';
 import 'passkey_idp.dart';
 
 /// Configuration for the Passkey account module.
@@ -43,6 +44,6 @@ class PasskeyIdpConfigFromPasswords extends PasskeyIdpConfig {
   PasskeyIdpConfigFromPasswords({
     super.challengeLifetime,
   }) : super(
-         hostname: Serverpod.instance.getPassword('passkeyHostname')!,
+         hostname: Serverpod.instance.getPasswordOrThrow('passkeyHostname'),
        );
 }

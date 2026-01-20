@@ -82,7 +82,7 @@ void main() async {
             serverDir,
             'lib',
             'src',
-            'endpoints',
+            'auth',
             'email_idp_endpoint.dart',
           ),
         );
@@ -96,7 +96,7 @@ void main() async {
             serverDir,
             'lib',
             'src',
-            'endpoints',
+            'auth',
             'jwt_refresh_endpoint.dart',
           ),
         );
@@ -122,7 +122,7 @@ void main() async {
 
       test('then the flutter main.dart contains SignInWidget', () {
         final content = mainFile.readAsStringSync();
-        expect(content, contains('SignInWidget'));
+        expect(content, contains('SignInScreen'));
       });
 
       test('then the flutter main.dart contains FlutterAuthSessionManager', () {

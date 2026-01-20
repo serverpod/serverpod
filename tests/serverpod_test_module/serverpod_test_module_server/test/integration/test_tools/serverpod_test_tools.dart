@@ -8,7 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -17,8 +16,10 @@ import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
 import 'package:serverpod_test_module_server/src/generated/module_class.dart'
     as _i4;
-import 'package:serverpod_test_module_server/src/generated/module_feature/models/my_feature_model.dart'
+import 'package:serverpod_test_module_server/src/generated/module_streaming_class.dart'
     as _i5;
+import 'package:serverpod_test_module_server/src/generated/module_feature/models/my_feature_model.dart'
+    as _i6;
 import 'package:serverpod_test_module_server/src/generated/protocol.dart';
 import 'package:serverpod_test_module_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -130,6 +131,8 @@ class TestEndpoints {
 
   late final _ModuleEndpoint module;
 
+  late final _RecordStreamingEndpoint recordStreaming;
+
   late final _StreamingEndpoint streaming;
 
   late final _UnauthenticatedEndpoint unauthenticated;
@@ -151,6 +154,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     module = _ModuleEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    recordStreaming = _RecordStreamingEndpoint(
       endpoints,
       serializationManager,
     );
@@ -344,6 +351,50 @@ class _ModuleEndpoint {
         await _localUniqueSession.close();
       }
     });
+  }
+}
+
+class _RecordStreamingEndpoint {
+  _RecordStreamingEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Stream<(int?, _i5.ModuleStreamingClass?)> streamModuleClass(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i3.Stream<(int?, _i5.ModuleStreamingClass?)> values,
+  ) {
+    var _localTestStreamManager =
+        _i1.TestStreamManager<(int?, _i5.ModuleStreamingClass?)>();
+    _i1.callStreamFunctionAndHandleExceptions(
+      () async {
+        var _localUniqueSession =
+            (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+              endpoint: 'recordStreaming',
+              method: 'streamModuleClass',
+            );
+        var _localCallContext = await _endpointDispatch
+            .getMethodStreamCallContext(
+              createSessionCallback: (_) => _localUniqueSession,
+              endpointPath: 'recordStreaming',
+              methodName: 'streamModuleClass',
+              arguments: {},
+              requestedInputStreams: ['values'],
+              serializationManager: _serializationManager,
+            );
+        await _localTestStreamManager.callStreamMethod(
+          _localCallContext,
+          _localUniqueSession,
+          {'values': values},
+        );
+      },
+      _localTestStreamManager.outputStreamController,
+    );
+    return _localTestStreamManager.outputStreamController.stream;
   }
 }
 
@@ -724,7 +775,7 @@ class _MyModuleFeatureEndpoint {
     });
   }
 
-  _i3.Future<_i5.MyModuleFeatureModel> myFeatureModel(
+  _i3.Future<_i6.MyModuleFeatureModel> myFeatureModel(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -746,7 +797,7 @@ class _MyModuleFeatureEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i5.MyModuleFeatureModel>);
+                as _i3.Future<_i6.MyModuleFeatureModel>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

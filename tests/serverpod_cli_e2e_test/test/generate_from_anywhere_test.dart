@@ -1,110 +1,40 @@
-@Timeout(Duration(minutes: 5))
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
+import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:uuid/uuid.dart';
 
 void main() async {
-  late Directory tempDir;
-  var rootPath = path.join(Directory.current.path, '..', '..');
-  var cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
-  var cliEntrypoint = path.join(cliPath, 'bin', 'serverpod_cli.dart');
-
-  setUpAll(() async {
-    // Run pub get to ensure dependencies are up to date
-    await Process.run(
-      'dart',
-      ['pub', 'get'],
-      workingDirectory: cliPath,
-    );
-  });
-
-  setUp(() async {
-    tempDir = await Directory.systemTemp.createTemp();
-  });
-
-  tearDown(() async {
-    if (tempDir.existsSync()) {
-      tempDir.deleteSync(recursive: true);
-    }
-  });
-
   group('Given a serverpod project when generate is called from anywhere', () {
     var projectName =
         'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
     var serverDir = path.join(projectName, '${projectName}_server');
-    var clientDir = path.join(projectName, '${projectName}_client');
-
-    late Process createProcess;
 
     setUp(() async {
-      createProcess = await Process.start(
-        'dart',
-        [
-          'run',
-          cliEntrypoint,
-          'create',
-          projectName,
-          '--mini',
-          '-v',
-          '--no-analytics',
-        ],
-        workingDirectory: tempDir.path,
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
+      var result = await runServerpod(
+        ['create', projectName, '--mini'],
+        workingDirectory: d.sandbox,
       );
-
-      createProcess.stdout.transform(const Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(const Utf8Decoder()).listen(print);
-
-      var createProjectExitCode = await createProcess.exitCode;
       assert(
-        createProjectExitCode == 0,
+        result.exitCode == 0,
         'Failed to create the serverpod project.',
       );
-    });
-
-    tearDown(() async {
-      createProcess.kill();
     });
 
     test(
       'then code generation succeeds when running from client directory.',
       () async {
-        var generateProcess = await Process.start(
-          'dart',
-          ['run', cliEntrypoint, 'generate', '--no-analytics'],
-          workingDirectory: path.join(tempDir.path, clientDir),
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
+        var clientDir = path.join(projectName, '${projectName}_client');
+        var result = await runServerpod(
+          ['generate'],
+          workingDirectory: path.join(d.sandbox, clientDir),
         );
 
-        var stdout = <String>[];
-        var stderr = <String>[];
+        expect(result.exitCode, equals(0), reason: 'Generate should succeed');
 
-        generateProcess.stdout
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stdout.add(line);
-            });
-
-        generateProcess.stderr
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stderr.add(line);
-            });
-
-        var exitCode = await generateProcess.exitCode;
-
-        expect(exitCode, equals(0), reason: 'Generate should succeed');
-
-        var allOutput = [...stdout, ...stderr].join('\n');
+        var allOutput = '${result.stdout}${result.stderr}';
         expect(
           allOutput.contains('Done') || allOutput.contains('success'),
           isTrue,
@@ -114,7 +44,7 @@ void main() async {
         // Verify that generated files exist
         var generatedEndpointsFile = File(
           path.join(
-            tempDir.path,
+            d.sandbox,
             serverDir,
             'lib',
             'src',
@@ -130,7 +60,7 @@ void main() async {
 
         var generatedProtocolFile = File(
           path.join(
-            tempDir.path,
+            d.sandbox,
             serverDir,
             'lib',
             'src',
@@ -149,39 +79,16 @@ void main() async {
     test(
       'then code generation succeeds when running from server subdirectory.',
       () async {
-        var libSrcPath = path.join(tempDir.path, serverDir, 'lib', 'src');
+        var libSrcPath = path.join(d.sandbox, serverDir, 'lib', 'src');
 
-        var generateProcess = await Process.start(
-          'dart',
-          ['run', cliEntrypoint, 'generate', '--no-analytics'],
+        var result = await runServerpod(
+          ['generate'],
           workingDirectory: libSrcPath,
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
         );
 
-        var stdout = <String>[];
-        var stderr = <String>[];
+        expect(result.exitCode, equals(0), reason: 'Generate should succeed');
 
-        generateProcess.stdout
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stdout.add(line);
-            });
-
-        generateProcess.stderr
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stderr.add(line);
-            });
-
-        var exitCode = await generateProcess.exitCode;
-
-        expect(exitCode, equals(0), reason: 'Generate should succeed');
-
-        var allOutput = [...stdout, ...stderr].join('\n');
+        var allOutput = '${result.stdout}${result.stderr}';
         expect(
           allOutput.contains('Done') || allOutput.contains('success'),
           isTrue,
@@ -191,7 +98,7 @@ void main() async {
         // Verify that generated files exist
         var generatedEndpointsFile = File(
           path.join(
-            tempDir.path,
+            d.sandbox,
             serverDir,
             'lib',
             'src',
@@ -210,37 +117,14 @@ void main() async {
     test(
       'then code generation succeeds when running from project root.',
       () async {
-        var generateProcess = await Process.start(
-          'dart',
-          ['run', cliEntrypoint, 'generate', '--no-analytics'],
-          workingDirectory: path.join(tempDir.path, projectName),
-          environment: {
-            'SERVERPOD_HOME': rootPath,
-          },
+        var result = await runServerpod(
+          ['generate'],
+          workingDirectory: path.join(d.sandbox, projectName),
         );
 
-        var stdout = <String>[];
-        var stderr = <String>[];
+        expect(result.exitCode, equals(0), reason: 'Generate should succeed');
 
-        generateProcess.stdout
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stdout.add(line);
-            });
-
-        generateProcess.stderr
-            .transform(const Utf8Decoder())
-            .transform(const LineSplitter())
-            .listen((line) {
-              stderr.add(line);
-            });
-
-        var exitCode = await generateProcess.exitCode;
-
-        expect(exitCode, equals(0), reason: 'Generate should succeed');
-
-        var allOutput = [...stdout, ...stderr].join('\n');
+        var allOutput = '${result.stdout}${result.stderr}';
         expect(
           allOutput.contains('Done') || allOutput.contains('success'),
           isTrue,
@@ -250,7 +134,7 @@ void main() async {
         // Verify that generated files exist
         var generatedEndpointsFile = File(
           path.join(
-            tempDir.path,
+            d.sandbox,
             serverDir,
             'lib',
             'src',

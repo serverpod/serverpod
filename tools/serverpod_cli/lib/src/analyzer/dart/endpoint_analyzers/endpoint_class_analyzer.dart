@@ -37,7 +37,7 @@ abstract class EndpointClassAnalyzer {
     }
 
     var classDocumentationComment = element.documentationComment;
-    var annotations = AnnotationAnalyzer.parseAnnotations(element);
+    var annotations = element.endpointAnnotations;
 
     var parentClass = element.supertype?.element;
     var parentClassName = parentClass?.name;

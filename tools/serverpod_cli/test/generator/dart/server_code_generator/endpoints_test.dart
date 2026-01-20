@@ -30,6 +30,7 @@ void main() {
         var protocolDefinition = const ProtocolDefinition(
           endpoints: [],
           models: [],
+          futureCalls: [],
         );
 
         codeMap = generator.generateProtocolCode(
@@ -73,6 +74,7 @@ void main() {
                 .build(),
           ],
           models: [],
+          futureCalls: [],
         );
 
         codeMap = generator.generateProtocolCode(
@@ -123,6 +125,7 @@ void main() {
                 .build(),
           ],
           models: [],
+          futureCalls: [],
         );
 
         codeMap = generator.generateProtocolCode(
@@ -186,6 +189,7 @@ void main() {
                 .build(),
           ],
           models: [],
+          futureCalls: [],
         );
 
         codeMap = generator.generateProtocolCode(
@@ -242,6 +246,7 @@ void main() {
                             .withStreamOf('String')
                             .build(),
                         required: false,
+                        annotations: const [],
                       ),
                     ],
                   ).buildMethodStreamDefinition(),
@@ -249,6 +254,7 @@ void main() {
                 .build(),
           ],
           models: [],
+          futureCalls: [],
         );
 
         codeMap = generator.generateProtocolCode(
@@ -330,6 +336,7 @@ void main() {
                 .build(),
           ],
           models: [],
+          futureCalls: [],
         );
 
         codeMap = generator.generateProtocolCode(
@@ -344,17 +351,12 @@ void main() {
       });
 
       test(
-        'then endpoint file contains "ignore: deprecated_member_use_from_same_package" comment for method.',
+        'then endpoint file contains "ignore_for_file: deprecated_member_use_from_same_package" directive.',
         () {
           expect(
             endpointsFile,
             contains(
-              RegExp(
-                r'// ignore: deprecated_member_use_from_same_package\n^\s*\b' +
-                    methodName +
-                    r'\b\(',
-                multiLine: true,
-              ),
+              '// ignore_for_file: deprecated_member_use_from_same_package',
             ),
           );
         },
@@ -380,6 +382,7 @@ void main() {
               .build(),
         ],
         models: [],
+        futureCalls: [],
       );
 
       late var codeMap = generator.generateProtocolCode(

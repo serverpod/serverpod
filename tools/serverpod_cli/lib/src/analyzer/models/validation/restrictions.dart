@@ -2014,26 +2014,6 @@ class Restrictions {
     return valueCount;
   }
 
-  var whiteListedTypes = [
-    'String',
-    'bool',
-    'int',
-    'double',
-    'DateTime',
-    'Duration',
-    'UuidValue',
-    'Uri',
-    'BigInt',
-    'ByteData',
-    'Vector',
-    'HalfVector',
-    'SparseVector',
-    'Bit',
-    'List',
-    'Map',
-    'Set',
-  ];
-
   var blackListedTypes = [
     'dynamic',
   ];
@@ -2043,7 +2023,7 @@ class Restrictions {
   }
 
   bool _isValidType(TypeDefinition type) {
-    return whiteListedTypes.contains(type.className) ||
+    return type.isSerializableDartType ||
         _isModelType(type) ||
         _isCustomType(type) ||
         _isRecordType(type);

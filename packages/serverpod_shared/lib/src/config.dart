@@ -62,6 +62,10 @@ class ServerpodConfig {
   /// Configuration for Session logs.
   final SessionLogConfig sessionLogs;
 
+  /// Health check interval.
+  /// Default is 1 minute.
+  final Duration healthCheckInterval;
+
   /// The timeout for the diagnostic event handlers.
   /// Default is 30 seconds.
   final Duration? experimentalDiagnosticHandlerTimeout;
@@ -71,6 +75,13 @@ class ServerpodConfig {
 
   /// True if future call execution should be disabled.
   final bool futureCallExecutionEnabled;
+
+  /// Whether to validate HTTP headers using typed APIs.
+  ///
+  /// When false, uses non-typed header API, allowing headers without
+  /// required formatting (e.g., unwrapped tokens in Authorization header).
+  /// Defaults to true.
+  final bool validateHeaders;
 
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
@@ -88,9 +99,11 @@ class ServerpodConfig {
     this.redis,
     this.serviceSecret,
     SessionLogConfig? sessionLogs,
+    this.healthCheckInterval = const Duration(minutes: 1),
     this.experimentalDiagnosticHandlerTimeout = const Duration(seconds: 30),
     this.futureCall = const FutureCallConfig(),
     this.futureCallExecutionEnabled = true,
+    this.validateHeaders = true,
   }) : sessionLogs =
            sessionLogs ??
            SessionLogConfig.buildDefault(
@@ -220,6 +233,11 @@ class ServerpodConfig {
       environment,
     );
 
+    var validateHeaders = _readValidateHeaders(
+      configMap,
+      environment,
+    );
+
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
@@ -237,6 +255,7 @@ class ServerpodConfig {
       sessionLogs: sessionLogsConfig,
       futureCall: futureCallConfig,
       futureCallExecutionEnabled: futureCallExecutionEnabled,
+      validateHeaders: validateHeaders,
     );
   }
 
@@ -286,9 +305,11 @@ class ServerpodConfig {
     RedisConfig? redis,
     String? serviceSecret,
     SessionLogConfig? sessionLogs,
+    Duration? healthCheckInterval,
     Duration? experimentalDiagnosticHandlerTimeout,
     FutureCallConfig? futureCall,
     bool? futureCallExecutionEnabled,
+    bool? validateHeaders,
   }) {
     return ServerpodConfig(
       apiServer: apiServer ?? this.apiServer,
@@ -305,12 +326,14 @@ class ServerpodConfig {
       redis: redis ?? this.redis,
       serviceSecret: serviceSecret ?? this.serviceSecret,
       sessionLogs: sessionLogs ?? this.sessionLogs,
+      healthCheckInterval: healthCheckInterval ?? this.healthCheckInterval,
       experimentalDiagnosticHandlerTimeout:
           experimentalDiagnosticHandlerTimeout ??
           this.experimentalDiagnosticHandlerTimeout,
       futureCall: futureCall ?? this.futureCall,
       futureCallExecutionEnabled:
           futureCallExecutionEnabled ?? this.futureCallExecutionEnabled,
+      validateHeaders: validateHeaders ?? this.validateHeaders,
     );
   }
 
@@ -1108,6 +1131,22 @@ bool _readIsFutureCallExecutionEnabled(
 
   futureCallsExecutionEnabled ??= true;
   return futureCallsExecutionEnabled;
+}
+
+bool _readValidateHeaders(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  var validateHeaders = configMap[ServerpodEnv.validateHeaders.configKey];
+  validateHeaders =
+      environment[ServerpodEnv.validateHeaders.envVariable] ?? validateHeaders;
+
+  if (validateHeaders is String) {
+    validateHeaders = bool.tryParse(validateHeaders);
+  }
+
+  validateHeaders ??= true;
+  return validateHeaders;
 }
 
 /// Validates that a JSON configuration contains all required keys, and that

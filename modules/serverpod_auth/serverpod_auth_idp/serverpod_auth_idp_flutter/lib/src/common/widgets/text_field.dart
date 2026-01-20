@@ -45,6 +45,7 @@ class CustomTextField extends StatelessWidget {
       controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
+        contentPadding: const EdgeInsets.fromLTRB(12, 14, 12, 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
         ),

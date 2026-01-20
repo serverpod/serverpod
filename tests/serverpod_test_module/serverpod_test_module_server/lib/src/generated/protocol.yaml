@@ -5,6 +5,8 @@ concreteBase:
 module:
   - hello:
   - modifyModuleObject:
+recordStreaming:
+  - streamModuleClass:
 streaming:
   - wasStreamOpenCalled:
   - wasStreamClosedCalled:

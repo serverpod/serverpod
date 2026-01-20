@@ -14,6 +14,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../profile/models/user_profile.dart' as _i2;
 import 'package:serverpod_auth_core_client/src/protocol/protocol.dart' as _i3;
 
+/// Database entity for storing user profile image information.
 abstract class UserProfileImage implements _i1.SerializableModel {
   UserProfileImage._({
     this.id,
@@ -48,9 +49,9 @@ abstract class UserProfileImage implements _i1.SerializableModel {
           : _i3.Protocol().deserialize<_i2.UserProfile>(
               jsonSerialization['userProfile'],
             ),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['createdAt'],
-      ),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
       url: _i1.UriJsonExtension.fromJson(jsonSerialization['url']),

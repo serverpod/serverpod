@@ -22,4 +22,5 @@ jobs:
         run: dart pub get
 
       - name: Check formatting
+        working-directory: projectname_server
         run: dart format --set-exit-if-changed .

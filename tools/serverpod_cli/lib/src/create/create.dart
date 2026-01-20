@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:cli_tools/execute.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/create/database_setup.dart';
@@ -11,7 +12,6 @@ import 'package:serverpod_cli/src/create/generate_files.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/scripts/script.dart';
-import 'package:serverpod_cli/src/scripts/script_executor.dart';
 import 'package:serverpod_cli/src/scripts/scripts.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
@@ -198,20 +198,20 @@ Future<bool> performCreate(
 
         final stdoutController = StreamController<List<int>>();
         stdoutController.stream
-            .transform(utf8.decoder)
+            .transform(const Utf8Decoder(allowMalformed: true))
             .transform(const LineSplitter())
             .listen((data) => log.debug(data));
         final toDebugLog = IOSink(stdoutController);
         final stderrController = StreamController<List<int>>();
         stderrController.stream
-            .transform(utf8.decoder)
+            .transform(const Utf8Decoder(allowMalformed: true))
             .transform(const LineSplitter())
             .listen((data) => log.error(data));
         final toErrorLog = IOSink(stderrController);
 
-        final exitCode = await ScriptExecutor.executeScript(
-          script,
-          serverpodDirs.serverDir,
+        final exitCode = await execute(
+          script.command,
+          workingDirectory: serverpodDirs.serverDir,
           stdout: toDebugLog,
           stderr: toErrorLog,
         );

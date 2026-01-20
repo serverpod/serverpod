@@ -30,11 +30,5 @@ fields:
   extraData: Map<String, String>?
 
 indexes:
-  serverpod_auth_idp_rate_limited_request_attempt_domain:
-    fields: domain
-
-  serverpod_auth_idp_rate_limited_request_attempt_source:
-    fields: source
-
-  serverpod_auth_idp_rate_limited_request_attempt_nonce:
-    fields: nonce
+  serverpod_auth_idp_rate_limited_request_attempt_composite:
+    fields: domain, source, nonce, attemptedAt

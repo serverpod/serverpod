@@ -1,10 +1,12 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/doc_comments/with_serverpod_doc_comment.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/endpoint_generators_util.dart';
+import 'package:serverpod_cli/src/generator/dart/protocol_definition_extension.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -27,12 +29,19 @@ class ServerTestToolsGenerator {
         _buildWithServerpodFunction(),
         _buildPublicTestEndpointsClass(),
         _buildPrivateTestEndpointsClass(),
+        if (protocolDefinition.shouldGenerateFutureCalls)
+          _buildFutureCallClass(),
       ],
     );
 
     for (var endpoint in protocolDefinition.endpoints) {
       if (endpoint.isAbstract) continue;
       library.body.add(_buildEndpointClassWithMethodCalls(endpoint));
+    }
+
+    for (var futureCall in protocolDefinition.futureCalls) {
+      if (futureCall.isAbstract || futureCall.methods.isEmpty) continue;
+      library.body.add(_buildFutureCallClassWithMethodCalls(futureCall));
     }
 
     return library.build();
@@ -58,6 +67,175 @@ class ServerTestToolsGenerator {
     ]);
 
     library.ignoreForFile.add('no_leading_underscores_for_local_identifiers');
+  }
+
+  Class _buildFutureCallClass() {
+    return Class((classBuilder) {
+      classBuilder
+        ..name = '_FutureCalls'
+        ..fields.addAll([
+          for (var futureCall in protocolDefinition.futureCalls)
+            if (!futureCall.isAbstract && futureCall.methods.isNotEmpty)
+              Field(
+                (f) => f
+                  ..late = true
+                  ..name = futureCall.name
+                  ..modifier = FieldModifier.final$
+                  ..assignment = Code(
+                    '_${futureCall.name.pascalCase}FutureCall()',
+                  ),
+              ),
+        ]);
+    });
+  }
+
+  Class _buildFutureCallClassWithMethodCalls(FutureCallDefinition futureCall) {
+    return Class((classBuilder) {
+      classBuilder
+        ..name = '_${futureCall.name.pascalCase}FutureCall'
+        ..methods.addAll([
+          for (final method in futureCall.methods)
+            _buildFutureCallMethod(method, futureCall),
+        ]);
+    });
+  }
+
+  Method _buildFutureCallMethod(
+    FutureCallMethodDefinition method,
+    FutureCallDefinition futureCall,
+  ) {
+    final requiredParameters = method.parameters;
+    final optionalParameters = method.parametersPositional;
+    final namedParameters = method.parametersNamed;
+
+    return Method(
+      (m) => m
+        ..name = method.name
+        ..modifier = MethodModifier.async
+        ..returns = TypeReference(
+          (t) => t
+            ..symbol = 'Future'
+            ..types.add(refer('void')),
+        )
+        ..requiredParameters.addAll([
+          Parameter(
+            (p) => p
+              ..name = 'sessionBuilder'
+              ..type = refer('TestSessionBuilder', serverpodTestUrl),
+          ),
+          for (var param in requiredParameters)
+            Parameter(
+              (p) => p
+                ..name = param.name
+                ..type = param.type.reference(
+                  true,
+                  config: config,
+                ),
+            ),
+        ])
+        ..optionalParameters.addAll([
+          for (var param in optionalParameters)
+            Parameter(
+              (p) => p
+                ..named = false
+                ..name = param.name
+                ..defaultTo = param.defaultValue != null
+                    ? Code(param.defaultValue!)
+                    : null
+                ..type = param.type.reference(
+                  true,
+                  config: config,
+                ),
+            ),
+          for (var param in namedParameters)
+            Parameter(
+              (p) => p
+                ..named = true
+                ..required = param.required
+                ..name = param.name
+                ..defaultTo = param.defaultValue != null
+                    ? Code(param.defaultValue!)
+                    : null
+                ..type = param.type.reference(
+                  true,
+                  config: config,
+                ),
+            ),
+        ])
+        ..body = Block.of([
+          _buildFutureCallMethodSerializableModel(method),
+
+          refer('var _localUniqueSession')
+              .assign(
+                refer('sessionBuilder')
+                    .asA(refer('InternalTestSessionBuilder', serverpodTestUrl))
+                    .property('internalBuild')
+                    .call([]),
+              )
+              .statement,
+          const Code('try {'),
+          refer(
+                _getFutureCallClassName(futureCall.name, method.name),
+                'package:${config.serverPackage}/src/generated/future_calls.dart',
+              )
+              .call([])
+              .property('invoke')
+              .call(
+                [
+                  refer('_localUniqueSession'),
+                  if (method.futureCallMethodParameter != null)
+                    refer('object')
+                  else if (requiredParameters.isNotEmpty)
+                    refer(requiredParameters.first.name),
+                ],
+              )
+              .awaited
+              .statement,
+          const Code('} finally {'),
+          refer(
+            '_localUniqueSession',
+          ).property('close').call([]).awaited.statement,
+          const Code('}'),
+        ]),
+    );
+  }
+
+  Code _buildFutureCallMethodSerializableModel(
+    FutureCallMethodDefinition method,
+  ) {
+    String? filePath;
+    if (method.futureCallMethodParameter != null) {
+      filePath = TypeDefinition.getRef(
+        method.futureCallMethodParameter!.toSerializableModel(),
+      );
+    }
+
+    return Block.of([
+      if (method.futureCallMethodParameter != null)
+        refer('var object')
+            .assign(
+              refer(
+                method.futureCallMethodParameter!.type.className,
+                'package:${config.serverPackage}/src/generated/$filePath',
+              ).call(
+                [],
+                {
+                  for (final param in method.allParameters)
+                    param.name: refer(param.name),
+                },
+              ),
+            )
+            .statement,
+    ]);
+  }
+
+  String _getFutureCallClassName(String futureCallName, [String? methodName]) {
+    final buffer = StringBuffer()
+      ..write(futureCallName.pascalCase)
+      ..write(methodName == null ? '' : methodName.pascalCase)
+      ..write('FutureCall');
+
+    return buffer.toString();
   }
 
   Class _buildEndpointClassWithMethodCalls(EndpointDefinition endpoint) {
@@ -142,7 +320,10 @@ class ServerTestToolsGenerator {
                 Parameter(
                   (p) => p
                     ..name = parameter.name
-                    ..type = parameter.type.reference(true, config: config),
+                    ..type = parameter.type.reference(true, config: config)
+                    ..annotations.addAll(
+                      buildParameterAnnotations(parameter),
+                    ),
                 ),
             ],
           )
@@ -153,7 +334,10 @@ class ServerTestToolsGenerator {
                   (p) => p
                     ..name = parameter.name
                     ..type = parameter.type.reference(true, config: config)
-                    ..named = false,
+                    ..named = false
+                    ..annotations.addAll(
+                      buildParameterAnnotations(parameter),
+                    ),
                 ),
               for (var parameter in method.parametersNamed)
                 Parameter(
@@ -161,7 +345,10 @@ class ServerTestToolsGenerator {
                     ..name = parameter.name
                     ..type = parameter.type.reference(true, config: config)
                     ..named = true
-                    ..required = parameter.required,
+                    ..required = parameter.required
+                    ..annotations.addAll(
+                      buildParameterAnnotations(parameter),
+                    ),
                 ),
             ],
           );
@@ -185,18 +372,16 @@ class ServerTestToolsGenerator {
     EndpointDefinition endpoint,
     MethodDefinition method,
   ) {
-    var mapRecordToJsonRef = refer(
-      mapRecordToJsonFuncName,
-      'package:${config.serverPackage}/src/generated/protocol.dart',
-    );
-    var mapRecordContainingContainerToJsonRef = refer(
-      mapContainerToJsonFunctionName,
+    var protocolRef = refer(
+      'Protocol',
       'package:${config.serverPackage}/src/generated/protocol.dart',
     );
 
     Spec handleParameter(ParameterDefinition parameterDef) {
       if (parameterDef.type.isRecordType) {
-        return mapRecordToJsonRef.call([refer(parameterDef.name)]).code;
+        return protocolRef.call([]).property(mapRecordToJsonFuncName).call([
+          refer(parameterDef.name),
+        ]).code;
       }
 
       if (parameterDef.type.returnsRecordInContainer ||
@@ -204,7 +389,7 @@ class ServerTestToolsGenerator {
         return Block.of([
           if (parameterDef.type.nullable)
             Code('${parameterDef.name} == null ? null :'),
-          mapRecordContainingContainerToJsonRef.call([
+          protocolRef.call([]).property(mapContainerToJsonFunctionName).call([
             refer(parameterDef.name),
           ]).code,
         ]);
@@ -456,6 +641,22 @@ class ServerTestToolsGenerator {
     return Class((classBuilder) {
       classBuilder.name = 'TestEndpoints';
 
+      if (protocolDefinition.shouldGenerateFutureCalls) {
+        classBuilder.fields.add(
+          Field(
+            (fieldBuilder) {
+              fieldBuilder
+                ..name = 'futureCalls'
+                ..late = true
+                ..modifier = FieldModifier.final$
+                ..assignment = Block.of([
+                  const Code('_FutureCalls()'),
+                ]);
+            },
+          ),
+        );
+      }
+
       for (var endpoint in protocolDefinition.endpoints) {
         if (endpoint.isAbstract) continue;
         classBuilder.fields.add(
@@ -633,12 +834,8 @@ extension on ParameterDefinition {
   /// Records and record-containing containers need to be mapped to their JSON (Map) representation,
   /// whereas models and primitives can be returned verbatim.
   Code methodArgumentSerializationCode({required GeneratorConfig config}) {
-    var mapRecordToJsonRef = refer(
-      mapRecordToJsonFuncName,
-      'package:${config.serverPackage}/src/generated/protocol.dart',
-    );
-    var mapRecordContainingContainerToJsonRef = refer(
-      mapContainerToJsonFunctionName,
+    var protocolRef = refer(
+      'Protocol',
       'package:${config.serverPackage}/src/generated/protocol.dart',
     );
 
@@ -648,7 +845,9 @@ extension on ParameterDefinition {
           'SerializationManager',
           serverpodUrl(true),
         ).property('encode').call([
-          mapRecordToJsonRef.call([refer(name)]),
+          protocolRef.call([]).property(mapRecordToJsonFuncName).call([
+            refer(name),
+          ]),
         ]),
       ]).code;
     } else if (type.returnsRecordInContainer) {
@@ -659,7 +858,9 @@ extension on ParameterDefinition {
             'SerializationManager',
             serverpodUrl(true),
           ).property('encode').call([
-            mapRecordContainingContainerToJsonRef.call([refer(name)]),
+            protocolRef.call([]).property(mapContainerToJsonFunctionName).call([
+              refer(name),
+            ]),
           ]),
         ]).code,
       ]);

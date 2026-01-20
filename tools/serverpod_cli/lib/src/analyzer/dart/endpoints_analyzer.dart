@@ -12,6 +12,7 @@ import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_clas
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/util/analysis_helper.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
 import 'definitions.dart';
@@ -29,6 +30,7 @@ class EndpointsAnalyzer {
     : collection = AnalysisContextCollection(
         includedPaths: [directory.absolute.path],
         resourceProvider: PhysicalResourceProvider.INSTANCE,
+        sdkPath: findDartSdk(),
       ),
       absoluteIncludedPaths = directory.absolute.path;
 

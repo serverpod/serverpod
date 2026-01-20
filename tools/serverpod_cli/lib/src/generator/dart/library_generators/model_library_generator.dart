@@ -1518,25 +1518,23 @@ class SerializableModelLibraryGenerator {
     // to treat it as potentially null.
     var nullableField = nullCheckedReference ? false : fieldType.nullable;
 
+    var protocolRef = refer(
+      'Protocol',
+      serverCode
+          ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+          : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+    );
     if (fieldType.isRecordType) {
-      var mapRecordToJsonRef = refer(
-        mapRecordToJsonFuncName,
-        serverCode
-            ? 'package:${config.serverPackage}/src/generated/protocol.dart'
-            : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+      return protocolRef.call([]).property(mapRecordToJsonFuncName).call(
+        [
+          fieldRef,
+        ],
       );
-
-      return mapRecordToJsonRef.call([fieldRef]);
     } else if (fieldType.returnsRecordInContainer) {
-      var mapContainerToJsonRef = refer(
-        mapContainerToJsonFunctionName,
-        serverCode
-            ? 'package:${config.serverPackage}/src/generated/protocol.dart'
-            : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
-      );
-
-      return mapContainerToJsonRef.call(
-        [refer('${fieldRef.symbol}${nullableField ? '!' : ''}')],
+      return protocolRef.call([]).property(mapContainerToJsonFunctionName).call(
+        [
+          refer('${fieldRef.symbol}${nullableField ? '!' : ''}'),
+        ],
       );
     }
 
@@ -2219,8 +2217,8 @@ class SerializableModelLibraryGenerator {
 
             // For records, we need to call mapRecordToJson
             if (field.type.isRecordType) {
-              var mapRecordToJsonRef = refer(
-                mapRecordToJsonFuncName,
+              var protocolRef = refer(
+                'Protocol',
                 serverCode
                     ? 'package:${config.serverPackage}/src/generated/protocol.dart'
                     : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
@@ -2228,7 +2226,9 @@ class SerializableModelLibraryGenerator {
 
               m.body = refer('ColumnValue', serverpodUrl(serverCode)).call([
                 refer('table').property(createFieldName(serverCode, field)),
-                mapRecordToJsonRef.call([refer('value')]),
+                protocolRef.call([]).property(mapRecordToJsonFuncName).call([
+                  refer('value'),
+                ]),
               ]).code;
             } else {
               m.body = refer('ColumnValue', serverpodUrl(serverCode)).call([

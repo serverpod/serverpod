@@ -28,10 +28,14 @@ dependencies:
   auth_client:
     path: ../auth_client
   extended_image: ^10.0.1
+  firebase_auth: ^6.1.3
+  firebase_core: ^4.3.0
+  firebase_ui_auth: ^3.0.0
   flutter:
     sdk: flutter
-  serverpod_auth_idp_flutter: 3.0.1
-  serverpod_flutter: 3.0.1
+  serverpod_auth_idp_flutter: 3.2.1
+  serverpod_auth_idp_flutter_firebase: 3.2.1
+  serverpod_flutter: 3.2.1
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
@@ -47,6 +51,8 @@ dependency_overrides:
     path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client
   serverpod_auth_idp_flutter:
     path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter
+  serverpod_auth_idp_flutter_firebase:
+    path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter_firebase
   serverpod_client:
     path: ../../../packages/serverpod_client
   serverpod_flutter:

@@ -256,32 +256,37 @@ abstract class TypesRecord implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'TypesRecord',
-      if (anInt != null) 'anInt': _i6.mapRecordToJson(anInt),
-      if (aBool != null) 'aBool': _i6.mapRecordToJson(aBool),
-      if (aDouble != null) 'aDouble': _i6.mapRecordToJson(aDouble),
-      if (aDateTime != null) 'aDateTime': _i6.mapRecordToJson(aDateTime),
-      if (aString != null) 'aString': _i6.mapRecordToJson(aString),
-      if (aByteData != null) 'aByteData': _i6.mapRecordToJson(aByteData),
-      if (aDuration != null) 'aDuration': _i6.mapRecordToJson(aDuration),
-      if (aUuid != null) 'aUuid': _i6.mapRecordToJson(aUuid),
-      if (aUri != null) 'aUri': _i6.mapRecordToJson(aUri),
-      if (aBigInt != null) 'aBigInt': _i6.mapRecordToJson(aBigInt),
-      if (anEnum != null) 'anEnum': _i6.mapRecordToJson(anEnum),
+      if (anInt != null) 'anInt': _i6.Protocol().mapRecordToJson(anInt),
+      if (aBool != null) 'aBool': _i6.Protocol().mapRecordToJson(aBool),
+      if (aDouble != null) 'aDouble': _i6.Protocol().mapRecordToJson(aDouble),
+      if (aDateTime != null)
+        'aDateTime': _i6.Protocol().mapRecordToJson(aDateTime),
+      if (aString != null) 'aString': _i6.Protocol().mapRecordToJson(aString),
+      if (aByteData != null)
+        'aByteData': _i6.Protocol().mapRecordToJson(aByteData),
+      if (aDuration != null)
+        'aDuration': _i6.Protocol().mapRecordToJson(aDuration),
+      if (aUuid != null) 'aUuid': _i6.Protocol().mapRecordToJson(aUuid),
+      if (aUri != null) 'aUri': _i6.Protocol().mapRecordToJson(aUri),
+      if (aBigInt != null) 'aBigInt': _i6.Protocol().mapRecordToJson(aBigInt),
+      if (anEnum != null) 'anEnum': _i6.Protocol().mapRecordToJson(anEnum),
       if (aStringifiedEnum != null)
-        'aStringifiedEnum': _i6.mapRecordToJson(aStringifiedEnum),
-      if (aList != null) 'aList': _i6.mapRecordToJson(aList),
-      if (aMap != null) 'aMap': _i6.mapRecordToJson(aMap),
-      if (aSet != null) 'aSet': _i6.mapRecordToJson(aSet),
-      if (aSimpleData != null) 'aSimpleData': _i6.mapRecordToJson(aSimpleData),
-      if (aNamedModel != null) 'aNamedModel': _i6.mapRecordToJson(aNamedModel),
+        'aStringifiedEnum': _i6.Protocol().mapRecordToJson(aStringifiedEnum),
+      if (aList != null) 'aList': _i6.Protocol().mapRecordToJson(aList),
+      if (aMap != null) 'aMap': _i6.Protocol().mapRecordToJson(aMap),
+      if (aSet != null) 'aSet': _i6.Protocol().mapRecordToJson(aSet),
+      if (aSimpleData != null)
+        'aSimpleData': _i6.Protocol().mapRecordToJson(aSimpleData),
+      if (aNamedModel != null)
+        'aNamedModel': _i6.Protocol().mapRecordToJson(aNamedModel),
       if (aPositionalAndNamedModel != null)
-        'aPositionalAndNamedModel': _i6.mapRecordToJson(
+        'aPositionalAndNamedModel': _i6.Protocol().mapRecordToJson(
           aPositionalAndNamedModel,
         ),
       if (aNestedRecord != null)
-        'aNestedRecord': _i6.mapRecordToJson(aNestedRecord),
+        'aNestedRecord': _i6.Protocol().mapRecordToJson(aNestedRecord),
       if (aNestedContainers != null)
-        'aNestedContainers': _i6.mapRecordToJson(aNestedContainers),
+        'aNestedContainers': _i6.Protocol().mapRecordToJson(aNestedContainers),
     };
   }
 

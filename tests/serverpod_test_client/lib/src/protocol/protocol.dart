@@ -4721,6 +4721,17 @@ class Protocol extends _i1.SerializationManager {
                 )
                 as T;
     }
+    if (t == _i1.getType<(int?, _i193.ProjectStreamingClass?)>()) {
+      return (
+            ((data as Map)['p'] as List)[0] == null
+                ? null
+                : deserialize<int>(data['p'][0]),
+            ((data)['p'] as List)[1] == null
+                ? null
+                : deserialize<_i193.ProjectStreamingClass>(data['p'][1]),
+          )
+          as T;
+    }
     if (t == Set<Set<int>>) {
       return (data as List).map((e) => deserialize<Set<int>>(e)).toSet() as T;
     }
@@ -5495,6 +5506,17 @@ class Protocol extends _i1.SerializationManager {
                 )
                 as T;
     }
+    if (t == _i1.getType<(int?, _i193.ProjectStreamingClass?)>()) {
+      return (
+            ((data as Map)['p'] as List)[0] == null
+                ? null
+                : deserialize<int>(data['p'][0]),
+            ((data)['p'] as List)[1] == null
+                ? null
+                : deserialize<_i193.ProjectStreamingClass>(data['p'][1]),
+          )
+          as T;
+    }
     if (t ==
         _i1
             .getType<
@@ -6242,6 +6264,9 @@ class Protocol extends _i1.SerializationManager {
         >?) {
       return 'List<((int,String),{(SimpleData,double) namedSubRecord})?>?';
     }
+    if (data is (int?, _i193.ProjectStreamingClass?)) {
+      return '(int?,serverpod_test_module.ProjectStreamingClass?)';
+    }
     if (data
         is (
           String,
@@ -6927,6 +6952,10 @@ class Protocol extends _i1.SerializationManager {
       >(data['data']);
     }
     if (dataClassName ==
+        '(int?,serverpod_test_module.ProjectStreamingClass?)') {
+      return deserialize<(int?, _i193.ProjectStreamingClass?)>(data['data']);
+    }
+    if (dataClassName ==
         '(String,(Map<String,int>,{bool flag,SimpleData simpleData}))') {
       return deserialize<
         (String, (Map<String, int>, {bool flag, _i196.SimpleData simpleData}))
@@ -6968,498 +6997,514 @@ class Protocol extends _i1.SerializationManager {
 
     return super.wrapWithClassName(data);
   }
-}
 
-/// Maps any `Record`s known to this [Protocol] to their JSON representation
-///
-/// Throws in case the record type is not known.
-///
-/// This method will return `null` (only) for `null` inputs.
-Map<String, dynamic>? mapRecordToJson(Record? record) {
-  if (record == null) {
-    return null;
-  }
-  if (record is (Map<int, String>, String)) {
-    return {
-      "p": [
-        mapContainerToJson(record.$1),
-        record.$2,
-      ],
-    };
-  }
-  if (record is (Map<int, int>,)) {
-    return {
-      "p": [
-        mapContainerToJson(record.$1),
-      ],
-    };
-  }
-  if (record is (int, BigInt)) {
-    return {
-      "p": [
-        record.$1,
-        record.$2.toJson(),
-      ],
-    };
-  }
-  if (record is (String, _i199.PolymorphicParent)) {
-    return {
-      "p": [
-        record.$1,
-        record.$2.toJson(),
-      ],
-    };
-  }
-  if (record is (int,)) {
-    return {
-      "p": [
-        record.$1,
-      ],
-    };
-  }
-  if (record is (int?,)) {
-    return {
-      "p": [
-        record.$1,
-      ],
-    };
-  }
-  if (record is (int, String)) {
-    return {
-      "p": [
-        record.$1,
-        record.$2,
-      ],
-    };
-  }
-  if (record is (int, _i196.SimpleData)) {
-    return {
-      "p": [
-        record.$1,
-        record.$2.toJson(),
-      ],
-    };
-  }
-  if (record is (Map<String, int>,)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-    };
-  }
-  if (record is (Set<(int,)>,)) {
-    return {
-      "p": [
-        mapContainerToJson(record.$1),
-      ],
-    };
-  }
-  if (record is ({int number, String text})) {
-    return {
-      "n": {
-        "number": record.number,
-        "text": record.text,
-      },
-    };
-  }
-  if (record is ({_i196.SimpleData data, int number})) {
-    return {
-      "n": {
-        "data": record.data,
-        "number": record.number,
-      },
-    };
-  }
-  if (record is ({_i196.SimpleData? data, int? number})) {
-    return {
-      "n": {
-        "data": record.data,
-        "number": record.number,
-      },
-    };
-  }
-  if (record is ({Map<int, int> intIntMap})) {
-    return {
-      "n": {
-        "intIntMap": mapContainerToJson(record.intIntMap),
-      },
-    };
-  }
-  if (record is ({Set<(bool,)> boolSet})) {
-    return {
-      "n": {
-        "boolSet": mapContainerToJson(record.boolSet),
-      },
-    };
-  }
-  if (record is (bool,)) {
-    return {
-      "p": [
-        record.$1,
-      ],
-    };
-  }
-  if (record is (Map<(Map<int, String>, String), String>,)) {
-    return {
-      "p": [
-        mapContainerToJson(record.$1),
-      ],
-    };
-  }
-  if (record is (int, {_i196.SimpleData data})) {
-    return {
-      "p": [
-        record.$1,
-      ],
-      "n": {
-        "data": record.data,
-      },
-    };
-  }
-  if (record is (String, int)) {
-    return {
-      "p": [
-        record.$1,
-        record.$2,
-      ],
-    };
-  }
-  if (record is ({(_i196.SimpleData, double) namedSubRecord})) {
-    return {
-      "n": {
-        "namedSubRecord": mapRecordToJson(record.namedSubRecord),
-      },
-    };
-  }
-  if (record is (_i196.SimpleData, double)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-        record.$2,
-      ],
-    };
-  }
-  if (record is ({(_i196.SimpleData, double)? namedSubRecord})) {
-    return {
-      "n": {
-        "namedSubRecord": mapRecordToJson(record.namedSubRecord),
-      },
-    };
-  }
-  if (record is ((int, String), {(_i196.SimpleData, double) namedSubRecord})) {
-    return {
-      "p": [
-        mapRecordToJson(record.$1),
-      ],
-      "n": {
-        "namedSubRecord": mapRecordToJson(record.namedSubRecord),
-      },
-    };
-  }
-  if (record is (String, (int, bool))) {
-    return {
-      "p": [
-        record.$1,
-        mapRecordToJson(record.$2),
-      ],
-    };
-  }
-  if (record is (int, bool)) {
-    return {
-      "p": [
-        record.$1,
-        record.$2,
-      ],
-    };
-  }
-  if (record
-      is (
-        String,
-        (Map<String, int>, {bool flag, _i196.SimpleData simpleData}),
-      )) {
-    return {
-      "p": [
-        record.$1,
-        mapRecordToJson(record.$2),
-      ],
-    };
-  }
-  if (record is (Map<String, int>, {bool flag, _i196.SimpleData simpleData})) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-      "n": {
-        "flag": record.flag,
-        "simpleData": record.simpleData,
-      },
-    };
-  }
-  if (record is (int, String)) {
-    return {
-      "p": [
-        record.$1,
-        record.$2,
-      ],
-    };
-  }
-  if (record is (_i193.ModuleClass,)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-    };
-  }
-  if (record is (bool,)) {
-    return {
-      "p": [
-        record.$1,
-      ],
-    };
-  }
-  if (record is (_i185.TestEnumStringified,)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-    };
-  }
-  if (record is (_i144.Nullability,)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-    };
-  }
-  if (record is ({_i185.TestEnumStringified value})) {
-    return {
-      "n": {
-        "value": record.value,
-      },
-    };
-  }
-  if (record is ({_i193.ModuleClass value})) {
-    return {
-      "n": {
-        "value": record.value,
-      },
-    };
-  }
-  if (record is ({_i144.Nullability value})) {
-    return {
-      "n": {
-        "value": record.value,
-      },
-    };
-  }
-  if (record is (String, {Uri? optionalUri})) {
-    return {
-      "p": [
-        record.$1,
-      ],
-      "n": {
-        "optionalUri": record.optionalUri,
-      },
-    };
-  }
-  if (record is (_i183.TestEnum,)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-    };
-  }
-  if (record is (String,)) {
-    return {
-      "p": [
-        record.$1,
-      ],
-    };
-  }
-  if (record is (double,)) {
-    return {
-      "p": [
-        record.$1,
-      ],
-    };
-  }
-  if (record is (DateTime,)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-    };
-  }
-  if (record is (_i194.ByteData,)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-    };
-  }
-  if (record is (Duration,)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-    };
-  }
-  if (record is (_i1.UuidValue,)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-    };
-  }
-  if (record is (Uri,)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-    };
-  }
-  if (record is (BigInt,)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-    };
-  }
-  if (record is (List<int>,)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-    };
-  }
-  if (record is (Map<int, int>,)) {
-    return {
-      "p": [
-        mapContainerToJson(record.$1),
-      ],
-    };
-  }
-  if (record is (Set<int>,)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-    };
-  }
-  if (record is (_i177.SimpleData,)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-    };
-  }
-  if (record is ({_i177.SimpleData namedModel})) {
-    return {
-      "n": {
-        "namedModel": record.namedModel,
-      },
-    };
-  }
-  if (record is (_i177.SimpleData, {_i177.SimpleData namedModel})) {
-    return {
-      "p": [
-        record.$1.toJson(),
-      ],
-      "n": {
-        "namedModel": record.namedModel,
-      },
-    };
-  }
-  if (record is ((int, String), {(int, String) namedNestedRecord})) {
-    return {
-      "p": [
-        mapRecordToJson(record.$1),
-      ],
-      "n": {
-        "namedNestedRecord": mapRecordToJson(record.namedNestedRecord),
-      },
-    };
-  }
-  if (record
-      is (
-        (List<(_i177.SimpleData,)>,), {
-        (_i177.SimpleData, Map<String, _i177.SimpleData>) namedNestedRecord,
-      })) {
-    return {
-      "p": [
-        mapRecordToJson(record.$1),
-      ],
-      "n": {
-        "namedNestedRecord": mapRecordToJson(record.namedNestedRecord),
-      },
-    };
-  }
-  if (record is (List<(_i177.SimpleData,)>,)) {
-    return {
-      "p": [
-        mapContainerToJson(record.$1),
-      ],
-    };
-  }
-  if (record is (_i177.SimpleData, Map<String, _i177.SimpleData>)) {
-    return {
-      "p": [
-        record.$1.toJson(),
-        record.$2.toJson(),
-      ],
-    };
-  }
-  throw Exception('Unsupported record type ${record.runtimeType}');
-}
-
-/// Maps container types (like [List], [Map], [Set]) containing
-/// [Record]s or non-String-keyed [Map]s to their JSON representation.
-///
-/// It should not be called for [SerializableModel] types. These
-/// handle the "[Record] in container" mapping internally already.
-///
-/// It is only supposed to be called from generated protocol code.
-///
-/// Returns either a `List<dynamic>` (for List, Sets, and Maps with
-/// non-String keys) or a `Map<String, dynamic>` in case the input was
-/// a `Map<String, …>`.
-Object? mapContainerToJson(Object obj) {
-  if (obj is! Iterable && obj is! Map) {
-    throw ArgumentError.value(
-      obj,
-      'obj',
-      'The object to serialize should be of type List, Map, or Set',
-    );
-  }
-
-  dynamic mapIfNeeded(Object? obj) {
-    return switch (obj) {
-      Record record => mapRecordToJson(record),
-      Iterable iterable => mapContainerToJson(iterable),
-      Map map => mapContainerToJson(map),
-      Object? value => value,
-    };
-  }
-
-  switch (obj) {
-    case Map<String, dynamic>():
+  /// Maps any `Record`s known to this [Protocol] to their JSON representation
+  ///
+  /// Throws in case the record type is not known.
+  ///
+  /// This method will return `null` (only) for `null` inputs.
+  Map<String, dynamic>? mapRecordToJson(Record? record) {
+    if (record == null) {
+      return null;
+    }
+    if (record is (Map<int, String>, String)) {
       return {
-        for (var entry in obj.entries) entry.key: mapIfNeeded(entry.value),
+        "p": [
+          mapContainerToJson(record.$1),
+          record.$2,
+        ],
       };
-    case Map():
-      return [
-        for (var entry in obj.entries)
-          {
-            'k': mapIfNeeded(entry.key),
-            'v': mapIfNeeded(entry.value),
-          },
-      ];
-
-    case Iterable():
-      return [
-        for (var e in obj) mapIfNeeded(e),
-      ];
+    }
+    if (record is (Map<int, int>,)) {
+      return {
+        "p": [
+          mapContainerToJson(record.$1),
+        ],
+      };
+    }
+    if (record is (int, BigInt)) {
+      return {
+        "p": [
+          record.$1,
+          record.$2.toJson(),
+        ],
+      };
+    }
+    if (record is (String, _i199.PolymorphicParent)) {
+      return {
+        "p": [
+          record.$1,
+          record.$2.toJson(),
+        ],
+      };
+    }
+    if (record is (int,)) {
+      return {
+        "p": [
+          record.$1,
+        ],
+      };
+    }
+    if (record is (int?,)) {
+      return {
+        "p": [
+          record.$1,
+        ],
+      };
+    }
+    if (record is (int, String)) {
+      return {
+        "p": [
+          record.$1,
+          record.$2,
+        ],
+      };
+    }
+    if (record is (int, _i196.SimpleData)) {
+      return {
+        "p": [
+          record.$1,
+          record.$2.toJson(),
+        ],
+      };
+    }
+    if (record is (Map<String, int>,)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+      };
+    }
+    if (record is (Set<(int,)>,)) {
+      return {
+        "p": [
+          mapContainerToJson(record.$1),
+        ],
+      };
+    }
+    if (record is ({int number, String text})) {
+      return {
+        "n": {
+          "number": record.number,
+          "text": record.text,
+        },
+      };
+    }
+    if (record is ({_i196.SimpleData data, int number})) {
+      return {
+        "n": {
+          "data": record.data,
+          "number": record.number,
+        },
+      };
+    }
+    if (record is ({_i196.SimpleData? data, int? number})) {
+      return {
+        "n": {
+          "data": record.data,
+          "number": record.number,
+        },
+      };
+    }
+    if (record is ({Map<int, int> intIntMap})) {
+      return {
+        "n": {
+          "intIntMap": mapContainerToJson(record.intIntMap),
+        },
+      };
+    }
+    if (record is ({Set<(bool,)> boolSet})) {
+      return {
+        "n": {
+          "boolSet": mapContainerToJson(record.boolSet),
+        },
+      };
+    }
+    if (record is (bool,)) {
+      return {
+        "p": [
+          record.$1,
+        ],
+      };
+    }
+    if (record is (Map<(Map<int, String>, String), String>,)) {
+      return {
+        "p": [
+          mapContainerToJson(record.$1),
+        ],
+      };
+    }
+    if (record is (int, {_i196.SimpleData data})) {
+      return {
+        "p": [
+          record.$1,
+        ],
+        "n": {
+          "data": record.data,
+        },
+      };
+    }
+    if (record is (String, int)) {
+      return {
+        "p": [
+          record.$1,
+          record.$2,
+        ],
+      };
+    }
+    if (record is ({(_i196.SimpleData, double) namedSubRecord})) {
+      return {
+        "n": {
+          "namedSubRecord": mapRecordToJson(record.namedSubRecord),
+        },
+      };
+    }
+    if (record is (_i196.SimpleData, double)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+          record.$2,
+        ],
+      };
+    }
+    if (record is ({(_i196.SimpleData, double)? namedSubRecord})) {
+      return {
+        "n": {
+          "namedSubRecord": mapRecordToJson(record.namedSubRecord),
+        },
+      };
+    }
+    if (record
+        is ((int, String), {(_i196.SimpleData, double) namedSubRecord})) {
+      return {
+        "p": [
+          mapRecordToJson(record.$1),
+        ],
+        "n": {
+          "namedSubRecord": mapRecordToJson(record.namedSubRecord),
+        },
+      };
+    }
+    if (record is (int?, _i193.ProjectStreamingClass?)) {
+      return {
+        "p": [
+          record.$1,
+          record.$2?.toJson(),
+        ],
+      };
+    }
+    if (record is (String, (int, bool))) {
+      return {
+        "p": [
+          record.$1,
+          mapRecordToJson(record.$2),
+        ],
+      };
+    }
+    if (record is (int, bool)) {
+      return {
+        "p": [
+          record.$1,
+          record.$2,
+        ],
+      };
+    }
+    if (record
+        is (
+          String,
+          (Map<String, int>, {bool flag, _i196.SimpleData simpleData}),
+        )) {
+      return {
+        "p": [
+          record.$1,
+          mapRecordToJson(record.$2),
+        ],
+      };
+    }
+    if (record
+        is (Map<String, int>, {bool flag, _i196.SimpleData simpleData})) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+        "n": {
+          "flag": record.flag,
+          "simpleData": record.simpleData,
+        },
+      };
+    }
+    if (record is (int, String)) {
+      return {
+        "p": [
+          record.$1,
+          record.$2,
+        ],
+      };
+    }
+    if (record is (_i193.ModuleClass,)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+      };
+    }
+    if (record is (bool,)) {
+      return {
+        "p": [
+          record.$1,
+        ],
+      };
+    }
+    if (record is (_i185.TestEnumStringified,)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+      };
+    }
+    if (record is (_i144.Nullability,)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+      };
+    }
+    if (record is ({_i185.TestEnumStringified value})) {
+      return {
+        "n": {
+          "value": record.value,
+        },
+      };
+    }
+    if (record is ({_i193.ModuleClass value})) {
+      return {
+        "n": {
+          "value": record.value,
+        },
+      };
+    }
+    if (record is ({_i144.Nullability value})) {
+      return {
+        "n": {
+          "value": record.value,
+        },
+      };
+    }
+    if (record is (String, {Uri? optionalUri})) {
+      return {
+        "p": [
+          record.$1,
+        ],
+        "n": {
+          "optionalUri": record.optionalUri,
+        },
+      };
+    }
+    if (record is (_i183.TestEnum,)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+      };
+    }
+    if (record is (String,)) {
+      return {
+        "p": [
+          record.$1,
+        ],
+      };
+    }
+    if (record is (double,)) {
+      return {
+        "p": [
+          record.$1,
+        ],
+      };
+    }
+    if (record is (DateTime,)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+      };
+    }
+    if (record is (_i194.ByteData,)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+      };
+    }
+    if (record is (Duration,)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+      };
+    }
+    if (record is (_i1.UuidValue,)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+      };
+    }
+    if (record is (Uri,)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+      };
+    }
+    if (record is (BigInt,)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+      };
+    }
+    if (record is (List<int>,)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+      };
+    }
+    if (record is (Map<int, int>,)) {
+      return {
+        "p": [
+          mapContainerToJson(record.$1),
+        ],
+      };
+    }
+    if (record is (Set<int>,)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+      };
+    }
+    if (record is (_i177.SimpleData,)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+      };
+    }
+    if (record is ({_i177.SimpleData namedModel})) {
+      return {
+        "n": {
+          "namedModel": record.namedModel,
+        },
+      };
+    }
+    if (record is (_i177.SimpleData, {_i177.SimpleData namedModel})) {
+      return {
+        "p": [
+          record.$1.toJson(),
+        ],
+        "n": {
+          "namedModel": record.namedModel,
+        },
+      };
+    }
+    if (record is ((int, String), {(int, String) namedNestedRecord})) {
+      return {
+        "p": [
+          mapRecordToJson(record.$1),
+        ],
+        "n": {
+          "namedNestedRecord": mapRecordToJson(record.namedNestedRecord),
+        },
+      };
+    }
+    if (record
+        is (
+          (List<(_i177.SimpleData,)>,), {
+          (_i177.SimpleData, Map<String, _i177.SimpleData>) namedNestedRecord,
+        })) {
+      return {
+        "p": [
+          mapRecordToJson(record.$1),
+        ],
+        "n": {
+          "namedNestedRecord": mapRecordToJson(record.namedNestedRecord),
+        },
+      };
+    }
+    if (record is (List<(_i177.SimpleData,)>,)) {
+      return {
+        "p": [
+          mapContainerToJson(record.$1),
+        ],
+      };
+    }
+    if (record is (_i177.SimpleData, Map<String, _i177.SimpleData>)) {
+      return {
+        "p": [
+          record.$1.toJson(),
+          record.$2.toJson(),
+        ],
+      };
+    }
+    try {
+      return _i198.Protocol().mapRecordToJson(record);
+    } catch (_) {}
+    try {
+      return _i193.Protocol().mapRecordToJson(record);
+    } catch (_) {}
+    throw Exception('Unsupported record type ${record.runtimeType}');
   }
 
-  return obj;
+  /// Maps container types (like [List], [Map], [Set]) containing
+  /// [Record]s or non-String-keyed [Map]s to their JSON representation.
+  ///
+  /// It should not be called for [SerializableModel] types. These
+  /// handle the "[Record] in container" mapping internally already.
+  ///
+  /// It is only supposed to be called from generated protocol code.
+  ///
+  /// Returns either a `List<dynamic>` (for List, Sets, and Maps with
+  /// non-String keys) or a `Map<String, dynamic>` in case the input was
+  /// a `Map<String, …>`.
+  Object? mapContainerToJson(Object obj) {
+    if (obj is! Iterable && obj is! Map) {
+      throw ArgumentError.value(
+        obj,
+        'obj',
+        'The object to serialize should be of type List, Map, or Set',
+      );
+    }
+
+    dynamic mapIfNeeded(Object? obj) {
+      return switch (obj) {
+        Record record => mapRecordToJson(record),
+        Iterable iterable => mapContainerToJson(iterable),
+        Map map => mapContainerToJson(map),
+        Object? value => value,
+      };
+    }
+
+    switch (obj) {
+      case Map<String, dynamic>():
+        return {
+          for (var entry in obj.entries) entry.key: mapIfNeeded(entry.value),
+        };
+      case Map():
+        return [
+          for (var entry in obj.entries)
+            {
+              'k': mapIfNeeded(entry.key),
+              'v': mapIfNeeded(entry.value),
+            },
+        ];
+
+      case Iterable():
+        return [
+          for (var e in obj) mapIfNeeded(e),
+        ];
+    }
+
+    return obj;
+  }
 }

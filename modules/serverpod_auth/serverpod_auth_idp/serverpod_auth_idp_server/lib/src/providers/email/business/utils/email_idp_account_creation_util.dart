@@ -52,7 +52,6 @@ class EmailIdpAccountCreationUtil {
   /// subclasses:
   /// - [EmailAccountRequestInvalidEmailException] if the email address is not valid.
   /// - [EmailAccountAlreadyRegisteredException] if the email address is already registered.
-  /// - [EmailAccountRequestAlreadyExistsException] if an account request already exists for the email address.
   ///
   /// It is important that the caller does not leak the existence of the
   /// account request to the outside client.
@@ -89,19 +88,11 @@ class EmailIdpAccountCreationUtil {
       transaction: transaction,
     );
     if (pendingAccountRequest != null) {
-      if (pendingAccountRequest.createdAt.isBefore(
-        clock.now().subtract(
-          _config.registrationVerificationCodeLifetime,
-        ),
-      )) {
-        await EmailAccountRequest.db.deleteRow(
-          session,
-          pendingAccountRequest,
-          transaction: transaction,
-        );
-      } else {
-        throw EmailAccountRequestAlreadyExistsException();
-      }
+      await EmailAccountRequest.db.deleteRow(
+        session,
+        pendingAccountRequest,
+        transaction: transaction,
+      );
     }
 
     final challenge = await _challengeUtil.createChallenge(

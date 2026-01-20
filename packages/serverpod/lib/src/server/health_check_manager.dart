@@ -21,12 +21,38 @@ class HealthCheckManager {
   /// running in [ServerpodRole.maintenance] mode.
   final void Function() onCompleted;
 
+  /// The interval between health checks.
+  final Duration interval;
+
   bool _running = false;
   Timer? _timer;
   Completer<void>? _pendingHealthCheck;
 
+  DateTime? _lastHealthCheckTime;
+
   /// Creates a new [HealthCheckManager].
-  HealthCheckManager(this._pod, this.onCompleted);
+  HealthCheckManager(
+    this._pod,
+    this.onCompleted, {
+    this.interval = const Duration(minutes: 1),
+  }) {
+    if (interval < const Duration(seconds: 1)) {
+      throw ArgumentError('Interval must be at least 1 second.');
+    } else if (interval < const Duration(minutes: 1)) {
+      stderr.writeln(
+        'WARNING: Using a health check interval less than 1 minute can cause '
+        'excessive database activity and considerably reduce performance. '
+        'It is recommended to use a minimum interval of 1 minute.',
+      );
+    } else if (interval > const Duration(minutes: 5)) {
+      stderr.writeln(
+        'WARNING: Using a health check interval greater than 5 minutes in '
+        'servers with lower load can lead to the health check manager waking '
+        'the database unnecessarily. The recommended interval is between 1 and '
+        '5 minutes.',
+      );
+    }
+  }
 
   /// Starts the health check manager.
   Future<void> start() async {
@@ -76,6 +102,27 @@ class HealthCheckManager {
     }
   }
 
+  /// Whether database operations should performed during health checks.
+  ///
+  /// If the database was idle since the last health check, we skip database
+  /// operations to allow the database to sleep and reduce resource usage. In
+  /// maintenance mode, always perform health checks regardless of activity.
+  bool get _shouldPerformDatabaseOperations {
+    if (_pod.config.role == ServerpodRole.maintenance) return true;
+
+    final lastDatabaseOperationTime = _pod.lastDatabaseOperationTime;
+    final lastHealthCheckTime = _lastHealthCheckTime;
+
+    // No database operations have been performed yet after startup.
+    if (lastDatabaseOperationTime == null) return false;
+
+    // First health check after the first database operation.
+    if (lastHealthCheckTime == null) return true;
+
+    // Database operations have been performed since the last health check.
+    return lastDatabaseOperationTime.compareTo(lastHealthCheckTime) > 0;
+  }
+
   Future<void> _innerPerformHealthCheck() async {
     if (_pod.config.role == ServerpodRole.maintenance) {
       stdout.writeln('Performing health checks.');
@@ -84,28 +131,38 @@ class HealthCheckManager {
     var session = _pod.internalSession;
     var numHealthChecks = 0;
 
-    try {
-      var result = await performHealthChecks(_pod);
-      numHealthChecks = result.metrics.length;
+    if (_shouldPerformDatabaseOperations) {
+      try {
+        var result = await performHealthChecks(_pod, granularity: interval);
+        numHealthChecks = result.metrics.length;
 
-      for (var metric in result.metrics) {
-        await ServerHealthMetric.db.insertRow(session, metric);
+        for (var metric in result.metrics) {
+          await ServerHealthMetric.db.insertRow(session, metric);
+        }
+
+        for (var connectionInfo in result.connectionInfos) {
+          await ServerHealthConnectionInfo.db.insertRow(
+            session,
+            connectionInfo,
+          );
+        }
+      } catch (e) {
+        // ISSUE(https://github.com/serverpod/serverpod/issues/4123):
+        // Sometimes serverpod attempts to write duplicate health checks for the
+        // same time.
       }
 
-      for (var connectionInfo in result.connectionInfos) {
-        await ServerHealthConnectionInfo.db.insertRow(session, connectionInfo);
-      }
-    } catch (e) {
-      // ISSUE(https://github.com/serverpod/serverpod/issues/4123):
-      // Sometimes serverpod attempts to write duplicate health checks for the
-      // same time.
+      await _pod.reloadRuntimeSettings();
+
+      await _cleanUpClosedSessions();
+
+      await _optimizeHealthCheckData(numHealthChecks);
     }
 
-    await _pod.reloadRuntimeSettings();
-
-    await _cleanUpClosedSessions();
-
-    await _optimizeHealthCheckData(numHealthChecks);
+    // NOTE: Updating the last health check time must be done after all database
+    // operations have been performed. Otherwise, the health check manager will
+    // always perform health checks, even if the server is idle.
+    _lastHealthCheckTime = DateTime.now().toUtc();
 
     // If we are running in maintenance mode, we don't want to schedule the next
     // health check, as it should only be run once.
@@ -121,7 +178,7 @@ class HealthCheckManager {
     if (!_running) {
       return;
     }
-    _timer = Timer(_timeUntilNextMinute(), _performHealthCheck);
+    _timer = Timer(_timeUntilNextInterval(), _performHealthCheck);
   }
 
   Future<void> _cleanUpClosedSessions() async {
@@ -401,15 +458,9 @@ class HealthCheckManager {
       ),
     );
   }
-}
 
-Duration _timeUntilNextMinute() {
-  // Add a second to make sure we don't end up on the same minute.
-  var now = DateTime.now().toUtc().add(const Duration(seconds: 2));
-  var next = DateTime.utc(now.year, now.month, now.day, now.hour, now.minute)
-      .add(
-        const Duration(minutes: 1),
-      );
-
-  return next.difference(now);
+  Duration _timeUntilNextInterval() {
+    var now = DateTime.now().toUtc();
+    return now.truncateTo(interval).add(interval).difference(now);
+  }
 }

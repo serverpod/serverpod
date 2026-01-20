@@ -34,11 +34,11 @@ abstract class IntDefaultMix implements _i1.SerializableModel {
     return IntDefaultMix(
       id: jsonSerialization['id'] as int?,
       intDefaultAndDefaultModel:
-          jsonSerialization['intDefaultAndDefaultModel'] as int,
+          jsonSerialization['intDefaultAndDefaultModel'] as int?,
       intDefaultAndDefaultPersist:
-          jsonSerialization['intDefaultAndDefaultPersist'] as int,
+          jsonSerialization['intDefaultAndDefaultPersist'] as int?,
       intDefaultModelAndDefaultPersist:
-          jsonSerialization['intDefaultModelAndDefaultPersist'] as int,
+          jsonSerialization['intDefaultModelAndDefaultPersist'] as int?,
     );
   }
 

@@ -38,15 +38,24 @@ abstract class BigIntDefaultMix
   factory BigIntDefaultMix.fromJson(Map<String, dynamic> jsonSerialization) {
     return BigIntDefaultMix(
       id: jsonSerialization['id'] as int?,
-      bigIntDefaultAndDefaultModel: _i1.BigIntJsonExtension.fromJson(
-        jsonSerialization['bigIntDefaultAndDefaultModel'],
-      ),
-      bigIntDefaultAndDefaultPersist: _i1.BigIntJsonExtension.fromJson(
-        jsonSerialization['bigIntDefaultAndDefaultPersist'],
-      ),
-      bigIntDefaultModelAndDefaultPersist: _i1.BigIntJsonExtension.fromJson(
-        jsonSerialization['bigIntDefaultModelAndDefaultPersist'],
-      ),
+      bigIntDefaultAndDefaultModel:
+          jsonSerialization['bigIntDefaultAndDefaultModel'] == null
+          ? null
+          : _i1.BigIntJsonExtension.fromJson(
+              jsonSerialization['bigIntDefaultAndDefaultModel'],
+            ),
+      bigIntDefaultAndDefaultPersist:
+          jsonSerialization['bigIntDefaultAndDefaultPersist'] == null
+          ? null
+          : _i1.BigIntJsonExtension.fromJson(
+              jsonSerialization['bigIntDefaultAndDefaultPersist'],
+            ),
+      bigIntDefaultModelAndDefaultPersist:
+          jsonSerialization['bigIntDefaultModelAndDefaultPersist'] == null
+          ? null
+          : _i1.BigIntJsonExtension.fromJson(
+              jsonSerialization['bigIntDefaultModelAndDefaultPersist'],
+            ),
     );
   }
 

@@ -52,6 +52,46 @@ void main() async {
           );
         },
       );
+
+      test(
+        'when an object is created from JSON with missing "stringDefault" key, then the field should have the default value.',
+        () {
+          var object = StringDefault.fromJson({});
+          expect(
+            object.stringDefault,
+            equals('This is a default value'),
+          );
+        },
+      );
+
+      test(
+        'when an object is created from JSON with missing "stringDefaultNull" key, then the field should have the default value.',
+        () {
+          var object = StringDefault.fromJson({});
+          expect(
+            object.stringDefaultNull,
+            equals('This is a default null value'),
+          );
+        },
+      );
+
+      test(
+        'when an object is created from JSON with explicit values, then the fields should match the provided values.',
+        () {
+          var object = StringDefault.fromJson({
+            'stringDefault': 'Custom value',
+            'stringDefaultNull': 'Custom null value',
+          });
+          expect(
+            object.stringDefault,
+            equals('Custom value'),
+          );
+          expect(
+            object.stringDefaultNull,
+            equals('Custom null value'),
+          );
+        },
+      );
     },
   );
 }

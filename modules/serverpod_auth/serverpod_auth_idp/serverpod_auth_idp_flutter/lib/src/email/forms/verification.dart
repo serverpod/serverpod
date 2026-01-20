@@ -15,9 +15,8 @@ export '../../common/text_formatters.dart' show LetterCase;
 
 /// Pattern with the default server-side characters in the verification code.
 ///
-/// The code uses a slightly reduced alphabet from [a-z0-9] to exclude easily
-/// confused characters (e.g. 0, O, l).
-final _defaultAllowedCharacters = RegExp(r'[abcdefghikmnpqrstuvwxyz123456789]');
+/// The default is to generate codes with digits from [1-9].
+final _defaultAllowedCharacters = RegExp(r'[1-9]');
 
 /// Email verification form widget.
 ///
@@ -162,7 +161,7 @@ class VerificationCodeConfig {
   /// Creates a [VerificationCodeConfig] with the given parameters.
   const VerificationCodeConfig({
     this.length = 8,
-    this.keyboardType = TextInputType.text,
+    this.keyboardType = TextInputType.number,
     this.allowedLetterCase = LetterCase.lowercase,
     this.resendCountdownDuration = const Duration(minutes: 1),
     this.allowedCharactersPattern,

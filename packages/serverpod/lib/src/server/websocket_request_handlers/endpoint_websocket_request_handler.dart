@@ -74,6 +74,14 @@ abstract class EndpointWebsocketRequestHandler {
               );
             } else if (command == 'auth') {
               var authKey = args['key'] as String?;
+              if (server.serverpod.config.validateHeaders &&
+                  authKey != null &&
+                  !isValidAuthHeaderValue(authKey)) {
+                server.serverpod.logVerbose(
+                  'Invalid authentication header format for auth command',
+                );
+                continue;
+              }
               await session.updateAuthenticationKey(
                 unwrapAuthHeaderValue(authKey),
               );

@@ -1,8 +1,9 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
-class FutureCallsEndpoint extends Endpoint {
+class TestFutureCallsEndpoint extends Endpoint {
   Future<void> makeFutureCall(Session session, SimpleData? data) async {
+    // ignore: deprecated_member_use
     await session.serverpod.futureCallWithDelay(
       'testCall',
       data,
@@ -14,6 +15,7 @@ class FutureCallsEndpoint extends Endpoint {
     Session session,
     SimpleData? data,
   ) async {
+    // ignore: deprecated_member_use
     await session.serverpod.futureCallWithDelay(
       'testExceptionCall',
       data,

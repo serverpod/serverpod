@@ -38,12 +38,18 @@ abstract class DateTimeDefaultModel implements _i1.SerializableModel {
   ) {
     return DateTimeDefaultModel(
       id: jsonSerialization['id'] as int?,
-      dateTimeDefaultModelNow: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['dateTimeDefaultModelNow'],
-      ),
-      dateTimeDefaultModelStr: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['dateTimeDefaultModelStr'],
-      ),
+      dateTimeDefaultModelNow:
+          jsonSerialization['dateTimeDefaultModelNow'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['dateTimeDefaultModelNow'],
+            ),
+      dateTimeDefaultModelStr:
+          jsonSerialization['dateTimeDefaultModelStr'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['dateTimeDefaultModelStr'],
+            ),
       dateTimeDefaultModelStrNull:
           jsonSerialization['dateTimeDefaultModelStrNull'] == null
           ? null

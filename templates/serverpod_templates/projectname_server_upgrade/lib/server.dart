@@ -46,7 +46,7 @@ void run(List<String> args) async {
   // the flutter app.
   pod.webServer.addRoute(
     AppConfigRoute(apiConfig: pod.config.apiServer),
-    '/app/assets/config.json',
+    '/app/assets/assets/config.json',
   );
 
   // Checks if the flutter web app has been built and serves it if it has.
