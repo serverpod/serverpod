@@ -1,12 +1,12 @@
 {
   "__className__": "serverpod.DatabaseDefinition",
-  "moduleName": "serverpod_auth_test",
+  "moduleName": "serverpod_auth_migration",
   "tables": [
     {
       "__className__": "serverpod.TableDefinition",
-      "name": "challenge_tracker",
-      "dartName": "ChallengeTracker",
-      "module": "serverpod_auth_test",
+      "name": "serverpod_auth_migration_migrated_user",
+      "dartName": "MigratedUser",
+      "module": "serverpod_auth_migration",
       "schema": "public",
       "columns": [
         {
@@ -14,122 +14,44 @@
           "name": "id",
           "columnType": 6,
           "isNullable": false,
-          "columnDefault": "nextval('challenge_tracker_id_seq'::regclass)",
+          "columnDefault": "nextval('serverpod_auth_migration_migrated_user_id_seq'::regclass)",
           "dartType": "int?"
         },
         {
           "__className__": "serverpod.ColumnDefinition",
-          "name": "secretChallengeId",
+          "name": "oldUserId",
+          "columnType": 6,
+          "isNullable": false,
+          "dartType": "int"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "newAuthUserId",
           "columnType": 7,
           "isNullable": false,
           "dartType": "UuidValue"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "trackedAt",
-          "columnType": 4,
-          "isNullable": false,
-          "dartType": "DateTime"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "notes",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
         }
       ],
       "foreignKeys": [
         {
           "__className__": "serverpod.ForeignKeyDefinition",
-          "constraintName": "challenge_tracker_fk_0",
+          "constraintName": "serverpod_auth_migration_migrated_user_fk_0",
           "columns": [
-            "secretChallengeId"
+            "oldUserId"
           ],
-          "referenceTable": "serverpod_auth_idp_secret_challenge",
+          "referenceTable": "serverpod_user_info",
           "referenceTableSchema": "public",
           "referenceColumns": [
             "id"
           ],
           "onUpdate": 3,
           "onDelete": 4
-        }
-      ],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "challenge_tracker_pkey",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "id"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": true
         },
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "secret_challenge_id_unique_idx",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "secretChallengeId"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
-      "name": "user_data",
-      "dartName": "UserData",
-      "module": "serverpod_auth_test",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "nextval('user_data_id_seq'::regclass)",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "authUserId",
-          "columnType": 7,
-          "isNullable": false,
-          "dartType": "UuidValue"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "displayName",
-          "columnType": 0,
-          "isNullable": false,
-          "dartType": "String"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "bio",
-          "columnType": 0,
-          "isNullable": true,
-          "dartType": "String?"
-        }
-      ],
-      "foreignKeys": [
         {
           "__className__": "serverpod.ForeignKeyDefinition",
-          "constraintName": "user_data_fk_0",
+          "constraintName": "serverpod_auth_migration_migrated_user_fk_1",
           "columns": [
-            "authUserId"
+            "newAuthUserId"
           ],
           "referenceTable": "serverpod_auth_core_user",
           "referenceTableSchema": "public",
@@ -143,7 +65,7 @@
       "indexes": [
         {
           "__className__": "serverpod.IndexDefinition",
-          "indexName": "user_data_pkey",
+          "indexName": "serverpod_auth_migration_migrated_user_pkey",
           "elements": [
             {
               "__className__": "serverpod.IndexElementDefinition",
@@ -157,12 +79,26 @@
         },
         {
           "__className__": "serverpod.IndexDefinition",
-          "indexName": "auth_user_id_unique_idx",
+          "indexName": "serverpod_auth_migration_migrated_user_old",
           "elements": [
             {
               "__className__": "serverpod.IndexElementDefinition",
               "type": 0,
-              "definition": "authUserId"
+              "definition": "oldUserId"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "serverpod_auth_migration_migrated_user_new",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "newAuthUserId"
             }
           ],
           "type": "btree",
@@ -3330,112 +3266,6 @@
     },
     {
       "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_auth_migration_migrated_user",
-      "dartName": "MigratedUser",
-      "module": "serverpod_auth_migration",
-      "schema": "public",
-      "columns": [
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "id",
-          "columnType": 6,
-          "isNullable": false,
-          "columnDefault": "nextval('serverpod_auth_migration_migrated_user_id_seq'::regclass)",
-          "dartType": "int?"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "oldUserId",
-          "columnType": 6,
-          "isNullable": false,
-          "dartType": "int"
-        },
-        {
-          "__className__": "serverpod.ColumnDefinition",
-          "name": "newAuthUserId",
-          "columnType": 7,
-          "isNullable": false,
-          "dartType": "UuidValue"
-        }
-      ],
-      "foreignKeys": [
-        {
-          "__className__": "serverpod.ForeignKeyDefinition",
-          "constraintName": "serverpod_auth_migration_migrated_user_fk_0",
-          "columns": [
-            "oldUserId"
-          ],
-          "referenceTable": "serverpod_user_info",
-          "referenceTableSchema": "public",
-          "referenceColumns": [
-            "id"
-          ],
-          "onUpdate": 3,
-          "onDelete": 4
-        },
-        {
-          "__className__": "serverpod.ForeignKeyDefinition",
-          "constraintName": "serverpod_auth_migration_migrated_user_fk_1",
-          "columns": [
-            "newAuthUserId"
-          ],
-          "referenceTable": "serverpod_auth_core_user",
-          "referenceTableSchema": "public",
-          "referenceColumns": [
-            "id"
-          ],
-          "onUpdate": 3,
-          "onDelete": 4
-        }
-      ],
-      "indexes": [
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_auth_migration_migrated_user_pkey",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "id"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": true
-        },
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_auth_migration_migrated_user_old",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "oldUserId"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        },
-        {
-          "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_auth_migration_migrated_user_new",
-          "elements": [
-            {
-              "__className__": "serverpod.IndexElementDefinition",
-              "type": 0,
-              "definition": "newAuthUserId"
-            }
-          ],
-          "type": "btree",
-          "isUnique": true,
-          "isPrimary": false
-        }
-      ],
-      "managed": true
-    },
-    {
-      "__className__": "serverpod.TableDefinition",
       "name": "serverpod_auth_key",
       "dartName": "AuthKey",
       "module": "serverpod_auth",
@@ -4073,8 +3903,8 @@
   "installedModules": [
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
-      "module": "serverpod_auth_test",
-      "version": "20260121104222834"
+      "module": "serverpod_auth_migration",
+      "version": "20260121144401174"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
@@ -4084,7 +3914,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod_auth_bridge",
-      "version": "20260121104150631"
+      "version": "20260121144354861"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
@@ -4094,12 +3924,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod_auth_idp",
-      "version": "20260121104031891"
-    },
-    {
-      "__className__": "serverpod.DatabaseMigrationVersion",
-      "module": "serverpod_auth_migration",
-      "version": "20260121104155995"
+      "version": "20260121135248082"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",

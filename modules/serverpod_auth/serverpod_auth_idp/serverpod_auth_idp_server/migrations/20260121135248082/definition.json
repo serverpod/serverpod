@@ -2929,7 +2929,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod_auth_idp",
-      "version": "20260121104031891"
+      "version": "20260121135248082"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",

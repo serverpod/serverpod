@@ -23,19 +23,6 @@ typedef GitHubSignInResult = ({
   String redirectUri,
 });
 
-/// Result of the GitHub OAuth sign-in flow.
-///
-/// Contains the authorization code and PKCE code verifier that must be sent
-/// to your backend endpoint to complete authentication.
-typedef GitHubSignInResult = ({
-  /// The authorization code received from GitHub after user authorization.
-  String code,
-
-  /// The PKCE code verifier that was used to generate the code challenge.
-  /// Must be sent to the backend along with the code for token exchange.
-  String codeVerifier,
-});
-
 /// Service to manage GitHub OAuth sign-in flow.
 ///
 /// Ensure it is only initialized once throughout the app lifetime.
