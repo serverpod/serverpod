@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'oauth2_exception.dart';
-import 'oauth2_pkce_config.dart';
+import 'oauth2_pkce_server_config.dart';
 
 /// Generic utility class for OAuth2 token exchange with optional PKCE support.
 ///
@@ -24,7 +24,7 @@ import 'oauth2_pkce_config.dart';
 ///
 /// ## Usage
 ///
-/// Create a provider-specific configuration that implements [OAuth2PkceConfig]
+/// Create a provider-specific configuration that implements [OAuth2PkceServerConfig]
 /// and pass it to the constructor:
 ///
 /// ```dart
@@ -37,7 +37,7 @@ import 'oauth2_pkce_config.dart';
 /// ```
 class OAuth2PkceUtil {
   /// The provider-specific configuration for OAuth2 PKCE.
-  final OAuth2PkceConfig config;
+  final OAuth2PkceServerConfig config;
 
   /// Creates a new [OAuth2PkceUtil] with the given configuration.
   OAuth2PkceUtil({required this.config});
@@ -60,7 +60,7 @@ class OAuth2PkceUtil {
   ///
   /// Returns the access token string on success.
   ///
-  /// Throws an exception created by [OAuth2PkceConfig.createException] if:
+  /// Throws an exception created by [OAuth2PkceServerConfig.createException] if:
   /// - The HTTP request fails (non-200 status code)
   /// - The response body cannot be parsed as JSON
   /// - The provider returns an error response

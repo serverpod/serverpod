@@ -15,7 +15,7 @@ export 'src/apple/apple_sign_in_button.dart';
 export 'src/apple/apple_sign_in_service.dart';
 export 'src/apple/apple_sign_in_style.dart';
 export 'src/apple/apple_sign_in_widget.dart';
-export 'src/common/oauth2_pkce/oauth2_pkce_config.dart';
+export 'src/common/oauth2_pkce/oauth2_pkce_client_config.dart';
 export 'src/common/oauth2_pkce/oauth2_pkce_result.dart';
 export 'src/common/oauth2_pkce/oauth2_pkce_util.dart';
 export 'src/email/email_auth_controller.dart';

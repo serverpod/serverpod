@@ -26,12 +26,14 @@ typedef GetExtraGitHubInfoCallback =
 
 /// Configuration for the GitHub identity provider.
 ///
-/// This class implements both [IdentityProviderBuilder] and [OAuth2PkceConfig]
+/// This class implements both [IdentityProviderBuilder] and [OAuth2PkceServerConfig]
 /// for generic OAuth2 PKCE token exchange.
-class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp>
-    implements OAuth2PkceConfig {
+class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
   /// The OAuth credentials used for GitHub sign-in.
   final GitHubOAuthCredentials oauthCredentials;
+
+  /// OAuth2 PKCE server config for GitHub.
+  late final OAuth2PkceServerConfig oauth2Config;
 
   /// Validation function for GitHub account details.
   ///
@@ -68,11 +70,17 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp>
   final GetExtraGitHubInfoCallback? getExtraGitHubInfoCallback;
 
   /// Creates a new instance of [GitHubIdpConfig].
-  const GitHubIdpConfig({
+  GitHubIdpConfig({
     required this.oauthCredentials,
     this.githubAccountDetailsValidation = validateGitHubAccountDetails,
     this.getExtraGitHubInfoCallback,
-  });
+  }) : oauth2Config = OAuth2PkceServerConfig(
+         tokenEndpointUrl: Uri.https('github.com', '/login/oauth/access_token'),
+         clientId: oauthCredentials.clientId,
+         clientSecret: oauthCredentials.clientSecret,
+         credentialsLocation: OAuth2CredentialsLocation.body,
+         parseAccessToken: parseAccessToken,
+       );
 
   /// Default validation function for extracting additional GitHub account details.
   ///
@@ -87,39 +95,8 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp>
     }
   }
 
-  // OAuth2PkceConfig implementation
-
-  @override
-  Uri get tokenEndpointUrl =>
-      Uri.https('github.com', '/login/oauth/access_token');
-
-  @override
-  String get clientId => oauthCredentials.clientId;
-
-  @override
-  String get clientSecret => oauthCredentials.clientSecret;
-
-  @override
-  OAuth2CredentialsLocation get credentialsLocation =>
-      OAuth2CredentialsLocation.body;
-
-  @override
-  String get clientIdKey => 'client_id';
-
-  @override
-  String get clientSecretKey => 'client_secret';
-
-  @override
-  Map<String, String> get tokenRequestHeaders => const {
-    'Accept': 'application/json',
-    'Content-Type': 'application/x-www-form-urlencoded',
-  };
-
-  @override
-  Map<String, String> get tokenRequestParams => const {};
-
-  @override
-  String parseAccessToken(final Map<String, dynamic> responseBody) {
+  /// Default GitHub access token parser for OAuth2PkceServerConfig.
+  static String parseAccessToken(final Map<String, dynamic> responseBody) {
     final error = responseBody['error'] as String?;
     if (error != null) {
       final errorDescription = responseBody['error_description'] as String?;
@@ -128,7 +105,6 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp>
         errorDescription: errorDescription,
       );
     }
-
     final accessToken = responseBody['access_token'] as String?;
     if (accessToken == null) {
       throw OAuth2Exception(
@@ -136,11 +112,8 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp>
         errorDescription: 'No access token in GitHub response',
       );
     }
-
     return accessToken;
   }
-
-  // Serverpod IDP implementation
 
   @override
   GitHubIdp build({
