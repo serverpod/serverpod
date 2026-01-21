@@ -2,9 +2,8 @@ import 'dart:async';
 
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
-import '../common/oauth2_pkce/oauth2_pkce_result.dart';
+import '../common/oauth2_pkce/oauth2_pkce_config.dart';
 import '../common/oauth2_pkce/oauth2_pkce_util.dart';
-import 'github_oauth2_provider_config.dart';
 
 /// Result of the GitHub OAuth sign-in flow.
 ///
@@ -54,10 +53,7 @@ class GitHubSignInService {
 
   GitHubSignInService._internal();
 
-  bool _initialized = false;
-  String? _clientId;
-  String? _redirectUri;
-  String? _callbackUrlScheme;
+  OAuth2PkceProviderClientConfig? _config;
   bool? _useWebview;
 
   /// Ensures that GitHub Sign-In is initialized.
@@ -81,43 +77,44 @@ class GitHubSignInService {
     String? callbackUrlScheme,
     bool? useWebview,
   }) async {
-    if (_initialized) return;
+    if (_config != null) return;
 
-    _clientId = clientId;
-    _redirectUri = redirectUri;
-    _callbackUrlScheme = callbackUrlScheme ?? Uri.parse(redirectUri).scheme;
+    _config = OAuth2PkceProviderClientConfig(
+      authorizationEndpoint: Uri.https(
+        'github.com',
+        '/login/oauth/authorize',
+      ),
+      clientId: clientId,
+      redirectUri: redirectUri,
+      callbackUrlScheme: callbackUrlScheme ?? Uri.parse(redirectUri).scheme,
+    );
     _useWebview = useWebview;
-    _initialized = true;
   }
 
-  /// Initiates the GitHub OAuth sign-in flow using PKCE.
+  /// Starts the GitHub OAuth sign-in flow using PKCE.
   ///
-  /// Returns a [GitHubSignInResult] containing the authorization code and PKCE
-  /// code verifier. Both values must be sent to your backend endpoint to
-  /// complete authentication.
-  ///
-  /// The [scopes] parameter allows requesting additional GitHub permissions.
-  /// By default, only basic profile information is requested.
+  /// Returns authorization code and PKCE code verifier for backend authentication.
+  /// [scopes] allows requesting extra GitHub permissions (optional).
   Future<GitHubSignInResult> signIn({
-    List<String> scopes = const [],
+    List<String>? scopes,
   }) async {
+    if (_config == null) {
+      throw StateError(
+        'GitHubSignInService is not initialized. Call ensureInitialized() first.',
+      );
+    }
+
     final oauth2Util = OAuth2PkceUtil(
-      config: GitHubOAuth2ProviderConfig(
-        clientId: _clientId!,
-        redirectUri: _redirectUri!,
-        callbackUrlScheme: _callbackUrlScheme!,
-      ),
+      config: _config!,
       useWebview: _useWebview,
     );
 
-    final OAuth2PkceResult result = await oauth2Util.authorize(
-      scopes: scopes.isNotEmpty ? scopes : null,
-    );
+    final result = await oauth2Util.authorize(scopes: scopes);
 
     return (
       code: result.code,
       codeVerifier: result.codeVerifier!,
-      redirectUri: _redirectUri!,
+      redirectUri: _config!.redirectUri,
     );
   }
 }

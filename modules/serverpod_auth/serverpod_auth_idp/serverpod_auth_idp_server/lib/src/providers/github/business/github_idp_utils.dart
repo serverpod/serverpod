@@ -266,7 +266,6 @@ class GitHubIdpUtils {
   }
 }
 
-// Private extension for Session logging and throwing.
 extension on Session {
   Never logAndThrow(final String message) {
     log(message, level: LogLevel.debug);

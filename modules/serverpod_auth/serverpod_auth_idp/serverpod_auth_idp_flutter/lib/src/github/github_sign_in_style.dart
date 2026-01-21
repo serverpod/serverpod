@@ -99,13 +99,11 @@ class GitHubSignInStyle {
     required GitHubButtonStyle style,
     required double width,
   }) {
-    // Determine button size based on configuration
     final buttonSize = switch (size) {
       GitHubButtonSize.large => const Size(0, 40),
       GitHubButtonSize.medium => const Size(0, 32),
     };
 
-    // Determine colors based on style
     final foregroundColor = switch (style) {
       GitHubButtonStyle.black => Colors.white,
       GitHubButtonStyle.white => const Color(0xFF24292F), // GitHub dark color
@@ -116,7 +114,6 @@ class GitHubSignInStyle {
       GitHubButtonStyle.white => Colors.white,
     };
 
-    // Determine border radius based on shape
     final borderRadius = switch (shape) {
       GitHubButtonShape.rectangular => BorderRadius.zero,
       GitHubButtonShape.pill => BorderRadius.circular(buttonSize.height / 2),

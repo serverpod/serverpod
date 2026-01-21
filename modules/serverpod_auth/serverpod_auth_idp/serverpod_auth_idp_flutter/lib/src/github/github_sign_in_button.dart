@@ -137,7 +137,6 @@ class GitHubSignInButton extends StatelessWidget {
       );
     }
 
-    // Left alignment
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(

@@ -111,7 +111,6 @@ void main() {
           expect(githubAccount.userIdentifier, equals('54321'));
           expect(githubAccount.email, equals('newuser@example.com'));
 
-          // Verify it was persisted
           final foundAccount = await GitHubAccount.db.findFirstRow(
             session,
             where: (final t) => t.userIdentifier.equals('54321'),

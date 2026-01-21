@@ -58,7 +58,7 @@ import 'oauth2_pkce_result.dart';
 /// ```
 class OAuth2PkceUtil {
   /// The provider-specific configuration.
-  final OAuth2PkceProviderConfig config;
+  final OAuth2PkceProviderClientConfig config;
 
   /// Controls the authentication method on Linux and Windows.
   ///
@@ -87,9 +87,9 @@ class OAuth2PkceUtil {
   /// 7. Extracts and returns authorization code with code verifier
   ///
   /// **Parameters:**
-  /// - [scopes]: Permissions to request. If null, uses [OAuth2PkceProviderConfig.defaultScopes]
+  /// - [scopes]: Permissions to request. If null, uses [OAuth2PkceProviderClientConfig.defaultScopes]
   /// - [authCodeParams]: Additional dynamic parameters to include in the authorization
-  ///   request. These are merged with [OAuth2PkceProviderConfig.additionalAuthParams],
+  ///   request. These are merged with [OAuth2PkceProviderClientConfig.additionalAuthParams],
   ///   with these dynamic params taking precedence if keys conflict.
   ///
   /// **Returns:**
@@ -105,14 +105,12 @@ class OAuth2PkceUtil {
     List<String>? scopes,
     Map<String, String>? authCodeParams,
   }) async {
-    // Generate random state and PKCE parameters
     final state = config.enableState ? _generateState() : null;
     final codeVerifier = config.enablePKCE ? _generateCodeVerifier() : null;
     final codeChallenge = codeVerifier != null
         ? _generateCodeChallenge(codeVerifier)
         : null;
 
-    // Build the authorization URL
     final authorizationUrl = _buildAuthorizationUrl(
       state: state,
       codeChallenge: codeChallenge,
@@ -121,18 +119,15 @@ class OAuth2PkceUtil {
     );
 
     try {
-      // Launch the authorization URL
       final result = await FlutterWebAuth2.authenticate(
         url: authorizationUrl.toString(),
         callbackUrlScheme: config.callbackUrlScheme,
         options: FlutterWebAuth2Options(useWebview: useWebview),
       );
 
-      // Parse the callback URI
       final uri = Uri.parse(result);
       final queryParams = uri.queryParameters;
 
-      // Validate state parameter (CSRF protection)
       if (config.enableState) {
         final returnedState = queryParams['state'];
         if (returnedState == null || returnedState != state) {
@@ -142,7 +137,6 @@ class OAuth2PkceUtil {
         }
       }
 
-      // Extract authorization code
       final code = queryParams['code'];
       if (code == null || code.isEmpty) {
         final error = queryParams['error'];
@@ -171,33 +165,29 @@ class OAuth2PkceUtil {
   Uri _buildAuthorizationUrl({
     required String? state,
     required String? codeChallenge,
-    required List<String> scopes,
+    required List<String>? scopes,
     Map<String, String>? authCodeParams,
   }) {
     final queryParameters = {
       'client_id': config.clientId,
       'redirect_uri': config.redirectUri,
       'response_type': 'code',
-      ...config.additionalAuthParams,
+      if (config.additionalAuthParams != null) ...config.additionalAuthParams!,
     };
 
-    // Add PKCE parameters if enabled
     if (codeChallenge != null) {
       queryParameters['code_challenge'] = codeChallenge;
       queryParameters['code_challenge_method'] = 'S256';
     }
 
-    // Add state parameter if enabled
     if (config.enableState && state != null && state.isNotEmpty) {
       queryParameters['state'] = state;
     }
 
-    // Add scope only if specified
-    if (scopes.isNotEmpty) {
+    if (scopes != null && scopes.isNotEmpty) {
       queryParameters['scope'] = scopes.join(config.scopeSeparator);
     }
 
-    // Add dynamic authorization code parameters (override static ones if conflicts)
     if (authCodeParams != null) {
       queryParameters.addAll(authCodeParams);
     }
