@@ -6,7 +6,6 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/github.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
 
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';

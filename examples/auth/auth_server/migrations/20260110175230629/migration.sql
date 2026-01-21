@@ -32,22 +32,17 @@ volatile;
 --
 -- ACTION CREATE TABLE
 --
-CREATE TABLE "serverpod_auth_idp_github_account" (
+CREATE TABLE "serverpod_auth_idp_anonymous_account" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
     "authUserId" uuid NOT NULL,
-    "userIdentifier" text NOT NULL,
-    "email" text,
-    "created" timestamp without time zone NOT NULL
+    "createdAt" timestamp without time zone NOT NULL
 );
-
--- Indexes
-CREATE UNIQUE INDEX "serverpod_auth_github_account_user_identifier" ON "serverpod_auth_idp_github_account" USING btree ("userIdentifier");
 
 --
 -- ACTION CREATE FOREIGN KEY
 --
-ALTER TABLE ONLY "serverpod_auth_idp_github_account"
-    ADD CONSTRAINT "serverpod_auth_idp_github_account_fk_0"
+ALTER TABLE ONLY "serverpod_auth_idp_anonymous_account"
+    ADD CONSTRAINT "serverpod_auth_idp_anonymous_account_fk_0"
     FOREIGN KEY("authUserId")
     REFERENCES "serverpod_auth_core_user"("id")
     ON DELETE CASCADE
@@ -55,12 +50,12 @@ ALTER TABLE ONLY "serverpod_auth_idp_github_account"
 
 
 --
--- MIGRATION VERSION FOR serverpod_auth_idp
+-- MIGRATION VERSION FOR auth
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_idp', '20260121104031891', now())
+    VALUES ('auth', '20260110175230629', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260121104031891', "timestamp" = now();
+    DO UPDATE SET "version" = '20260110175230629', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -69,6 +64,14 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
     VALUES ('serverpod', '20251208110333922-v3-0-0', now())
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '20251208110333922-v3-0-0', "timestamp" = now();
+
+--
+-- MIGRATION VERSION FOR serverpod_auth_idp
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth_idp', '20260110175038528', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20260110175038528', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_core
