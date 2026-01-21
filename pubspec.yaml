@@ -12,4 +12,3 @@ serverpod_cli:
     ignore_packages:
       - google_sign_in
       - sign_in_with_apple
-      - flutter_web_auth_2
