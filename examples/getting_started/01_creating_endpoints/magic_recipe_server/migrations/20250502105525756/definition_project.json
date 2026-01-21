@@ -1,0 +1,11 @@
+{
+  "moduleName": "magic_recipe",
+  "tables": [],
+  "installedModules": [
+    {
+      "module": "serverpod",
+      "version": "20240516151843329"
+    }
+  ],
+  "migrationApiVersion": 1
+}
