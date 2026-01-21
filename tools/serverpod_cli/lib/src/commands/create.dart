@@ -1,5 +1,6 @@
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
+import 'package:serverpod_cli/src/analytics/analytics_helper.dart';
 import 'package:serverpod_cli/src/create/create.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
@@ -98,38 +99,71 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       GlobalOption.interactive,
     );
 
-    if (restrictedNames.contains(name) && !force) {
-      log.error(
-        'Are you sure you want to create a project named "$name"?\n'
-        'Use the --${CreateOption.force.option.argName} flag to force creation.',
-      );
-      throw ExitException.error();
+    // Build full command string for tracking
+    final fullCommandParts = ['serverpod', 'create', name];
+    if (commandConfig.value(CreateOption.mini)) {
+      fullCommandParts.add('--mini');
+    } else if (commandConfig.value(CreateOption.template) != ServerpodTemplateType.server) {
+      fullCommandParts.add('--template');
+      fullCommandParts.add(template.name);
     }
+    if (force) {
+      fullCommandParts.add('--force');
+    }
+    final fullCommand = fullCommandParts.join(' ');
 
-    // Make sure all necessary downloads are installed
-    if (!resourceManager.isTemplatesInstalled) {
-      try {
-        await resourceManager.installTemplates();
-      } catch (e) {
-        log.error('Failed to download templates.');
-        throw ExitException.error();
-      }
-
-      if (!resourceManager.isTemplatesInstalled) {
+    var success = false;
+    try {
+      if (restrictedNames.contains(name) && !force) {
         log.error(
-          'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.',
+          'Are you sure you want to create a project named "$name"?\n'
+          'Use the --${CreateOption.force.option.argName} flag to force creation.',
         );
         throw ExitException.error();
       }
-    }
 
-    if (!await performCreate(
-      name,
-      template,
-      force,
-      interactive: interactive,
-    )) {
-      throw ExitException.error();
+      // Make sure all necessary downloads are installed
+      if (!resourceManager.isTemplatesInstalled) {
+        try {
+          await resourceManager.installTemplates();
+        } catch (e) {
+          log.error('Failed to download templates.');
+          throw ExitException.error();
+        }
+
+        if (!resourceManager.isTemplatesInstalled) {
+          log.error(
+            'Could not download the required resources for Serverpod. Make sure that you are connected to the internet and that you are using the latest version of Serverpod.',
+          );
+          throw ExitException.error();
+        }
+      }
+
+      if (!await performCreate(
+        name,
+        template,
+        force,
+        interactive: interactive,
+      )) {
+        throw ExitException.error();
+      }
+      success = true;
+    } finally {
+      // Track the event
+      serverpodRunner.analytics.trackWithProperties(
+        event: 'cli:project_created',
+        properties: {
+          'full_command': fullCommand,
+          'command': 'create',
+          'project_name': name,
+          'template': template.name,
+          'template_used': template.name,
+          'force': force,
+          'mini_flag': commandConfig.value(CreateOption.mini),
+          'interactive': interactive ?? false,
+          'success': success,
+        },
+      );
     }
   }
 }

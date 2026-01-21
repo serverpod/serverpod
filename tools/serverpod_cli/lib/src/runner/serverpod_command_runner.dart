@@ -51,18 +51,23 @@ Future<void> _serverpodOnBeforeRunCommand(BetterCommandRunner runner) async {
 class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
   final bool _productionMode;
   final Version _cliVersion;
+  final Analytics _analytics;
+
+  Analytics get analytics => _analytics;
 
   ServerpodCommandRunner(
     super.executableName,
     super.description, {
     required bool productionMode,
     required Version cliVersion,
+    required Analytics analytics,
     super.messageOutput,
     super.onBeforeRunCommand,
     super.setLogLevel,
     super.onAnalyticsEvent,
   }) : _productionMode = productionMode,
        _cliVersion = cliVersion,
+       _analytics = analytics,
        super(globalOptions: GlobalOption.values);
 
   @override
@@ -98,9 +103,13 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
       ),
       setLogLevel: _configureLogLevel,
       onBeforeRunCommand: onBeforeRunCommand,
-      onAnalyticsEvent: (String event) => analytics.track(event: event),
+      onAnalyticsEvent: (String event) {
+        // Don't track generic events - we track custom events in each command
+        // This prevents duplicate "create", "generate", etc. events
+      },
       productionMode: productionMode,
       cliVersion: cliVersion,
+      analytics: analytics,
     );
   }
 

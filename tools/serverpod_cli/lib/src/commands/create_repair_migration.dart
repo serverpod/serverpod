@@ -4,6 +4,7 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/analytics_helper.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
@@ -75,88 +76,126 @@ class CreateRepairMigrationCommand
       CreateRepairMigrationOption.version,
     );
 
-    GeneratorConfig config;
+    // Build full command string for tracking
+    final fullCommandParts = ['serverpod', 'create-repair-migration'];
+    if (force) {
+      fullCommandParts.add('--force');
+    }
+    if (tag != null) {
+      fullCommandParts.add('--tag');
+      fullCommandParts.add(tag);
+    }
+    if (targetVersion != null) {
+      fullCommandParts.add('--version');
+      fullCommandParts.add(targetVersion);
+    }
+    if (mode != 'development') {
+      fullCommandParts.add('--mode');
+      fullCommandParts.add(mode);
+    }
+    final fullCommand = fullCommandParts.join(' ');
+
+    var success = false;
     try {
-      config = await GeneratorConfig.load(interactive: interactive);
-    } catch (_) {
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    if (!config.isFeatureEnabled(ServerpodFeature.database)) {
-      log.error(
-        'The database feature is not enabled in this project. '
-        'This command cannot be used.',
-      );
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    var serverDirectory = Directory(
-      path.joinAll(config.serverPackageDirectoryPathParts),
-    );
-
-    var projectName = await getProjectName(serverDirectory);
-    if (projectName == null) {
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    var generator = MigrationGenerator(
-      directory: serverDirectory,
-      projectName: projectName,
-    );
-
-    File? repairMigration;
-    await log.progress('Creating repair migration', () async {
+      GeneratorConfig config;
       try {
-        repairMigration = await generator.repairMigration(
-          tag: tag,
-          force: force,
-          runMode: mode,
-          targetMigrationVersion: targetVersion,
-        );
-      } on MigrationRepairTargetNotFoundException catch (e) {
-        if (e.versionsFound.isEmpty) {
-          log.error('Unable to find any migration versions.');
-        } else {
-          log.error(
-            'Unable to find the specified target migration "${e.targetName}".'
-            'Please select on of the available versions: ${e.versionsFound}.',
-          );
-        }
-      } on MigrationVersionLoadException catch (e) {
-        log.error(
-          'Unable to determine latest database definition due to a corrupted '
-          'migration. Please re-create or remove the migration version and try '
-          'again. Migration version: "${e.versionName}" for module '
-          '"${e.moduleName}".',
-        );
-        log.error(e.exception);
-      } on MigrationLiveDatabaseDefinitionException catch (e) {
-        log.error(
-          'Unable to fetch live database schema from server. '
-          'Make sure the server is running and is connected to the '
-          'database.',
-        );
-        log.error(e.exception);
-      } on MigrationRepairWriteException catch (e) {
-        log.error('Unable to write repair migration.');
-        log.error(e.exception);
+        config = await GeneratorConfig.load(interactive: interactive);
+      } catch (_) {
+        throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
       }
 
-      return repairMigration != null;
-    });
+      if (!config.isFeatureEnabled(ServerpodFeature.database)) {
+        log.error(
+          'The database feature is not enabled in this project. '
+          'This command cannot be used.',
+        );
+        throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+      }
 
-    var repairMigrationPath = repairMigration?.path;
-    if (repairMigration == null || repairMigrationPath == null) {
-      throw ExitException.error();
+      var serverDirectory = Directory(
+        path.joinAll(config.serverPackageDirectoryPathParts),
+      );
+
+      var projectName = await getProjectName(serverDirectory);
+      if (projectName == null) {
+        throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+      }
+
+      var generator = MigrationGenerator(
+        directory: serverDirectory,
+        projectName: projectName,
+      );
+
+      File? repairMigration;
+      await log.progress('Creating repair migration', () async {
+        try {
+          repairMigration = await generator.repairMigration(
+            tag: tag,
+            force: force,
+            runMode: mode,
+            targetMigrationVersion: targetVersion,
+          );
+        } on MigrationRepairTargetNotFoundException catch (e) {
+          if (e.versionsFound.isEmpty) {
+            log.error('Unable to find any migration versions.');
+          } else {
+            log.error(
+              'Unable to find the specified target migration "${e.targetName}".'
+              'Please select on of the available versions: ${e.versionsFound}.',
+            );
+          }
+        } on MigrationVersionLoadException catch (e) {
+          log.error(
+            'Unable to determine latest database definition due to a corrupted '
+            'migration. Please re-create or remove the migration version and try '
+            'again. Migration version: "${e.versionName}" for module '
+            '"${e.moduleName}".',
+          );
+          log.error(e.exception);
+        } on MigrationLiveDatabaseDefinitionException catch (e) {
+          log.error(
+            'Unable to fetch live database schema from server. '
+            'Make sure the server is running and is connected to the '
+            'database.',
+          );
+          log.error(e.exception);
+        } on MigrationRepairWriteException catch (e) {
+          log.error('Unable to write repair migration.');
+          log.error(e.exception);
+        }
+
+        return repairMigration != null;
+      });
+
+      var repairMigrationPath = repairMigration?.path;
+      if (repairMigration == null || repairMigrationPath == null) {
+        throw ExitException.error();
+      }
+
+      log.info(
+        'Repair migration created: ${path.relative(
+          repairMigrationPath,
+          from: Directory.current.path,
+        )}',
+        type: TextLogType.bullet,
+      );
+      log.info('Done.', type: TextLogType.success);
+      success = true;
+    } finally {
+      // Track the event
+      serverpodRunner.analytics.trackWithProperties(
+        event: 'cli:repair_migration_created',
+        properties: {
+          'full_command': fullCommand,
+          'command': 'create-repair-migration',
+          'force': force,
+          'tag': tag ?? '',
+          'version': targetVersion ?? '',
+          'mode': mode,
+          'interactive': interactive ?? false,
+          'success': success,
+        },
+      );
     }
-
-    log.info(
-      'Repair migration created: ${path.relative(
-        repairMigrationPath,
-        from: Directory.current.path,
-      )}',
-      type: TextLogType.bullet,
-    );
-    log.info('Done.', type: TextLogType.success);
   }
 }

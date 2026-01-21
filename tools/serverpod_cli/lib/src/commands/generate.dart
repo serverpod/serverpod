@@ -11,6 +11,7 @@ import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_cal
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
+import 'package:serverpod_cli/src/analytics/analytics_helper.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
@@ -62,103 +63,131 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
     bool watch = commandConfig.value(GenerateOption.watch);
     String directory = commandConfig.value(GenerateOption.directory);
 
+    // Build full command string for tracking
+    final fullCommandParts = ['serverpod', 'generate'];
+    if (watch) {
+      fullCommandParts.add('--watch');
+    }
+    if (directory.isNotEmpty) {
+      fullCommandParts.add('--directory');
+      fullCommandParts.add(directory);
+    }
+    final fullCommand = fullCommandParts.join(' ');
+
     // Get interactive flag from global configuration
     final interactive = serverpodRunner.globalConfiguration.optionalValue(
       GlobalOption.interactive,
     );
 
-    GeneratorConfig config;
+    var success = false;
     try {
-      config = await GeneratorConfig.load(
-        serverRootDir: directory,
-        interactive: interactive,
-      );
-    } catch (e) {
-      log.error('$e');
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    var serverPubspecFile = File(
-      path.joinAll([
-        ...config.serverPackageDirectoryPathParts,
-        'pubspec.yaml',
-      ]),
-    );
-    var clientPubspecFile = File(
-      path.joinAll([
-        ...config.clientPackagePathParts,
-        'pubspec.yaml',
-      ]),
-    );
-    var pubspecsToCheck = [
-      serverPubspecFile,
-      if (await clientPubspecFile.exists()) clientPubspecFile,
-    ].map(PubspecPlus.fromFile);
-
-    // Validate cli version is compatible with serverpod packages
-    var cliVersion = Version.parse(templateVersion);
-    var warnings = [
-      for (var p in pubspecsToCheck)
-        ...validateServerpodPackagesVersion(cliVersion, p),
-    ];
-    if (warnings.isNotEmpty) {
-      log.warning(
-        'The version of the CLI may be incompatible with the Serverpod '
-        'packages used in your project.',
-      );
-      for (var warning in warnings) {
-        log.sourceSpanException(warning);
+      GeneratorConfig config;
+      try {
+        config = await GeneratorConfig.load(
+          serverRootDir: directory,
+          interactive: interactive,
+        );
+      } catch (e) {
+        log.error('$e');
+        throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
       }
-    }
 
-    // Also check pubspec.lock files if pubspec validation passes
-    if (warnings.isEmpty) {
-      var serverLockFile = File(
+      var serverPubspecFile = File(
         path.joinAll([
           ...config.serverPackageDirectoryPathParts,
-          'pubspec.lock',
+          'pubspec.yaml',
         ]),
       );
-      var clientLockFile = File(
+      var clientPubspecFile = File(
         path.joinAll([
           ...config.clientPackagePathParts,
-          'pubspec.lock',
+          'pubspec.yaml',
         ]),
       );
+      var pubspecsToCheck = [
+        serverPubspecFile,
+        if (await clientPubspecFile.exists()) clientPubspecFile,
+      ].map(PubspecPlus.fromFile);
 
-      var lockFilesToCheck = [
-        if (await serverLockFile.exists()) serverLockFile,
-        if (await clientLockFile.exists()) clientLockFile,
-      ].map(PubspecLockParser.fromFile);
-
-      var lockWarnings = [
-        for (var lockParser in lockFilesToCheck)
-          validateServerpodLockFileVersion(cliVersion, lockParser),
-      ].nonNulls;
-
-      for (var warning in lockWarnings) {
-        log.sourceSpanException(warning);
+      // Validate cli version is compatible with serverpod packages
+      var cliVersion = Version.parse(templateVersion);
+      var warnings = [
+        for (var p in pubspecsToCheck)
+          ...validateServerpodPackagesVersion(cliVersion, p),
+      ];
+      if (warnings.isNotEmpty) {
+        log.warning(
+          'The version of the CLI may be incompatible with the Serverpod '
+          'packages used in your project.',
+        );
+        for (var warning in warnings) {
+          log.sourceSpanException(warning);
+        }
       }
-    }
 
-    final futureSuccess = Isolate.run(
-      () => _performGenerate(config: config, watch: watch),
-    );
+      // Also check pubspec.lock files if pubspec validation passes
+      if (warnings.isEmpty) {
+        var serverLockFile = File(
+          path.joinAll([
+            ...config.serverPackageDirectoryPathParts,
+            'pubspec.lock',
+          ]),
+        );
+        var clientLockFile = File(
+          path.joinAll([
+            ...config.clientPackagePathParts,
+            'pubspec.lock',
+          ]),
+        );
 
-    late final bool success;
-    if (!watch) {
-      success = await log.progress(
-        'Generating code',
-        () => futureSuccess,
+        var lockFilesToCheck = [
+          if (await serverLockFile.exists()) serverLockFile,
+          if (await clientLockFile.exists()) clientLockFile,
+        ].map(PubspecLockParser.fromFile);
+
+        var lockWarnings = [
+          for (var lockParser in lockFilesToCheck)
+            validateServerpodLockFileVersion(cliVersion, lockParser),
+        ].nonNulls;
+
+        for (var warning in lockWarnings) {
+          log.sourceSpanException(warning);
+        }
+      }
+
+      final futureSuccess = Isolate.run(
+        () => _performGenerate(config: config, watch: watch),
       );
-    } else {
-      success = await futureSuccess;
-    }
 
-    if (!success) {
-      throw ExitException.error();
-    } else {
-      log.info('Done.', type: TextLogType.success);
+      late final bool generateSuccess;
+      if (!watch) {
+        generateSuccess = await log.progress(
+          'Generating code',
+          () => futureSuccess,
+        );
+      } else {
+        generateSuccess = await futureSuccess;
+      }
+
+      if (!generateSuccess) {
+        throw ExitException.error();
+      } else {
+        log.info('Done.', type: TextLogType.success);
+        success = true;
+      }
+    } finally {
+      // Track the event
+      serverpodRunner.analytics.trackWithProperties(
+        event: 'cli:code_generated',
+        properties: {
+          'full_command': fullCommand,
+          'command': 'generate',
+          'watch_mode': watch,
+          'directory': directory.isEmpty ? '.' : directory,
+          'interactive': interactive ?? false,
+          'success': success,
+        },
+      );
     }
   }
 }

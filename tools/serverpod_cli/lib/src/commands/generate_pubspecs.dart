@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:config/config.dart';
+import 'package:serverpod_cli/src/analytics/analytics_helper.dart';
 import 'package:serverpod_cli/src/internal_tools/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 
@@ -60,11 +61,41 @@ class GeneratePubspecsCommand extends ServerpodCommand<GeneratePubspecsOption> {
     );
     var mode = commandConfig.value(GeneratePubspecsOption.mode);
 
+    // Build full command string for tracking
+    final fullCommandParts = [
+      'serverpod',
+      'generate-pubspecs',
+      '--version',
+      version,
+      '--dart-version',
+      dartVersion,
+      '--flutter-version',
+      flutterVersion,
+    ];
+    if (mode != 'development') {
+      fullCommandParts.add('--mode');
+      fullCommandParts.add(mode);
+    }
+    final fullCommand = fullCommandParts.join(' ');
+
     performGeneratePubspecs(
       version: version,
       dartVersion: dartVersion,
       flutterVersion: flutterVersion,
       mode: mode,
+    );
+
+    // Track the event
+    serverpodRunner.analytics.trackWithProperties(
+      event: 'cli:pubspecs_generated',
+      properties: {
+        'full_command': fullCommand,
+        'command': 'generate-pubspecs',
+        'version': version,
+        'dart_version': dartVersion,
+        'flutter_version': flutterVersion,
+        'mode': mode,
+      },
     );
   }
 }

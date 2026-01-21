@@ -238,6 +238,31 @@ Future<bool> performCreate(
     }
   }
 
+  // Open welcome page with UUID for PostHog linking
+  // Open browser for server template projects if project directory was created
+  // (even if some steps failed, the project is still usable)
+  if (template == ServerpodTemplateType.server && 
+      serverpodDirs.projectDir.existsSync()) {
+    final uuid = ResourceManager().uniqueUserId;
+    // Use localhost for development, production URL for production
+    final welcomeUrl = productionMode
+        ? 'https://serverpod.dev/welcome?distinct_id=$uuid'
+        : 'http://localhost:8082/welcome?distinct_id=$uuid';
+    try {
+      if (Platform.isWindows) {
+        // On Windows, use 'start' command directly
+        await Process.run('start', [welcomeUrl], runInShell: true);
+      } else if (Platform.isMacOS) {
+        await Process.run('open', [welcomeUrl]);
+      } else if (Platform.isLinux) {
+        await Process.run('xdg-open', [welcomeUrl]);
+      }
+    } catch (e) {
+      // Silently fail - opening browser is not critical
+      log.debug('Could not open browser: $e');
+    }
+  }
+
   return success;
 }
 
