@@ -18,7 +18,10 @@ import 'github_sign_in_service.dart';
 /// final controller = GitHubAuthController(
 ///   client: client,
 ///   onAuthenticated: () {
-///     // Navigate to home screen
+///     // Do something when the user is authenticated.
+///     //
+///     // NOTE: You should not navigate to the home screen here, otherwise
+///     // the user will have to sign in again every time they open the app.
 ///   },
 /// );
 ///
@@ -108,12 +111,10 @@ class GitHubAuthController extends ChangeNotifier {
     _setState(GitHubAuthState.loading);
 
     try {
-      // Get the authorization code, code verifier, and redirect URI from GitHub OAuth flow
       final signInResult = await GitHubSignInService.instance.signIn(
         scopes: scopes,
       );
 
-      // Exchange the code for an access token on the server
       await _handleServerSideSignIn(signInResult);
     } catch (error) {
       _handleAuthenticationError(error);
