@@ -9,154 +9,352 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 const projectName = 'example_project';
 
 void main() {
-  group('Given a class with a jsonKey field property', () {
-    var config = GeneratorConfigBuilder().withName(projectName).build();
+  final config = GeneratorConfigBuilder().withName(projectName).build();
 
-    test(
-      'when jsonKey is a valid string then no errors are collected and the field has the correct jsonKey',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-            class: Example
-            fields:
-              displayName: String, jsonKey=display_name
-            ''',
-          ).build(),
-        ];
+  group('Given a class with a field with jsonKey set to a valid string', () {
+    final models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        fields:
+          displayName: String, jsonKey=display_name
+        ''',
+      ).build(),
+    ];
 
-        var collector = CodeGenerationCollector();
-        var definitions = StatefulAnalyzer(
-          config,
-          models,
-          onErrorsCollector(collector),
-        ).validateAll();
+    late CodeGenerationCollector collector;
+    late List<SerializableModelDefinition> definitions;
 
+    setUp(() {
+      collector = CodeGenerationCollector();
+      definitions = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+    });
+
+    group('when analyzing', () {
+      test('then no errors are collected', () {
         expect(collector.errors, isEmpty);
-        expect(definitions, isNotEmpty);
+      });
 
-        var definition = definitions.first as ClassDefinition;
-        var field = definition.fields.first;
+      test('then the field has the correct jsonKey', () {
+        expect(definitions, isNotEmpty);
+        final definition = definitions.first as ClassDefinition;
+        final field = definition.fields.first;
         expect(field.jsonKey, equals('display_name'));
         expect(field.hasJsonKeyOverride, isTrue);
-      },
-    );
+      });
+    });
+  });
 
-    test(
-      'when jsonKey is not set then field uses the field name as jsonKey',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-            class: Example
-            fields:
-              displayName: String
-            ''',
-          ).build(),
-        ];
+  group('Given a class with a field without jsonKey set', () {
+    final models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        fields:
+          displayName: String
+        ''',
+      ).build(),
+    ];
 
-        var collector = CodeGenerationCollector();
-        var definitions = StatefulAnalyzer(
-          config,
-          models,
-          onErrorsCollector(collector),
-        ).validateAll();
+    late CodeGenerationCollector collector;
+    late List<SerializableModelDefinition> definitions;
 
+    setUp(() {
+      collector = CodeGenerationCollector();
+      definitions = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+    });
+
+    group('when analyzing', () {
+      test('then no errors are collected', () {
         expect(collector.errors, isEmpty);
-        expect(definitions, isNotEmpty);
+      });
 
-        var definition = definitions.first as ClassDefinition;
-        var field = definition.fields.first;
+      test('then the field uses the field name as jsonKey', () {
+        expect(definitions, isNotEmpty);
+        final definition = definitions.first as ClassDefinition;
+        final field = definition.fields.first;
         expect(field.jsonKey, equals('displayName'));
         expect(field.hasJsonKeyOverride, isFalse);
-      },
-    );
+      });
+    });
+  });
 
-    test(
-      'when jsonKey contains special characters then no errors are collected',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-            class: Example
-            fields:
-              id: String, jsonKey=_id
-            ''',
-          ).build(),
-        ];
+  group(
+    'Given a class with a field with jsonKey containing special characters',
+    () {
+      final models = [
+        ModelSourceBuilder().withYaml(
+          '''
+        class: Example
+        fields:
+          id: String, jsonKey=_id
+        ''',
+        ).build(),
+      ];
 
-        var collector = CodeGenerationCollector();
-        var definitions = StatefulAnalyzer(
+      late CodeGenerationCollector collector;
+      late List<SerializableModelDefinition> definitions;
+
+      setUp(() {
+        collector = CodeGenerationCollector();
+        definitions = StatefulAnalyzer(
           config,
           models,
           onErrorsCollector(collector),
         ).validateAll();
+      });
 
+      group('when analyzing', () {
+        test('then no errors are collected', () {
+          expect(collector.errors, isEmpty);
+        });
+
+        test('then the field has the correct jsonKey', () {
+          expect(definitions, isNotEmpty);
+          final definition = definitions.first as ClassDefinition;
+          final field = definition.fields.first;
+          expect(field.jsonKey, equals('_id'));
+        });
+      });
+    },
+  );
+
+  group('Given a table class with a field with jsonKey set', () {
+    final models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          displayName: String, jsonKey=display_name
+        ''',
+      ).build(),
+    ];
+
+    late CodeGenerationCollector collector;
+    late List<SerializableModelDefinition> definitions;
+
+    setUp(() {
+      collector = CodeGenerationCollector();
+      definitions = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+    });
+
+    group('when analyzing', () {
+      test('then no errors are collected', () {
         expect(collector.errors, isEmpty);
         expect(definitions, isNotEmpty);
+      });
+    });
+  });
 
-        var definition = definitions.first as ClassDefinition;
-        var field = definition.fields.first;
-        expect(field.jsonKey, equals('_id'));
-      },
-    );
+  group('Given a class with multiple fields with different jsonKey values', () {
+    final models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        fields:
+          firstName: String, jsonKey=first_name
+          lastName: String, jsonKey=last_name
+          email: String
+        ''',
+      ).build(),
+    ];
 
-    test(
-      'when jsonKey is used with a table class then no errors are collected',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-            class: Example
-            table: example
-            fields:
-              displayName: String, jsonKey=display_name
-            ''',
-          ).build(),
-        ];
+    late CodeGenerationCollector collector;
+    late List<SerializableModelDefinition> definitions;
 
-        var collector = CodeGenerationCollector();
-        var definitions = StatefulAnalyzer(
-          config,
-          models,
-          onErrorsCollector(collector),
-        ).validateAll();
+    setUp(() {
+      collector = CodeGenerationCollector();
+      definitions = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+    });
 
+    group('when analyzing', () {
+      test('then no errors are collected', () {
         expect(collector.errors, isEmpty);
         expect(definitions, isNotEmpty);
-      },
-    );
+      });
 
-    test(
-      'when multiple fields have different jsonKey values then no errors are collected',
-      () {
-        var models = [
-          ModelSourceBuilder().withYaml(
-            '''
-            class: Example
-            fields:
-              firstName: String, jsonKey=first_name
-              lastName: String, jsonKey=last_name
-              email: String
-            ''',
-          ).build(),
-        ];
-
-        var collector = CodeGenerationCollector();
-        var definitions = StatefulAnalyzer(
-          config,
-          models,
-          onErrorsCollector(collector),
-        ).validateAll();
-
-        expect(collector.errors, isEmpty);
-        expect(definitions, isNotEmpty);
-
-        var definition = definitions.first as ClassDefinition;
+      test('then each field has the correct jsonKey', () {
+        final definition = definitions.first as ClassDefinition;
         expect(definition.fields[0].jsonKey, equals('first_name'));
         expect(definition.fields[1].jsonKey, equals('last_name'));
         expect(definition.fields[2].jsonKey, equals('email'));
-      },
-    );
+      });
+    });
   });
+
+  group('Given a class with a field with jsonKey set to an empty string', () {
+    final models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        fields:
+          displayName:
+            type: String
+            jsonKey:
+        ''',
+      ).build(),
+    ];
+
+    late CodeGenerationCollector collector;
+
+    setUp(() {
+      collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+    });
+
+    group('when analyzing', () {
+      test('then an error is collected', () {
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error for empty jsonKey value.',
+        );
+
+        final error = collector.errors.first;
+        expect(error.message, contains('jsonKey'));
+      });
+    });
+  });
+
+  group(
+    'Given a class with a field with jsonKey set to a non-string value',
+    () {
+      final models = [
+        ModelSourceBuilder().withYaml(
+          '''
+        class: Example
+        fields:
+          displayName:
+            type: String
+            jsonKey: 123
+        ''',
+        ).build(),
+      ];
+
+      late CodeGenerationCollector collector;
+
+      setUp(() {
+        collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+      });
+
+      group('when analyzing', () {
+        test('then an error is collected', () {
+          expect(
+            collector.errors,
+            isNotEmpty,
+            reason: 'Expected an error for non-string jsonKey value.',
+          );
+
+          final error = collector.errors.first;
+          expect(error.message, contains('jsonKey'));
+          expect(error.message, contains('String'));
+        });
+      });
+    },
+  );
+
+  group('Given a class with multiple fields with the same jsonKey', () {
+    final models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        fields:
+          firstName: String, jsonKey=name
+          lastName: String, jsonKey=name
+        ''',
+      ).build(),
+    ];
+
+    late CodeGenerationCollector collector;
+
+    setUp(() {
+      collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+    });
+
+    group('when analyzing', () {
+      test('then an error is collected', () {
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error for duplicate jsonKey values.',
+        );
+
+        final error = collector.errors.first;
+        expect(error.message, contains('name'));
+        expect(error.message, contains('multiple fields'));
+      });
+    });
+  });
+
+  group(
+    'Given a class with a field with jsonKey matching another field name',
+    () {
+      final models = [
+        ModelSourceBuilder().withYaml(
+          '''
+        class: Example
+        fields:
+          email: String
+          userEmail: String, jsonKey=email
+        ''',
+        ).build(),
+      ];
+
+      late CodeGenerationCollector collector;
+
+      setUp(() {
+        collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+      });
+
+      group('when analyzing', () {
+        test('then an error is collected', () {
+          expect(
+            collector.errors,
+            isNotEmpty,
+            reason:
+                'Expected an error when jsonKey matches another field name.',
+          );
+
+          final error = collector.errors.first;
+          expect(error.message, contains('email'));
+        });
+      });
+    },
+  );
 }

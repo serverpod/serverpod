@@ -1085,6 +1085,24 @@ class Restrictions {
       ];
     }
 
+    var definition = documentDefinition;
+    if (definition == null) return [];
+
+    var currentModel = parsedModels.findByClassName(definition.className);
+
+    if (currentModel is ClassDefinition) {
+      final fieldsWithJsonKey = _findFieldsWithJsonKey(currentModel, jsonKey);
+
+      if (fieldsWithJsonKey.length > 1) {
+        return [
+          SourceSpanSeverityException(
+            'The jsonKey "$jsonKey" is used by multiple fields. Each field must have a unique JSON key.',
+            span,
+          ),
+        ];
+      }
+    }
+
     return [];
   }
 
@@ -2210,6 +2228,15 @@ class Restrictions {
   ) {
     return currentModel.fields
         .where((field) => field.columnName == column)
+        .toList();
+  }
+
+  List<SerializableModelFieldDefinition> _findFieldsWithJsonKey(
+    ClassDefinition currentModel,
+    String jsonKey,
+  ) {
+    return currentModel.fields
+        .where((field) => field.jsonKey == jsonKey)
         .toList();
   }
 }

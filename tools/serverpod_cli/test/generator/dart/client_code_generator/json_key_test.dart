@@ -1,6 +1,6 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:test/test.dart';
 
 import '../../../test_util/builders/generator_config_builder.dart';
@@ -11,15 +11,17 @@ import '../../../test_util/compilation_unit_helpers.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
-const generator = DartServerCodeGenerator();
+const generator = DartClientCodeGenerator();
 
 void main() {
   const testClassName = 'Example';
   const testClassFileName = 'example';
   final expectedFilePath = path.join(
+    '..',
+    'example_project_client',
     'lib',
     'src',
-    'generated',
+    'protocol',
     '$testClassFileName.dart',
   );
 
@@ -68,7 +70,7 @@ void main() {
           name: testClassName,
         );
 
-    group('when generating server code', () {
+    group('when generating client code', () {
       group('then the fromJson method', () {
         test('uses jsonKey value for field with jsonKey set', () {
           final fromJsonConstructor =
@@ -133,42 +135,6 @@ void main() {
             toJsonCode,
             contains("'$noJsonKeyFieldName'"),
             reason: 'toJson should use the field name when jsonKey is not set.',
-          );
-        });
-      });
-
-      group('then the toJsonForProtocol method', () {
-        test('uses jsonKey value for field with jsonKey set', () {
-          final toJsonForProtocolMethod =
-              CompilationUnitHelpers.tryFindMethodDeclaration(
-                maybeClassNamedExample!,
-                name: 'toJsonForProtocol',
-              );
-
-          final toJsonForProtocolCode = toJsonForProtocolMethod!.toSource();
-
-          expect(
-            toJsonForProtocolCode,
-            contains("'$jsonKeyValue'"),
-            reason:
-                'toJsonForProtocol should use the jsonKey value for the key.',
-          );
-        });
-
-        test('uses field name for field without jsonKey set', () {
-          final toJsonForProtocolMethod =
-              CompilationUnitHelpers.tryFindMethodDeclaration(
-                maybeClassNamedExample!,
-                name: 'toJsonForProtocol',
-              );
-
-          final toJsonForProtocolCode = toJsonForProtocolMethod!.toSource();
-
-          expect(
-            toJsonForProtocolCode,
-            contains("'$noJsonKeyFieldName'"),
-            reason:
-                'toJsonForProtocol should use the field name when jsonKey is not set.',
           );
         });
       });
