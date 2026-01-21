@@ -63,7 +63,7 @@ class GitHubIdpUtils {
     required this.config,
     required final AuthUsers authUsers,
   }) : _authUsers = authUsers {
-    _oauth2Util = OAuth2PkceUtil(config: config);
+    _oauth2Util = OAuth2PkceUtil(config: config.oauth2Config);
   }
 
   /// Exchanges an `authorization code` for an `access token`.

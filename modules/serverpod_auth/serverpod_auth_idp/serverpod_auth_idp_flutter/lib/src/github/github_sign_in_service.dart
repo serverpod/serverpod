@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
-import '../common/oauth2_pkce/oauth2_pkce_config.dart';
+import '../common/oauth2_pkce/oauth2_pkce_client_config.dart';
 import '../common/oauth2_pkce/oauth2_pkce_util.dart';
 
 /// Result of the GitHub OAuth sign-in flow.

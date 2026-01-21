@@ -1,5 +1,5 @@
 /// Configuration for an OAuth2 provider (client-side).
-class OAuth2PkceProviderClientConfig {
+final class OAuth2PkceProviderClientConfig {
   /// Authorization endpoint URL.
   final Uri authorizationEndpoint;
 
@@ -13,10 +13,10 @@ class OAuth2PkceProviderClientConfig {
   final String callbackUrlScheme;
 
   /// Default permission scopes.
-  final List<String> defaultScopes;
+  final List<String>? defaultScopes;
 
   /// Extra query parameters for authorization request.
-  final Map<String, String> additionalAuthParams;
+  final Map<String, String>? additionalAuthParams;
 
   /// Separator for joining scopes.
   final String scopeSeparator;

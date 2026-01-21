@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
 import '../utils.dart';
-import 'oauth2_pkce_config.dart';
+import 'oauth2_pkce_client_config.dart';
 import 'oauth2_pkce_result.dart';
 
 /// Generic utility for OAuth2 authorization with optional PKCE support.
