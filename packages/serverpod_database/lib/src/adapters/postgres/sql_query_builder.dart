@@ -140,7 +140,10 @@ class SelectQueryBuilder {
 
     String query = 'WITH $wrappedBaseQueryAlias AS ($baseQuery)';
 
-    var windowOrderBy = _buildWindowOrderByClause(orderBy, wrappedBaseQueryAlias);
+    var windowOrderBy = _buildWindowOrderByClause(
+      orderBy,
+      wrappedBaseQueryAlias,
+    );
 
     query +=
         ', $partitionedQueryAlias AS (SELECT *, row_number() OVER ( PARTITION BY $wrappedBaseQueryAlias."$relationalFieldName"$windowOrderBy) AS row_number FROM $wrappedBaseQueryAlias)';
@@ -158,18 +161,20 @@ class SelectQueryBuilder {
       return '';
     }
 
-    var orderClauses = orderBy.map((order) {
-      var column = order.column;
-      var alias = truncateIdentifier(
-        column.fieldQueryAlias,
-        DatabaseConstants.pgsqlMaxNameLimitation,
-      );
-      var clause = '$tableAlias."$alias"';
-      if (order.orderDescending) {
-        clause += ' DESC';
-      }
-      return clause;
-    }).join(', ');
+    var orderClauses = orderBy
+        .map((order) {
+          var column = order.column;
+          var alias = truncateIdentifier(
+            column.fieldQueryAlias,
+            DatabaseConstants.pgsqlMaxNameLimitation,
+          );
+          var clause = '$tableAlias."$alias"';
+          if (order.orderDescending) {
+            clause += ' DESC';
+          }
+          return clause;
+        })
+        .join(', ');
 
     return ' ORDER BY $orderClauses';
   }
