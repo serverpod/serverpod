@@ -1,22 +1,36 @@
+/// The reason why an [OAuth2Exception] was thrown during token exchange.
+enum OAuth2ExceptionReason {
+  /// The token response could not be parsed as valid JSON.
+  invalidResponse,
+
+  /// The access token was missing from the token response.
+  missingAccessToken,
+
+  /// Network error or timeout occurred during the token exchange.
+  networkError,
+
+  /// Unknown or unexpected error occurred.
+  unknown,
+}
+
 /// Exception thrown during OAuth2 token exchange operations.
 ///
-/// This exception contains detailed error information from the OAuth2 provider
-/// that can be logged on the server side for debugging.
+/// This exception is thrown when the OAuth2 token exchange process fails,
+/// whether due to invalid credentials, network errors, or provider-specific
+/// issues.
 class OAuth2Exception implements Exception {
-  /// The OAuth2 error code (e.g., "invalid_grant", "invalid_client").
-  final String error;
+  /// Creates an [OAuth2Exception] with the given reason and message.
+  const OAuth2Exception({
+    required this.reason,
+    required this.message,
+  });
 
-  /// Optional human-readable error description.
-  final String? errorDescription;
+  /// The reason for the exception.
+  final OAuth2ExceptionReason reason;
 
-  /// Creates a new [OAuth2Exception].
-  OAuth2Exception(this.error, {this.errorDescription});
+  /// A human-readable error message.
+  final String message;
 
   @override
-  String toString() {
-    if (errorDescription != null) {
-      return 'OAuth2Exception: $error - $errorDescription';
-    }
-    return 'OAuth2Exception: $error';
-  }
+  String toString() => 'OAuth2Exception: $message (reason: $reason)';
 }

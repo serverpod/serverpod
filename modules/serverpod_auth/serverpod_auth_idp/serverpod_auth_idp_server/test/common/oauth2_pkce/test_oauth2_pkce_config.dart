@@ -49,16 +49,21 @@ class TestOAuth2PkceServerConfig {
       final error = responseBody['error'] as String?;
       if (error != null) {
         final errorDescription = responseBody['error_description'] as String?;
-        throw OAuth2Exception(error, errorDescription: errorDescription);
+        throw OAuth2Exception(
+          reason: OAuth2ExceptionReason.invalidResponse,
+          message:
+              'Invalid response from GitHub:'
+              ' $error${errorDescription != null ? ' - $errorDescription' : ''}',
+        );
       }
     }
 
     // Extract access token
     final accessToken = responseBody['access_token'] as String?;
     if (accessToken == null) {
-      throw OAuth2Exception(
-        'missing_token',
-        errorDescription: 'No access token in response',
+      throw const OAuth2Exception(
+        reason: OAuth2ExceptionReason.missingAccessToken,
+        message: 'No access token in GitHub response',
       );
     }
 

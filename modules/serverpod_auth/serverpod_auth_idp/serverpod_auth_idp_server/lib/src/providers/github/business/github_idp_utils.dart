@@ -93,11 +93,7 @@ class GitHubIdpUtils {
         redirectUri: redirectUri,
       );
     } on OAuth2Exception catch (e) {
-      session.log(
-        'GitHub token exchange failed: ${e.error}'
-        '${e.errorDescription != null ? ' - ${e.errorDescription}' : ''}',
-        level: LogLevel.debug,
-      );
+      session.log(e.toString(), level: LogLevel.debug);
       throw GitHubAccessTokenVerificationException();
     }
   }

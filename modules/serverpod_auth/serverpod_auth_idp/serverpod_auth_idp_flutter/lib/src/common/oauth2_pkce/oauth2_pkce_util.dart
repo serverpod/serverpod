@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
 import '../utils.dart';
 import 'oauth2_pkce_client_config.dart';
+import 'oauth2_pkce_exception.dart';
 import 'oauth2_pkce_result.dart';
 
 /// Generic utility for OAuth2 authorization with optional PKCE support.
@@ -96,11 +96,12 @@ class OAuth2PkceUtil {
   /// [OAuth2PkceResult] with authorization code and code verifier.
   /// **Both must be sent to your backend** to exchange for an access token.
   ///
-  /// **Throws:**
-  /// - User cancels authorization
-  /// - State parameter mismatch (security validation failure)
-  /// - Provider returns error response
-  /// - Missing authorization code in callback
+  /// **Throws:** an [OAuth2PkceException] in case of errors, with reason:
+  /// - [OAuth2PkceExceptionReason.userCancelled] if the user cancels authorization
+  /// - [OAuth2PkceExceptionReason.stateMismatch] if state parameter validation fails
+  /// - [OAuth2PkceExceptionReason.missingAuthorizationCode] if no code is returned
+  /// - [OAuth2PkceExceptionReason.providerError] if the provider returns an error
+  /// - [OAuth2PkceExceptionReason.unknown] for other unexpected errors
   Future<OAuth2PkceResult> authorize({
     List<String>? scopes,
     Map<String, String>? authCodeParams,
@@ -131,8 +132,9 @@ class OAuth2PkceUtil {
       if (config.enableState) {
         final returnedState = queryParams['state'];
         if (returnedState == null || returnedState != state) {
-          throw Exception(
-            'Security validation failed: State mismatch or missing.',
+          throw const OAuth2PkceException(
+            reason: OAuth2PkceExceptionReason.stateMismatch,
+            message: 'Security validation failed: State mismatch or missing.',
           );
         }
       }
@@ -143,21 +145,28 @@ class OAuth2PkceUtil {
         final errorDescription = queryParams['error_description'];
 
         if (error != null) {
-          throw Exception(
-            'Authorization failed: $error'
-            '${errorDescription != null ? ' - $errorDescription' : ''}',
+          throw OAuth2PkceException(
+            reason: OAuth2PkceExceptionReason.providerError,
+            message:
+                'Authorization failed: $error'
+                '${errorDescription != null ? ' - $errorDescription' : ''}',
           );
         }
 
-        throw Exception(
-          'Authorization failed: No code returned from provider.',
+        throw const OAuth2PkceException(
+          reason: OAuth2PkceExceptionReason.missingAuthorizationCode,
+          message: 'Authorization failed: No code returned from provider.',
         );
       }
 
       return (code: code, codeVerifier: codeVerifier);
-    } catch (e) {
-      debugPrint('OAuth2 PKCE sign-in failed: ${e.toString()}');
+    } on OAuth2PkceException {
       rethrow;
+    } catch (e) {
+      throw OAuth2PkceException(
+        reason: OAuth2PkceExceptionReason.unknown,
+        message: 'Unexpected error during authorization: ${e.toString()}',
+      );
     }
   }
 

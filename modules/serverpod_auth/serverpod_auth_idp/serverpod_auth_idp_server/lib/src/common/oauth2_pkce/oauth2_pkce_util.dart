@@ -60,42 +60,36 @@ class OAuth2PkceUtil {
   ///
   /// Returns the access token string on success.
   ///
-  /// Throws an exception created by [OAuth2PkceServerConfig.createException] if:
-  /// - The HTTP request fails (non-200 status code)
-  /// - The response body cannot be parsed as JSON
-  /// - The provider returns an error response
-  /// - The access token field is missing from the response
+  /// Throws an [OAuth2Exception] in case of errors, with reason:
+  /// - [OAuth2ExceptionReason.invalidResponse] if the response cannot be parsed
+  /// - [OAuth2ExceptionReason.missingAccessToken] if the access token is missing
+  /// - [OAuth2ExceptionReason.networkError] if a network error occurs
+  /// - [OAuth2ExceptionReason.unknown] for other unexpected errors
   Future<String> exchangeCodeForToken({
     required final String code,
     final String? codeVerifier,
     required final String redirectUri,
     http.Client? httpClient,
   }) async {
-    // Track if the client was provided to avoid closing it.
     final clientProvidedByUser = httpClient != null;
     httpClient ??= http.Client();
 
     try {
-      // Build request body with standard OAuth2 parameters
       final Map<String, dynamic> bodyParams = {
         'grant_type': 'authorization_code',
         'code': code,
         'redirect_uri': redirectUri,
-        ...config.tokenRequestParams, // Add provider-specific params
+        ...config.tokenRequestParams,
       };
 
-      // Add PKCE code_verifier only if provided
       if (codeVerifier != null) {
         bodyParams['code_verifier'] = codeVerifier;
       }
 
-      // Build headers
       final headers = Map<String, String>.from(config.tokenRequestHeaders);
 
-      // Handle credentials based on configuration
       switch (config.credentialsLocation) {
         case OAuth2CredentialsLocation.header:
-          // Send credentials in Authorization header (preferred method)
           final credentials = base64Encode(
             utf8.encode('${config.clientId}:${config.clientSecret}'),
           );
@@ -103,13 +97,11 @@ class OAuth2PkceUtil {
           break;
 
         case OAuth2CredentialsLocation.body:
-          // Send credentials in request body
           bodyParams[config.clientIdKey] = config.clientId;
           bodyParams[config.clientSecretKey] = config.clientSecret;
           break;
       }
 
-      // Convert body params to URL-encoded format
       final body = bodyParams.entries
           .map(
             (final e) =>
@@ -125,8 +117,8 @@ class OAuth2PkceUtil {
 
       if (response.statusCode != 200) {
         throw OAuth2Exception(
-          'http_error',
-          errorDescription:
+          reason: OAuth2ExceptionReason.networkError,
+          message:
               'Failed to exchange authorization code for access token: '
               'HTTP ${response.statusCode}',
         );
@@ -137,12 +129,29 @@ class OAuth2PkceUtil {
         responseBody = jsonDecode(response.body) as Map<String, dynamic>;
       } catch (e) {
         throw OAuth2Exception(
-          'invalid_response',
-          errorDescription: 'Failed to parse token response: $e',
+          reason: OAuth2ExceptionReason.invalidResponse,
+          message: 'Failed to parse token response as JSON: ${e.toString()}',
         );
       }
 
-      return config.parseAccessToken(responseBody);
+      try {
+        return config.parseAccessToken(responseBody);
+      } on OAuth2Exception {
+        rethrow;
+      } catch (e) {
+        throw OAuth2Exception(
+          reason: OAuth2ExceptionReason.missingAccessToken,
+          message:
+              'Access token missing or invalid in response: ${e.toString()}',
+        );
+      }
+    } on OAuth2Exception {
+      rethrow;
+    } catch (e) {
+      throw OAuth2Exception(
+        reason: OAuth2ExceptionReason.networkError,
+        message: 'Network error during token exchange: ${e.toString()}',
+      );
     } finally {
       // Close the client only if we created it internally
       if (!clientProvidedByUser) {
