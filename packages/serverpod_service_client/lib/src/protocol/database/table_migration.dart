@@ -27,6 +27,7 @@ abstract class TableMigration implements _i1.SerializableModel {
     required this.addColumns,
     required this.deleteColumns,
     required this.modifyColumns,
+    required this.renameColumns,
     required this.addIndexes,
     required this.deleteIndexes,
     required this.addForeignKeys,
@@ -42,6 +43,7 @@ abstract class TableMigration implements _i1.SerializableModel {
     required List<_i2.ColumnDefinition> addColumns,
     required List<String> deleteColumns,
     required List<_i3.ColumnMigration> modifyColumns,
+    required Map<String, String> renameColumns,
     required List<_i4.IndexDefinition> addIndexes,
     required List<String> deleteIndexes,
     required List<_i5.ForeignKeyDefinition> addForeignKeys,
@@ -63,6 +65,9 @@ abstract class TableMigration implements _i1.SerializableModel {
       ),
       modifyColumns: _i7.Protocol().deserialize<List<_i3.ColumnMigration>>(
         jsonSerialization['modifyColumns'],
+      ),
+      renameColumns: _i7.Protocol().deserialize<Map<String, String>>(
+        jsonSerialization['renameColumns'],
       ),
       addIndexes: _i7.Protocol().deserialize<List<_i4.IndexDefinition>>(
         jsonSerialization['addIndexes'],
@@ -97,6 +102,8 @@ abstract class TableMigration implements _i1.SerializableModel {
 
   List<_i3.ColumnMigration> modifyColumns;
 
+  Map<String, String> renameColumns;
+
   List<_i4.IndexDefinition> addIndexes;
 
   List<String> deleteIndexes;
@@ -118,6 +125,7 @@ abstract class TableMigration implements _i1.SerializableModel {
     List<_i2.ColumnDefinition>? addColumns,
     List<String>? deleteColumns,
     List<_i3.ColumnMigration>? modifyColumns,
+    Map<String, String>? renameColumns,
     List<_i4.IndexDefinition>? addIndexes,
     List<String>? deleteIndexes,
     List<_i5.ForeignKeyDefinition>? addForeignKeys,
@@ -135,6 +143,7 @@ abstract class TableMigration implements _i1.SerializableModel {
       'addColumns': addColumns.toJson(valueToJson: (v) => v.toJson()),
       'deleteColumns': deleteColumns.toJson(),
       'modifyColumns': modifyColumns.toJson(valueToJson: (v) => v.toJson()),
+      'renameColumns': renameColumns.toJson(),
       'addIndexes': addIndexes.toJson(valueToJson: (v) => v.toJson()),
       'deleteIndexes': deleteIndexes.toJson(),
       'addForeignKeys': addForeignKeys.toJson(valueToJson: (v) => v.toJson()),
@@ -160,6 +169,7 @@ class _TableMigrationImpl extends TableMigration {
     required List<_i2.ColumnDefinition> addColumns,
     required List<String> deleteColumns,
     required List<_i3.ColumnMigration> modifyColumns,
+    required Map<String, String> renameColumns,
     required List<_i4.IndexDefinition> addIndexes,
     required List<String> deleteIndexes,
     required List<_i5.ForeignKeyDefinition> addForeignKeys,
@@ -173,6 +183,7 @@ class _TableMigrationImpl extends TableMigration {
          addColumns: addColumns,
          deleteColumns: deleteColumns,
          modifyColumns: modifyColumns,
+         renameColumns: renameColumns,
          addIndexes: addIndexes,
          deleteIndexes: deleteIndexes,
          addForeignKeys: addForeignKeys,
@@ -192,6 +203,7 @@ class _TableMigrationImpl extends TableMigration {
     List<_i2.ColumnDefinition>? addColumns,
     List<String>? deleteColumns,
     List<_i3.ColumnMigration>? modifyColumns,
+    Map<String, String>? renameColumns,
     List<_i4.IndexDefinition>? addIndexes,
     List<String>? deleteIndexes,
     List<_i5.ForeignKeyDefinition>? addForeignKeys,
@@ -210,6 +222,17 @@ class _TableMigrationImpl extends TableMigration {
       modifyColumns:
           modifyColumns ??
           this.modifyColumns.map((e0) => e0.copyWith()).toList(),
+      renameColumns:
+          renameColumns ??
+          this.renameColumns.map(
+            (
+              key0,
+              value0,
+            ) => MapEntry(
+              key0,
+              value0,
+            ),
+          ),
       addIndexes:
           addIndexes ?? this.addIndexes.map((e0) => e0.copyWith()).toList(),
       deleteIndexes:

@@ -198,6 +198,7 @@ extension TableDiffComparisons on TableMigration {
     return addColumns.isEmpty &&
         deleteColumns.isEmpty &&
         modifyColumns.isEmpty &&
+        renameColumns.isEmpty &&
         addIndexes.isEmpty &&
         deleteIndexes.isEmpty &&
         addForeignKeys.isEmpty &&
@@ -643,6 +644,11 @@ extension TableMigrationPgSqlGenerator on TableMigration {
     // Drop columns
     for (var deleteColumn in deleteColumns) {
       out += 'ALTER TABLE "$name" DROP COLUMN "$deleteColumn";\n';
+    }
+
+    // Rename columns (must happen before add/modify to avoid naming conflicts)
+    for (var entry in renameColumns.entries) {
+      out += 'ALTER TABLE "$name" RENAME COLUMN "${entry.key}" TO "${entry.value}";\n';
     }
 
     // Add columns
