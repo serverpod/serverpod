@@ -20,9 +20,10 @@ abstract class UuidDefault implements _i1.SerializableModel {
     _i1.UuidValue? uuidDefaultRandomNull,
     _i1.UuidValue? uuidDefaultStr,
     _i1.UuidValue? uuidDefaultStrNull,
-  }) : uuidDefaultRandom = uuidDefaultRandom ?? _i1.Uuid().v4obj(),
-       uuidDefaultRandomV7 = uuidDefaultRandomV7 ?? _i1.Uuid().v7obj(),
-       uuidDefaultRandomNull = uuidDefaultRandomNull ?? _i1.Uuid().v4obj(),
+  }) : uuidDefaultRandom = uuidDefaultRandom ?? const _i1.Uuid().v4obj(),
+       uuidDefaultRandomV7 = uuidDefaultRandomV7 ?? const _i1.Uuid().v7obj(),
+       uuidDefaultRandomNull =
+           uuidDefaultRandomNull ?? const _i1.Uuid().v4obj(),
        uuidDefaultStr =
            uuidDefaultStr ??
            _i1.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),

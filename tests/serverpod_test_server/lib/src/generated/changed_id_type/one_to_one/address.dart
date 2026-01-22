@@ -22,7 +22,7 @@ abstract class AddressUuid
     required this.street,
     this.inhabitantId,
     this.inhabitant,
-  }) : id = id ?? _i1.Uuid().v4obj();
+  }) : id = id ?? const _i1.Uuid().v4obj();
 
   factory AddressUuid({
     _i1.UuidValue? id,

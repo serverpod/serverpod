@@ -19,7 +19,7 @@ abstract class DurationDefaultModel implements _i1.SerializableModel {
     Duration? durationDefaultModelNull,
   }) : durationDefaultModel =
            durationDefaultModel ??
-           Duration(
+           const Duration(
              days: 1,
              hours: 2,
              minutes: 10,
@@ -28,7 +28,7 @@ abstract class DurationDefaultModel implements _i1.SerializableModel {
            ),
        durationDefaultModelNull =
            durationDefaultModelNull ??
-           Duration(
+           const Duration(
              days: 2,
              hours: 1,
              minutes: 20,

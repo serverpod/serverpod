@@ -21,7 +21,7 @@ abstract class DurationDefaultMix
     Duration? durationDefaultModelAndDefaultPersist,
   }) : durationDefaultAndDefaultModel =
            durationDefaultAndDefaultModel ??
-           Duration(
+           const Duration(
              days: 2,
              hours: 1,
              minutes: 20,
@@ -30,7 +30,7 @@ abstract class DurationDefaultMix
            ),
        durationDefaultAndDefaultPersist =
            durationDefaultAndDefaultPersist ??
-           Duration(
+           const Duration(
              days: 1,
              hours: 2,
              minutes: 10,
@@ -39,7 +39,7 @@ abstract class DurationDefaultMix
            ),
        durationDefaultModelAndDefaultPersist =
            durationDefaultModelAndDefaultPersist ??
-           Duration(
+           const Duration(
              days: 1,
              hours: 2,
              minutes: 10,

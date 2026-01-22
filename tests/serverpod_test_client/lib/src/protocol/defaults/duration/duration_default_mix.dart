@@ -20,7 +20,7 @@ abstract class DurationDefaultMix implements _i1.SerializableModel {
     Duration? durationDefaultModelAndDefaultPersist,
   }) : durationDefaultAndDefaultModel =
            durationDefaultAndDefaultModel ??
-           Duration(
+           const Duration(
              days: 2,
              hours: 1,
              minutes: 20,
@@ -29,7 +29,7 @@ abstract class DurationDefaultMix implements _i1.SerializableModel {
            ),
        durationDefaultAndDefaultPersist =
            durationDefaultAndDefaultPersist ??
-           Duration(
+           const Duration(
              days: 1,
              hours: 2,
              minutes: 10,
@@ -38,7 +38,7 @@ abstract class DurationDefaultMix implements _i1.SerializableModel {
            ),
        durationDefaultModelAndDefaultPersist =
            durationDefaultModelAndDefaultPersist ??
-           Duration(
+           const Duration(
              days: 1,
              hours: 2,
              minutes: 10,

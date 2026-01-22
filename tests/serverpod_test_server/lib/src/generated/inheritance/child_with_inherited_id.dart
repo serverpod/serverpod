@@ -23,7 +23,7 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
     required this.name,
     this.parent,
     this.parentId,
-  }) : id = id ?? _i2.Uuid().v7obj();
+  }) : id = id ?? const _i2.Uuid().v7obj();
 
   factory ChildWithInheritedId({
     _i2.UuidValue? id,

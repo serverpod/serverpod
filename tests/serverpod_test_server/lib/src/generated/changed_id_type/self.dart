@@ -26,7 +26,7 @@ abstract class ChangedIdTypeSelf
     this.parentId,
     this.parent,
     this.children,
-  }) : id = id ?? _i1.Uuid().v4obj();
+  }) : id = id ?? const _i1.Uuid().v4obj();
 
   factory ChangedIdTypeSelf({
     _i1.UuidValue? id,
