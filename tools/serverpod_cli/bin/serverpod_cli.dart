@@ -5,7 +5,6 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/composite_analytics.dart';
-import 'package:serverpod_cli/src/analytics/mixpanel_config.dart';
 import 'package:serverpod_cli/src/analytics/posthog_analytics.dart';
 import 'package:serverpod_cli/src/analytics/posthog_config.dart';
 import 'package:serverpod_cli/src/commands/analyze_pubspecs.dart';
@@ -24,6 +23,8 @@ import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
+const _mixPanelToken = '05e8ab306c393c7482e0f41851a176d8';
+
 final Analytics _analytics = CompositeAnalytics([
   PostHogAnalytics(
     projectApiKey: PostHogConfig.apiKey,
@@ -32,12 +33,11 @@ final Analytics _analytics = CompositeAnalytics([
     version: templateVersion,
     enabled: PostHogConfig.enabled,
   ),
-  if (MixPanelConfig.enabled)
-    MixPanelAnalytics(
-      projectToken: MixPanelConfig.token,
-      uniqueUserId: ResourceManager().uniqueUserId,
-      version: templateVersion,
-    ),
+  MixPanelAnalytics(
+    uniqueUserId: ResourceManager().uniqueUserId,
+    projectToken: _mixPanelToken,
+    version: templateVersion,
+  ),
 ]);
 
 void main(List<String> args) async {
