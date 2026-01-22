@@ -1,35 +1,43 @@
-/// The reason why an [OAuth2PkceException] was thrown.
-enum OAuth2PkceExceptionReason {
-  /// User cancelled the authorization flow.
-  userCancelled,
-
-  /// State parameter validation failed (possible CSRF attack).
-  stateMismatch,
-
-  /// No authorization code was returned by the provider.
-  missingAuthorizationCode,
-
-  /// The provider returned an error response.
-  providerError,
-
-  /// Network or other unexpected error occurred.
-  unknown,
-}
-
-/// Exception thrown during OAuth2 PKCE authorization flow.
-class OAuth2PkceException implements Exception {
-  /// Creates an [OAuth2PkceException] with the given reason and message.
-  const OAuth2PkceException({
-    required this.reason,
-    required this.message,
-  });
-
-  /// The reason for the exception.
-  final OAuth2PkceExceptionReason reason;
-
+/// Base exception for OAuth2 PKCE authorization flow.
+///
+/// All specific OAuth2 PKCE errors should extend this class.
+abstract class OAuth2PkceException implements Exception {
   /// A human-readable error message.
   final String message;
 
+  /// Creates a new [OAuth2PkceException] object
+  const OAuth2PkceException(this.message);
+
   @override
-  String toString() => 'OAuth2PkceException: $message (reason: $reason)';
+  String toString() => '$runtimeType: $message';
+}
+
+/// Thrown when the user cancels the authorization flow.
+class OAuth2PkceUserCancelledException extends OAuth2PkceException {
+  /// Creates a new [OAuth2PkceUserCancelledException] object
+  const OAuth2PkceUserCancelledException(super.message);
+}
+
+/// Thrown when state parameter validation fails (possible CSRF attack).
+class OAuth2PkceStateMismatchException extends OAuth2PkceException {
+  /// Creates a new [OAuth2PkceStateMismatchException] object
+  const OAuth2PkceStateMismatchException(super.message);
+}
+
+/// Thrown when no authorization code was returned by the provider.
+class OAuth2PkceMissingAuthorizationCodeException extends OAuth2PkceException {
+  /// Creates a new [OAuth2PkceMissingAuthorizationCodeException] object
+  const OAuth2PkceMissingAuthorizationCodeException(super.message);
+}
+
+/// Thrown when the provider returned an error response.
+class OAuth2PkceProviderErrorException extends OAuth2PkceException {
+  /// Creates a new [OAuth2PkceProviderErrorException] object
+  const OAuth2PkceProviderErrorException(super.message);
+}
+
+/// Thrown when a network or other unexpected error occurred.
+class OAuth2PkceUnknownException extends OAuth2PkceException {
+  /// Creates a new [OAuth2PkceUnknownException] object
+  const OAuth2PkceUnknownException(super.message);
 }

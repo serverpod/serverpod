@@ -96,12 +96,12 @@ class OAuth2PkceUtil {
   /// [OAuth2PkceResult] with authorization code and code verifier.
   /// **Both must be sent to your backend** to exchange for an access token.
   ///
-  /// **Throws:** an [OAuth2PkceException] in case of errors, with reason:
-  /// - [OAuth2PkceExceptionReason.userCancelled] if the user cancels authorization
-  /// - [OAuth2PkceExceptionReason.stateMismatch] if state parameter validation fails
-  /// - [OAuth2PkceExceptionReason.missingAuthorizationCode] if no code is returned
-  /// - [OAuth2PkceExceptionReason.providerError] if the provider returns an error
-  /// - [OAuth2PkceExceptionReason.unknown] for other unexpected errors
+  /// Throws one of the following [OAuth2PkceException] subclasses in case of errors:
+  /// - [OAuth2PkceUserCancelledException] if the user cancels authorization
+  /// - [OAuth2PkceStateMismatchException] if state parameter validation fails
+  /// - [OAuth2PkceMissingAuthorizationCodeException] if no code is returned
+  /// - [OAuth2PkceProviderErrorException] if the provider returns an error
+  /// - [OAuth2PkceUnknownException] for other unexpected errors
   Future<OAuth2PkceResult> authorize({
     List<String>? scopes,
     Map<String, String>? authCodeParams,
@@ -132,9 +132,8 @@ class OAuth2PkceUtil {
       if (config.enableState) {
         final returnedState = queryParams['state'];
         if (returnedState == null || returnedState != state) {
-          throw const OAuth2PkceException(
-            reason: OAuth2PkceExceptionReason.stateMismatch,
-            message: 'Security validation failed: State mismatch or missing.',
+          throw const OAuth2PkceStateMismatchException(
+            'Security validation failed: State mismatch or missing.',
           );
         }
       }
@@ -145,17 +144,14 @@ class OAuth2PkceUtil {
         final errorDescription = queryParams['error_description'];
 
         if (error != null) {
-          throw OAuth2PkceException(
-            reason: OAuth2PkceExceptionReason.providerError,
-            message:
-                'Authorization failed: $error'
-                '${errorDescription != null ? ' - $errorDescription' : ''}',
+          throw OAuth2PkceProviderErrorException(
+            'Authorization failed:'
+            ' $error${errorDescription != null ? ' - $errorDescription' : ''}',
           );
         }
 
-        throw const OAuth2PkceException(
-          reason: OAuth2PkceExceptionReason.missingAuthorizationCode,
-          message: 'Authorization failed: No code returned from provider.',
+        throw const OAuth2PkceMissingAuthorizationCodeException(
+          'Authorization failed: No code returned from provider.',
         );
       }
 
@@ -163,9 +159,8 @@ class OAuth2PkceUtil {
     } on OAuth2PkceException {
       rethrow;
     } catch (e) {
-      throw OAuth2PkceException(
-        reason: OAuth2PkceExceptionReason.unknown,
-        message: 'Unexpected error during authorization: ${e.toString()}',
+      throw OAuth2PkceUnknownException(
+        'Unexpected error during authorization: ${e.toString()}',
       );
     }
   }
