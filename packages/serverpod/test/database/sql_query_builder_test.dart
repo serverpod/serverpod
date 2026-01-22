@@ -1200,4 +1200,66 @@ void main() {
       });
     });
   });
+
+  test(
+    'Given a select query with a filtered result set and an order by and a limit when building then the query window function includes the ORDER BY clause.',
+    () {
+      var manyTable = _TableWithManyRelation(
+        relationAlias: 'citizens',
+        tableName: 'country',
+        tableRelation: TableRelation([
+          TableRelationEntry(
+            relationAlias: 'citizens',
+            field: ColumnInt('citizenId', citizenTable),
+            foreignField: ColumnInt('id', citizenTable),
+          ),
+        ]),
+      );
+
+      var query = SelectQueryBuilder(table: citizenTable)
+          .withWhereRelationInResultSet({1, 2, 3}, manyTable)
+          .withOrderBy([Order(column: citizenTable.id, orderDescending: true)])
+          .withLimit(10)
+          .build();
+
+      expect(
+        query,
+        'WITH _base_query_sorting_and_ordering AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3) ORDER BY "citizen"."id" DESC), _partitioned_list_by_parent_id AS (SELECT *, row_number() OVER ( PARTITION BY _base_query_sorting_and_ordering."citizen.id" ORDER BY _base_query_sorting_and_ordering."citizen.id" DESC) FROM _base_query_sorting_and_ordering) SELECT * FROM _partitioned_list_by_parent_id WHERE row_number BETWEEN 1 AND 10',
+      );
+    },
+  );
+
+  test(
+    'Given a select query with a filtered result set and multiple order by columns and a limit when building then the query window function includes all ORDER BY columns.',
+    () {
+      var manyTable = _TableWithManyRelation(
+        relationAlias: 'citizens',
+        tableName: 'country',
+        tableRelation: TableRelation([
+          TableRelationEntry(
+            relationAlias: 'citizens',
+            field: ColumnInt('citizenId', citizenTable),
+            foreignField: ColumnInt('id', citizenTable),
+          ),
+        ]),
+      );
+
+      var nameColumn = ColumnString('name', citizenTable);
+
+      var query = SelectQueryBuilder(table: citizenTable)
+          .withSelectFields([citizenTable.id, nameColumn])
+          .withWhereRelationInResultSet({1, 2, 3}, manyTable)
+          .withOrderBy([
+            Order(column: nameColumn, orderDescending: false),
+            Order(column: citizenTable.id, orderDescending: true),
+          ])
+          .withLimit(5)
+          .build();
+
+      expect(
+        query,
+        'WITH _base_query_sorting_and_ordering AS (SELECT "citizen"."id" AS "citizen.id", "citizen"."name" AS "citizen.name" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3) ORDER BY "citizen"."name", "citizen"."id" DESC), _partitioned_list_by_parent_id AS (SELECT *, row_number() OVER ( PARTITION BY _base_query_sorting_and_ordering."citizen.id" ORDER BY _base_query_sorting_and_ordering."citizen.name", _base_query_sorting_and_ordering."citizen.id" DESC) FROM _base_query_sorting_and_ordering) SELECT * FROM _partitioned_list_by_parent_id WHERE row_number BETWEEN 1 AND 5',
+      );
+    },
+  );
 }
