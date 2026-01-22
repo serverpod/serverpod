@@ -25,7 +25,8 @@ void main() {
           .withServerPackage('server')
           .withDartClientPackage('client')
           .withRelativeDartClientPackagePathParts(['..', 'client'])
-          .withModules([authCoreModule]).build();
+          .withModules([authCoreModule])
+          .build();
 
       var myModel = ModelClassDefinitionBuilder()
           .withClassName('MyModel')
@@ -53,13 +54,13 @@ void main() {
       );
 
       String getExpectedFilePath(String fileName) => p.joinAll([
-            '..',
-            'client',
-            'lib',
-            'src',
-            'protocol',
-            '$fileName.dart',
-          ]);
+        '..',
+        'client',
+        'lib',
+        'src',
+        'protocol',
+        '$fileName.dart',
+      ]);
 
       var myModelCode = codeMap[getExpectedFilePath('my_model')]!;
       var compilationUnit = parseString(content: myModelCode).unit;
@@ -81,9 +82,11 @@ void main() {
                 'package:serverpod_auth_core_client/src/protocol/common/models/auth_success.dart',
           );
 
-          expect(import, isNotNull,
-              reason:
-                  'Expected import from serverpod_auth_core_client');
+          expect(
+            import,
+            isNotNull,
+            reason: 'Expected import from serverpod_auth_core_client',
+          );
         },
       );
 
@@ -96,9 +99,12 @@ void main() {
                 'package:clientpod_auth_core_server/src/protocol/common/models/auth_success.dart',
           );
 
-          expect(import, isNull,
-              reason:
-                  'Should not have incorrect import from clientpod_auth_core_server (bug)');
+          expect(
+            import,
+            isNull,
+            reason:
+                'Should not have incorrect import from clientpod_auth_core_server (bug)',
+          );
         },
       );
 
@@ -111,9 +117,12 @@ void main() {
                 'package:clientpod_auth_core_client/src/protocol/common/models/auth_success.dart',
           );
 
-          expect(import, isNull,
-              reason:
-                  'Should not have incorrect import from clientpod_auth_core_client (another variant of the bug)');
+          expect(
+            import,
+            isNull,
+            reason:
+                'Should not have incorrect import from clientpod_auth_core_client (another variant of the bug)',
+          );
         },
       );
     },
