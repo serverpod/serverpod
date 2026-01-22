@@ -1939,9 +1939,9 @@ class SerializableModelLibraryGenerator {
         };
         if (uuidGeneratorMethod != null) {
           return refer(
-            'Uuid()',
+            'Uuid',
             serverpodUrl(serverCode),
-          ).property(uuidGeneratorMethod).call([]).code;
+          ).constInstance([]).property(uuidGeneratorMethod).call([]).code;
         }
 
         return refer(field.type.className, serverpodUrl(serverCode))
@@ -1958,7 +1958,7 @@ class SerializableModelLibraryGenerator {
         ).property('parse').call([literalString(defaultValue)]).code;
       case DefaultValueAllowedType.duration:
         Duration parsedDuration = parseDuration(defaultValue);
-        return refer(field.type.className).call([], {
+        return refer(field.type.className).constInstance([], {
           'days': literalNum(parsedDuration.days),
           'hours': literalNum(parsedDuration.hours),
           'minutes': literalNum(parsedDuration.minutes),
