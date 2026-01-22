@@ -72,7 +72,6 @@ set POSTHOG_API_KEY=phc_your_api_key_here
 export POSTHOG_API_KEY="phc_your_api_key_here"
 ```
 
-
 To make this permanent, add it to your shell profile (`.bashrc`, `.zshrc`, or PowerShell profile).
 
 **For production:**
