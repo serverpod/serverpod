@@ -101,15 +101,17 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
     if (error != null) {
       final errorDescription = responseBody['error_description'] as String?;
       throw OAuth2Exception(
-        error,
-        errorDescription: errorDescription,
+        reason: OAuth2ExceptionReason.invalidResponse,
+        message:
+            'Invalid response from GitHub:'
+            ' $error${errorDescription != null ? ' - $errorDescription' : ''}',
       );
     }
     final accessToken = responseBody['access_token'] as String?;
     if (accessToken == null) {
-      throw OAuth2Exception(
-        'missing_token',
-        errorDescription: 'No access token in GitHub response',
+      throw const OAuth2Exception(
+        reason: OAuth2ExceptionReason.missingAccessToken,
+        message: 'No access token in GitHub response',
       );
     }
     return accessToken;
