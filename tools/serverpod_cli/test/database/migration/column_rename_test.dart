@@ -61,7 +61,7 @@ void main() {
       var tableMigration = action.alterTable;
       expect(tableMigration, isNotNull);
       expect(tableMigration!.renameColumns, hasLength(1));
-      expect(tableMigration.renameColumns[oldColumnName], newColumnName);
+      expect(tableMigration.renameColumns![oldColumnName], newColumnName);
     });
 
     test('then the column is not in addColumns list.', () {
@@ -144,8 +144,8 @@ void main() {
         var action = migration.actions.first;
         var tableMigration = action.alterTable;
         expect(tableMigration!.renameColumns, hasLength(2));
-        expect(tableMigration.renameColumns[oldName1], newName1);
-        expect(tableMigration.renameColumns[oldName2], newName2);
+        expect(tableMigration.renameColumns![oldName1], newName1);
+        expect(tableMigration.renameColumns![oldName2], newName2);
       });
     },
   );
@@ -281,7 +281,7 @@ void main() {
       test('then the rename is detected.', () {
         var action = migration.actions.first;
         var tableMigration = action.alterTable;
-        expect(tableMigration!.renameColumns[oldColumnName], newColumnName);
+        expect(tableMigration!.renameColumns![oldColumnName], newColumnName);
       });
 
       test('then a modify column action is also created.', () {
@@ -341,7 +341,7 @@ void main() {
       test('then the rename is detected.', () {
         var action = migration.actions.first;
         var tableMigration = action.alterTable;
-        expect(tableMigration!.renameColumns[oldColumnName], newColumnName);
+        expect(tableMigration!.renameColumns![oldColumnName], newColumnName);
       });
 
       test('then a modify column action is also created.', () {
@@ -427,7 +427,7 @@ void main() {
       var action = migration.actions.first;
       var tableMigration = action.alterTable;
       expect(tableMigration!.renameColumns, hasLength(1));
-      expect(tableMigration.renameColumns[renamedOldName], renamedNewName);
+      expect(tableMigration.renameColumns![renamedOldName], renamedNewName);
     });
 
     test('then the added column is detected.', () {
@@ -449,11 +449,11 @@ void main() {
       var action = migration.actions.first;
       var tableMigration = action.alterTable;
       expect(
-        tableMigration!.renameColumns.containsKey(unchangedColumnName),
+        tableMigration!.renameColumns?.containsKey(unchangedColumnName) ?? false,
         isFalse,
       );
       expect(
-        tableMigration.renameColumns.containsValue(unchangedColumnName),
+        tableMigration.renameColumns?.containsValue(unchangedColumnName) ?? false,
         isFalse,
       );
       expect(

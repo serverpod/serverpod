@@ -198,7 +198,7 @@ extension TableDiffComparisons on TableMigration {
     return addColumns.isEmpty &&
         deleteColumns.isEmpty &&
         modifyColumns.isEmpty &&
-        renameColumns.isEmpty &&
+        (renameColumns?.isEmpty ?? true) &&
         addIndexes.isEmpty &&
         deleteIndexes.isEmpty &&
         addForeignKeys.isEmpty &&
@@ -647,9 +647,11 @@ extension TableMigrationPgSqlGenerator on TableMigration {
     }
 
     // Rename columns (must happen before add/modify to avoid naming conflicts)
-    for (var entry in renameColumns.entries) {
-      out +=
-          'ALTER TABLE "$name" RENAME COLUMN "${entry.key}" TO "${entry.value}";\n';
+    if (renameColumns != null) {
+      for (var entry in renameColumns!.entries) {
+        out +=
+            'ALTER TABLE "$name" RENAME COLUMN "${entry.key}" TO "${entry.value}";\n';
+      }
     }
 
     // Add columns

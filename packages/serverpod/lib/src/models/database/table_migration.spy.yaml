@@ -8,7 +8,7 @@ fields:
   addColumns: List<ColumnDefinition>
   deleteColumns: List<String>
   modifyColumns: List<ColumnMigration>
-  renameColumns: Map<String, String>
+  renameColumns: Map<String, String>?
 
   addIndexes: List<IndexDefinition>
   deleteIndexes: List<String>
