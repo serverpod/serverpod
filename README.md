@@ -47,6 +47,41 @@ Serverpod comes with Terraform scripts for Google Cloud Platform and AWS, making
 ### Built-in web server
 Serverpod comes with a built-in web server. This makes it very easy to share data for applications that need both an app and traditional web pages. You can also use the webserver to create webhooks or generate custom REST APIs to communicate with 3rd party services. _The web server is still experimental, and we are actively working on it_.
 
+## Analytics
+
+Serverpod uses PostHog and MixPanel analytics to track CLI usage and improve the framework. Both analytics systems work side-by-side without conflicts.
+
+### Setting Up PostHog Analytics
+
+To enable PostHog analytics, set the `POSTHOG_API_KEY` environment variable. If the API key is not set, analytics will be automatically disabled and everything will work normally.
+
+**For local development:**
+
+**Windows (PowerShell):**
+```powershell
+$env:POSTHOG_API_KEY = "phc_your_api_key_here"
+```
+
+**Windows (Command Prompt):**
+```cmd
+set POSTHOG_API_KEY=phc_your_api_key_here
+```
+
+**macOS/Linux:**
+```bash
+export POSTHOG_API_KEY="phc_your_api_key_here"
+```
+
+To make this permanent, add it to your shell profile (`.bashrc`, `.zshrc`, or PowerShell profile).
+
+**For production:**
+
+Set the `POSTHOG_API_KEY` environment variable in your deployment environment (Docker, cloud platforms, CI/CD pipelines, etc.). The same environment variable works for both CLI analytics and server analytics in projects created with `serverpod create`.
+
+**Optional:** To use a custom PostHog instance:
+```bash
+export POSTHOG_HOST="https://your-posthog-instance.com"
+```
 
 ## License
 All Serverpod packages are licensed under BSD-3, except for the main `serverpod` package, which uses the SSPL license. In short, this means that you can, without limitation, use any of the client packages in your app. You can also host your Serverpod server without limitation as long as you do not offer Severpod as a cloud service to 3rd parties (this is typically only relevant for cloud service providers).
