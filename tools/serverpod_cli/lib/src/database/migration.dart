@@ -220,16 +220,24 @@ TableMigration? generateTableMigration(
         renameColumns[deleteColumnName] = addColumn.name;
         deleteColumns.remove(deleteColumnName);
         addColumns.remove(addColumn);
-        
-        // If nullability or default changed, we still need to modify the column
-        if (srcColumn.isNullable != addColumn.isNullable ||
-            srcColumn.columnDefault != addColumn.columnDefault) {
-          // This will be handled by the modify columns logic below
-          // The column will exist with its new name, so we use that name
-        }
         break;
       }
     }
+  }
+
+  // Add warnings for columns that will actually be dropped (not renamed)
+  for (var deleteColumnName in deleteColumns) {
+    warnings.add(
+      DatabaseMigrationWarning(
+        type: DatabaseMigrationWarningType.columnDropped,
+        table: srcTable.name,
+        columns: [deleteColumnName],
+        message:
+            'Column "$deleteColumnName" of table "${srcTable.name}" '
+            'will be dropped.',
+        destrucive: true,
+      ),
+    );
   }
 
   var modifyColumns = <ColumnMigration>[];
@@ -335,21 +343,6 @@ TableMigration? generateTableMigration(
         }
       }
     }
-  }
-
-  // Add warnings for columns that will be dropped (not renamed)
-  for (var deleteColumnName in deleteColumns) {
-    warnings.add(
-      DatabaseMigrationWarning(
-        type: DatabaseMigrationWarningType.columnDropped,
-        table: srcTable.name,
-        columns: [deleteColumnName],
-        message:
-            'Column "$deleteColumnName" of table "${srcTable.name}" '
-            'will be dropped.',
-        destrucive: true,
-      ),
-    );
   }
 
   // Find added indexes
