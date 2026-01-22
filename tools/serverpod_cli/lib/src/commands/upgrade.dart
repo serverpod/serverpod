@@ -24,18 +24,21 @@ class UpgradeCommand extends ServerpodCommand {
     const cliVersionBefore = templateVersion;
     var success = false;
     try {
-      var upgradeSuccess = await log.progress('Updating Serverpod Cli...', () async {
-        log.debug('Running `dart pub global activate serverpod_cli`...');
-        var startProcess = await Process.start('dart', [
-          'pub',
-          'global',
-          'activate',
-          'serverpod_cli',
-        ]);
-        startProcess.stdout.transform(const Utf8Decoder()).listen(log.debug);
-        startProcess.stderr.transform(const Utf8Decoder()).listen(log.error);
-        return await startProcess.exitCode == 0;
-      });
+      var upgradeSuccess = await log.progress(
+        'Updating Serverpod Cli...',
+        () async {
+          log.debug('Running `dart pub global activate serverpod_cli`...');
+          var startProcess = await Process.start('dart', [
+            'pub',
+            'global',
+            'activate',
+            'serverpod_cli',
+          ]);
+          startProcess.stdout.transform(const Utf8Decoder()).listen(log.debug);
+          startProcess.stderr.transform(const Utf8Decoder()).listen(log.error);
+          return await startProcess.exitCode == 0;
+        },
+      );
 
       if (!upgradeSuccess) {
         log.info('Failed to update Serverpod.');

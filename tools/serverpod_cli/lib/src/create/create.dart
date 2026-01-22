@@ -241,7 +241,7 @@ Future<bool> performCreate(
   // Open welcome page with UUID for PostHog linking
   // Open browser for server template projects if project directory was created
   // (even if some steps failed, the project is still usable)
-  if (template == ServerpodTemplateType.server && 
+  if (template == ServerpodTemplateType.server &&
       serverpodDirs.projectDir.existsSync()) {
     final uuid = ResourceManager().uniqueUserId;
     // Use localhost for development, production URL for production

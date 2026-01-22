@@ -103,7 +103,8 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
     final fullCommandParts = ['serverpod', 'create', name];
     if (commandConfig.value(CreateOption.mini)) {
       fullCommandParts.add('--mini');
-    } else if (commandConfig.value(CreateOption.template) != ServerpodTemplateType.server) {
+    } else if (commandConfig.value(CreateOption.template) !=
+        ServerpodTemplateType.server) {
       fullCommandParts.add('--template');
       fullCommandParts.add(template.name);
     }

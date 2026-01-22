@@ -1,7 +1,7 @@
 import 'dart:io';
 
 /// MixPanel configuration for CLI analytics.
-/// 
+///
 /// API token should be provided via environment variable:
 /// - MIXPANEL_TOKEN: MixPanel project token
 class MixPanelConfig {

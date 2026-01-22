@@ -51,17 +51,17 @@ class PostHogAnalytics implements Analytics {
   void _sendEvent(Map<String, dynamic> eventData) {
     final future = http
         .post(
-      Uri.parse('$host/capture/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(eventData),
-    )
+          Uri.parse('$host/capture/'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(eventData),
+        )
         .then((response) {
-      // Request completed successfully
-    })
+          // Request completed successfully
+        })
         .catchError((error) {
-      // Silently fail - analytics should not break the CLI
-    });
-    
+          // Silently fail - analytics should not break the CLI
+        });
+
     _pendingRequests.add(future);
   }
 
@@ -76,7 +76,7 @@ class PostHogAnalytics implements Analytics {
     // Create a copy of pending requests and clear the list to prevent duplicate waits
     final requestsToWait = List<Future<void>>.from(_pendingRequests);
     _pendingRequests.clear();
-    
+
     if (requestsToWait.isNotEmpty) {
       try {
         await Future.wait(requestsToWait).timeout(
@@ -109,13 +109,13 @@ class PostHogAnalytics implements Analytics {
 
     http
         .post(
-      Uri.parse('$host/capture/'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(identifyData),
-    )
+          Uri.parse('$host/capture/'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(identifyData),
+        )
         .catchError((error) {
-      // Silently fail
-      return http.Response('', 500);
-    });
+          // Silently fail
+          return http.Response('', 500);
+        });
   }
 }

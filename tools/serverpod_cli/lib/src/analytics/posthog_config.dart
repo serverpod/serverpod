@@ -1,7 +1,7 @@
 import 'dart:io';
 
 /// PostHog configuration for CLI analytics.
-/// 
+///
 /// API keys should be provided via environment variables:
 /// - POSTHOG_API_KEY: PostHog project API key
 /// - POSTHOG_HOST: PostHog host (defaults to https://eu.i.posthog.com)
@@ -14,8 +14,7 @@ class PostHogConfig {
   static String get apiKey => Platform.environment['POSTHOG_API_KEY'] ?? '';
 
   /// PostHog host from environment variable or default.
-  static String get host =>
-      Platform.environment['POSTHOG_HOST'] ?? defaultHost;
+  static String get host => Platform.environment['POSTHOG_HOST'] ?? defaultHost;
 
   /// Whether PostHog is enabled (has API key).
   static bool get enabled => apiKey.isNotEmpty;
