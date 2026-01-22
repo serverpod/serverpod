@@ -229,7 +229,7 @@ void _collectMissingRequiredKeyErrors(
     collector.addError(
       SourceSpanSeverityException(
         'No "${node.key}" property is defined.',
-        documentContents.nodes[node.key]?.span,
+        documentContents.nodes[node.key]?.span ?? documentContents.span,
       ),
     );
   }

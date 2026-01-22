@@ -86,6 +86,49 @@ void main() {
   );
 
   test(
+    'Given a class with an index defined as an empty map when fields keyword is missing then collect an error that fields are required.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            name: String
+          indexes:
+            example_index: {}
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'No "fields" property is defined.',
+      );
+      expect(
+        error.span,
+        isNotNull,
+        reason: 'Expected error span to not be null.',
+      );
+    },
+  );
+
+  test(
     'Given a class with an index with a defined field, then the definition contains the index.',
     () {
       var models = [
