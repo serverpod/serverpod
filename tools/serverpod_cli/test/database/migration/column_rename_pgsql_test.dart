@@ -50,28 +50,37 @@ void main() {
 
     var psql = migration.toPgSql(installedModules: [], removedModules: []);
 
-    test('when generating PostgreSQL then ALTER TABLE RENAME COLUMN statement is generated.', () {
-      expect(
-        psql,
-        contains(
-          'ALTER TABLE "$tableName" RENAME COLUMN "$oldColumnName" TO "$newColumnName";',
-        ),
-      );
-    });
+    test(
+      'when generating PostgreSQL then ALTER TABLE RENAME COLUMN statement is generated.',
+      () {
+        expect(
+          psql,
+          contains(
+            'ALTER TABLE "$tableName" RENAME COLUMN "$oldColumnName" TO "$newColumnName";',
+          ),
+        );
+      },
+    );
 
-    test('when generating PostgreSQL then DROP COLUMN statement is not generated.', () {
-      expect(
-        psql,
-        isNot(contains('DROP COLUMN "$oldColumnName"')),
-      );
-    });
+    test(
+      'when generating PostgreSQL then DROP COLUMN statement is not generated.',
+      () {
+        expect(
+          psql,
+          isNot(contains('DROP COLUMN "$oldColumnName"')),
+        );
+      },
+    );
 
-    test('when generating PostgreSQL then ADD COLUMN statement is not generated.', () {
-      expect(
-        psql,
-        isNot(contains('ADD COLUMN "$newColumnName"')),
-      );
-    });
+    test(
+      'when generating PostgreSQL then ADD COLUMN statement is not generated.',
+      () {
+        expect(
+          psql,
+          isNot(contains('ADD COLUMN "$newColumnName"')),
+        );
+      },
+    );
   });
 
   group('Given a table migration with multiple column renames', () {
@@ -130,20 +139,23 @@ void main() {
 
     var psql = migration.toPgSql(installedModules: [], removedModules: []);
 
-    test('when generating PostgreSQL then both RENAME COLUMN statements are generated.', () {
-      expect(
-        psql,
-        contains(
-          'ALTER TABLE "$tableName" RENAME COLUMN "$oldName1" TO "$newName1";',
-        ),
-      );
-      expect(
-        psql,
-        contains(
-          'ALTER TABLE "$tableName" RENAME COLUMN "$oldName2" TO "$newName2";',
-        ),
-      );
-    });
+    test(
+      'when generating PostgreSQL then both RENAME COLUMN statements are generated.',
+      () {
+        expect(
+          psql,
+          contains(
+            'ALTER TABLE "$tableName" RENAME COLUMN "$oldName1" TO "$newName1";',
+          ),
+        );
+        expect(
+          psql,
+          contains(
+            'ALTER TABLE "$tableName" RENAME COLUMN "$oldName2" TO "$newName2";',
+          ),
+        );
+      },
+    );
   });
 
   group('Given a table migration with rename and add operations', () {
@@ -205,9 +217,7 @@ void main() {
     });
   });
 
-  group(
-      'Given a table migration with renamed column and nullability change',
-      () {
+  group('Given a table migration with renamed column and nullability change', () {
     const tableName = 'example_table';
     const oldColumnName = 'old_name';
     const newColumnName = 'new_name';
@@ -251,27 +261,33 @@ void main() {
 
     var psql = migration.toPgSql(installedModules: [], removedModules: []);
 
-    test('when generating PostgreSQL then both RENAME and DROP NOT NULL statements are generated.', () {
-      expect(
-        psql,
-        contains(
-          'ALTER TABLE "$tableName" RENAME COLUMN "$oldColumnName" TO "$newColumnName";',
-        ),
-      );
-      expect(
-        psql,
-        contains(
-          'ALTER TABLE "$tableName" ALTER COLUMN "$newColumnName" DROP NOT NULL;',
-        ),
-      );
-    });
+    test(
+      'when generating PostgreSQL then both RENAME and DROP NOT NULL statements are generated.',
+      () {
+        expect(
+          psql,
+          contains(
+            'ALTER TABLE "$tableName" RENAME COLUMN "$oldColumnName" TO "$newColumnName";',
+          ),
+        );
+        expect(
+          psql,
+          contains(
+            'ALTER TABLE "$tableName" ALTER COLUMN "$newColumnName" DROP NOT NULL;',
+          ),
+        );
+      },
+    );
 
-    test('when generating PostgreSQL then rename appears before nullability change.', () {
-      var renameIndex = psql.indexOf('RENAME COLUMN');
-      var dropNotNullIndex = psql.indexOf('DROP NOT NULL');
-      expect(renameIndex, isNot(-1));
-      expect(dropNotNullIndex, isNot(-1));
-      expect(renameIndex, lessThan(dropNotNullIndex));
-    });
+    test(
+      'when generating PostgreSQL then rename appears before nullability change.',
+      () {
+        var renameIndex = psql.indexOf('RENAME COLUMN');
+        var dropNotNullIndex = psql.indexOf('DROP NOT NULL');
+        expect(renameIndex, isNot(-1));
+        expect(dropNotNullIndex, isNot(-1));
+        expect(renameIndex, lessThan(dropNotNullIndex));
+      },
+    );
   });
 }

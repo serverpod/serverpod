@@ -77,80 +77,80 @@ void main() {
     });
 
     test('then no destructive warnings are generated.', () {
-      var destructiveWarnings =
-          migration.warnings.where((w) => w.destrucive).toList();
+      var destructiveWarnings = migration.warnings
+          .where((w) => w.destrucive)
+          .toList();
       expect(destructiveWarnings, isEmpty);
     });
   });
 
   group(
-      'Given a table with multiple renamed columns when detecting migration',
-      () {
-    const tableName = 'example_table';
-    const oldName1 = 'old_name_1';
-    const newName1 = 'new_name_1';
-    const oldName2 = 'old_name_2';
-    const newName2 = 'new_name_2';
+    'Given a table with multiple renamed columns when detecting migration',
+    () {
+      const tableName = 'example_table';
+      const oldName1 = 'old_name_1';
+      const newName1 = 'new_name_1';
+      const oldName2 = 'old_name_2';
+      const newName2 = 'new_name_2';
 
-    var sourceDefinition = DatabaseDefinitionBuilder()
-        .withDefaultModules()
-        .withTable(
-          TableDefinitionBuilder()
-              .withName(tableName)
-              .withColumn(
-                ColumnDefinitionBuilder()
-                    .withName(oldName1)
-                    .withColumnType(ColumnType.text)
-                    .build(),
-              )
-              .withColumn(
-                ColumnDefinitionBuilder()
-                    .withName(oldName2)
-                    .withColumnType(ColumnType.integer)
-                    .build(),
-              )
-              .build(),
-        )
-        .build();
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName(tableName)
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName(oldName1)
+                      .withColumnType(ColumnType.text)
+                      .build(),
+                )
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName(oldName2)
+                      .withColumnType(ColumnType.integer)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
 
-    var targetDefinition = DatabaseDefinitionBuilder()
-        .withDefaultModules()
-        .withTable(
-          TableDefinitionBuilder()
-              .withName(tableName)
-              .withColumn(
-                ColumnDefinitionBuilder()
-                    .withName(newName1)
-                    .withColumnType(ColumnType.text)
-                    .build(),
-              )
-              .withColumn(
-                ColumnDefinitionBuilder()
-                    .withName(newName2)
-                    .withColumnType(ColumnType.integer)
-                    .build(),
-              )
-              .build(),
-        )
-        .build();
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName(tableName)
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName(newName1)
+                      .withColumnType(ColumnType.text)
+                      .build(),
+                )
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName(newName2)
+                      .withColumnType(ColumnType.integer)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
 
-    var migration = generateDatabaseMigration(
-      databaseSource: sourceDefinition,
-      databaseTarget: targetDefinition,
-    );
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
 
-    test('then both renames are detected.', () {
-      var action = migration.actions.first;
-      var tableMigration = action.alterTable;
-      expect(tableMigration!.renameColumns, hasLength(2));
-      expect(tableMigration.renameColumns[oldName1], newName1);
-      expect(tableMigration.renameColumns[oldName2], newName2);
-    });
-  });
+      test('then both renames are detected.', () {
+        var action = migration.actions.first;
+        var tableMigration = action.alterTable;
+        expect(tableMigration!.renameColumns, hasLength(2));
+        expect(tableMigration.renameColumns[oldName1], newName1);
+        expect(tableMigration.renameColumns[oldName2], newName2);
+      });
+    },
+  );
 
-  group(
-      'Given a column with a changed type when detecting migration',
-      () {
+  group('Given a column with a changed type when detecting migration', () {
     const tableName = 'example_table';
     const columnName = 'column_name';
 
@@ -235,122 +235,125 @@ void main() {
   });
 
   group(
-      'Given a renamed column with changed nullability when detecting migration',
-      () {
-    const tableName = 'example_table';
-    const oldColumnName = 'old_name';
-    const newColumnName = 'new_name';
+    'Given a renamed column with changed nullability when detecting migration',
+    () {
+      const tableName = 'example_table';
+      const oldColumnName = 'old_name';
+      const newColumnName = 'new_name';
 
-    var sourceDefinition = DatabaseDefinitionBuilder()
-        .withDefaultModules()
-        .withTable(
-          TableDefinitionBuilder()
-              .withName(tableName)
-              .withColumn(
-                ColumnDefinitionBuilder()
-                    .withName(oldColumnName)
-                    .withColumnType(ColumnType.text)
-                    .withIsNullable(false)
-                    .build(),
-              )
-              .build(),
-        )
-        .build();
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName(tableName)
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName(oldColumnName)
+                      .withColumnType(ColumnType.text)
+                      .withIsNullable(false)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
 
-    var targetDefinition = DatabaseDefinitionBuilder()
-        .withDefaultModules()
-        .withTable(
-          TableDefinitionBuilder()
-              .withName(tableName)
-              .withColumn(
-                ColumnDefinitionBuilder()
-                    .withName(newColumnName)
-                    .withColumnType(ColumnType.text)
-                    .withIsNullable(true)
-                    .build(),
-              )
-              .build(),
-        )
-        .build();
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName(tableName)
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName(newColumnName)
+                      .withColumnType(ColumnType.text)
+                      .withIsNullable(true)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
 
-    var migration = generateDatabaseMigration(
-      databaseSource: sourceDefinition,
-      databaseTarget: targetDefinition,
-    );
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
 
-    test('then the rename is detected.', () {
-      var action = migration.actions.first;
-      var tableMigration = action.alterTable;
-      expect(tableMigration!.renameColumns[oldColumnName], newColumnName);
-    });
+      test('then the rename is detected.', () {
+        var action = migration.actions.first;
+        var tableMigration = action.alterTable;
+        expect(tableMigration!.renameColumns[oldColumnName], newColumnName);
+      });
 
-    test('then a modify column action is also created.', () {
-      var action = migration.actions.first;
-      var tableMigration = action.alterTable;
-      expect(tableMigration!.modifyColumns, hasLength(1));
-      expect(tableMigration.modifyColumns.first.columnName, newColumnName);
-      expect(tableMigration.modifyColumns.first.addNullable, isTrue);
-    });
-  });
+      test('then a modify column action is also created.', () {
+        var action = migration.actions.first;
+        var tableMigration = action.alterTable;
+        expect(tableMigration!.modifyColumns, hasLength(1));
+        expect(tableMigration.modifyColumns.first.columnName, newColumnName);
+        expect(tableMigration.modifyColumns.first.addNullable, isTrue);
+      });
+    },
+  );
 
-  group('Given a renamed column with changed default when detecting migration',
-      () {
-    const tableName = 'example_table';
-    const oldColumnName = 'old_name';
-    const newColumnName = 'new_name';
-    const defaultValue = "'default'";
+  group(
+    'Given a renamed column with changed default when detecting migration',
+    () {
+      const tableName = 'example_table';
+      const oldColumnName = 'old_name';
+      const newColumnName = 'new_name';
+      const defaultValue = "'default'";
 
-    var sourceDefinition = DatabaseDefinitionBuilder()
-        .withDefaultModules()
-        .withTable(
-          TableDefinitionBuilder()
-              .withName(tableName)
-              .withColumn(
-                ColumnDefinitionBuilder()
-                    .withName(oldColumnName)
-                    .withColumnType(ColumnType.text)
-                    .build(),
-              )
-              .build(),
-        )
-        .build();
+      var sourceDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName(tableName)
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName(oldColumnName)
+                      .withColumnType(ColumnType.text)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
 
-    var targetDefinition = DatabaseDefinitionBuilder()
-        .withDefaultModules()
-        .withTable(
-          TableDefinitionBuilder()
-              .withName(tableName)
-              .withColumn(
-                ColumnDefinitionBuilder()
-                    .withName(newColumnName)
-                    .withColumnType(ColumnType.text)
-                    .withColumnDefault(defaultValue)
-                    .build(),
-              )
-              .build(),
-        )
-        .build();
+      var targetDefinition = DatabaseDefinitionBuilder()
+          .withDefaultModules()
+          .withTable(
+            TableDefinitionBuilder()
+                .withName(tableName)
+                .withColumn(
+                  ColumnDefinitionBuilder()
+                      .withName(newColumnName)
+                      .withColumnType(ColumnType.text)
+                      .withColumnDefault(defaultValue)
+                      .build(),
+                )
+                .build(),
+          )
+          .build();
 
-    var migration = generateDatabaseMigration(
-      databaseSource: sourceDefinition,
-      databaseTarget: targetDefinition,
-    );
+      var migration = generateDatabaseMigration(
+        databaseSource: sourceDefinition,
+        databaseTarget: targetDefinition,
+      );
 
-    test('then the rename is detected.', () {
-      var action = migration.actions.first;
-      var tableMigration = action.alterTable;
-      expect(tableMigration!.renameColumns[oldColumnName], newColumnName);
-    });
+      test('then the rename is detected.', () {
+        var action = migration.actions.first;
+        var tableMigration = action.alterTable;
+        expect(tableMigration!.renameColumns[oldColumnName], newColumnName);
+      });
 
-    test('then a modify column action is also created.', () {
-      var action = migration.actions.first;
-      var tableMigration = action.alterTable;
-      expect(tableMigration!.modifyColumns, hasLength(1));
-      expect(tableMigration.modifyColumns.first.columnName, newColumnName);
-      expect(tableMigration.modifyColumns.first.changeDefault, isTrue);
-      expect(tableMigration.modifyColumns.first.newDefault, defaultValue);
-    });
-  });
+      test('then a modify column action is also created.', () {
+        var action = migration.actions.first;
+        var tableMigration = action.alterTable;
+        expect(tableMigration!.modifyColumns, hasLength(1));
+        expect(tableMigration.modifyColumns.first.columnName, newColumnName);
+        expect(tableMigration.modifyColumns.first.changeDefault, isTrue);
+        expect(tableMigration.modifyColumns.first.newDefault, defaultValue);
+      });
+    },
+  );
 
   group('Given a table with mixed operations when detecting migration', () {
     const tableName = 'example_table';
@@ -445,11 +448,18 @@ void main() {
     test('then the unchanged column is not in any change lists.', () {
       var action = migration.actions.first;
       var tableMigration = action.alterTable;
-      expect(tableMigration!.renameColumns.containsKey(unchangedColumnName),
-          isFalse);
-      expect(tableMigration.renameColumns.containsValue(unchangedColumnName),
-          isFalse);
-      expect(tableMigration.deleteColumns, isNot(contains(unchangedColumnName)));
+      expect(
+        tableMigration!.renameColumns.containsKey(unchangedColumnName),
+        isFalse,
+      );
+      expect(
+        tableMigration.renameColumns.containsValue(unchangedColumnName),
+        isFalse,
+      );
+      expect(
+        tableMigration.deleteColumns,
+        isNot(contains(unchangedColumnName)),
+      );
       expect(
         tableMigration.addColumns.any((c) => c.name == unchangedColumnName),
         isFalse,

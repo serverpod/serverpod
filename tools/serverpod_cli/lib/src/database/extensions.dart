@@ -648,7 +648,8 @@ extension TableMigrationPgSqlGenerator on TableMigration {
 
     // Rename columns (must happen before add/modify to avoid naming conflicts)
     for (var entry in renameColumns.entries) {
-      out += 'ALTER TABLE "$name" RENAME COLUMN "${entry.key}" TO "${entry.value}";\n';
+      out +=
+          'ALTER TABLE "$name" RENAME COLUMN "${entry.key}" TO "${entry.value}";\n';
     }
 
     // Add columns

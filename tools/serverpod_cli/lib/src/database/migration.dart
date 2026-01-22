@@ -249,17 +249,18 @@ TableMigration? generateTableMigration(
     var dstColumn = renamedTo != null
         ? dstTable.findColumnNamed(renamedTo)
         : dstTable.findColumnNamed(srcColumn.name);
-    
+
     if (dstColumn == null) {
       continue;
     }
-    
+
     // For renamed columns, we need to check if properties other than name changed
     // For non-renamed columns, we use the standard like() check
     bool columnsAreDifferent;
     if (renamedTo != null) {
       // Renamed column - check everything except name
-      columnsAreDifferent = srcColumn.isNullable != dstColumn.isNullable ||
+      columnsAreDifferent =
+          srcColumn.isNullable != dstColumn.isNullable ||
           srcColumn.columnDefault != dstColumn.columnDefault ||
           srcColumn.columnType != dstColumn.columnType ||
           srcColumn.dartType != dstColumn.dartType ||
@@ -268,13 +269,14 @@ TableMigration? generateTableMigration(
       // Regular column - use standard comparison
       columnsAreDifferent = !srcColumn.like(dstColumn);
     }
-    
+
     if (columnsAreDifferent) {
       // Check if the column can be migrated (type compatible)
       bool canMigrate;
       if (renamedTo != null) {
         // For renamed columns, check if types are compatible (ignoring name)
-        canMigrate = srcColumn.columnType == dstColumn.columnType &&
+        canMigrate =
+            srcColumn.columnType == dstColumn.columnType &&
             (srcColumn.dartType == null ||
                 dstColumn.dartType == null ||
                 srcColumn.dartType == dstColumn.dartType) &&
@@ -282,7 +284,7 @@ TableMigration? generateTableMigration(
       } else {
         canMigrate = srcColumn.canMigrateTo(dstColumn);
       }
-      
+
       if (canMigrate) {
         // Column can be modified
         var addNullable = !srcColumn.isNullable && dstColumn.isNullable;
