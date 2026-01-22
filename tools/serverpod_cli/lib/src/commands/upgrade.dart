@@ -20,8 +20,8 @@ class UpgradeCommand extends ServerpodCommand {
   Future<void> runWithConfig(
     final Configuration commandConfig,
   ) async {
-    final fullCommand = 'serverpod upgrade';
-    final cliVersionBefore = templateVersion;
+    const fullCommand = 'serverpod upgrade';
+    const cliVersionBefore = templateVersion;
     var success = false;
     try {
       var upgradeSuccess = await log.progress('Updating Serverpod Cli...', () async {

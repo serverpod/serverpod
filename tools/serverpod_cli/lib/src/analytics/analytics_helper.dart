@@ -1,6 +1,6 @@
 import 'package:cli_tools/cli_tools.dart';
-import 'package:serverpod_cli/src/analytics/posthog_analytics.dart';
 import 'package:serverpod_cli/src/analytics/composite_analytics.dart';
+import 'package:serverpod_cli/src/analytics/posthog_analytics.dart';
 
 /// Helper extension for tracking analytics events with properties.
 /// 
