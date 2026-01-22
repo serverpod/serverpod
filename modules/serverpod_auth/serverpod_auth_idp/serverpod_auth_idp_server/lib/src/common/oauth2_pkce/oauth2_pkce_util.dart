@@ -60,11 +60,11 @@ class OAuth2PkceUtil {
   ///
   /// Returns the access token string on success.
   ///
-  /// Throws an [OAuth2Exception] in case of errors, with reason:
-  /// - [OAuth2ExceptionReason.invalidResponse] if the response cannot be parsed
-  /// - [OAuth2ExceptionReason.missingAccessToken] if the access token is missing
-  /// - [OAuth2ExceptionReason.networkError] if a network error occurs
-  /// - [OAuth2ExceptionReason.unknown] for other unexpected errors
+  /// Throws one of the following [OAuth2Exception] subclasses in case of errors:
+  /// - [OAuth2InvalidResponseException] if the response cannot be parsed
+  /// - [OAuth2MissingAccessTokenException] if the access token is missing
+  /// - [OAuth2NetworkErrorException] if a network error occurs
+  /// - [OAuth2UnknownException] for other unexpected errors
   Future<String> exchangeCodeForToken({
     required final String code,
     final String? codeVerifier,
@@ -116,11 +116,9 @@ class OAuth2PkceUtil {
       );
 
       if (response.statusCode != 200) {
-        throw OAuth2Exception(
-          reason: OAuth2ExceptionReason.networkError,
-          message:
-              'Failed to exchange authorization code for access token: '
-              'HTTP ${response.statusCode}',
+        throw OAuth2InvalidResponseException(
+          'Failed to exchange authorization code for access token: '
+          'HTTP ${response.statusCode}',
         );
       }
 
@@ -128,9 +126,8 @@ class OAuth2PkceUtil {
       try {
         responseBody = jsonDecode(response.body) as Map<String, dynamic>;
       } catch (e) {
-        throw OAuth2Exception(
-          reason: OAuth2ExceptionReason.invalidResponse,
-          message: 'Failed to parse token response as JSON: ${e.toString()}',
+        throw OAuth2InvalidResponseException(
+          'Failed to parse token response as JSON: ${e.toString()}',
         );
       }
 
@@ -139,18 +136,15 @@ class OAuth2PkceUtil {
       } on OAuth2Exception {
         rethrow;
       } catch (e) {
-        throw OAuth2Exception(
-          reason: OAuth2ExceptionReason.missingAccessToken,
-          message:
-              'Access token missing or invalid in response: ${e.toString()}',
+        throw OAuth2MissingAccessTokenException(
+          'Access token missing or invalid in response: ${e.toString()}',
         );
       }
     } on OAuth2Exception {
       rethrow;
     } catch (e) {
-      throw OAuth2Exception(
-        reason: OAuth2ExceptionReason.networkError,
-        message: 'Network error during token exchange: ${e.toString()}',
+      throw OAuth2NetworkErrorException(
+        'Network error during token exchange: ${e.toString()}',
       );
     } finally {
       // Close the client only if we created it internally
