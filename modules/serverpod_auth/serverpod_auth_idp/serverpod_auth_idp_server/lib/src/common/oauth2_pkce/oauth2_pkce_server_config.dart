@@ -21,7 +21,7 @@ enum OAuth2CredentialsLocation {
 typedef ParseAccessToken = String Function(Map<String, dynamic> responseBody);
 
 /// Configuration for OAuth2 token exchange (server-side).
-final class OAuth2PkceServerConfig {
+class OAuth2PkceServerConfig {
   /// Token endpoint URL for exchanging authorization codes.
   final Uri tokenEndpointUrl;
 

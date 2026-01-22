@@ -139,28 +139,34 @@ class _SignInWidgetState extends State<SignInWidget> {
               onAuthenticated: widget.onAuthenticated,
               onError: widget.onError,
             ),
+    ];
 
-      if (hasApple)
-        widget.appleSignInWidget ??
-            AppleSignInWidget(
-              client: widget.client,
-              onAuthenticated: widget.onAuthenticated,
-              onError: widget.onError,
-            ),
+    if (hasApple) {
+      final appleSignInWidget =
+          widget.appleSignInWidget ??
+          AppleSignInWidget(
+            client: widget.client,
+            onAuthenticated: widget.onAuthenticated,
+            onError: widget.onError,
+          );
 
-      if (hasGitHub)
+      // On Apple platforms, display the Apple sign-in widget first.
+      if (!kIsWeb && (Platform.isIOS || Platform.isMacOS)) {
+        socialProviders.insert(0, appleSignInWidget);
+      } else {
+        socialProviders.add(appleSignInWidget);
+      }
+    }
+
+    if (hasGitHub) {
+      socialProviders.add(
         widget.githubSignInWidget ??
             GitHubSignInWidget(
               client: widget.client,
               onAuthenticated: widget.onAuthenticated,
               onError: widget.onError,
             ),
-    ];
-
-    // On Apple platforms, display the Apple sign-in widget first.
-    if (hasApple && !kIsWeb && (Platform.isIOS || Platform.isMacOS)) {
-      final appleWidget = socialProviders.removeAt(1);
-      socialProviders.insert(0, appleWidget);
+      );
     }
 
     if (hasGitHub) {

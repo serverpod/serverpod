@@ -172,7 +172,7 @@ class OAuth2PkceUtil {
       'client_id': config.clientId,
       'redirect_uri': config.redirectUri,
       'response_type': 'code',
-      if (config.additionalAuthParams != null) ...config.additionalAuthParams!,
+      ...config.additionalAuthParams,
     };
 
     if (codeChallenge != null) {
