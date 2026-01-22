@@ -56,6 +56,11 @@ class GitHubSignInService {
   OAuth2PkceProviderClientConfig? _config;
   bool? _useWebview;
 
+  OAuth2PkceUtil get _oauth2Util => OAuth2PkceUtil(
+    config: _config!,
+    useWebview: _useWebview,
+  );
+
   /// Ensures that GitHub Sign-In is initialized.
   ///
   /// This method is idempotent and can be called multiple times, but only the
@@ -80,10 +85,7 @@ class GitHubSignInService {
     if (_config != null) return;
 
     _config = OAuth2PkceProviderClientConfig(
-      authorizationEndpoint: Uri.https(
-        'github.com',
-        '/login/oauth/authorize',
-      ),
+      authorizationEndpoint: Uri.https('github.com', '/login/oauth/authorize'),
       clientId: clientId,
       redirectUri: redirectUri,
       callbackUrlScheme: callbackUrlScheme ?? Uri.parse(redirectUri).scheme,
@@ -104,12 +106,7 @@ class GitHubSignInService {
       );
     }
 
-    final oauth2Util = OAuth2PkceUtil(
-      config: _config!,
-      useWebview: _useWebview,
-    );
-
-    final result = await oauth2Util.authorize(scopes: scopes);
+    final result = await _oauth2Util.authorize(scopes: scopes);
 
     return (
       code: result.code,
