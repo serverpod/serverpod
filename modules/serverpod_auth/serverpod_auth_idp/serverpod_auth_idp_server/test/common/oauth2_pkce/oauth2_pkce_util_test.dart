@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:serverpod_auth_idp_server/core.dart';
@@ -12,6 +13,7 @@ class MockHttpClient extends http.BaseClient {
   MockHttpClient({
     required this.statusCode,
     required this.responseBody,
+    this.throwError = false,
   });
 
   /// The HTTP status code to return.
@@ -19,6 +21,9 @@ class MockHttpClient extends http.BaseClient {
 
   /// The response body to return.
   final String responseBody;
+
+  /// Whether to simulate an error during the request.
+  final bool throwError;
 
   /// Captured request for verification.
   http.BaseRequest? capturedRequest;
@@ -31,6 +36,10 @@ class MockHttpClient extends http.BaseClient {
 
   @override
   Future<http.StreamedResponse> send(final http.BaseRequest request) async {
+    if (throwError) {
+      throw const SocketException('No Internet');
+    }
+
     capturedRequest = request;
     capturedHeaders = Map.from(request.headers);
 
@@ -185,8 +194,9 @@ void main() {
       );
     });
 
-    group('when exchanging code for token', () {
-      test('then it throws OAuth2Exception', () {
+    test(
+      'when exchanging code for token then it throws OAuth2InvalidResponseException',
+      () {
         expect(
           () => oauth2Util.exchangeCodeForToken(
             code: 'invalid_code',
@@ -194,10 +204,10 @@ void main() {
             redirectUri: 'https://example.com/callback',
             httpClient: mockClient,
           ),
-          throwsA(isA<OAuth2Exception>()),
+          throwsA(isA<OAuth2InvalidResponseException>()),
         );
-      });
-    });
+      },
+    );
   });
 
   group('Given OAuth2PkceUtil receiving 401 Unauthorized response', () {
@@ -213,8 +223,9 @@ void main() {
       );
     });
 
-    group('when exchanging code for token', () {
-      test('then it throws OAuth2Exception', () {
+    test(
+      'when exchanging code for token then it throws OAuth2InvalidResponseException',
+      () {
         expect(
           () => oauth2Util.exchangeCodeForToken(
             code: 'auth_code',
@@ -222,26 +233,28 @@ void main() {
             redirectUri: 'https://example.com/callback',
             httpClient: mockClient,
           ),
-          throwsA(isA<OAuth2Exception>()),
+          throwsA(isA<OAuth2InvalidResponseException>()),
         );
-      });
-    });
+      },
+    );
   });
 
   group(
-    'Given OAuth2PkceUtil receiving 500 Internal Server Error response',
+    'Given OAuth2PkceUtil encountering a network failure',
     () {
       late MockHttpClient mockClient;
 
       setUp(() {
         mockClient = MockHttpClient(
+          throwError: true,
           statusCode: 500,
-          responseBody: 'Internal Server Error',
+          responseBody: 'Network Exception',
         );
       });
 
-      group('when exchanging code for token', () {
-        test('then it throws OAuth2Exception', () {
+      test(
+        'when exchanging code for token then it throws OAuth2NetworkErrorException',
+        () async {
           expect(
             () => oauth2Util.exchangeCodeForToken(
               code: 'auth_code',
@@ -249,10 +262,10 @@ void main() {
               redirectUri: 'https://example.com/callback',
               httpClient: mockClient,
             ),
-            throwsA(isA<OAuth2Exception>()),
+            throwsA(isA<OAuth2NetworkErrorException>()),
           );
-        });
-      });
+        },
+      );
     },
   );
 
@@ -266,8 +279,9 @@ void main() {
       );
     });
 
-    group('when exchanging code for token', () {
-      test('then it throws OAuth2Exception', () {
+    test(
+      'when exchanging code for token then it throws OAuth2InvalidResponseException',
+      () {
         expect(
           () => oauth2Util.exchangeCodeForToken(
             code: 'auth_code',
@@ -275,10 +289,10 @@ void main() {
             redirectUri: 'https://example.com/callback',
             httpClient: mockClient,
           ),
-          throwsA(isA<OAuth2Exception>()),
+          throwsA(isA<OAuth2InvalidResponseException>()),
         );
-      });
-    });
+      },
+    );
   });
 
   group('Given OAuth2PkceUtil receiving response missing access token', () {
@@ -295,8 +309,9 @@ void main() {
       );
     });
 
-    group('when exchanging code for token', () {
-      test('then it throws OAuth2Exception', () {
+    test(
+      'when exchanging code for token then it throws OAuth2MissingAccessTokenException',
+      () {
         expect(
           () => oauth2Util.exchangeCodeForToken(
             code: 'auth_code',
@@ -304,9 +319,9 @@ void main() {
             redirectUri: 'https://example.com/callback',
             httpClient: mockClient,
           ),
-          throwsA(isA<OAuth2Exception>()),
+          throwsA(isA<OAuth2MissingAccessTokenException>()),
         );
-      });
-    });
+      },
+    );
   });
 }
