@@ -1164,22 +1164,47 @@ Duration _readWebsocketPingInterval(
   Map<dynamic, dynamic> configMap,
   Map<String, String> environment,
 ) {
-  var websocketPingInterval =
-      configMap[ServerpodEnv.websocketPingInterval.configKey];
-  websocketPingInterval =
-      environment[ServerpodEnv.websocketPingInterval.envVariable] ??
-      websocketPingInterval;
+  final envVariable = ServerpodEnv.websocketPingInterval.envVariable;
+  final configKey = ServerpodEnv.websocketPingInterval.configKey;
 
-  if (websocketPingInterval is String) {
-    var seconds = int.tryParse(websocketPingInterval);
-    if (seconds != null && seconds > 0) {
-      return Duration(seconds: seconds);
-    }
-  } else if (websocketPingInterval is int && websocketPingInterval > 0) {
-    return Duration(seconds: websocketPingInterval);
+  var websocketPingInterval = configMap[configKey];
+  var isFromEnv = false;
+
+  if (environment[envVariable] != null) {
+    websocketPingInterval = environment[envVariable];
+    isFromEnv = true;
   }
 
-  return const Duration(seconds: 30);
+  if (websocketPingInterval == null) {
+    return const Duration(seconds: 30);
+  }
+
+  int? seconds;
+  if (websocketPingInterval is String) {
+    seconds = int.tryParse(websocketPingInterval);
+    if (seconds == null) {
+      throw ArgumentError(
+        'Invalid ${isFromEnv ? envVariable : configKey} ${isFromEnv ? 'from environment variable' : 'from configuration'}: $websocketPingInterval. '
+        'Expected a positive integer.',
+      );
+    }
+  } else if (websocketPingInterval is int) {
+    seconds = websocketPingInterval;
+  } else {
+    throw ArgumentError(
+      'Invalid ${isFromEnv ? envVariable : configKey} ${isFromEnv ? 'from environment variable' : 'from configuration'}: $websocketPingInterval. '
+      'Expected a positive integer.',
+    );
+  }
+
+  if (seconds <= 0) {
+    throw ArgumentError(
+      'Invalid ${isFromEnv ? envVariable : configKey} ${isFromEnv ? 'from environment variable' : 'from configuration'}: $seconds. '
+      'Expected a positive integer greater than 0.',
+    );
+  }
+
+  return Duration(seconds: seconds);
 }
 
 /// Validates that a JSON configuration contains all required keys, and that

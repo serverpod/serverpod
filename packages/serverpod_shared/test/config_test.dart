@@ -1903,53 +1903,112 @@ websocketPingInterval: 15
   );
 
   test(
-    'Given a Serverpod config with invalid websocketPingInterval in environment variable when loading from Map then default value is used.',
+    'Given a Serverpod config with invalid websocketPingInterval in environment variable when loading from Map then ArgumentError is thrown.',
     () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {},
-        environment: {
-          'SERVERPOD_WEBSOCKET_PING_INTERVAL': 'invalid',
-        },
+      expect(
+        () => ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          {},
+          environment: {
+            'SERVERPOD_WEBSOCKET_PING_INTERVAL': 'invalid',
+          },
+        ),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'message',
+            contains(
+              'Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL from environment variable: invalid',
+            ),
+          ),
+        ),
       );
-
-      expect(config.websocketPingInterval, const Duration(seconds: 30));
     },
   );
 
   test(
-    'Given a Serverpod config with zero websocketPingInterval in environment variable when loading from Map then default value is used.',
+    'Given a Serverpod config with zero websocketPingInterval in environment variable when loading from Map then ArgumentError is thrown.',
     () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {},
-        environment: {
-          'SERVERPOD_WEBSOCKET_PING_INTERVAL': '0',
-        },
+      expect(
+        () => ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          {},
+          environment: {
+            'SERVERPOD_WEBSOCKET_PING_INTERVAL': '0',
+          },
+        ),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'message',
+            contains(
+              'Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL from environment variable: 0',
+            ),
+          ),
+        ),
       );
-
-      expect(config.websocketPingInterval, const Duration(seconds: 30));
     },
   );
 
   test(
-    'Given a Serverpod config with negative websocketPingInterval in environment variable when loading from Map then default value is used.',
+    'Given a Serverpod config with negative websocketPingInterval in environment variable when loading from Map then ArgumentError is thrown.',
     () {
-      var config = ServerpodConfig.loadFromMap(
-        runMode,
-        serverId,
-        passwords,
-        {},
-        environment: {
-          'SERVERPOD_WEBSOCKET_PING_INTERVAL': '-5',
-        },
+      expect(
+        () => ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          {},
+          environment: {
+            'SERVERPOD_WEBSOCKET_PING_INTERVAL': '-5',
+          },
+        ),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'message',
+            contains(
+              'Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL from environment variable: -5',
+            ),
+          ),
+        ),
       );
+    },
+  );
 
-      expect(config.websocketPingInterval, const Duration(seconds: 30));
+  test(
+    'Given a Serverpod config with invalid websocketPingInterval in YAML when loading from Map then ArgumentError is thrown.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+websocketPingInterval: 0
+''';
+
+      expect(
+        () => ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml(serverpodConfig),
+        ),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'message',
+            contains(
+              'Invalid websocketPingInterval from configuration: 0',
+            ),
+          ),
+        ),
+      );
     },
   );
 }
