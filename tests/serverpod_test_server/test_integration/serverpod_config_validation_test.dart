@@ -27,11 +27,10 @@ void main() {
               isA<ArgumentError>().having(
                 (e) => e.toString(),
                 'message',
-                allOf([
-                  contains('Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL'),
-                  contains('from environment variable: -1'),
-                  contains('Expected a positive integer greater than 0'),
-                ]),
+                contains(
+                  'Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL from environment '
+                  'variable: -1. Expected a positive integer greater than 0.',
+                ),
               ),
             ),
           );
@@ -56,11 +55,10 @@ void main() {
               isA<ArgumentError>().having(
                 (e) => e.toString(),
                 'message',
-                allOf([
-                  contains('Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL'),
-                  contains('from environment variable: 0'),
-                  contains('Expected a positive integer greater than 0'),
-                ]),
+                contains(
+                  'Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL from environment '
+                  'variable: 0. Expected a positive integer greater than 0.',
+                ),
               ),
             ),
           );
@@ -85,11 +83,10 @@ void main() {
               isA<ArgumentError>().having(
                 (e) => e.toString(),
                 'message',
-                allOf([
-                  contains('Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL'),
-                  contains('from environment variable: invalid'),
-                  contains('Expected a positive integer'),
-                ]),
+                contains(
+                  'Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL from environment '
+                  'variable: invalid. Expected a positive integer.',
+                ),
               ),
             ),
           );

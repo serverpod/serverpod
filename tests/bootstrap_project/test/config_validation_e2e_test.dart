@@ -73,19 +73,10 @@ void main() async {
         expect(result.exitCode, 1);
         expect(
           result.stderr.toString(),
-          contains('Error loading ServerpodConfig'),
-        );
-        expect(
-          result.stderr.toString(),
-          contains('Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL'),
-        );
-        expect(
-          result.stderr.toString(),
-          contains('from environment variable: -1'),
-        );
-        expect(
-          result.stderr.toString(),
-          contains('Expected a positive integer greater than 0'),
+          contains(
+            'Error loading ServerpodConfig. Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL '
+            'from environment variable: -1. Expected a positive integer greater than 0',
+          ),
         );
       },
     );
@@ -106,19 +97,10 @@ void main() async {
         expect(result.exitCode, 1);
         expect(
           result.stderr.toString(),
-          contains('Error loading ServerpodConfig'),
-        );
-        expect(
-          result.stderr.toString(),
-          contains('Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL'),
-        );
-        expect(
-          result.stderr.toString(),
-          contains('from environment variable: 0'),
-        );
-        expect(
-          result.stderr.toString(),
-          contains('Expected a positive integer greater than 0'),
+          contains(
+            'Error loading ServerpodConfig. Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL '
+            'from environment variable: 0. Expected a positive integer greater than 0',
+          ),
         );
       },
     );
@@ -139,19 +121,10 @@ void main() async {
         expect(result.exitCode, 1);
         expect(
           result.stderr.toString(),
-          contains('Error loading ServerpodConfig'),
-        );
-        expect(
-          result.stderr.toString(),
-          contains('Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL'),
-        );
-        expect(
-          result.stderr.toString(),
-          contains('from environment variable: invalid'),
-        );
-        expect(
-          result.stderr.toString(),
-          contains('Expected a positive integer'),
+          contains(
+            'Error loading ServerpodConfig. Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL '
+            'from environment variable: invalid. Expected a positive integer',
+          ),
         );
       },
     );
