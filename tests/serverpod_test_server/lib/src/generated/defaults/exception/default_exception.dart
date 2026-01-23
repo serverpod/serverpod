@@ -34,17 +34,15 @@ abstract class DefaultException
        defaultDouble = defaultDouble ?? 10.5,
        defaultDuration =
            defaultDuration ??
-           Duration(
+           const Duration(
              days: 1,
              hours: 2,
              minutes: 30,
-             seconds: 0,
-             milliseconds: 0,
            ),
        defaultEnum = defaultEnum ?? _i2.ByNameEnum.byName1,
        defaultInteger = defaultInteger ?? 10,
        defaultString = defaultString ?? 'Default error message',
-       defaultUuid = defaultUuid ?? _i1.Uuid().v4obj(),
+       defaultUuid = defaultUuid ?? const _i1.Uuid().v4obj(),
        defaultModelField = defaultModelField ?? 'Model specific message',
        defaultMixField = defaultMixField ?? 'Model specific mix message';
 

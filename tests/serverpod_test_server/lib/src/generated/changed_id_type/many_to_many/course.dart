@@ -21,7 +21,7 @@ abstract class CourseUuid
     _i1.UuidValue? id,
     required this.name,
     this.enrollments,
-  }) : id = id ?? _i1.Uuid().v7obj();
+  }) : id = id ?? const _i1.Uuid().v7obj();
 
   factory CourseUuid({
     _i1.UuidValue? id,

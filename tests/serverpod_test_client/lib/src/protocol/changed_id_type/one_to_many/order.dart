@@ -22,7 +22,7 @@ abstract class OrderUuid implements _i1.SerializableModel {
     required this.customerId,
     this.customer,
     this.comments,
-  }) : id = id ?? _i1.Uuid().v7obj();
+  }) : id = id ?? const _i1.Uuid().v7obj();
 
   factory OrderUuid({
     _i1.UuidValue? id,
