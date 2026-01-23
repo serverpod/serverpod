@@ -1959,11 +1959,15 @@ class SerializableModelLibraryGenerator {
       case DefaultValueAllowedType.duration:
         Duration parsedDuration = parseDuration(defaultValue);
         return refer(field.type.className).constInstance([], {
-          'days': literalNum(parsedDuration.days),
-          'hours': literalNum(parsedDuration.hours),
-          'minutes': literalNum(parsedDuration.minutes),
-          'seconds': literalNum(parsedDuration.seconds),
-          'milliseconds': literalNum(parsedDuration.milliseconds),
+          if (parsedDuration.days != 0) 'days': literalNum(parsedDuration.days),
+          if (parsedDuration.hours != 0)
+            'hours': literalNum(parsedDuration.hours),
+          if (parsedDuration.minutes != 0)
+            'minutes': literalNum(parsedDuration.minutes),
+          if (parsedDuration.seconds != 0)
+            'seconds': literalNum(parsedDuration.seconds),
+          if (parsedDuration.milliseconds != 0)
+            'milliseconds': literalNum(parsedDuration.milliseconds),
         }).code;
       case DefaultValueAllowedType.isEnum:
         var enumDefinition = field.type.enumDefinition;

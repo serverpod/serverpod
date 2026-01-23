@@ -35,8 +35,6 @@ abstract class DefaultException
              days: 1,
              hours: 2,
              minutes: 30,
-             seconds: 0,
-             milliseconds: 0,
            ),
        defaultEnum = defaultEnum ?? _i2.ByNameEnum.byName1,
        defaultInteger = defaultInteger ?? 10,

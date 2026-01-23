@@ -120,7 +120,7 @@ void main() {
         'when the Duration is normalized',
         () {
           test(
-            'with a default value of "1d 24h", the duration should be normalized to "Duration(days: 2, hours: 0, minutes: 0, seconds: 0, milliseconds: 0)"',
+            'with a default value of "1d 24h", the duration should be normalized to "Duration(days: 2)"',
             () {
               var normalizedField = FieldDefinitionBuilder()
                   .withName('normalizedDuration')
@@ -168,13 +168,13 @@ void main() {
               );
               expect(
                 initializer?.toSource(),
-                'normalizedDuration = normalizedDuration ?? const Duration(days: 2, hours: 0, minutes: 0, seconds: 0, milliseconds: 0)',
+                'normalizedDuration = normalizedDuration ?? const Duration(days: 2)',
               );
             },
           );
 
           test(
-            'with a default value of "0d 48h 60min", the duration should be normalized to "Duration(days: 2, hours: 1, minutes: 0, seconds: 0, milliseconds: 0)"',
+            'with a default value of "0d 48h 60min", the duration should be normalized to "Duration(days: 2, hours: 1)"',
             () {
               var normalizedField = FieldDefinitionBuilder()
                   .withName('normalizedDuration')
@@ -222,7 +222,7 @@ void main() {
               );
               expect(
                 initializer?.toSource(),
-                'normalizedDuration = normalizedDuration ?? const Duration(days: 2, hours: 1, minutes: 0, seconds: 0, milliseconds: 0)',
+                'normalizedDuration = normalizedDuration ?? const Duration(days: 2, hours: 1)',
               );
             },
           );
