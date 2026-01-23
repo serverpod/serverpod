@@ -2,7 +2,7 @@
 
 name: serverpod_test
 version: SERVERPOD_VERSION
-description: Severpod test tools to simplify testing of endpoints.
+description: Serverpod test tools to simplify testing of endpoints.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues

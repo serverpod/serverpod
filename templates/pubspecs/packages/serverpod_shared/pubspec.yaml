@@ -2,7 +2,7 @@
 
 name: serverpod_shared
 version: SERVERPOD_VERSION
-description: Severpod code that is shared between serverpod and tooling.
+description: Serverpod code that is shared between serverpod and tooling.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
