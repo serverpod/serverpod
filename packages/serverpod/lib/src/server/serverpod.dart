@@ -436,21 +436,29 @@ class Serverpod {
     //
     // This is a workaround to allow the command line arguments to override the
     // config if the user provides a config object.
-    this.config =
-        config?.copyWith(
-          runMode: runMode,
-          serverId: serverId,
-          loggingMode: loggingMode,
-          role: role,
-          applyMigrations: applyMigrations,
-          applyRepairMigration: applyRepairMigration,
-        ) ??
-        ServerpodConfig.load(
-          runMode,
-          serverId,
-          _passwords,
-          commandLineArgs: _commandLineArgs.toMap(),
-        );
+    try {
+      this.config =
+          config?.copyWith(
+            runMode: runMode,
+            serverId: serverId,
+            loggingMode: loggingMode,
+            role: role,
+            applyMigrations: applyMigrations,
+            applyRepairMigration: applyRepairMigration,
+          ) ??
+          ServerpodConfig.load(
+            runMode,
+            serverId,
+            _passwords,
+            commandLineArgs: _commandLineArgs.toMap(),
+          );
+    } on ArgumentError catch (e) {
+      // The `ServerpodConfig.load` method throws an `ArgumentError` if the
+      // config is invalid. Then, we hide the stack trace to better guide the
+      // user to fix the config.
+      _reportException(e, null, message: 'Error loading ServerpodConfig');
+      exit(1);
+    }
 
     stdout.writeln(_getCommandLineArgsString());
 
@@ -1165,7 +1173,7 @@ class Serverpod {
 
   void _reportException(
     Object e,
-    StackTrace stackTrace, {
+    StackTrace? stackTrace, {
     String? message,
   }) {
     var now = DateTime.now().toUtc();
@@ -1173,6 +1181,8 @@ class Serverpod {
       stderr.writeln('$now ERROR: $message');
     }
     stderr.writeln('$now ERROR: $e');
+
+    if (stackTrace == null) return;
     stderr.writeln('$stackTrace');
 
     internalSubmitEvent(
