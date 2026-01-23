@@ -17,6 +17,7 @@ class AwsS3Client {
   final String _bucketId;
   final String? _sessionToken;
   final Client _client;
+  final bool _useHttps;
 
   static const _service = "s3";
 
@@ -34,6 +35,7 @@ class AwsS3Client {
     required String accessKey,
     required String bucketId,
     String? host,
+    bool useHttps = true,
     required String region,
     String? sessionToken,
     Client? client,
@@ -43,6 +45,7 @@ class AwsS3Client {
        _bucketId = bucketId,
        _region = region,
        _sessionToken = sessionToken,
+       _useHttps = useHttps,
        _client = client ?? Client();
 
   Future<ListBucketResult?> listObjects({
@@ -87,7 +90,10 @@ class AwsS3Client {
     String method = 'GET',
   }) {
     final unencodedPath = "$_bucketId/$key";
-    final uri = Uri.https(_host, unencodedPath, queryParams);
+    final uri = _useHttps
+        ? Uri.https(_host, unencodedPath, queryParams)
+        : Uri.http(_host, unencodedPath, queryParams);
+
     final payload = SigV4.hashCanonicalRequest('');
     final datetime = SigV4.generateDatetime();
     final credentialScope = SigV4.buildCredentialScope(
@@ -97,16 +103,25 @@ class AwsS3Client {
     );
 
     final canonicalQuery = SigV4.buildCanonicalQueryString(queryParams);
+
+    final canonicalHeaders = StringBuffer()
+      ..writeln('host:$_host')
+      ..writeln('x-amz-content-sha256:$payload')
+      ..writeln('x-amz-date:$datetime');
+
+    final signedHeaders = StringBuffer('host;x-amz-content-sha256;x-amz-date');
+
+    if (_sessionToken != null && _sessionToken.isNotEmpty) {
+      canonicalHeaders.writeln('x-amz-security-token:$_sessionToken');
+      signedHeaders.write(';x-amz-security-token');
+    }
+
     final canonicalRequest =
         '''$method
-${'/$unencodedPath'.split('/').map(Uri.encodeComponent).join('/')}
+/${unencodedPath.split('/').map(Uri.encodeComponent).join('/')}
 $canonicalQuery
-host:$_host
-x-amz-content-sha256:$payload
-x-amz-date:$datetime
-x-amz-security-token:${_sessionToken ?? ""}
-
-host;x-amz-content-sha256;x-amz-date;x-amz-security-token
+$canonicalHeaders
+$signedHeaders
 $payload''';
 
     final stringToSign = SigV4.buildStringToSign(
@@ -114,6 +129,7 @@ $payload''';
       credentialScope,
       SigV4.hashCanonicalRequest(canonicalRequest),
     );
+
     final signingKey = SigV4.calculateSigningKey(
       _secretKey,
       datetime,
@@ -122,17 +138,20 @@ $payload''';
     );
     final signature = SigV4.calculateSignature(signingKey, stringToSign);
 
-    final authorization = [
-      'AWS4-HMAC-SHA256 Credential=$_accessKey/$credentialScope',
-      'SignedHeaders=host;x-amz-content-sha256;x-amz-date;x-amz-security-token',
-      'Signature=$signature',
-    ].join(',');
+    final authorization =
+        'AWS4-HMAC-SHA256 Credential=$_accessKey/$credentialScope, '
+        'SignedHeaders=$signedHeaders, '
+        'Signature=$signature';
 
-    return SignedRequestParams(uri, {
+    final headers = {
       'Authorization': authorization,
       'x-amz-content-sha256': payload,
       'x-amz-date': datetime,
-    });
+      if (_sessionToken != null && _sessionToken.isNotEmpty)
+        'x-amz-security-token': _sessionToken,
+    };
+
+    return SignedRequestParams(uri, headers);
   }
 
   Future<Response> _doSignedGetRequest({
