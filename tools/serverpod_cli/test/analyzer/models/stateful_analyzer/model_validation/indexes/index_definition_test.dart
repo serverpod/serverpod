@@ -85,46 +85,55 @@ void main() {
     },
   );
 
-  test(
-    'Given a class with an index defined as an empty map when fields keyword is missing then collect an error that fields are required.',
+  group(
+    'Given a class with an index defined as an empty map when fields keyword is missing',
     () {
       var models = [
         ModelSourceBuilder().withYaml(
           '''
-          class: Example
-          table: example
-          fields:
-            name: String
-          indexes:
-            example_index: {}
-          ''',
+class: Example
+table: example
+fields:
+  name: String
+indexes:
+  example_index:
+    type: btree''',
         ).build(),
       ];
 
-      var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(
+      late var collector = CodeGenerationCollector();
+      late var analyzer = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       );
-      analyzer.validateAll();
 
-      expect(
-        collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error but none was generated.',
-      );
+      setUp(() {
+        analyzer.validateAll();
+      });
 
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'No "fields" property is defined.',
-      );
-      expect(
-        error.span,
-        isNotNull,
-        reason: 'Expected error span to not be null.',
-      );
+      test('then collect an error that fields are required.', () {
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error but none was generated.',
+        );
+
+        expect(
+          collector.errors.first.message,
+          'No "fields" property is defined for "example_index".',
+        );
+      });
+
+      late var error = collector.errors.first;
+
+      test('then the error span has the correct line and column.', () {
+        expect(error.span, isNotNull);
+        expect(error.span!.start.line, 5);
+        expect(error.span!.start.column, 2);
+        expect(error.span!.end.line, 5);
+        expect(error.span!.end.column, 15);
+      });
     },
   );
 

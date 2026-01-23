@@ -96,10 +96,12 @@ void validateYamlModel(
   YamlMap documentContents,
   CodeAnalysisCollector collector, {
   NodeContext? context,
+  YamlMap? parentDocumentContents,
 }) {
   context ??= NodeContext(
     documentType,
     false,
+    parentDocumentContents?.key(documentType)?.span,
   );
 
   _collectInvalidKeyErrors(
@@ -131,6 +133,7 @@ void validateYamlModel(
     );
 
     _collectMissingRequiredKeyErrors(
+      context,
       node,
       documentContents,
       collector,
@@ -221,6 +224,7 @@ void _collectMutuallyExclusiveKeyErrors(
 }
 
 void _collectMissingRequiredKeyErrors(
+  NodeContext context,
   ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector,
@@ -228,8 +232,10 @@ void _collectMissingRequiredKeyErrors(
   if (_isMissingRequiredKey(node, documentContents)) {
     collector.addError(
       SourceSpanSeverityException(
-        'No "${node.key}" property is defined.',
-        documentContents.nodes[node.key]?.span ?? documentContents.span,
+        documentContents.containsKey(context.parentNodeName)
+            ? 'No "${node.key}" property is defined.'
+            : 'No "${node.key}" property is defined for "${context.parentNodeName}".',
+        documentContents.nodes[node.key]?.span ?? context.parentNodeSpan,
       ),
     );
   }
@@ -375,7 +381,11 @@ void _collectNodesWithNestedNodesErrors(
 
     var nodeContext = context.shouldPropagateContext
         ? context
-        : NodeContext(nodeKey, node.isContextualParentNode);
+        : NodeContext(
+            nodeKey,
+            node.isContextualParentNode,
+            documentContents.key(nodeKey)?.span,
+          );
 
     validateNestedNodes?.call(
       nodeKey,
