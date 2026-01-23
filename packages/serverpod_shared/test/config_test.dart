@@ -1972,7 +1972,8 @@ websocketPingInterval: 15
             (e) => e.toString(),
             'message',
             contains(
-              'Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL from environment variable: -5',
+              'Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL from environment variable: -5. '
+              'Expected a positive integer greater than 0.',
             ),
           ),
         ),
@@ -2004,7 +2005,8 @@ websocketPingInterval: 0
             (e) => e.toString(),
             'message',
             contains(
-              'Invalid websocketPingInterval from configuration: 0',
+              'Invalid websocketPingInterval from configuration: 0. '
+              'Expected a positive integer greater than 0.',
             ),
           ),
         ),

@@ -1168,38 +1168,25 @@ Duration _readWebsocketPingInterval(
   final configKey = ServerpodEnv.websocketPingInterval.configKey;
 
   var websocketPingInterval = configMap[configKey];
-  var isFromEnv = false;
+  var sourceDescription = '$configKey from configuration';
 
   if (environment[envVariable] != null) {
     websocketPingInterval = environment[envVariable];
-    isFromEnv = true;
-  }
-
-  if (websocketPingInterval == null) {
-    return const Duration(seconds: 30);
+    sourceDescription = '$envVariable from environment variable';
   }
 
   int? seconds;
-  if (websocketPingInterval is String) {
-    seconds = int.tryParse(websocketPingInterval);
-    if (seconds == null) {
-      throw ArgumentError(
-        'Invalid ${isFromEnv ? envVariable : configKey} ${isFromEnv ? 'from environment variable' : 'from configuration'}: $websocketPingInterval. '
-        'Expected a positive integer.',
-      );
-    }
+  if (websocketPingInterval == null) {
+    seconds = 30;
   } else if (websocketPingInterval is int) {
     seconds = websocketPingInterval;
-  } else {
-    throw ArgumentError(
-      'Invalid ${isFromEnv ? envVariable : configKey} ${isFromEnv ? 'from environment variable' : 'from configuration'}: $websocketPingInterval. '
-      'Expected a positive integer.',
-    );
+  } else if (websocketPingInterval is String) {
+    seconds = int.tryParse(websocketPingInterval);
   }
 
-  if (seconds <= 0) {
+  if (seconds == null || seconds <= 0) {
     throw ArgumentError(
-      'Invalid ${isFromEnv ? envVariable : configKey} ${isFromEnv ? 'from environment variable' : 'from configuration'}: $seconds. '
+      'Invalid $sourceDescription: $websocketPingInterval. '
       'Expected a positive integer greater than 0.',
     );
   }
