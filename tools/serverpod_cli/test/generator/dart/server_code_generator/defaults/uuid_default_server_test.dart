@@ -109,7 +109,7 @@ void main() {
             );
             expect(
               initializer?.toSource().withoutImportPrefix,
-              'uuidDefaultRandom = uuidDefaultRandom ?? Uuid().v4obj()',
+              'uuidDefaultRandom = uuidDefaultRandom ?? const Uuid().v4obj()',
             );
           },
         );
@@ -122,7 +122,7 @@ void main() {
             );
             expect(
               initializer?.toSource().withoutImportPrefix,
-              'uuidDefaultRandomV7 = uuidDefaultRandomV7 ?? Uuid().v7obj()',
+              'uuidDefaultRandomV7 = uuidDefaultRandomV7 ?? const Uuid().v7obj()',
             );
           },
         );
