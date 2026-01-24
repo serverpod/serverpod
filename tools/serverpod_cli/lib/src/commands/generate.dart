@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
@@ -139,30 +141,18 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
       }
     }
 
-    var libDirectory = Directory(path.joinAll(config.libSourcePathParts));
-    var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
+    final futureSuccess = Isolate.run(
+      () => _performGenerate(config: config, watch: watch),
+    );
 
-    var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-    var modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
-      collector.printErrors();
-    });
-
-    bool success = true;
-    if (watch) {
-      success = await performGenerateContinuously(
-        config: config,
-        endpointsAnalyzer: endpointsAnalyzer,
-        modelAnalyzer: modelAnalyzer,
-      );
-    } else {
+    late final bool success;
+    if (!watch) {
       success = await log.progress(
         'Generating code',
-        () => performGenerate(
-          config: config,
-          endpointsAnalyzer: endpointsAnalyzer,
-          modelAnalyzer: modelAnalyzer,
-        ),
+        () => futureSuccess,
       );
+    } else {
+      success = await futureSuccess;
     }
 
     if (!success) {
@@ -171,4 +161,42 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
       log.info('Done.', type: TextLogType.success);
     }
   }
+}
+
+Future<bool> _performGenerate({
+  required GeneratorConfig config,
+  required bool watch,
+}) async {
+  var libDirectory = Directory(path.joinAll(config.libSourcePathParts));
+  var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
+
+  var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+  var modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
+    collector.printErrors();
+  });
+
+  var parameterValidator = FutureCallMethodParameterValidator(
+    modelAnalyzer: modelAnalyzer,
+  );
+
+  var futureCallsAnalyzer = FutureCallsAnalyzer(
+    directory: libDirectory,
+    parameterValidator: parameterValidator,
+  );
+
+  if (watch) {
+    return await performGenerateContinuously(
+      config: config,
+      endpointsAnalyzer: endpointsAnalyzer,
+      modelAnalyzer: modelAnalyzer,
+      futureCallsAnalyzer: futureCallsAnalyzer,
+    );
+  }
+
+  return performGenerate(
+    config: config,
+    endpointsAnalyzer: endpointsAnalyzer,
+    modelAnalyzer: modelAnalyzer,
+    futureCallsAnalyzer: futureCallsAnalyzer,
+  );
 }

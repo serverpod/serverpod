@@ -38,15 +38,24 @@ abstract class UuidDefaultMix implements _i1.SerializableModel {
   factory UuidDefaultMix.fromJson(Map<String, dynamic> jsonSerialization) {
     return UuidDefaultMix(
       id: jsonSerialization['id'] as int?,
-      uuidDefaultAndDefaultModel: _i1.UuidValueJsonExtension.fromJson(
-        jsonSerialization['uuidDefaultAndDefaultModel'],
-      ),
-      uuidDefaultAndDefaultPersist: _i1.UuidValueJsonExtension.fromJson(
-        jsonSerialization['uuidDefaultAndDefaultPersist'],
-      ),
-      uuidDefaultModelAndDefaultPersist: _i1.UuidValueJsonExtension.fromJson(
-        jsonSerialization['uuidDefaultModelAndDefaultPersist'],
-      ),
+      uuidDefaultAndDefaultModel:
+          jsonSerialization['uuidDefaultAndDefaultModel'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidDefaultAndDefaultModel'],
+            ),
+      uuidDefaultAndDefaultPersist:
+          jsonSerialization['uuidDefaultAndDefaultPersist'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidDefaultAndDefaultPersist'],
+            ),
+      uuidDefaultModelAndDefaultPersist:
+          jsonSerialization['uuidDefaultModelAndDefaultPersist'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['uuidDefaultModelAndDefaultPersist'],
+            ),
     );
   }
 

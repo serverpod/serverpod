@@ -20,7 +20,7 @@ abstract class DurationDefault
     Duration? durationDefaultNull,
   }) : durationDefault =
            durationDefault ??
-           Duration(
+           const Duration(
              days: 1,
              hours: 2,
              minutes: 10,
@@ -29,7 +29,7 @@ abstract class DurationDefault
            ),
        durationDefaultNull =
            durationDefaultNull ??
-           Duration(
+           const Duration(
              days: 2,
              hours: 1,
              minutes: 20,
@@ -46,9 +46,11 @@ abstract class DurationDefault
   factory DurationDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return DurationDefault(
       id: jsonSerialization['id'] as int?,
-      durationDefault: _i1.DurationJsonExtension.fromJson(
-        jsonSerialization['durationDefault'],
-      ),
+      durationDefault: jsonSerialization['durationDefault'] == null
+          ? null
+          : _i1.DurationJsonExtension.fromJson(
+              jsonSerialization['durationDefault'],
+            ),
       durationDefaultNull: jsonSerialization['durationDefaultNull'] == null
           ? null
           : _i1.DurationJsonExtension.fromJson(

@@ -1518,25 +1518,23 @@ class SerializableModelLibraryGenerator {
     // to treat it as potentially null.
     var nullableField = nullCheckedReference ? false : fieldType.nullable;
 
+    var protocolRef = refer(
+      'Protocol',
+      serverCode
+          ? 'package:${config.serverPackage}/src/generated/protocol.dart'
+          : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+    );
     if (fieldType.isRecordType) {
-      var mapRecordToJsonRef = refer(
-        mapRecordToJsonFuncName,
-        serverCode
-            ? 'package:${config.serverPackage}/src/generated/protocol.dart'
-            : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
+      return protocolRef.call([]).property(mapRecordToJsonFuncName).call(
+        [
+          fieldRef,
+        ],
       );
-
-      return mapRecordToJsonRef.call([fieldRef]);
     } else if (fieldType.returnsRecordInContainer) {
-      var mapContainerToJsonRef = refer(
-        mapContainerToJsonFunctionName,
-        serverCode
-            ? 'package:${config.serverPackage}/src/generated/protocol.dart'
-            : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
-      );
-
-      return mapContainerToJsonRef.call(
-        [refer('${fieldRef.symbol}${nullableField ? '!' : ''}')],
+      return protocolRef.call([]).property(mapContainerToJsonFunctionName).call(
+        [
+          refer('${fieldRef.symbol}${nullableField ? '!' : ''}'),
+        ],
       );
     }
 
@@ -1941,9 +1939,9 @@ class SerializableModelLibraryGenerator {
         };
         if (uuidGeneratorMethod != null) {
           return refer(
-            'Uuid()',
+            'Uuid',
             serverpodUrl(serverCode),
-          ).property(uuidGeneratorMethod).call([]).code;
+          ).constInstance([]).property(uuidGeneratorMethod).call([]).code;
         }
 
         return refer(field.type.className, serverpodUrl(serverCode))
@@ -1960,12 +1958,16 @@ class SerializableModelLibraryGenerator {
         ).property('parse').call([literalString(defaultValue)]).code;
       case DefaultValueAllowedType.duration:
         Duration parsedDuration = parseDuration(defaultValue);
-        return refer(field.type.className).call([], {
-          'days': literalNum(parsedDuration.days),
-          'hours': literalNum(parsedDuration.hours),
-          'minutes': literalNum(parsedDuration.minutes),
-          'seconds': literalNum(parsedDuration.seconds),
-          'milliseconds': literalNum(parsedDuration.milliseconds),
+        return refer(field.type.className).constInstance([], {
+          if (parsedDuration.days != 0) 'days': literalNum(parsedDuration.days),
+          if (parsedDuration.hours != 0)
+            'hours': literalNum(parsedDuration.hours),
+          if (parsedDuration.minutes != 0)
+            'minutes': literalNum(parsedDuration.minutes),
+          if (parsedDuration.seconds != 0)
+            'seconds': literalNum(parsedDuration.seconds),
+          if (parsedDuration.milliseconds != 0)
+            'milliseconds': literalNum(parsedDuration.milliseconds),
         }).code;
       case DefaultValueAllowedType.isEnum:
         var enumDefinition = field.type.enumDefinition;
@@ -2219,8 +2221,8 @@ class SerializableModelLibraryGenerator {
 
             // For records, we need to call mapRecordToJson
             if (field.type.isRecordType) {
-              var mapRecordToJsonRef = refer(
-                mapRecordToJsonFuncName,
+              var protocolRef = refer(
+                'Protocol',
                 serverCode
                     ? 'package:${config.serverPackage}/src/generated/protocol.dart'
                     : 'package:${config.dartClientPackage}/src/protocol/protocol.dart',
@@ -2228,7 +2230,9 @@ class SerializableModelLibraryGenerator {
 
               m.body = refer('ColumnValue', serverpodUrl(serverCode)).call([
                 refer('table').property(createFieldName(serverCode, field)),
-                mapRecordToJsonRef.call([refer('value')]),
+                protocolRef.call([]).property(mapRecordToJsonFuncName).call([
+                  refer('value'),
+                ]),
               ]).code;
             } else {
               m.body = refer('ColumnValue', serverpodUrl(serverCode)).call([
@@ -3057,16 +3061,75 @@ class SerializableModelLibraryGenerator {
           e.implements.add(
             refer('SerializableModel', serverpodUrl(serverCode)),
           );
-          e.values.addAll([
-            for (var value in enumDefinition.values)
-              EnumValue((v) {
-                v
-                  ..name = value.name
-                  ..docs.addAll(value.documentation ?? []);
-              }),
-          ]);
 
-          // Check if the enum has a value named "name"
+          if (enumDefinition.isEnhanced) {
+            e.values.addAll([
+              for (final value in enumDefinition.values)
+                EnumValue((v) {
+                  v
+                    ..name = value.name
+                    ..docs.addAll(value.documentation ?? []);
+
+                  final args = <Expression>[];
+                  for (final property in enumDefinition.properties) {
+                    final propertyValue = value.propertyValues[property.name];
+                    if (propertyValue != null) {
+                      args.add(
+                        _formatPropertyValueForExpression(
+                          propertyValue,
+                          property.type,
+                        ),
+                      );
+                    } else if (property.defaultValue != null) {
+                      args.add(
+                        _formatPropertyValueForExpression(
+                          property.defaultValue,
+                          property.type,
+                        ),
+                      );
+                    }
+                  }
+                  v.arguments.addAll(args);
+                }),
+            ]);
+
+            e.constructors.add(
+              Constructor((c) {
+                c.constant = true;
+                for (final property in enumDefinition.properties) {
+                  c.requiredParameters.add(
+                    Parameter(
+                      (p) => p
+                        ..name = property.name
+                        ..toThis = true,
+                    ),
+                  );
+                }
+              }),
+            );
+
+            for (final property in enumDefinition.properties) {
+              e.fields.add(
+                Field((f) {
+                  f
+                    ..name = property.name
+                    ..modifier = FieldModifier.final$
+                    ..type = _parsePropertyType(property.type)
+                    ..docs.addAll(property.documentation ?? []);
+                }),
+              );
+            }
+          } else {
+            e.values.addAll([
+              for (final value in enumDefinition.values)
+                EnumValue((v) {
+                  v
+                    ..name = value.name
+                    ..docs.addAll(value.documentation ?? []);
+                }),
+            ]);
+          }
+
           bool hasValueNamedName = enumDefinition.values.any(
             (v) => v.name == 'name',
           );
@@ -3099,6 +3162,48 @@ class SerializableModelLibraryGenerator {
       );
     });
     return library;
+  }
+
+  Expression _formatPropertyValueForExpression(dynamic value, String type) {
+    if (value == null) {
+      return literalNull;
+    }
+
+    var baseType = type.endsWith('?')
+        ? type.substring(0, type.length - 1)
+        : type;
+
+    switch (baseType) {
+      case 'int':
+        return literalNum(value);
+      case 'double':
+        return literalNum(value);
+      case 'bool':
+        return literalBool(value);
+      case 'String':
+      default:
+        var str = value.toString();
+        if (str.startsWith("'") && str.endsWith("'")) {
+          str = str.substring(1, str.length - 1);
+        }
+        return literalString(str);
+    }
+  }
+
+  /// Parses a property type string to a Reference
+  Reference _parsePropertyType(String type) {
+    // Handle nullable types
+    var isNullable = type.endsWith('?');
+    var baseType = isNullable ? type.substring(0, type.length - 1) : type;
+
+    var typeRef = refer(baseType);
+    return isNullable
+        ? TypeReference(
+            (t) => t
+              ..symbol = baseType
+              ..isNullable = true,
+          )
+        : typeRef;
   }
 
   List<Method> enumSerializationMethodsByIndex(EnumDefinition enumDefinition) {

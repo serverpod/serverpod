@@ -8,7 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
 // ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -22,7 +21,7 @@ abstract class ArenaUuid
     _i1.UuidValue? id,
     required this.name,
     this.team,
-  }) : id = id ?? _i1.Uuid().v7obj();
+  }) : id = id ?? const _i1.Uuid().v7obj();
 
   factory ArenaUuid({
     _i1.UuidValue? id,
@@ -32,7 +31,9 @@ abstract class ArenaUuid
 
   factory ArenaUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return ArenaUuid(
-      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       team: jsonSerialization['team'] == null
           ? null

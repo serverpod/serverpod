@@ -37,16 +37,26 @@ abstract class EnumDefaultMix
   factory EnumDefaultMix.fromJson(Map<String, dynamic> jsonSerialization) {
     return EnumDefaultMix(
       id: jsonSerialization['id'] as int?,
-      byNameEnumDefaultAndDefaultModel: _i2.ByNameEnum.fromJson(
-        (jsonSerialization['byNameEnumDefaultAndDefaultModel'] as String),
-      ),
-      byNameEnumDefaultAndDefaultPersist: _i2.ByNameEnum.fromJson(
-        (jsonSerialization['byNameEnumDefaultAndDefaultPersist'] as String),
-      ),
-      byNameEnumDefaultModelAndDefaultPersist: _i2.ByNameEnum.fromJson(
-        (jsonSerialization['byNameEnumDefaultModelAndDefaultPersist']
-            as String),
-      ),
+      byNameEnumDefaultAndDefaultModel:
+          jsonSerialization['byNameEnumDefaultAndDefaultModel'] == null
+          ? null
+          : _i2.ByNameEnum.fromJson(
+              (jsonSerialization['byNameEnumDefaultAndDefaultModel'] as String),
+            ),
+      byNameEnumDefaultAndDefaultPersist:
+          jsonSerialization['byNameEnumDefaultAndDefaultPersist'] == null
+          ? null
+          : _i2.ByNameEnum.fromJson(
+              (jsonSerialization['byNameEnumDefaultAndDefaultPersist']
+                  as String),
+            ),
+      byNameEnumDefaultModelAndDefaultPersist:
+          jsonSerialization['byNameEnumDefaultModelAndDefaultPersist'] == null
+          ? null
+          : _i2.ByNameEnum.fromJson(
+              (jsonSerialization['byNameEnumDefaultModelAndDefaultPersist']
+                  as String),
+            ),
     );
   }
 

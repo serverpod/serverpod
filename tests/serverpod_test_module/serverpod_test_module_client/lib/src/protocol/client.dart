@@ -14,8 +14,10 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:serverpod_test_module_client/src/protocol/module_class.dart'
     as _i3;
-import 'package:serverpod_test_module_client/src/protocol/module_feature/models/my_feature_model.dart'
+import 'package:serverpod_test_module_client/src/protocol/module_streaming_class.dart'
     as _i4;
+import 'package:serverpod_test_module_client/src/protocol/module_feature/models/my_feature_model.dart'
+    as _i5;
 
 /// An abstract endpoint with a virtual method.
 ///
@@ -84,6 +86,27 @@ class EndpointModule extends _i1.EndpointRef {
         'serverpod_test_module.module',
         'modifyModuleObject',
         {'object': object},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointRecordStreaming extends _i1.EndpointRef {
+  EndpointRecordStreaming(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverpod_test_module.recordStreaming';
+
+  _i2.Stream<(int?, _i4.ModuleStreamingClass?)> streamModuleClass(
+    _i2.Stream<(int?, _i4.ModuleStreamingClass?)> values,
+  ) =>
+      caller.callStreamingServerEndpoint<
+        _i2.Stream<(int?, _i4.ModuleStreamingClass?)>,
+        (int?, _i4.ModuleStreamingClass?)
+      >(
+        'serverpod_test_module.recordStreaming',
+        'streamModuleClass',
+        {},
+        {'values': values},
       );
 }
 
@@ -200,8 +223,8 @@ class EndpointMyModuleFeature extends _i1.EndpointRef {
     {},
   );
 
-  _i2.Future<_i4.MyModuleFeatureModel> myFeatureModel() =>
-      caller.callServerEndpoint<_i4.MyModuleFeatureModel>(
+  _i2.Future<_i5.MyModuleFeatureModel> myFeatureModel() =>
+      caller.callServerEndpoint<_i5.MyModuleFeatureModel>(
         'serverpod_test_module.myModuleFeature',
         'myFeatureModel',
         {},
@@ -212,6 +235,7 @@ class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
     concreteBase = EndpointConcreteBase(this);
     module = EndpointModule(this);
+    recordStreaming = EndpointRecordStreaming(this);
     streaming = EndpointStreaming(this);
     unauthenticated = EndpointUnauthenticated(this);
     partiallyUnauthenticated = EndpointPartiallyUnauthenticated(this);
@@ -221,6 +245,8 @@ class Caller extends _i1.ModuleEndpointCaller {
   late final EndpointConcreteBase concreteBase;
 
   late final EndpointModule module;
+
+  late final EndpointRecordStreaming recordStreaming;
 
   late final EndpointStreaming streaming;
 
@@ -234,6 +260,7 @@ class Caller extends _i1.ModuleEndpointCaller {
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
     'serverpod_test_module.concreteBase': concreteBase,
     'serverpod_test_module.module': module,
+    'serverpod_test_module.recordStreaming': recordStreaming,
     'serverpod_test_module.streaming': streaming,
     'serverpod_test_module.unauthenticated': unauthenticated,
     'serverpod_test_module.partiallyUnauthenticated': partiallyUnauthenticated,

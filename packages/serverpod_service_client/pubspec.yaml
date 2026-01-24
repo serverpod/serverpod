@@ -2,8 +2,8 @@
 # Mode: development
 
 name: serverpod_service_client
-version: 3.1.1
-description: Generated client for the Severpod service protocol.
+version: 3.2.3
+description: Generated client for the Serverpod service protocol.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -13,11 +13,11 @@ environment:
 
 dependencies:
   meta: ^1.15.0
-  serverpod_client: 3.1.1
-  serverpod_shared: 3.1.1
+  serverpod_client: 3.2.3
+  serverpod_shared: 3.2.3
 
 dev_dependencies:
-  serverpod_lints: 3.1.1
+  serverpod_lints: 3.2.3
 
 dependency_overrides:
   serverpod_client:

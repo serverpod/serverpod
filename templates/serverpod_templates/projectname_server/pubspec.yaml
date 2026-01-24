@@ -7,11 +7,11 @@ environment:
   sdk: '^3.8.0'
 
 dependencies:
-  serverpod: 3.1.1
+  serverpod: 3.2.3
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
-  serverpod_test: 3.1.1
+  serverpod_test: 3.2.3
   test: ^1.25.5
 
 dependency_overrides: 
@@ -31,9 +31,15 @@ serverpod:
     # Starts the server and applies migrations
     start: dart bin/main.dart --apply-migrations
 
-    # Build the Flutter web app and move it to the server's web directory
-    # 
-    # Unfortunately, we can't use the `-o` flag directly because of an error
-    # that happens on windows. Issue is tracked in the flutter
-    # repository here: https://github.com/flutter/flutter/issues/157886
-    flutter_build: cd ../projectname_flutter && flutter build web --base-href /app/ --wasm && rm -rf ../projectname_server/web/app && mv build/web/ ../projectname_server/web/app
+    # Build the Flutter web app and copy it to the server's web directory.
+    # Windows uses xcopy since flutter's --output flag doesn't work there.
+    # See: https://github.com/flutter/flutter/issues/157886
+    flutter_build:
+      windows: >-
+        (if exist web\app rmdir /S /Q web\app)
+        & cd /D ..\projectname_flutter
+        && flutter build web --base-href /app/ --wasm
+        && xcopy /E /I /Y build\web ..\projectname_server\web\app
+      posix: |
+        cd ../projectname_flutter
+        flutter build web --base-href /app/ --wasm --output ../projectname_server/web/app

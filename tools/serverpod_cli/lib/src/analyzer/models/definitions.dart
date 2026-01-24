@@ -23,9 +23,11 @@ sealed class SerializableModelDefinition {
 
   /// Generate the file reference [String] to this file.
   String fileRef() {
-    return p.posix
-    // ignore: prefer_interpolation_to_compose_strings
-    .joinAll([...subDirParts, '$fileName.dart']);
+    var path = p.posix.joinAll([...subDirParts, '$fileName.dart']);
+
+    // If on Windows, paths could appear with backslashes in the import clause.
+    // Normalize to forward slashes.
+    return p.split(path).join('/');
   }
 }
 
@@ -410,6 +412,32 @@ class SerializableModelIndexDefinition {
   }
 }
 
+/// Represents a single property on an enhanced enum.
+class EnumPropertyDefinition {
+  /// The name of the property.
+  final String name;
+
+  /// The type of the property (e.g., 'int', 'String', 'bool').
+  final String type;
+
+  /// Whether this property is required (no default value).
+  final bool isRequired;
+
+  /// Default value if property is optional.
+  final dynamic defaultValue;
+
+  /// Documentation for this property.
+  final List<String>? documentation;
+
+  EnumPropertyDefinition({
+    required this.name,
+    required this.type,
+    this.isRequired = true,
+    this.defaultValue,
+    this.documentation,
+  });
+}
+
 /// A representation of a yaml file in the protocol directory defining an enum.
 class EnumDefinition extends SerializableModelDefinition {
   /// The type of serialization this enum should use.
@@ -425,6 +453,9 @@ class EnumDefinition extends SerializableModelDefinition {
   /// The documentation for this enum, line by line.
   final List<String>? documentation;
 
+  /// Properties for enhanced enums with custom fields.
+  final List<EnumPropertyDefinition> properties;
+
   /// Create a new [EnumDefinition].
   EnumDefinition({
     required super.fileName,
@@ -437,7 +468,11 @@ class EnumDefinition extends SerializableModelDefinition {
     required super.type,
     super.subDirParts,
     this.documentation,
+    this.properties = const [],
   });
+
+  /// Whether this is an enhanced enum with properties.
+  bool get isEnhanced => properties.isNotEmpty;
 }
 
 /// A representation of a single value of a [EnumDefinition].
@@ -448,8 +483,15 @@ class ProtocolEnumValueDefinition {
   /// The documentation for this value, line by line.
   final List<String>? documentation;
 
+  /// Property values for enhanced enums.
+  final Map<String, dynamic> propertyValues;
+
   /// Create a new [ProtocolEnumValueDefinition].
-  ProtocolEnumValueDefinition(this.name, [this.documentation]);
+  ProtocolEnumValueDefinition(
+    this.name, [
+    this.documentation,
+    this.propertyValues = const {},
+  ]);
 }
 
 abstract class InheritanceDefinition {}

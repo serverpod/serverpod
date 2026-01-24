@@ -160,25 +160,33 @@ abstract class ModelInSubfolder implements _i1.SerializableModel {
       if (enumListField != null)
         'enumListField': enumListField?.toJson(valueToJson: (v) => v.toJson()),
       if (enumRecordField != null)
-        'enumRecordField': _i5.mapRecordToJson(enumRecordField),
+        'enumRecordField': _i5.Protocol().mapRecordToJson(enumRecordField),
       if (enumRecordListField != null)
-        'enumRecordListField': _i5.mapContainerToJson(enumRecordListField!),
+        'enumRecordListField': _i5.Protocol().mapContainerToJson(
+          enumRecordListField!,
+        ),
       if (moduleClassRecordField != null)
-        'moduleClassRecordField': _i5.mapRecordToJson(moduleClassRecordField),
+        'moduleClassRecordField': _i5.Protocol().mapRecordToJson(
+          moduleClassRecordField,
+        ),
       if (classRecordField != null)
-        'classRecordField': _i5.mapRecordToJson(classRecordField),
+        'classRecordField': _i5.Protocol().mapRecordToJson(classRecordField),
       if (enumNamedRecordField != null)
-        'enumNamedRecordField': _i5.mapRecordToJson(enumNamedRecordField),
+        'enumNamedRecordField': _i5.Protocol().mapRecordToJson(
+          enumNamedRecordField,
+        ),
       if (enumNamedRecordListField != null)
-        'enumNamedRecordListField': _i5.mapContainerToJson(
+        'enumNamedRecordListField': _i5.Protocol().mapContainerToJson(
           enumNamedRecordListField!,
         ),
       if (moduleClassNamedRecordField != null)
-        'moduleClassNamedRecordField': _i5.mapRecordToJson(
+        'moduleClassNamedRecordField': _i5.Protocol().mapRecordToJson(
           moduleClassNamedRecordField,
         ),
       if (classNamedRecordField != null)
-        'classNamedRecordField': _i5.mapRecordToJson(classNamedRecordField),
+        'classNamedRecordField': _i5.Protocol().mapRecordToJson(
+          classNamedRecordField,
+        ),
     };
   }
 

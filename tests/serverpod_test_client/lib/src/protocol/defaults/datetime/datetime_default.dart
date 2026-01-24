@@ -34,12 +34,16 @@ abstract class DateTimeDefault implements _i1.SerializableModel {
   factory DateTimeDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return DateTimeDefault(
       id: jsonSerialization['id'] as int?,
-      dateTimeDefaultNow: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['dateTimeDefaultNow'],
-      ),
-      dateTimeDefaultStr: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['dateTimeDefaultStr'],
-      ),
+      dateTimeDefaultNow: jsonSerialization['dateTimeDefaultNow'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['dateTimeDefaultNow'],
+            ),
+      dateTimeDefaultStr: jsonSerialization['dateTimeDefaultStr'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['dateTimeDefaultStr'],
+            ),
       dateTimeDefaultStrNull:
           jsonSerialization['dateTimeDefaultStrNull'] == null
           ? null

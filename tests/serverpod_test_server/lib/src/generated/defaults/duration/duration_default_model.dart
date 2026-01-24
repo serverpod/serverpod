@@ -20,7 +20,7 @@ abstract class DurationDefaultModel
     Duration? durationDefaultModelNull,
   }) : durationDefaultModel =
            durationDefaultModel ??
-           Duration(
+           const Duration(
              days: 1,
              hours: 2,
              minutes: 10,
@@ -29,7 +29,7 @@ abstract class DurationDefaultModel
            ),
        durationDefaultModelNull =
            durationDefaultModelNull ??
-           Duration(
+           const Duration(
              days: 2,
              hours: 1,
              minutes: 20,
@@ -48,9 +48,11 @@ abstract class DurationDefaultModel
   ) {
     return DurationDefaultModel(
       id: jsonSerialization['id'] as int?,
-      durationDefaultModel: _i1.DurationJsonExtension.fromJson(
-        jsonSerialization['durationDefaultModel'],
-      ),
+      durationDefaultModel: jsonSerialization['durationDefaultModel'] == null
+          ? null
+          : _i1.DurationJsonExtension.fromJson(
+              jsonSerialization['durationDefaultModel'],
+            ),
       durationDefaultModelNull:
           jsonSerialization['durationDefaultModelNull'] == null
           ? null

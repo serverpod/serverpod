@@ -291,6 +291,7 @@ class TextStdOutLogWriter extends LogWriter {
       error: entry.error,
       stackTrace: entry.stackTrace,
       toStdErr: _isError(entry),
+      time: entry.time,
     );
   }
 
@@ -341,6 +342,7 @@ class TextStdOutLogWriter extends LogWriter {
       },
       error: entry.error,
       stackTrace: entry.stackTrace,
+      time: entry.time,
     );
   }
 
@@ -461,8 +463,9 @@ class TextStdOutLogWriter extends LogWriter {
     required String? error,
     required String? stackTrace,
     bool toStdErr = false,
+    DateTime? time,
   }) {
-    var now = DateTime.now().toUtc();
+    var now = time?.toUtc() ?? DateTime.now().toUtc();
     _write(
       type,
       context: context,

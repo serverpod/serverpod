@@ -20,7 +20,7 @@ abstract class DurationDefaultMix implements _i1.SerializableModel {
     Duration? durationDefaultModelAndDefaultPersist,
   }) : durationDefaultAndDefaultModel =
            durationDefaultAndDefaultModel ??
-           Duration(
+           const Duration(
              days: 2,
              hours: 1,
              minutes: 20,
@@ -29,7 +29,7 @@ abstract class DurationDefaultMix implements _i1.SerializableModel {
            ),
        durationDefaultAndDefaultPersist =
            durationDefaultAndDefaultPersist ??
-           Duration(
+           const Duration(
              days: 1,
              hours: 2,
              minutes: 10,
@@ -38,7 +38,7 @@ abstract class DurationDefaultMix implements _i1.SerializableModel {
            ),
        durationDefaultModelAndDefaultPersist =
            durationDefaultModelAndDefaultPersist ??
-           Duration(
+           const Duration(
              days: 1,
              hours: 2,
              minutes: 10,
@@ -56,15 +56,24 @@ abstract class DurationDefaultMix implements _i1.SerializableModel {
   factory DurationDefaultMix.fromJson(Map<String, dynamic> jsonSerialization) {
     return DurationDefaultMix(
       id: jsonSerialization['id'] as int?,
-      durationDefaultAndDefaultModel: _i1.DurationJsonExtension.fromJson(
-        jsonSerialization['durationDefaultAndDefaultModel'],
-      ),
-      durationDefaultAndDefaultPersist: _i1.DurationJsonExtension.fromJson(
-        jsonSerialization['durationDefaultAndDefaultPersist'],
-      ),
-      durationDefaultModelAndDefaultPersist: _i1.DurationJsonExtension.fromJson(
-        jsonSerialization['durationDefaultModelAndDefaultPersist'],
-      ),
+      durationDefaultAndDefaultModel:
+          jsonSerialization['durationDefaultAndDefaultModel'] == null
+          ? null
+          : _i1.DurationJsonExtension.fromJson(
+              jsonSerialization['durationDefaultAndDefaultModel'],
+            ),
+      durationDefaultAndDefaultPersist:
+          jsonSerialization['durationDefaultAndDefaultPersist'] == null
+          ? null
+          : _i1.DurationJsonExtension.fromJson(
+              jsonSerialization['durationDefaultAndDefaultPersist'],
+            ),
+      durationDefaultModelAndDefaultPersist:
+          jsonSerialization['durationDefaultModelAndDefaultPersist'] == null
+          ? null
+          : _i1.DurationJsonExtension.fromJson(
+              jsonSerialization['durationDefaultModelAndDefaultPersist'],
+            ),
     );
   }
 

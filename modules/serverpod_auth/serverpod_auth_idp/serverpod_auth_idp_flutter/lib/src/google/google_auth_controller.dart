@@ -19,7 +19,10 @@ import 'google_sign_in_service.dart';
 /// final controller = GoogleAuthController(
 ///   client: client,
 ///   onAuthenticated: () {
-///     // Navigate to home screen
+///     // Do something when the user is authenticated.
+///     //
+///     // NOTE: You should not navigate to the home screen here, otherwise
+///     // the user will have to sign in again every time they open the app.
 ///   },
 /// );
 ///
@@ -69,7 +72,7 @@ class GoogleAuthController extends ChangeNotifier {
     required this.client,
     this.onAuthenticated,
     this.onError,
-    this.attemptLightweightSignIn = true,
+    this.attemptLightweightSignIn = false,
     this.scopes = defaultScopes,
   }) {
     unawaited(_initialize());
@@ -109,6 +112,8 @@ class GoogleAuthController extends ChangeNotifier {
 
   /// Initializes the Google Sign-In service and sets up auth event listeners.
   Future<void> _initialize() async {
+    if (_isInitialized) return;
+
     try {
       final signIn = await GoogleSignInService.instance.ensureInitialized(
         auth: client.auth,
@@ -119,7 +124,7 @@ class GoogleAuthController extends ChangeNotifier {
         onError: _handleAuthenticationError,
       );
 
-      if (attemptLightweightSignIn) {
+      if (!isAuthenticated && attemptLightweightSignIn) {
         unawaited(signIn.attemptLightweightAuthentication());
       }
 

@@ -104,10 +104,11 @@ jobs:
 
   serverpod_generate:
     name: serverpod generate
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         flutter-version: ["3.32.0", "3.38.4"]
+        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -119,7 +120,10 @@ jobs:
       - name: Install dependencies
         run: melos bootstrap
       - name: Run serverpod generate
-        run: bash util/run_tests_serverpod_generate
+        shell: bash
+        run: |
+          git config core.safecrlf false
+          util/run_tests_serverpod_generate
 
   update_pubspecs:
     name: update pubspecs

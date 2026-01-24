@@ -14,11 +14,14 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 class ParentWithChangedId
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  ParentWithChangedId({_i1.UuidValue? id}) : id = id ?? _i1.Uuid().v7obj();
+  ParentWithChangedId({_i1.UuidValue? id})
+    : id = id ?? const _i1.Uuid().v7obj();
 
   factory ParentWithChangedId.fromJson(Map<String, dynamic> jsonSerialization) {
     return ParentWithChangedId(
-      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
     );
   }
 

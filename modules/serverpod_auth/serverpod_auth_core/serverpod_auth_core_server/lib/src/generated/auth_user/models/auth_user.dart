@@ -13,6 +13,10 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i2;
 
+/// Core database entity representing a user in the authentication system.
+///
+/// This class is meant to be used only to interact with the database. To transfer
+/// user data, use the [AuthUserModel] DTO.
 abstract class AuthUser
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   AuthUser._({
@@ -35,13 +39,13 @@ abstract class AuthUser
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['createdAt'],
-      ),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       scopeNames: _i2.Protocol().deserialize<Set<String>>(
         jsonSerialization['scopeNames'],
       ),
-      blocked: jsonSerialization['blocked'] as bool,
+      blocked: jsonSerialization['blocked'] as bool?,
     );
   }
 

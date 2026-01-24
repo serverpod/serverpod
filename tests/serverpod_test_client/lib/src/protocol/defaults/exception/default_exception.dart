@@ -31,17 +31,15 @@ abstract class DefaultException
        defaultDouble = defaultDouble ?? 10.5,
        defaultDuration =
            defaultDuration ??
-           Duration(
+           const Duration(
              days: 1,
              hours: 2,
              minutes: 30,
-             seconds: 0,
-             milliseconds: 0,
            ),
        defaultEnum = defaultEnum ?? _i2.ByNameEnum.byName1,
        defaultInteger = defaultInteger ?? 10,
        defaultString = defaultString ?? 'Default error message',
-       defaultUuid = defaultUuid ?? _i1.Uuid().v4obj(),
+       defaultUuid = defaultUuid ?? const _i1.Uuid().v4obj(),
        defaultModelField = defaultModelField ?? 'Model specific message',
        defaultMixField = defaultMixField ?? 'Model specific mix message';
 
@@ -60,24 +58,32 @@ abstract class DefaultException
 
   factory DefaultException.fromJson(Map<String, dynamic> jsonSerialization) {
     return DefaultException(
-      defaultBoolean: jsonSerialization['defaultBoolean'] as bool,
-      defaultDateTime: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['defaultDateTime'],
-      ),
-      defaultDouble: (jsonSerialization['defaultDouble'] as num).toDouble(),
-      defaultDuration: _i1.DurationJsonExtension.fromJson(
-        jsonSerialization['defaultDuration'],
-      ),
-      defaultEnum: _i2.ByNameEnum.fromJson(
-        (jsonSerialization['defaultEnum'] as String),
-      ),
-      defaultInteger: jsonSerialization['defaultInteger'] as int,
-      defaultString: jsonSerialization['defaultString'] as String,
-      defaultUuid: _i1.UuidValueJsonExtension.fromJson(
-        jsonSerialization['defaultUuid'],
-      ),
-      defaultModelField: jsonSerialization['defaultModelField'] as String,
-      defaultMixField: jsonSerialization['defaultMixField'] as String,
+      defaultBoolean: jsonSerialization['defaultBoolean'] as bool?,
+      defaultDateTime: jsonSerialization['defaultDateTime'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['defaultDateTime'],
+            ),
+      defaultDouble: (jsonSerialization['defaultDouble'] as num?)?.toDouble(),
+      defaultDuration: jsonSerialization['defaultDuration'] == null
+          ? null
+          : _i1.DurationJsonExtension.fromJson(
+              jsonSerialization['defaultDuration'],
+            ),
+      defaultEnum: jsonSerialization['defaultEnum'] == null
+          ? null
+          : _i2.ByNameEnum.fromJson(
+              (jsonSerialization['defaultEnum'] as String),
+            ),
+      defaultInteger: jsonSerialization['defaultInteger'] as int?,
+      defaultString: jsonSerialization['defaultString'] as String?,
+      defaultUuid: jsonSerialization['defaultUuid'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['defaultUuid'],
+            ),
+      defaultModelField: jsonSerialization['defaultModelField'] as String?,
+      defaultMixField: jsonSerialization['defaultMixField'] as String?,
     );
   }
 

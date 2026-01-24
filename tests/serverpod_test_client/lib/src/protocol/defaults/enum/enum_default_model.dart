@@ -41,18 +41,24 @@ abstract class EnumDefaultModel implements _i1.SerializableModel {
   factory EnumDefaultModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return EnumDefaultModel(
       id: jsonSerialization['id'] as int?,
-      byNameEnumDefaultModel: _i2.ByNameEnum.fromJson(
-        (jsonSerialization['byNameEnumDefaultModel'] as String),
-      ),
+      byNameEnumDefaultModel:
+          jsonSerialization['byNameEnumDefaultModel'] == null
+          ? null
+          : _i2.ByNameEnum.fromJson(
+              (jsonSerialization['byNameEnumDefaultModel'] as String),
+            ),
       byNameEnumDefaultModelNull:
           jsonSerialization['byNameEnumDefaultModelNull'] == null
           ? null
           : _i2.ByNameEnum.fromJson(
               (jsonSerialization['byNameEnumDefaultModelNull'] as String),
             ),
-      byIndexEnumDefaultModel: _i3.ByIndexEnum.fromJson(
-        (jsonSerialization['byIndexEnumDefaultModel'] as int),
-      ),
+      byIndexEnumDefaultModel:
+          jsonSerialization['byIndexEnumDefaultModel'] == null
+          ? null
+          : _i3.ByIndexEnum.fromJson(
+              (jsonSerialization['byIndexEnumDefaultModel'] as int),
+            ),
       byIndexEnumDefaultModelNull:
           jsonSerialization['byIndexEnumDefaultModelNull'] == null
           ? null

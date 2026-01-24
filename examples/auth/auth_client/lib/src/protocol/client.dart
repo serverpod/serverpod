@@ -21,6 +21,26 @@ import 'package:auth_client/src/protocol/greeting.dart' as _i6;
 import 'protocol.dart' as _i7;
 
 /// {@category Endpoint}
+class EndpointAnonymousIdp extends _i1.EndpointAnonymousIdpBase {
+  EndpointAnonymousIdp(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'anonymousIdp';
+
+  /// Creates a new anonymous account and returns its session.
+  ///
+  /// Invokes the [AnonymousIdp.beforeAnonymousAccount] callback if configured,
+  /// which may prevent account creation if the endpoint is protected.
+  @override
+  _i3.Future<_i4.AuthSuccess> login({String? token}) =>
+      caller.callServerEndpoint<_i4.AuthSuccess>(
+        'anonymousIdp',
+        'login',
+        {'token': token},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointAppleIdp extends _i1.EndpointAppleIdpBase {
   EndpointAppleIdp(_i2.EndpointCaller caller) : super(caller);
 
@@ -229,6 +249,26 @@ class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
 }
 
 /// {@category Endpoint}
+class EndpointFirebaseIdp extends _i1.EndpointFirebaseIdpBase {
+  EndpointFirebaseIdp(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'firebaseIdp';
+
+  /// Validates a Firebase ID token and either logs in the associated user or
+  /// creates a new user account if the Firebase account ID is not yet known.
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  @override
+  _i3.Future<_i4.AuthSuccess> login({required String idToken}) =>
+      caller.callServerEndpoint<_i4.AuthSuccess>(
+        'firebaseIdp',
+        'login',
+        {'idToken': idToken},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointGoogleIdp extends _i1.EndpointGoogleIdpBase {
   EndpointGoogleIdp(_i2.EndpointCaller caller) : super(caller);
 
@@ -388,8 +428,10 @@ class Client extends _i2.ServerpodClientShared {
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
        ) {
+    anonymousIdp = EndpointAnonymousIdp(this);
     appleIdp = EndpointAppleIdp(this);
     emailIdp = EndpointEmailIdp(this);
+    firebaseIdp = EndpointFirebaseIdp(this);
     googleIdp = EndpointGoogleIdp(this);
     refreshJwtTokens = EndpointRefreshJwtTokens(this);
     passkeyIdp = EndpointPasskeyIdp(this);
@@ -397,9 +439,13 @@ class Client extends _i2.ServerpodClientShared {
     modules = Modules(this);
   }
 
+  late final EndpointAnonymousIdp anonymousIdp;
+
   late final EndpointAppleIdp appleIdp;
 
   late final EndpointEmailIdp emailIdp;
+
+  late final EndpointFirebaseIdp firebaseIdp;
 
   late final EndpointGoogleIdp googleIdp;
 
@@ -413,8 +459,10 @@ class Client extends _i2.ServerpodClientShared {
 
   @override
   Map<String, _i2.EndpointRef> get endpointRefLookup => {
+    'anonymousIdp': anonymousIdp,
     'appleIdp': appleIdp,
     'emailIdp': emailIdp,
+    'firebaseIdp': firebaseIdp,
     'googleIdp': googleIdp,
     'refreshJwtTokens': refreshJwtTokens,
     'passkeyIdp': passkeyIdp,

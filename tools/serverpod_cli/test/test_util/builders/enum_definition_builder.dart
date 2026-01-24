@@ -14,6 +14,7 @@ class EnumDefinitionBuilder {
 
   List<ProtocolEnumValueDefinition> _values;
   List<String>? _documentation;
+  List<EnumPropertyDefinition> _properties;
 
   EnumDefinitionBuilder()
     : _fileName = 'example',
@@ -28,7 +29,8 @@ class EnumDefinitionBuilder {
         ProtocolEnumValueDefinition('B'),
         ProtocolEnumValueDefinition('C'),
       ],
-      _documentation = [];
+      _documentation = [],
+      _properties = [];
 
   EnumDefinition build() {
     var enumDefinition = EnumDefinition(
@@ -41,6 +43,7 @@ class EnumDefinitionBuilder {
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
       documentation: _documentation,
+      properties: _properties,
       type: TypeDefinitionBuilder().withClassName(_className).build(),
     );
     enumDefinition.type.enumDefinition = enumDefinition;
@@ -96,6 +99,13 @@ class EnumDefinitionBuilder {
 
   EnumDefinitionBuilder withDocumentation(List<String>? documentation) {
     _documentation = documentation;
+    return this;
+  }
+
+  EnumDefinitionBuilder withProperties(
+    List<EnumPropertyDefinition> properties,
+  ) {
+    _properties = properties;
     return this;
   }
 }

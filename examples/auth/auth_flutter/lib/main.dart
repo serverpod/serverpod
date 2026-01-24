@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:auth_client/auth_client.dart';
+import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
+import 'firebase.dart';
 import 'widgets/profile_info.dart';
 
 /// Sets up a global client object that can be used to talk to the server from
@@ -16,7 +17,10 @@ late final Client client;
 
 late String serverUrl;
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeFirebase();
+
   // When you are running the app on a physical device, you need to set the
   // server URL to the IP address of your computer. You can find the IP
   // address by running `ipconfig` on Windows or `ifconfig` on Mac/Linux.
@@ -72,8 +76,6 @@ class _MainPageState extends State<MainPage> {
     // NOTE: This is the only required setState to ensure that the  UI gets
     // updated when the auth state changes.
     client.auth.authInfoListenable.addListener(_updateSignedInState);
-
-    // Sync the initial auth state to the UI.
     _updateSignedInState();
   }
 
@@ -108,6 +110,9 @@ class SignInScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Uncomment this to replace the default sign-in screen with Firebase.
+      // See the `firebase.dart` file for more information.
+      // body: FirebaseSignInScreen(client: client),
       body: SignInWidget(
         client: client,
         // NOTE: No need to call navigation here if it gets done on the

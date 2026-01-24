@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Exception thrown when a refresh token rotation request has an invalid secret.
 abstract class RefreshTokenInvalidSecretException
     implements _i1.SerializableException, _i1.SerializableModel {
   RefreshTokenInvalidSecretException._();

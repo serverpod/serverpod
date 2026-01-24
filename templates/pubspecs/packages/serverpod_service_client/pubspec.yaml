@@ -2,7 +2,7 @@
 
 name: serverpod_service_client
 version: SERVERPOD_VERSION
-description: Generated client for the Severpod service protocol.
+description: Generated client for the Serverpod service protocol.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues

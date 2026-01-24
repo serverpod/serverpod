@@ -33,10 +33,11 @@ abstract class BoolDefaultModel
   factory BoolDefaultModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return BoolDefaultModel(
       id: jsonSerialization['id'] as int?,
-      boolDefaultModelTrue: jsonSerialization['boolDefaultModelTrue'] as bool,
-      boolDefaultModelFalse: jsonSerialization['boolDefaultModelFalse'] as bool,
+      boolDefaultModelTrue: jsonSerialization['boolDefaultModelTrue'] as bool?,
+      boolDefaultModelFalse:
+          jsonSerialization['boolDefaultModelFalse'] as bool?,
       boolDefaultModelNullFalse:
-          jsonSerialization['boolDefaultModelNullFalse'] as bool,
+          jsonSerialization['boolDefaultModelNullFalse'] as bool?,
     );
   }
 

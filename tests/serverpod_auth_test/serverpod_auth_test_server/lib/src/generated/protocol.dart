@@ -398,4 +398,31 @@ class Protocol extends _i1.SerializationManagerServer {
 
   @override
   String getModuleName() => 'serverpod_auth_test';
+
+  /// Maps any `Record`s known to this [Protocol] to their JSON representation
+  ///
+  /// Throws in case the record type is not known.
+  ///
+  /// This method will return `null` (only) for `null` inputs.
+  Map<String, dynamic>? mapRecordToJson(Record? record) {
+    if (record == null) {
+      return null;
+    }
+    try {
+      return _i3.Protocol().mapRecordToJson(record);
+    } catch (_) {}
+    try {
+      return _i4.Protocol().mapRecordToJson(record);
+    } catch (_) {}
+    try {
+      return _i5.Protocol().mapRecordToJson(record);
+    } catch (_) {}
+    try {
+      return _i6.Protocol().mapRecordToJson(record);
+    } catch (_) {}
+    try {
+      return _i7.Protocol().mapRecordToJson(record);
+    } catch (_) {}
+    throw Exception('Unsupported record type ${record.runtimeType}');
+  }
 }

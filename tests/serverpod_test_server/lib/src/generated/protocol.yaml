@@ -83,6 +83,8 @@ basicDatabase:
   - getTypesRawQuery:
   - storeObjectWithEnum:
   - getObjectWithEnum:
+  - storeObjectWithEnumEnhanced:
+  - getObjectWithEnumEnhanced:
   - storeObjectWithObject:
   - getObjectWithObject:
   - deleteAll:
@@ -93,6 +95,11 @@ transactionsDatabase:
 deprecation:
   - setGlobalDouble:
   - getGlobalDouble:
+  - methodWithDeprecatedParam:
+  - methodWithDeprecatedParamMessage:
+  - methodWithMixedParams:
+  - methodWithOptionalDeprecatedParam:
+  - methodWithNamedDeprecatedParam:
 diagnosticEventTest:
   - submitExceptionEvent:
 echoRequest:
@@ -151,7 +158,7 @@ failedCalls:
 fieldScopes:
   - storeObject:
   - retrieveObject:
-futureCalls:
+testFutureCalls:
   - makeFutureCall:
   - makeFutureCallThatThrows:
 listParameters:
@@ -373,6 +380,7 @@ recordParameters:
   - streamOfModelClassWithRecordField:
   - streamOfNullableModelClassWithRecordField:
   - streamOfNullableModelClassWithRecordFieldFromExternalModule:
+  - streamOfNullableIntAndModuleClass:
   - recordParametersWithCustomNames:
 redis:
   - setSimpleData:

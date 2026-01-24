@@ -19,7 +19,7 @@ abstract class ArenaUuid implements _i1.SerializableModel {
     _i1.UuidValue? id,
     required this.name,
     this.team,
-  }) : id = id ?? _i1.Uuid().v7obj();
+  }) : id = id ?? const _i1.Uuid().v7obj();
 
   factory ArenaUuid({
     _i1.UuidValue? id,
@@ -29,7 +29,9 @@ abstract class ArenaUuid implements _i1.SerializableModel {
 
   factory ArenaUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return ArenaUuid(
-      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       team: jsonSerialization['team'] == null
           ? null

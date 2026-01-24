@@ -13,6 +13,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_core_client/src/protocol/protocol.dart' as _i2;
 
+/// DTO for transferring server-side session information between server and client.
 abstract class ServerSideSessionInfo implements _i1.SerializableModel {
   ServerSideSessionInfo._({
     required this.id,

@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_templates
-version: 3.1.1
+version: 3.2.3
 description: Templates for Serverpod.
 repository: https://github.com/serverpod/serverpod
 

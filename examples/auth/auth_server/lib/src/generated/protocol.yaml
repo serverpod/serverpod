@@ -1,3 +1,5 @@
+anonymousIdp:
+  - login:
 appleIdp:
   - login:
 emailIdp:
@@ -8,6 +10,8 @@ emailIdp:
   - startPasswordReset:
   - verifyPasswordResetCode:
   - finishPasswordReset:
+firebaseIdp:
+  - login:
 googleIdp:
   - login:
 refreshJwtTokens:

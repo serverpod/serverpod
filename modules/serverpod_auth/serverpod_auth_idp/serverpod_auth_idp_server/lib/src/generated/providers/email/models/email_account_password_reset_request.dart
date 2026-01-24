@@ -8,7 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
 // ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -17,6 +16,7 @@ import '../../../providers/email/models/email_account.dart' as _i2;
 import '../../../common/secret_challenge/models/secret_challenge.dart' as _i3;
 import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i4;
 
+/// Pending email account password reset.
 abstract class EmailAccountPasswordResetRequest
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   EmailAccountPasswordResetRequest._({
@@ -56,9 +56,9 @@ abstract class EmailAccountPasswordResetRequest
           : _i4.Protocol().deserialize<_i2.EmailAccount>(
               jsonSerialization['emailAccount'],
             ),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['createdAt'],
-      ),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       challengeId: _i1.UuidValueJsonExtension.fromJson(
         jsonSerialization['challengeId'],
       ),

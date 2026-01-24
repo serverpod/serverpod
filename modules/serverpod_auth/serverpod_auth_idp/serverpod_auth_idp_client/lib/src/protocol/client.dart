@@ -20,24 +20,16 @@ import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/
 import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/passkey_login_request.dart'
     as _i6;
 
-/// Idp-agnostic authentication endpoints to learn general information about a
-/// given user account.
+/// Base endpoint for anonymous accounts.
 /// {@category Endpoint}
-class EndpointIdp extends _i1.EndpointRef {
-  EndpointIdp(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointAnonymousIdpBase extends _i1.EndpointRef {
+  EndpointAnonymousIdpBase(_i1.EndpointCaller caller) : super(caller);
 
-  @override
-  String get name => 'serverpod_auth_idp.idp';
-
-  /// Returns the `method` value for each connected [Idp] subclass if the
-  /// current session is authenticated and if the user has an account connected
-  /// to the [Idp].
-  _i2.Future<Set<String>> idpAccounts() =>
-      caller.callServerEndpoint<Set<String>>(
-        'serverpod_auth_idp.idp',
-        'idpAccounts',
-        {},
-      );
+  /// Creates a new anonymous account and returns its session.
+  ///
+  /// Invokes the [AnonymousIdp.beforeAnonymousAccount] callback if configured,
+  /// which may prevent account creation if the endpoint is protected.
+  _i2.Future<_i3.AuthSuccess> login({String? token});
 }
 
 /// Endpoint for handling Sign in with Apple.
@@ -193,6 +185,22 @@ abstract class EndpointEmailIdpBase extends _i1.EndpointRef {
     required String finishPasswordResetToken,
     required String newPassword,
   });
+}
+
+/// Base endpoint for Firebase Account-based authentication.
+///
+/// This endpoint exposes methods for logging in users using Firebase ID tokens.
+/// If you would like modify the authentication flow, consider extending this
+/// class and overriding the relevant methods.
+/// {@category Endpoint}
+abstract class EndpointFirebaseIdpBase extends _i1.EndpointRef {
+  EndpointFirebaseIdpBase(_i1.EndpointCaller caller) : super(caller);
+
+  /// Validates a Firebase ID token and either logs in the associated user or
+  /// creates a new user account if the Firebase account ID is not yet known.
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  _i2.Future<_i3.AuthSuccess> login({required String idToken});
 }
 
 /// Base endpoint for Google Account-based authentication.

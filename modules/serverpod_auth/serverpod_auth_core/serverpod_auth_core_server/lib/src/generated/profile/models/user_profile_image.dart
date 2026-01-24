@@ -8,7 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
 // ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -16,6 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../profile/models/user_profile.dart' as _i2;
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i3;
 
+/// Database entity for storing user profile image information.
 abstract class UserProfileImage
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   UserProfileImage._({
@@ -51,9 +51,9 @@ abstract class UserProfileImage
           : _i3.Protocol().deserialize<_i2.UserProfile>(
               jsonSerialization['userProfile'],
             ),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['createdAt'],
-      ),
+      createdAt: jsonSerialization['createdAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
       url: _i1.UriJsonExtension.fromJson(jsonSerialization['url']),

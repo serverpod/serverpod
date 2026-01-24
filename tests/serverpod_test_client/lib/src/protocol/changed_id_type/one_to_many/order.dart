@@ -22,7 +22,7 @@ abstract class OrderUuid implements _i1.SerializableModel {
     required this.customerId,
     this.customer,
     this.comments,
-  }) : id = id ?? _i1.Uuid().v7obj();
+  }) : id = id ?? const _i1.Uuid().v7obj();
 
   factory OrderUuid({
     _i1.UuidValue? id,
@@ -34,7 +34,9 @@ abstract class OrderUuid implements _i1.SerializableModel {
 
   factory OrderUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return OrderUuid(
-      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      id: jsonSerialization['id'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       description: jsonSerialization['description'] as String,
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization['customer'] == null
