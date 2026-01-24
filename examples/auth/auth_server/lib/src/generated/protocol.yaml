@@ -22,5 +22,7 @@ passkeyIdp:
   - createChallenge:
   - register:
   - login:
+twitchIdp:
+  - login:
 greeting:
   - hello:

@@ -401,6 +401,35 @@ class EndpointPasskeyIdp extends _i1.EndpointPasskeyIdpBase {
   );
 }
 
+/// {@category Endpoint}
+class EndpointTwitchIdp extends _i1.EndpointTwitchIdpBase {
+  EndpointTwitchIdp(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'twitchIdp';
+
+  /// Validates a Twitch authorization code and either logs in the associated
+  /// user or creates a new user account if the Twitch account ID is not yet
+  /// known.
+  ///
+  /// This method exchanges the `authorization code` for an `access token` using
+  /// `PKCE`, then authenticates the user.
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  @override
+  _i3.Future<_i4.AuthSuccess> login({
+    required String code,
+    required String redirectUri,
+  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+    'twitchIdp',
+    'login',
+    {
+      'code': code,
+      'redirectUri': redirectUri,
+    },
+  );
+}
+
 /// This is an example endpoint that returns a greeting message through
 /// its [hello] method.
 /// {@category Endpoint}
@@ -467,6 +496,7 @@ class Client extends _i2.ServerpodClientShared {
     googleIdp = EndpointGoogleIdp(this);
     refreshJwtTokens = EndpointRefreshJwtTokens(this);
     passkeyIdp = EndpointPasskeyIdp(this);
+    twitchIdp = EndpointTwitchIdp(this);
     greeting = EndpointGreeting(this);
     modules = Modules(this);
   }
@@ -487,6 +517,8 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointPasskeyIdp passkeyIdp;
 
+  late final EndpointTwitchIdp twitchIdp;
+
   late final EndpointGreeting greeting;
 
   late final Modules modules;
@@ -501,6 +533,7 @@ class Client extends _i2.ServerpodClientShared {
     'googleIdp': googleIdp,
     'refreshJwtTokens': refreshJwtTokens,
     'passkeyIdp': passkeyIdp,
+    'twitchIdp': twitchIdp,
     'greeting': greeting,
   };
 
