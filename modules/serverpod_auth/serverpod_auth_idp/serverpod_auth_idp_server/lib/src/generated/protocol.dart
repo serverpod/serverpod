@@ -61,7 +61,8 @@ import 'providers/passkey/models/passkey_registration_request.dart' as _i31;
 import 'providers/twitch/models/twitch_access_token_verification_exception.dart'
     as _i32;
 import 'providers/twitch/models/twitch_account.dart' as _i33;
-import 'dart:typed_data' as _i34;
+import 'providers/twitch/models/twitch_account_details.dart' as _i34;
+import 'dart:typed_data' as _i35;
 export 'common/rate_limited_request_attempt/models/rate_limited_request_attempt.dart';
 export 'common/secret_challenge/models/secret_challenge.dart';
 export 'providers/anonymous/models/anonymous_account.dart';
@@ -92,6 +93,7 @@ export 'providers/passkey/models/passkey_public_key_not_found_exception.dart';
 export 'providers/passkey/models/passkey_registration_request.dart';
 export 'providers/twitch/models/twitch_access_token_verification_exception.dart';
 export 'providers/twitch/models/twitch_account.dart';
+export 'providers/twitch/models/twitch_account_details.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -1294,6 +1296,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i33.TwitchAccount) {
       return _i33.TwitchAccount.fromJson(data) as T;
     }
+    if (t == _i34.TwitchAccountDetails) {
+      return _i34.TwitchAccountDetails.fromJson(data) as T;
+    }
     if (t == _i1.getType<_i4.RateLimitedRequestAttempt?>()) {
       return (data != null
               ? _i4.RateLimitedRequestAttempt.fromJson(data)
@@ -1440,6 +1445,10 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i33.TwitchAccount?>()) {
       return (data != null ? _i33.TwitchAccount.fromJson(data) : null) as T;
     }
+    if (t == _i1.getType<_i34.TwitchAccountDetails?>()) {
+      return (data != null ? _i34.TwitchAccountDetails.fromJson(data) : null)
+          as T;
+    }
     if (t == Map<String, String>) {
       return (data as Map).map(
             (k, v) => MapEntry(deserialize<String>(k), deserialize<String>(v)),
@@ -1455,9 +1464,9 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == _i1.getType<({_i34.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<({_i35.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i34.ByteData>(
+            challenge: deserialize<_i35.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -1519,6 +1528,7 @@ class Protocol extends _i1.SerializationManagerServer {
       _i32.TwitchAccessTokenVerificationException =>
         'TwitchAccessTokenVerificationException',
       _i33.TwitchAccount => 'TwitchAccount',
+      _i34.TwitchAccountDetails => 'TwitchAccountDetails',
       _ => null,
     };
   }
@@ -1596,6 +1606,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'TwitchAccessTokenVerificationException';
       case _i33.TwitchAccount():
         return 'TwitchAccount';
+      case _i34.TwitchAccountDetails():
+        return 'TwitchAccountDetails';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -1714,6 +1726,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'TwitchAccount') {
       return deserialize<_i33.TwitchAccount>(data['data']);
     }
+    if (dataClassName == 'TwitchAccountDetails') {
+      return deserialize<_i34.TwitchAccountDetails>(data['data']);
+    }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
@@ -1786,7 +1801,7 @@ class Protocol extends _i1.SerializationManagerServer {
     if (record == null) {
       return null;
     }
-    if (record is ({_i34.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i35.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge,
