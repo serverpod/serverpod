@@ -38,12 +38,12 @@ class TestOAuth2PkceServerConfig {
       clientSecretKey: testClientSecretKey,
       tokenRequestHeaders: testTokenRequestHeaders,
       tokenRequestParams: testTokenRequestParams,
-      parseAccessToken: _parseAccessToken,
+      parseTokenResponse: _parseTokenResponse,
     );
   }
 
   /// Custom access token parser for testing.
-  String _parseAccessToken(final Map<String, dynamic> responseBody) {
+  String _parseTokenResponse(final Map<String, dynamic> responseBody) {
     // Check for error in response
     if (testShouldThrowOnError) {
       final error = responseBody['error'] as String?;

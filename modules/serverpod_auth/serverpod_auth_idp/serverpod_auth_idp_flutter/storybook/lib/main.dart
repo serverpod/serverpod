@@ -8,6 +8,7 @@ import 'stories/apple.dart';
 import 'stories/email.dart';
 import 'stories/github.dart';
 import 'stories/google.dart';
+import 'stories/twitch.dart';
 import 'stories/signin.dart';
 import 'utils/client.dart';
 import 'utils/wrapper.dart';
@@ -20,6 +21,7 @@ void main() {
   client.auth.initializeGoogleSignIn();
   client.auth.initializeAppleSignIn();
   client.auth.initializeGitHubSignIn();
+  client.auth.initializeTwitchSignIn();
 
   runApp(const MainApp());
 }
@@ -50,6 +52,7 @@ class MainApp extends StatelessWidget {
           ...googleStories,
           ...appleStories,
           ...githubStories,
+          ...twitchStories,
           ...signInStories,
         ],
       ),

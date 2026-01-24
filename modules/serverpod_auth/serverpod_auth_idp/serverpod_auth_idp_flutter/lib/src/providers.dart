@@ -30,6 +30,7 @@ class AvailableIdps {
     hasApple,
     hasFirebase,
     hasGitHub,
+    hasTwitch,
   ].where((e) => e).length;
 
   /// Whether the anonymous authentication provider is available.
@@ -49,6 +50,9 @@ class AvailableIdps {
 
   /// Whether the GitHub authentication provider is available.
   bool get hasGitHub => _isProviderAvailable<EndpointGitHubIdpBase>();
+
+  /// Whether the Twitch authentication provider is available.
+  bool get hasTwitch => _isProviderAvailable<EndpointTwitchIdpBase>();
 }
 
 /// Extension to provide information about available identity providers.

@@ -45,6 +45,12 @@ final List<Story> signInStories = [
         _signInWidgetStory(context, disableGitHubSignInWidget: true),
   ),
   Story(
+    name: 'Sign In/Disabled Twitch Widget',
+    description: 'Sign in flow suppressing the Twitch sign-in widget.',
+    builder: (context) =>
+        _signInWidgetStory(context, disableTwitchSignInWidget: true),
+  ),
+  Story(
     name: 'Sign In/Only Email and Anonymous Widget',
     description: 'Sign in flow with only email and anonymous sign-in widgets.',
     builder: (context) => _signInWidgetStory(
@@ -52,6 +58,7 @@ final List<Story> signInStories = [
       disableGoogleSignInWidget: true,
       disableAppleSignInWidget: true,
       disableGitHubSignInWidget: true,
+      disableTwitchSignInWidget: true,
     ),
   ),
 ];
@@ -63,6 +70,7 @@ Widget _signInWidgetStory(
   bool disableGoogleSignInWidget = false,
   bool disableAppleSignInWidget = false,
   bool disableGitHubSignInWidget = false,
+  bool disableTwitchSignInWidget = false,
 }) {
   return SizedBox(
     width: 400,
@@ -79,6 +87,7 @@ Widget _signInWidgetStory(
       disableGoogleSignInWidget: disableGoogleSignInWidget,
       disableAppleSignInWidget: disableAppleSignInWidget,
       disableGitHubSignInWidget: disableGitHubSignInWidget,
+      disableTwitchSignInWidget: disableTwitchSignInWidget,
     ),
   );
 }

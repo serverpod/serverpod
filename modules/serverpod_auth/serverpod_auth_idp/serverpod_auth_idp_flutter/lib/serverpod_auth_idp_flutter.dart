@@ -1,7 +1,7 @@
 /// Provides authentication UI widgets for Serverpod applications.
 ///
 /// This library allows developers to integrate authentication flows with various
-/// identity providers (email, Google, Apple, GitHub) into their Flutter apps. It works
+/// identity providers (email, Google, Apple, GitHub, Twitch) into their Flutter apps. It works
 /// with the Serverpod auth system and provides ready-to-use UI components.
 library;
 
@@ -26,6 +26,11 @@ export 'src/github/github_sign_in_button.dart';
 export 'src/github/github_sign_in_service.dart';
 export 'src/github/github_sign_in_style.dart';
 export 'src/github/github_sign_in_widget.dart';
+export 'src/twitch/twitch_auth_controller.dart';
+export 'src/twitch/twitch_sign_in_button.dart';
+export 'src/twitch/twitch_sign_in_service.dart';
+export 'src/twitch/twitch_sign_in_style.dart';
+export 'src/twitch/twitch_sign_in_widget.dart';
 export 'src/google/common/style.dart';
 export 'src/google/google_auth_controller.dart';
 export 'src/google/google_sign_in_service.dart';

@@ -67,6 +67,13 @@ void run(List<String> args) async {
     }),
   );
 
+  final twitchIdpConfig = TwitchIdpConfig(
+    oauthCredentials: TwitchOAuthCredentials.fromJson({
+      'clientId': pod.getPassword('twitchClientId')!,
+      'clientSecret': pod.getPassword('twitchClientSecret')!,
+    }),
+  );
+
   final passkeyIdpConfig = PasskeyIdpConfig(
     challengeLifetime: Duration(seconds: 30),
     hostname: 'localhost',
@@ -85,6 +92,7 @@ void run(List<String> args) async {
       appleIdpConfig,
       emailIdpConfig,
       githubIdpConfig,
+      twitchIdpConfig,
       passkeyIdpConfig,
     ],
   );

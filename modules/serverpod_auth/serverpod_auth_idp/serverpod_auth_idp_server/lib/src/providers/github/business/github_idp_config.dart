@@ -79,7 +79,7 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
          clientId: oauthCredentials.clientId,
          clientSecret: oauthCredentials.clientSecret,
          credentialsLocation: OAuth2CredentialsLocation.body,
-         parseAccessToken: parseAccessToken,
+         parseTokenResponse: parseAccessToken,
        );
 
   /// Default validation function for extracting additional GitHub account details.
@@ -111,6 +111,7 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
         'No access token in GitHub response',
       );
     }
+
     return accessToken;
   }
 

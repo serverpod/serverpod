@@ -8,6 +8,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
+import 'package:serverpod_auth_idp_server/providers/twitch.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 
@@ -38,6 +39,7 @@ void run(List<String> args) async {
         sendPasswordResetVerificationCode: _sendPasswordResetCode,
       ),
       GoogleIdpConfigFromPasswords(),
+      TwitchIdpConfigFromPasswords(),
       PasskeyIdpConfigFromPasswords(),
     ],
   );
