@@ -6,6 +6,25 @@ import 'package:serverpod/serverpod.dart';
 import '../../../../../core.dart';
 import 'twitch_idp_config.dart';
 
+/// Details of the Twitch Account.
+///
+/// All nullable fields are not guaranteed to be available from Twitch's API,
+/// since the user may have a private email or limited profile information.
+typedef TwitchAccountDetails = ({
+  /// Twitch's user identifier for this account.
+  String userIdentifier,
+
+  String login,
+
+  String displayName,
+
+  /// The email received from Twitch (may be null if private).
+  String? email,
+
+  /// The user's profile image URI.
+  Uri? profileImage,
+});
+
 /// Result of the code exchange process to be used for authorization
 typedef TwitchTokenSuccess = ({
   String accessToken,
@@ -183,8 +202,7 @@ class TwitchIdpUtils {
 
     TwitchAccountDetails details;
     try {
-      details = TwitchAccountDetails.fromJson(data);
-      config.twitchAccountDetailsValidation(details);
+      details = _parseAccountDetails(data);
     } catch (e) {
       session.logAndThrow('Invalid user info from Twitch: $e');
     }
@@ -199,6 +217,36 @@ class TwitchIdpUtils {
           transaction: null,
         );
       }
+    } catch (e) {
+      session.logAndThrow('Failed to get extra Twitch account info: $e');
+    }
+
+    return details;
+  }
+
+  TwitchAccountDetails _parseAccountDetails(final Map<String, dynamic> data) {
+    final userId = data['id'];
+    final login = data['login'] as String;
+    final displayName = data['displayName'] as String;
+    final email = data['email'] as String?;
+    final profileImageUrl = data['profile_image_url'] as String?;
+
+    if (userId == null) {
+      throw TwitchUserInfoMissingDataException();
+    }
+
+    final details = (
+      displayName: displayName,
+      email: email?.toLowerCase(),
+      login: login,
+      profileImage: profileImageUrl != null
+          ? Uri.tryParse(profileImageUrl)
+          : null,
+      userIdentifier: userId.toString(),
+    );
+
+    try {
+      config.twitchAccountDetailsValidation(details);
     } catch (e) {
       throw TwitchUserInfoMissingDataException();
     }
