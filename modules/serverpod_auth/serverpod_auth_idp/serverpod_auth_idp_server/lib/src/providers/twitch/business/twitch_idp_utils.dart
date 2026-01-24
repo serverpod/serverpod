@@ -33,7 +33,7 @@ typedef TwitchTokenSuccess = ({
 
   String refreshToken,
 
-  Set<String> scope,
+  List<dynamic> scope,
 
   String tokenType,
 });
@@ -73,10 +73,8 @@ class TwitchIdpUtils {
   late final OAuth2PkceUtil _oauth2Util;
 
   /// Creates a new instance of [TwitchIdpUtils].
-  TwitchIdpUtils({
-    required this.config,
-    required final AuthUsers authUsers,
-  }) : _authUsers = authUsers {
+  TwitchIdpUtils({required this.config, required final AuthUsers authUsers})
+    : _authUsers = authUsers {
     _oauth2Util = OAuth2PkceUtil(config: config.oauth2Config);
   }
 
@@ -129,19 +127,15 @@ class TwitchIdpUtils {
 
     var twitchAccount = await TwitchAccount.db.findFirstRow(
       session,
-      where: (final t) => t.userIdentifier.equals(
-        accountDetails.userIdentifier,
-      ),
+      where: (final t) =>
+          t.userIdentifier.equals(accountDetails.userIdentifier),
       transaction: transaction,
     );
 
     final createNewUser = twitchAccount == null;
 
     final AuthUserModel authUser = switch (createNewUser) {
-      true => await _authUsers.create(
-        session,
-        transaction: transaction,
-      ),
+      true => await _authUsers.create(session, transaction: transaction),
       false => await _authUsers.get(
         session,
         authUserId: twitchAccount!.authUserId,
@@ -193,16 +187,11 @@ class TwitchIdpUtils {
       );
     }
 
-    Map<String, dynamic> data;
-    try {
-      data = jsonDecode(response.body) as Map<String, dynamic>;
-    } catch (e) {
-      session.logAndThrow('Invalid user info from Twitch: $e');
-    }
-
     TwitchAccountDetails details;
     try {
-      details = _parseAccountDetails(data);
+      final responseData = jsonDecode(response.body) as Map<String, dynamic>;
+      final data = responseData['data'] as List<dynamic>;
+      details = _parseAccountDetails(data.first);
     } catch (e) {
       session.logAndThrow('Invalid user info from Twitch: $e');
     }
@@ -227,7 +216,7 @@ class TwitchIdpUtils {
   TwitchAccountDetails _parseAccountDetails(final Map<String, dynamic> data) {
     final userId = data['id'];
     final login = data['login'] as String;
-    final displayName = data['displayName'] as String;
+    final displayName = data['display_name'] as String;
     final email = data['email'] as String?;
     final profileImageUrl = data['profile_image_url'] as String?;
 
@@ -293,9 +282,8 @@ class TwitchIdpUtils {
           a.expiresIn(tokenResponse.expiresIn),
         ],
         limit: 1,
-        where: (final a) => a.userIdentifier.equals(
-          twitchAccountDetails.userIdentifier,
-        ),
+        where: (final a) =>
+            a.userIdentifier.equals(twitchAccountDetails.userIdentifier),
       )).first,
     };
   }

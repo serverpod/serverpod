@@ -28,6 +28,7 @@ import 'providers.dart';
 /// - Google Sign-In (via [EndpointGoogleIdpBase])
 /// - Apple Sign-In (via [EndpointAppleIdpBase])
 /// - GitHub Sign-In (via [EndpointGitHubIdpBase])
+/// - Twitch Sign-In (via [EndpointTwitchIdpBase])
 ///
 /// The widget separates email authentication from other providers with a
 /// visual divider showing "Or continue with" text.

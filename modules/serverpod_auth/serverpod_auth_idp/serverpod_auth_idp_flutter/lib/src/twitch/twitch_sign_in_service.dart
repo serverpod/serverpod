@@ -51,10 +51,8 @@ class TwitchSignInService {
   OAuth2PkceProviderClientConfig? _config;
   bool? _useWebview;
 
-  OAuth2PkceUtil get _oauth2Util => OAuth2PkceUtil(
-    config: _config!,
-    useWebview: _useWebview,
-  );
+  OAuth2PkceUtil get _oauth2Util =>
+      OAuth2PkceUtil(config: _config!, useWebview: _useWebview);
 
   /// Ensures that Twitch Sign-In is initialized.
   ///
@@ -76,6 +74,7 @@ class TwitchSignInService {
     required String redirectUri,
     String? callbackUrlScheme,
     bool? useWebview,
+    List<String> scopes = const ['user:read:follows'],
   }) async {
     if (_config != null) return;
 
@@ -84,6 +83,7 @@ class TwitchSignInService {
       clientId: clientId,
       redirectUri: redirectUri,
       callbackUrlScheme: callbackUrlScheme ?? Uri.parse(redirectUri).scheme,
+      defaultScopes: scopes,
     );
     _useWebview = useWebview;
   }
@@ -92,21 +92,25 @@ class TwitchSignInService {
   ///
   /// Returns authorization code for backend authentication.
   /// [scopes] allows requesting extra Twitch permissions (optional).
-  Future<TwitchSignInResult> signIn({
-    List<String>? scopes,
-  }) async {
+  Future<TwitchSignInResult> signIn({List<String>? scopes}) async {
     if (_config == null) {
       throw StateError(
         'TwitchSignInService is not initialized. Call ensureInitialized() first.',
       );
     }
 
-    final result = await _oauth2Util.authorize(scopes: scopes);
+    /// Merge default scopes from [TwitchAuthController]
+    /// with custom from PKCE config
+    final List<String> effectiveScopes = {
+      ..._config!.defaultScopes,
+      ...scopes ?? [],
+    }.toList();
 
-    return (
-      code: result.code,
-      redirectUri: _config!.redirectUri,
+    final result = await _oauth2Util.authorize(
+      scopes: effectiveScopes,
     );
+
+    return (code: result.code, redirectUri: _config!.redirectUri);
   }
 }
 

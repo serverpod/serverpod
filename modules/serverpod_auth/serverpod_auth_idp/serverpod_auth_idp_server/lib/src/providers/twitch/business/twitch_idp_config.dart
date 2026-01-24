@@ -116,8 +116,8 @@ class TwitchIdpConfig extends IdentityProviderBuilder<TwitchIdp> {
     }
 
     final expiresIn = responseBody['expires_in'] as int;
-    final refreshToken = responseBody['response_token'] as String;
-    final scope = responseBody['scopy'] as Set<String>;
+    final refreshToken = responseBody['refresh_token'] as String;
+    final scope = responseBody['scope'] as List<dynamic>;
     final tokenType = responseBody['token_type'] as String;
 
     return (
