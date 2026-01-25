@@ -1,4 +1,4 @@
-### Providers of user identity, each maped to a folder within the
+### Providers of user identity, each mapped to a folder within the
 ### `lib/src/providers` directory. This class is used by the
 ### `IdpEndpoint.idpAccounts` method, which allows developers to determine which
 ### identity providers a user has already linked to their account.
