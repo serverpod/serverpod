@@ -28,9 +28,8 @@ class IdpEndpoint extends Endpoint {
       // exists.
       hasAccountFutures.add(
         () async {
-          final nameMap = IdentityProvider.values.asNameMap();
           return await provider.hasAccount(session)
-              ? nameMap[provider.getMethod()]
+              ? IdentityProvider.values.asNameMap()[provider.getMethod()]
               : null;
         }(),
       );
