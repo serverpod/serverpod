@@ -1,0 +1,18 @@
+### Providers of user identity, each maped to a folder within the
+### `lib/src/providers` directory. This class is used by the
+### `IdpEndpoint.idpAccounts` method, which allows developers to determine which
+### identity providers a user has already linked to their account.
+###
+### If developers include their own custom Idps, they should consider creating
+### an entirely new enum with values for all of the providers they use,
+### including any custom ones, and mimic the `IdpEndpoint.idpAccounts` method
+### to return values from that new enum.
+enum: IdentityProvider
+serialized: byName
+values:
+  - anonymous
+  - apple
+  - email
+  - firebase
+  - google
+  - passkey

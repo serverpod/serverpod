@@ -12,7 +12,7 @@ import 'passkey_idp_utils.dart';
 /// Passkey account management functions.
 class PasskeyIdp extends Idp {
   /// The method used when authenticating with the Passkey identity provider.
-  static const String method = 'passkey';
+  static final String method = IdentityProvider.passkey.name;
 
   /// Administrative methods for working with Passkey-backed accounts.
   final PasskeyIdpAdmin admin;

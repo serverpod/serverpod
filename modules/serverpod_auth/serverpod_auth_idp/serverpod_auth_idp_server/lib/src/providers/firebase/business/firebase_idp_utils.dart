@@ -205,6 +205,19 @@ class FirebaseIdpUtils {
       transaction: transaction,
     );
   }
+
+  /// Returns the possible [FirebaseAccount] associated with an session.
+  Future<FirebaseAccount?> getAccount(final Session session) {
+    return switch (session.authenticated) {
+      null => Future.value(null),
+      _ => FirebaseAccount.db.findFirstRow(
+        session,
+        where: (final t) => t.authUserId.equals(
+          session.authenticated!.authUserId,
+        ),
+      ),
+    };
+  }
 }
 
 extension on Session {

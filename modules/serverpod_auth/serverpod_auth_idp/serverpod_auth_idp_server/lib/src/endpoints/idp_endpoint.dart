@@ -1,5 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/src/common/business/idp.dart';
 
 /// Idp-agnostic authentication endpoints to learn general information about a
@@ -8,13 +8,12 @@ class IdpEndpoint extends Endpoint {
   /// Returns the `method` value for each connected [Idp] subclass if the
   /// current session is authenticated and if the user has an account connected
   /// to the [Idp].
-  Future<Set<String>> idpAccounts(final Session session) async {
+  Future<Set<IdentityProvider>> idpAccounts(final Session session) async {
     if (session.authenticated == null) {
-      return const <String>{};
+      return const <IdentityProvider>{};
     }
 
-    final accounts = <String>{};
-    final List<Future<String?>> hasAccountFutures = [];
+    final List<Future<IdentityProvider?>> hasAccountFutures = [];
     for (final provider in AuthServices.instance.identityProviders) {
       if (provider is! Idp) {
         session.log(
@@ -29,20 +28,18 @@ class IdpEndpoint extends Endpoint {
       // exists.
       hasAccountFutures.add(
         () async {
+          final nameMap = IdentityProvider.values.asNameMap();
           return await provider.hasAccount(session)
-              ? provider.getMethod()
+              ? nameMap[provider.getMethod()]
               : null;
         }(),
       );
     }
 
     final accountResults = await Future.wait(hasAccountFutures);
-    for (final result in accountResults) {
-      if (result != null) {
-        accounts.add(result);
-      }
-    }
-
-    return accounts;
+    return accountResults
+        .where((final result) => result != null)
+        .cast<IdentityProvider>()
+        .toSet();
   }
 }

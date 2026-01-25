@@ -20,6 +20,26 @@ import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/
 import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/passkey_login_request.dart'
     as _i6;
 
+/// Idp-agnostic authentication endpoints to learn general information about a
+/// given user account.
+/// {@category Endpoint}
+class EndpointIdp extends _i1.EndpointRef {
+  EndpointIdp(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverpod_auth_idp.idp';
+
+  /// Returns the `method` value for each connected [Idp] subclass if the
+  /// current session is authenticated and if the user has an account connected
+  /// to the [Idp].
+  _i2.Future<Set<String>> idpAccounts() =>
+      caller.callServerEndpoint<Set<String>>(
+        'serverpod_auth_idp.idp',
+        'idpAccounts',
+        {},
+      );
+}
+
 /// Base endpoint for anonymous accounts.
 /// {@category Endpoint}
 abstract class EndpointAnonymousIdpBase extends _i1.EndpointRef {

@@ -21,7 +21,7 @@ import 'email_idp_utils.dart';
 /// custom implementations of the relevant methods.
 class EmailIdp extends Idp {
   /// The method used when authenticating with the Email identity provider.
-  static const String method = 'email';
+  static final String method = IdentityProvider.email.name;
 
   /// Admin operations to work with email-backed accounts.
   final EmailIdpAdmin admin;
