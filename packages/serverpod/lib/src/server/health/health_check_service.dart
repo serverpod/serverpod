@@ -7,6 +7,7 @@ import 'health_config.dart';
 import 'health_indicator.dart';
 import 'health_response.dart';
 import 'redis_health_indicator.dart';
+import 'serverpod_startup_indicator.dart';
 
 /// Cached health check result with timestamp.
 class _CachedResult {
@@ -25,7 +26,6 @@ class _CachedResult {
 /// This service:
 /// - Executes health indicators with timeout enforcement
 /// - Caches results to prevent thundering herd during high-frequency probing
-/// - Tracks startup completion state
 /// - Aggregates results into RFC-compliant responses
 class HealthCheckService {
   final Serverpod _pod;
@@ -38,9 +38,6 @@ class HealthCheckService {
   final Map<String, _CachedResult> _cache = {};
   final Map<String, Future<HealthCheckResult>> _pendingChecks = {};
 
-  // Startup state
-  bool _startupComplete = false;
-
   /// Creates a health check service.
   HealthCheckService(this._pod, this._config) {
     _initializeBuiltInIndicators();
@@ -49,6 +46,9 @@ class HealthCheckService {
   }
 
   void _initializeBuiltInIndicators() {
+    // Always add the Serverpod startup indicator first
+    _startupIndicators.insert(0, ServerpodStartupIndicator(_pod));
+
     if (Features.enableDatabase) {
       _readinessIndicators.add(DatabaseHealthIndicator(_pod));
     }
@@ -56,17 +56,6 @@ class HealthCheckService {
       _readinessIndicators.add(RedisHealthIndicator(_pod));
     }
   }
-
-  /// Mark startup as complete.
-  ///
-  /// Call this after migrations and any custom initialization are done.
-  /// This affects the `/startupz` endpoint response.
-  void markStartupComplete() {
-    _startupComplete = true;
-  }
-
-  /// Whether startup has been marked as complete.
-  bool get isStartupComplete => _startupComplete;
 
   /// The list of readiness indicators being used.
   List<HealthIndicator> get readinessIndicators =>
@@ -95,17 +84,11 @@ class HealthCheckService {
 
   /// Check startup (`/startupz`).
   ///
-  /// Returns unhealthy if [markStartupComplete] has not been called,
-  /// or if any startup indicator fails.
+  /// Runs all startup indicators and returns an aggregate response.
+  /// The built-in [ServerpodStartupIndicator] checks if the server has
+  /// completed its startup sequence. Additional custom startup indicators
+  /// can be added via [HealthConfig.startupIndicators].
   Future<HealthResponse> checkStartup() async {
-    if (!_startupComplete) {
-      return HealthResponse.startupIncomplete();
-    }
-
-    if (_startupIndicators.isEmpty) {
-      return HealthResponse.alive();
-    }
-
     final results = await _runIndicators(_startupIndicators);
     return HealthResponse.fromResults(results);
   }

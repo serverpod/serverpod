@@ -74,16 +74,6 @@ class HealthResponse {
     );
   }
 
-  /// Creates a failing response for when startup is not complete.
-  factory HealthResponse.startupIncomplete() {
-    return HealthResponse(
-      status: HealthStatus.fail,
-      checks: const {},
-      notes: 'Server startup not complete',
-      time: DateTime.now().toUtc(),
-    );
-  }
-
   /// Whether the overall status is healthy.
   bool get isHealthy => status == HealthStatus.pass;
 

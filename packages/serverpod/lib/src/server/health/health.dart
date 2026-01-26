@@ -8,7 +8,8 @@
 /// ## Usage
 ///
 /// Health indicators are automatically registered based on configuration.
-/// You can add custom indicators:
+/// The `/startupz` endpoint automatically checks if Serverpod has completed
+/// its startup sequence. You can add custom indicators for additional checks:
 ///
 /// ```dart
 /// final pod = Serverpod(
@@ -19,11 +20,11 @@
 ///     readinessIndicators: [
 ///       MyCustomServiceIndicator(),
 ///     ],
+///     startupIndicators: [
+///       CacheWarmupIndicator(),
+///     ],
 ///   ),
 /// );
-///
-/// // After migrations and custom initialization:
-/// pod.markStartupComplete();
 ///
 /// await pod.start();
 /// ```
@@ -59,3 +60,4 @@ export 'health_config.dart';
 export 'health_indicator.dart';
 export 'health_response.dart';
 export 'redis_health_indicator.dart';
+export 'serverpod_startup_indicator.dart';
