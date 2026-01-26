@@ -112,7 +112,7 @@ class EmailSignInWidget extends StatefulWidget {
     this.onPrivacyPolicyPressed,
     super.key,
   }) : assert(
-         (controller == null || client == null),
+         (controller == null) != (client == null),
          'Either controller or client must be provided, but not both. When '
          'passing a controller, client, startScreen, onAuthenticated, and '
          'onError parameters are ignored.',

@@ -108,7 +108,7 @@ class AppleSignInWidget extends StatefulWidget {
     this.minimumWidth = 240,
     super.key,
   }) : assert(
-         (controller == null || client == null),
+         (controller == null) != (client == null),
          'Either controller or client must be provided, but not both. When '
          'passing a controller, the client parameter is ignored.',
        ),
