@@ -67,8 +67,6 @@ import 'session_log_entry.dart' as _i54;
 import 'session_log_filter.dart' as _i55;
 import 'session_log_info.dart' as _i56;
 import 'session_log_result.dart' as _i57;
-import 'package:serverpod_service_client/src/protocol/database/table_definition.dart'
-    as _i58;
 export 'cache_info.dart';
 export 'caches_info.dart';
 export 'cloud_storage.dart';
@@ -674,15 +672,6 @@ class Protocol extends _i1.SerializationManager {
               .map((e) => deserialize<_i56.SessionLogInfo>(e))
               .toList()
           as T;
-    }
-    if (t == List<_i58.TableDefinition>) {
-      return (data as List)
-              .map((e) => deserialize<_i58.TableDefinition>(e))
-              .toList()
-          as T;
-    }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
     return super.deserialize<T>(data, t);
   }
