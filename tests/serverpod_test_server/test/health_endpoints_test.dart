@@ -33,7 +33,7 @@ void main() {
         ),
       );
       await pod.start();
-      port = pod.server.port!;
+      port = pod.server.port;
       httpClient = http.Client();
     });
 
@@ -92,7 +92,7 @@ void main() {
         ),
       );
       await pod.start();
-      port = pod.server.port!;
+      port = pod.server.port;
       httpClient = http.Client();
     });
 
@@ -147,7 +147,7 @@ void main() {
         ),
       );
       await pod.start();
-      port = pod.server.port!;
+      port = pod.server.port;
       httpClient = http.Client();
     });
 
@@ -208,7 +208,7 @@ void main() {
         ),
       );
       await pod.start();
-      port = pod.server.port!;
+      port = pod.server.port;
       httpClient = http.Client();
     });
 
@@ -267,7 +267,7 @@ void main() {
         ),
       );
       await pod.start();
-      port = pod.server.port!;
+      port = pod.server.port;
       httpClient = http.Client();
     });
 
@@ -328,7 +328,7 @@ void main() {
         ),
       );
       await pod.start();
-      port = pod.server.port!;
+      port = pod.server.port;
       httpClient = http.Client();
     });
 
@@ -388,7 +388,7 @@ void main() {
         ),
       );
       await pod.start();
-      port = pod.server.port!;
+      port = pod.server.port;
       httpClient = http.Client();
     });
 
