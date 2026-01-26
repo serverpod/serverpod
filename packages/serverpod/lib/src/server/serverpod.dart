@@ -45,6 +45,11 @@ class Serverpod {
     return _startedTime!;
   }
 
+  /// Whether the server has completed its startup sequence.
+  ///
+  /// Returns `true` if [start] has been called and completed successfully.
+  bool get isRunning => _startedTime != null;
+
   /// The last created [Serverpod]. In most cases the [Serverpod] is a singleton
   /// object, although it may be possible to run multiple instances in the same
   /// program it's not recommended.
@@ -1285,21 +1290,6 @@ class Serverpod {
   /// Provides access to the service that manages `/livez`, `/readyz`,
   /// and `/startupz` endpoints.
   HealthCheckService get healthCheckService => _healthCheckService;
-
-  /// Signal that server startup is complete.
-  ///
-  /// Call this after migrations and any custom initialization are done.
-  /// This affects the `/startupz` endpoint response.
-  ///
-  /// Example:
-  /// ```dart
-  /// await pod.start();
-  /// // Custom initialization...
-  /// pod.markStartupComplete();
-  /// ```
-  void markStartupComplete() {
-    _healthCheckService.markStartupComplete();
-  }
 }
 
 // _shutdownTestAuditor is a stop-gap test approach to verify the robustness

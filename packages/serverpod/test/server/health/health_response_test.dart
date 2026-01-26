@@ -41,40 +41,6 @@ void main() {
     });
   });
 
-  group('Given HealthResponse.startupIncomplete()', () {
-    test('when created then status is fail', () {
-      final response = HealthResponse.startupIncomplete();
-
-      expect(response.status, HealthStatus.fail);
-    });
-
-    test('when created then httpStatusCode is 503', () {
-      final response = HealthResponse.startupIncomplete();
-
-      expect(response.httpStatusCode, 503);
-    });
-
-    test('when created then isHealthy is false', () {
-      final response = HealthResponse.startupIncomplete();
-
-      expect(response.isHealthy, isFalse);
-    });
-
-    test('when created then notes indicates startup not complete', () {
-      final response = HealthResponse.startupIncomplete();
-
-      expect(response.notes, contains('startup'));
-    });
-
-    test('when toJson is called then notes is included', () {
-      final response = HealthResponse.startupIncomplete();
-      final json = response.toJson();
-
-      expect(json['notes'], isA<String>());
-      expect(json['notes'], contains('startup'));
-    });
-  });
-
   group('Given HealthResponse.fromResults with all passing results', () {
     late List<HealthCheckResult> results;
     late HealthResponse response;

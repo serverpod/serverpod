@@ -129,7 +129,7 @@ void main() {
     });
   });
 
-  group('Given /startupz endpoint before markStartupComplete', () {
+  group('Given /startupz endpoint after server has started', () {
     late Serverpod pod;
     late int port;
     late http.Client httpClient;
@@ -147,59 +147,6 @@ void main() {
         ),
       );
       await pod.start();
-      // Note: markStartupComplete() is NOT called
-      port = pod.server.port!;
-      httpClient = http.Client();
-    });
-
-    tearDown(() async {
-      httpClient.close();
-      await pod.shutdown(exitProcess: false);
-    });
-
-    test('when GET request is made then returns 503', () async {
-      final response = await httpClient.get(
-        Uri.http('localhost:$port', '/startupz'),
-      );
-
-      expect(response.statusCode, 503);
-    });
-
-    test(
-      'when request has valid auth then response notes indicate startup incomplete',
-      () async {
-        final response = await httpClient.get(
-          Uri.http('localhost:$port', '/startupz'),
-          headers: {'Authorization': 'Bearer valid'},
-        );
-
-        expect(response.statusCode, 503);
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        expect(json['status'], 'fail');
-        expect(json['notes'], contains('startup'));
-      },
-    );
-  });
-
-  group('Given /startupz endpoint after markStartupComplete', () {
-    late Serverpod pod;
-    late int port;
-    late http.Client httpClient;
-
-    setUp(() async {
-      pod = Serverpod(
-        [],
-        Protocol(),
-        Endpoints(),
-        config: ServerpodConfig(apiServer: portZeroConfig),
-        authenticationHandler: (session, token) => Future.value(
-          token == 'valid'
-              ? AuthenticationInfo('test-user', {}, authId: 'valid')
-              : null,
-        ),
-      );
-      await pod.start();
-      pod.markStartupComplete();
       port = pod.server.port!;
       httpClient = http.Client();
     });
@@ -216,6 +163,82 @@ void main() {
 
       expect(response.statusCode, 200);
     });
+
+    test(
+      'when request has valid auth then response includes startup indicator',
+      () async {
+        final response = await httpClient.get(
+          Uri.http('localhost:$port', '/startupz'),
+          headers: {'Authorization': 'Bearer valid'},
+        );
+
+        expect(response.statusCode, 200);
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        expect(json['status'], 'pass');
+        expect(json['checks'], isA<Map>());
+        final checks = json['checks'] as Map<String, dynamic>;
+        expect(checks['serverpod:startup'], isA<List>());
+      },
+    );
+  });
+
+  group('Given server with custom startup indicator that fails', () {
+    late Serverpod pod;
+    late int port;
+    late http.Client httpClient;
+
+    setUp(() async {
+      final failingIndicator = FakeHealthIndicator(
+        name: 'test:warmup',
+        isHealthy: false,
+        failureMessage: 'Cache not warmed up',
+      );
+      pod = Serverpod(
+        [],
+        Protocol(),
+        Endpoints(),
+        config: ServerpodConfig(apiServer: portZeroConfig),
+        authenticationHandler: (session, token) => Future.value(
+          token == 'valid'
+              ? AuthenticationInfo('test-user', {}, authId: 'valid')
+              : null,
+        ),
+        healthConfig: HealthConfig(
+          startupIndicators: [failingIndicator],
+        ),
+      );
+      await pod.start();
+      port = pod.server.port!;
+      httpClient = http.Client();
+    });
+
+    tearDown(() async {
+      httpClient.close();
+      await pod.shutdown(exitProcess: false);
+    });
+
+    test('when GET /startupz is made then returns 503', () async {
+      final response = await httpClient.get(
+        Uri.http('localhost:$port', '/startupz'),
+      );
+
+      expect(response.statusCode, 503);
+    });
+
+    test(
+      'when request has valid auth then response includes failure details',
+      () async {
+        final response = await httpClient.get(
+          Uri.http('localhost:$port', '/startupz'),
+          headers: {'Authorization': 'Bearer valid'},
+        );
+
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        expect(json['status'], 'fail');
+        expect(json['notes'], contains('test:warmup'));
+        expect(json['output'], contains('Cache not warmed up'));
+      },
+    );
   });
 
   group('Given server with custom readiness indicator that passes', () {
