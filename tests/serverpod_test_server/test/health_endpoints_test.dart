@@ -27,7 +27,9 @@ void main() {
         Endpoints(),
         config: ServerpodConfig(apiServer: portZeroConfig),
         authenticationHandler: (session, token) => Future.value(
-          token == 'valid' ? AuthenticationInfo('test-user', {}) : null,
+          token == 'valid'
+              ? AuthenticationInfo('test-user', {}, authId: 'valid')
+              : null,
         ),
       );
       await pod.start();
@@ -84,7 +86,9 @@ void main() {
         Endpoints(),
         config: ServerpodConfig(apiServer: portZeroConfig),
         authenticationHandler: (session, token) => Future.value(
-          token == 'valid' ? AuthenticationInfo('test-user', {}) : null,
+          token == 'valid'
+              ? AuthenticationInfo('test-user', {}, authId: 'valid')
+              : null,
         ),
       );
       await pod.start();
@@ -137,7 +141,9 @@ void main() {
         Endpoints(),
         config: ServerpodConfig(apiServer: portZeroConfig),
         authenticationHandler: (session, token) => Future.value(
-          token == 'valid' ? AuthenticationInfo('test-user', {}) : null,
+          token == 'valid'
+              ? AuthenticationInfo('test-user', {}, authId: 'valid')
+              : null,
         ),
       );
       await pod.start();
@@ -187,7 +193,9 @@ void main() {
         Endpoints(),
         config: ServerpodConfig(apiServer: portZeroConfig),
         authenticationHandler: (session, token) => Future.value(
-          token == 'valid' ? AuthenticationInfo('test-user', {}) : null,
+          token == 'valid'
+              ? AuthenticationInfo('test-user', {}, authId: 'valid')
+              : null,
         ),
       );
       await pod.start();
@@ -227,7 +235,9 @@ void main() {
         Endpoints(),
         config: ServerpodConfig(apiServer: portZeroConfig),
         authenticationHandler: (session, token) => Future.value(
-          token == 'valid' ? AuthenticationInfo('test-user', {}) : null,
+          token == 'valid'
+              ? AuthenticationInfo('test-user', {}, authId: 'valid')
+              : null,
         ),
         healthConfig: HealthConfig(
           readinessIndicators: [indicator],
@@ -286,7 +296,9 @@ void main() {
         Endpoints(),
         config: ServerpodConfig(apiServer: portZeroConfig),
         authenticationHandler: (session, token) => Future.value(
-          token == 'valid' ? AuthenticationInfo('test-user', {}) : null,
+          token == 'valid'
+              ? AuthenticationInfo('test-user', {}, authId: 'valid')
+              : null,
         ),
         healthConfig: HealthConfig(
           readinessIndicators: [indicator],
@@ -344,7 +356,9 @@ void main() {
         Endpoints(),
         config: ServerpodConfig(apiServer: portZeroConfig),
         authenticationHandler: (session, token) => Future.value(
-          token == 'valid' ? AuthenticationInfo('test-user', {}) : null,
+          token == 'valid'
+              ? AuthenticationInfo('test-user', {}, authId: 'valid')
+              : null,
         ),
         healthConfig: HealthConfig(
           readinessIndicators: [slowIndicator],

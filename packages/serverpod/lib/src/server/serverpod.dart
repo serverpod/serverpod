@@ -1279,6 +1279,27 @@ class Serverpod {
         'applyMigrations: $applyMigrations\n'
         'applyRepairMigration: $applyRepairMigration';
   }
+
+  /// The health check service for orchestrator probes.
+  ///
+  /// Provides access to the service that manages `/livez`, `/readyz`,
+  /// and `/startupz` endpoints.
+  HealthCheckService get healthCheckService => _healthCheckService;
+
+  /// Signal that server startup is complete.
+  ///
+  /// Call this after migrations and any custom initialization are done.
+  /// This affects the `/startupz` endpoint response.
+  ///
+  /// Example:
+  /// ```dart
+  /// await pod.start();
+  /// // Custom initialization...
+  /// pod.markStartupComplete();
+  /// ```
+  void markStartupComplete() {
+    _healthCheckService.markStartupComplete();
+  }
 }
 
 // _shutdownTestAuditor is a stop-gap test approach to verify the robustness
@@ -1363,27 +1384,6 @@ extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the global internal session used by the Serverpod.
   /// Logging is turned off.
   Session get internalSession => _internalSession;
-
-  /// The health check service for orchestrator probes.
-  ///
-  /// Provides access to the service that manages `/livez`, `/readyz`,
-  /// and `/startupz` endpoints.
-  HealthCheckService get healthCheckService => _healthCheckService;
-
-  /// Signal that server startup is complete.
-  ///
-  /// Call this after migrations and any custom initialization are done.
-  /// This affects the `/startupz` endpoint response.
-  ///
-  /// Example:
-  /// ```dart
-  /// await pod.start();
-  /// // Custom initialization...
-  /// pod.markStartupComplete();
-  /// ```
-  void markStartupComplete() {
-    _healthCheckService.markStartupComplete();
-  }
 
   /// Submits an event to registered event handlers.
   /// They will execute asynchronously.
