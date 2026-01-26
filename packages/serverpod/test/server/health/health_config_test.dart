@@ -40,8 +40,8 @@ void main() {
 
   group('Given custom HealthConfig', () {
     test('when created with custom cacheTtl then it is preserved', () {
-      final config = HealthConfig(
-        cacheTtl: const Duration(seconds: 5),
+      const config = HealthConfig(
+        cacheTtl: Duration(seconds: 5),
       );
 
       expect(config.cacheTtl, const Duration(seconds: 5));
