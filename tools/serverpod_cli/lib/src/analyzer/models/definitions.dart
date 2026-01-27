@@ -298,6 +298,15 @@ class SerializableModelFieldDefinition {
   /// Whether this field has a column name override.
   bool get hasColumnNameOverride => _columnNameOverride != null;
 
+  final String? _jsonKeyOverride;
+
+  /// Key to use for JSON serialization/deserialization.
+  ///
+  /// This will be the [_jsonKeyOverride] if set, with fallback to the [name]
+  String get jsonKey => _jsonKeyOverride ?? name;
+
+  bool get hasJsonKeyOverride => _jsonKeyOverride != null;
+
   /// Indexes that this field is part of.
   List<SerializableModelIndexDefinition> indexes = [];
 
@@ -313,7 +322,9 @@ class SerializableModelFieldDefinition {
     this.documentation,
     this.isRequired = false,
     String? columnNameOverride,
-  }) : _columnNameOverride = columnNameOverride;
+    String? jsonKeyOverride,
+  }) : _columnNameOverride = columnNameOverride,
+       _jsonKeyOverride = jsonKeyOverride;
 
   /// Returns true, if classes should include this field.
   /// [serverCode] specifies if it's a code on the server or client side.

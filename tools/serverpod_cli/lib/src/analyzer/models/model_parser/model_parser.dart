@@ -308,6 +308,10 @@ class ModelParser {
     final columnValue = columnNode?.value;
     final columnNameOverride = columnValue is String ? columnValue : null;
 
+    final jsonKeyNode = node.nodes[Keyword.jsonKey];
+    final jsonKeyValue = jsonKeyNode?.value;
+    final jsonKeyOverride = jsonKeyValue is String ? jsonKeyValue : null;
+
     var typeNode = node.nodes[Keyword.type];
     var typeValue = typeNode?.value;
     if (typeNode is! YamlScalar) return [];
@@ -352,6 +356,7 @@ class ModelParser {
         defaultPersistValue: defaultPersistValue,
         isRequired: isRequired,
         columnNameOverride: columnNameOverride,
+        jsonKeyOverride: jsonKeyOverride,
       ),
     ];
   }
