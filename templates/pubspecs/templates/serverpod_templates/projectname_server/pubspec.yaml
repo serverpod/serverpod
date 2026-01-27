@@ -6,6 +6,8 @@ description: Starting point for a Serverpod server.
 environment:
   sdk: DART_VERSION
 
+#resolution: workspace #--UNCOMMENT_LINE--#
+
 dependencies:
   serverpod: SERVERPOD_VERSION
 
@@ -13,18 +15,6 @@ dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
   serverpod_test: SERVERPOD_VERSION
   test: ^1.25.5
-
-dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_shared: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_shared #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_test: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_test #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#
 
 serverpod:
   scripts:

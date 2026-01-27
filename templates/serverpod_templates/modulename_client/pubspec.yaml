@@ -5,11 +5,8 @@ description: Starting point for a Serverpod module client.
 
 environment:
   sdk: '^3.8.0'
+
+#resolution: workspace #--UNCOMMENT_LINE--#
+
 dependencies:
   serverpod_client: 3.2.3
-
-dependency_overrides: 
-  serverpod_client: 
-    path: ../../../packages/serverpod_client 
-  serverpod_serialization: 
-    path: ../../../packages/serverpod_serialization 

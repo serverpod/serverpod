@@ -265,6 +265,62 @@ void main() async {
         final content = mainFile.readAsStringSync();
         expect(content, isNot(contains('SignInWidget')));
       });
+
+      group('then the workspace', () {
+        test('has a root pubspec.yaml file', () {
+          expect(
+            File(path.join(tempPath, projectName, 'pubspec.yaml')).existsSync(),
+            isTrue,
+            reason: 'Root workspace pubspec file does not exist.',
+          );
+        });
+
+        test('root pubspec.yaml has name: _', () {
+          final content = File(
+            path.join(tempPath, projectName, 'pubspec.yaml'),
+          ).readAsStringSync();
+          expect(content, contains('name: _'));
+        });
+
+        test('root pubspec.yaml has workspace section', () {
+          final content = File(
+            path.join(tempPath, projectName, 'pubspec.yaml'),
+          ).readAsStringSync();
+          expect(content, contains('workspace:'));
+          expect(content, contains('${projectName}_client'));
+          expect(content, contains('${projectName}_server'));
+          expect(content, contains('${projectName}_flutter'));
+        });
+
+        test('server pubspec.yaml has resolution: workspace', () {
+          final content = File(
+            path.join(tempPath, serverDir, 'pubspec.yaml'),
+          ).readAsStringSync();
+          expect(content, contains('resolution: workspace'));
+        });
+
+        test('client pubspec.yaml has resolution: workspace', () {
+          final content = File(
+            path.join(tempPath, clientDir, 'pubspec.yaml'),
+          ).readAsStringSync();
+          expect(content, contains('resolution: workspace'));
+        });
+
+        test('flutter pubspec.yaml has resolution: workspace', () {
+          final content = File(
+            path.join(tempPath, flutterDir, 'pubspec.yaml'),
+          ).readAsStringSync();
+          expect(content, contains('resolution: workspace'));
+        });
+
+        test('root has pubspec.lock file', () {
+          expect(
+            File(path.join(tempPath, projectName, 'pubspec.lock')).existsSync(),
+            isTrue,
+            reason: 'Root pubspec.lock file does not exist.',
+          );
+        });
+      });
     });
   });
 
