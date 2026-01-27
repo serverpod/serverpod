@@ -17,11 +17,11 @@ enum OAuth2CredentialsLocation {
   body,
 }
 
-/// Signature for parsing the access token from the provider's token response.
-typedef ParseAccessToken = String Function(Map<String, dynamic> responseBody);
+/// Signature for parsing the data from the provider's token response.
+typedef ParseTokenResponse<T> = T Function(Map<String, dynamic> responseBody);
 
 /// Configuration for OAuth2 token exchange (server-side).
-class OAuth2PkceServerConfig {
+class OAuth2PkceServerConfig<T> {
   /// Token endpoint URL for exchanging authorization codes.
   final Uri tokenEndpointUrl;
 
@@ -47,14 +47,14 @@ class OAuth2PkceServerConfig {
   final Map<String, dynamic> tokenRequestParams;
 
   /// Callback to parse access token from provider response.
-  final ParseAccessToken parseAccessToken;
+  final ParseTokenResponse parseTokenResponse;
 
   /// Create a new server config for OAuth2 PKCE.
   const OAuth2PkceServerConfig({
     required this.tokenEndpointUrl,
     required this.clientId,
     required this.clientSecret,
-    required this.parseAccessToken,
+    required this.parseTokenResponse,
     this.clientIdKey = 'client_id',
     this.clientSecretKey = 'client_secret',
     this.credentialsLocation = OAuth2CredentialsLocation.header,

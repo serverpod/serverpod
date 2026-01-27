@@ -13,6 +13,8 @@ import 'common/widgets/gaps.dart';
 import 'email/email_sign_in_widget.dart';
 import 'github/github_sign_in_widget.dart';
 import 'google/google_sign_in_widget.dart';
+import 'twitch/twitch_sign_in_widget.dart';
+
 import 'providers.dart';
 
 /// A widget that provides a complete authentication onboarding experience.
@@ -26,6 +28,7 @@ import 'providers.dart';
 /// - Google Sign-In (via [EndpointGoogleIdpBase])
 /// - Apple Sign-In (via [EndpointAppleIdpBase])
 /// - GitHub Sign-In (via [EndpointGitHubIdpBase])
+/// - Twitch Sign-In (via [EndpointTwitchIdpBase])
 ///
 /// The widget separates email authentication from other providers with a
 /// visual divider showing "Or continue with" text.
@@ -71,6 +74,9 @@ class SignInWidget extends StatefulWidget {
   /// Whether to disable the GitHub sign-in widget if it is available.
   final bool disableGitHubSignInWidget;
 
+  /// Whether to disable the Twitch sign-in widget if it is available.
+  final bool disableTwitchSignInWidget;
+
   /// Customized widget to use for anonymous sign-in.
   final AnonymousSignInWidget? anonymousSignInWidget;
 
@@ -86,6 +92,9 @@ class SignInWidget extends StatefulWidget {
   /// Customized widget to use for GitHub sign-in.
   final GitHubSignInWidget? githubSignInWidget;
 
+  /// Customized widget to use for Twitch sign-in.
+  final TwitchSignInWidget? twitchSignInWidget;
+
   /// Creates an authentication onboarding widget.
   const SignInWidget({
     required this.client,
@@ -96,11 +105,13 @@ class SignInWidget extends StatefulWidget {
     this.disableGoogleSignInWidget = false,
     this.disableAppleSignInWidget = false,
     this.disableGitHubSignInWidget = false,
+    this.disableTwitchSignInWidget = false,
     this.anonymousSignInWidget,
     this.emailSignInWidget,
     this.googleSignInWidget,
     this.appleSignInWidget,
     this.githubSignInWidget,
+    this.twitchSignInWidget,
     super.key,
   });
 
@@ -117,6 +128,7 @@ class _SignInWidgetState extends State<SignInWidget> {
   bool get hasGoogle => auth.idp.hasGoogle && !widget.disableGoogleSignInWidget;
   bool get hasApple => auth.idp.hasApple && !widget.disableAppleSignInWidget;
   bool get hasGitHub => auth.idp.hasGitHub && !widget.disableGitHubSignInWidget;
+  bool get hasTwitch => auth.idp.hasTwitch && !widget.disableTwitchSignInWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -162,6 +174,17 @@ class _SignInWidgetState extends State<SignInWidget> {
       socialProviders.add(
         widget.githubSignInWidget ??
             GitHubSignInWidget(
+              client: widget.client,
+              onAuthenticated: widget.onAuthenticated,
+              onError: widget.onError,
+            ),
+      );
+    }
+
+    if (hasTwitch) {
+      socialProviders.add(
+        widget.twitchSignInWidget ??
+            TwitchSignInWidget(
               client: widget.client,
               onAuthenticated: widget.onAuthenticated,
               onError: widget.onError,

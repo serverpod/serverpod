@@ -65,7 +65,7 @@ class OAuth2PkceUtil {
   /// - [OAuth2MissingAccessTokenException] if the access token is missing
   /// - [OAuth2NetworkErrorException] if a network error occurs
   /// - [OAuth2UnknownException] for other unexpected errors
-  Future<String> exchangeCodeForToken({
+  Future<T> exchangeCodeForToken<T>({
     required final String code,
     final String? codeVerifier,
     required final String redirectUri,
@@ -132,7 +132,7 @@ class OAuth2PkceUtil {
       }
 
       try {
-        return config.parseAccessToken(responseBody);
+        return config.parseTokenResponse(responseBody);
       } on OAuth2Exception {
         rethrow;
       } catch (e) {
