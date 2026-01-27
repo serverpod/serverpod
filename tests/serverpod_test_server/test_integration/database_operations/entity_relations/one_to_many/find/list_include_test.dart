@@ -941,4 +941,117 @@ void main() async {
       expect(city?.citizens?.map((e) => e.id), [person3.id, person2.id]);
     },
   );
+
+  test(
+    'Given a list relation with many rows when including the list with orderBy and a constraining limit then the result contains the correctly ordered first N rows.',
+    () async {
+      var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
+      var gothenburg = await City.db.insertRow(
+        session,
+        City(name: 'Gothenburg'),
+      );
+
+      // Create persons with names that sort alphabetically: Alice, Bob, Charlie, Diana
+      var alice = await Person.db.insertRow(session, Person(name: 'Alice'));
+      var bob = await Person.db.insertRow(session, Person(name: 'Bob'));
+      var charlie = await Person.db.insertRow(session, Person(name: 'Charlie'));
+      var diana = await Person.db.insertRow(session, Person(name: 'Diana'));
+
+      // Create persons for second city: Eve, Frank, Grace
+      var eve = await Person.db.insertRow(session, Person(name: 'Eve'));
+      var frank = await Person.db.insertRow(session, Person(name: 'Frank'));
+      var grace = await Person.db.insertRow(session, Person(name: 'Grace'));
+
+      await City.db.attach.citizens(session, stockholm, [
+        diana, // Intentionally attach in non-alphabetical order
+        alice,
+        charlie,
+        bob,
+      ]);
+
+      await City.db.attach.citizens(session, gothenburg, [
+        grace,
+        eve,
+        frank,
+      ]);
+
+      // Query with orderBy name ascending and limit 2
+      // Should return first 2 alphabetically: Alice, Bob for Stockholm
+      // and Eve, Frank for Gothenburg
+      var cities = await City.db.find(
+        session,
+        orderBy: (t) => t.name,
+        include: City.include(
+          citizens: Person.includeList(
+            orderBy: (t) => t.name,
+            limit: 2,
+          ),
+        ),
+      );
+
+      expect(cities, hasLength(2));
+
+      // Gothenburg comes first alphabetically
+      var gothenburgResult = cities.first;
+      expect(gothenburgResult.name, 'Gothenburg');
+      expect(gothenburgResult.citizens, hasLength(2));
+      expect(
+        gothenburgResult.citizens?.map((e) => e.name).toList(),
+        ['Eve', 'Frank'],
+        reason: 'Expected first 2 citizens alphabetically: Eve, Frank',
+      );
+
+      // Stockholm comes second
+      var stockholmResult = cities.last;
+      expect(stockholmResult.name, 'Stockholm');
+      expect(stockholmResult.citizens, hasLength(2));
+      expect(
+        stockholmResult.citizens?.map((e) => e.name).toList(),
+        ['Alice', 'Bob'],
+        reason: 'Expected first 2 citizens alphabetically: Alice, Bob',
+      );
+    },
+  );
+
+  test(
+    'Given a list relation with many rows when including the list with orderBy descending and a constraining limit then the result contains the correctly ordered first N rows.',
+    () async {
+      var city = await City.db.insertRow(session, City(name: 'Stockholm'));
+
+      // Create persons with names that sort alphabetically: Alice, Bob, Charlie, Diana
+      var alice = await Person.db.insertRow(session, Person(name: 'Alice'));
+      var bob = await Person.db.insertRow(session, Person(name: 'Bob'));
+      var charlie = await Person.db.insertRow(session, Person(name: 'Charlie'));
+      var diana = await Person.db.insertRow(session, Person(name: 'Diana'));
+
+      await City.db.attach.citizens(session, city, [
+        bob, // Intentionally attach in non-alphabetical order
+        diana,
+        alice,
+        charlie,
+      ]);
+
+      // Query with orderBy name descending and limit 2
+      // Should return first 2 reverse-alphabetically: Diana, Charlie
+      var result = await City.db.findById(
+        session,
+        city.id!,
+        include: City.include(
+          citizens: Person.includeList(
+            orderBy: (t) => t.name,
+            orderDescending: true,
+            limit: 2,
+          ),
+        ),
+      );
+
+      expect(result?.citizens, hasLength(2));
+      expect(
+        result?.citizens?.map((e) => e.name).toList(),
+        ['Diana', 'Charlie'],
+        reason:
+            'Expected first 2 citizens reverse-alphabetically: Diana, Charlie',
+      );
+    },
+  );
 }
