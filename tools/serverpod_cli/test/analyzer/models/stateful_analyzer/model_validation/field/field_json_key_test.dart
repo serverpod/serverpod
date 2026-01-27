@@ -211,7 +211,50 @@ void main() {
   );
 
   group(
-    'Given a class with a field with jsonKey set to an empty string when analyzing',
+    'Given a class with multiple fields with the same jsonKey when analyzing',
+    () {
+      final models = [
+        ModelSourceBuilder().withYaml(
+          '''
+        class: Example
+        fields:
+          firstName: String, jsonKey=name
+          lastName: String, jsonKey=name
+        ''',
+        ).build(),
+      ];
+
+      late CodeGenerationCollector collector;
+
+      setUp(() {
+        collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+      });
+
+      test('then an error is collected', () {
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error for duplicate jsonKey values.',
+        );
+
+        final error = collector.errors.first;
+        expect(
+          error.message,
+          equals(
+            'The jsonKey "name" is used by multiple fields. Each field must have a unique JSON key.',
+          ),
+        );
+      });
+    },
+  );
+
+  group(
+    'Given a class with a field with jsonKey set to an empty value when analyzing',
     () {
       final models = [
         ModelSourceBuilder().withYaml(
@@ -243,8 +286,54 @@ void main() {
           reason: 'Expected an error for empty jsonKey value.',
         );
 
+        // YAML parses empty values as null, so this triggers the type check
         final error = collector.errors.first;
-        expect(error.message, contains('jsonKey'));
+        expect(
+          error.message,
+          equals('The "jsonKey" value must be a String.'),
+        );
+      });
+    },
+  );
+
+  group(
+    'Given a class with a field with jsonKey set to an empty string when analyzing',
+    () {
+      final models = [
+        ModelSourceBuilder().withYaml(
+          '''
+        class: Example
+        fields:
+          displayName:
+            type: String
+            jsonKey: ""
+        ''',
+        ).build(),
+      ];
+
+      late CodeGenerationCollector collector;
+
+      setUp(() {
+        collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+      });
+
+      test('then an error is collected', () {
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error for empty string jsonKey value.',
+        );
+
+        final error = collector.errors.first;
+        expect(
+          error.message,
+          equals('The "jsonKey" value cannot be empty.'),
+        );
       });
     },
   );
@@ -283,47 +372,10 @@ void main() {
         );
 
         final error = collector.errors.first;
-        expect(error.message, contains('jsonKey'));
-        expect(error.message, contains('String'));
-      });
-    },
-  );
-
-  group(
-    'Given a class with multiple fields with the same jsonKey when analyzing',
-    () {
-      final models = [
-        ModelSourceBuilder().withYaml(
-          '''
-        class: Example
-        fields:
-          firstName: String, jsonKey=name
-          lastName: String, jsonKey=name
-        ''',
-        ).build(),
-      ];
-
-      late CodeGenerationCollector collector;
-
-      setUp(() {
-        collector = CodeGenerationCollector();
-        StatefulAnalyzer(
-          config,
-          models,
-          onErrorsCollector(collector),
-        ).validateAll();
-      });
-
-      test('then an error is collected', () {
         expect(
-          collector.errors,
-          isNotEmpty,
-          reason: 'Expected an error for duplicate jsonKey values.',
+          error.message,
+          equals('The "jsonKey" value must be a String.'),
         );
-
-        final error = collector.errors.first;
-        expect(error.message, contains('name'));
-        expect(error.message, contains('multiple fields'));
       });
     },
   );
@@ -361,7 +413,12 @@ void main() {
         );
 
         final error = collector.errors.first;
-        expect(error.message, contains('email'));
+        expect(
+          error.message,
+          equals(
+            'The jsonKey "email" is used by multiple fields. Each field must have a unique JSON key.',
+          ),
+        );
       });
     },
   );
