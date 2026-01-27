@@ -81,8 +81,13 @@ class ValidateNode {
 class NodeContext {
   final String parentNodeName;
   final bool shouldPropagateContext;
+  final SourceSpan? parentNodeSpan;
 
-  NodeContext(this.parentNodeName, this.shouldPropagateContext);
+  NodeContext(
+    this.parentNodeName,
+    this.shouldPropagateContext,
+    this.parentNodeSpan,
+  );
 }
 
 class StringifiedNestedValues {
