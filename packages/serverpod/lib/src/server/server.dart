@@ -323,7 +323,7 @@ class Server implements RouterInjectable {
     return (req) async {
       return WebSocketUpgrade((webSocket) async {
         try {
-          webSocket.pingInterval = const Duration(seconds: 30);
+          webSocket.pingInterval = serverpod.config.websocketPingInterval;
           var websocketKey = const Uuid().v4();
           final handlerFuture = requestHandler(
             this,

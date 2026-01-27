@@ -166,7 +166,10 @@ enum ServerpodEnv {
   ///
   /// When false, uses non-typed header API, allowing headers without
   /// required formatting (e.g., unwrapped tokens in Authorization header).
-  validateHeaders;
+  validateHeaders,
+
+  /// The interval in seconds between websocket ping messages.
+  websocketPingInterval;
 
   /// The key used in the environment configuration file.
   String get configKey {
@@ -213,6 +216,7 @@ enum ServerpodEnv {
       (ServerpodEnv.applyMigrations) => 'applyMigrations',
       (ServerpodEnv.applyRepairMigration) => 'applyRepairMigration',
       (ServerpodEnv.validateHeaders) => 'validateHeaders',
+      (ServerpodEnv.websocketPingInterval) => 'websocketPingInterval',
     };
   }
 
@@ -269,6 +273,8 @@ enum ServerpodEnv {
       (ServerpodEnv.applyMigrations) => 'SERVERPOD_APPLY_MIGRATIONS',
       (ServerpodEnv.applyRepairMigration) => 'SERVERPOD_APPLY_REPAIR_MIGRATION',
       (ServerpodEnv.validateHeaders) => 'SERVERPOD_VALIDATE_HEADERS',
+      (ServerpodEnv.websocketPingInterval) =>
+        'SERVERPOD_WEBSOCKET_PING_INTERVAL',
     };
   }
 }
