@@ -4,6 +4,9 @@ import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/analytics/composite_analytics.dart';
+import 'package:serverpod_cli/src/analytics/posthog_analytics.dart';
+import 'package:serverpod_cli/src/analytics/posthog_config.dart';
 import 'package:serverpod_cli/src/commands/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/commands/create.dart';
 import 'package:serverpod_cli/src/commands/create_migration.dart';
@@ -21,18 +24,28 @@ import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 const _mixPanelToken = '05e8ab306c393c7482e0f41851a176d8';
-final Analytics _analytics = MixPanelAnalytics(
-  uniqueUserId: ResourceManager().uniqueUserId,
-  projectToken: _mixPanelToken,
-  version: templateVersion,
-);
+
+final Analytics _analytics = CompositeAnalytics([
+  PostHogAnalytics(
+    projectApiKey: PostHogConfig.apiKey,
+    host: PostHogConfig.host,
+    uniqueUserId: ResourceManager().uniqueUserId,
+    version: templateVersion,
+    enabled: PostHogConfig.enabled,
+  ),
+  MixPanelAnalytics(
+    uniqueUserId: ResourceManager().uniqueUserId,
+    projectToken: _mixPanelToken,
+    version: templateVersion,
+  ),
+]);
 
 void main(List<String> args) async {
   await runZonedGuarded(
     () async {
       try {
         await _main(args);
-        await _preExit();
+        // _preExit() is called in _main() after runner.run() completes
       } on ExitException catch (e) {
         await _preExit();
         exit(e.exitCode);
@@ -59,6 +72,8 @@ Future<void> _main(List<String> args) async {
   var runner = buildCommandRunner();
   try {
     await runner.run(args);
+    // Wait for analytics requests to complete before exiting
+    await _preExit();
   } on UsageException catch (e) {
     log.error(e.toString());
     throw ExitException.error();
@@ -87,5 +102,11 @@ ServerpodCommandRunner buildCommandRunner() {
 
 Future<void> _preExit() async {
   _analytics.cleanUp();
+  // Wait for PostHog requests to complete if using CompositeAnalytics
+  if (_analytics is CompositeAnalytics) {
+    await (_analytics as CompositeAnalytics).waitForPendingRequests();
+  } else if (_analytics is PostHogAnalytics) {
+    await (_analytics as PostHogAnalytics).waitForPendingRequests();
+  }
   await log.flush();
 }

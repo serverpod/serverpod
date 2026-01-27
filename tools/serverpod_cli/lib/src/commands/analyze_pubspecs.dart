@@ -1,5 +1,6 @@
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
+import 'package:serverpod_cli/src/analytics/analytics_helper.dart';
 import 'package:serverpod_cli/src/internal_tools/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 
@@ -57,18 +58,48 @@ class AnalyzePubspecsCommand extends ServerpodCommand<AnalyzePubspecsOption> {
       AnalyzePubspecsOption.ignoreServerpod,
     );
 
-    var checkLatestVersionObj = switch (checkLatestVersion) {
-      true => CheckLatestVersion(
-        onlyMajorUpdate: onlyMajor,
-        ignoreServerpodPackages: ignoreServerpod,
-      ),
-      false => null,
-    };
+    // Build full command string for tracking
+    final fullCommandParts = ['serverpod', 'analyze-pubspecs'];
+    if (checkLatestVersion) {
+      fullCommandParts.add('--check-latest-version');
+    }
+    if (onlyMajor) {
+      fullCommandParts.add('--only-major');
+    }
+    if (ignoreServerpod) {
+      fullCommandParts.add('--ignore-serverpod');
+    }
+    final fullCommand = fullCommandParts.join(' ');
 
-    if (!await pubspecDependenciesMatch(
-      checkLatestVersion: checkLatestVersionObj,
-    )) {
-      throw ExitException.error();
+    var success = false;
+    try {
+      var checkLatestVersionObj = switch (checkLatestVersion) {
+        true => CheckLatestVersion(
+          onlyMajorUpdate: onlyMajor,
+          ignoreServerpodPackages: ignoreServerpod,
+        ),
+        false => null,
+      };
+
+      if (!await pubspecDependenciesMatch(
+        checkLatestVersion: checkLatestVersionObj,
+      )) {
+        throw ExitException.error();
+      }
+      success = true;
+    } finally {
+      // Track the event
+      serverpodRunner.analytics.trackWithProperties(
+        event: 'cli:pubspecs_analyzed',
+        properties: {
+          'full_command': fullCommand,
+          'command': 'analyze-pubspecs',
+          'check_latest_version': checkLatestVersion,
+          'only_major': onlyMajor,
+          'ignore_serverpod': ignoreServerpod,
+          'success': success,
+        },
+      );
     }
   }
 }

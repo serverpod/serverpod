@@ -4,6 +4,7 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/analytics_helper.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
@@ -64,104 +65,135 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     bool force = commandConfig.value(CreateMigrationOption.force);
     String? tag = commandConfig.optionalValue(CreateMigrationOption.tag);
 
+    // Build full command string for tracking
+    final fullCommandParts = ['serverpod', 'create-migration'];
+    if (force) {
+      fullCommandParts.add('--force');
+    }
+    if (tag != null) {
+      fullCommandParts.add('--tag');
+      fullCommandParts.add(tag);
+    }
+    final fullCommand = fullCommandParts.join(' ');
+
     // Get interactive flag from global configuration
     final interactive = serverpodRunner.globalConfiguration.optionalValue(
       GlobalOption.interactive,
     );
 
-    GeneratorConfig config;
+    var success = false;
+    var migrationCreated = false;
     try {
-      config = await GeneratorConfig.load(interactive: interactive);
-    } catch (_) {
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    if (!config.isFeatureEnabled(ServerpodFeature.database)) {
-      log.error(
-        'The database feature is not enabled in this project. '
-        'This command cannot be used.',
-      );
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    var serverDirectory = Directory(
-      path.joinAll(config.serverPackageDirectoryPathParts),
-    );
-
-    var projectName = await getProjectName(serverDirectory);
-    if (projectName == null) {
-      throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-    }
-
-    var generator = MigrationGenerator(
-      directory: serverDirectory,
-      projectName: projectName,
-    );
-
-    MigrationVersion? migration;
-    bool migrationAborted = false;
-    bool migrationFailed = false;
-    await log.progress('Creating migration', () async {
+      GeneratorConfig config;
       try {
-        migration = await generator.createMigration(
-          tag: tag,
-          force: force,
-          config: config,
-        );
-      } on MigrationVersionLoadException catch (e) {
-        log.error(
-          'Unable to determine latest database definition due to a corrupted '
-          'migration. Please re-create or remove the migration version and try '
-          'again. Migration version: "${e.versionName}".',
-        );
-        log.error(e.exception);
-        migrationFailed = true;
-      } on GenerateMigrationDatabaseDefinitionException {
-        log.error('Unable to generate database definition for project.');
-        migrationFailed = true;
-      } on MigrationVersionAlreadyExistsException catch (e) {
-        log.error(
-          'Unable to create migration. A directory with the same name already '
-          'exists: "${e.directoryPath}".',
-        );
-        migrationFailed = true;
-      } on MigrationAbortedException {
-        migrationAborted = true;
+        config = await GeneratorConfig.load(interactive: interactive);
+      } catch (_) {
+        throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
       }
 
-      return migration != null;
-    });
+      if (!config.isFeatureEnabled(ServerpodFeature.database)) {
+        log.error(
+          'The database feature is not enabled in this project. '
+          'This command cannot be used.',
+        );
+        throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+      }
 
-    if (migrationFailed) {
-      throw ExitException.error();
+      var serverDirectory = Directory(
+        path.joinAll(config.serverPackageDirectoryPathParts),
+      );
+
+      var projectName = await getProjectName(serverDirectory);
+      if (projectName == null) {
+        throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
+      }
+
+      var generator = MigrationGenerator(
+        directory: serverDirectory,
+        projectName: projectName,
+      );
+
+      MigrationVersion? migration;
+      bool migrationAborted = false;
+      bool migrationFailed = false;
+      await log.progress('Creating migration', () async {
+        try {
+          migration = await generator.createMigration(
+            tag: tag,
+            force: force,
+            config: config,
+          );
+        } on MigrationVersionLoadException catch (e) {
+          log.error(
+            'Unable to determine latest database definition due to a corrupted '
+            'migration. Please re-create or remove the migration version and try '
+            'again. Migration version: "${e.versionName}".',
+          );
+          log.error(e.exception);
+          migrationFailed = true;
+        } on GenerateMigrationDatabaseDefinitionException {
+          log.error('Unable to generate database definition for project.');
+          migrationFailed = true;
+        } on MigrationVersionAlreadyExistsException catch (e) {
+          log.error(
+            'Unable to create migration. A directory with the same name already '
+            'exists: "${e.directoryPath}".',
+          );
+          migrationFailed = true;
+        } on MigrationAbortedException {
+          migrationAborted = true;
+        }
+
+        return migration != null;
+      });
+
+      if (migrationFailed) {
+        throw ExitException.error();
+      }
+
+      // Migration was aborted due to warnings.
+      if (migrationAborted) {
+        throw ExitException.error();
+      }
+
+      // No changes detected.
+      if (migration == null) {
+        return;
+      }
+
+      // Dart does not infer the type of `migration` to be non-nullable here,
+      // so we use the null-check operator to assert that it is not null.
+      var createdMigration = migration!;
+      var projectDirectory = createdMigration.projectDirectory;
+      var migrationName = createdMigration.versionName;
+      migrationCreated = true;
+
+      log.info(
+        'Migration created: ${path.relative(
+          MigrationConstants.migrationVersionDirectory(
+            projectDirectory,
+            migrationName,
+          ).path,
+          from: Directory.current.path,
+        )}',
+        type: TextLogType.bullet,
+      );
+      log.info('Done.', type: TextLogType.success);
+      success = true;
+    } finally {
+      // Track the event
+      serverpodRunner.analytics.trackWithProperties(
+        event: 'cli:migration_created',
+        properties: {
+          'full_command': fullCommand,
+          'command': 'create-migration',
+          'force': force,
+          'tag': tag ?? '',
+          'interactive': interactive ?? false,
+          'migration_created': migrationCreated,
+          'success': success,
+        },
+      );
     }
-
-    // Migration was aborted due to warnings.
-    if (migrationAborted) {
-      throw ExitException.error();
-    }
-
-    // No changes detected.
-    if (migration == null) {
-      return;
-    }
-
-    // Dart does not infer the type of `migration` to be non-nullable here,
-    // so we use the null-check operator to assert that it is not null.
-    var createdMigration = migration!;
-    var projectDirectory = createdMigration.projectDirectory;
-    var migrationName = createdMigration.versionName;
-
-    log.info(
-      'Migration created: ${path.relative(
-        MigrationConstants.migrationVersionDirectory(
-          projectDirectory,
-          migrationName,
-        ).path,
-        from: Directory.current.path,
-      )}',
-      type: TextLogType.bullet,
-    );
-    log.info('Done.', type: TextLogType.success);
   }
 }

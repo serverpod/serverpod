@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/analytics/analytics_helper.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
@@ -25,5 +26,14 @@ class VersionCommand extends ServerpodCommand {
     // The format that the version is printed in is important, as it is used by
     // the Serverpod Language Server to determine if the CLI is compatible.
     log.info('Serverpod version: $_cliVersion');
+
+    // Track the event
+    serverpodRunner.analytics.trackWithProperties(
+      event: 'cli:version_checked',
+      properties: {
+        'full_command': 'serverpod version',
+        'command': 'version',
+      },
+    );
   }
 }
