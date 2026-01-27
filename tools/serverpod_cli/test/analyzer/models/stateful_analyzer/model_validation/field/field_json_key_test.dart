@@ -157,6 +157,15 @@ void main() {
         expect(collector.errors, isEmpty);
         expect(definitions, isNotEmpty);
       });
+
+      test('then the column name is not affected by jsonKey', () {
+        final definition = definitions.first as ClassDefinition;
+        final field = definition.fields.firstWhere(
+          (f) => f.name == 'displayName',
+        );
+        expect(field.jsonKey, equals('display_name'));
+        expect(field.columnName, equals('displayName'));
+      });
     },
   );
 
