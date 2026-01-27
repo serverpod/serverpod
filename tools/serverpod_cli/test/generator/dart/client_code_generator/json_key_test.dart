@@ -25,62 +25,61 @@ void main() {
     '$testClassFileName.dart',
   );
 
-  group('Given a class with a field with jsonKey set', () {
-    const fieldName = 'displayName';
-    const jsonKeyValue = 'display_name';
-    const fieldType = 'String';
+  group(
+    'Given a class with a field with jsonKey set when generating client code',
+    () {
+      const fieldName = 'displayName';
+      const jsonKeyValue = 'display_name';
+      const fieldType = 'String';
 
-    final jsonKeyField = FieldDefinitionBuilder()
-        .withName(fieldName)
-        .withType(
-          TypeDefinitionBuilder().withClassName(fieldType).build(),
-        )
-        .withJsonKeyOverride(jsonKeyValue)
-        .build();
+      final jsonKeyField = FieldDefinitionBuilder()
+          .withName(fieldName)
+          .withType(
+            TypeDefinitionBuilder().withClassName(fieldType).build(),
+          )
+          .withJsonKeyOverride(jsonKeyValue)
+          .build();
 
-    const noJsonKeyFieldName = 'email';
-    final noJsonKeyField = FieldDefinitionBuilder()
-        .withName(noJsonKeyFieldName)
-        .withType(
-          TypeDefinitionBuilder().withClassName(fieldType).build(),
-        )
-        .build();
+      const noJsonKeyFieldName = 'email';
+      final noJsonKeyField = FieldDefinitionBuilder()
+          .withName(noJsonKeyFieldName)
+          .withType(
+            TypeDefinitionBuilder().withClassName(fieldType).build(),
+          )
+          .build();
 
-    final models = [
-      ModelClassDefinitionBuilder()
-          .withClassName(testClassName)
-          .withFileName(testClassFileName)
-          .withField(jsonKeyField)
-          .withField(noJsonKeyField)
-          .build(),
-    ];
+      final models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(testClassName)
+            .withFileName(testClassFileName)
+            .withField(jsonKeyField)
+            .withField(noJsonKeyField)
+            .build(),
+      ];
 
-    final codeMap = generator.generateSerializableModelsCode(
-      models: models,
-      config: config,
-    );
+      final codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
 
-    final compilationUnit = parseString(
-      content: codeMap[expectedFilePath]!,
-    ).unit;
+      final compilationUnit = parseString(
+        content: codeMap[expectedFilePath]!,
+      ).unit;
 
-    final maybeClassNamedExample =
-        CompilationUnitHelpers.tryFindClassDeclaration(
-          compilationUnit,
-          name: testClassName,
-        );
+      final maybeClassNamedExample =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: testClassName,
+          );
 
-    group('when generating client code', () {
       group('then the fromJson method', () {
+        late final fromJsonCode =
+            CompilationUnitHelpers.tryFindConstructorDeclaration(
+              maybeClassNamedExample!,
+              name: 'fromJson',
+            )!.toSource();
+
         test('uses jsonKey value for field with jsonKey set', () {
-          final fromJsonConstructor =
-              CompilationUnitHelpers.tryFindConstructorDeclaration(
-                maybeClassNamedExample!,
-                name: 'fromJson',
-              );
-
-          final fromJsonCode = fromJsonConstructor!.toSource();
-
           expect(
             fromJsonCode,
             contains("jsonSerialization['$jsonKeyValue']"),
@@ -90,14 +89,6 @@ void main() {
         });
 
         test('uses field name for field without jsonKey set', () {
-          final fromJsonConstructor =
-              CompilationUnitHelpers.tryFindConstructorDeclaration(
-                maybeClassNamedExample!,
-                name: 'fromJson',
-              );
-
-          final fromJsonCode = fromJsonConstructor!.toSource();
-
           expect(
             fromJsonCode,
             contains("jsonSerialization['$noJsonKeyFieldName']"),
@@ -108,14 +99,12 @@ void main() {
       });
 
       group('then the toJson method', () {
+        late final toJsonCode = CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExample!,
+          name: 'toJson',
+        )!.toSource();
+
         test('uses jsonKey value for field with jsonKey set', () {
-          final toJsonMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            maybeClassNamedExample!,
-            name: 'toJson',
-          );
-
-          final toJsonCode = toJsonMethod!.toSource();
-
           expect(
             toJsonCode,
             contains("'$jsonKeyValue'"),
@@ -124,13 +113,6 @@ void main() {
         });
 
         test('uses field name for field without jsonKey set', () {
-          final toJsonMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-            maybeClassNamedExample!,
-            name: 'toJson',
-          );
-
-          final toJsonCode = toJsonMethod!.toSource();
-
           expect(
             toJsonCode,
             contains("'$noJsonKeyFieldName'"),
@@ -138,6 +120,6 @@ void main() {
           );
         });
       });
-    });
-  });
+    },
+  );
 }
