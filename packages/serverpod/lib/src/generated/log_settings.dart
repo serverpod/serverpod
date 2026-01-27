@@ -27,6 +27,9 @@ abstract class LogSettings
     required this.logFailedQueries,
     required this.slowSessionDuration,
     required this.slowQueryDuration,
+    this.logRetentionPeriodDays,
+    this.logRetentionCount,
+    this.logCleanupIntervalHours,
   });
 
   factory LogSettings({
@@ -40,6 +43,9 @@ abstract class LogSettings
     required bool logFailedQueries,
     required double slowSessionDuration,
     required double slowQueryDuration,
+    int? logRetentionPeriodDays,
+    int? logRetentionCount,
+    int? logCleanupIntervalHours,
   }) = _LogSettingsImpl;
 
   factory LogSettings.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -57,6 +63,11 @@ abstract class LogSettings
           .toDouble(),
       slowQueryDuration: (jsonSerialization['slowQueryDuration'] as num)
           .toDouble(),
+      logRetentionPeriodDays:
+          jsonSerialization['logRetentionPeriodDays'] as int?,
+      logRetentionCount: jsonSerialization['logRetentionCount'] as int?,
+      logCleanupIntervalHours:
+          jsonSerialization['logCleanupIntervalHours'] as int?,
     );
   }
 
@@ -91,6 +102,19 @@ abstract class LogSettings
   /// The duration in seconds for a query to be considered slow.
   double slowQueryDuration;
 
+  /// The retention period in days for log data. Logs older than this will be
+  /// automatically deleted. If null, time-based cleanup is disabled.
+  int? logRetentionPeriodDays;
+
+  /// The maximum number of log entries to keep. If the number of entries exceeds
+  /// this count, the oldest entries will be deleted. If null, count-based cleanup
+  /// is disabled.
+  int? logRetentionCount;
+
+  /// The interval in hours between log cleanup operations. If null, automatic
+  /// cleanup is disabled.
+  int? logCleanupIntervalHours;
+
   /// Returns a shallow copy of this [LogSettings]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -105,6 +129,9 @@ abstract class LogSettings
     bool? logFailedQueries,
     double? slowSessionDuration,
     double? slowQueryDuration,
+    int? logRetentionPeriodDays,
+    int? logRetentionCount,
+    int? logCleanupIntervalHours,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -120,6 +147,11 @@ abstract class LogSettings
       'logFailedQueries': logFailedQueries,
       'slowSessionDuration': slowSessionDuration,
       'slowQueryDuration': slowQueryDuration,
+      if (logRetentionPeriodDays != null)
+        'logRetentionPeriodDays': logRetentionPeriodDays,
+      if (logRetentionCount != null) 'logRetentionCount': logRetentionCount,
+      if (logCleanupIntervalHours != null)
+        'logCleanupIntervalHours': logCleanupIntervalHours,
     };
   }
 
@@ -137,6 +169,11 @@ abstract class LogSettings
       'logFailedQueries': logFailedQueries,
       'slowSessionDuration': slowSessionDuration,
       'slowQueryDuration': slowQueryDuration,
+      if (logRetentionPeriodDays != null)
+        'logRetentionPeriodDays': logRetentionPeriodDays,
+      if (logRetentionCount != null) 'logRetentionCount': logRetentionCount,
+      if (logCleanupIntervalHours != null)
+        'logCleanupIntervalHours': logCleanupIntervalHours,
     };
   }
 
@@ -145,6 +182,8 @@ abstract class LogSettings
     return _i1.SerializationManager.encode(this);
   }
 }
+
+class _Undefined {}
 
 class _LogSettingsImpl extends LogSettings {
   _LogSettingsImpl({
@@ -158,6 +197,9 @@ class _LogSettingsImpl extends LogSettings {
     required bool logFailedQueries,
     required double slowSessionDuration,
     required double slowQueryDuration,
+    int? logRetentionPeriodDays,
+    int? logRetentionCount,
+    int? logCleanupIntervalHours,
   }) : super._(
          logLevel: logLevel,
          logAllSessions: logAllSessions,
@@ -169,6 +211,9 @@ class _LogSettingsImpl extends LogSettings {
          logFailedQueries: logFailedQueries,
          slowSessionDuration: slowSessionDuration,
          slowQueryDuration: slowQueryDuration,
+         logRetentionPeriodDays: logRetentionPeriodDays,
+         logRetentionCount: logRetentionCount,
+         logCleanupIntervalHours: logCleanupIntervalHours,
        );
 
   /// Returns a shallow copy of this [LogSettings]
@@ -186,6 +231,9 @@ class _LogSettingsImpl extends LogSettings {
     bool? logFailedQueries,
     double? slowSessionDuration,
     double? slowQueryDuration,
+    Object? logRetentionPeriodDays = _Undefined,
+    Object? logRetentionCount = _Undefined,
+    Object? logCleanupIntervalHours = _Undefined,
   }) {
     return LogSettings(
       logLevel: logLevel ?? this.logLevel,
@@ -200,6 +248,15 @@ class _LogSettingsImpl extends LogSettings {
       logFailedQueries: logFailedQueries ?? this.logFailedQueries,
       slowSessionDuration: slowSessionDuration ?? this.slowSessionDuration,
       slowQueryDuration: slowQueryDuration ?? this.slowQueryDuration,
+      logRetentionPeriodDays: logRetentionPeriodDays is int?
+          ? logRetentionPeriodDays
+          : this.logRetentionPeriodDays,
+      logRetentionCount: logRetentionCount is int?
+          ? logRetentionCount
+          : this.logRetentionCount,
+      logCleanupIntervalHours: logCleanupIntervalHours is int?
+          ? logCleanupIntervalHours
+          : this.logCleanupIntervalHours,
     );
   }
 }
