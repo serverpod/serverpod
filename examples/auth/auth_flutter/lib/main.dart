@@ -157,6 +157,18 @@ class ConnectedScreen extends StatelessWidget {
               },
               child: const Text('Sign out'),
             ),
+            FilledButton(
+              onPressed: () async {
+                final connectedIdps = await client.auth.idp.getConnectedIdps();
+
+                // It is possible to check IDPs by name or with a bool getter.
+                debugPrint('Connected IDPs: ${connectedIdps.names}');
+                debugPrint('Has Google: ${client.auth.idp.hasGoogle}');
+                debugPrint('Has Email: ${client.auth.idp.hasEmail}');
+                debugPrint('Has Custom: ${client.auth.idp.has('customIdp')}');
+              },
+              child: const Text('Get Connected IDPs'),
+            ),
             if (client.auth.idp.hasGoogle)
               FilledButton(
                 onPressed: () async {
