@@ -7,6 +7,7 @@ export 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     hide Endpoints, Protocol;
 
 export 'src/common/idp/business/idp.dart';
+export 'src/common/idp/endpoints/idp_endpoint.dart';
 export 'src/common/rate_limited_request_attempt/rate_limited_request_attempt_config.dart';
 export 'src/common/rate_limited_request_attempt/rate_limited_request_attempt_util.dart';
 export 'src/common/secret_challenge/secret_challenge_config.dart';

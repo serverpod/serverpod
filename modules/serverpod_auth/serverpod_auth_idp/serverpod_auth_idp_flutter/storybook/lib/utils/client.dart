@@ -37,6 +37,7 @@ class EndpointAuthEmail extends EndpointEmailIdpBase {
         reason: EmailAccountLoginExceptionReason.invalidCredentials,
       );
     }
+    _mockData.hasAccount = true;
     return _mockData.authSuccess;
   }
 
@@ -126,6 +127,9 @@ class EndpointAuthEmail extends EndpointEmailIdpBase {
     _mockData.passwordResetToken = null;
     return _mockData.authSuccess;
   }
+
+  @override
+  Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
 class GoogleIdpEndpoint extends EndpointGoogleIdpBase {
@@ -140,7 +144,13 @@ class GoogleIdpEndpoint extends EndpointGoogleIdpBase {
   Future<AuthSuccess> login({
     required String idToken,
     required String? accessToken,
-  }) => Future.value(_mockData.authSuccess);
+  }) async {
+    _mockData.hasAccount = true;
+    return _mockData.authSuccess;
+  }
+
+  @override
+  Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
 class AppleIdpEndpoint extends EndpointAppleIdpBase {
@@ -158,7 +168,13 @@ class AppleIdpEndpoint extends EndpointAppleIdpBase {
     required bool isNativeApplePlatformSignIn,
     String? firstName,
     String? lastName,
-  }) => Future.value(_mockData.authSuccess);
+  }) async {
+    _mockData.hasAccount = true;
+    return _mockData.authSuccess;
+  }
+
+  @override
+  Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
 class Modules {
@@ -229,6 +245,7 @@ class MockAuthData {
   String? passwordResetCode;
   String? registrationToken;
   String? passwordResetToken;
+  bool hasAccount = false;
 
   UuidValue? registrationRequestId;
   UuidValue? passwordResetRequestId;
