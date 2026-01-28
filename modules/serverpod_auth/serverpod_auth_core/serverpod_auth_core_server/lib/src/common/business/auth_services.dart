@@ -124,9 +124,6 @@ class AuthServices {
     return provider as T;
   }
 
-  /// Iterator over all supported identity providers.
-  Iterable<Object> get identityProviders => _providers.values;
-
   /// Manager for managing auth users.
   final AuthUsers authUsers;
 

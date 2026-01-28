@@ -89,13 +89,6 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       _isSignedIn = client.auth.isAuthenticated;
     });
-
-    if (_isSignedIn) {
-      client.modules.serverpod_auth_idp.idp.idpAccounts().then(
-        // ignore: avoid_print
-        (value) => print('Connected IDPs: $value'),
-      );
-    }
   }
 
   @override

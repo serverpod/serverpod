@@ -1,5 +1,4 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/src/common/business/idp.dart';
 
 import '../../../../../core.dart';
 import 'firebase_idp_admin.dart';
@@ -21,7 +20,7 @@ import 'firebase_idp_utils.dart';
 /// custom implementations of the relevant methods.
 class FirebaseIdp extends Idp {
   /// The method used when authenticating with the Firebase identity provider.
-  static final String method = IdentityProvider.firebase.name;
+  static const String method = 'firebase';
 
   /// Admin operations to work with Firebase-backed accounts.
   final FirebaseIdpAdmin admin;
@@ -139,9 +138,6 @@ class FirebaseIdp extends Idp {
       },
     );
   }
-
-  @override
-  String getMethod() => method;
 
   @override
   Future<bool> hasAccount(final Session session) async =>

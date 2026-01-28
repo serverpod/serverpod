@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/src/common/business/idp.dart';
+
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
 import '../../../../core.dart';
@@ -24,7 +24,7 @@ import 'routes/apple_server_notification_route.dart';
 /// custom implementations of the relevant methods.
 class AppleIdp extends Idp {
   /// The method used when authenticating with the Apple identity provider.
-  static final String method = IdentityProvider.apple.name;
+  static const String method = 'apple';
 
   /// Admin operations to work with Apple-backed accounts.
   late final AppleIdpAdmin admin;
@@ -128,9 +128,6 @@ class AppleIdp extends Idp {
       },
     );
   }
-
-  @override
-  String getMethod() => method;
 
   @override
   Future<bool> hasAccount(final Session session) async =>

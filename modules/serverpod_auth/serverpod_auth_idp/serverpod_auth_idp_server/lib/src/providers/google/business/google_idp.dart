@@ -1,5 +1,4 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/src/common/business/idp.dart';
 
 import '../../../../../core.dart';
 import 'google_idp_admin.dart';
@@ -20,7 +19,7 @@ import 'google_idp_utils.dart';
 /// custom implementations of the relevant methods.
 class GoogleIdp extends Idp {
   /// The method used when authenticating with the Google identity provider.
-  static final String method = IdentityProvider.google.name;
+  static const String method = 'google';
 
   /// Admin operations to work with Google-backed accounts.
   final GoogleIdpAdmin admin;
@@ -140,9 +139,6 @@ class GoogleIdp extends Idp {
       },
     );
   }
-
-  @override
-  String getMethod() => method;
 
   @override
   Future<bool> hasAccount(final Session session) async =>
