@@ -147,6 +147,8 @@ class TypeDefinition {
 
   bool get isVectorType => vectorClassNames.contains(className);
 
+  bool get isJsonType => className == 'JsonValue';
+
   bool get isRecordType => className == recordTypeClassName;
 
   bool get isIdType =>
@@ -340,7 +342,8 @@ class TypeDefinition {
                   'package:uuid/uuid.dart',
                 ].contains(url)) ||
             (url == null &&
-                (['UuidValue', ...vectorClassNames]).contains(className))) {
+                (['UuidValue', 'JsonValue', ...vectorClassNames])
+                    .contains(className))) {
           // serverpod: reference
           t.url = serverpodUrl(serverCode);
         } else if (url?.startsWith('project:') ?? false) {
@@ -435,6 +438,7 @@ class TypeDefinition {
     if (className == 'HalfVector') return 'halfvec';
     if (className == 'SparseVector') return 'sparsevec';
     if (className == 'Bit') return 'bit';
+    if (className == 'JsonValue') return 'jsonb';
 
     return 'json';
   }
@@ -462,6 +466,7 @@ class TypeDefinition {
     if (className == 'HalfVector') return 'ColumnHalfVector';
     if (className == 'SparseVector') return 'ColumnSparseVector';
     if (className == 'Bit') return 'ColumnBit';
+    if (className == 'JsonValue') return 'ColumnJson';
 
     return 'ColumnSerializable';
   }
@@ -745,6 +750,7 @@ class TypeDefinition {
     if (className == 'HalfVector') return ValueType.halfVector;
     if (className == 'SparseVector') return ValueType.sparseVector;
     if (className == 'Bit') return ValueType.bit;
+    if (className == 'JsonValue') return ValueType.jsonValue;
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
@@ -975,6 +981,7 @@ enum ValueType {
   sparseVector,
   bit,
   uri,
+  jsonValue,
 }
 
 enum DefaultValueAllowedType {

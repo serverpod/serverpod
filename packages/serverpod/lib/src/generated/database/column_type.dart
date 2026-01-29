@@ -42,6 +42,9 @@ enum ColumnType implements _i1.SerializableModel {
   /// Esp. for serializable objects.
   json,
 
+  /// Dart type: [JsonValue] - queryable JSON
+  jsonb,
+
   /// Used for unknown types, that have never been
   /// used by Serverpod.
   unknown,
@@ -79,14 +82,16 @@ enum ColumnType implements _i1.SerializableModel {
       case 8:
         return ColumnType.json;
       case 9:
-        return ColumnType.unknown;
+        return ColumnType.jsonb;
       case 10:
-        return ColumnType.vector;
+        return ColumnType.unknown;
       case 11:
-        return ColumnType.halfvec;
+        return ColumnType.vector;
       case 12:
-        return ColumnType.sparsevec;
+        return ColumnType.halfvec;
       case 13:
+        return ColumnType.sparsevec;
+      case 14:
         return ColumnType.bit;
       default:
         throw ArgumentError(

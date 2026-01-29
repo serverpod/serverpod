@@ -97,6 +97,9 @@ abstract class SerializationManager {
     } else if (_isNullableType<Bit>(t)) {
       if (data == null) return null as T;
       return BitJsonExtension.fromJson(data) as T;
+    } else if (_isNullableType<JsonValue>(t)) {
+      if (data == null) return null as T;
+      return JsonValueJsonExtension.fromJson(data) as T;
     } else if (_isNullableType<Uri>(t)) {
       if (data == null) return null as T;
       return Uri.parse(data) as T;
@@ -142,6 +145,8 @@ abstract class SerializationManager {
       return 'SparseVector';
     } else if (data is Bit) {
       return 'Bit';
+    } else if (data is JsonValue) {
+      return 'JsonValue';
     }
 
     return null;
@@ -181,6 +186,8 @@ abstract class SerializationManager {
         return deserialize<SparseVector>(data['data']);
       case 'Bit':
         return deserialize<Bit>(data['data']);
+      case 'JsonValue':
+        return deserialize<JsonValue>(data['data']);
     }
     throw FormatException('No deserialization found for type named $className');
   }
@@ -233,6 +240,8 @@ abstract class SerializationManager {
           return nonEncodable.toList();
         } else if (nonEncodable is Bit) {
           return nonEncodable.toList();
+        } else if (nonEncodable is JsonValue) {
+          return nonEncodable.value;
         } else if (nonEncodable is Set) {
           return nonEncodable.toList();
         } else if (nonEncodable is Map && nonEncodable.keyType != String) {
@@ -328,6 +337,7 @@ const extensionSerializedTypes = [
   'HalfVector',
   'SparseVector',
   'Bit',
+  'JsonValue',
   'Map',
   'List',
   'Set',

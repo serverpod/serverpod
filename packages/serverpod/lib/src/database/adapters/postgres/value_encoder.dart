@@ -48,6 +48,10 @@ class ValueEncoder extends PostgresTextEncoder {
       return '\'${input.toString()}\'';
     } else if (input is Bit) {
       return '\'${input.toString()}\'';
+    } else if (input is JsonValue) {
+      var encoded = SerializationManager.encode(input.value);
+      var escaped = encoded.replaceAll("'", "''");
+      return "'$escaped'::jsonb";
     } else if (input is SerializableModel && input is Enum) {
       return super.convert(
         input.toJson(),
