@@ -4,6 +4,12 @@
 
 This document explains how the `SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED` environment variable is handled in Serverpod, and what the default values are for mini and standard projects.
 
+## ⚠️ Important Default Behavior
+
+**If you have a database configured and do NOT specify `persistentEnabled` in your production.yaml (or any other config file) and do NOT set the `SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED` environment variable, then persistent logging IS ENABLED BY DEFAULT.**
+
+This is intentional behavior - when a database is available, Serverpod automatically enables persistent logging unless you explicitly disable it.
+
 ## Environment Variable Definition
 
 **Variable Name:** `SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED`
@@ -141,6 +147,48 @@ This ensures that persistent logging can only be enabled when there's a database
 3. **Standard projects default to persistent logging** - Database is configured, so persistent logging is enabled
 4. **Persistent logging requires a database** - Validation prevents enabling persistent logs without database
 5. **Production disables console logging** - Only persistent logging enabled in production for standard projects
+
+## Production Configuration - Confirmed Behavior
+
+**Q: If I have nothing in my production.yaml and no environment variable configured, is persistent logging enabled by default (assuming I have a database)?**
+
+**A: YES** ✅ - Persistent logging is **enabled by default** when:
+- A database is configured in your production.yaml
+- The `persistentEnabled` setting is **not** specified in the `sessionLogs` section
+- The `SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED` environment variable is **not** set
+
+This behavior is verified by the test case in `/packages/serverpod_shared/test/session_logs_config_test.dart` (lines 102-132):
+
+```dart
+test(
+  'Given a Serverpod config with "production" run mode missing sessionLogs configuration and a database when loading from Map then sessionLogs defaults to persistent logging enabled and json console logging disabled',
+  () {
+    // ... test confirms persistentEnabled is true by default in production with database
+    expect(config.sessionLogs.persistentEnabled, isTrue);
+  },
+);
+```
+
+### How to Disable Persistent Logging in Production
+
+If you want to disable persistent logging in production, you must **explicitly** set it to `false`:
+
+**Option 1: In production.yaml**
+```yaml
+sessionLogs:
+  persistentEnabled: false
+  consoleEnabled: false
+```
+
+**Option 2: Using Environment Variable**
+```bash
+export SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED=false
+```
+
+The production.yaml template includes this as a commented line with clear documentation:
+```yaml
+# persistentEnabled: true # Defaults to true (enabled) when database is configured
+```
 
 ## Related Files
 
