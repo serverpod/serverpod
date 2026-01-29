@@ -13,7 +13,7 @@ environment:
 
 dependencies:
   cached_network_image: ^3.2.3
-  file_picker: '>=8.1.0 <11.0.0'
+  file_picker: '>=10.3.10 <11.0.0'
   flutter:
     sdk: flutter
   image: ^4.0.15
