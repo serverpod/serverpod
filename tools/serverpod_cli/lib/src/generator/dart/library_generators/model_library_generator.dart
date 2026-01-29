@@ -1663,7 +1663,7 @@ class SerializableModelLibraryGenerator {
         nullCheckedReference: field.hiddenSerializableField(serverCode),
       );
 
-      final fieldKey = field.name;
+      final fieldKey = field.jsonKey;
 
       return {
         ...map,

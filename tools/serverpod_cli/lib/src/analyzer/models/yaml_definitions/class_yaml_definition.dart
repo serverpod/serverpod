@@ -206,6 +206,10 @@ class ClassYamlDefinition {
                   ExperimentalFeature.columnOverride,
                 ),
               ),
+              ValidateNode(
+                Keyword.jsonKey,
+                valueRestriction: restrictions.validateJsonKey,
+              ),
             },
           ),
         },
