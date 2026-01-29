@@ -85,7 +85,7 @@ void main() {
                 'message',
                 contains(
                   'Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL from environment '
-                  'variable: invalid. Expected a positive integer.',
+                  'variable: invalid. Expected a positive integer greater than 0.',
                 ),
               ),
             ),

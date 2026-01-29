@@ -453,7 +453,7 @@ class Serverpod {
             commandLineArgs: _commandLineArgs.toMap(),
           );
     } on ArgumentError catch (e) {
-      throw ExitException(1, 'Error loading ServerpodConfig: $e');
+      throw ExitException(1, 'Error loading ServerpodConfig: ${e.message}');
     }
 
     stdout.writeln(_getCommandLineArgsString());
