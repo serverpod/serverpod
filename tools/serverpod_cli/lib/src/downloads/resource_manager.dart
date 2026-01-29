@@ -13,6 +13,8 @@ import 'package:uuid/uuid.dart';
 final resourceManager = ResourceManager();
 
 class ResourceManager {
+  static int? _runCount;
+
   Directory get localStorageDirectory =>
       Directory(p.join(LocalStorageManager.homeDirectory.path, '.serverpod'));
 
@@ -46,6 +48,36 @@ class ResourceManager {
     } finally {}
 
     return userId;
+  }
+
+  int get runCount {
+    if (_runCount != null) {
+      return _runCount!;
+    }
+
+    const runCountFilePath = 'run_count';
+    var count = 0;
+    try {
+      var runCountFile = File(
+        p.join(localStorageDirectory.path, runCountFilePath),
+      );
+      var fileContents = runCountFile.readAsStringSync();
+      count = int.parse(fileContents);
+    } catch (e) {
+      // Failed to read run count from file, it's probably not created.
+    }
+
+    count += 1;
+    try {
+      var runCountFile = File(
+        p.join(localStorageDirectory.path, runCountFilePath),
+      );
+      runCountFile.createSync(recursive: true);
+      runCountFile.writeAsStringSync(count.toString());
+    } finally {}
+
+    _runCount = count;
+    return count;
   }
 
   Future<void> storeLatestCliVersion(

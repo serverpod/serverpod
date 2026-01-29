@@ -98,7 +98,10 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
       ),
       setLogLevel: _configureLogLevel,
       onBeforeRunCommand: onBeforeRunCommand,
-      onAnalyticsEvent: (String event) => analytics.track(event: event),
+      onAnalyticsEvent: (event, properties) => analytics.track(
+        event: event,
+        properties: properties,
+      ),
       productionMode: productionMode,
       cliVersion: cliVersion,
     );
