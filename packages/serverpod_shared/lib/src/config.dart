@@ -703,6 +703,15 @@ class SessionLogConfig {
   /// True if persistent logging (e.g., to Redis) should be enabled.
   final bool persistentEnabled;
 
+  /// The interval between log cleanup operations. If null, automatic cleanup is disabled.
+  final Duration? cleanupInterval;
+
+  /// The retention period for log data. If null, time-based cleanup is disabled.
+  final Duration? retentionPeriod;
+
+  /// The maximum number of log entries to keep. If null, count-based cleanup is disabled.
+  final int? retentionCount;
+
   /// True if console logging should be enabled.
   final bool consoleEnabled;
 
@@ -713,6 +722,9 @@ class SessionLogConfig {
   SessionLogConfig({
     required this.persistentEnabled,
     required this.consoleEnabled,
+    required this.cleanupInterval,
+    required this.retentionPeriod,
+    required this.retentionCount,
     ConsoleLogFormat? consoleLogFormat,
   }) : consoleLogFormat = consoleLogFormat ?? ConsoleLogFormat.defaultFormat;
 
@@ -724,6 +736,9 @@ class SessionLogConfig {
   }) {
     return SessionLogConfig(
       persistentEnabled: databaseEnabled,
+      cleanupInterval: const Duration(hours: 24),
+      retentionPeriod: const Duration(days: 90),
+      retentionCount: 100_000,
       consoleEnabled: !databaseEnabled || runMode == _developmentRunMode,
       consoleLogFormat: runMode == _developmentRunMode
           ? ConsoleLogFormat.text
@@ -750,6 +765,16 @@ class SessionLogConfig {
               .sessionPersistentLogEnabled
               .configKey] ??
           false,
+      cleanupInterval: _parseDurationWithValidation(
+        sessionLogConfigJson[ServerpodEnv.sessionLogCleanupInterval.configKey],
+      ),
+      retentionPeriod: _parseDurationWithValidation(
+        sessionLogConfigJson[ServerpodEnv.sessionLogRetentionPeriod.configKey],
+      ),
+      retentionCount: _parseIntWithValidation(
+        sessionLogConfigJson[ServerpodEnv.sessionLogRetentionCount.configKey],
+        ServerpodEnv.sessionLogRetentionCount.configKey,
+      ),
       consoleEnabled:
           sessionLogConfigJson[ServerpodEnv
               .sessionConsoleLogEnabled
@@ -843,6 +868,26 @@ Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
   ]);
 }
 
+Duration? _parseDurationWithValidation(dynamic value) {
+  if (value is Duration?) return value;
+  if (value is! String || !isValidDuration(value)) {
+    throw ArgumentError(
+      'Invalid duration: "$value". Expected a duration string in the format '
+      '"Xd Xh Xmin Xs Xms" (e.g., "1d 2h 30min 45s 100ms"). Any combination of '
+      'units is allowed.',
+    );
+  }
+  return parseDuration(value);
+}
+
+int? _parseIntWithValidation(dynamic value, String configKey) {
+  if (value is int?) return value;
+  if (value is! String || int.tryParse(value) == null) {
+    throw ArgumentError('Invalid $configKey: "$value". Expected an integer.');
+  }
+  return int.parse(value);
+}
+
 Map? _buildSessionLogsConfigMap(
   Map configMap,
   Map<String, String> environment,
@@ -851,6 +896,9 @@ Map? _buildSessionLogsConfigMap(
 
   return _buildConfigMap(logsConfig, environment, [
     (ServerpodEnv.sessionPersistentLogEnabled, bool.parse),
+    (ServerpodEnv.sessionLogCleanupInterval, _parseDurationWithValidation),
+    (ServerpodEnv.sessionLogRetentionPeriod, _parseDurationWithValidation),
+    (ServerpodEnv.sessionLogRetentionCount, int.parse),
     (ServerpodEnv.sessionConsoleLogEnabled, bool.parse),
     (ServerpodEnv.sessionConsoleLogFormat, null),
   ]);

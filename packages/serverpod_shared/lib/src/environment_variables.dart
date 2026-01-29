@@ -138,6 +138,15 @@ enum ServerpodEnv {
   /// True if session persistent logging is enabled.
   sessionPersistentLogEnabled,
 
+  /// The retention period for log data. Accepts a duration string.
+  sessionLogRetentionPeriod,
+
+  /// The maximum number of log entries to keep.
+  sessionLogRetentionCount,
+
+  /// The interval between log cleanup operations. Accepts a duration string.
+  sessionLogCleanupInterval,
+
   /// True if session console logging is enabled.
   sessionConsoleLogEnabled,
 
@@ -204,6 +213,9 @@ enum ServerpodEnv {
         ServerpodFutureCallConfigMap.scanInterval,
       (ServerpodEnv.futureCallExecutionEnabled) => 'futureCallExecutionEnabled',
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
+      (ServerpodEnv.sessionLogCleanupInterval) => 'cleanupInterval',
+      (ServerpodEnv.sessionLogRetentionPeriod) => 'retentionPeriod',
+      (ServerpodEnv.sessionLogRetentionCount) => 'retentionCount',
       (ServerpodEnv.sessionConsoleLogEnabled) => 'consoleEnabled',
       (ServerpodEnv.sessionConsoleLogFormat) => 'consoleLogFormat',
       (ServerpodEnv.runMode) => 'mode',
@@ -258,6 +270,12 @@ enum ServerpodEnv {
         'SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED',
       (ServerpodEnv.sessionPersistentLogEnabled) =>
         'SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED',
+      (ServerpodEnv.sessionLogCleanupInterval) =>
+        'SERVERPOD_SESSION_LOG_CLEANUP_INTERVAL',
+      (ServerpodEnv.sessionLogRetentionPeriod) =>
+        'SERVERPOD_SESSION_LOG_RETENTION_PERIOD',
+      (ServerpodEnv.sessionLogRetentionCount) =>
+        'SERVERPOD_SESSION_LOG_RETENTION_COUNT',
       (ServerpodEnv.sessionConsoleLogEnabled) =>
         'SERVERPOD_SESSION_CONSOLE_LOG_ENABLED',
       (ServerpodEnv.sessionConsoleLogFormat) =>
