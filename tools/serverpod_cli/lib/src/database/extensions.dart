@@ -845,7 +845,12 @@ extension ColumnTypeComparison on ColumnType {
 
 extension GinIndexOperatorClass on GinOperatorClass {
   String asOperator() {
-    return '${name.snakeCase}_ops';
+    switch (this) {
+      case GinOperatorClass.trigram:
+        return 'gin_trgm_ops';
+      default:
+        return '${name.snakeCase}_ops';
+    }
   }
 }
 

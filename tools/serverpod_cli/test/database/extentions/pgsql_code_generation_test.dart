@@ -657,75 +657,52 @@ END
     );
   });
 
-  group('Given a table definition with a jsonb field', () {
+  group('Given a table definition with a text field', () {
     var modelName = 'myModel';
-    var fieldName = 'jdoc';
+    var fieldName = 'content';
+
     var models = [
       ModelClassDefinitionBuilder()
           .withClassName(modelName.sentenceCase)
           .withFileName(modelName)
           .withTableName(modelName)
-          .withListField(
-            fieldName,
-            'List',
-          )
+          .withSimpleField(fieldName, 'String')
           .build(),
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromModels(models, 'example', []);
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      models,
+      'example',
+      [],
+    );
     var tableDefinition = databaseDefinition.tables.first;
 
     test(
-        'Given a table definition with an GIN index on a jsonb field, then the SQL should include the correct GIN parameters.',
-        () {
-      var indexName = '${modelName}_jsonb_idx';
-      var index = IndexDefinitionBuilder()
-          .withIndexName(indexName)
-          .withElements([
-            IndexElementDefinition(
-              type: IndexElementDefinitionType.column,
-              definition: fieldName,
-            )
-          ])
-          .withType('GIN')
-          .withIsUnique(false)
-          .withIsPrimary(false)
-          .build();
+      'Given a table definition with a GIN index with trigram ops on a text field, then the SQL should include gin_trgm_ops.',
+      () {
+        var indexName = '${modelName}_trgm_idx';
+        var index = IndexDefinitionBuilder()
+            .withIndexName(indexName)
+            .withElements([
+              IndexElementDefinition(
+                type: IndexElementDefinitionType.column,
+                definition: fieldName,
+              ),
+            ])
+            .withType('GIN')
+            .withGinOperatorClass(GinOperatorClass.trigram)
+            .withIsUnique(false)
+            .withIsPrimary(false)
+            .build();
 
-      var sql = index.toPgSql(tableName: tableDefinition.name);
+        var sql = index.toPgSql(tableName: tableDefinition.name);
 
-      expect(
-        sql,
-        'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
-        'USING GIN ("$fieldName");\n',
-      );
-    });
-
-    test(
-        'Given a table definition with an GIN index with json_path_ops on a jsonb field, then the SQL should include the correct GIN parameters.',
-        () {
-      var indexName = '${modelName}_jsonb_idx';
-      var index = IndexDefinitionBuilder()
-          .withIndexName(indexName)
-          .withElements([
-            IndexElementDefinition(
-              type: IndexElementDefinitionType.column,
-              definition: fieldName,
-            )
-          ])
-          .withType('GIN')
-          .withGinOperatorClass(GinOperatorClass.jsonbPath)
-          .withIsUnique(false)
-          .withIsPrimary(false)
-          .build();
-
-      var sql = index.toPgSql(tableName: tableDefinition.name);
-
-      expect(
-        sql,
-        'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
-        'USING GIN ("$fieldName" jsonb_path_ops);\n',
-      );
-    });
+        expect(
+          sql,
+          'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+          'USING GIN ("$fieldName" gin_trgm_ops);\n',
+        );
+      },
+    );
   });
 }

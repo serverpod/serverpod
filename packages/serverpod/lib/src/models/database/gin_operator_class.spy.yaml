@@ -6,3 +6,4 @@ values:
   - jsonb
   - jsonbPath
   - tsvector
+  - trigram

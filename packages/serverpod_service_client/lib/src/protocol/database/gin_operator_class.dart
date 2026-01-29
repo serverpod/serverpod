@@ -17,7 +17,8 @@ enum GinOperatorClass implements _i1.SerializableModel {
   array,
   jsonb,
   jsonbPath,
-  tsvector;
+  tsvector,
+  trigram;
 
   static GinOperatorClass fromJson(String name) {
     switch (name) {
@@ -29,14 +30,18 @@ enum GinOperatorClass implements _i1.SerializableModel {
         return GinOperatorClass.jsonbPath;
       case 'tsvector':
         return GinOperatorClass.tsvector;
+      case 'trigram':
+        return GinOperatorClass.trigram;
       default:
         throw ArgumentError(
-            'Value "$name" cannot be converted to "GinOperatorClass"');
+          'Value "$name" cannot be converted to "GinOperatorClass"',
+        );
     }
   }
 
   @override
   String toJson() => name;
+
   @override
   String toString() => name;
 }
