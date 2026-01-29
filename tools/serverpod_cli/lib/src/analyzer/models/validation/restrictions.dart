@@ -171,6 +171,7 @@ class Restrictions {
       'HalfVector',
       'SparseVector',
       'Bit',
+      'JsonValue',
       '_Record',
     };
     if (reservedClassNames.contains(className)) {
