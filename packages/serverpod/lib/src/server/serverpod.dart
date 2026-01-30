@@ -436,21 +436,25 @@ class Serverpod {
     //
     // This is a workaround to allow the command line arguments to override the
     // config if the user provides a config object.
-    this.config =
-        config?.copyWith(
-          runMode: runMode,
-          serverId: serverId,
-          loggingMode: loggingMode,
-          role: role,
-          applyMigrations: applyMigrations,
-          applyRepairMigration: applyRepairMigration,
-        ) ??
-        ServerpodConfig.load(
-          runMode,
-          serverId,
-          _passwords,
-          commandLineArgs: _commandLineArgs.toMap(),
-        );
+    try {
+      this.config =
+          config?.copyWith(
+            runMode: runMode,
+            serverId: serverId,
+            loggingMode: loggingMode,
+            role: role,
+            applyMigrations: applyMigrations,
+            applyRepairMigration: applyRepairMigration,
+          ) ??
+          ServerpodConfig.load(
+            runMode,
+            serverId,
+            _passwords,
+            commandLineArgs: _commandLineArgs.toMap(),
+          );
+    } on ArgumentError catch (e) {
+      throw ExitException(1, 'Error loading ServerpodConfig: ${e.message}');
+    }
 
     stdout.writeln(_getCommandLineArgsString());
 
