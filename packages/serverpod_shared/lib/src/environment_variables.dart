@@ -242,6 +242,8 @@ enum ServerpodEnv {
       (ServerpodEnv.apiPublicHost) => 'SERVERPOD_API_SERVER_PUBLIC_HOST',
       (ServerpodEnv.apiPublicPort) => 'SERVERPOD_API_SERVER_PUBLIC_PORT',
       (ServerpodEnv.apiPublicScheme) => 'SERVERPOD_API_SERVER_PUBLIC_SCHEME',
+      (ServerpodEnv.websocketPingInterval) =>
+        'SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL',
       (ServerpodEnv.insightsPort) => 'SERVERPOD_INSIGHTS_SERVER_PORT',
       (ServerpodEnv.insightsPublicHost) =>
         'SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST',
@@ -273,8 +275,6 @@ enum ServerpodEnv {
       (ServerpodEnv.applyMigrations) => 'SERVERPOD_APPLY_MIGRATIONS',
       (ServerpodEnv.applyRepairMigration) => 'SERVERPOD_APPLY_REPAIR_MIGRATION',
       (ServerpodEnv.validateHeaders) => 'SERVERPOD_VALIDATE_HEADERS',
-      (ServerpodEnv.websocketPingInterval) =>
-        'SERVERPOD_WEBSOCKET_PING_INTERVAL',
     };
   }
 }

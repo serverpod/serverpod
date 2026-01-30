@@ -244,7 +244,7 @@ class ServerpodConfig {
     );
 
     var websocketPingInterval = _readWebsocketPingInterval(
-      configMap,
+      apiConfig,
       environment,
     );
 
@@ -321,6 +321,7 @@ class ServerpodConfig {
     FutureCallConfig? futureCall,
     bool? futureCallExecutionEnabled,
     bool? validateHeaders,
+    Duration? websocketPingInterval,
   }) {
     return ServerpodConfig(
       apiServer: apiServer ?? this.apiServer,
@@ -345,6 +346,8 @@ class ServerpodConfig {
       futureCallExecutionEnabled:
           futureCallExecutionEnabled ?? this.futureCallExecutionEnabled,
       validateHeaders: validateHeaders ?? this.validateHeaders,
+      websocketPingInterval:
+          websocketPingInterval ?? this.websocketPingInterval,
     );
   }
 
@@ -1161,14 +1164,14 @@ bool _readValidateHeaders(
 }
 
 Duration _readWebsocketPingInterval(
-  Map<dynamic, dynamic> configMap,
+  Map<dynamic, dynamic>? apiServerConfigMap,
   Map<String, String> environment,
 ) {
   final envVariable = ServerpodEnv.websocketPingInterval.envVariable;
   final configKey = ServerpodEnv.websocketPingInterval.configKey;
 
-  var websocketPingInterval = configMap[configKey];
-  var sourceDescription = '$configKey from configuration';
+  var websocketPingInterval = apiServerConfigMap?[configKey];
+  var sourceDescription = '$configKey from apiServer configuration';
 
   if (environment[envVariable] != null) {
     websocketPingInterval = environment[envVariable];

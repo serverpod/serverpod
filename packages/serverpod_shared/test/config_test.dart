@@ -1845,7 +1845,7 @@ apiServer:
   publicHost: localhost
   publicPort: 8080
   publicScheme: http
-websocketPingInterval: 15
+  websocketPingInterval: 15
 ''';
 
       var config = ServerpodConfig.loadFromMap(
@@ -1868,7 +1868,7 @@ apiServer:
   publicHost: localhost
   publicPort: 8080
   publicScheme: http
-websocketPingInterval: 15
+  websocketPingInterval: 15
 ''';
 
       var config = ServerpodConfig.loadFromMap(
@@ -1877,7 +1877,7 @@ websocketPingInterval: 15
         passwords,
         loadYaml(serverpodConfig),
         environment: {
-          'SERVERPOD_WEBSOCKET_PING_INTERVAL': '20',
+          'SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL': '20',
         },
       );
 
@@ -1894,7 +1894,7 @@ websocketPingInterval: 15
         passwords,
         {},
         environment: {
-          'SERVERPOD_WEBSOCKET_PING_INTERVAL': '10',
+          'SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL': '10',
         },
       );
 
@@ -1912,7 +1912,7 @@ websocketPingInterval: 15
           passwords,
           {},
           environment: {
-            'SERVERPOD_WEBSOCKET_PING_INTERVAL': 'invalid',
+            'SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL': 'invalid',
           },
         ),
         throwsA(
@@ -1920,7 +1920,7 @@ websocketPingInterval: 15
             (e) => e.toString(),
             'message',
             contains(
-              'Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL from environment variable: invalid',
+              'Invalid SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL from environment variable: invalid',
             ),
           ),
         ),
@@ -1938,7 +1938,7 @@ websocketPingInterval: 15
           passwords,
           {},
           environment: {
-            'SERVERPOD_WEBSOCKET_PING_INTERVAL': '0',
+            'SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL': '0',
           },
         ),
         throwsA(
@@ -1946,7 +1946,7 @@ websocketPingInterval: 15
             (e) => e.toString(),
             'message',
             contains(
-              'Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL from environment variable: 0',
+              'Invalid SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL from environment variable: 0',
             ),
           ),
         ),
@@ -1964,7 +1964,7 @@ websocketPingInterval: 15
           passwords,
           {},
           environment: {
-            'SERVERPOD_WEBSOCKET_PING_INTERVAL': '-5',
+            'SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL': '-5',
           },
         ),
         throwsA(
@@ -1972,7 +1972,7 @@ websocketPingInterval: 15
             (e) => e.toString(),
             'message',
             contains(
-              'Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL from environment variable: -5. '
+              'Invalid SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL from environment variable: -5. '
               'Expected a positive integer greater than 0.',
             ),
           ),
@@ -1990,7 +1990,7 @@ apiServer:
   publicHost: localhost
   publicPort: 8080
   publicScheme: http
-websocketPingInterval: 0
+  websocketPingInterval: 0
 ''';
 
       expect(
@@ -2005,7 +2005,7 @@ websocketPingInterval: 0
             (e) => e.toString(),
             'message',
             contains(
-              'Invalid websocketPingInterval from configuration: 0. '
+              'Invalid websocketPingInterval from apiServer configuration: 0. '
               'Expected a positive integer greater than 0.',
             ),
           ),
