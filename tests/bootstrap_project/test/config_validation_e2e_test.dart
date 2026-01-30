@@ -66,7 +66,7 @@ void main() async {
           ['bin/main.dart'],
           workingDirectory: commandRoot,
           environment: {
-            'SERVERPOD_WEBSOCKET_PING_INTERVAL': '-1',
+            'SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL': '-1',
           },
         );
 
@@ -74,7 +74,7 @@ void main() async {
         expect(
           result.stderr.toString(),
           contains(
-            'Error loading ServerpodConfig: Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL '
+            'Error loading ServerpodConfig: Invalid SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL '
             'from environment variable: -1. Expected a positive integer greater than 0',
           ),
         );
@@ -90,7 +90,7 @@ void main() async {
           ['bin/main.dart'],
           workingDirectory: commandRoot,
           environment: {
-            'SERVERPOD_WEBSOCKET_PING_INTERVAL': '0',
+            'SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL': '0',
           },
         );
 
@@ -98,7 +98,7 @@ void main() async {
         expect(
           result.stderr.toString(),
           contains(
-            'Error loading ServerpodConfig: Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL '
+            'Error loading ServerpodConfig: Invalid SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL '
             'from environment variable: 0. Expected a positive integer greater than 0',
           ),
         );
@@ -114,7 +114,7 @@ void main() async {
           ['bin/main.dart'],
           workingDirectory: commandRoot,
           environment: {
-            'SERVERPOD_WEBSOCKET_PING_INTERVAL': 'invalid',
+            'SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL': 'invalid',
           },
         );
 
@@ -122,7 +122,7 @@ void main() async {
         expect(
           result.stderr.toString(),
           contains(
-            'Error loading ServerpodConfig: Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL '
+            'Error loading ServerpodConfig: Invalid SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL '
             'from environment variable: invalid. Expected a positive integer',
           ),
         );
@@ -138,7 +138,7 @@ void main() async {
           ['bin/main.dart', '--role', 'maintenance'],
           workingDirectory: commandRoot,
           environment: {
-            'SERVERPOD_WEBSOCKET_PING_INTERVAL': '15',
+            'SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL': '15',
           },
         );
 

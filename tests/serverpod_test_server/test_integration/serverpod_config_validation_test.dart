@@ -20,7 +20,7 @@ void main() {
               passwords,
               {},
               environment: {
-                'SERVERPOD_WEBSOCKET_PING_INTERVAL': '-1',
+                'SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL': '-1',
               },
             ),
             throwsA(
@@ -28,7 +28,7 @@ void main() {
                 (e) => e.toString(),
                 'message',
                 contains(
-                  'Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL from environment '
+                  'Invalid SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL from environment '
                   'variable: -1. Expected a positive integer greater than 0.',
                 ),
               ),
@@ -48,7 +48,7 @@ void main() {
               passwords,
               {},
               environment: {
-                'SERVERPOD_WEBSOCKET_PING_INTERVAL': '0',
+                'SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL': '0',
               },
             ),
             throwsA(
@@ -56,7 +56,7 @@ void main() {
                 (e) => e.toString(),
                 'message',
                 contains(
-                  'Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL from environment '
+                  'Invalid SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL from environment '
                   'variable: 0. Expected a positive integer greater than 0.',
                 ),
               ),
@@ -76,7 +76,7 @@ void main() {
               passwords,
               {},
               environment: {
-                'SERVERPOD_WEBSOCKET_PING_INTERVAL': 'invalid',
+                'SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL': 'invalid',
               },
             ),
             throwsA(
@@ -84,7 +84,7 @@ void main() {
                 (e) => e.toString(),
                 'message',
                 contains(
-                  'Invalid SERVERPOD_WEBSOCKET_PING_INTERVAL from environment '
+                  'Invalid SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL from environment '
                   'variable: invalid. Expected a positive integer greater than 0.',
                 ),
               ),
@@ -103,7 +103,7 @@ void main() {
             passwords,
             {},
             environment: {
-              'SERVERPOD_WEBSOCKET_PING_INTERVAL': '15',
+              'SERVERPOD_API_SERVER_WEBSOCKET_PING_INTERVAL': '15',
             },
           );
 
