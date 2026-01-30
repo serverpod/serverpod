@@ -70,9 +70,14 @@ class MockAnalytics implements Analytics {
   int numberOfCleanups = 0;
 
   @override
-  void track({required String event}) {
+  void track({
+    required String event,
+    Map<String, dynamic> properties = const {},
+  }) {
     trackedEvents.add(event);
   }
+
+  void identify({String? email, Map<String, dynamic>? properties}) {}
 
   @override
   void cleanUp() {
