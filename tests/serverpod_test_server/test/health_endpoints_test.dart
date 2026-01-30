@@ -361,6 +361,76 @@ void main() {
     );
   });
 
+  group('Given server with caching enabled', () {
+    late Serverpod pod;
+    late int port;
+    late http.Client httpClient;
+    late FakeHealthIndicator indicator;
+
+    setUp(() async {
+      indicator = FakeHealthIndicator(
+        name: 'test:cached',
+        isHealthy: true,
+      );
+      pod = Serverpod(
+        [],
+        Protocol(),
+        Endpoints(),
+        config: ServerpodConfig(apiServer: portZeroConfig),
+        authenticationHandler: (session, token) => Future.value(
+          token == 'valid'
+              ? AuthenticationInfo('test-user', {}, authId: 'valid')
+              : null,
+        ),
+        healthConfig: HealthConfig(
+          cacheTtl: const Duration(seconds: 2),
+          readinessIndicators: [indicator],
+        ),
+      );
+      await pod.start();
+      port = pod.server.port;
+      httpClient = http.Client();
+    });
+
+    tearDown(() async {
+      httpClient.close();
+      await pod.shutdown(exitProcess: false);
+    });
+
+    test(
+      'when multiple requests are made within cache TTL then indicator is only called once',
+      () async {
+        // First request triggers the check
+        await httpClient.get(Uri.http('localhost:$port', '/readyz'));
+        expect(indicator.checkCount, 1);
+
+        // Second request within TTL should use cached result
+        await httpClient.get(Uri.http('localhost:$port', '/readyz'));
+        expect(indicator.checkCount, 1);
+
+        // Third request within TTL should still use cached result
+        await httpClient.get(Uri.http('localhost:$port', '/readyz'));
+        expect(indicator.checkCount, 1);
+      },
+    );
+
+    test(
+      'when request is made after cache TTL expires then indicator is called again',
+      () async {
+        // First request triggers the check
+        await httpClient.get(Uri.http('localhost:$port', '/readyz'));
+        expect(indicator.checkCount, 1);
+
+        // Wait for cache to expire (TTL is 2 seconds, wait a bit longer)
+        await Future.delayed(const Duration(milliseconds: 2100));
+
+        // Request after TTL should trigger new check
+        await httpClient.get(Uri.http('localhost:$port', '/readyz'));
+        expect(indicator.checkCount, 2);
+      },
+    );
+  });
+
   group('Given server with slow indicator exceeding timeout', () {
     late Serverpod pod;
     late int port;

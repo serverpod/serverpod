@@ -39,6 +39,12 @@ class FakeHealthIndicator extends HealthIndicator {
   /// the indicator's timeout.
   Duration delay;
 
+  /// The number of times [check] has been called.
+  ///
+  /// Use this to verify caching behavior - if results are cached,
+  /// this counter should not increase on subsequent calls within the TTL.
+  int checkCount = 0;
+
   /// Creates a fake health indicator.
   ///
   /// By default, the indicator is healthy with no delay.
@@ -59,6 +65,7 @@ class FakeHealthIndicator extends HealthIndicator {
 
   @override
   Future<HealthCheckResult> check() async {
+    checkCount++;
     if (delay > Duration.zero) {
       await Future.delayed(delay);
     }

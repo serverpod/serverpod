@@ -131,7 +131,7 @@ class HealthCheckService {
       _cache[indicator.name] = _CachedResult(result, DateTime.now().toUtc());
       return result;
     } finally {
-      _pendingChecks.remove(indicator.name); // ignore: unawaited_futures
+      unawaited(_pendingChecks.remove(indicator.name));
     }
   }
 

@@ -24,7 +24,9 @@ class RedisHealthIndicator extends HealthIndicator {
       return HealthCheckResult.fail(
         name: name,
         componentType: 'datastore',
-        output: 'Redis controller not initialized',
+        output:
+            'Redis is enabled but controller not initialized - '
+            'check Redis configuration',
       );
     }
 
