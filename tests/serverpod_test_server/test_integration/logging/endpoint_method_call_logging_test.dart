@@ -433,6 +433,9 @@ void main() async {
           ),
           sessionLogs: SessionLogConfig(
             persistentEnabled: false,
+            cleanupInterval: const Duration(hours: 24),
+            retentionPeriod: const Duration(days: 90),
+            retentionCount: 100_000,
             consoleEnabled: true,
             consoleLogFormat: ConsoleLogFormat.json,
           ),
@@ -493,6 +496,9 @@ void main() async {
           ),
           sessionLogs: SessionLogConfig(
             persistentEnabled: false,
+            cleanupInterval: const Duration(hours: 24),
+            retentionPeriod: const Duration(days: 90),
+            retentionCount: 100_000,
             consoleEnabled: true,
             consoleLogFormat: ConsoleLogFormat.text,
           ),

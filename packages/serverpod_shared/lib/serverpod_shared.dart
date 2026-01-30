@@ -1,6 +1,7 @@
 export 'src/certificates.dart';
 export 'src/config.dart';
 export 'src/constants.dart';
+export 'src/duration.dart';
 export 'src/enums.dart';
 export 'src/environment_variables.dart';
 export 'src/exceptions/exit_exception.dart';

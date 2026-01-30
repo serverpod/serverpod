@@ -38,6 +38,9 @@ void main() async {
             ),
             sessionLogs: SessionLogConfig(
               persistentEnabled: true,
+              cleanupInterval: const Duration(hours: 24),
+              retentionPeriod: const Duration(days: 90),
+              retentionCount: 100_000,
               consoleEnabled: false,
             ),
           ),
@@ -127,6 +130,9 @@ void main() async {
             ),
             sessionLogs: SessionLogConfig(
               persistentEnabled: false,
+              cleanupInterval: const Duration(hours: 24),
+              retentionPeriod: const Duration(days: 90),
+              retentionCount: 100_000,
               consoleEnabled: true,
             ),
           ),
@@ -190,6 +196,9 @@ void main() async {
           ),
           sessionLogs: SessionLogConfig(
             persistentEnabled: false,
+            cleanupInterval: const Duration(hours: 24),
+            retentionPeriod: const Duration(days: 90),
+            retentionCount: 100_000,
             consoleEnabled: false,
           ),
         ),
@@ -238,6 +247,9 @@ void main() async {
             ),
             sessionLogs: SessionLogConfig(
               persistentEnabled: true,
+              cleanupInterval: const Duration(hours: 24),
+              retentionPeriod: const Duration(days: 90),
+              retentionCount: 100_000,
               consoleEnabled: false,
             ),
           ),

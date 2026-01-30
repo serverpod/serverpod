@@ -58,17 +58,9 @@ class CachedLogWriter implements LogWriter {
 
     await _logWriter.openLog(openLogEntry);
 
-    for (var query in _queries) {
-      await _logWriter.logQuery(query);
-    }
-
-    for (var logEntry in _logEntries) {
-      await _logWriter.logEntry(logEntry);
-    }
-
-    for (var message in _messages) {
-      await _logWriter.logMessage(message);
-    }
+    await _exhaustCache(_queries, _logWriter.logQuery);
+    await _exhaustCache(_logEntries, _logWriter.logEntry);
+    await _exhaustCache(_messages, _logWriter.logMessage);
 
     return _logWriter.closeLog(entry);
   }
@@ -86,6 +78,22 @@ class CachedLogWriter implements LogWriter {
   @override
   Future<void> logQuery(QueryLogEntry entry) async {
     _queries.add(entry);
+  }
+
+  /// This method allow exhausting the queries without locking the list to
+  /// account for entries added while the [LogWriter] has started closing.
+  /// With a regular loop, the [_queries] list would be modified during the
+  /// iteration, breaking the closing process. Late entries can be caused by
+  /// the logs cleanup queries that are triggered unawaited from a log call
+  /// and can be executed after the writer starts closing.
+  Future<void> _exhaustCache<T>(
+    List<T> cache,
+    Future<void> Function(T) log,
+  ) async {
+    while (cache.isNotEmpty) {
+      var item = cache.removeAt(0);
+      await log(item);
+    }
   }
 }
 
