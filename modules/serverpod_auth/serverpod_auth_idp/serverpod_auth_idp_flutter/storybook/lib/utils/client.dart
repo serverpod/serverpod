@@ -177,6 +177,21 @@ class GitHubIdpEndpoint extends EndpointGitHubIdpBase {
   }) => Future.value(_mockData.authSuccess);
 }
 
+class TwitchIdpEndpoint extends EndpointTwitchIdpBase {
+  TwitchIdpEndpoint(super.caller);
+
+  final _mockData = MockAuthData();
+
+  @override
+  String get name => 'twitchIdp';
+
+  @override
+  Future<AuthSuccess> login({
+    required String code,
+    required String redirectUri,
+  }) => Future.value(_mockData.authSuccess);
+}
+
 class Modules {
   Modules(Client client) {
     auth = Caller(client);
@@ -198,6 +213,7 @@ class Client extends ServerpodClientShared {
     googleIdp = GoogleIdpEndpoint(this);
     appleIdp = AppleIdpEndpoint(this);
     githubIdp = GitHubIdpEndpoint(this);
+    twitchIdp = TwitchIdpEndpoint(this);
     modules = Modules(this);
   }
 
@@ -211,6 +227,8 @@ class Client extends ServerpodClientShared {
 
   late final GitHubIdpEndpoint githubIdp;
 
+  late final TwitchIdpEndpoint twitchIdp;
+
   late final Modules modules;
 
   @override
@@ -220,6 +238,7 @@ class Client extends ServerpodClientShared {
     'googleIdp': googleIdp,
     'appleIdp': appleIdp,
     'githubIdp': githubIdp,
+    'twitchIdp': twitchIdp,
   };
 
   @override
