@@ -364,20 +364,20 @@ class TypeDefinition {
 
           t.url = p.posix.joinAll([...subDirParts.map((e) => '..'), reference]);
         } else if (!serverCode &&
-            (url?.startsWith('package:${config.serverPackage}') ?? false)) {
+            (url?.startsWith('package:${config.serverPackage}/') ?? false)) {
           // import from the server package
           t.url = url
               ?.replaceFirst(
-                'package:${config.serverPackage}',
-                'package:${config.dartClientPackage}',
+                'package:${config.serverPackage}/',
+                'package:${config.dartClientPackage}/',
               )
               .replaceFirst('src/generated/', 'src/protocol/');
         } else if (config.modules.any(
-          (m) => url?.startsWith('package:${m.serverPackage}') ?? false,
+          (m) => url?.startsWith('package:${m.serverPackage}/') ?? false,
         )) {
           // endpoint definition references from an module
           var module = config.modules.firstWhere(
-            (m) => url?.startsWith('package:${m.serverPackage}') ?? false,
+            (m) => url?.startsWith('package:${m.serverPackage}/') ?? false,
           );
           var packageName = serverCode
               ? module.serverPackage
@@ -387,8 +387,8 @@ class TypeDefinition {
               : serverCode
               ? url
               : url?.replaceFirst(
-                  'package:${module.serverPackage}',
-                  'package:${module.dartClientPackage}',
+                  'package:${module.serverPackage}/',
+                  'package:${module.dartClientPackage}/',
                 );
         } else if (className == 'SerializableModel') {
           t.url = serverpodUrl(serverCode);
