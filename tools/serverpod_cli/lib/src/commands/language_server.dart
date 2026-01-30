@@ -1,4 +1,5 @@
 import 'package:config/config.dart';
+import 'package:serverpod_cli/src/analytics/analytics_helper.dart';
 import 'package:serverpod_cli/src/language_server/language_server.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 
@@ -33,6 +34,19 @@ class LanguageServerCommand extends ServerpodCommand<LanguageServerOption> {
   Future<void> runWithConfig(
     final Configuration<LanguageServerOption> commandConfig,
   ) async {
+    final stdio = commandConfig.value(LanguageServerOption.stdio);
+    final fullCommand = 'serverpod language-server${stdio ? ' --stdio' : ''}';
+
+    // Track the event before starting (language server runs indefinitely)
+    serverpodRunner.analytics.trackWithProperties(
+      event: 'cli:language_server_started',
+      properties: {
+        'full_command': fullCommand,
+        'command': 'language-server',
+        'stdio': stdio,
+      },
+    );
+
     await runLanguageServer();
   }
 }
