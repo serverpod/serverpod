@@ -63,12 +63,17 @@ void main(List<String> args) async {
 }
 
 Future<void> _main(List<String> args) async {
-  // Check the numer of runs and pop the web browser on first run, if possible.
+  // Check the numer of runs and pop the web browser on first and 20th run.
   final runCount = ResourceManager().runCount;
   if (runCount == 1) {
     final uuid = ResourceManager().uniqueUserId;
     await BrowserLauncher.openUrl(
       Uri.parse('https://serverpod.dev/welcome?distinct_id=$uuid'),
+    );
+  } else if (runCount == 20) {
+    final uuid = ResourceManager().uniqueUserId;
+    await BrowserLauncher.openUrl(
+      Uri.parse('https://serverpod.dev/checkin?distinct_id=$uuid'),
     );
   }
 
