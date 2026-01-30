@@ -77,7 +77,6 @@ class MockAnalytics implements Analytics {
     trackedEvents.add(event);
   }
 
-  @override
   void identify({String? email, Map<String, dynamic>? properties}) {}
 
   @override
