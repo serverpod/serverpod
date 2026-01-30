@@ -128,6 +128,7 @@ class GoogleCloudStorage extends CloudStorage {
       uploadDst: path,
       expires: expirationDuration,
       maxFileSize: maxFileSize,
+      public: public,
     );
   }
 
