@@ -36,6 +36,8 @@ dependency_overrides:
     path: ../../../integrations/serverpod_cloud_storage_s3
   serverpod_lints:
     path: ../../../packages/serverpod_lints
+  serverpod_open_metrics:
+    path: ../../../integrations/serverpod_open_metrics
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization
   serverpod_service_client:
