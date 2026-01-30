@@ -81,10 +81,9 @@ class Serverpod {
   /// [HealthCheckHandler] for any custom health checks. This can be used to
   /// check remotely if all services the server is depending on is up and
   /// running.
-  @Deprecated(
-    'Use healthConfig with custom HealthIndicator implementations instead. '
-    'This will be removed in a future version.',
-  )
+  ///
+  /// Deprecated: Use [HealthConfig] with custom [HealthIndicator]
+  /// implementations instead. This will be removed in a future version.
   final HealthCheckHandler? healthCheckHandler;
 
   /// Configuration for the health check system.
