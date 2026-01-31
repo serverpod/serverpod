@@ -2,6 +2,32 @@ import 'package:serverpod/src/server/health/health_indicator.dart';
 import 'package:serverpod/src/server/health/health_response.dart';
 import 'package:test/test.dart';
 
+/// Helper to create passing health check results for testing.
+HealthCheckResult _pass({
+  required String name,
+  String? componentId,
+}) {
+  return HealthCheckResultInternal.create(
+    name: name,
+    status: HealthStatus.pass,
+    componentId: componentId,
+    time: DateTime.now().toUtc(),
+  );
+}
+
+/// Helper to create failing health check results for testing.
+HealthCheckResult _fail({
+  required String name,
+  String? output,
+}) {
+  return HealthCheckResultInternal.create(
+    name: name,
+    status: HealthStatus.fail,
+    output: output,
+    time: DateTime.now().toUtc(),
+  );
+}
+
 void main() {
   group('Given HealthResponse.alive()', () {
     test('when created then status is pass', () {
@@ -47,8 +73,8 @@ void main() {
 
     setUp(() {
       results = [
-        HealthCheckResult.pass(name: 'database:connection'),
-        HealthCheckResult.pass(name: 'redis:connection'),
+        _pass(name: 'database:connection'),
+        _pass(name: 'redis:connection'),
       ];
       response = HealthResponse.fromResults(results);
     });
@@ -91,8 +117,8 @@ void main() {
 
     setUp(() {
       results = [
-        HealthCheckResult.pass(name: 'redis:connection'),
-        HealthCheckResult.fail(
+        _pass(name: 'redis:connection'),
+        _fail(
           name: 'database:connection',
           output: 'Connection refused',
         ),
@@ -123,11 +149,11 @@ void main() {
 
     setUp(() {
       final results = [
-        HealthCheckResult.fail(
+        _fail(
           name: 'database:connection',
           output: 'Database timeout',
         ),
-        HealthCheckResult.fail(
+        _fail(
           name: 'redis:connection',
           output: 'Redis unavailable',
         ),
@@ -163,11 +189,11 @@ void main() {
   group('Given HealthResponse.fromResults with multiple results same name', () {
     test('when created then results are grouped in same list', () {
       final results = [
-        HealthCheckResult.pass(
+        _pass(
           name: 'database:connection',
           componentId: 'primary',
         ),
-        HealthCheckResult.pass(
+        _pass(
           name: 'database:connection',
           componentId: 'replica',
         ),
@@ -184,7 +210,7 @@ void main() {
     () {
       test('when created then output is null', () {
         final results = [
-          HealthCheckResult.fail(name: 'test:indicator'),
+          _fail(name: 'test:indicator'),
         ];
         final response = HealthResponse.fromResults(results);
 

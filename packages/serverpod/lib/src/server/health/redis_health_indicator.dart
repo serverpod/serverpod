@@ -5,7 +5,7 @@ import 'health_indicator.dart';
 ///
 /// This indicator sends a PING command to Redis and expects a PONG response
 /// to verify that Redis is reachable and responding.
-class RedisHealthIndicator extends HealthIndicator {
+class RedisHealthIndicator extends HealthIndicator<double> {
   final Serverpod _pod;
 
   /// Creates a Redis health indicator.
@@ -15,15 +15,19 @@ class RedisHealthIndicator extends HealthIndicator {
   String get name => 'redis:connection';
 
   @override
+  String get componentType => HealthComponentType.datastore.name;
+
+  @override
+  String get observedUnit => 'ms';
+
+  @override
   Duration get timeout => const Duration(seconds: 2);
 
   @override
   Future<HealthCheckResult> check() async {
     final controller = _pod.redisController;
     if (controller == null) {
-      return HealthCheckResult.fail(
-        name: name,
-        componentType: 'datastore',
+      return fail(
         output:
             'Redis is enabled but controller not initialized - '
             'check Redis configuration',
@@ -36,24 +40,17 @@ class RedisHealthIndicator extends HealthIndicator {
       stopwatch.stop();
 
       if (pong) {
-        return HealthCheckResult.pass(
-          name: name,
-          componentType: 'datastore',
+        return pass(
           observedValue: stopwatch.elapsedMilliseconds.toDouble(),
-          observedUnit: 'ms',
         );
       } else {
-        return HealthCheckResult.fail(
-          name: name,
-          componentType: 'datastore',
+        return fail(
           output: 'Redis PING did not return PONG',
         );
       }
     } catch (e) {
       stopwatch.stop();
-      return HealthCheckResult.fail(
-        name: name,
-        componentType: 'datastore',
+      return fail(
         output: 'Redis connection failed: $e',
       );
     }

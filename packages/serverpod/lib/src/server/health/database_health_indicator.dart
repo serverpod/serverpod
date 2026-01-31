@@ -5,7 +5,7 @@ import 'health_indicator.dart';
 ///
 /// This indicator uses the existing `testConnection()` method to verify
 /// that the database is reachable and responding to queries.
-class DatabaseHealthIndicator extends HealthIndicator {
+class DatabaseHealthIndicator extends HealthIndicator<double> {
   final Serverpod _pod;
 
   /// Creates a database health indicator.
@@ -13,6 +13,12 @@ class DatabaseHealthIndicator extends HealthIndicator {
 
   @override
   String get name => 'database:connection';
+
+  @override
+  String get componentType => HealthComponentType.datastore.name;
+
+  @override
+  String get observedUnit => 'ms';
 
   @override
   Duration get timeout => const Duration(seconds: 2);
@@ -25,24 +31,17 @@ class DatabaseHealthIndicator extends HealthIndicator {
       stopwatch.stop();
 
       if (healthy) {
-        return HealthCheckResult.pass(
-          name: name,
-          componentType: HealthComponentType.datastore,
+        return pass(
           observedValue: stopwatch.elapsedMilliseconds.toDouble(),
-          observedUnit: 'ms',
         );
       } else {
-        return HealthCheckResult.fail(
-          name: name,
-          componentType: HealthComponentType.datastore,
+        return fail(
           output: 'Database connection test returned false',
         );
       }
     } catch (e) {
       stopwatch.stop();
-      return HealthCheckResult.fail(
-        name: name,
-        componentType: HealthComponentType.datastore,
+      return fail(
         output: 'Database connection failed: $e',
       );
     }

@@ -1,18 +1,18 @@
+import 'package:meta/meta.dart';
+
 /// Known component types for health indicators.
 ///
 /// These values follow the RFC Health Check Response Format conventions.
 /// Custom component types can also be used as plain strings.
-class HealthComponentType {
-  HealthComponentType._();
-
+enum HealthComponentType {
   /// Data storage components (databases, caches, file systems).
-  static const datastore = 'datastore';
+  datastore,
 
   /// System-level components (CPU, memory, process health).
-  static const system = 'system';
+  system,
 
   /// Generic component type for custom services.
-  static const component = 'component';
+  component,
 }
 
 /// Base class for health indicators that check service dependencies.
@@ -21,27 +21,35 @@ class HealthComponentType {
 /// whether the server is ready to handle requests. Each indicator checks
 /// a specific dependency (database, Redis, external service, etc.).
 ///
+/// The type parameter [T] specifies the type of [observedValue] that this
+/// indicator produces, providing type safety when creating results.
+///
 /// Example implementation:
 /// ```dart
-/// class MyServiceHealthIndicator extends HealthIndicator {
+/// class MyServiceHealthIndicator extends HealthIndicator<double> {
 ///   @override
 ///   String get name => 'myservice:connection';
 ///
 ///   @override
+///   String get componentType => HealthComponentType.component;
+///
+///   @override
+///   String get observedUnit => 'ms';
+///
+///   @override
 ///   Future<HealthCheckResult> check() async {
+///     final stopwatch = Stopwatch()..start();
 ///     try {
 ///       await myService.ping();
-///       return HealthCheckResult.pass(name: name);
+///       stopwatch.stop();
+///       return pass(observedValue: stopwatch.elapsedMilliseconds.toDouble());
 ///     } catch (e) {
-///       return HealthCheckResult.fail(
-///         name: name,
-///         output: 'Connection failed: $e',
-///       );
+///       return fail(output: 'Connection failed: $e');
 ///     }
 ///   }
 /// }
 /// ```
-abstract class HealthIndicator {
+abstract class HealthIndicator<T extends Object> {
   /// Human-readable name for this indicator.
   ///
   /// Should follow the format `component:aspect`, e.g.:
@@ -49,6 +57,23 @@ abstract class HealthIndicator {
   /// - `redis:latency`
   /// - `stripe:api`
   String get name;
+
+  /// Unique identifier for the component instance.
+  ///
+  /// Useful when there are multiple instances of the same component type,
+  /// e.g., `primary-db`, `replica-db`. Returns `null` by default.
+  String? get componentId => null;
+
+  /// Type of the component.
+  ///
+  /// Use constants from [HealthComponentType] or custom strings.
+  /// Returns `null` by default.
+  String? get componentType => null;
+
+  /// Unit of the observed value, e.g., `ms`, `percent`, `bytes`.
+  ///
+  /// Returns `null` by default.
+  String? get observedUnit => null;
 
   /// Maximum time to wait for this check before considering it failed.
   ///
@@ -59,8 +84,51 @@ abstract class HealthIndicator {
   /// Perform the health check and return the result.
   ///
   /// Implementations should catch exceptions and return a failed result
-  /// rather than throwing.
+  /// rather than throwing. Use the [pass] and [fail] helper methods to
+  /// create results with consistent metadata.
   Future<HealthCheckResult> check();
+
+  /// Creates a passing health check result for this indicator.
+  ///
+  /// This method automatically populates [name], [componentId],
+  /// [componentType], and [observedUnit] from this indicator's properties.
+  HealthCheckResult pass({
+    T? observedValue,
+    String? output,
+    DateTime? time,
+  }) {
+    return HealthCheckResult._(
+      name: name,
+      status: HealthStatus.pass,
+      componentId: componentId,
+      componentType: componentType,
+      observedValue: observedValue,
+      observedUnit: observedUnit,
+      output: output,
+      time: time ?? DateTime.now().toUtc(),
+    );
+  }
+
+  /// Creates a failing health check result for this indicator.
+  ///
+  /// This method automatically populates [name], [componentId],
+  /// [componentType], and [observedUnit] from this indicator's properties.
+  HealthCheckResult fail({
+    T? observedValue,
+    String? output,
+    DateTime? time,
+  }) {
+    return HealthCheckResult._(
+      name: name,
+      status: HealthStatus.fail,
+      componentId: componentId,
+      componentType: componentType,
+      observedValue: observedValue,
+      observedUnit: observedUnit,
+      output: output,
+      time: time ?? DateTime.now().toUtc(),
+    );
+  }
 }
 
 /// The status of a health check.
@@ -110,7 +178,7 @@ class HealthCheckResult {
   final DateTime time;
 
   /// Creates a health check result.
-  const HealthCheckResult({
+  const HealthCheckResult._({
     required this.name,
     required this.status,
     this.componentId,
@@ -120,50 +188,6 @@ class HealthCheckResult {
     this.output,
     required this.time,
   });
-
-  /// Creates a passing health check result.
-  factory HealthCheckResult.pass({
-    required String name,
-    String? componentId,
-    String? componentType,
-    Object? observedValue,
-    String? observedUnit,
-    String? output,
-    DateTime? time,
-  }) {
-    return HealthCheckResult(
-      name: name,
-      status: HealthStatus.pass,
-      componentId: componentId,
-      componentType: componentType,
-      observedValue: observedValue,
-      observedUnit: observedUnit,
-      output: output,
-      time: time ?? DateTime.now().toUtc(),
-    );
-  }
-
-  /// Creates a failing health check result.
-  factory HealthCheckResult.fail({
-    required String name,
-    String? componentId,
-    String? componentType,
-    Object? observedValue,
-    String? observedUnit,
-    String? output,
-    DateTime? time,
-  }) {
-    return HealthCheckResult(
-      name: name,
-      status: HealthStatus.fail,
-      componentId: componentId,
-      componentType: componentType,
-      observedValue: observedValue,
-      observedUnit: observedUnit,
-      output: output,
-      time: time ?? DateTime.now().toUtc(),
-    );
-  }
 
   /// Whether this check passed.
   bool get isHealthy => status == HealthStatus.pass;
@@ -183,4 +207,9 @@ class HealthCheckResult {
       if (output != null) 'output': output,
     };
   }
+}
+
+@internal
+extension HealthCheckResultInternal on HealthCheckResult {
+  static const create = HealthCheckResult._;
 }

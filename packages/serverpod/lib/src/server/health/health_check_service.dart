@@ -139,14 +139,12 @@ class HealthCheckService {
     try {
       return await indicator.check().timeout(indicator.timeout);
     } on TimeoutException {
-      return HealthCheckResult.fail(
-        name: indicator.name,
+      return indicator.fail(
         output:
             'Health check timed out after ${indicator.timeout.inMilliseconds}ms',
       );
     } catch (e) {
-      return HealthCheckResult.fail(
-        name: indicator.name,
+      return indicator.fail(
         output: 'Health check failed: $e',
       );
     }

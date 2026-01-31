@@ -3,7 +3,7 @@ import 'package:serverpod/src/server/health/health_indicator.dart';
 import 'package:test/test.dart';
 
 /// A minimal health indicator implementation for testing config.
-class _TestIndicator extends HealthIndicator {
+class _TestIndicator extends HealthIndicator<double> {
   final String _name;
 
   _TestIndicator(this._name);
@@ -13,7 +13,7 @@ class _TestIndicator extends HealthIndicator {
 
   @override
   Future<HealthCheckResult> check() async {
-    return HealthCheckResult.pass(name: name);
+    return pass();
   }
 }
 

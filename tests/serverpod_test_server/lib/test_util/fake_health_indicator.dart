@@ -19,11 +19,11 @@ import 'package:serverpod/serverpod.dart';
 ///   Protocol(),
 ///   Endpoints(),
 ///   healthConfig: HealthConfig(
-///     readinessIndicators: [indicator],
+///     additionalReadinessIndicators: [indicator],
 ///   ),
 /// );
 /// ```
-class FakeHealthIndicator extends HealthIndicator {
+class FakeHealthIndicator extends HealthIndicator<double> {
   final String _name;
   final Duration _timeout;
 
@@ -70,10 +70,9 @@ class FakeHealthIndicator extends HealthIndicator {
       await Future.delayed(delay);
     }
     if (isHealthy) {
-      return HealthCheckResult.pass(name: name);
+      return pass();
     }
-    return HealthCheckResult.fail(
-      name: name,
+    return fail(
       output: failureMessage ?? 'Fake indicator failure',
     );
   }
