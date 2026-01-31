@@ -1,142 +1,81 @@
-import 'dart:typed_data';
-
 import 'package:serverpod/serverpod.dart';
-import '../aws_s3_client/client/client.dart';
-import '../aws_s3_upload/aws_s3_upload.dart';
+import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
 
-/// Concrete implementation of S3 cloud storage for use with Serverpod.
-class S3CloudStorage extends CloudStorage {
-  late final String _awsAccessKeyId;
-  late final String _awsSecretKey;
-  final String region;
-  final String bucket;
-  final bool public;
-  late final String publicHost;
-
-  late final AwsS3Client _s3Client;
-
-  /// Creates a new [S3CloudStorage] reference.
+/// AWS S3 cloud storage implementation for Serverpod.
+///
+/// This implementation uses AWS S3's native API with IAM credentials.
+///
+/// ## Configuration
+///
+/// Set the following environment variables or add to `config/passwords.yaml`:
+/// - `SERVERPOD_AWS_ACCESS_KEY_ID` or `AWSAccessKeyId`
+/// - `SERVERPOD_AWS_SECRET_KEY` or `AWSSecretKey`
+///
+/// ## Example
+///
+/// ```dart
+/// pod.addCloudStorage(S3CloudStorage(
+///   serverpod: pod,
+///   storageId: 'public',
+///   public: true,
+///   region: 'us-east-1',
+///   bucket: 'my-bucket',
+/// ));
+/// ```
+class S3CloudStorage extends S3CompatCloudStorage {
+  /// Creates a new AWS S3 cloud storage.
+  ///
+  /// [serverpod] is the Serverpod instance for loading credentials.
+  /// [storageId] identifies this storage (typically 'public' or 'private').
+  /// [public] indicates whether files should be publicly accessible.
+  /// [region] is the AWS region (e.g., 'us-east-1').
+  /// [bucket] is the S3 bucket name.
+  /// [publicHost] optionally overrides the public URL host (e.g., for CDN).
   S3CloudStorage({
     required Serverpod serverpod,
-    required String storageId,
-    required this.public,
-    required this.region,
-    required this.bucket,
+    required super.storageId,
+    required super.public,
+    required super.region,
+    required super.bucket,
     String? publicHost,
-  }) : super(storageId) {
+  }) : super(
+         accessKey: _loadAccessKey(serverpod),
+         secretKey: _loadSecretKey(serverpod),
+         endpoints: AwsEndpointConfig(
+           publicHost: publicHost != null
+               ? Uri.parse('https://$publicHost')
+               : null,
+         ),
+         uploadStrategy: MultipartPostUploadStrategy(),
+       );
+
+  static String _loadAccessKey(Serverpod serverpod) {
     serverpod.loadCustomPasswords([
       (envName: 'SERVERPOD_AWS_ACCESS_KEY_ID', alias: 'AWSAccessKeyId'),
+    ]);
+    final accessKey = serverpod.getPassword('AWSAccessKeyId');
+    if (accessKey == null) {
+      throw StateError(
+        'AWS access key not configured. '
+        'Set AWSAccessKeyId in passwords.yaml or '
+        'SERVERPOD_AWS_ACCESS_KEY_ID environment variable.',
+      );
+    }
+    return accessKey;
+  }
+
+  static String _loadSecretKey(Serverpod serverpod) {
+    serverpod.loadCustomPasswords([
       (envName: 'SERVERPOD_AWS_SECRET_KEY', alias: 'AWSSecretKey'),
     ]);
-
-    var awsAccessKeyId = serverpod.getPassword('AWSAccessKeyId');
-    var awsSecretKey = serverpod.getPassword('AWSSecretKey');
-
-    if (awsAccessKeyId == null) {
-      throw StateError('HMACAccessKeyId must be configured in your passwords.');
+    final secretKey = serverpod.getPassword('AWSSecretKey');
+    if (secretKey == null) {
+      throw StateError(
+        'AWS secret key not configured. '
+        'Set AWSSecretKey in passwords.yaml or '
+        'SERVERPOD_AWS_SECRET_KEY environment variable.',
+      );
     }
-
-    if (awsSecretKey == null) {
-      throw StateError('HMACSecretKey must be configured in your passwords.');
-    }
-
-    _awsAccessKeyId = awsAccessKeyId;
-    _awsSecretKey = awsSecretKey;
-
-    // Create client
-    _s3Client = AwsS3Client(
-      accessKey: _awsAccessKeyId,
-      secretKey: _awsSecretKey,
-      bucketId: bucket,
-      region: region,
-    );
-
-    this.publicHost = publicHost ?? '$bucket.s3.$region.amazonaws.com';
-  }
-
-  @override
-  Future<void> storeFile({
-    required Session session,
-    required String path,
-    required ByteData byteData,
-    DateTime? expiration,
-    bool verified = true,
-  }) async {
-    await AwsS3Uploader.uploadData(
-      accessKey: _awsAccessKeyId,
-      secretKey: _awsSecretKey,
-      bucket: bucket,
-      region: region,
-      data: byteData,
-      uploadDst: path,
-      public: public,
-    );
-  }
-
-  @override
-  Future<ByteData?> retrieveFile({
-    required Session session,
-    required String path,
-  }) async {
-    final response = await _s3Client.getObject(path);
-    if (response.statusCode == 200) {
-      return ByteData.view(response.bodyBytes.buffer);
-    }
-    return null;
-  }
-
-  @override
-  Future<Uri?> getPublicUrl({
-    required Session session,
-    required String path,
-  }) async {
-    if (await fileExists(session: session, path: path)) {
-      return Uri.parse('https://$publicHost/$path');
-    }
-    return null;
-  }
-
-  @override
-  Future<bool> fileExists({
-    required Session session,
-    required String path,
-  }) async {
-    var response = await _s3Client.headObject(path);
-    return response.statusCode == 200;
-  }
-
-  @override
-  Future<void> deleteFile({
-    required Session session,
-    required String path,
-  }) async {
-    await _s3Client.deleteObject(path);
-  }
-
-  @override
-  Future<String?> createDirectFileUploadDescription({
-    required Session session,
-    required String path,
-    Duration expirationDuration = const Duration(minutes: 10),
-    int maxFileSize = 10 * 1024 * 1024,
-  }) async {
-    return await AwsS3Uploader.getDirectUploadDescription(
-      accessKey: _awsAccessKeyId,
-      secretKey: _awsSecretKey,
-      bucket: bucket,
-      region: region,
-      uploadDst: path,
-      expires: expirationDuration,
-      maxFileSize: maxFileSize,
-      public: public,
-    );
-  }
-
-  @override
-  Future<bool> verifyDirectFileUpload({
-    required Session session,
-    required String path,
-  }) async {
-    return fileExists(session: session, path: path);
+    return secretKey;
   }
 }
