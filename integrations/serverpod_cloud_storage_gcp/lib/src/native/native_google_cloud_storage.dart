@@ -71,6 +71,20 @@ class NativeGoogleCloudStorage extends CloudStorage {
     _initializeAsync(serviceAccountJson);
   }
 
+  /// Creates a [NativeGoogleCloudStorage] with an already-initialized
+  /// [StorageApi].
+  ///
+  /// This constructor is primarily intended for testing purposes.
+  NativeGoogleCloudStorage.withStorageApi({
+    required String storageId,
+    required this.bucket,
+    required this.public,
+    required gcs.StorageApi storageApi,
+    this.publicHost,
+  }) : super(storageId) {
+    _storageApiCompleter.complete(storageApi);
+  }
+
   Future<void> _initializeAsync(String serviceAccountJson) async {
     try {
       final credentials = ServiceAccountCredentials.fromJson(
