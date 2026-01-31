@@ -21,7 +21,7 @@ class ServerpodStartupIndicator extends HealthIndicator {
 
   @override
   Future<HealthCheckResult> check() async {
-    if (_pod.isRunning) {
+    if (_pod.isStartupComplete) {
       return HealthCheckResult.pass(
         name: name,
         componentType: HealthComponentType.system,

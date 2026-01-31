@@ -48,7 +48,8 @@ class Serverpod {
   /// Whether the server has completed its startup sequence.
   ///
   /// Returns `true` if [start] has been called and completed successfully.
-  bool get isRunning => _startedTime != null;
+  /// Note: This remains `true` even after [shutdown] is called.
+  bool get isStartupComplete => _startedTime != null;
 
   /// The last created [Serverpod]. In most cases the [Serverpod] is a singleton
   /// object, although it may be possible to run multiple instances in the same
