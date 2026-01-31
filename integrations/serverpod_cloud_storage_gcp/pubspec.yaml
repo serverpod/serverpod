@@ -19,6 +19,9 @@ dependencies:
   path: ^1.8.3
   serverpod: 3.3.1
   xml2json: ^6.0.0
+  googleapis: ^14.0.0
+  googleapis_auth: ^1.6.0
+  http: ">=1.1.0 <2.0.0"
   serverpod_cloud_storage_s3_compat: 3.2.3
 
 dev_dependencies:
