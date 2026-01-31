@@ -1,141 +1,69 @@
-import 'dart:typed_data';
-
 import 'package:serverpod/serverpod.dart';
-import '../aws_s3_client/client/client.dart';
-import '../aws_s3_upload/aws_s3_upload.dart';
+import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
 
-/// Concrete implementation of S3 cloud storage for use with Serverpod.
-class GoogleCloudStorage extends CloudStorage {
-  late final String _hmacAccessKeyId;
-  late final String _hmacSecretKey;
-  final String region;
-  final String bucket;
-  final bool public;
-  late final String publicHost;
-
-  late final GCPS3Client _s3Client;
-
+/// Google Cloud Storage implementation using S3-compatible API with HMAC credentials.
+///
+/// This implementation uses GCP's S3-compatible API endpoint, which allows
+/// using the same SigV4 signing mechanism as AWS S3. Requires HMAC credentials
+/// to be configured in Serverpod's password system.
+///
+/// For HMAC credential setup, see:
+/// https://cloud.google.com/storage/docs/authentication/hmackeys
+class GoogleCloudStorage extends S3CompatCloudStorage {
   /// Creates a new [GoogleCloudStorage] reference.
+  ///
+  /// The [serverpod] instance is used to load HMAC credentials from the
+  /// password system. Credentials can be set via:
+  /// - `passwords.yaml`: `HMACAccessKeyId` and `HMACSecretKey`
+  /// - Environment variables: `SERVERPOD_HMAC_ACCESS_KEY_ID` and
+  ///   `SERVERPOD_HMAC_SECRET_KEY`
+  ///
+  /// The [storageId] uniquely identifies this storage configuration.
+  ///
+  /// Set [public] to true if files should be publicly accessible.
+  ///
+  /// The [region] should be the GCS region (e.g., 'us-central1').
+  ///
+  /// The [bucket] is the name of the GCS bucket.
+  ///
+  /// Optionally specify [publicHost] to use a custom domain for public URLs.
   GoogleCloudStorage({
     required Serverpod serverpod,
-    required String storageId,
-    required this.public,
-    required this.region,
-    required this.bucket,
+    required super.storageId,
+    required super.public,
+    required super.region,
+    required super.bucket,
     String? publicHost,
-  }) : super(storageId) {
+  }) : super(
+         accessKey: _loadAccessKey(serverpod),
+         secretKey: _loadSecretKey(serverpod),
+         endpoints: GcpEndpointConfig(
+           publicHost: publicHost != null
+               ? Uri.parse('https://$publicHost')
+               : null,
+         ),
+         uploadStrategy: MultipartPostUploadStrategy(),
+       );
+
+  static String _loadAccessKey(Serverpod serverpod) {
     serverpod.loadCustomPasswords([
       (envName: 'SERVERPOD_HMAC_ACCESS_KEY_ID', alias: 'HMACAccessKeyId'),
-      (envName: 'SERVERPOD_HMAC_SECRET_KEY', alias: 'HMACSecretKey'),
     ]);
-
-    var hmacAccessKeyId = serverpod.getPassword('HMACAccessKeyId');
-    var hmacSecretKey = serverpod.getPassword('HMACSecretKey');
-
-    if (hmacAccessKeyId == null) {
+    var accessKey = serverpod.getPassword('HMACAccessKeyId');
+    if (accessKey == null) {
       throw StateError('HMACAccessKeyId must be configured in your passwords.');
     }
+    return accessKey;
+  }
 
-    if (hmacSecretKey == null) {
+  static String _loadSecretKey(Serverpod serverpod) {
+    serverpod.loadCustomPasswords([
+      (envName: 'SERVERPOD_HMAC_SECRET_KEY', alias: 'HMACSecretKey'),
+    ]);
+    var secretKey = serverpod.getPassword('HMACSecretKey');
+    if (secretKey == null) {
       throw StateError('HMACSecretKey must be configured in your passwords.');
     }
-
-    _hmacAccessKeyId = hmacAccessKeyId;
-    _hmacSecretKey = hmacSecretKey;
-
-    // Create client
-    _s3Client = GCPS3Client(
-      accessKey: _hmacAccessKeyId,
-      secretKey: _hmacSecretKey,
-      bucketId: bucket,
-      region: region,
-    );
-
-    this.publicHost = publicHost ?? 'storage.googleapis.com/$bucket';
-  }
-
-  @override
-  Future<void> storeFile({
-    required Session session,
-    required String path,
-    required ByteData byteData,
-    DateTime? expiration,
-    bool verified = true,
-  }) async {
-    await GCPS3Uploader.uploadData(
-      accessKey: _hmacAccessKeyId,
-      secretKey: _hmacSecretKey,
-      bucket: bucket,
-      region: region,
-      data: byteData,
-      uploadDst: path,
-      public: public,
-    );
-  }
-
-  @override
-  Future<ByteData?> retrieveFile({
-    required Session session,
-    required String path,
-  }) async {
-    final response = await _s3Client.getObject(path);
-    if (response.statusCode == 200) {
-      return ByteData.view(response.bodyBytes.buffer);
-    }
-    return null;
-  }
-
-  @override
-  Future<Uri?> getPublicUrl({
-    required Session session,
-    required String path,
-  }) async {
-    if (await fileExists(session: session, path: path)) {
-      return Uri.parse('https://$publicHost/$path');
-    }
-    return null;
-  }
-
-  @override
-  Future<bool> fileExists({
-    required Session session,
-    required String path,
-  }) async {
-    var response = await _s3Client.headObject(path);
-    return response.statusCode == 200;
-  }
-
-  @override
-  Future<void> deleteFile({
-    required Session session,
-    required String path,
-  }) async {
-    await _s3Client.deleteObject(path);
-  }
-
-  @override
-  Future<String?> createDirectFileUploadDescription({
-    required Session session,
-    required String path,
-    Duration expirationDuration = const Duration(minutes: 10),
-    int maxFileSize = 10 * 1024 * 1024,
-  }) async {
-    return await GCPS3Uploader.getDirectUploadDescription(
-      accessKey: _hmacAccessKeyId,
-      secretKey: _hmacSecretKey,
-      bucket: bucket,
-      region: region,
-      uploadDst: path,
-      expires: expirationDuration,
-      maxFileSize: maxFileSize,
-    );
-  }
-
-  @override
-  Future<bool> verifyDirectFileUpload({
-    required Session session,
-    required String path,
-  }) async {
-    return fileExists(session: session, path: path);
+    return secretKey;
   }
 }
