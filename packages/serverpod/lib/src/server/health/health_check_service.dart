@@ -41,8 +41,8 @@ class HealthCheckService {
   /// Creates a health check service.
   HealthCheckService(this._pod, this._config) {
     _initializeBuiltInIndicators();
-    _readinessIndicators.addAll(_config.readinessIndicators);
-    _startupIndicators.addAll(_config.startupIndicators);
+    _readinessIndicators.addAll(_config.additionalReadinessIndicators);
+    _startupIndicators.addAll(_config.additionalStartupIndicators);
   }
 
   void _initializeBuiltInIndicators() {
@@ -87,7 +87,7 @@ class HealthCheckService {
   /// Runs all startup indicators and returns an aggregate response.
   /// The built-in [ServerpodStartupIndicator] checks if the server has
   /// completed its startup sequence. Additional custom startup indicators
-  /// can be added via [HealthConfig.startupIndicators].
+  /// can be added via [HealthConfig.additionalStartupIndicators].
   Future<HealthResponse> checkStartup() async {
     final results = await _runIndicators(_startupIndicators);
     return HealthResponse.fromResults(results);

@@ -29,12 +29,12 @@ void main() {
       expect(config.cacheTtl, const Duration(seconds: 1));
     });
 
-    test('when created then readinessIndicators is empty', () {
-      expect(config.readinessIndicators, isEmpty);
+    test('when created then additionalReadinessIndicators is empty', () {
+      expect(config.additionalReadinessIndicators, isEmpty);
     });
 
-    test('when created then startupIndicators is empty', () {
-      expect(config.startupIndicators, isEmpty);
+    test('when created then additionalStartupIndicators is empty', () {
+      expect(config.additionalStartupIndicators, isEmpty);
     });
   });
 
@@ -47,44 +47,56 @@ void main() {
       expect(config.cacheTtl, const Duration(seconds: 5));
     });
 
-    test('when created with readinessIndicators then they are preserved', () {
-      final indicators = [
-        _TestIndicator('test:one'),
-        _TestIndicator('test:two'),
-      ];
-      final config = HealthConfig(
-        readinessIndicators: indicators,
-      );
+    test(
+      'when created with additionalReadinessIndicators then they are preserved',
+      () {
+        final indicators = [
+          _TestIndicator('test:one'),
+          _TestIndicator('test:two'),
+        ];
+        final config = HealthConfig(
+          additionalReadinessIndicators: indicators,
+        );
 
-      expect(config.readinessIndicators, hasLength(2));
-      expect(config.readinessIndicators[0].name, 'test:one');
-      expect(config.readinessIndicators[1].name, 'test:two');
-    });
+        expect(config.additionalReadinessIndicators, hasLength(2));
+        expect(config.additionalReadinessIndicators[0].name, 'test:one');
+        expect(config.additionalReadinessIndicators[1].name, 'test:two');
+      },
+    );
 
-    test('when created with startupIndicators then they are preserved', () {
-      final indicators = [
-        _TestIndicator('startup:warmup'),
-      ];
-      final config = HealthConfig(
-        startupIndicators: indicators,
-      );
+    test(
+      'when created with additionalStartupIndicators then they are preserved',
+      () {
+        final indicators = [
+          _TestIndicator('startup:warmup'),
+        ];
+        final config = HealthConfig(
+          additionalStartupIndicators: indicators,
+        );
 
-      expect(config.startupIndicators, hasLength(1));
-      expect(config.startupIndicators[0].name, 'startup:warmup');
-    });
+        expect(config.additionalStartupIndicators, hasLength(1));
+        expect(config.additionalStartupIndicators[0].name, 'startup:warmup');
+      },
+    );
 
     test('when created with all options then all are preserved', () {
-      final readinessIndicators = [_TestIndicator('readiness:test')];
-      final startupIndicators = [_TestIndicator('startup:test')];
+      final additionalReadinessIndicators = [_TestIndicator('readiness:test')];
+      final additionalStartupIndicators = [_TestIndicator('startup:test')];
       final config = HealthConfig(
         cacheTtl: const Duration(milliseconds: 500),
-        readinessIndicators: readinessIndicators,
-        startupIndicators: startupIndicators,
+        additionalReadinessIndicators: additionalReadinessIndicators,
+        additionalStartupIndicators: additionalStartupIndicators,
       );
 
       expect(config.cacheTtl, const Duration(milliseconds: 500));
-      expect(config.readinessIndicators, same(readinessIndicators));
-      expect(config.startupIndicators, same(startupIndicators));
+      expect(
+        config.additionalReadinessIndicators,
+        same(additionalReadinessIndicators),
+      );
+      expect(
+        config.additionalStartupIndicators,
+        same(additionalStartupIndicators),
+      );
     });
   });
 }

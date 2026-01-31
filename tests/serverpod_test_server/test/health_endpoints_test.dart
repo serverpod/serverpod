@@ -204,7 +204,7 @@ void main() {
               : null,
         ),
         healthConfig: HealthConfig(
-          startupIndicators: [failingIndicator],
+          additionalStartupIndicators: [failingIndicator],
         ),
       );
       await pod.start();
@@ -263,7 +263,7 @@ void main() {
               : null,
         ),
         healthConfig: HealthConfig(
-          readinessIndicators: [indicator],
+          additionalReadinessIndicators: [indicator],
         ),
       );
       await pod.start();
@@ -324,7 +324,7 @@ void main() {
               : null,
         ),
         healthConfig: HealthConfig(
-          readinessIndicators: [indicator],
+          additionalReadinessIndicators: [indicator],
         ),
       );
       await pod.start();
@@ -384,7 +384,7 @@ void main() {
         ),
         healthConfig: HealthConfig(
           cacheTtl: const Duration(seconds: 2),
-          readinessIndicators: [indicator],
+          additionalReadinessIndicators: [indicator],
         ),
       );
       await pod.start();
@@ -454,7 +454,7 @@ void main() {
               : null,
         ),
         healthConfig: HealthConfig(
-          readinessIndicators: [slowIndicator],
+          additionalReadinessIndicators: [slowIndicator],
         ),
       );
       await pod.start();

@@ -17,10 +17,10 @@
 ///   Protocol(),
 ///   Endpoints(),
 ///   healthConfig: HealthConfig(
-///     readinessIndicators: [
+///     additionalReadinessIndicators: [
 ///       MyCustomServiceIndicator(),
 ///     ],
-///     startupIndicators: [
+///     additionalStartupIndicators: [
 ///       CacheWarmupIndicator(),
 ///     ],
 ///   ),
