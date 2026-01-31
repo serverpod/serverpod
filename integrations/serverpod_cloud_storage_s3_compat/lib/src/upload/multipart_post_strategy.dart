@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 
+import '../client/exceptions.dart';
 import '../endpoints/s3_endpoint_config.dart';
 import 'policy.dart';
 import 's3_upload_strategy.dart';
@@ -19,7 +19,7 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
   String get uploadType => 'multipart';
 
   @override
-  Future<String?> uploadData({
+  Future<String> uploadData({
     required String accessKey,
     required String secretKey,
     required String bucket,
@@ -68,26 +68,18 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
     req.fields['Policy'] = policy.encode();
     req.fields['X-Amz-Signature'] = signature;
 
-    try {
-      final res = await req.send();
+    final res = await req.send();
+    final response = await http.Response.fromStream(res);
 
-      if (res.statusCode >= 400 && res.statusCode < 500) {
-        stderr.writeln(
-          'Failed to upload to ${endpoints.serviceName}, with reason: ${res.reasonPhrase}',
-        );
-      }
-
-      if (res.statusCode == 204) {
-        return uploadUri.replace(path: '/${policy.key}').toString();
-      }
-    } catch (e) {
-      stderr.writeln(
-        'Failed to upload to ${endpoints.serviceName}, with exception:',
-      );
-      stderr.writeln(e);
-      return null;
+    if (response.statusCode == 204) {
+      return uploadUri.replace(path: '/${policy.key}').toString();
     }
-    return null;
+
+    if (response.statusCode == 403) {
+      throw NoPermissionsException(response);
+    }
+
+    throw S3Exception(response);
   }
 
   @override

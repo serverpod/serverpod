@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import '../client/exceptions.dart';
 import '../endpoints/s3_endpoint_config.dart';
 
 /// Strategy for uploading files to S3-compatible storage.
@@ -12,8 +13,10 @@ import '../endpoints/s3_endpoint_config.dart';
 abstract class S3UploadStrategy {
   /// Upload file data directly from server.
   ///
-  /// Returns the URL of the uploaded file on success, or null on failure.
-  Future<String?> uploadData({
+  /// Returns the URL of the uploaded file on success.
+  ///
+  /// Throws [S3Exception] if the upload fails.
+  Future<String> uploadData({
     required String accessKey,
     required String secretKey,
     required String bucket,

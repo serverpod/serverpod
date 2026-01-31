@@ -57,7 +57,7 @@ class MockUploadStrategy implements S3UploadStrategy {
   String get uploadType => 'mock';
 
   @override
-  Future<String?> uploadData({
+  Future<String> uploadData({
     required String accessKey,
     required String secretKey,
     required String bucket,
@@ -69,7 +69,7 @@ class MockUploadStrategy implements S3UploadStrategy {
   }) async {
     uploadedPath = path;
     uploadedData = data;
-    return uploadDataResult;
+    return uploadDataResult ?? 'https://example.com/$path';
   }
 
   @override

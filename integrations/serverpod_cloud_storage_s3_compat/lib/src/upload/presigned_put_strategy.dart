@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
@@ -7,6 +6,7 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 
+import '../client/exceptions.dart';
 import '../endpoints/s3_endpoint_config.dart';
 import 's3_upload_strategy.dart';
 
@@ -20,7 +20,7 @@ class PresignedPutUploadStrategy implements S3UploadStrategy {
   String get uploadType => 'binary';
 
   @override
-  Future<String?> uploadData({
+  Future<String> uploadData({
     required String accessKey,
     required String secretKey,
     required String bucket,
@@ -85,38 +85,26 @@ $payloadHash''';
       path: objectPath,
     );
 
-    try {
-      final response = await http.put(
-        uri,
-        headers: {
-          'Authorization': authorization,
-          'x-amz-content-sha256': payloadHash,
-          'x-amz-date': datetime,
-          'host': host,
-        },
-        body: payloadBytes,
-      );
+    final response = await http.put(
+      uri,
+      headers: {
+        'Authorization': authorization,
+        'x-amz-content-sha256': payloadHash,
+        'x-amz-date': datetime,
+        'host': host,
+      },
+      body: payloadBytes,
+    );
 
-      if (response.statusCode >= 400) {
-        stderr.writeln(
-          'Failed to upload to ${endpoints.serviceName}, '
-          'status: ${response.statusCode}, reason: ${response.reasonPhrase}',
-        );
-        stderr.writeln('Response body: ${response.body}');
-        return null;
-      }
-
-      if (response.statusCode == 200 || response.statusCode == 204) {
-        return uri.toString();
-      }
-    } catch (e) {
-      stderr.writeln(
-        'Failed to upload to ${endpoints.serviceName}, with exception:',
-      );
-      stderr.writeln(e);
-      return null;
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      return uri.toString();
     }
-    return null;
+
+    if (response.statusCode == 403) {
+      throw NoPermissionsException(response);
+    }
+
+    throw S3Exception(response);
   }
 
   @override
