@@ -1,0 +1,30 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+name: serverpod_cloud_storage_r2
+description: Serverpod integration for Cloudflare R2 cloud storage
+version: 3.2.3
+repository: https://github.com/serverpod/serverpod
+homepage: https://serverpod.dev
+issue_tracker: https://github.com/serverpod/serverpod/issues
+
+environment:
+  sdk: '^3.8.0'
+
+dependencies:
+  serverpod: 3.2.3
+  serverpod_cloud_storage_s3_compat: 3.2.3
+
+dev_dependencies:
+  lints: '>=3.0.0 <7.0.0'
+  test: ^1.25.8
+
+dependency_overrides:
+  serverpod:
+    path: ../../packages/serverpod
+  serverpod_cloud_storage_s3_compat:
+    path: ../serverpod_cloud_storage_s3_compat
+  serverpod_serialization:
+    path: ../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../packages/serverpod_shared
