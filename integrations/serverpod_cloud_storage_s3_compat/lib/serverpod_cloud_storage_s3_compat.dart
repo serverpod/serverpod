@@ -15,7 +15,15 @@
 /// ### Upload Strategy
 /// - [S3UploadStrategy] - Abstract interface for upload mechanisms
 /// - [MultipartPostUploadStrategy] - POST with presigned policy (AWS, GCP, MinIO)
+///
+/// ### S3 Client
+/// - [S3Client] - Client for signed S3 API requests
+/// - [S3Exception] - Exception for S3 API errors
 library;
+
+// Client
+export 'src/client/exceptions.dart';
+export 'src/client/s3_client.dart';
 
 // Endpoint configurations
 export 'src/endpoints/aws_endpoint_config.dart';
