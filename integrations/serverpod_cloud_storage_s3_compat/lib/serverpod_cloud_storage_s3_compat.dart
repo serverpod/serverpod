@@ -6,6 +6,9 @@
 ///
 /// ## Key Components
 ///
+/// ### Base Implementation
+/// - [S3CompatCloudStorage] - Base CloudStorage implementation
+///
 /// ### Endpoint Configuration
 /// - [S3EndpointConfig] - Abstract interface for endpoint URLs
 /// - [AwsEndpointConfig] - AWS S3 endpoint configuration
@@ -20,6 +23,9 @@
 /// - [S3Client] - Client for signed S3 API requests
 /// - [S3Exception] - Exception for S3 API errors
 library;
+
+// Base implementation
+export 'src/s3_compat_cloud_storage.dart';
 
 // Client
 export 'src/client/exceptions.dart';
