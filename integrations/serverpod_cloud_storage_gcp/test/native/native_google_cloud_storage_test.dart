@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:googleapis/storage/v1.dart' as gcs;
 import 'package:mocktail/mocktail.dart';
+import 'package:pointycastle/export.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_gcp/serverpod_cloud_storage_gcp.dart';
 import 'package:test/test.dart';
@@ -45,17 +47,29 @@ void main() {
       );
     });
 
-    test('then storageId is set correctly', () {
-      expect(storage.storageId, 'test-storage');
-    });
+    test(
+      'when accessing storageId '
+      'then it returns the configured value',
+      () {
+        expect(storage.storageId, 'test-storage');
+      },
+    );
 
-    test('then bucket is set correctly', () {
-      expect(storage.bucket, 'test-bucket');
-    });
+    test(
+      'when accessing bucket '
+      'then it returns the configured value',
+      () {
+        expect(storage.bucket, 'test-bucket');
+      },
+    );
 
-    test('then public is set correctly', () {
-      expect(storage.public, isTrue);
-    });
+    test(
+      'when accessing public '
+      'then it returns the configured value',
+      () {
+        expect(storage.public, isTrue);
+      },
+    );
 
     group('when checking if a file exists', () {
       test('then it returns true when the object exists', () async {
@@ -418,5 +432,192 @@ void main() {
         expect(url.toString(), 'https://cdn.example.com/file.txt');
       });
     });
+  });
+
+  group('Given a NativeGoogleCloudStorage with signing credentials', () {
+    late NativeGoogleCloudStorage storage;
+    late MockStorageApi mockStorageApi;
+    late MockObjectsResource mockObjects;
+    late MockSession mockSession;
+
+    setUp(() {
+      mockStorageApi = MockStorageApi();
+      mockObjects = MockObjectsResource();
+      mockSession = MockSession();
+      when(() => mockStorageApi.objects).thenReturn(mockObjects);
+
+      // Generate a test RSA key pair
+      final keyGen = RSAKeyGenerator()
+        ..init(
+          ParametersWithRandom(
+            RSAKeyGeneratorParameters(BigInt.parse('65537'), 2048, 64),
+            SecureRandom('Fortuna')..seed(
+              KeyParameter(
+                Uint8List.fromList(
+                  List.generate(32, (i) => i),
+                ),
+              ),
+            ),
+          ),
+        );
+      final keyPair = keyGen.generateKeyPair();
+      // ignore: unnecessary_cast
+      final privateKey = keyPair.privateKey as RSAPrivateKey;
+
+      storage = NativeGoogleCloudStorage.withSigningCredentials(
+        storageId: 'signed-storage',
+        bucket: 'test-bucket',
+        public: true,
+        storageApi: mockStorageApi,
+        clientEmail: 'test@test-project.iam.gserviceaccount.com',
+        privateKey: privateKey,
+      );
+    });
+
+    group('when creating direct upload description', () {
+      test('then it returns a valid upload description', () async {
+        final description = await storage.createDirectFileUploadDescription(
+          session: mockSession,
+          path: 'uploads/test-file.txt',
+        );
+
+        expect(description, isNotNull);
+
+        final data = jsonDecode(description!) as Map<String, dynamic>;
+        expect(data['type'], 'binary');
+        expect(data['method'], 'PUT');
+        expect(data['file-name'], 'test-file.txt');
+        expect(data['headers'], isA<Map>());
+        expect(data['headers']['Content-Type'], 'text/plain');
+      });
+
+      test(
+        'then the URL contains required GCP signed URL parameters',
+        () async {
+          final description = await storage.createDirectFileUploadDescription(
+            session: mockSession,
+            path: 'uploads/image.png',
+            expirationDuration: Duration(minutes: 15),
+          );
+
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          final url = data['url'] as String;
+
+          expect(url, startsWith('https://storage.googleapis.com/'));
+          expect(url, contains('test-bucket'));
+          expect(url, contains('uploads/image.png'));
+          expect(url, contains('X-Goog-Algorithm=GOOG4-RSA-SHA256'));
+          expect(url, contains('X-Goog-Credential='));
+          expect(url, contains('X-Goog-Date='));
+          expect(url, contains('X-Goog-Expires=900')); // 15 minutes
+          expect(
+            url,
+            contains('X-Goog-SignedHeaders=content-type%3Bhost%3Bx-goog-acl'),
+          );
+          expect(url, contains('X-Goog-Signature='));
+        },
+      );
+
+      test('then it detects MIME types correctly', () async {
+        final pngDescription = await storage.createDirectFileUploadDescription(
+          session: mockSession,
+          path: 'images/photo.png',
+        );
+        final pngData = jsonDecode(pngDescription!) as Map<String, dynamic>;
+        expect(pngData['headers']['Content-Type'], 'image/png');
+
+        final jpgDescription = await storage.createDirectFileUploadDescription(
+          session: mockSession,
+          path: 'images/photo.jpg',
+        );
+        final jpgData = jsonDecode(jpgDescription!) as Map<String, dynamic>;
+        expect(jpgData['headers']['Content-Type'], 'image/jpeg');
+
+        final pdfDescription = await storage.createDirectFileUploadDescription(
+          session: mockSession,
+          path: 'docs/document.pdf',
+        );
+        final pdfData = jsonDecode(pdfDescription!) as Map<String, dynamic>;
+        expect(pdfData['headers']['Content-Type'], 'application/pdf');
+
+        final unknownDescription = await storage
+            .createDirectFileUploadDescription(
+              session: mockSession,
+              path: 'data/file.xyz',
+            );
+        final unknownData =
+            jsonDecode(unknownDescription!) as Map<String, dynamic>;
+        expect(
+          unknownData['headers']['Content-Type'],
+          'application/octet-stream',
+        );
+      });
+
+      test(
+        'then it includes public-read ACL header when public is true',
+        () async {
+          final description = await storage.createDirectFileUploadDescription(
+            session: mockSession,
+            path: 'uploads/test-file.txt',
+          );
+
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          expect(data['headers']['x-goog-acl'], 'public-read');
+        },
+      );
+    });
+  });
+
+  group('Given a NativeGoogleCloudStorage with public set to false', () {
+    late NativeGoogleCloudStorage storage;
+    late MockStorageApi mockStorageApi;
+    late MockObjectsResource mockObjects;
+    late MockSession mockSession;
+
+    setUp(() {
+      mockStorageApi = MockStorageApi();
+      mockObjects = MockObjectsResource();
+      mockSession = MockSession();
+      when(() => mockStorageApi.objects).thenReturn(mockObjects);
+
+      final keyGen = RSAKeyGenerator()
+        ..init(
+          ParametersWithRandom(
+            RSAKeyGeneratorParameters(BigInt.parse('65537'), 2048, 64),
+            SecureRandom('Fortuna')..seed(
+              KeyParameter(
+                Uint8List.fromList(
+                  List.generate(32, (i) => i),
+                ),
+              ),
+            ),
+          ),
+        );
+      final keyPair = keyGen.generateKeyPair();
+      // ignore: unnecessary_cast
+      final privateKey = keyPair.privateKey as RSAPrivateKey;
+
+      storage = NativeGoogleCloudStorage.withSigningCredentials(
+        storageId: 'private-storage',
+        bucket: 'test-bucket',
+        public: false,
+        storageApi: mockStorageApi,
+        clientEmail: 'test@test-project.iam.gserviceaccount.com',
+        privateKey: privateKey,
+      );
+    });
+
+    test(
+      'when creating direct upload description then it includes private ACL header',
+      () async {
+        final description = await storage.createDirectFileUploadDescription(
+          session: mockSession,
+          path: 'uploads/private-file.txt',
+        );
+
+        final data = jsonDecode(description!) as Map<String, dynamic>;
+        expect(data['headers']['x-goog-acl'], 'private');
+      },
+    );
   });
 }
