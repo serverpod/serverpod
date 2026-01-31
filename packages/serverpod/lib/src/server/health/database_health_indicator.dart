@@ -27,14 +27,14 @@ class DatabaseHealthIndicator extends HealthIndicator {
       if (healthy) {
         return HealthCheckResult.pass(
           name: name,
-          componentType: 'datastore',
+          componentType: HealthComponentType.datastore,
           observedValue: stopwatch.elapsedMilliseconds.toDouble(),
           observedUnit: 'ms',
         );
       } else {
         return HealthCheckResult.fail(
           name: name,
-          componentType: 'datastore',
+          componentType: HealthComponentType.datastore,
           output: 'Database connection test returned false',
         );
       }
@@ -42,7 +42,7 @@ class DatabaseHealthIndicator extends HealthIndicator {
       stopwatch.stop();
       return HealthCheckResult.fail(
         name: name,
-        componentType: 'datastore',
+        componentType: HealthComponentType.datastore,
         output: 'Database connection failed: $e',
       );
     }

@@ -1,3 +1,20 @@
+/// Known component types for health indicators.
+///
+/// These values follow the RFC Health Check Response Format conventions.
+/// Custom component types can also be used as plain strings.
+class HealthComponentType {
+  HealthComponentType._();
+
+  /// Data storage components (databases, caches, file systems).
+  static const datastore = 'datastore';
+
+  /// System-level components (CPU, memory, process health).
+  static const system = 'system';
+
+  /// Generic component type for custom services.
+  static const component = 'component';
+}
+
 /// Base class for health indicators that check service dependencies.
 ///
 /// Health indicators are used by the health check system to determine

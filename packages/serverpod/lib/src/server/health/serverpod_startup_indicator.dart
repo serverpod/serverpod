@@ -24,12 +24,12 @@ class ServerpodStartupIndicator extends HealthIndicator {
     if (_pod.isRunning) {
       return HealthCheckResult.pass(
         name: name,
-        componentType: 'system',
+        componentType: HealthComponentType.system,
       );
     } else {
       return HealthCheckResult.fail(
         name: name,
-        componentType: 'system',
+        componentType: HealthComponentType.system,
         output: 'Serverpod has not completed startup',
       );
     }
