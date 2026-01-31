@@ -7,7 +7,7 @@ name: serverpod_auth_test_server
 description: Test server for new Serverpod authentication modules
 
 environment:
-  sdk: "^3.8.0"
+  sdk: '^3.8.0'
 
 dependencies:
   serverpod: 3.3.1
