@@ -13,7 +13,9 @@ environment:
 
 dependencies:
   amazon_cognito_identity_dart_2: ^3.5.0
+  crypto: ^3.0.2
   http: '>=1.1.0 <2.0.0'
+  path: ^1.8.3
   serverpod: 3.2.3
 
 dev_dependencies:
