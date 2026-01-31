@@ -193,22 +193,31 @@ void main() {
       );
     });
 
-    test('then storageId is set correctly', () {
-      expect(storage.storageId, 'test-storage');
-    });
+    test(
+      'when accessing storageId '
+      'then it returns the configured value',
+      () {
+        expect(storage.storageId, 'test-storage');
+      },
+    );
 
-    group('when storing a file', () {
-      test('then it delegates to the upload strategy', () async {
+    test(
+      'when storing a file '
+      'then it delegates to the upload strategy',
+      () async {
         final data = ByteData(10);
+
         await storage.testStoreFile('test/file.txt', data);
 
         expect(mockUploadStrategy.uploadedPath, 'test/file.txt');
         expect(mockUploadStrategy.uploadedData, data);
-      });
-    });
+      },
+    );
 
-    group('when retrieving a file that exists', () {
-      test('then it returns the file data', () async {
+    test(
+      'when retrieving a file that exists '
+      'then it returns the file data',
+      () async {
         final fileContent = [1, 2, 3, 4, 5];
         mockClient.getObjectResponse = http.Response.bytes(fileContent, 200);
 
@@ -217,40 +226,50 @@ void main() {
         expect(mockClient.lastGetKey, 'existing/file.txt');
         expect(result, isNotNull);
         expect(result!.buffer.asUint8List(), fileContent);
-      });
-    });
+      },
+    );
 
-    group('when retrieving a file that does not exist', () {
-      test('then it returns null', () async {
+    test(
+      'when retrieving a file that does not exist '
+      'then it returns null',
+      () async {
         mockClient.getObjectResponse = http.Response('Not Found', 404);
 
         final result = await storage.testRetrieveFile('missing/file.txt');
 
         expect(result, isNull);
-      });
-    });
+      },
+    );
 
-    group('when checking if a file exists', () {
-      test('then it returns true for existing files', () async {
+    test(
+      'when checking if an existing file exists '
+      'then it returns true',
+      () async {
         mockClient.headObjectResponse = http.Response('', 200);
 
         final exists = await storage.testFileExists('existing.txt');
 
         expect(mockClient.lastHeadKey, 'existing.txt');
         expect(exists, isTrue);
-      });
+      },
+    );
 
-      test('then it returns false for missing files', () async {
+    test(
+      'when checking if a missing file exists '
+      'then it returns false',
+      () async {
         mockClient.headObjectResponse = http.Response('', 404);
 
         final exists = await storage.testFileExists('missing.txt');
 
         expect(exists, isFalse);
-      });
-    });
+      },
+    );
 
-    group('when getting public URL for an existing file', () {
-      test('then it returns the URL', () async {
+    test(
+      'when getting public URL for an existing file '
+      'then it returns the URL',
+      () async {
         mockClient.headObjectResponse = http.Response('', 200);
 
         final url = await storage.testGetPublicUrl('path/to/file.txt');
@@ -258,31 +277,37 @@ void main() {
         expect(url, isNotNull);
         expect(url.toString(), contains('test-bucket'));
         expect(url.toString(), contains('path/to/file.txt'));
-      });
-    });
+      },
+    );
 
-    group('when getting public URL for a missing file', () {
-      test('then it returns null', () async {
+    test(
+      'when getting public URL for a missing file '
+      'then it returns null',
+      () async {
         mockClient.headObjectResponse = http.Response('', 404);
 
         final url = await storage.testGetPublicUrl('missing.txt');
 
         expect(url, isNull);
-      });
-    });
+      },
+    );
 
-    group('when deleting a file', () {
-      test('then it calls deleteObject on the client', () async {
+    test(
+      'when deleting a file '
+      'then it calls deleteObject on the client',
+      () async {
         mockClient.deleteObjectResponse = http.Response('', 204);
 
         await storage.testDeleteFile('to-delete.txt');
 
         expect(mockClient.lastDeleteKey, 'to-delete.txt');
-      });
-    });
+      },
+    );
 
-    group('when creating direct upload description', () {
-      test('then it delegates to the upload strategy', () async {
+    test(
+      'when creating direct upload description '
+      'then it delegates to the upload strategy',
+      () async {
         mockUploadStrategy.directUploadDescriptionResult =
             '{"url":"https://example.com"}';
 
@@ -296,11 +321,13 @@ void main() {
         expect(mockUploadStrategy.directUploadExpiration, Duration(minutes: 5));
         expect(mockUploadStrategy.directUploadMaxFileSize, 1024 * 1024);
         expect(description, '{"url":"https://example.com"}');
-      });
-    });
+      },
+    );
 
-    group('when verifying direct file upload', () {
-      test('then it checks if the file exists', () async {
+    test(
+      'when verifying direct file upload for existing file '
+      'then it returns true',
+      () async {
         mockClient.headObjectResponse = http.Response('', 200);
 
         final verified = await storage.testVerifyDirectFileUpload(
@@ -309,9 +336,13 @@ void main() {
 
         expect(mockClient.lastHeadKey, 'uploaded.txt');
         expect(verified, isTrue);
-      });
+      },
+    );
 
-      test('then it returns false if file does not exist', () async {
+    test(
+      'when verifying direct file upload for missing file '
+      'then it returns false',
+      () async {
         mockClient.headObjectResponse = http.Response('', 404);
 
         final verified = await storage.testVerifyDirectFileUpload(
@@ -319,74 +350,84 @@ void main() {
         );
 
         expect(verified, isFalse);
-      });
-    });
+      },
+    );
   });
 
-  group(
-    'Given TestableS3CompatCloudStorage with different endpoint configs',
-    () {
-      test('then AWS endpoints produce correct public URLs', () async {
-        final mockClient = MockS3Client();
-        mockClient.headObjectResponse = http.Response('', 200);
+  test(
+    'Given a TestableS3CompatCloudStorage with AWS endpoints '
+    'when getting public URL '
+    'then it produces correct AWS URL format',
+    () async {
+      final mockClient = MockS3Client();
+      mockClient.headObjectResponse = http.Response('', 200);
 
-        final storage = TestableS3CompatCloudStorage(
-          mockClient: mockClient,
-          mockUploadStrategy: MockUploadStrategy(),
-          storageId: 'aws',
-          bucket: 'my-bucket',
-          region: 'eu-west-1',
-          endpoints: AwsEndpointConfig(),
-        );
+      final storage = TestableS3CompatCloudStorage(
+        mockClient: mockClient,
+        mockUploadStrategy: MockUploadStrategy(),
+        storageId: 'aws',
+        bucket: 'my-bucket',
+        region: 'eu-west-1',
+        endpoints: AwsEndpointConfig(),
+      );
 
-        final url = await storage.testGetPublicUrl('file.txt');
+      final url = await storage.testGetPublicUrl('file.txt');
 
-        expect(
-          url.toString(),
-          'https://my-bucket.s3.eu-west-1.amazonaws.com/file.txt',
-        );
-      });
+      expect(
+        url.toString(),
+        'https://my-bucket.s3.eu-west-1.amazonaws.com/file.txt',
+      );
+    },
+  );
 
-      test('then GCP endpoints produce correct public URLs', () async {
-        final mockClient = MockS3Client();
-        mockClient.headObjectResponse = http.Response('', 200);
+  test(
+    'Given a TestableS3CompatCloudStorage with GCP endpoints '
+    'when getting public URL '
+    'then it produces correct GCP URL format',
+    () async {
+      final mockClient = MockS3Client();
+      mockClient.headObjectResponse = http.Response('', 200);
 
-        final storage = TestableS3CompatCloudStorage(
-          mockClient: mockClient,
-          mockUploadStrategy: MockUploadStrategy(),
-          storageId: 'gcp',
-          bucket: 'gcp-bucket',
-          region: 'auto',
-          endpoints: GcpEndpointConfig(),
-        );
+      final storage = TestableS3CompatCloudStorage(
+        mockClient: mockClient,
+        mockUploadStrategy: MockUploadStrategy(),
+        storageId: 'gcp',
+        bucket: 'gcp-bucket',
+        region: 'auto',
+        endpoints: GcpEndpointConfig(),
+      );
 
-        final url = await storage.testGetPublicUrl('file.txt');
+      final url = await storage.testGetPublicUrl('file.txt');
 
-        expect(
-          url.toString(),
-          'https://storage.googleapis.com/gcp-bucket/file.txt',
-        );
-      });
+      expect(
+        url.toString(),
+        'https://storage.googleapis.com/gcp-bucket/file.txt',
+      );
+    },
+  );
 
-      test('then custom endpoints produce correct public URLs', () async {
-        final mockClient = MockS3Client();
-        mockClient.headObjectResponse = http.Response('', 200);
+  test(
+    'Given a TestableS3CompatCloudStorage with custom endpoints '
+    'when getting public URL '
+    'then it produces correct custom URL format',
+    () async {
+      final mockClient = MockS3Client();
+      mockClient.headObjectResponse = http.Response('', 200);
 
-        final storage = TestableS3CompatCloudStorage(
-          mockClient: mockClient,
-          mockUploadStrategy: MockUploadStrategy(),
-          storageId: 'minio',
-          bucket: 'local-bucket',
-          region: 'us-east-1',
-          endpoints: CustomEndpointConfig(
-            baseUri: Uri.http('localhost:9000', '/'),
-          ),
-        );
+      final storage = TestableS3CompatCloudStorage(
+        mockClient: mockClient,
+        mockUploadStrategy: MockUploadStrategy(),
+        storageId: 'minio',
+        bucket: 'local-bucket',
+        region: 'us-east-1',
+        endpoints: CustomEndpointConfig(
+          baseUri: Uri.http('localhost:9000', '/'),
+        ),
+      );
 
-        final url = await storage.testGetPublicUrl('file.txt');
+      final url = await storage.testGetPublicUrl('file.txt');
 
-        expect(url.toString(), 'http://localhost:9000/local-bucket/file.txt');
-      });
+      expect(url.toString(), 'http://localhost:9000/local-bucket/file.txt');
     },
   );
 }
