@@ -19,7 +19,7 @@ void main() {
     group('when creating direct upload description', () {
       late String? description;
 
-      setUpAll(() async {
+      setUp(() async {
         description = await strategy.createDirectUploadDescription(
           accessKey: 'AKIAIOSFODNN7EXAMPLE',
           secretKey: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
@@ -82,7 +82,7 @@ void main() {
     group('when creating private upload description', () {
       late String? description;
 
-      setUpAll(() async {
+      setUp(() async {
         description = await strategy.createDirectUploadDescription(
           accessKey: 'AKIAIOSFODNN7EXAMPLE',
           secretKey: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
@@ -112,7 +112,7 @@ void main() {
     group('when creating direct upload description', () {
       late String? description;
 
-      setUpAll(() async {
+      setUp(() async {
         description = await strategy.createDirectUploadDescription(
           accessKey: 'GOOGTS7C7FUP3AIRVEXAMPLE',
           secretKey: 'bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiEXAMPLEKEY',
@@ -150,7 +150,7 @@ void main() {
     group('when creating direct upload description', () {
       late String? description;
 
-      setUpAll(() async {
+      setUp(() async {
         description = await strategy.createDirectUploadDescription(
           accessKey: 'minioadmin',
           secretKey: 'minioadmin',
