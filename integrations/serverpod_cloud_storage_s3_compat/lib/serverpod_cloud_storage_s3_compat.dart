@@ -2,7 +2,7 @@
 ///
 /// This package provides abstractions for building cloud storage integrations
 /// that work with S3-compatible APIs, including AWS S3, Google Cloud Storage
-/// (via S3 compatibility), MinIO, and other providers.
+/// (via S3 compatibility), Cloudflare R2, MinIO, and other providers.
 ///
 /// ## Key Components
 ///
@@ -13,11 +13,13 @@
 /// - [S3EndpointConfig] - Abstract interface for endpoint URLs
 /// - [AwsEndpointConfig] - AWS S3 endpoint configuration
 /// - [GcpEndpointConfig] - GCP S3-compatible endpoint configuration
+/// - [R2EndpointConfig] - Cloudflare R2 endpoint configuration
 /// - [CustomEndpointConfig] - Custom S3-compatible endpoint configuration
 ///
 /// ### Upload Strategy
 /// - [S3UploadStrategy] - Abstract interface for upload mechanisms
 /// - [MultipartPostUploadStrategy] - POST with presigned policy (AWS, GCP, MinIO)
+/// - [PresignedPutUploadStrategy] - PUT with presigned URL (Cloudflare R2)
 ///
 /// ### S3 Client
 /// - [S3Client] - Client for signed S3 API requests
@@ -35,9 +37,11 @@ export 'src/client/s3_client.dart';
 export 'src/endpoints/aws_endpoint_config.dart';
 export 'src/endpoints/custom_endpoint_config.dart';
 export 'src/endpoints/gcp_endpoint_config.dart';
+export 'src/endpoints/r2_endpoint_config.dart';
 export 'src/endpoints/s3_endpoint_config.dart';
 
 // Upload strategies
 export 'src/upload/multipart_post_strategy.dart';
 export 'src/upload/policy.dart';
+export 'src/upload/presigned_put_strategy.dart';
 export 'src/upload/s3_upload_strategy.dart';
