@@ -9,7 +9,7 @@ description: Test server for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.8.0'
+  sdk: "^3.8.0"
 dependencies:
   http: '>=1.1.0 <2.0.0'
   relic: ^1.0.0
@@ -50,6 +50,8 @@ dependency_overrides:
     path: ../../packages/serverpod_client
   serverpod_cloud_storage_s3:
     path: ../../integrations/serverpod_cloud_storage_s3
+  serverpod_cloud_storage_s3_compat:
+    path: ../../integrations/serverpod_cloud_storage_s3_compat
   serverpod_lints:
     path: ../../packages/serverpod_lints
   serverpod_serialization:
