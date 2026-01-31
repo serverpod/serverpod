@@ -9,7 +9,7 @@ description: Non-vector project test server for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.8.0'
+  sdk: "^3.8.0"
 
 dependencies:
   serverpod: 3.3.1
@@ -35,6 +35,8 @@ dependency_overrides:
     path: ../../../packages/serverpod_client
   serverpod_cloud_storage_s3:
     path: ../../../integrations/serverpod_cloud_storage_s3
+  serverpod_cloud_storage_s3_compat:
+    path: ../../../integrations/serverpod_cloud_storage_s3_compat
   serverpod_lints:
     path: ../../../packages/serverpod_lints
   serverpod_serialization:
