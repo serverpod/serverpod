@@ -4,17 +4,25 @@ import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_com
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a PresignedPutUploadStrategy', () {
-    final strategy = PresignedPutUploadStrategy();
+  test(
+    'Given a PresignedPutUploadStrategy '
+    'when reading uploadType '
+    'then it is binary',
+    () {
+      final strategy = PresignedPutUploadStrategy();
 
-    test('when reading uploadType then it is binary', () {
       expect(strategy.uploadType, 'binary');
-    });
-  });
+    },
+  );
 
   group('Given a PresignedPutUploadStrategy with R2 endpoints', () {
-    final strategy = PresignedPutUploadStrategy();
-    final endpoints = R2EndpointConfig(accountId: 'abc123def456');
+    late PresignedPutUploadStrategy strategy;
+    late R2EndpointConfig endpoints;
+
+    setUp(() {
+      strategy = PresignedPutUploadStrategy();
+      endpoints = R2EndpointConfig(accountId: 'abc123def456');
+    });
 
     group('when creating direct upload description', () {
       late String? description;
@@ -155,11 +163,16 @@ void main() {
   });
 
   group('Given a PresignedPutUploadStrategy with custom endpoints', () {
-    final strategy = PresignedPutUploadStrategy();
-    final endpoints = CustomEndpointConfig(
-      baseUri: Uri.http('localhost:9000', '/'),
-      serviceName: 'MinIO',
-    );
+    late PresignedPutUploadStrategy strategy;
+    late CustomEndpointConfig endpoints;
+
+    setUp(() {
+      strategy = PresignedPutUploadStrategy();
+      endpoints = CustomEndpointConfig(
+        baseUri: Uri.http('localhost:9000', '/'),
+        serviceName: 'MinIO',
+      );
+    });
 
     group('when creating direct upload description', () {
       late String? description;

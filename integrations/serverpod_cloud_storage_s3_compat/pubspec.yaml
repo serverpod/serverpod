@@ -3,7 +3,7 @@
 
 name: serverpod_cloud_storage_s3_compat
 description: Base package for S3-compatible cloud storage integrations with Serverpod
-version: 3.2.3
+version: 3.3.1
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -17,7 +17,8 @@ dependencies:
   http: '>=1.1.0 <2.0.0'
   mime: ^2.0.0
   path: ^1.8.3
-  serverpod: 3.2.3
+  serverpod: 3.3.1
+  serverpod_client: 3.3.1
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
@@ -26,7 +27,12 @@ dev_dependencies:
 dependency_overrides:
   serverpod:
     path: ../../packages/serverpod
+  serverpod_client:
+    path: ../../packages/serverpod_client
   serverpod_serialization:
     path: ../../packages/serverpod_serialization
   serverpod_shared:
     path: ../../packages/serverpod_shared
+
+false_secrets:
+  - test/

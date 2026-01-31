@@ -53,8 +53,10 @@ void main() {
       });
     });
 
-    group('when building signed params for HEAD request', () {
-      test('then it generates valid params', () {
+    test(
+      'when building signed params for HEAD request '
+      'then it generates valid params',
+      () {
         final params = client.buildSignedParams(
           key: 'test.txt',
           method: 'HEAD',
@@ -62,11 +64,13 @@ void main() {
 
         expect(params.uri.path, '/test.txt');
         expect(params.headers['Authorization'], contains('AWS4-HMAC-SHA256'));
-      });
-    });
+      },
+    );
 
-    group('when building signed params for DELETE request', () {
-      test('then it generates valid params', () {
+    test(
+      'when building signed params for DELETE request '
+      'then it generates valid params',
+      () {
         final params = client.buildSignedParams(
           key: 'delete-me.txt',
           method: 'DELETE',
@@ -74,11 +78,13 @@ void main() {
 
         expect(params.uri.path, '/delete-me.txt');
         expect(params.headers['Authorization'], contains('AWS4-HMAC-SHA256'));
-      });
-    });
+      },
+    );
 
-    group('when building signed params with query parameters', () {
-      test('then the URI includes the query parameters', () {
+    test(
+      'when building signed params with query parameters '
+      'then the URI includes the query parameters',
+      () {
         final params = client.buildSignedParams(
           key: 'test.txt',
           queryParams: {'list-type': '2', 'prefix': 'uploads/'},
@@ -86,8 +92,8 @@ void main() {
 
         expect(params.uri.queryParameters, containsPair('list-type', '2'));
         expect(params.uri.queryParameters, containsPair('prefix', 'uploads/'));
-      });
-    });
+      },
+    );
   });
 
   group('Given an S3Client with GCP endpoints', () {
@@ -103,19 +109,25 @@ void main() {
       );
     });
 
-    group('when building signed params', () {
-      test('then the URI has the GCP host', () {
+    test(
+      'when building signed params '
+      'then the URI has the GCP host',
+      () {
         final params = client.buildSignedParams(key: 'file.txt');
 
         expect(params.uri.host, 'storage.googleapis.com');
-      });
+      },
+    );
 
-      test('then the URI path includes the bucket and file', () {
+    test(
+      'when building signed params '
+      'then the URI path includes the bucket and file',
+      () {
         final params = client.buildSignedParams(key: 'path/to/file.txt');
 
         expect(params.uri.path, '/my-gcp-bucket/path/to/file.txt');
-      });
-    });
+      },
+    );
   });
 
   group('Given an S3Client with custom endpoints', () {
@@ -133,18 +145,20 @@ void main() {
       );
     });
 
-    group('when building signed params', () {
-      test('then the URI has the custom host and port', () {
+    test(
+      'when building signed params '
+      'then the URI has the custom host and port',
+      () {
         final params = client.buildSignedParams(key: 'test.txt');
 
         expect(params.uri.scheme, 'http');
         expect(params.uri.host, 'localhost');
         expect(params.uri.port, 9000);
-      });
-    });
+      },
+    );
   });
 
-  group('Given an S3Client when checking response errors', () {
+  group('Given an S3Client', () {
     late S3Client client;
 
     setUp(() {
@@ -157,43 +171,63 @@ void main() {
       );
     });
 
-    test('then a 200 response does not throw', () {
-      final response = http.Response('OK', 200);
+    test(
+      'when checking a 200 response for errors '
+      'then it does not throw',
+      () {
+        final response = http.Response('OK', 200);
 
-      expect(() => client.checkResponseError(response), returnsNormally);
-    });
+        expect(() => client.checkResponseError(response), returnsNormally);
+      },
+    );
 
-    test('then a 204 response does not throw', () {
-      final response = http.Response('', 204);
+    test(
+      'when checking a 204 response for errors '
+      'then it does not throw',
+      () {
+        final response = http.Response('', 204);
 
-      expect(() => client.checkResponseError(response), returnsNormally);
-    });
+        expect(() => client.checkResponseError(response), returnsNormally);
+      },
+    );
 
-    test('then a 403 response throws NoPermissionsException', () {
-      final response = http.Response('Forbidden', 403);
+    test(
+      'when checking a 403 response for errors '
+      'then it throws NoPermissionsException',
+      () {
+        final response = http.Response('Forbidden', 403);
 
-      expect(
-        () => client.checkResponseError(response),
-        throwsA(isA<NoPermissionsException>()),
-      );
-    });
+        expect(
+          () => client.checkResponseError(response),
+          throwsA(isA<NoPermissionsException>()),
+        );
+      },
+    );
 
-    test('then a 404 response throws S3Exception', () {
-      final response = http.Response('Not Found', 404);
+    test(
+      'when checking a 404 response for errors '
+      'then it throws S3Exception',
+      () {
+        final response = http.Response('Not Found', 404);
 
-      expect(
-        () => client.checkResponseError(response),
-        throwsA(isA<S3Exception>()),
-      );
-    });
+        expect(
+          () => client.checkResponseError(response),
+          throwsA(isA<S3Exception>()),
+        );
+      },
+    );
 
-    test('then a 500 response throws S3Exception', () {
-      final response = http.Response('Internal Server Error', 500);
+    test(
+      'when checking a 500 response for errors '
+      'then it throws S3Exception',
+      () {
+        final response = http.Response('Internal Server Error', 500);
 
-      expect(
-        () => client.checkResponseError(response),
-        throwsA(isA<S3Exception>()),
-      );
-    });
+        expect(
+          () => client.checkResponseError(response),
+          throwsA(isA<S3Exception>()),
+        );
+      },
+    );
   });
 }
