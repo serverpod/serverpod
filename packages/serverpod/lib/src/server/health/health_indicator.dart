@@ -92,8 +92,13 @@ class HealthCheckResult {
   /// Type of the component, e.g., `datastore`, `system`, `component`.
   final String? componentType;
 
-  /// The observed value from the check, e.g., response time in milliseconds.
-  final double? observedValue;
+  /// The observed value from the check.
+  ///
+  /// Can be any JSON-serializable value, for example:
+  /// - Response time in milliseconds (double)
+  /// - ISO 8601 datetime for timestamps (DateTime, serialized automatically)
+  /// - Categorical values like 'connected', 'degraded' (String)
+  final Object? observedValue;
 
   /// Unit of the observed value, e.g., `ms`, `percent`, `bytes`.
   final String? observedUnit;
@@ -121,7 +126,7 @@ class HealthCheckResult {
     required String name,
     String? componentId,
     String? componentType,
-    double? observedValue,
+    Object? observedValue,
     String? observedUnit,
     String? output,
     DateTime? time,
@@ -143,7 +148,7 @@ class HealthCheckResult {
     required String name,
     String? componentId,
     String? componentType,
-    double? observedValue,
+    Object? observedValue,
     String? observedUnit,
     String? output,
     DateTime? time,
@@ -168,7 +173,10 @@ class HealthCheckResult {
     return {
       if (componentId != null) 'componentId': componentId,
       if (componentType != null) 'componentType': componentType,
-      if (observedValue != null) 'observedValue': observedValue,
+      if (observedValue != null)
+        'observedValue': observedValue is DateTime
+            ? (observedValue as DateTime).toIso8601String()
+            : observedValue,
       if (observedUnit != null) 'observedUnit': observedUnit,
       'status': status.name,
       'time': time.toIso8601String(),
