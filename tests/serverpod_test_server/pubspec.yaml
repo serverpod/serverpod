@@ -9,7 +9,7 @@ description: Test server for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: "^3.8.0"
+  sdk: '^3.8.0'
 dependencies:
   http: '>=1.1.0 <2.0.0'
   relic: ^1.0.0

@@ -1,19 +1,18 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
+# TEMPLATE
 
 name: serverpod_cloud_storage_r2
 description: Serverpod integration for Cloudflare R2 cloud storage
-version: 3.2.3
+version: SERVERPOD_VERSION
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '^3.8.0'
+  sdk: DART_VERSION
 
 dependencies:
-  serverpod: 3.2.3
-  serverpod_cloud_storage_s3_compat: 3.2.3
+  serverpod: SERVERPOD_VERSION
+  serverpod_cloud_storage_s3_compat: SERVERPOD_VERSION
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
