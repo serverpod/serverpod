@@ -11,7 +11,7 @@ sealed class WebSocketMessage {
   ]) {
     return SerializationManager.encodeForProtocol({
       WebSocketMessageKey.type: messageType,
-      if (data != null) WebSocketMessageKey.data: data,
+      WebSocketMessageKey.data: ?data,
     });
   }
 
@@ -225,8 +225,7 @@ class OpenMethodStreamCommand extends WebSocketMessage
         args,
       ),
       WebSocketMessageDataKey.inputStreams: inputStreams,
-      if (authentication != null)
-        WebSocketMessageDataKey.authentication: authentication,
+      WebSocketMessageDataKey.authentication: ?authentication,
     });
   }
 
@@ -308,7 +307,7 @@ class CloseMethodStreamCommand extends WebSocketMessage
       WebSocketMessageDataKey.endpoint: endpoint,
       WebSocketMessageDataKey.method: method,
       WebSocketMessageDataKey.connectionId: connectionId,
-      if (parameter != null) WebSocketMessageDataKey.parameter: parameter,
+      WebSocketMessageDataKey.parameter: ?parameter,
       WebSocketMessageDataKey.closeReason: reason.name,
     });
   }
@@ -408,7 +407,7 @@ class MethodStreamSerializableException extends WebSocketMessage
         WebSocketMessageDataKey.endpoint: endpoint,
         WebSocketMessageDataKey.method: method,
         WebSocketMessageDataKey.connectionId: connectionId,
-        if (parameter != null) WebSocketMessageDataKey.parameter: parameter,
+        WebSocketMessageDataKey.parameter: ?parameter,
         WebSocketMessageDataKey.exception: serializationManager
             .wrapWithClassName(object),
       },
@@ -482,7 +481,7 @@ class MethodStreamMessage extends WebSocketMessage
       WebSocketMessageDataKey.endpoint: endpoint,
       WebSocketMessageDataKey.method: method,
       WebSocketMessageDataKey.connectionId: connectionId,
-      if (parameter != null) WebSocketMessageDataKey.parameter: parameter,
+      WebSocketMessageDataKey.parameter: ?parameter,
       WebSocketMessageDataKey.object: serializationManager.wrapWithClassName(
         object,
       ),
