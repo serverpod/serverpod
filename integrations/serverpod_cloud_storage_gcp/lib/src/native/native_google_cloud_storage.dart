@@ -2,8 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:googleapis/storage/v1.dart' as gcs;
 import 'package:googleapis_auth/auth_io.dart';
+import 'package:path/path.dart' as p;
+import 'package:pointycastle/asn1.dart';
+import 'package:pointycastle/export.dart';
 import 'package:serverpod/serverpod.dart';
 
 /// GCP cloud storage using native Google Cloud JSON API.
@@ -36,6 +40,8 @@ class NativeGoogleCloudStorage extends CloudStorage {
   final String? publicHost;
 
   final Completer<gcs.StorageApi> _storageApiCompleter = Completer();
+  final Completer<_SigningCredentials> _signingCredentialsCompleter =
+      Completer();
 
   /// Creates a new [NativeGoogleCloudStorage] reference.
   ///
@@ -75,6 +81,9 @@ class NativeGoogleCloudStorage extends CloudStorage {
   /// [StorageApi].
   ///
   /// This constructor is primarily intended for testing purposes.
+  ///
+  /// Note: Direct upload via signed URLs is not available when using this
+  /// constructor, as signing credentials are not provided.
   NativeGoogleCloudStorage.withStorageApi({
     required String storageId,
     required this.bucket,
@@ -83,13 +92,34 @@ class NativeGoogleCloudStorage extends CloudStorage {
     this.publicHost,
   }) : super(storageId) {
     _storageApiCompleter.complete(storageApi);
+    // No signing credentials available in test mode
+  }
+
+  /// Creates a [NativeGoogleCloudStorage] with signing credentials for testing.
+  ///
+  /// This constructor allows testing direct upload functionality.
+  NativeGoogleCloudStorage.withSigningCredentials({
+    required String storageId,
+    required this.bucket,
+    required this.public,
+    required gcs.StorageApi storageApi,
+    required String clientEmail,
+    required RSAPrivateKey privateKey,
+    this.publicHost,
+  }) : super(storageId) {
+    _storageApiCompleter.complete(storageApi);
+    _signingCredentialsCompleter.complete(
+      _SigningCredentials(
+        clientEmail: clientEmail,
+        privateKey: privateKey,
+      ),
+    );
   }
 
   Future<void> _initializeAsync(String serviceAccountJson) async {
     try {
-      final credentials = ServiceAccountCredentials.fromJson(
-        jsonDecode(serviceAccountJson) as Map<String, dynamic>,
-      );
+      final jsonData = jsonDecode(serviceAccountJson) as Map<String, dynamic>;
+      final credentials = ServiceAccountCredentials.fromJson(jsonData);
 
       final authClient = await clientViaServiceAccount(
         credentials,
@@ -97,9 +127,63 @@ class NativeGoogleCloudStorage extends CloudStorage {
       );
 
       _storageApiCompleter.complete(gcs.StorageApi(authClient));
+
+      // Parse signing credentials for direct uploads
+      final clientEmail = jsonData['client_email'] as String?;
+      final privateKeyPem = jsonData['private_key'] as String?;
+
+      if (clientEmail != null && privateKeyPem != null) {
+        final privateKey = _parsePrivateKeyFromPem(privateKeyPem);
+        _signingCredentialsCompleter.complete(
+          _SigningCredentials(
+            clientEmail: clientEmail,
+            privateKey: privateKey,
+          ),
+        );
+      } else {
+        _signingCredentialsCompleter.completeError(
+          StateError(
+            'Service account JSON missing client_email or private_key',
+          ),
+        );
+      }
     } catch (e) {
       _storageApiCompleter.completeError(e);
+      if (!_signingCredentialsCompleter.isCompleted) {
+        _signingCredentialsCompleter.completeError(e);
+      }
     }
+  }
+
+  /// Parses an RSA private key from PEM format.
+  RSAPrivateKey _parsePrivateKeyFromPem(String pem) {
+    final lines = pem
+        .split('\n')
+        .where((line) => !line.startsWith('-----'))
+        .join();
+    final bytes = base64.decode(lines);
+    final asn1Parser = ASN1Parser(Uint8List.fromList(bytes));
+    final topLevelSeq = asn1Parser.nextObject() as ASN1Sequence;
+
+    // PKCS#8 format: PrivateKeyInfo ::= SEQUENCE { version, algorithm, privateKey }
+    // The privateKey is an OCTET STRING containing the RSA private key
+    ASN1Sequence rsaSeq;
+    if (topLevelSeq.elements!.length == 3) {
+      // PKCS#8 format
+      final privateKeyOctet = topLevelSeq.elements![2] as ASN1OctetString;
+      final pkParser = ASN1Parser(privateKeyOctet.valueBytes);
+      rsaSeq = pkParser.nextObject() as ASN1Sequence;
+    } else {
+      // PKCS#1 format (raw RSA key)
+      rsaSeq = topLevelSeq;
+    }
+
+    final modulus = (rsaSeq.elements![1] as ASN1Integer).integer!;
+    final privateExponent = (rsaSeq.elements![3] as ASN1Integer).integer!;
+    final p = (rsaSeq.elements![4] as ASN1Integer).integer!;
+    final q = (rsaSeq.elements![5] as ASN1Integer).integer!;
+
+    return RSAPrivateKey(modulus, privateExponent, p, q);
   }
 
   Future<gcs.StorageApi> get _storageApi => _storageApiCompleter.future;
@@ -209,14 +293,150 @@ class NativeGoogleCloudStorage extends CloudStorage {
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
   }) async {
-    // Native GCP signed URL generation requires the service account private key.
-    // This is a more complex implementation that involves:
-    // 1. Creating a signed URL with the service account credentials
-    // 2. The client uploads directly using PUT to the signed URL
-    //
-    // For now, we don't support direct upload with native GCP.
-    // Users who need direct upload should use GoogleCloudStorage (S3-compat).
-    return null;
+    // Check if signing credentials are available
+    if (!_signingCredentialsCompleter.isCompleted) {
+      return null;
+    }
+
+    final signingCredentials = await _signingCredentialsCompleter.future;
+
+    final signedUrl = _createSignedUrl(
+      credentials: signingCredentials,
+      bucket: bucket,
+      path: path,
+      expiration: expirationDuration,
+      method: 'PUT',
+    );
+
+    final fileName = p.basename(path);
+    final contentType = _detectMimeType(fileName);
+
+    return jsonEncode({
+      'url': signedUrl,
+      'type': 'binary',
+      'method': 'PUT',
+      'file-name': fileName,
+      'headers': {
+        'Content-Type': contentType,
+      },
+    });
+  }
+
+  /// Creates a V4 signed URL for GCS operations.
+  String _createSignedUrl({
+    required _SigningCredentials credentials,
+    required String bucket,
+    required String path,
+    required Duration expiration,
+    required String method,
+  }) {
+    final now = DateTime.now().toUtc();
+    final datestamp = _formatDatestamp(now);
+    final timestamp = _formatTimestamp(now);
+
+    final host = 'storage.googleapis.com';
+    final encodedPath = path.split('/').map(Uri.encodeComponent).join('/');
+    final canonicalUri = '/$bucket/$encodedPath';
+    final credentialScope = '$datestamp/auto/storage/goog4_request';
+
+    // Build canonical query string (sorted alphabetically)
+    final queryParams = <String, String>{
+      'X-Goog-Algorithm': 'GOOG4-RSA-SHA256',
+      'X-Goog-Credential': '${credentials.clientEmail}/$credentialScope',
+      'X-Goog-Date': timestamp,
+      'X-Goog-Expires': expiration.inSeconds.toString(),
+      'X-Goog-SignedHeaders': 'host',
+    };
+
+    final canonicalQueryString = queryParams.entries
+        .toList()
+        .map((e) => '${_uriEncode(e.key)}=${_uriEncode(e.value)}')
+        .join('&');
+
+    // Build canonical headers
+    final canonicalHeaders = 'host:$host\n';
+    final signedHeaders = 'host';
+
+    // Build canonical request
+    final canonicalRequest = [
+      method,
+      canonicalUri,
+      canonicalQueryString,
+      canonicalHeaders,
+      signedHeaders,
+      'UNSIGNED-PAYLOAD',
+    ].join('\n');
+
+    // Build string to sign
+    final hashedCanonicalRequest = sha256
+        .convert(utf8.encode(canonicalRequest))
+        .toString();
+    final stringToSign = [
+      'GOOG4-RSA-SHA256',
+      timestamp,
+      credentialScope,
+      hashedCanonicalRequest,
+    ].join('\n');
+
+    // Sign with RSA-SHA256
+    final signature = _rsaSign(credentials.privateKey, stringToSign);
+    final signatureHex = signature
+        .map((b) => b.toRadixString(16).padLeft(2, '0'))
+        .join();
+
+    // Build final URL
+    return 'https://$host$canonicalUri?$canonicalQueryString&X-Goog-Signature=$signatureHex';
+  }
+
+  /// Signs data using RSA-SHA256.
+  Uint8List _rsaSign(RSAPrivateKey privateKey, String data) {
+    final signer = RSASigner(SHA256Digest(), '0609608648016503040201');
+    signer.init(true, PrivateKeyParameter<RSAPrivateKey>(privateKey));
+    final signature = signer.generateSignature(
+      Uint8List.fromList(utf8.encode(data)),
+    );
+    return signature.bytes;
+  }
+
+  /// Formats a DateTime as YYYYMMDD.
+  String _formatDatestamp(DateTime dt) {
+    return '${dt.year}${dt.month.toString().padLeft(2, '0')}${dt.day.toString().padLeft(2, '0')}';
+  }
+
+  /// Formats a DateTime as YYYYMMDDTHHMMSSZ.
+  String _formatTimestamp(DateTime dt) {
+    return '${_formatDatestamp(dt)}T${dt.hour.toString().padLeft(2, '0')}${dt.minute.toString().padLeft(2, '0')}${dt.second.toString().padLeft(2, '0')}Z';
+  }
+
+  /// URI-encodes a string according to RFC 3986.
+  String _uriEncode(String input) {
+    return Uri.encodeComponent(input).replaceAll('+', '%2B');
+  }
+
+  /// Detects MIME type based on file extension.
+  static String _detectMimeType(String filename) {
+    final ext = p.extension(filename).toLowerCase();
+
+    const mimeTypes = {
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.png': 'image/png',
+      '.gif': 'image/gif',
+      '.webp': 'image/webp',
+      '.svg': 'image/svg+xml',
+      '.pdf': 'application/pdf',
+      '.txt': 'text/plain',
+      '.html': 'text/html',
+      '.css': 'text/css',
+      '.js': 'application/javascript',
+      '.json': 'application/json',
+      '.xml': 'application/xml',
+      '.mp4': 'video/mp4',
+      '.mp3': 'audio/mpeg',
+      '.zip': 'application/zip',
+    };
+
+    return mimeTypes[ext] ?? 'application/octet-stream';
   }
 
   @override
@@ -245,4 +465,15 @@ class NativeGoogleCloudStorage extends CloudStorage {
 
     return result;
   }
+}
+
+/// Internal class to hold signing credentials.
+class _SigningCredentials {
+  final String clientEmail;
+  final RSAPrivateKey privateKey;
+
+  _SigningCredentials({
+    required this.clientEmail,
+    required this.privateKey,
+  });
 }
