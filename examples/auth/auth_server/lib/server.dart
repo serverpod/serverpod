@@ -61,10 +61,8 @@ void run(List<String> args) async {
   );
 
   final githubIdpConfig = GitHubIdpConfig(
-    oauthCredentials: GitHubOAuthCredentials.fromJson({
-      'clientId': pod.getPassword('githubClientId')!,
-      'clientSecret': pod.getPassword('githubClientSecret')!,
-    }),
+    clientId: pod.getPassword('githubClientId')!,
+    clientSecret: pod.getPassword('githubClientSecret')!,
   );
 
   final passkeyIdpConfig = PasskeyIdpConfig(
