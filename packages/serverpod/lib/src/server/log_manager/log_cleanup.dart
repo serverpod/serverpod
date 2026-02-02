@@ -21,20 +21,20 @@ class LogCleanupManager {
   DateTime? _lastCleanupTime;
   Future<void>? _activeCleanupTask;
 
-  Duration? get _timeSinceLastCleanup {
+  Duration? get _durationSinceLastCleanup {
     final lastCleanup = _lastCleanupTime;
     if (lastCleanup == null) return null;
     return DateTime.now().difference(lastCleanup);
   }
 
   bool get shouldPerformCleanup {
-    final timeSinceLastCleanup = _timeSinceLastCleanup;
-    if (timeSinceLastCleanup == null) return true;
+    final durationSinceLastCleanup = _durationSinceLastCleanup;
+    if (durationSinceLastCleanup == null) return true;
 
     final cleanupInterval = _cleanupInterval;
     if (cleanupInterval == null) return false;
 
-    return timeSinceLastCleanup < cleanupInterval;
+    return durationSinceLastCleanup < cleanupInterval;
   }
 
   Future<void> performCleanup(Session session) async {
