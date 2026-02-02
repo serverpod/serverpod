@@ -39,7 +39,7 @@
 ///   String get name => 'stripe:api';
 ///
 ///   @override
-///   String get componentType => HealthComponentType.component;
+///   String get componentType => HealthComponentType.component.name;
 ///
 ///   @override
 ///   String get observedUnit => 'ms';

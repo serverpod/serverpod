@@ -9,7 +9,7 @@ class RedisHealthIndicator extends HealthIndicator<double> {
   final Serverpod _pod;
 
   /// Creates a Redis health indicator.
-  RedisHealthIndicator(this._pod);
+  const RedisHealthIndicator(this._pod);
 
   @override
   String get name => 'redis:connection';

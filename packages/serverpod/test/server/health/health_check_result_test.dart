@@ -196,14 +196,4 @@ void main() {
       expect(json['output'], 'Connection timeout after 5000ms');
     });
   });
-
-  group('Given HealthStatus enum', () {
-    test('then pass.name returns "pass"', () {
-      expect(HealthStatus.pass.name, 'pass');
-    });
-
-    test('then fail.name returns "fail"', () {
-      expect(HealthStatus.fail.name, 'fail');
-    });
-  });
 }

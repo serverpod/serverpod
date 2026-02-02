@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 
+import '../../../serverpod.dart';
+
 /// Known component types for health indicators.
 ///
 /// These values follow the RFC Health Check Response Format conventions.
@@ -31,7 +33,7 @@ enum HealthComponentType {
 ///   String get name => 'myservice:connection';
 ///
 ///   @override
-///   String get componentType => HealthComponentType.component;
+///   String get componentType => HealthComponentType.component.name;
 ///
 ///   @override
 ///   String get observedUnit => 'ms';
@@ -50,6 +52,9 @@ enum HealthComponentType {
 /// }
 /// ```
 abstract class HealthIndicator<T extends Object> {
+  /// Const ctor to allow subclasses the same
+  const HealthIndicator();
+
   /// Human-readable name for this indicator.
   ///
   /// Should follow the format `component:aspect`, e.g.:
@@ -195,16 +200,14 @@ class HealthCheckResult {
   /// Converts this result to a JSON map following the RFC format.
   Map<String, dynamic> toJson() {
     return {
-      if (componentId != null) 'componentId': componentId,
-      if (componentType != null) 'componentType': componentType,
+      'componentId': ?componentId,
+      'componentType': ?componentType,
       if (observedValue != null)
-        'observedValue': observedValue is DateTime
-            ? (observedValue as DateTime).toIso8601String()
-            : observedValue,
-      if (observedUnit != null) 'observedUnit': observedUnit,
+        'observedValue': SerializationManager.encode(observedValue),
+      'observedUnit': ?observedUnit,
       'status': status.name,
       'time': time.toIso8601String(),
-      if (output != null) 'output': output,
+      'output': ?output,
     };
   }
 }

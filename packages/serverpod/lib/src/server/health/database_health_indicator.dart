@@ -9,7 +9,7 @@ class DatabaseHealthIndicator extends HealthIndicator<double> {
   final Serverpod _pod;
 
   /// Creates a database health indicator.
-  DatabaseHealthIndicator(this._pod);
+  const DatabaseHealthIndicator(this._pod);
 
   @override
   String get name => 'database:connection';
