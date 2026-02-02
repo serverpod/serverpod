@@ -21,6 +21,7 @@ export 'src/common/oauth2_pkce/oauth2_pkce_result.dart';
 export 'src/common/oauth2_pkce/oauth2_pkce_util.dart';
 export 'src/email/email_auth_controller.dart';
 export 'src/email/email_sign_in_widget.dart';
+export 'src/email/forms/verification.dart' show VerificationCodeConfig;
 export 'src/github/github_auth_controller.dart';
 export 'src/github/github_sign_in_button.dart';
 export 'src/github/github_sign_in_service.dart';
