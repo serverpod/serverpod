@@ -133,6 +133,7 @@ abstract class AuthBackwardsCompatibility {
   /// This can later be checked using [authenticationHandler].
   static Future<void> storeLegacySession(
     final Session session, {
+    required final int legacySessionId,
     required final UuidValue authUserId,
 
     /// The legacy session key hash
@@ -144,6 +145,7 @@ abstract class AuthBackwardsCompatibility {
     await LegacySession.db.insertRow(
       session,
       LegacySession(
+        id: legacySessionId,
         authUserId: authUserId,
         hash: sessionKeyHash,
         method: method,
