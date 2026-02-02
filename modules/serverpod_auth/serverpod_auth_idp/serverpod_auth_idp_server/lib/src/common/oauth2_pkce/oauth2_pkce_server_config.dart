@@ -19,41 +19,11 @@ enum OAuth2CredentialsLocation {
   body,
 }
 
-/// Signature for parsing the OAuth2 token response from the provider.
+/// Callback to parse the OAuth2 token response from the provider.
 ///
-/// Implementations should:
-/// 1. Validate the response and check for error fields
-/// 2. Extract required fields (`access_token` at minimum)
-/// 3. Extract optional fields (`refresh_token`, `expires_in`, etc.)
-/// 4. Throw [OAuth2InvalidResponseException] or [OAuth2MissingAccessTokenException]
-///    on validation failures
-///
-/// Example implementation:
-/// ```dart
-/// static OAuth2PkceTokenResponse parseTokenResponse(
-///   Map<String, dynamic> responseBody,
-/// ) {
-///   // Check for errors
-///   final error = responseBody['error'] as String?;
-///   if (error != null) {
-///     throw OAuth2InvalidResponseException('Error: $error');
-///   }
-///
-///   // Extract access token (required)
-///   final accessToken = responseBody['access_token'] as String?;
-///   if (accessToken == null) {
-///     throw OAuth2MissingAccessTokenException('Missing access_token');
-///   }
-///
-///   // Extract optional fields
-///   return OAuth2PkceTokenResponse(
-///     accessToken: accessToken,
-///     refreshToken: responseBody['refresh_token'] as String?,
-///     expiresIn: responseBody['expires_in'] as int?,
-///     raw: responseBody,
-///   );
-/// }
-/// ```
+/// Should extract the access token, optional fields, and validate for errors.
+/// Throws [OAuth2InvalidResponseException] or [OAuth2MissingAccessTokenException]
+/// on validation failures.
 typedef ParseTokenResponse =
     OAuth2PkceTokenResponse Function(Map<String, dynamic> responseBody);
 
@@ -84,14 +54,6 @@ class OAuth2PkceServerConfig {
   final Map<String, dynamic> tokenRequestParams;
 
   /// Callback to parse the token response from the provider.
-  ///
-  /// This callback is responsible for:
-  /// - Validating the response structure
-  /// - Extracting the access token (required)
-  /// - Extracting optional fields (refresh token, expiration, provider-specific data)
-  /// - Throwing appropriate exceptions on errors
-  ///
-  /// See [ParseTokenResponse] for implementation guidelines.
   final ParseTokenResponse parseTokenResponse;
 
   /// Create a new server config for OAuth2 PKCE.
