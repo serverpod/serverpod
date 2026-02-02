@@ -203,7 +203,7 @@ class HealthCheckResult {
       'componentId': ?componentId,
       'componentType': ?componentType,
       if (observedValue != null)
-        'observedValue': SerializationManager.encode(observedValue),
+        'observedValue': SerializationManager.toEncodable(observedValue),
       'observedUnit': ?observedUnit,
       'status': status.name,
       'time': time.toIso8601String(),
