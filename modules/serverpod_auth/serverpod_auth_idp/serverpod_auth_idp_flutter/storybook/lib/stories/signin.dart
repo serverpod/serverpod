@@ -39,6 +39,12 @@ final List<Story> signInStories = [
         _signInWidgetStory(context, disableAppleSignInWidget: true),
   ),
   Story(
+    name: 'Sign In/Disabled Facebook Widget',
+    description: 'Sign in flow suppressing the Facebook sign-in widget.',
+    builder: (context) =>
+        _signInWidgetStory(context, disableFacebookSignInWidget: true),
+  ),
+  Story(
     name: 'Sign In/Disabled GitHub Widget',
     description: 'Sign in flow suppressing the GitHub sign-in widget.',
     builder: (context) =>
@@ -57,6 +63,7 @@ final List<Story> signInStories = [
       context,
       disableGoogleSignInWidget: true,
       disableAppleSignInWidget: true,
+      disableFacebookSignInWidget: true,
       disableGitHubSignInWidget: true,
       disableMicrosoftSignInWidget: true,
     ),
@@ -69,6 +76,7 @@ Widget _signInWidgetStory(
   bool disableEmailSignInWidget = false,
   bool disableGoogleSignInWidget = false,
   bool disableAppleSignInWidget = false,
+  bool disableFacebookSignInWidget = false,
   bool disableGitHubSignInWidget = false,
   bool disableMicrosoftSignInWidget = false,
 }) {
@@ -86,6 +94,7 @@ Widget _signInWidgetStory(
       disableEmailSignInWidget: disableEmailSignInWidget,
       disableGoogleSignInWidget: disableGoogleSignInWidget,
       disableAppleSignInWidget: disableAppleSignInWidget,
+      disableFacebookSignInWidget: disableFacebookSignInWidget,
       disableGitHubSignInWidget: disableGitHubSignInWidget,
       disableMicrosoftSignInWidget: disableMicrosoftSignInWidget,
     ),

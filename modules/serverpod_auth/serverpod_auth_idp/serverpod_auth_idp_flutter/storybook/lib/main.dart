@@ -6,6 +6,7 @@ import 'package:storybook_toolkit/storybook_toolkit.dart';
 import 'stories/anonymous.dart';
 import 'stories/apple.dart';
 import 'stories/email.dart';
+import 'stories/facebook.dart';
 import 'stories/github.dart';
 import 'stories/google.dart';
 import 'stories/microsoft.dart';
@@ -20,6 +21,12 @@ void main() {
   client.auth.initialize();
   client.auth.initializeGoogleSignIn();
   client.auth.initializeAppleSignIn();
+  client.auth.initializeFacebookSignIn(
+    appId: const String.fromEnvironment(
+      'FACEBOOK_APP_ID',
+      defaultValue: 'your-facebook-app-id',
+    ),
+  );
   client.auth.initializeGitHubSignIn();
   client.auth.initializeMicrosoftSignIn();
 
@@ -51,6 +58,7 @@ class MainApp extends StatelessWidget {
           ...emailStories,
           ...googleStories,
           ...appleStories,
+          ...facebookStories,
           ...githubStories,
           ...microsoftStories,
           ...signInStories,

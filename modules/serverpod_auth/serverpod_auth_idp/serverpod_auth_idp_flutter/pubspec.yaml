@@ -16,6 +16,7 @@ dependencies:
   email_validator: '>=2.1.17 <4.0.0'
   flutter:
     sdk: flutter
+  flutter_facebook_auth: ^7.1.5
   flutter_localizations:
     sdk: flutter
   flutter_svg: ^2.2.1

@@ -27,11 +27,11 @@ import 'providers/email/models/exceptions/email_account_request_exception.dart'
     as _i8;
 import 'providers/email/models/exceptions/email_account_request_exception_reason.dart'
     as _i9;
-import 'providers/firebase/models/firebase_id_token_verification_exception.dart'
+import 'providers/facebook/models/facebook_access_token_verification_exception.dart'
     as _i10;
-import 'providers/github/models/github_access_token_verification_exception.dart'
+import 'providers/firebase/models/firebase_id_token_verification_exception.dart'
     as _i11;
-import 'providers/google/models/google_id_token_verification_exception.dart'
+import 'providers/github/models/github_access_token_verification_exception.dart'
     as _i12;
 import 'providers/microsoft/models/microsoft_access_token_verification_exception.dart'
     as _i13;
@@ -54,6 +54,7 @@ export 'providers/email/models/exceptions/email_account_password_reset_exception
 export 'providers/email/models/exceptions/email_account_password_reset_exception_reason.dart';
 export 'providers/email/models/exceptions/email_account_request_exception.dart';
 export 'providers/email/models/exceptions/email_account_request_exception_reason.dart';
+export 'providers/facebook/models/facebook_access_token_verification_exception.dart';
 export 'providers/firebase/models/firebase_id_token_verification_exception.dart';
 export 'providers/github/models/github_access_token_verification_exception.dart';
 export 'providers/google/models/google_id_token_verification_exception.dart';
@@ -125,14 +126,14 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i9.EmailAccountRequestExceptionReason) {
       return _i9.EmailAccountRequestExceptionReason.fromJson(data) as T;
     }
-    if (t == _i10.FirebaseIdTokenVerificationException) {
-      return _i10.FirebaseIdTokenVerificationException.fromJson(data) as T;
+    if (t == _i10.FacebookAccessTokenVerificationException) {
+      return _i10.FacebookAccessTokenVerificationException.fromJson(data) as T;
     }
-    if (t == _i11.GitHubAccessTokenVerificationException) {
-      return _i11.GitHubAccessTokenVerificationException.fromJson(data) as T;
+    if (t == _i11.FirebaseIdTokenVerificationException) {
+      return _i11.FirebaseIdTokenVerificationException.fromJson(data) as T;
     }
-    if (t == _i12.GoogleIdTokenVerificationException) {
-      return _i12.GoogleIdTokenVerificationException.fromJson(data) as T;
+    if (t == _i12.GitHubAccessTokenVerificationException) {
+      return _i12.GitHubAccessTokenVerificationException.fromJson(data) as T;
     }
     if (t == _i13.MicrosoftAccessTokenVerificationException) {
       return _i13.MicrosoftAccessTokenVerificationException.fromJson(data) as T;
@@ -200,21 +201,21 @@ class Protocol extends _i1.SerializationManager {
               : null)
           as T;
     }
-    if (t == _i1.getType<_i10.FirebaseIdTokenVerificationException?>()) {
+    if (t == _i1.getType<_i10.FacebookAccessTokenVerificationException?>()) {
       return (data != null
-              ? _i10.FirebaseIdTokenVerificationException.fromJson(data)
+              ? _i10.FacebookAccessTokenVerificationException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i11.GitHubAccessTokenVerificationException?>()) {
+    if (t == _i1.getType<_i11.FirebaseIdTokenVerificationException?>()) {
       return (data != null
-              ? _i11.GitHubAccessTokenVerificationException.fromJson(data)
+              ? _i11.FirebaseIdTokenVerificationException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i12.GoogleIdTokenVerificationException?>()) {
+    if (t == _i1.getType<_i12.GitHubAccessTokenVerificationException?>()) {
       return (data != null
-              ? _i12.GoogleIdTokenVerificationException.fromJson(data)
+              ? _i12.GitHubAccessTokenVerificationException.fromJson(data)
               : null)
           as T;
     }
@@ -283,11 +284,13 @@ class Protocol extends _i1.SerializationManager {
       _i8.EmailAccountRequestException => 'EmailAccountRequestException',
       _i9.EmailAccountRequestExceptionReason =>
         'EmailAccountRequestExceptionReason',
-      _i10.FirebaseIdTokenVerificationException =>
+      _i10.FacebookAccessTokenVerificationException =>
+        'FacebookAccessTokenVerificationException',
+      _i11.FirebaseIdTokenVerificationException =>
         'FirebaseIdTokenVerificationException',
-      _i11.GitHubAccessTokenVerificationException =>
+      _i12.GitHubAccessTokenVerificationException =>
         'GitHubAccessTokenVerificationException',
-      _i12.GoogleIdTokenVerificationException =>
+      _i13.GoogleIdTokenVerificationException =>
         'GoogleIdTokenVerificationException',
       _i13.MicrosoftAccessTokenVerificationException =>
         'MicrosoftAccessTokenVerificationException',
@@ -332,11 +335,13 @@ class Protocol extends _i1.SerializationManager {
         return 'EmailAccountRequestException';
       case _i9.EmailAccountRequestExceptionReason():
         return 'EmailAccountRequestExceptionReason';
-      case _i10.FirebaseIdTokenVerificationException():
+      case _i10.FacebookAccessTokenVerificationException():
+        return 'FacebookAccessTokenVerificationException';
+      case _i11.FirebaseIdTokenVerificationException():
         return 'FirebaseIdTokenVerificationException';
-      case _i11.GitHubAccessTokenVerificationException():
+      case _i12.GitHubAccessTokenVerificationException():
         return 'GitHubAccessTokenVerificationException';
-      case _i12.GoogleIdTokenVerificationException():
+      case _i13.GoogleIdTokenVerificationException():
         return 'GoogleIdTokenVerificationException';
       case _i13.MicrosoftAccessTokenVerificationException():
         return 'MicrosoftAccessTokenVerificationException';
@@ -392,18 +397,23 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'EmailAccountRequestExceptionReason') {
       return deserialize<_i9.EmailAccountRequestExceptionReason>(data['data']);
     }
+    if (dataClassName == 'FacebookAccessTokenVerificationException') {
+      return deserialize<_i10.FacebookAccessTokenVerificationException>(
+        data['data'],
+      );
+    }
     if (dataClassName == 'FirebaseIdTokenVerificationException') {
-      return deserialize<_i10.FirebaseIdTokenVerificationException>(
+      return deserialize<_i11.FirebaseIdTokenVerificationException>(
         data['data'],
       );
     }
     if (dataClassName == 'GitHubAccessTokenVerificationException') {
-      return deserialize<_i11.GitHubAccessTokenVerificationException>(
+      return deserialize<_i12.GitHubAccessTokenVerificationException>(
         data['data'],
       );
     }
     if (dataClassName == 'GoogleIdTokenVerificationException') {
-      return deserialize<_i12.GoogleIdTokenVerificationException>(data['data']);
+      return deserialize<_i13.GoogleIdTokenVerificationException>(data['data']);
     }
     if (dataClassName == 'MicrosoftAccessTokenVerificationException') {
       return deserialize<_i13.MicrosoftAccessTokenVerificationException>(

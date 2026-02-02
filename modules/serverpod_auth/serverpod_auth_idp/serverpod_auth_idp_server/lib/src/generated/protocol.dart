@@ -39,13 +39,16 @@ import 'providers/email/models/exceptions/email_account_request_exception.dart'
     as _i17;
 import 'providers/email/models/exceptions/email_account_request_exception_reason.dart'
     as _i18;
-import 'providers/firebase/models/firebase_account.dart' as _i19;
+import 'providers/facebook/models/facebook_access_token_verification_exception.dart'
+    as _i19;
+import 'providers/facebook/models/facebook_account.dart' as _i20;
+import 'providers/firebase/models/firebase_account.dart' as _i21;
 import 'providers/firebase/models/firebase_id_token_verification_exception.dart'
-    as _i20;
+    as _i22;
 import 'providers/github/models/github_access_token_verification_exception.dart'
-    as _i21;
-import 'providers/github/models/github_account.dart' as _i22;
-import 'providers/google/models/google_account.dart' as _i23;
+    as _i23;
+import 'providers/github/models/github_account.dart' as _i24;
+import 'providers/google/models/google_account.dart' as _i25;
 import 'providers/google/models/google_id_token_verification_exception.dart'
     as _i24;
 import 'providers/microsoft/models/microsoft_access_token_verification_exception.dart'
@@ -77,6 +80,8 @@ export 'providers/email/models/exceptions/email_account_password_reset_exception
 export 'providers/email/models/exceptions/email_account_password_reset_exception_reason.dart';
 export 'providers/email/models/exceptions/email_account_request_exception.dart';
 export 'providers/email/models/exceptions/email_account_request_exception_reason.dart';
+export 'providers/facebook/models/facebook_access_token_verification_exception.dart';
+export 'providers/facebook/models/facebook_account.dart';
 export 'providers/firebase/models/firebase_account.dart';
 export 'providers/firebase/models/firebase_id_token_verification_exception.dart';
 export 'providers/github/models/github_access_token_verification_exception.dart';
@@ -533,6 +538,104 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'email',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_auth_idp_facebook_account',
+      dartName: 'FacebookAccount',
+      schema: 'public',
+      module: 'serverpod_auth_idp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid_v7()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userIdentifier',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'email',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'fullName',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'firstName',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastName',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_facebook_account_fk_0',
+          columns: ['authUserId'],
+          referenceTable: 'serverpod_auth_core_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_facebook_account_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_facebook_account_user_identifier',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userIdentifier',
             ),
           ],
           type: 'btree',
@@ -1219,23 +1322,23 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i18.EmailAccountRequestExceptionReason) {
       return _i18.EmailAccountRequestExceptionReason.fromJson(data) as T;
     }
-    if (t == _i19.FirebaseAccount) {
-      return _i19.FirebaseAccount.fromJson(data) as T;
+    if (t == _i19.FacebookAccessTokenVerificationException) {
+      return _i19.FacebookAccessTokenVerificationException.fromJson(data) as T;
     }
-    if (t == _i20.FirebaseIdTokenVerificationException) {
-      return _i20.FirebaseIdTokenVerificationException.fromJson(data) as T;
+    if (t == _i20.FacebookAccount) {
+      return _i20.FacebookAccount.fromJson(data) as T;
     }
-    if (t == _i21.GitHubAccessTokenVerificationException) {
-      return _i21.GitHubAccessTokenVerificationException.fromJson(data) as T;
+    if (t == _i21.FirebaseAccount) {
+      return _i21.FirebaseAccount.fromJson(data) as T;
     }
-    if (t == _i22.GitHubAccount) {
-      return _i22.GitHubAccount.fromJson(data) as T;
+    if (t == _i22.FirebaseIdTokenVerificationException) {
+      return _i22.FirebaseIdTokenVerificationException.fromJson(data) as T;
     }
-    if (t == _i23.GoogleAccount) {
-      return _i23.GoogleAccount.fromJson(data) as T;
+    if (t == _i23.GitHubAccessTokenVerificationException) {
+      return _i23.GitHubAccessTokenVerificationException.fromJson(data) as T;
     }
-    if (t == _i24.GoogleIdTokenVerificationException) {
-      return _i24.GoogleIdTokenVerificationException.fromJson(data) as T;
+    if (t == _i24.GitHubAccount) {
+      return _i24.GitHubAccount.fromJson(data) as T;
     }
     if (t == _i25.MicrosoftAccessTokenVerificationException) {
       return _i25.MicrosoftAccessTokenVerificationException.fromJson(data) as T;
@@ -1340,30 +1443,27 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == _i1.getType<_i19.FirebaseAccount?>()) {
-      return (data != null ? _i19.FirebaseAccount.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i20.FirebaseIdTokenVerificationException?>()) {
+    if (t == _i1.getType<_i19.FacebookAccessTokenVerificationException?>()) {
       return (data != null
-              ? _i20.FirebaseIdTokenVerificationException.fromJson(data)
+              ? _i19.FacebookAccessTokenVerificationException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i21.GitHubAccessTokenVerificationException?>()) {
+    if (t == _i1.getType<_i20.FacebookAccount?>()) {
+      return (data != null ? _i20.FacebookAccount.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i21.FirebaseAccount?>()) {
+      return (data != null ? _i21.FirebaseAccount.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i22.FirebaseIdTokenVerificationException?>()) {
       return (data != null
-              ? _i21.GitHubAccessTokenVerificationException.fromJson(data)
+              ? _i22.FirebaseIdTokenVerificationException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i22.GitHubAccount?>()) {
-      return (data != null ? _i22.GitHubAccount.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i23.GoogleAccount?>()) {
-      return (data != null ? _i23.GoogleAccount.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i24.GoogleIdTokenVerificationException?>()) {
+    if (t == _i1.getType<_i23.GitHubAccessTokenVerificationException?>()) {
       return (data != null
-              ? _i24.GoogleIdTokenVerificationException.fromJson(data)
+              ? _i23.GitHubAccessTokenVerificationException.fromJson(data)
               : null)
           as T;
     }
@@ -1467,14 +1567,17 @@ class Protocol extends _i1.SerializationManagerServer {
       _i17.EmailAccountRequestException => 'EmailAccountRequestException',
       _i18.EmailAccountRequestExceptionReason =>
         'EmailAccountRequestExceptionReason',
-      _i19.FirebaseAccount => 'FirebaseAccount',
-      _i20.FirebaseIdTokenVerificationException =>
+      _i19.FacebookAccessTokenVerificationException =>
+        'FacebookAccessTokenVerificationException',
+      _i20.FacebookAccount => 'FacebookAccount',
+      _i21.FirebaseAccount => 'FirebaseAccount',
+      _i22.FirebaseIdTokenVerificationException =>
         'FirebaseIdTokenVerificationException',
-      _i21.GitHubAccessTokenVerificationException =>
+      _i23.GitHubAccessTokenVerificationException =>
         'GitHubAccessTokenVerificationException',
-      _i22.GitHubAccount => 'GitHubAccount',
-      _i23.GoogleAccount => 'GoogleAccount',
-      _i24.GoogleIdTokenVerificationException =>
+      _i24.GitHubAccount => 'GitHubAccount',
+      _i25.GoogleAccount => 'GoogleAccount',
+      _i26.GoogleIdTokenVerificationException =>
         'GoogleIdTokenVerificationException',
       _i25.MicrosoftAccessTokenVerificationException =>
         'MicrosoftAccessTokenVerificationException',
@@ -1536,17 +1639,21 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'EmailAccountRequestException';
       case _i18.EmailAccountRequestExceptionReason():
         return 'EmailAccountRequestExceptionReason';
-      case _i19.FirebaseAccount():
+      case _i19.FacebookAccessTokenVerificationException():
+        return 'FacebookAccessTokenVerificationException';
+      case _i20.FacebookAccount():
+        return 'FacebookAccount';
+      case _i21.FirebaseAccount():
         return 'FirebaseAccount';
-      case _i20.FirebaseIdTokenVerificationException():
+      case _i22.FirebaseIdTokenVerificationException():
         return 'FirebaseIdTokenVerificationException';
-      case _i21.GitHubAccessTokenVerificationException():
+      case _i23.GitHubAccessTokenVerificationException():
         return 'GitHubAccessTokenVerificationException';
-      case _i22.GitHubAccount():
+      case _i24.GitHubAccount():
         return 'GitHubAccount';
-      case _i23.GoogleAccount():
+      case _i25.GoogleAccount():
         return 'GoogleAccount';
-      case _i24.GoogleIdTokenVerificationException():
+      case _i26.GoogleIdTokenVerificationException():
         return 'GoogleIdTokenVerificationException';
       case _i25.MicrosoftAccessTokenVerificationException():
         return 'MicrosoftAccessTokenVerificationException';
@@ -1633,27 +1740,35 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'EmailAccountRequestExceptionReason') {
       return deserialize<_i18.EmailAccountRequestExceptionReason>(data['data']);
     }
+    if (dataClassName == 'FacebookAccessTokenVerificationException') {
+      return deserialize<_i19.FacebookAccessTokenVerificationException>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'FacebookAccount') {
+      return deserialize<_i20.FacebookAccount>(data['data']);
+    }
     if (dataClassName == 'FirebaseAccount') {
-      return deserialize<_i19.FirebaseAccount>(data['data']);
+      return deserialize<_i21.FirebaseAccount>(data['data']);
     }
     if (dataClassName == 'FirebaseIdTokenVerificationException') {
-      return deserialize<_i20.FirebaseIdTokenVerificationException>(
+      return deserialize<_i22.FirebaseIdTokenVerificationException>(
         data['data'],
       );
     }
     if (dataClassName == 'GitHubAccessTokenVerificationException') {
-      return deserialize<_i21.GitHubAccessTokenVerificationException>(
+      return deserialize<_i23.GitHubAccessTokenVerificationException>(
         data['data'],
       );
     }
     if (dataClassName == 'GitHubAccount') {
-      return deserialize<_i22.GitHubAccount>(data['data']);
+      return deserialize<_i24.GitHubAccount>(data['data']);
     }
     if (dataClassName == 'GoogleAccount') {
-      return deserialize<_i23.GoogleAccount>(data['data']);
+      return deserialize<_i25.GoogleAccount>(data['data']);
     }
     if (dataClassName == 'GoogleIdTokenVerificationException') {
-      return deserialize<_i24.GoogleIdTokenVerificationException>(data['data']);
+      return deserialize<_i26.GoogleIdTokenVerificationException>(data['data']);
     }
     if (dataClassName == 'MicrosoftAccessTokenVerificationException') {
       return deserialize<_i25.MicrosoftAccessTokenVerificationException>(
