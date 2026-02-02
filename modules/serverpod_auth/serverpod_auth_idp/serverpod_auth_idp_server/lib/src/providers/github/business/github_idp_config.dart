@@ -80,7 +80,7 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
          clientId: clientId,
          clientSecret: clientSecret,
          credentialsLocation: OAuth2CredentialsLocation.body,
-         parseAccessToken: parseAccessToken,
+         parseTokenResponse: parseTokenResponse,
        );
 
   /// Default validation function for extracting additional GitHub account details.
@@ -96,8 +96,10 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
     }
   }
 
-  /// Default GitHub access token parser for OAuth2PkceServerConfig.
-  static String parseAccessToken(final Map<String, dynamic> responseBody) {
+  /// Default GitHub token response parser for OAuth2PkceServerConfig.
+  static OAuth2PkceTokenResponse parseTokenResponse(
+    final Map<String, dynamic> responseBody,
+  ) {
     final error = responseBody['error'] as String?;
     if (error != null) {
       final errorDescription = responseBody['error_description'] as String?;
@@ -106,13 +108,15 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
         ' $error${errorDescription != null ? ' - $errorDescription' : ''}',
       );
     }
+
     final accessToken = responseBody['access_token'] as String?;
     if (accessToken == null) {
       throw const OAuth2MissingAccessTokenException(
         'No access token in GitHub response',
       );
     }
-    return accessToken;
+
+    return OAuth2PkceTokenResponse(accessToken: accessToken);
   }
 
   @override

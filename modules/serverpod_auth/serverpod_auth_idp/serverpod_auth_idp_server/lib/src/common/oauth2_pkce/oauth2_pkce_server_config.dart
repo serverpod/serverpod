@@ -1,3 +1,5 @@
+import 'oauth2_pkce_token_response.dart';
+
 /// Location where OAuth2 credentials should be sent in token requests.
 ///
 /// Per [RFC 6749 Section 2.3](https://tools.ietf.org/html/rfc6749#section-2.3),
@@ -17,8 +19,43 @@ enum OAuth2CredentialsLocation {
   body,
 }
 
-/// Signature for parsing the access token from the provider's token response.
-typedef ParseAccessToken = String Function(Map<String, dynamic> responseBody);
+/// Signature for parsing the OAuth2 token response from the provider.
+///
+/// Implementations should:
+/// 1. Validate the response and check for error fields
+/// 2. Extract required fields (`access_token` at minimum)
+/// 3. Extract optional fields (`refresh_token`, `expires_in`, etc.)
+/// 4. Throw [OAuth2InvalidResponseException] or [OAuth2MissingAccessTokenException]
+///    on validation failures
+///
+/// Example implementation:
+/// ```dart
+/// static OAuth2PkceTokenResponse parseTokenResponse(
+///   Map<String, dynamic> responseBody,
+/// ) {
+///   // Check for errors
+///   final error = responseBody['error'] as String?;
+///   if (error != null) {
+///     throw OAuth2InvalidResponseException('Error: $error');
+///   }
+///
+///   // Extract access token (required)
+///   final accessToken = responseBody['access_token'] as String?;
+///   if (accessToken == null) {
+///     throw OAuth2MissingAccessTokenException('Missing access_token');
+///   }
+///
+///   // Extract optional fields
+///   return OAuth2PkceTokenResponse(
+///     accessToken: accessToken,
+///     refreshToken: responseBody['refresh_token'] as String?,
+///     expiresIn: responseBody['expires_in'] as int?,
+///     raw: responseBody,
+///   );
+/// }
+/// ```
+typedef ParseTokenResponse =
+    OAuth2PkceTokenResponse Function(Map<String, dynamic> responseBody);
 
 /// Configuration for OAuth2 token exchange (server-side).
 class OAuth2PkceServerConfig {
@@ -46,15 +83,23 @@ class OAuth2PkceServerConfig {
   /// Extra parameters for token requests.
   final Map<String, dynamic> tokenRequestParams;
 
-  /// Callback to parse access token from provider response.
-  final ParseAccessToken parseAccessToken;
+  /// Callback to parse the token response from the provider.
+  ///
+  /// This callback is responsible for:
+  /// - Validating the response structure
+  /// - Extracting the access token (required)
+  /// - Extracting optional fields (refresh token, expiration, provider-specific data)
+  /// - Throwing appropriate exceptions on errors
+  ///
+  /// See [ParseTokenResponse] for implementation guidelines.
+  final ParseTokenResponse parseTokenResponse;
 
   /// Create a new server config for OAuth2 PKCE.
   const OAuth2PkceServerConfig({
     required this.tokenEndpointUrl,
     required this.clientId,
     required this.clientSecret,
-    required this.parseAccessToken,
+    required this.parseTokenResponse,
     this.clientIdKey = 'client_id',
     this.clientSecretKey = 'client_secret',
     this.credentialsLocation = OAuth2CredentialsLocation.header,
