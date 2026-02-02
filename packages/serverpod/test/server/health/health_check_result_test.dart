@@ -130,22 +130,35 @@ void main() {
     });
   });
 
-  group('Given a HealthCheckResult when toJson() is called', () {
-    test('then pass status is serialized as "pass"', () {
+  test(
+    'Given a passing HealthCheckResult '
+    'when toJson() is called '
+    'then status is serialized as "pass"',
+    () {
       final indicator = _TestIndicator();
       final result = indicator.pass();
 
       expect(result.toJson()['status'], 'pass');
-    });
+    },
+  );
 
-    test('then fail status is serialized as "fail"', () {
+  test(
+    'Given a failing HealthCheckResult '
+    'when toJson() is called '
+    'then status is serialized as "fail"',
+    () {
       final indicator = _TestIndicator();
       final result = indicator.fail();
 
       expect(result.toJson()['status'], 'fail');
-    });
+    },
+  );
 
-    test('then null optional fields are omitted', () {
+  test(
+    'Given a HealthCheckResult with null optional fields '
+    'when toJson() is called '
+    'then null fields are omitted',
+    () {
       final result = HealthCheckResultInternal.create(
         name: 'test:indicator',
         status: HealthStatus.pass,
@@ -158,9 +171,14 @@ void main() {
       expect(json.containsKey('observedValue'), isFalse);
       expect(json.containsKey('observedUnit'), isFalse);
       expect(json.containsKey('output'), isFalse);
-    });
+    },
+  );
 
-    test('then DateTime observedValue is serialized to ISO8601', () {
+  test(
+    'Given a HealthCheckResult with a DateTime observed value '
+    'when toJson() is called '
+    'then the observedValue is serialized to ISO8601',
+    () {
       final dateValue = DateTime.utc(2024, 6, 15, 12, 0, 0);
       final result = HealthCheckResultInternal.create(
         name: 'test:indicator',
@@ -171,9 +189,14 @@ void main() {
       final json = result.toJson();
 
       expect(json['observedValue'], '2024-06-15T12:00:00.000Z');
-    });
+    },
+  );
 
-    test('then all set fields are included', () {
+  test(
+    'Given a HealthCheckResult with all fields set to non-null values '
+    'when toJson() is called '
+    'then all set fields are included',
+    () {
       final explicitTime = DateTime.utc(2024, 1, 15, 10, 30, 0);
       final result = HealthCheckResultInternal.create(
         name: 'database:connection',
@@ -194,6 +217,6 @@ void main() {
       expect(json['status'], 'fail');
       expect(json['time'], '2024-01-15T10:30:00.000Z');
       expect(json['output'], 'Connection timeout after 5000ms');
-    });
-  });
+    },
+  );
 }

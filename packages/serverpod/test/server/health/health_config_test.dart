@@ -38,16 +38,24 @@ void main() {
     });
   });
 
-  group('Given HealthConfig when created with custom values', () {
-    test('then custom cacheTtl is preserved', () {
+  test(
+    'Given HealthConfig created with custom cacheTtl '
+    'when accessing cacheTtl '
+    'then the custom value is preserved',
+    () {
       const config = HealthConfig(
         cacheTtl: Duration(seconds: 5),
       );
 
       expect(config.cacheTtl, const Duration(seconds: 5));
-    });
+    },
+  );
 
-    test('then additionalReadinessIndicators are preserved', () {
+  test(
+    'Given HealthConfig created with additionalReadinessIndicators '
+    'when accessing additionalReadinessIndicators '
+    'then the indicators are preserved',
+    () {
       final indicators = [
         _TestIndicator('test:one'),
         _TestIndicator('test:two'),
@@ -59,9 +67,14 @@ void main() {
       expect(config.additionalReadinessIndicators, hasLength(2));
       expect(config.additionalReadinessIndicators[0].name, 'test:one');
       expect(config.additionalReadinessIndicators[1].name, 'test:two');
-    });
+    },
+  );
 
-    test('then additionalStartupIndicators are preserved', () {
+  test(
+    'Given HealthConfig created with additionalStartupIndicators '
+    'when accessing additionalStartupIndicators '
+    'then the indicators are preserved',
+    () {
       final indicators = [
         _TestIndicator('startup:warmup'),
       ];
@@ -71,9 +84,14 @@ void main() {
 
       expect(config.additionalStartupIndicators, hasLength(1));
       expect(config.additionalStartupIndicators[0].name, 'startup:warmup');
-    });
+    },
+  );
 
-    test('then all options are preserved', () {
+  test(
+    'Given HealthConfig created with all custom options '
+    'when accessing all properties '
+    'then all values are preserved',
+    () {
       final additionalReadinessIndicators = [_TestIndicator('readiness:test')];
       final additionalStartupIndicators = [_TestIndicator('startup:test')];
       final config = HealthConfig(
@@ -91,6 +109,6 @@ void main() {
         config.additionalStartupIndicators,
         same(additionalStartupIndicators),
       );
-    });
-  });
+    },
+  );
 }
