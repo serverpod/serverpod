@@ -15,7 +15,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given /livez endpoint', () {
+  group('Given a running server when GET /livez is called', () {
     late Serverpod pod;
     late int port;
     late http.Client httpClient;
@@ -42,7 +42,7 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    test('when GET request is made then returns 200', () async {
+    test('then returns 200', () async {
       final response = await httpClient.get(
         Uri.http('localhost:$port', '/livez'),
       );
@@ -50,7 +50,7 @@ void main() {
       expect(response.statusCode, 200);
     });
 
-    test('when request has no auth then response has no body', () async {
+    test('then response has no body when unauthenticated', () async {
       final response = await httpClient.get(
         Uri.http('localhost:$port', '/livez'),
       );
@@ -58,78 +58,78 @@ void main() {
       expect(response.body, isEmpty);
     });
 
-    test(
-      'when request has valid auth then response is JSON with status pass',
-      () async {
-        final response = await httpClient.get(
-          Uri.http('localhost:$port', '/livez'),
-          headers: {'Authorization': 'Bearer valid'},
-        );
-
-        expect(response.statusCode, 200);
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        expect(json['status'], 'pass');
-        expect(json['time'], isA<String>());
-      },
-    );
-  });
-
-  group('Given /readyz endpoint with no database configured', () {
-    late Serverpod pod;
-    late int port;
-    late http.Client httpClient;
-
-    setUp(() async {
-      pod = Serverpod(
-        [],
-        Protocol(),
-        Endpoints(),
-        config: ServerpodConfig(apiServer: portZeroConfig),
-        authenticationHandler: (session, token) => Future.value(
-          token == 'valid'
-              ? AuthenticationInfo('test-user', {}, authId: 'valid')
-              : null,
-        ),
-      );
-      await pod.start();
-      port = pod.server.port;
-      httpClient = http.Client();
-    });
-
-    tearDown(() async {
-      httpClient.close();
-      await pod.shutdown(exitProcess: false);
-    });
-
-    test('when GET request is made then returns 200', () async {
+    test('then response is JSON with status pass when authenticated', () async {
       final response = await httpClient.get(
-        Uri.http('localhost:$port', '/readyz'),
-      );
-
-      expect(response.statusCode, 200);
-    });
-
-    test('when request has no auth then response has no body', () async {
-      final response = await httpClient.get(
-        Uri.http('localhost:$port', '/readyz'),
-      );
-
-      expect(response.body, isEmpty);
-    });
-
-    test('when request has valid auth then response is JSON', () async {
-      final response = await httpClient.get(
-        Uri.http('localhost:$port', '/readyz'),
+        Uri.http('localhost:$port', '/livez'),
         headers: {'Authorization': 'Bearer valid'},
       );
 
       expect(response.statusCode, 200);
       final json = jsonDecode(response.body) as Map<String, dynamic>;
       expect(json['status'], 'pass');
+      expect(json['time'], isA<String>());
     });
   });
 
-  group('Given /startupz endpoint after server has started', () {
+  group(
+    'Given a running server with no database when GET /readyz is called',
+    () {
+      late Serverpod pod;
+      late int port;
+      late http.Client httpClient;
+
+      setUp(() async {
+        pod = Serverpod(
+          [],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+          authenticationHandler: (session, token) => Future.value(
+            token == 'valid'
+                ? AuthenticationInfo('test-user', {}, authId: 'valid')
+                : null,
+          ),
+        );
+        await pod.start();
+        port = pod.server.port;
+        httpClient = http.Client();
+      });
+
+      tearDown(() async {
+        httpClient.close();
+        await pod.shutdown(exitProcess: false);
+      });
+
+      test('then returns 200', () async {
+        final response = await httpClient.get(
+          Uri.http('localhost:$port', '/readyz'),
+        );
+
+        expect(response.statusCode, 200);
+      });
+
+      test('then response has no body when unauthenticated', () async {
+        final response = await httpClient.get(
+          Uri.http('localhost:$port', '/readyz'),
+        );
+
+        expect(response.body, isEmpty);
+      });
+
+      test('then response is JSON when authenticated', () async {
+        final response = await httpClient.get(
+          Uri.http('localhost:$port', '/readyz'),
+          headers: {'Authorization': 'Bearer valid'},
+        );
+
+        expect(response.statusCode, 200);
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        expect(json['status'], 'pass');
+      });
+    },
+  );
+
+  group('Given a started server when GET /startupz is called', () {
     late Serverpod pod;
     late int port;
     late http.Client httpClient;
@@ -156,7 +156,7 @@ void main() {
       await pod.shutdown(exitProcess: false);
     });
 
-    test('when GET request is made then returns 200', () async {
+    test('then returns 200', () async {
       final response = await httpClient.get(
         Uri.http('localhost:$port', '/startupz'),
       );
@@ -165,7 +165,7 @@ void main() {
     });
 
     test(
-      'when request has valid auth then response includes startup indicator',
+      'then response includes startup indicator when authenticated',
       () async {
         final response = await httpClient.get(
           Uri.http('localhost:$port', '/startupz'),
@@ -182,186 +182,195 @@ void main() {
     );
   });
 
-  group('Given server with custom startup indicator that fails', () {
-    late Serverpod pod;
-    late int port;
-    late http.Client httpClient;
+  group(
+    'Given a server with failing startup indicator when GET /startupz is called',
+    () {
+      late Serverpod pod;
+      late int port;
+      late http.Client httpClient;
 
-    setUp(() async {
-      final failingIndicator = FakeHealthIndicator(
-        name: 'test:warmup',
-        isHealthy: false,
-        failureMessage: 'Cache not warmed up',
-      );
-      pod = Serverpod(
-        [],
-        Protocol(),
-        Endpoints(),
-        config: ServerpodConfig(apiServer: portZeroConfig),
-        authenticationHandler: (session, token) => Future.value(
-          token == 'valid'
-              ? AuthenticationInfo('test-user', {}, authId: 'valid')
-              : null,
-        ),
-        healthConfig: HealthConfig(
-          additionalStartupIndicators: [failingIndicator],
-        ),
-      );
-      await pod.start();
-      port = pod.server.port;
-      httpClient = http.Client();
-    });
+      setUp(() async {
+        final failingIndicator = FakeHealthIndicator(
+          name: 'test:warmup',
+          isHealthy: false,
+          failureMessage: 'Cache not warmed up',
+        );
+        pod = Serverpod(
+          [],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+          authenticationHandler: (session, token) => Future.value(
+            token == 'valid'
+                ? AuthenticationInfo('test-user', {}, authId: 'valid')
+                : null,
+          ),
+          healthConfig: HealthConfig(
+            additionalStartupIndicators: [failingIndicator],
+          ),
+        );
+        await pod.start();
+        port = pod.server.port;
+        httpClient = http.Client();
+      });
 
-    tearDown(() async {
-      httpClient.close();
-      await pod.shutdown(exitProcess: false);
-    });
+      tearDown(() async {
+        httpClient.close();
+        await pod.shutdown(exitProcess: false);
+      });
 
-    test('when GET /startupz is made then returns 503', () async {
-      final response = await httpClient.get(
-        Uri.http('localhost:$port', '/startupz'),
-      );
-
-      expect(response.statusCode, 503);
-    });
-
-    test(
-      'when request has valid auth then response includes failure details',
-      () async {
+      test('then returns 503', () async {
         final response = await httpClient.get(
           Uri.http('localhost:$port', '/startupz'),
-          headers: {'Authorization': 'Bearer valid'},
         );
 
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        expect(json['status'], 'fail');
-        expect(json['notes'], contains('test:warmup'));
-        expect(json['output'], contains('Cache not warmed up'));
-      },
-    );
-  });
+        expect(response.statusCode, 503);
+      });
 
-  group('Given server with custom readiness indicator that passes', () {
-    late Serverpod pod;
-    late int port;
-    late http.Client httpClient;
-    late FakeHealthIndicator indicator;
+      test(
+        'then response includes failure details when authenticated',
+        () async {
+          final response = await httpClient.get(
+            Uri.http('localhost:$port', '/startupz'),
+            headers: {'Authorization': 'Bearer valid'},
+          );
 
-    setUp(() async {
-      indicator = FakeHealthIndicator(
-        name: 'test:service',
-        isHealthy: true,
+          final json = jsonDecode(response.body) as Map<String, dynamic>;
+          expect(json['status'], 'fail');
+          expect(json['notes'], contains('test:warmup'));
+          expect(json['output'], contains('Cache not warmed up'));
+        },
       );
-      pod = Serverpod(
-        [],
-        Protocol(),
-        Endpoints(),
-        config: ServerpodConfig(apiServer: portZeroConfig),
-        authenticationHandler: (session, token) => Future.value(
-          token == 'valid'
-              ? AuthenticationInfo('test-user', {}, authId: 'valid')
-              : null,
-        ),
-        healthConfig: HealthConfig(
-          additionalReadinessIndicators: [indicator],
-        ),
-      );
-      await pod.start();
-      port = pod.server.port;
-      httpClient = http.Client();
-    });
+    },
+  );
 
-    tearDown(() async {
-      httpClient.close();
-      await pod.shutdown(exitProcess: false);
-    });
+  group(
+    'Given a server with passing readiness indicator when GET /readyz is called',
+    () {
+      late Serverpod pod;
+      late int port;
+      late http.Client httpClient;
+      late FakeHealthIndicator indicator;
 
-    test('when GET /readyz is made then returns 200', () async {
-      final response = await httpClient.get(
-        Uri.http('localhost:$port', '/readyz'),
-      );
+      setUp(() async {
+        indicator = FakeHealthIndicator(
+          name: 'test:service',
+          isHealthy: true,
+        );
+        pod = Serverpod(
+          [],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+          authenticationHandler: (session, token) => Future.value(
+            token == 'valid'
+                ? AuthenticationInfo('test-user', {}, authId: 'valid')
+                : null,
+          ),
+          healthConfig: HealthConfig(
+            additionalReadinessIndicators: [indicator],
+          ),
+        );
+        await pod.start();
+        port = pod.server.port;
+        httpClient = http.Client();
+      });
 
-      expect(response.statusCode, 200);
-    });
+      tearDown(() async {
+        httpClient.close();
+        await pod.shutdown(exitProcess: false);
+      });
 
-    test(
-      'when request has valid auth then response includes indicator result',
-      () async {
+      test('then returns 200', () async {
         final response = await httpClient.get(
           Uri.http('localhost:$port', '/readyz'),
-          headers: {'Authorization': 'Bearer valid'},
         );
 
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        expect(json['status'], 'pass');
-        expect(json['checks'], isA<Map>());
-        final checks = json['checks'] as Map<String, dynamic>;
-        expect(checks['test:service'], isA<List>());
-      },
-    );
-  });
+        expect(response.statusCode, 200);
+      });
 
-  group('Given server with custom readiness indicator that fails', () {
-    late Serverpod pod;
-    late int port;
-    late http.Client httpClient;
-    late FakeHealthIndicator indicator;
+      test(
+        'then response includes indicator result when authenticated',
+        () async {
+          final response = await httpClient.get(
+            Uri.http('localhost:$port', '/readyz'),
+            headers: {'Authorization': 'Bearer valid'},
+          );
 
-    setUp(() async {
-      indicator = FakeHealthIndicator(
-        name: 'test:service',
-        isHealthy: false,
-        failureMessage: 'Service unavailable',
+          final json = jsonDecode(response.body) as Map<String, dynamic>;
+          expect(json['status'], 'pass');
+          expect(json['checks'], isA<Map>());
+          final checks = json['checks'] as Map<String, dynamic>;
+          expect(checks['test:service'], isA<List>());
+        },
       );
-      pod = Serverpod(
-        [],
-        Protocol(),
-        Endpoints(),
-        config: ServerpodConfig(apiServer: portZeroConfig),
-        authenticationHandler: (session, token) => Future.value(
-          token == 'valid'
-              ? AuthenticationInfo('test-user', {}, authId: 'valid')
-              : null,
-        ),
-        healthConfig: HealthConfig(
-          additionalReadinessIndicators: [indicator],
-        ),
-      );
-      await pod.start();
-      port = pod.server.port;
-      httpClient = http.Client();
-    });
+    },
+  );
 
-    tearDown(() async {
-      httpClient.close();
-      await pod.shutdown(exitProcess: false);
-    });
+  group(
+    'Given a server with failing readiness indicator when GET /readyz is called',
+    () {
+      late Serverpod pod;
+      late int port;
+      late http.Client httpClient;
+      late FakeHealthIndicator indicator;
 
-    test('when GET /readyz is made then returns 503', () async {
-      final response = await httpClient.get(
-        Uri.http('localhost:$port', '/readyz'),
-      );
+      setUp(() async {
+        indicator = FakeHealthIndicator(
+          name: 'test:service',
+          isHealthy: false,
+          failureMessage: 'Service unavailable',
+        );
+        pod = Serverpod(
+          [],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+          authenticationHandler: (session, token) => Future.value(
+            token == 'valid'
+                ? AuthenticationInfo('test-user', {}, authId: 'valid')
+                : null,
+          ),
+          healthConfig: HealthConfig(
+            additionalReadinessIndicators: [indicator],
+          ),
+        );
+        await pod.start();
+        port = pod.server.port;
+        httpClient = http.Client();
+      });
 
-      expect(response.statusCode, 503);
-    });
+      tearDown(() async {
+        httpClient.close();
+        await pod.shutdown(exitProcess: false);
+      });
 
-    test(
-      'when request has valid auth then response includes failure details',
-      () async {
+      test('then returns 503', () async {
         final response = await httpClient.get(
           Uri.http('localhost:$port', '/readyz'),
-          headers: {'Authorization': 'Bearer valid'},
         );
 
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        expect(json['status'], 'fail');
-        expect(json['notes'], contains('test:service'));
-        expect(json['output'], contains('Service unavailable'));
-      },
-    );
-  });
+        expect(response.statusCode, 503);
+      });
 
-  group('Given server with caching enabled', () {
+      test(
+        'then response includes failure details when authenticated',
+        () async {
+          final response = await httpClient.get(
+            Uri.http('localhost:$port', '/readyz'),
+            headers: {'Authorization': 'Bearer valid'},
+          );
+
+          final json = jsonDecode(response.body) as Map<String, dynamic>;
+          expect(json['status'], 'fail');
+          expect(json['notes'], contains('test:service'));
+          expect(json['output'], contains('Service unavailable'));
+        },
+      );
+    },
+  );
+
+  group('Given a server with caching enabled when GET /readyz is called', () {
     late Serverpod pod;
     late int port;
     late http.Client httpClient;
@@ -398,7 +407,7 @@ void main() {
     });
 
     test(
-      'when multiple requests are made within cache TTL then indicator is only called once',
+      'then indicator is only called once for requests within cache TTL',
       () async {
         // First request triggers the check
         await httpClient.get(Uri.http('localhost:$port', '/readyz'));
@@ -414,79 +423,80 @@ void main() {
       },
     );
 
-    test(
-      'when request is made after cache TTL expires then indicator is called again',
-      () async {
-        // First request triggers the check
-        await httpClient.get(Uri.http('localhost:$port', '/readyz'));
-        expect(indicator.checkCount, 1);
+    test('then indicator is called again after cache TTL expires', () async {
+      // First request triggers the check
+      await httpClient.get(Uri.http('localhost:$port', '/readyz'));
+      expect(indicator.checkCount, 1);
 
-        // Wait for cache to expire (TTL is 2 seconds, wait a bit longer)
-        await Future.delayed(const Duration(milliseconds: 2100));
+      // Wait for cache to expire (TTL is 2 seconds, wait a bit longer)
+      await Future.delayed(const Duration(milliseconds: 2100));
 
-        // Request after TTL should trigger new check
-        await httpClient.get(Uri.http('localhost:$port', '/readyz'));
-        expect(indicator.checkCount, 2);
-      },
-    );
+      // Request after TTL should trigger new check
+      await httpClient.get(Uri.http('localhost:$port', '/readyz'));
+      expect(indicator.checkCount, 2);
+    });
   });
 
-  group('Given server with slow indicator exceeding timeout', () {
-    late Serverpod pod;
-    late int port;
-    late http.Client httpClient;
+  group(
+    'Given a server with slow indicator exceeding timeout '
+    'when GET /readyz is called',
+    () {
+      late Serverpod pod;
+      late int port;
+      late http.Client httpClient;
 
-    setUp(() async {
-      final slowIndicator = FakeHealthIndicator(
-        name: 'test:slow',
-        isHealthy: true,
-        delay: const Duration(seconds: 2),
-        timeout: const Duration(milliseconds: 100),
-      );
-      pod = Serverpod(
-        [],
-        Protocol(),
-        Endpoints(),
-        config: ServerpodConfig(apiServer: portZeroConfig),
-        authenticationHandler: (session, token) => Future.value(
-          token == 'valid'
-              ? AuthenticationInfo('test-user', {}, authId: 'valid')
-              : null,
-        ),
-        healthConfig: HealthConfig(
-          additionalReadinessIndicators: [slowIndicator],
-        ),
-      );
-      await pod.start();
-      port = pod.server.port;
-      httpClient = http.Client();
-    });
+      setUp(() async {
+        final slowIndicator = FakeHealthIndicator(
+          name: 'test:slow',
+          isHealthy: true,
+          delay: const Duration(seconds: 2),
+          timeout: const Duration(milliseconds: 100),
+        );
+        pod = Serverpod(
+          [],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+          authenticationHandler: (session, token) => Future.value(
+            token == 'valid'
+                ? AuthenticationInfo('test-user', {}, authId: 'valid')
+                : null,
+          ),
+          healthConfig: HealthConfig(
+            additionalReadinessIndicators: [slowIndicator],
+          ),
+        );
+        await pod.start();
+        port = pod.server.port;
+        httpClient = http.Client();
+      });
 
-    tearDown(() async {
-      httpClient.close();
-      await pod.shutdown(exitProcess: false);
-    });
+      tearDown(() async {
+        httpClient.close();
+        await pod.shutdown(exitProcess: false);
+      });
 
-    test('when GET /readyz is made then indicator times out', () async {
-      final response = await httpClient.get(
-        Uri.http('localhost:$port', '/readyz'),
-      );
-
-      expect(response.statusCode, 503);
-    });
-
-    test(
-      'when request has valid auth then response indicates timeout failure',
-      () async {
+      test('then indicator times out and returns 503', () async {
         final response = await httpClient.get(
           Uri.http('localhost:$port', '/readyz'),
-          headers: {'Authorization': 'Bearer valid'},
         );
 
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        expect(json['status'], 'fail');
-        expect(json['output'], contains('timed out'));
-      },
-    );
-  });
+        expect(response.statusCode, 503);
+      });
+
+      test(
+        'then response indicates timeout failure when authenticated',
+        () async {
+          final response = await httpClient.get(
+            Uri.http('localhost:$port', '/readyz'),
+            headers: {'Authorization': 'Bearer valid'},
+          );
+
+          final json = jsonDecode(response.body) as Map<String, dynamic>;
+          expect(json['status'], 'fail');
+          expect(json['output'], contains('timed out'));
+        },
+      );
+    },
+  );
 }

@@ -17,7 +17,7 @@ class _TestIndicator extends HealthIndicator<double> {
 }
 
 void main() {
-  group('Given a HealthCheckResult created with pass()', () {
+  group('Given a HealthIndicator when pass() is called', () {
     late _TestIndicator indicator;
     late HealthCheckResult result;
 
@@ -52,7 +52,7 @@ void main() {
     });
   });
 
-  group('Given a HealthCheckResult created with pass() and observedValue', () {
+  group('Given a HealthIndicator when pass() is called with observedValue', () {
     late HealthCheckResult result;
 
     setUp(() {
@@ -64,12 +64,12 @@ void main() {
       expect(result.observedValue, 42.5);
     });
 
-    test('when toJson is called then observedValue is included', () {
+    test('then toJson includes observedValue', () {
       expect(result.toJson()['observedValue'], 42.5);
     });
   });
 
-  group('Given a HealthCheckResult created with pass() and explicit time', () {
+  group('Given a HealthIndicator when pass() is called with explicit time', () {
     late HealthCheckResult result;
     final explicitTime = DateTime.utc(2024, 1, 15, 10, 30, 0);
 
@@ -82,12 +82,12 @@ void main() {
       expect(result.time, explicitTime);
     });
 
-    test('when toJson is called then time is ISO8601 formatted', () {
+    test('then toJson formats time as ISO8601', () {
       expect(result.toJson()['time'], '2024-01-15T10:30:00.000Z');
     });
   });
 
-  group('Given a HealthCheckResult created with fail()', () {
+  group('Given a HealthIndicator when fail() is called', () {
     late _TestIndicator indicator;
     late HealthCheckResult result;
 
@@ -113,7 +113,7 @@ void main() {
     });
   });
 
-  group('Given a HealthCheckResult created with fail() and output', () {
+  group('Given a HealthIndicator when fail() is called with output', () {
     late HealthCheckResult result;
 
     setUp(() {
@@ -125,27 +125,27 @@ void main() {
       expect(result.output, 'Connection refused');
     });
 
-    test('when toJson is called then output is included', () {
+    test('then toJson includes output', () {
       expect(result.toJson()['output'], 'Connection refused');
     });
   });
 
-  group('Given a HealthCheckResult toJson()', () {
-    test('when status is pass then serialized status is "pass"', () {
+  group('Given a HealthCheckResult when toJson() is called', () {
+    test('then pass status is serialized as "pass"', () {
       final indicator = _TestIndicator();
       final result = indicator.pass();
 
       expect(result.toJson()['status'], 'pass');
     });
 
-    test('when status is fail then serialized status is "fail"', () {
+    test('then fail status is serialized as "fail"', () {
       final indicator = _TestIndicator();
       final result = indicator.fail();
 
       expect(result.toJson()['status'], 'fail');
     });
 
-    test('when optional fields are null then they are omitted', () {
+    test('then null optional fields are omitted', () {
       final result = HealthCheckResultInternal.create(
         name: 'test:indicator',
         status: HealthStatus.pass,
@@ -160,7 +160,7 @@ void main() {
       expect(json.containsKey('output'), isFalse);
     });
 
-    test('when observedValue is DateTime then it is serialized to ISO8601', () {
+    test('then DateTime observedValue is serialized to ISO8601', () {
       final dateValue = DateTime.utc(2024, 6, 15, 12, 0, 0);
       final result = HealthCheckResultInternal.create(
         name: 'test:indicator',
@@ -173,7 +173,7 @@ void main() {
       expect(json['observedValue'], '2024-06-15T12:00:00.000Z');
     });
 
-    test('when all fields are set then all are included', () {
+    test('then all set fields are included', () {
       final explicitTime = DateTime.utc(2024, 1, 15, 10, 30, 0);
       final result = HealthCheckResultInternal.create(
         name: 'database:connection',
@@ -198,11 +198,11 @@ void main() {
   });
 
   group('Given HealthStatus enum', () {
-    test('when pass.name is called then returns "pass"', () {
+    test('then pass.name returns "pass"', () {
       expect(HealthStatus.pass.name, 'pass');
     });
 
-    test('when fail.name is called then returns "fail"', () {
+    test('then fail.name returns "fail"', () {
       expect(HealthStatus.fail.name, 'fail');
     });
   });
