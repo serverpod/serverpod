@@ -19,7 +19,7 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
   String get uploadType => 'multipart';
 
   @override
-  Future<String> uploadData({
+  Future<void> uploadData({
     required String accessKey,
     required String secretKey,
     required String bucket,
@@ -72,7 +72,7 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
     final response = await http.Response.fromStream(res);
 
     if (response.statusCode == 204) {
-      return uploadUri.replace(path: '/${policy.key}').toString();
+      return;
     }
 
     if (response.statusCode == 403) {
