@@ -11,12 +11,10 @@ class LogCleanupManager {
   final Duration? _retentionPeriod;
   final int? _retentionCount;
 
-  LogCleanupManager({
-    required Database database,
-    required SessionLogConfig config,
-  }) : _cleanupInterval = config.cleanupInterval,
-       _retentionPeriod = config.retentionPeriod,
-       _retentionCount = config.retentionCount;
+  LogCleanupManager(SessionLogConfig config)
+    : _cleanupInterval = config.cleanupInterval,
+      _retentionPeriod = config.retentionPeriod,
+      _retentionCount = config.retentionCount;
 
   DateTime? _lastCleanupTime;
   Future<void>? _activeCleanupTask;
@@ -34,7 +32,7 @@ class LogCleanupManager {
     final cleanupInterval = _cleanupInterval;
     if (cleanupInterval == null) return false;
 
-    return durationSinceLastCleanup < cleanupInterval;
+    return durationSinceLastCleanup > cleanupInterval;
   }
 
   Future<void> performCleanup(Session session) async {

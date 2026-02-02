@@ -341,10 +341,25 @@ void main() {
 
         await SessionLogEntry.db.insert(session, recentEntries);
 
+        final record = MockStdout();
+
         // Trigger first cleanup
-        final testSession = await server.createSession(enableLogging: true);
-        testSession.log('Trigger cleanup');
-        await testSession.close();
+        await IOOverrides.runZoned(
+          () async {
+            final testSession = await server.createSession(
+              enableLogging: true,
+            );
+            testSession.log('Trigger cleanup');
+            await testSession.close();
+          },
+          stdout: () => record,
+        );
+
+        // Wait for first cleanup to complete
+        await Future.doWhile(() async {
+          await Future.delayed(const Duration(milliseconds: 100));
+          return !record.output.contains('Cleaned up');
+        }).timeout(const Duration(seconds: 3));
 
         // Add more entries
         final secondEntries = List.generate(
@@ -363,6 +378,61 @@ void main() {
       group('when a log entry is added', () {
         setUp(() async {
           final testSession = await server.createSession(enableLogging: true);
+          testSession.log('Do not trigger cleanup');
+          await testSession.close();
+        });
+
+        test(
+          'then the cleanup is not triggered and all entries are present.',
+          () async {
+            final allLogs = await SessionLogEntry.db.find(session);
+
+            expect(
+              allLogs.length,
+              greaterThanOrEqualTo(numFirstEntries + numSecondEntries + 1),
+            );
+          },
+        );
+      });
+    },
+  );
+
+  group(
+    'Given log cleanup is configured with persistent logging disabled and the database has more entries than the retention count',
+    () {
+      const numEntries = 50;
+      const retentionCount = 10;
+
+      setUp(() async {
+        (server, session) = await createTestServer(
+          SessionLogConfig(
+            persistentEnabled: false,
+            consoleEnabled: false,
+            cleanupInterval: const Duration(seconds: 1),
+            retentionPeriod: const Duration(days: 1),
+            retentionCount: retentionCount,
+          ),
+        );
+
+        final now = DateTime.now();
+        final recentTime = now.subtract(const Duration(hours: 12));
+
+        final recentEntries = List.generate(
+          numEntries,
+          (i) => SessionLogEntry(
+            serverId: 'test_server',
+            time: recentTime.add(Duration(minutes: i)),
+            touched: recentTime.add(Duration(minutes: i)),
+            endpoint: 'test',
+          ),
+        );
+
+        await SessionLogEntry.db.insert(session, recentEntries);
+      });
+
+      group('when a log entry is added', () {
+        setUp(() async {
+          final testSession = await server.createSession(enableLogging: true);
           testSession.log('Trigger cleanup');
           await testSession.close();
         });
@@ -372,11 +442,10 @@ void main() {
           () async {
             final allLogs = await SessionLogEntry.db.find(session);
 
-            // We can't match the exact number of entries since the cleanup
-            // triggers a delete query that can be logged if it runs faster
-            // than the close log call. So it is possible to have up to 3 extra
-            // entries: the one that triggered the cleanup and 2 delete queries.
-            expect(allLogs.length, lessThanOrEqualTo(retentionCount + 3));
+            // With persistent logging disabled, the entry that could trigger
+            // cleanup is not persisted, so we expect only previous entries to
+            // be present.
+            expect(allLogs.length, equals(numEntries));
           },
         );
       });

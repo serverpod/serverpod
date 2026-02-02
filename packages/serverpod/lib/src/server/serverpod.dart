@@ -12,6 +12,7 @@ import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
+import 'package:serverpod/src/server/log_manager/log_cleanup.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/tasks/tasks.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -145,6 +146,8 @@ class Serverpod {
   }
 
   LogSettingsManager? _logSettingsManager;
+
+  LogCleanupManager? _logCleanupManager;
 
   FutureCallManager? _futureCallManager;
 
@@ -768,6 +771,12 @@ class Serverpod {
         serverId,
       );
     }
+
+    if (Features.enableDatabase &&
+        config.sessionLogs.persistentEnabled == true &&
+        config.sessionLogs.cleanupInterval != null) {
+      _logCleanupManager = LogCleanupManager(config.sessionLogs);
+    }
   }
 
   Future<void> _applyMigrations({
@@ -1343,6 +1352,9 @@ class ExperimentalApi {
 extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the log settings manager
   LogSettingsManager get logSettingsManager => _logSettingsManager!;
+
+  /// Retrieve the log cleanup manager
+  LogCleanupManager? get logCleanupManager => _logCleanupManager;
 
   /// Retrieve the global internal session used by the Serverpod.
   /// Logging is turned off.
