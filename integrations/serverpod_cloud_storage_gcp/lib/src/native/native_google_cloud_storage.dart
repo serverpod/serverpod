@@ -148,7 +148,9 @@ class NativeGoogleCloudStorage extends CloudStorage {
         );
       }
     } catch (e) {
-      _storageApiCompleter.completeError(e);
+      if (!_storageApiCompleter.isCompleted) {
+        _storageApiCompleter.completeError(e);
+      }
       if (!_signingCredentialsCompleter.isCompleted) {
         _signingCredentialsCompleter.completeError(e);
       }
