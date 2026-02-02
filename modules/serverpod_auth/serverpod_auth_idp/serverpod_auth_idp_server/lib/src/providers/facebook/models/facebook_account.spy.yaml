@@ -1,0 +1,41 @@
+### A fully configured Facebook account to be used for logins.\
+class: FacebookAccount
+serverOnly: true
+table: serverpod_auth_idp_facebook_account
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### The [AuthUser] this profile belongs to
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  ### The time when this authentication was created.
+  createdAt: DateTime, defaultModel=now
+
+  ### The Facebook-provided user identifier (Facebook User ID).
+  userIdentifier: String
+
+  ### The verified email of the user, as received from Facebook.
+  ###
+  ### Logins all work through the [userIdentifier], but the email is retained
+  ### for consolidation look-ups and user profile creation.
+  ###
+  ### Stored in lower-case.
+  ###
+  ### This may be null if the user hasn't granted email permission.
+  email: String?
+
+  ### The user's full name from Facebook.
+  ###
+  ### Combined first and last name as provided by Facebook.
+  fullName: String?
+
+  ### The user's first name from Facebook.
+  firstName: String?
+
+  ### The user's last name from Facebook.
+  lastName: String?
+
+indexes:
+  serverpod_auth_facebook_account_user_identifier:
+    fields: userIdentifier
+    unique: true

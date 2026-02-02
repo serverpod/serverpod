@@ -11,6 +11,7 @@ import 'common/widgets/column.dart';
 import 'common/widgets/divider.dart';
 import 'common/widgets/gaps.dart';
 import 'email/email_sign_in_widget.dart';
+import 'facebook/facebook_sign_in_widget.dart';
 import 'github/github_sign_in_widget.dart';
 import 'google/google_sign_in_widget.dart';
 import 'providers.dart';
@@ -25,6 +26,7 @@ import 'providers.dart';
 /// - Email authentication (via [EndpointEmailIdpBase])
 /// - Google Sign-In (via [EndpointGoogleIdpBase])
 /// - Apple Sign-In (via [EndpointAppleIdpBase])
+/// - Facebook Sign-In (via [EndpointFacebookIdpBase])
 /// - GitHub Sign-In (via [EndpointGitHubIdpBase])
 ///
 /// The widget separates email authentication from other providers with a
@@ -68,6 +70,9 @@ class SignInWidget extends StatefulWidget {
   /// Whether to disable the Apple sign-in widget if it is available.
   final bool disableAppleSignInWidget;
 
+  /// Whether to disable the Facebook sign-in widget if it is available.
+  final bool disableFacebookSignInWidget;
+
   /// Whether to disable the GitHub sign-in widget if it is available.
   final bool disableGitHubSignInWidget;
 
@@ -83,6 +88,9 @@ class SignInWidget extends StatefulWidget {
   /// Customized widget to use for Apple sign-in.
   final AppleSignInWidget? appleSignInWidget;
 
+  /// Customized widget to use for Facebook sign-in.
+  final FacebookSignInWidget? facebookSignInWidget;
+
   /// Customized widget to use for GitHub sign-in.
   final GitHubSignInWidget? githubSignInWidget;
 
@@ -95,11 +103,13 @@ class SignInWidget extends StatefulWidget {
     this.disableEmailSignInWidget = false,
     this.disableGoogleSignInWidget = false,
     this.disableAppleSignInWidget = false,
+    this.disableFacebookSignInWidget = false,
     this.disableGitHubSignInWidget = false,
     this.anonymousSignInWidget,
     this.emailSignInWidget,
     this.googleSignInWidget,
     this.appleSignInWidget,
+    this.facebookSignInWidget,
     this.githubSignInWidget,
     super.key,
   });
@@ -116,6 +126,8 @@ class _SignInWidgetState extends State<SignInWidget> {
   bool get hasEmail => auth.idp.hasEmail && !widget.disableEmailSignInWidget;
   bool get hasGoogle => auth.idp.hasGoogle && !widget.disableGoogleSignInWidget;
   bool get hasApple => auth.idp.hasApple && !widget.disableAppleSignInWidget;
+  bool get hasFacebook =>
+      auth.idp.hasFacebook && !widget.disableFacebookSignInWidget;
   bool get hasGitHub => auth.idp.hasGitHub && !widget.disableGitHubSignInWidget;
 
   @override
@@ -156,6 +168,17 @@ class _SignInWidgetState extends State<SignInWidget> {
       } else {
         socialProviders.add(appleSignInWidget);
       }
+    }
+
+    if (hasFacebook) {
+      socialProviders.add(
+        widget.facebookSignInWidget ??
+            FacebookSignInWidget(
+              client: widget.client,
+              onAuthenticated: widget.onAuthenticated,
+              onError: widget.onError,
+            ),
+      );
     }
 
     if (hasGitHub) {
