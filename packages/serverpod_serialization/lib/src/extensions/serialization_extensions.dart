@@ -234,3 +234,26 @@ extension BitJsonExtension on Bit {
         : _fromList(json.decode(value) as List);
   }
 }
+
+/// Expose toJson on JsonValue
+/// Expose static fromJson builder
+extension JsonValueJsonExtension on JsonValue {
+  /// Returns a deserialized version of the [JsonValue] from various formats.
+  static JsonValue fromJson(dynamic value) {
+    if (value is JsonValue) return value;
+    if (value is String) {
+      // Try to decode if it looks like JSON
+      try {
+        return JsonValue(json.decode(value));
+      } catch (_) {
+        // If it's not valid JSON, store as a string value
+        return JsonValue(value);
+      }
+    }
+    // For Map, List, num, bool, null - use directly
+    return JsonValue(value);
+  }
+
+  /// Returns a serialized version of the [JsonValue].
+  dynamic toJson() => value;
+}

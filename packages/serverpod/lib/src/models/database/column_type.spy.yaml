@@ -21,6 +21,8 @@ values:
   - uuid
   ### Esp. for serializable objects.
   - json
+  ### Dart type: [JsonValue] - queryable JSON
+  - jsonb
   ### Used for unknown types, that have never been
   ### used by Serverpod.
   - unknown

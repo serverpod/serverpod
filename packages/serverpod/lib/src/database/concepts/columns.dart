@@ -1002,3 +1002,677 @@ extension IdColumnIterable on Iterable {
     throw Exception('Unsupported id column type: ${first.runtimeType}');
   }
 }
+
+/// A [Column] holding a [JsonValue] stored as PostgreSQL jsonb.
+///
+/// This column type supports PostgreSQL's JSONB operators for querying
+/// nested JSON data with type-safe expressions.
+///
+/// Example:
+/// ```dart
+/// // Navigate to nested field and compare as text
+/// where: (t) => t.settings.field('theme').field('color').asText().equals('dark')
+///
+/// // Check key existence
+/// where: (t) => t.settings.containsKey('notifications')
+///
+/// // JSON containment
+/// where: (t) => t.settings.contains(JsonValue({'premium': true}))
+/// ```
+class ColumnJson extends _ValueOperatorColumn<JsonValue>
+    with _NullableColumnDefaultOperations<JsonValue> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnJson(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+    super.fieldName,
+  });
+
+  @override
+  Expression _encodeValueForQuery(JsonValue value) =>
+      _JsonValueExpression(value);
+
+  /// Navigate to an object field using the -> operator.
+  ///
+  /// Returns a [JsonPathExpression] that can be further navigated or compared.
+  ///
+  /// Example:
+  /// ```dart
+  /// // Access nested field: column -> 'key'
+  /// t.data.field('settings').field('theme')
+  /// ```
+  JsonPathExpression field(String key) => JsonPathExpression._(this, [key]);
+
+  /// Navigate to an array element using the -> operator.
+  ///
+  /// Returns a [JsonPathExpression] that can be further navigated or compared.
+  ///
+  /// Example:
+  /// ```dart
+  /// // Access array element: column -> 0
+  /// t.data.element(0)
+  /// ```
+  JsonPathExpression element(int index) => JsonPathExpression._(this, [index]);
+
+  /// Navigate to a nested path using the #> operator.
+  ///
+  /// The path can contain string keys and/or integer indices.
+  ///
+  /// Example:
+  /// ```dart
+  /// // Access nested path: column #> '{settings,theme,color}'
+  /// t.data.path(['settings', 'theme', 'color'])
+  /// ```
+  JsonPathExpression path(List<Object> keys) => JsonPathExpression._(this, keys);
+
+  /// Check if a key exists in the JSON object using the ? operator.
+  ///
+  /// Example:
+  /// ```dart
+  /// // Check key exists: column ? 'key'
+  /// t.data.containsKey('notifications')
+  /// ```
+  Expression containsKey(String key) => _JsonContainsKeyExpression(this, key);
+
+  /// Check if any of the specified keys exist using the ?| operator.
+  ///
+  /// Example:
+  /// ```dart
+  /// // Check any key exists: column ?| array['k1','k2']
+  /// t.data.containsAnyKey(['email', 'phone'])
+  /// ```
+  Expression containsAnyKey(List<String> keys) =>
+      _JsonContainsAnyKeyExpression(this, keys);
+
+  /// Check if all specified keys exist using the ?& operator.
+  ///
+  /// Example:
+  /// ```dart
+  /// // Check all keys exist: column ?& array['k1','k2']
+  /// t.data.containsAllKeys(['name', 'email'])
+  /// ```
+  Expression containsAllKeys(List<String> keys) =>
+      _JsonContainsAllKeysExpression(this, keys);
+
+  /// Check if this JSON contains another JSON value using the @> operator.
+  ///
+  /// Example:
+  /// ```dart
+  /// // JSON containment: column @> '{"key":"value"}'::jsonb
+  /// t.data.contains(JsonValue({'premium': true}))
+  /// ```
+  Expression contains(JsonValue other) =>
+      _JsonContainsExpression(this, _encodeValueForQuery(other));
+
+  /// Check if this JSON is contained by another JSON value using the <@ operator.
+  ///
+  /// Example:
+  /// ```dart
+  /// // Contained by: column <@ '{"key":"value"}'::jsonb
+  /// t.data.containedBy(JsonValue({'key': 'value', 'extra': 'data'}))
+  /// ```
+  Expression containedBy(JsonValue other) =>
+      _JsonContainedByExpression(this, _encodeValueForQuery(other));
+}
+
+/// Represents a path into JSON for further navigation or comparison.
+///
+/// This class is returned by [ColumnJson.field], [ColumnJson.element], and
+/// [ColumnJson.path] to enable chained navigation into nested JSON structures.
+class JsonPathExpression extends Expression {
+  final ColumnJson _column;
+  final List<Object> _path;
+
+  JsonPathExpression._(this._column, this._path) : super(null);
+
+  /// Continue navigating to a nested object field.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('settings').field('theme').field('color')
+  /// ```
+  JsonPathExpression field(String key) =>
+      JsonPathExpression._(_column, [..._path, key]);
+
+  /// Continue navigating to an array element.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('items').element(0).field('name')
+  /// ```
+  JsonPathExpression element(int index) =>
+      JsonPathExpression._(_column, [..._path, index]);
+
+  /// Extract the value at this path as text for string comparisons.
+  ///
+  /// Uses the ->> or #>> operator depending on path depth.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('name').asText().equals('John')
+  /// t.data.field('settings').field('theme').asText().like('%dark%')
+  /// ```
+  JsonTextExpression asText() => JsonTextExpression._(_column, _path);
+
+  /// Check if the path exists (value is not null).
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('optional_field').exists()
+  /// ```
+  Expression exists() => _JsonPathExistsExpression(_column, _path);
+
+  /// Check if a key exists at this path using the ? operator.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('settings').containsKey('theme')
+  /// ```
+  Expression containsKey(String key) =>
+      _JsonPathContainsKeyExpression(_column, _path, key);
+
+  /// Check if the JSON at this path contains another JSON value.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('settings').contains(JsonValue({'dark': true}))
+  /// ```
+  Expression contains(JsonValue value) =>
+      _JsonPathContainsExpression(_column, _path, value);
+
+  /// Check if the JSON at this path equals another JSON value.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('config').equalsJson(JsonValue({'enabled': true}))
+  /// ```
+  Expression equalsJson(JsonValue value) =>
+      _JsonPathEqualsExpression(_column, _path, value);
+
+  @override
+  String toString() {
+    if (_path.length == 1) {
+      var key = _path.first;
+      if (key is String) {
+        return "$_column -> '$key'";
+      }
+      return '$_column -> $key';
+    }
+    var pathStr = _path.map((k) => k is String ? k : k.toString()).join(',');
+    return "$_column #> '{$pathStr}'";
+  }
+}
+
+/// JSON path extracted as text for string comparisons.
+///
+/// This class enables string-like operations on JSON values extracted as text.
+class JsonTextExpression extends Expression {
+  final ColumnJson _column;
+  final List<Object> _path;
+
+  JsonTextExpression._(this._column, this._path) : super(null);
+
+  /// Check if the text value equals the specified string.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('name').asText().equals('John')
+  /// ```
+  Expression equals(String value) =>
+      _JsonTextEqualsExpression(_column, _path, value);
+
+  /// Check if the text value does not equal the specified string.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('status').asText().notEquals('inactive')
+  /// ```
+  Expression notEquals(String value) =>
+      _JsonTextNotEqualsExpression(_column, _path, value);
+
+  /// Check if the text value matches a LIKE pattern.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('email').asText().like('%@example.com')
+  /// ```
+  Expression like(String pattern) =>
+      _JsonTextLikeExpression(_column, _path, pattern);
+
+  /// Check if the text value matches an ILIKE pattern (case-insensitive).
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('name').asText().ilike('%john%')
+  /// ```
+  Expression ilike(String pattern) =>
+      _JsonTextILikeExpression(_column, _path, pattern);
+
+  /// Cast the text to an integer for numeric comparisons.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('age').asText().asInt().greaterThan(18)
+  /// ```
+  JsonNumericExpression asInt() => JsonNumericExpression._(_column, _path, true);
+
+  /// Cast the text to a double for numeric comparisons.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('price').asText().asDouble().lessThan(99.99)
+  /// ```
+  JsonNumericExpression asDouble() =>
+      JsonNumericExpression._(_column, _path, false);
+
+  @override
+  String toString() {
+    if (_path.length == 1) {
+      var key = _path.first;
+      if (key is String) {
+        return "$_column ->> '$key'";
+      }
+      return '$_column ->> $key';
+    }
+    var pathStr = _path.map((k) => k is String ? k : k.toString()).join(',');
+    return "$_column #>> '{$pathStr}'";
+  }
+}
+
+/// JSON text cast to numeric for numeric comparisons.
+///
+/// This class enables numeric operations on JSON values extracted and cast to numbers.
+class JsonNumericExpression extends Expression {
+  final ColumnJson _column;
+  final List<Object> _path;
+  final bool _isInt;
+
+  JsonNumericExpression._(this._column, this._path, this._isInt) : super(null);
+
+  String get _castType => _isInt ? 'integer' : 'double precision';
+
+  String get _pathExpression {
+    if (_path.length == 1) {
+      var key = _path.first;
+      if (key is String) {
+        return "$_column ->> '$key'";
+      }
+      return '$_column ->> $key';
+    }
+    var pathStr = _path.map((k) => k is String ? k : k.toString()).join(',');
+    return "$_column #>> '{$pathStr}'";
+  }
+
+  /// Check if the numeric value equals the specified number.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('count').asText().asInt().equals(10)
+  /// ```
+  Expression equals(num value) =>
+      _JsonNumericComparisonExpression(this, '=', value);
+
+  /// Check if the numeric value does not equal the specified number.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('count').asText().asInt().notEquals(0)
+  /// ```
+  Expression notEquals(num value) =>
+      _JsonNumericComparisonExpression(this, '!=', value);
+
+  /// Check if the numeric value is greater than the specified number.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('age').asText().asInt().greaterThan(18)
+  /// ```
+  Expression greaterThan(num value) =>
+      _JsonNumericComparisonExpression(this, '>', value);
+
+  /// Check if the numeric value is greater than or equal to the specified number.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('score').asText().asInt().greaterThanOrEquals(100)
+  /// ```
+  Expression greaterThanOrEquals(num value) =>
+      _JsonNumericComparisonExpression(this, '>=', value);
+
+  /// Check if the numeric value is less than the specified number.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('price').asText().asDouble().lessThan(50.0)
+  /// ```
+  Expression lessThan(num value) =>
+      _JsonNumericComparisonExpression(this, '<', value);
+
+  /// Check if the numeric value is less than or equal to the specified number.
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('quantity').asText().asInt().lessThanOrEquals(100)
+  /// ```
+  Expression lessThanOrEquals(num value) =>
+      _JsonNumericComparisonExpression(this, '<=', value);
+
+  /// Check if the numeric value is between min and max (inclusive).
+  ///
+  /// Example:
+  /// ```dart
+  /// t.data.field('score').asText().asInt().between(0, 100)
+  /// ```
+  Expression between(num min, num max) =>
+      _JsonNumericBetweenExpression(this, min, max);
+
+  @override
+  String toString() => '($_pathExpression)::$_castType';
+}
+
+// Private expression classes for JSON operations
+
+class _JsonValueExpression extends Expression {
+  final JsonValue _value;
+
+  _JsonValueExpression(this._value) : super(null);
+
+  @override
+  String toString() {
+    var encoded = SerializationManager.encode(_value.value);
+    var escaped = encoded.replaceAll("'", "''");
+    return "'$escaped'::jsonb";
+  }
+}
+
+class _JsonContainsKeyExpression extends Expression {
+  final ColumnJson _column;
+  final String _key;
+
+  _JsonContainsKeyExpression(this._column, this._key) : super(null);
+
+  @override
+  String toString() => "$_column ? '$_key'";
+}
+
+class _JsonContainsAnyKeyExpression extends Expression {
+  final ColumnJson _column;
+  final List<String> _keys;
+
+  _JsonContainsAnyKeyExpression(this._column, this._keys) : super(null);
+
+  @override
+  String toString() {
+    var keysStr = _keys.map((k) => "'$k'").join(',');
+    return '$_column ?| array[$keysStr]';
+  }
+}
+
+class _JsonContainsAllKeysExpression extends Expression {
+  final ColumnJson _column;
+  final List<String> _keys;
+
+  _JsonContainsAllKeysExpression(this._column, this._keys) : super(null);
+
+  @override
+  String toString() {
+    var keysStr = _keys.map((k) => "'$k'").join(',');
+    return '$_column ?& array[$keysStr]';
+  }
+}
+
+class _JsonContainsExpression extends Expression {
+  final ColumnJson _column;
+  final Expression _value;
+
+  _JsonContainsExpression(this._column, this._value) : super(null);
+
+  @override
+  String toString() => '$_column @> $_value';
+}
+
+class _JsonContainedByExpression extends Expression {
+  final ColumnJson _column;
+  final Expression _value;
+
+  _JsonContainedByExpression(this._column, this._value) : super(null);
+
+  @override
+  String toString() => '$_column <@ $_value';
+}
+
+class _JsonPathExistsExpression extends Expression {
+  final ColumnJson _column;
+  final List<Object> _path;
+
+  _JsonPathExistsExpression(this._column, this._path) : super(null);
+
+  @override
+  String toString() {
+    String pathExpr;
+    if (_path.length == 1) {
+      var key = _path.first;
+      if (key is String) {
+        pathExpr = "$_column -> '$key'";
+      } else {
+        pathExpr = '$_column -> $key';
+      }
+    } else {
+      var pathStr = _path.map((k) => k is String ? k : k.toString()).join(',');
+      pathExpr = "$_column #> '{$pathStr}'";
+    }
+    return '$pathExpr IS NOT NULL';
+  }
+}
+
+class _JsonPathContainsKeyExpression extends Expression {
+  final ColumnJson _column;
+  final List<Object> _path;
+  final String _key;
+
+  _JsonPathContainsKeyExpression(this._column, this._path, this._key)
+      : super(null);
+
+  @override
+  String toString() {
+    String pathExpr;
+    if (_path.length == 1) {
+      var key = _path.first;
+      if (key is String) {
+        pathExpr = "$_column -> '$key'";
+      } else {
+        pathExpr = '$_column -> $key';
+      }
+    } else {
+      var pathStr = _path.map((k) => k is String ? k : k.toString()).join(',');
+      pathExpr = "$_column #> '{$pathStr}'";
+    }
+    return "$pathExpr ? '$_key'";
+  }
+}
+
+class _JsonPathContainsExpression extends Expression {
+  final ColumnJson _column;
+  final List<Object> _path;
+  final JsonValue _value;
+
+  _JsonPathContainsExpression(this._column, this._path, this._value)
+      : super(null);
+
+  @override
+  String toString() {
+    String pathExpr;
+    if (_path.length == 1) {
+      var key = _path.first;
+      if (key is String) {
+        pathExpr = "$_column -> '$key'";
+      } else {
+        pathExpr = '$_column -> $key';
+      }
+    } else {
+      var pathStr = _path.map((k) => k is String ? k : k.toString()).join(',');
+      pathExpr = "$_column #> '{$pathStr}'";
+    }
+    var encoded = SerializationManager.encode(_value.value);
+    var escaped = encoded.replaceAll("'", "''");
+    return "$pathExpr @> '$escaped'::jsonb";
+  }
+}
+
+class _JsonPathEqualsExpression extends Expression {
+  final ColumnJson _column;
+  final List<Object> _path;
+  final JsonValue _value;
+
+  _JsonPathEqualsExpression(this._column, this._path, this._value) : super(null);
+
+  @override
+  String toString() {
+    String pathExpr;
+    if (_path.length == 1) {
+      var key = _path.first;
+      if (key is String) {
+        pathExpr = "$_column -> '$key'";
+      } else {
+        pathExpr = '$_column -> $key';
+      }
+    } else {
+      var pathStr = _path.map((k) => k is String ? k : k.toString()).join(',');
+      pathExpr = "$_column #> '{$pathStr}'";
+    }
+    var encoded = SerializationManager.encode(_value.value);
+    var escaped = encoded.replaceAll("'", "''");
+    return "$pathExpr = '$escaped'::jsonb";
+  }
+}
+
+class _JsonTextEqualsExpression extends Expression {
+  final ColumnJson _column;
+  final List<Object> _path;
+  final String _value;
+
+  _JsonTextEqualsExpression(this._column, this._path, this._value) : super(null);
+
+  @override
+  String toString() {
+    String pathExpr;
+    if (_path.length == 1) {
+      var key = _path.first;
+      if (key is String) {
+        pathExpr = "$_column ->> '$key'";
+      } else {
+        pathExpr = '$_column ->> $key';
+      }
+    } else {
+      var pathStr = _path.map((k) => k is String ? k : k.toString()).join(',');
+      pathExpr = "$_column #>> '{$pathStr}'";
+    }
+    var escaped = _value.replaceAll("'", "''");
+    return "$pathExpr = '$escaped'";
+  }
+}
+
+class _JsonTextNotEqualsExpression extends Expression {
+  final ColumnJson _column;
+  final List<Object> _path;
+  final String _value;
+
+  _JsonTextNotEqualsExpression(this._column, this._path, this._value)
+      : super(null);
+
+  @override
+  String toString() {
+    String pathExpr;
+    if (_path.length == 1) {
+      var key = _path.first;
+      if (key is String) {
+        pathExpr = "$_column ->> '$key'";
+      } else {
+        pathExpr = '$_column ->> $key';
+      }
+    } else {
+      var pathStr = _path.map((k) => k is String ? k : k.toString()).join(',');
+      pathExpr = "$_column #>> '{$pathStr}'";
+    }
+    var escaped = _value.replaceAll("'", "''");
+    return "$pathExpr != '$escaped'";
+  }
+}
+
+class _JsonTextLikeExpression extends Expression {
+  final ColumnJson _column;
+  final List<Object> _path;
+  final String _pattern;
+
+  _JsonTextLikeExpression(this._column, this._path, this._pattern) : super(null);
+
+  @override
+  String toString() {
+    String pathExpr;
+    if (_path.length == 1) {
+      var key = _path.first;
+      if (key is String) {
+        pathExpr = "$_column ->> '$key'";
+      } else {
+        pathExpr = '$_column ->> $key';
+      }
+    } else {
+      var pathStr = _path.map((k) => k is String ? k : k.toString()).join(',');
+      pathExpr = "$_column #>> '{$pathStr}'";
+    }
+    var escaped = _pattern.replaceAll("'", "''");
+    return "$pathExpr LIKE '$escaped'";
+  }
+}
+
+class _JsonTextILikeExpression extends Expression {
+  final ColumnJson _column;
+  final List<Object> _path;
+  final String _pattern;
+
+  _JsonTextILikeExpression(this._column, this._path, this._pattern)
+      : super(null);
+
+  @override
+  String toString() {
+    String pathExpr;
+    if (_path.length == 1) {
+      var key = _path.first;
+      if (key is String) {
+        pathExpr = "$_column ->> '$key'";
+      } else {
+        pathExpr = '$_column ->> $key';
+      }
+    } else {
+      var pathStr = _path.map((k) => k is String ? k : k.toString()).join(',');
+      pathExpr = "$_column #>> '{$pathStr}'";
+    }
+    var escaped = _pattern.replaceAll("'", "''");
+    return "$pathExpr ILIKE '$escaped'";
+  }
+}
+
+class _JsonNumericComparisonExpression extends Expression {
+  final JsonNumericExpression _numeric;
+  final String _operator;
+  final num _value;
+
+  _JsonNumericComparisonExpression(this._numeric, this._operator, this._value)
+      : super(null);
+
+  @override
+  String toString() => '$_numeric $_operator $_value';
+}
+
+class _JsonNumericBetweenExpression extends Expression {
+  final JsonNumericExpression _numeric;
+  final num _min;
+  final num _max;
+
+  _JsonNumericBetweenExpression(this._numeric, this._min, this._max)
+      : super(null);
+
+  @override
+  String toString() => '$_numeric BETWEEN $_min AND $_max';
+}
