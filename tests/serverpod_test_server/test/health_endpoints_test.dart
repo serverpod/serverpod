@@ -190,6 +190,18 @@ void main() {
     );
 
     test(
+      'when calling GET /startupz with no authentication '
+      'then response has no body',
+      () async {
+        final response = await httpClient.get(
+          Uri.http('localhost:$port', '/startupz'),
+        );
+
+        expect(response.body, isEmpty);
+      },
+    );
+
+    test(
       'when calling GET /startupz with valid authentication '
       'then response includes startup indicator',
       () async {
