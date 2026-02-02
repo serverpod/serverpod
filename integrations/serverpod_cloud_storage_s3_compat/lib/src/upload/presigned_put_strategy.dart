@@ -20,7 +20,7 @@ class PresignedPutUploadStrategy implements S3UploadStrategy {
   String get uploadType => 'binary';
 
   @override
-  Future<String> uploadData({
+  Future<void> uploadData({
     required String accessKey,
     required String secretKey,
     required String bucket,
@@ -97,7 +97,7 @@ $payloadHash''';
     );
 
     if (response.statusCode == 200 || response.statusCode == 204) {
-      return uri.toString();
+      return;
     }
 
     if (response.statusCode == 403) {

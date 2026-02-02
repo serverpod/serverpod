@@ -50,14 +50,13 @@ class MockUploadStrategy implements S3UploadStrategy {
   Duration? directUploadExpiration;
   int? directUploadMaxFileSize;
 
-  String? uploadDataResult;
   String? directUploadDescriptionResult;
 
   @override
   String get uploadType => 'mock';
 
   @override
-  Future<String> uploadData({
+  Future<void> uploadData({
     required String accessKey,
     required String secretKey,
     required String bucket,
@@ -69,7 +68,6 @@ class MockUploadStrategy implements S3UploadStrategy {
   }) async {
     uploadedPath = path;
     uploadedData = data;
-    return uploadDataResult ?? 'https://example.com/$path';
   }
 
   @override
