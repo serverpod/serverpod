@@ -217,9 +217,9 @@ abstract class SerializationManager {
         bool() => object,
         num() => object,
         String() => object,
-        List<dynamic> l => List.of([
+        List<dynamic> l => [
           for (final i in l) _toEncodable(i, encodeForProtocol),
-        ]),
+        ],
         Map<String, dynamic> m => Map.of({
           for (final i in m.entries)
             i.key: _toEncodable(i.value, encodeForProtocol),
@@ -234,11 +234,18 @@ abstract class SerializationManager {
         HalfVector() => object.toList(),
         SparseVector() => object.toList(),
         Bit() => object.toList(),
-        Set() => object.toList(),
+        Set<dynamic> s => [
+          for (final i in s) _toEncodable(i, encodeForProtocol),
+        ],
         ProtocolSerialization() when encodeForProtocol =>
           object.toJsonForProtocol(),
-        Map(keyType: != String) =>
-          object.entries.map((e) => {'k': e.key, 'v': e.value}).toList(),
+        Map(keyType: != String) => [
+          for (final e in object.entries)
+            {
+              'k': _toEncodable(e.key, encodeForProtocol),
+              'v': _toEncodable(e.value, encodeForProtocol),
+            },
+        ],
         Record() => throw Exception(
           'Records are not supported. '
           'They must be converted beforehand via `Protocol.mapRecordToJson` '
