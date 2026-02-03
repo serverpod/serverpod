@@ -13,51 +13,62 @@ void main() {
   group('Given SerializationManager.toEncodable', () {
     final toEncodable = SerializationManager.toEncodable;
 
-    test('when encoding null then returns null', () {
+    test('when calling on null '
+        'then returns null', () {
       expect(toEncodable(null), null);
     });
 
-    test('when encoding bool true then returns true', () {
+    test('when calling on a bool true '
+        'then returns true', () {
       expect(toEncodable(true), true);
     });
 
-    test('when encoding bool false then returns false', () {
+    test('when calling on a bool false '
+        'then returns false', () {
       expect(toEncodable(false), false);
     });
 
-    test('when encoding int then returns int', () {
+    test('when calling on a int '
+        'then returns int', () {
       expect(toEncodable(42), 42);
     });
 
-    test('when encoding double then returns double', () {
+    test('when calling on a double '
+        'then returns double', () {
       expect(toEncodable(3.14), 3.14);
     });
 
-    test('when encoding String then returns String', () {
+    test('when calling on a String '
+        'then returns String', () {
       expect(toEncodable('hello'), 'hello');
     });
 
-    test('when encoding List<dynamic> then recursively encodes elements', () {
-      expect(
-        toEncodable([
-          'hello',
-          true,
-          42,
-          DateTime.utc(1974),
-          [1, 2, 3],
-        ]),
-        [
-          'hello',
-          true,
-          42,
-          '1974-01-01T00:00:00.000Z',
-          [1, 2, 3],
-        ],
-      );
-    });
+    test(
+      'when calling on a List<dynamic> '
+      'then recursively encodes elements',
+      () {
+        expect(
+          toEncodable([
+            'hello',
+            true,
+            42,
+            DateTime.utc(1974),
+            [1, 2, 3],
+          ]),
+          [
+            'hello',
+            true,
+            42,
+            '1974-01-01T00:00:00.000Z',
+            [1, 2, 3],
+          ],
+        );
+      },
+    );
 
     test(
-      'when encoding Map<String, dynamic> then recursively encodes values',
+      'when calling on a Map<String, dynamic> '
+      'then recursively encodes values',
       () {
         expect(
           toEncodable({
@@ -79,7 +90,8 @@ void main() {
     );
 
     test(
-      'when encoding Map<DateTime, DateTime> then returns list of encoded k/v pairs',
+      'when calling on a Map<DateTime, DateTime> '
+      'then returns list of encoded k/v pairs',
       () {
         expect(
           toEncodable({DateTime.utc(1974): DateTime.utc(1993)}),
@@ -90,88 +102,117 @@ void main() {
       },
     );
 
-    test('when encoding DateTime then returns ISO8601 UTC string', () {
-      expect(
-        toEncodable(DateTime.utc(2024, 1, 15, 10, 30)),
-        '2024-01-15T10:30:00.000Z',
-      );
-    });
+    test(
+      'when calling on a DateTime '
+      'then returns ISO8601 UTC string',
+      () {
+        expect(
+          toEncodable(DateTime.utc(2024, 1, 15, 10, 30)),
+          '2024-01-15T10:30:00.000Z',
+        );
+      },
+    );
 
-    test('when encoding Duration then returns milliseconds', () {
-      expect(toEncodable(Duration(seconds: 5)), 5000);
-    });
+    test(
+      'when calling on a Duration '
+      'then returns milliseconds',
+      () {
+        expect(toEncodable(Duration(seconds: 5)), 5000);
+      },
+    );
 
-    test('when encoding UuidValue then returns string', () {
-      // ignore: deprecated_member_use
+    test('when calling on a UuidValue '
+        'then returns string', () {
       expect(
-        toEncodable(UuidValue.nil),
+        toEncodable(UuidValue.nil), // ignore: deprecated_member_use
         '00000000-0000-0000-0000-000000000000',
       );
     });
 
-    test('when encoding Uri then returns string', () {
+    test('when calling on a Uri '
+        'then returns string', () {
       expect(
         toEncodable(Uri.parse('https://serverpod.dev')),
         'https://serverpod.dev',
       );
     });
 
-    test('when encoding BigInt then returns string', () {
+    test('when calling on a BigInt '
+        'then returns string', () {
       expect(toEncodable(BigInt.from(123456789)), '123456789');
     });
 
-    test('when encoding Vector then returns list', () {
+    test('when calling on a Vector '
+        'then returns list', () {
       expect(toEncodable(Vector([1.0, 2.0, 3.0])), [1.0, 2.0, 3.0]);
     });
 
-    test('when encoding HalfVector then returns list', () {
+    test('when calling on a HalfVector '
+        'then returns list', () {
       expect(toEncodable(HalfVector([1.0, 2.0, 3.0])), [1.0, 2.0, 3.0]);
     });
 
-    test('when encoding Set<dynamic> then recursively encodes to list', () {
-      expect(
-        toEncodable({
-          'hello',
-          true,
-          42,
-          DateTime.utc(1974),
-          {1, 2, 3},
-        }),
-        [
-          'hello',
-          true,
-          42,
-          '1974-01-01T00:00:00.000Z',
-          [1, 2, 3],
-        ],
-      );
-    });
-
-    test('when encoding ByteData then returns base64 encoded string', () {
-      final bytes = Uint8List.fromList([0, 1, 2, 3]);
-      final byteData = ByteData.view(bytes.buffer);
-      final result = toEncodable(byteData);
-
-      expect(result, isA<String>());
-      expect(result, "decode('AAECAw==', 'base64')");
-    });
-
-    test('when encoding SparseVector then returns list representation', () {
-      final vector = SparseVector.fromMap({1: 1.0, 3: 2.0}, 5);
-      final result = toEncodable(vector);
-
-      expect(result, isA<List>());
-    });
-
-    test('when encoding Bit then returns list representation', () {
-      final bit = Bit.fromString('10101');
-      final result = toEncodable(bit);
-
-      expect(result, isA<List>());
-    });
+    test(
+      'when calling on a Set<dynamic> '
+      'then recursively encodes to list',
+      () {
+        expect(
+          toEncodable({
+            'hello',
+            true,
+            42,
+            DateTime.utc(1974),
+            {1, 2, 3},
+          }),
+          [
+            'hello',
+            true,
+            42,
+            '1974-01-01T00:00:00.000Z',
+            [1, 2, 3],
+          ],
+        );
+      },
+    );
 
     test(
-      'when encoding Map with non-String keys then returns list of k/v pairs',
+      'when calling on a ByteData '
+      'then returns base64 encoded string',
+      () {
+        final bytes = Uint8List.fromList([0, 1, 2, 3]);
+        final byteData = ByteData.view(bytes.buffer);
+        final result = toEncodable(byteData);
+
+        expect(result, isA<String>());
+        expect(result, "decode('AAECAw==', 'base64')");
+      },
+    );
+
+    test(
+      'when calling on a SparseVector '
+      'then returns list representation',
+      () {
+        final vector = SparseVector.fromMap({1: 1.0, 3: 2.0}, 5);
+        final result = toEncodable(vector);
+
+        expect(result, isA<List>());
+      },
+    );
+
+    test(
+      'when calling on a Bit '
+      'then returns list representation',
+      () {
+        final bit = Bit.fromString('10101');
+        final result = toEncodable(bit);
+
+        expect(result, isA<List>());
+      },
+    );
+
+    test(
+      'when calling on a Map with non-String keys '
+      'then returns list of k/v pairs',
       () {
         final map = {1: 'one', 2: 'two'};
         final result = toEncodable(map);
@@ -183,15 +224,20 @@ void main() {
       },
     );
 
-    test('when encoding SerializableModel then calls toJson', () {
-      final model = SimpleData(num: 42);
-      final result = toEncodable(model);
+    test(
+      'when calling on a SerializableModel '
+      'then calls toJson',
+      () {
+        final model = SimpleData(num: 42);
+        final result = toEncodable(model);
 
-      expect(result, isA<Map>());
-      expect((result as Map)['num'], 42);
-    });
+        expect(result, isA<Map>());
+        expect((result as Map)['num'], 42);
+      },
+    );
 
-    test('when encoding Record then throws Exception', () {
+    test('when calling on a Record '
+        'then throws Exception', () {
       final record = (1, 'two');
 
       expect(
@@ -207,7 +253,8 @@ void main() {
     });
 
     test(
-      'when encoding object with toJson (not SerializableModel) then calls toJson',
+      'when calling on an object with toJson (not SerializableModel) '
+      'then calls toJson',
       () {
         final obj = _ObjectWithToJson(42);
         final result = toEncodable(obj);
@@ -217,7 +264,8 @@ void main() {
     );
 
     test(
-      'when encoding object without toJson then returns object unchanged',
+      'when calling on a no-encodable object without toJson '
+      'then returns object unchanged',
       () {
         final obj = _ObjectWithoutToJson(42);
         final result = toEncodable(obj);
@@ -229,20 +277,26 @@ void main() {
 
   group('Given SerializationManager.toEncodableForProtocol', () {
     test(
-      'when encoding ProtocolSerialization then calls toJsonForProtocol',
+      'when calling it on an instance of a class implementing ProtocolSerialization '
+      'then calls toJsonForProtocol and correctly excludes server-only fields',
       () {
-        final model = SimpleData(num: 42);
+        final model = server.ScopeServerOnlyField(
+          allScope: server.Types(anInt: 1),
+          serverOnlyScope: server.Types(anInt: 2),
+        );
         final result = SerializationManager.toEncodableForProtocol(model);
 
         expect(result, isA<Map>());
-        // ProtocolSerialization excludes certain fields - just verify it works
-        expect((result as Map)['num'], 42);
+        final map = result as Map;
+        expect(map.containsKey('allScope'), isTrue);
+        expect(map.containsKey('serverOnlyScope'), isFalse);
       },
     );
   });
 
   test(
-    'Given an enum serialized as string with a null value when serializing then the value is null',
+    'Given an enum serialized as string with a null value when serializing '
+    'then the value is null',
     () {
       var types = Types();
 
@@ -254,7 +308,8 @@ void main() {
   );
 
   test(
-    'Given a server-side enum serialized as string value when serializing then the value is unpacked correctly',
+    'Given a server-side enum serialized as string value when serializing '
+    'then the value is unpacked correctly',
     () {
       var types = server.Types(
         aStringifiedEnum: server.TestEnumStringified.one,
@@ -268,7 +323,8 @@ void main() {
   );
 
   test(
-    'Given a server-side enum serialized as string with a null value when serializing then the value is null',
+    'Given a server-side enum serialized as string with a null value when serializing '
+    'then the value is null',
     () {
       var types = server.Types();
 
@@ -280,7 +336,8 @@ void main() {
   );
 
   test(
-    'Given an enum serialized as string value when serializing then the value is unpacked correctly',
+    'Given an enum serialized as string value when serializing '
+    'then the value is unpacked correctly',
     () {
       var types = Types(aStringifiedEnum: TestEnumStringified.one);
 
@@ -522,7 +579,8 @@ void main() {
   );
 
   test(
-    'Given a Serverpod defined model when encoding it with type then it is encoded',
+    'Given a Serverpod defined model when encoding it with type '
+    'then it is encoded',
     () {
       var serverProtocol = server.Protocol();
       var serverpodDefinedModel = serverpod.ClusterServerInfo(
@@ -535,7 +593,8 @@ void main() {
   );
 
   test(
-    'Given a project-defined Record type, when encoding it using `mapRecordToJson` then it is encoded',
+    'Given a project-defined Record type, when encoding it using `mapRecordToJson` '
+    'then it is encoded',
     () {
       var recordAsJSON = Protocol().mapRecordToJson(
         (
@@ -566,7 +625,8 @@ void main() {
   );
 
   test(
-    'Given a Map with String keys and optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
+    'Given a Map with String keys and optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` '
+    'then it is converted to a JSON map without records',
     () {
       var jsonMap = Protocol().mapContainerToJson(
         {
@@ -602,7 +662,8 @@ void main() {
   );
 
   test(
-    'Given a List with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
+    'Given a List with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` '
+    'then it is converted to a JSON map without records',
     () {
       var jsonList = Protocol().mapContainerToJson([
         null,
@@ -636,7 +697,8 @@ void main() {
   );
 
   test(
-    'Given a Set with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
+    'Given a Set with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` '
+    'then it is converted to a JSON map without records',
     () {
       var jsonList = Protocol().mapContainerToJson({
         null,
@@ -670,7 +732,8 @@ void main() {
   );
 
   test(
-    'Given a List containing Sets with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` then it is converted to a JSON map without records',
+    'Given a List containing Sets with optional project-defined Record value type, when encoding it using `mapRecordContainingContainerToJson` '
+    'then it is converted to a JSON map without records',
     () {
       var jsonList = Protocol().mapContainerToJson([
         {
@@ -700,7 +763,8 @@ void main() {
   );
 
   test(
-    'Given a leaf class in a hierarchy, when serializing it, then all its values are restored on decode.',
+    'Given a leaf class in a hierarchy, when serializing it, '
+    'then all its values are restored on decode.',
     () {
       final object = server.ParentClass(
         grandParentField: 'grand parent value',
@@ -724,7 +788,8 @@ void main() {
   );
 
   test(
-    'Given a class with a empty `Map`s, when serializing it, then the empty maps are restored on decode.',
+    'Given a class with a empty `Map`s, when serializing it, '
+    'then the empty maps are restored on decode.',
     () {
       final object = server.ObjectWithMaps(
         dataMap: {},
