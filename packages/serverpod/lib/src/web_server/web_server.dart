@@ -23,7 +23,7 @@ class WebServer {
 
   int? _actualPort;
 
-  late final _app = RelicApp()
+  late final _app = RelicApp(useHostWhenRouting: true)
     ..inject(_ReportExceptionMiddleware(this))
     ..inject(_SessionMiddleware(serverpod.server));
 
@@ -66,6 +66,13 @@ class WebServer {
   /// a route with `path: '/edit'` added via `addRoute(route, '/users')`
   /// handles requests to `/users/edit`.
   ///
+  /// ## Virtual Host Routing
+  ///
+  /// Routes can optionally specify a [Route.host] to restrict them to specific
+  /// virtual hosts. When [Route.host] is `null` (the default), the route
+  /// matches any host. When set, the route only matches requests with that
+  /// specific `Host` header value.
+  ///
   /// ## Tail paths
   ///
   /// A tail path (`/**`) matches all remaining segments and must be terminal.
@@ -75,12 +82,21 @@ class WebServer {
   ///
   /// The default [Route.injectIn] satisfies this requirement.
   void addRoute(Route route, [String path = '/']) {
-    _app.injectAt(path, route);
+    final hostPrefix = route.host ?? '*';
+    final fullPath = '$hostPrefix/$path'; // normalized by relic
+    _app.injectAt(fullPath, route);
   }
 
   /// Adds a [Middleware] to the server for all routes below [path].
-  void addMiddleware(Middleware middleware, String path) =>
-      _app.use(path, middleware);
+  ///
+  /// The [host] parameter can be used to restrict the middleware to a specific
+  /// virtual host. When `null` (the default), the middleware applies to all
+  /// hosts.
+  void addMiddleware(Middleware middleware, String path, {String? host}) {
+    final hostPrefix = host ?? '*';
+    final fullPath = '$hostPrefix/$path'; // normalized by relic
+    _app.use(fullPath, middleware);
+  }
 
   /// Sets a fallback [route] to use if no other registered [Route] matches a
   /// request.
@@ -310,8 +326,30 @@ abstract class Route extends HandlerObject {
   /// the path given to [WebServer.addRoute].
   final String path;
 
+  /// The virtual host this route will respond to.
+  ///
+  /// When `null` (the default), the route matches requests to any host.
+  /// When set, the route only matches requests where the `Host` header
+  /// matches this value exactly.
+  ///
+  /// Example:
+  /// ```dart
+  /// // Route that only responds to api.example.com
+  /// class ApiRoute extends Route {
+  ///   ApiRoute() : super(host: 'api.example.com');
+  ///   // ...
+  /// }
+  ///
+  /// // Route that responds to any host (default)
+  /// class PublicRoute extends Route {
+  ///   PublicRoute() : super();  // host defaults to null
+  ///   // ...
+  /// }
+  /// ```
+  final String? host;
+
   /// Creates a new [Route].
-  Route({this.methods = const {Method.get}, this.path = '/'});
+  Route({this.methods = const {Method.get}, this.path = '/', this.host});
 
   @override
   void injectIn(RelicRouter router) => router.anyOf(methods, path, asHandler);
@@ -353,8 +391,9 @@ abstract class WidgetRoute extends Route {
   ///
   /// The [methods] parameter specifies which HTTP methods this route will
   /// respond to (defaults to GET only). The [path] parameter specifies the
-  /// suffix path (defaults to '/').
-  WidgetRoute({super.methods, super.path});
+  /// suffix path (defaults to '/'). The [host] parameter restricts this route
+  /// to a specific virtual host (defaults to `null`, matching any host).
+  WidgetRoute({super.methods, super.path, super.host});
 
   /// Override this method to build your web widget from the current [session]
   /// and [request].

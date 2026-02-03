@@ -17,7 +17,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given WebServer.addRoute', () {
+  group('Given a WebServer.addRoute', () {
     late Serverpod pod;
 
     setUp(() async {
@@ -119,12 +119,54 @@ void main() {
         },
       );
     });
+
+    test(
+      'when adding a route without host, then it matches any host',
+      () {
+        final route = _TestRoute(path: '/');
+        expect(route.host, isNull);
+        expect(
+          () => pod.webServer.addRoute(route, '/api'),
+          returnsNormally,
+        );
+      },
+    );
+
+    test(
+      'when adding a route with host, then it is set correctly',
+      () {
+        final route = _TestRoute(host: 'api.example.com', path: '/');
+        expect(route.host, equals('api.example.com'));
+        expect(
+          () => pod.webServer.addRoute(route, '/api'),
+          returnsNormally,
+        );
+      },
+    );
+
+    test(
+      'when adding routes with different hosts, then both are accepted',
+      () {
+        final apiRoute = _TestRoute(host: 'api.example.com', path: '/');
+        final webRoute = _TestRoute(host: 'www.example.com', path: '/');
+        final anyRoute = _TestRoute(path: '/health');
+
+        expect(
+          () {
+            pod.webServer.addRoute(apiRoute, '/users');
+            pod.webServer.addRoute(webRoute, '/users');
+            pod.webServer.addRoute(anyRoute, '/');
+          },
+          returnsNormally,
+        );
+      },
+    );
   });
 }
 
 class _TestRoute extends Route {
   void Function(RelicRouter)? injector;
-  _TestRoute({this.injector, super.path});
+  _TestRoute({this.injector, super.path, super.host});
 
   @override
   void injectIn(RelicRouter router) => (injector ?? super.injectIn)(router);

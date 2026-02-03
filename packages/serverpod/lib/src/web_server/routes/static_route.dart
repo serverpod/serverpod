@@ -32,7 +32,7 @@ class StaticRoute extends Route {
 
   final Handler _handler;
 
-  StaticRoute._(this._handler, {required bool tailMatch})
+  StaticRoute._(this._handler, {required bool tailMatch, super.host})
     : super(methods: {Method.get, Method.head}, path: tailMatch ? '/**' : '/');
 
   /// Use [StaticRoute.directory] to serve everything below a given [root].
@@ -40,10 +40,14 @@ class StaticRoute extends Route {
   /// Use [cacheControlFactory] to customize what [CacheControlHeader] to
   /// return for a given asset. Default is to leave caching behavior to client
   /// side heuristics.
+  ///
+  /// The [host] parameter restricts this route to a specific virtual host
+  /// (defaults to `null`, matching any host).
   factory StaticRoute.directory(
     Directory root, {
     CacheBustingConfig? cacheBustingConfig,
     CacheControlFactory cacheControlFactory = _defaultFactory,
+    String? host,
   }) {
     return StaticRoute._(
       StaticHandler.directory(
@@ -52,6 +56,7 @@ class StaticRoute extends Route {
         cacheControl: cacheControlFactory,
       ).asHandler,
       tailMatch: true,
+      host: host,
     );
   }
 
@@ -60,9 +65,13 @@ class StaticRoute extends Route {
   /// Use [cacheControlFactory] to customize what [CacheControlHeader] to
   /// return for a given asset. Default is to leave caching behavior to client
   /// side heuristics.
+  ///
+  /// The [host] parameter restricts this route to a specific virtual host
+  /// (defaults to `null`, matching any host).
   factory StaticRoute.file(
     File file, {
     CacheControlFactory cacheControlFactory = _defaultFactory,
+    String? host,
   }) {
     return StaticRoute._(
       StaticHandler.file(
@@ -70,6 +79,7 @@ class StaticRoute extends Route {
         cacheControl: cacheControlFactory,
       ).asHandler,
       tailMatch: false,
+      host: host,
     );
   }
 
