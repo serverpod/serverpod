@@ -220,10 +220,10 @@ abstract class SerializationManager {
         List<dynamic> l => [
           for (final i in l) _toEncodable(i, encodeForProtocol),
         ],
-        Map<String, dynamic> m => Map.of({
+        Map<String, dynamic> m => {
           for (final i in m.entries)
             i.key: _toEncodable(i.value, encodeForProtocol),
-        }),
+        },
         DateTime() => object.toUtc().toIso8601String(),
         ByteData() => object.base64encodedString(),
         Duration() => object.inMilliseconds,
