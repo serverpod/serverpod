@@ -314,6 +314,8 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.OrderByListBuilder<UserNoteCollectionWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
     UserNoteCollectionWithALongNameInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserNoteCollectionWithALongName>(
       where: where?.call(UserNoteCollectionWithALongName.t),
@@ -324,6 +326,8 @@ class UserNoteCollectionWithALongNameRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -353,6 +357,8 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.OrderByListBuilder<UserNoteCollectionWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
     UserNoteCollectionWithALongNameInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserNoteCollectionWithALongName>(
       where: where?.call(UserNoteCollectionWithALongName.t),
@@ -362,6 +368,8 @@ class UserNoteCollectionWithALongNameRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -371,11 +379,15 @@ class UserNoteCollectionWithALongNameRepository {
     int id, {
     _i1.Transaction? transaction,
     UserNoteCollectionWithALongNameInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UserNoteCollectionWithALongName>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -541,6 +553,23 @@ class UserNoteCollectionWithALongNameRepository {
     return session.db.count<UserNoteCollectionWithALongName>(
       where: where?.call(UserNoteCollectionWithALongName.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [UserNoteCollectionWithALongName] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>
+    where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<UserNoteCollectionWithALongName>(
+      where: where(UserNoteCollectionWithALongName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

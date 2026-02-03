@@ -292,6 +292,8 @@ class TownIntRepository {
     _i1.OrderByListBuilder<TownIntTable>? orderByList,
     _i1.Transaction? transaction,
     TownIntInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<TownInt>(
       where: where?.call(TownInt.t),
@@ -302,6 +304,8 @@ class TownIntRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -331,6 +335,8 @@ class TownIntRepository {
     _i1.OrderByListBuilder<TownIntTable>? orderByList,
     _i1.Transaction? transaction,
     TownIntInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<TownInt>(
       where: where?.call(TownInt.t),
@@ -340,6 +346,8 @@ class TownIntRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -349,11 +357,15 @@ class TownIntRepository {
     int id, {
     _i1.Transaction? transaction,
     TownIntInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<TownInt>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -511,6 +523,22 @@ class TownIntRepository {
     return session.db.count<TownInt>(
       where: where?.call(TownInt.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [TownInt] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<TownIntTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<TownInt>(
+      where: where(TownInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

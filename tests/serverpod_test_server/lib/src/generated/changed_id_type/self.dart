@@ -491,6 +491,8 @@ class ChangedIdTypeSelfRepository {
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
     ChangedIdTypeSelfInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChangedIdTypeSelf>(
       where: where?.call(ChangedIdTypeSelf.t),
@@ -501,6 +503,8 @@ class ChangedIdTypeSelfRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -530,6 +534,8 @@ class ChangedIdTypeSelfRepository {
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _i1.Transaction? transaction,
     ChangedIdTypeSelfInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChangedIdTypeSelf>(
       where: where?.call(ChangedIdTypeSelf.t),
@@ -539,6 +545,8 @@ class ChangedIdTypeSelfRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -548,11 +556,15 @@ class ChangedIdTypeSelfRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     ChangedIdTypeSelfInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ChangedIdTypeSelf>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -712,6 +724,22 @@ class ChangedIdTypeSelfRepository {
     return session.db.count<ChangedIdTypeSelf>(
       where: where?.call(ChangedIdTypeSelf.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ChangedIdTypeSelf] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ChangedIdTypeSelf>(
+      where: where(ChangedIdTypeSelf.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

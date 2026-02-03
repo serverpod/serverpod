@@ -6,6 +6,7 @@ import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/database_result.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
+import 'package:serverpod/src/database/concepts/row_lock.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/query_parameters.dart';
@@ -64,7 +65,18 @@ class Database {
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
   }) async {
+    // ignore: invalid_use_of_visible_for_testing_member
+    final resolvedTransaction = transaction ?? _session.transaction;
+    if (lockMode != null && resolvedTransaction == null) {
+      throw ArgumentError(
+        'A transaction is required when using row locking. '
+        'Wrap your query in session.db.transaction().',
+      );
+    }
+
     return _databaseConnection.find<T>(
       _session,
       where: where,
@@ -73,9 +85,10 @@ class Database {
       orderBy: orderBy,
       orderByList: orderByList,
       orderDescending: orderDescending,
-      // ignore: invalid_use_of_visible_for_testing_member
-      transaction: transaction ?? _session.transaction,
+      transaction: resolvedTransaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -97,7 +110,18 @@ class Database {
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
   }) async {
+    // ignore: invalid_use_of_visible_for_testing_member
+    final resolvedTransaction = transaction ?? _session.transaction;
+    if (lockMode != null && resolvedTransaction == null) {
+      throw ArgumentError(
+        'A transaction is required when using row locking. '
+        'Wrap your query in session.db.transaction().',
+      );
+    }
+
     return await _databaseConnection.findFirstRow<T>(
       _session,
       where: where,
@@ -105,9 +129,10 @@ class Database {
       orderBy: orderBy,
       orderByList: orderByList,
       orderDescending: orderDescending,
-      // ignore: invalid_use_of_visible_for_testing_member
-      transaction: transaction ?? _session.transaction,
+      transaction: resolvedTransaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -122,13 +147,43 @@ class Database {
     Object id, {
     Transaction? transaction,
     Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
   }) async {
+    // ignore: invalid_use_of_visible_for_testing_member
+    final resolvedTransaction = transaction ?? _session.transaction;
+    if (lockMode != null && resolvedTransaction == null) {
+      throw ArgumentError(
+        'A transaction is required when using row locking. '
+        'Wrap your query in session.db.transaction().',
+      );
+    }
+
     return _databaseConnection.findById<T>(
       _session,
       id,
-      // ignore: invalid_use_of_visible_for_testing_member
-      transaction: transaction ?? _session.transaction,
+      transaction: resolvedTransaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Acquires row-level locks on rows matching the [where] expression without
+  /// returning the row data.
+  @internal
+  Future<void> lockRows<T extends TableRow>({
+    required Expression where,
+    required LockMode lockMode,
+    required Transaction transaction,
+    LockBehavior lockBehavior = LockBehavior.wait,
+  }) async {
+    return _databaseConnection.lockRows<T>(
+      _session,
+      where: where,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+      transaction: transaction,
     );
   }
 

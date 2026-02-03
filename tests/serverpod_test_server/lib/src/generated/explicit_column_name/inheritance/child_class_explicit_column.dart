@@ -248,6 +248,8 @@ class ChildClassExplicitColumnRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
     _i2.Transaction? transaction,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChildClassExplicitColumn>(
       where: where?.call(ChildClassExplicitColumn.t),
@@ -257,6 +259,8 @@ class ChildClassExplicitColumnRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -285,6 +289,8 @@ class ChildClassExplicitColumnRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
     _i2.Transaction? transaction,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChildClassExplicitColumn>(
       where: where?.call(ChildClassExplicitColumn.t),
@@ -293,6 +299,8 @@ class ChildClassExplicitColumnRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -301,10 +309,14 @@ class ChildClassExplicitColumnRepository {
     _i2.Session session,
     int id, {
     _i2.Transaction? transaction,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ChildClassExplicitColumn>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -464,6 +476,22 @@ class ChildClassExplicitColumnRepository {
     return session.db.count<ChildClassExplicitColumn>(
       where: where?.call(ChildClassExplicitColumn.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ChildClassExplicitColumn] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i2.Session session, {
+    required _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable> where,
+    required _i2.LockMode lockMode,
+    required _i2.Transaction transaction,
+    _i2.LockBehavior lockBehavior = _i2.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ChildClassExplicitColumn>(
+      where: where(ChildClassExplicitColumn.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

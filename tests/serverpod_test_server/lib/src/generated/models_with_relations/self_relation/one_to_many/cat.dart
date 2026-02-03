@@ -368,6 +368,8 @@ class CatRepository {
     _i1.OrderByListBuilder<CatTable>? orderByList,
     _i1.Transaction? transaction,
     CatInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Cat>(
       where: where?.call(Cat.t),
@@ -378,6 +380,8 @@ class CatRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -407,6 +411,8 @@ class CatRepository {
     _i1.OrderByListBuilder<CatTable>? orderByList,
     _i1.Transaction? transaction,
     CatInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Cat>(
       where: where?.call(Cat.t),
@@ -416,6 +422,8 @@ class CatRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -425,11 +433,15 @@ class CatRepository {
     int id, {
     _i1.Transaction? transaction,
     CatInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Cat>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -587,6 +599,22 @@ class CatRepository {
     return session.db.count<Cat>(
       where: where?.call(Cat.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Cat] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<CatTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Cat>(
+      where: where(Cat.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

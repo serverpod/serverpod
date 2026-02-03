@@ -290,6 +290,8 @@ class CompanyUuidRepository {
     _i1.OrderByListBuilder<CompanyUuidTable>? orderByList,
     _i1.Transaction? transaction,
     CompanyUuidInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CompanyUuid>(
       where: where?.call(CompanyUuid.t),
@@ -300,6 +302,8 @@ class CompanyUuidRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -329,6 +333,8 @@ class CompanyUuidRepository {
     _i1.OrderByListBuilder<CompanyUuidTable>? orderByList,
     _i1.Transaction? transaction,
     CompanyUuidInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CompanyUuid>(
       where: where?.call(CompanyUuid.t),
@@ -338,6 +344,8 @@ class CompanyUuidRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -347,11 +355,15 @@ class CompanyUuidRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     CompanyUuidInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<CompanyUuid>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -509,6 +521,22 @@ class CompanyUuidRepository {
     return session.db.count<CompanyUuid>(
       where: where?.call(CompanyUuid.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [CompanyUuid] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<CompanyUuidTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<CompanyUuid>(
+      where: where(CompanyUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }
