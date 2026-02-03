@@ -21,11 +21,39 @@ void main() {
       ('int', 42, 42),
       ('double', 3.14, 3.14),
       ('String', 'hello', 'hello'),
-      ('List', [1, 2, 3], [1, 2, 3]),
+      (
+        'List<dynamic>',
+        [
+          'hello',
+          true,
+          42,
+          DateTime.utc(1974),
+          [1, 2, 3],
+        ],
+        [
+          'hello',
+          true,
+          42,
+          '1974-01-01T00:00:00.000Z',
+          [1, 2, 3],
+        ],
+      ),
       (
         'Map<String, dynamic>',
-        {'key': 'value', 'key2': true, 'key3': 42},
-        {'key': 'value', 'key2': true, 'key3': 42},
+        {
+          'key': 'value',
+          'key2': true,
+          'key3': 42,
+          'key4': DateTime.utc(1974),
+          'key5': {'a': 1},
+        },
+        {
+          'key': 'value',
+          'key2': true,
+          'key3': 42,
+          'key4': '1974-01-01T00:00:00.000Z',
+          'key5': {'a': 1},
+        },
       ),
 
       // DateTime - converted to ISO8601 UTC string
