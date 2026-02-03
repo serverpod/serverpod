@@ -4,17 +4,25 @@ import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_com
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a MultipartPostUploadStrategy', () {
-    final strategy = MultipartPostUploadStrategy();
+  test(
+    'Given a MultipartPostUploadStrategy '
+    'when reading uploadType '
+    'then it is multipart',
+    () {
+      final strategy = MultipartPostUploadStrategy();
 
-    test('when reading uploadType then it is multipart', () {
       expect(strategy.uploadType, 'multipart');
-    });
-  });
+    },
+  );
 
   group('Given a MultipartPostUploadStrategy with AWS endpoints', () {
-    final strategy = MultipartPostUploadStrategy();
-    final endpoints = AwsEndpointConfig();
+    late MultipartPostUploadStrategy strategy;
+    late AwsEndpointConfig endpoints;
+
+    setUp(() {
+      strategy = MultipartPostUploadStrategy();
+      endpoints = AwsEndpointConfig();
+    });
 
     group('when creating direct upload description', () {
       late String? description;
@@ -106,8 +114,13 @@ void main() {
   });
 
   group('Given a MultipartPostUploadStrategy with GCP endpoints', () {
-    final strategy = MultipartPostUploadStrategy();
-    final endpoints = GcpEndpointConfig();
+    late MultipartPostUploadStrategy strategy;
+    late GcpEndpointConfig endpoints;
+
+    setUp(() {
+      strategy = MultipartPostUploadStrategy();
+      endpoints = GcpEndpointConfig();
+    });
 
     group('when creating direct upload description', () {
       late String? description;
@@ -141,11 +154,16 @@ void main() {
   });
 
   group('Given a MultipartPostUploadStrategy with custom endpoints', () {
-    final strategy = MultipartPostUploadStrategy();
-    final endpoints = CustomEndpointConfig(
-      baseUri: Uri.http('localhost:9000', '/'),
-      serviceName: 'MinIO',
-    );
+    late MultipartPostUploadStrategy strategy;
+    late CustomEndpointConfig endpoints;
+
+    setUp(() {
+      strategy = MultipartPostUploadStrategy();
+      endpoints = CustomEndpointConfig(
+        baseUri: Uri.http('localhost:9000', '/'),
+        serviceName: 'MinIO',
+      );
+    });
 
     group('when creating direct upload description', () {
       late String? description;
