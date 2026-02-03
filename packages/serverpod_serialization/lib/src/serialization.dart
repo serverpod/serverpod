@@ -234,7 +234,8 @@ abstract class SerializationManager {
           'They must be converted beforehand via `Protocol.mapRecordToJson` '
           'or the enclosing `SerializableModel`.',
         ),
-        _ => (object as dynamic).toJson(),
+        SerializableModel() => object.toJson(),
+        _ => object.safeToJson(),
       };
 
   /// Encode the provided [object] to a Json-formatted [String].
@@ -321,4 +322,17 @@ const extensionSerializedTypes = [
 
 extension<K, V> on Map<K, V> {
   Type get keyType => K;
+}
+
+extension on Object? {
+  /// Returns a safe JSON representation of the object.
+  /// If the object does not implement the [toJson] method,
+  /// it will be returned as is.
+  Object? safeToJson() {
+    try {
+      return (this as dynamic).toJson();
+    } catch (_) {
+      return this;
+    }
+  }
 }
