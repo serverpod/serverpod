@@ -47,17 +47,29 @@ void main() {
       );
     });
 
-    test('then storageId is set correctly', () {
-      expect(storage.storageId, 'test-storage');
-    });
+    test(
+      'when accessing storageId '
+      'then it returns the configured value',
+      () {
+        expect(storage.storageId, 'test-storage');
+      },
+    );
 
-    test('then bucket is set correctly', () {
-      expect(storage.bucket, 'test-bucket');
-    });
+    test(
+      'when accessing bucket '
+      'then it returns the configured value',
+      () {
+        expect(storage.bucket, 'test-bucket');
+      },
+    );
 
-    test('then public is set correctly', () {
-      expect(storage.public, isTrue);
-    });
+    test(
+      'when accessing public '
+      'then it returns the configured value',
+      () {
+        expect(storage.public, isTrue);
+      },
+    );
 
     group('when checking if a file exists', () {
       test('then it returns true when the object exists', () async {
