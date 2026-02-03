@@ -10,6 +10,156 @@ void main() {
   var protocol = Protocol();
   var serverProtocol = server.Protocol();
 
+  group('Given SerializationManager.toEncodable', () {
+    final toEncodable = SerializationManager.toEncodable;
+
+    final testCases = <(String, Object?, Object?)>{
+      // Primitives - returned unchanged
+      ('nullable', null, null),
+      ('bool', true, true),
+      ('bool', false, false),
+      ('int', 42, 42),
+      ('double', 3.14, 3.14),
+      ('String', 'hello', 'hello'),
+      ('List', [1, 2, 3], [1, 2, 3]),
+      (
+        'Map<String, dynamic>',
+        {'key': 'value', 'key2': true, 'key3': 42},
+        {'key': 'value', 'key2': true, 'key3': 42},
+      ),
+
+      // DateTime - converted to ISO8601 UTC string
+      (
+        'DateTime',
+        DateTime.utc(2024, 1, 15, 10, 30),
+        '2024-01-15T10:30:00.000Z',
+      ),
+
+      // Duration - converted to milliseconds
+      ('Duration', Duration(seconds: 5), 5000),
+
+      // UuidValue - converted to string
+      // ignore: deprecated_member_use
+      ('UuidValue', UuidValue.nil, '00000000-0000-0000-0000-000000000000'),
+
+      // Uri - converted to string
+      ('Uri', Uri.parse('https://serverpod.dev'), 'https://serverpod.dev'),
+
+      // BigInt - converted to string
+      ('BigInt', BigInt.from(123456789), '123456789'),
+
+      // Vector types - converted to list
+      ('Vector', Vector([1.0, 2.0, 3.0]), [1.0, 2.0, 3.0]),
+      ('HalfVector', HalfVector([1.0, 2.0, 3.0]), [1.0, 2.0, 3.0]),
+
+      // Set - converted to list
+      ('Set', {1, 2, 3}, [1, 2, 3]),
+    };
+
+    for (final (name, input, expected) in testCases) {
+      test(
+        'when encoding $name with value $input then returns ${expected.runtimeType} with value ${expected}',
+        () => expect(
+          toEncodable(input),
+          expected,
+        ),
+      );
+    }
+
+    test('when encoding ByteData then returns base64 encoded string', () {
+      final bytes = Uint8List.fromList([0, 1, 2, 3]);
+      final byteData = ByteData.view(bytes.buffer);
+      final result = toEncodable(byteData);
+
+      expect(result, isA<String>());
+      expect(result, "decode('AAECAw==', 'base64')");
+    });
+
+    test('when encoding SparseVector then returns list representation', () {
+      final vector = SparseVector.fromMap({1: 1.0, 3: 2.0}, 5);
+      final result = toEncodable(vector);
+
+      expect(result, isA<List>());
+    });
+
+    test('when encoding Bit then returns list representation', () {
+      final bit = Bit.fromString('10101');
+      final result = toEncodable(bit);
+
+      expect(result, isA<List>());
+    });
+
+    test(
+      'when encoding Map with non-String keys then returns list of k/v pairs',
+      () {
+        final map = {1: 'one', 2: 'two'};
+        final result = toEncodable(map);
+
+        expect(result, [
+          {'k': 1, 'v': 'one'},
+          {'k': 2, 'v': 'two'},
+        ]);
+      },
+    );
+
+    test('when encoding SerializableModel then calls toJson', () {
+      final model = SimpleData(num: 42);
+      final result = toEncodable(model);
+
+      expect(result, isA<Map>());
+      expect((result as Map)['num'], 42);
+    });
+
+    test('when encoding Record then throws Exception', () {
+      final record = (1, 'two');
+
+      expect(
+        () => toEncodable(record),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Records are not supported'),
+          ),
+        ),
+      );
+    });
+
+    test(
+      'when encoding object with toJson (not SerializableModel) then calls toJson',
+      () {
+        final obj = _ObjectWithToJson(42);
+        final result = toEncodable(obj);
+
+        expect(result, {'value': 42});
+      },
+    );
+
+    test(
+      'when encoding object without toJson then returns object unchanged',
+      () {
+        final obj = _ObjectWithoutToJson(42);
+        final result = toEncodable(obj);
+
+        expect(result, same(obj));
+      },
+    );
+  });
+
+  group('Given SerializationManager.toEncodableForProtocol', () {
+    test(
+      'when encoding ProtocolSerialization then calls toJsonForProtocol',
+      () {
+        final model = SimpleData(num: 42);
+        final result = SerializationManager.toEncodableForProtocol(model);
+
+        expect(result, isA<Map>());
+        // ProtocolSerialization excludes certain fields - just verify it works
+        expect((result as Map)['num'], 42);
+      },
+    );
+  });
+
   test(
     'Given an enum serialized as string with a null value when serializing then the value is null',
     () {
@@ -548,4 +698,18 @@ void main() {
       );
     },
   );
+}
+
+/// Test helper: object with toJson() but not implementing SerializableModel.
+class _ObjectWithToJson {
+  final int value;
+  _ObjectWithToJson(this.value);
+
+  Map<String, dynamic> toJson() => {'value': value};
+}
+
+/// Test helper: object without toJson() method.
+class _ObjectWithoutToJson {
+  final int value;
+  _ObjectWithoutToJson(this.value);
 }
