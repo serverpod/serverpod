@@ -13,25 +13,39 @@ void main() {
   group('Given SerializationManager.toEncodable', () {
     final toEncodable = SerializationManager.toEncodable;
 
-    final testCases = <(String, Object?, Object?)>{
-      // Primitives - returned unchanged
-      ('nullable', null, null),
-      ('bool', true, true),
-      ('bool', false, false),
-      ('int', 42, 42),
-      ('double', 3.14, 3.14),
-      ('String', 'hello', 'hello'),
+    test('when encoding null then returns null', () {
+      expect(toEncodable(null), null);
+    });
 
-      // Nested types
-      (
-        'List<dynamic>',
-        [
+    test('when encoding bool true then returns true', () {
+      expect(toEncodable(true), true);
+    });
+
+    test('when encoding bool false then returns false', () {
+      expect(toEncodable(false), false);
+    });
+
+    test('when encoding int then returns int', () {
+      expect(toEncodable(42), 42);
+    });
+
+    test('when encoding double then returns double', () {
+      expect(toEncodable(3.14), 3.14);
+    });
+
+    test('when encoding String then returns String', () {
+      expect(toEncodable('hello'), 'hello');
+    });
+
+    test('when encoding List<dynamic> then recursively encodes elements', () {
+      expect(
+        toEncodable([
           'hello',
           true,
           42,
           DateTime.utc(1974),
           [1, 2, 3],
-        ],
+        ]),
         [
           'hello',
           true,
@@ -39,66 +53,90 @@ void main() {
           '1974-01-01T00:00:00.000Z',
           [1, 2, 3],
         ],
-      ),
-      (
-        'Map<String, dynamic>',
-        {
-          'key': 'value',
-          'key2': true,
-          'key3': 42,
-          'key4': DateTime.utc(1974),
-          'key5': {'a': 1},
-        },
-        {
-          'key': 'value',
-          'key2': true,
-          'key3': 42,
-          'key4': '1974-01-01T00:00:00.000Z',
-          'key5': {'a': 1},
-        },
-      ),
-      (
-        'Map<DateTime, DateTime>',
-        {DateTime.utc(1974): DateTime.utc(1993)},
-        [
-          {'k': '1974-01-01T00:00:00.000Z', 'v': '1993-01-01T00:00:00.000Z'},
-        ],
-      ),
+      );
+    });
 
-      // DateTime - converted to ISO8601 UTC string
-      (
-        'DateTime',
-        DateTime.utc(2024, 1, 15, 10, 30),
+    test(
+      'when encoding Map<String, dynamic> then recursively encodes values',
+      () {
+        expect(
+          toEncodable({
+            'key': 'value',
+            'key2': true,
+            'key3': 42,
+            'key4': DateTime.utc(1974),
+            'key5': {'a': 1},
+          }),
+          {
+            'key': 'value',
+            'key2': true,
+            'key3': 42,
+            'key4': '1974-01-01T00:00:00.000Z',
+            'key5': {'a': 1},
+          },
+        );
+      },
+    );
+
+    test(
+      'when encoding Map<DateTime, DateTime> then returns list of encoded k/v pairs',
+      () {
+        expect(
+          toEncodable({DateTime.utc(1974): DateTime.utc(1993)}),
+          [
+            {'k': '1974-01-01T00:00:00.000Z', 'v': '1993-01-01T00:00:00.000Z'},
+          ],
+        );
+      },
+    );
+
+    test('when encoding DateTime then returns ISO8601 UTC string', () {
+      expect(
+        toEncodable(DateTime.utc(2024, 1, 15, 10, 30)),
         '2024-01-15T10:30:00.000Z',
-      ),
+      );
+    });
 
-      // Duration - converted to milliseconds
-      ('Duration', Duration(seconds: 5), 5000),
+    test('when encoding Duration then returns milliseconds', () {
+      expect(toEncodable(Duration(seconds: 5)), 5000);
+    });
 
-      // UuidValue - converted to string
+    test('when encoding UuidValue then returns string', () {
       // ignore: deprecated_member_use
-      ('UuidValue', UuidValue.nil, '00000000-0000-0000-0000-000000000000'),
+      expect(
+        toEncodable(UuidValue.nil),
+        '00000000-0000-0000-0000-000000000000',
+      );
+    });
 
-      // Uri - converted to string
-      ('Uri', Uri.parse('https://serverpod.dev'), 'https://serverpod.dev'),
+    test('when encoding Uri then returns string', () {
+      expect(
+        toEncodable(Uri.parse('https://serverpod.dev')),
+        'https://serverpod.dev',
+      );
+    });
 
-      // BigInt - converted to string
-      ('BigInt', BigInt.from(123456789), '123456789'),
+    test('when encoding BigInt then returns string', () {
+      expect(toEncodable(BigInt.from(123456789)), '123456789');
+    });
 
-      // Vector types - converted to list
-      ('Vector', Vector([1.0, 2.0, 3.0]), [1.0, 2.0, 3.0]),
-      ('HalfVector', HalfVector([1.0, 2.0, 3.0]), [1.0, 2.0, 3.0]),
+    test('when encoding Vector then returns list', () {
+      expect(toEncodable(Vector([1.0, 2.0, 3.0])), [1.0, 2.0, 3.0]);
+    });
 
-      // Set - converted to list
-      (
-        'Set<dynamic>',
-        {
+    test('when encoding HalfVector then returns list', () {
+      expect(toEncodable(HalfVector([1.0, 2.0, 3.0])), [1.0, 2.0, 3.0]);
+    });
+
+    test('when encoding Set<dynamic> then recursively encodes to list', () {
+      expect(
+        toEncodable({
           'hello',
           true,
           42,
           DateTime.utc(1974),
           {1, 2, 3},
-        },
+        }),
         [
           'hello',
           true,
@@ -106,18 +144,8 @@ void main() {
           '1974-01-01T00:00:00.000Z',
           [1, 2, 3],
         ],
-      ),
-    };
-
-    for (final (name, input, expected) in testCases) {
-      test(
-        'when encoding $name with value $input then returns ${expected.runtimeType} with value ${expected}',
-        () => expect(
-          toEncodable(input),
-          expected,
-        ),
       );
-    }
+    });
 
     test('when encoding ByteData then returns base64 encoded string', () {
       final bytes = Uint8List.fromList([0, 1, 2, 3]);
