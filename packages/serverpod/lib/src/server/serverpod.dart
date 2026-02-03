@@ -46,6 +46,12 @@ class Serverpod {
     return _startedTime!;
   }
 
+  /// Whether the server has completed its startup sequence.
+  ///
+  /// Returns `true` if [start] has been called and completed successfully.
+  /// Note: This remains `true` even after [shutdown] is called.
+  bool get isStartupComplete => _startedTime != null;
+
   /// The last created [Serverpod]. In most cases the [Serverpod] is a singleton
   /// object, although it may be possible to run multiple instances in the same
   /// program it's not recommended.
@@ -77,7 +83,15 @@ class Serverpod {
   /// [HealthCheckHandler] for any custom health checks. This can be used to
   /// check remotely if all services the server is depending on is up and
   /// running.
+  ///
+  /// Deprecated: Use [HealthConfig] with custom [HealthIndicator]
+  /// implementations instead. This will be removed in a future version.
   final HealthCheckHandler? healthCheckHandler;
+
+  /// Configuration for the health check system.
+  final HealthConfig _healthConfig;
+
+  late final HealthCheckService _healthCheckService;
 
   final ExperimentalApi _experimental;
 
@@ -371,7 +385,11 @@ class Serverpod {
     this.endpoints, {
     ServerpodConfig? config,
     this.authenticationHandler,
+    @Deprecated(
+      'Use healthConfig with custom HealthIndicator implementations instead.',
+    )
     this.healthCheckHandler,
+    HealthConfig? healthConfig,
     Headers? httpResponseHeaders,
     Headers? httpOptionsResponseHeaders,
     SecurityContextConfig? securityContextConfig,
@@ -381,6 +399,7 @@ class Serverpod {
        httpOptionsResponseHeaders =
            httpOptionsResponseHeaders ?? _defaultHttpOptionsResponseHeaders,
        _securityContextConfig = securityContextConfig,
+       _healthConfig = healthConfig ?? const HealthConfig(),
        _experimental = ExperimentalApi._(
          config: config,
          experimentalFeatures: experimentalFeatures,
@@ -551,6 +570,8 @@ class Serverpod {
     endpoints.initializeEndpoints(server);
 
     _internalSession = InternalSession(server: server, enableLogging: false);
+
+    _healthCheckService = HealthCheckService(this, _healthConfig);
 
     if (Features.enableFutureCalls) {
       _futureCallManager = FutureCallManager(
@@ -1276,6 +1297,12 @@ class Serverpod {
         'applyMigrations: $applyMigrations\n'
         'applyRepairMigration: $applyRepairMigration';
   }
+
+  /// The health check service for orchestrator probes.
+  ///
+  /// Provides access to the service that manages `/livez`, `/readyz`,
+  /// and `/startupz` endpoints.
+  HealthCheckService get healthCheckService => _healthCheckService;
 }
 
 // _shutdownTestAuditor is a stop-gap test approach to verify the robustness

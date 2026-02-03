@@ -14,7 +14,7 @@ void main() {
       publicPort: 0,
     );
 
-    setUpAll(() async {
+    setUp(() async {
       server = Serverpod(
         [],
         Protocol(),
@@ -34,7 +34,7 @@ void main() {
       await server.start();
     });
 
-    tearDownAll(() async {
+    tearDown(() async {
       await server.shutdown(exitProcess: false);
     });
 
