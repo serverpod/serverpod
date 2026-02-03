@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io' as io;
 import 'dart:typed_data';
 
-import 'package:relic/io_adapter.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/caches.dart';
 import 'package:serverpod/src/database/database.dart';

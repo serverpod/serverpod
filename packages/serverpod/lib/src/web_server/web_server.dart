@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:relic/io_adapter.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
