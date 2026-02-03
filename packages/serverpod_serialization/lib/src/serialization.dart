@@ -214,6 +214,11 @@ abstract class SerializationManager {
   static Object? _toEncodable(Object? object, bool encodeForProtocol) =>
       switch (object) {
         null => null,
+        bool() => object,
+        num() => object,
+        String() => object,
+        List() => object,
+        Map<String, dynamic> m => m,
         DateTime() => object.toUtc().toIso8601String(),
         ByteData() => object.base64encodedString(),
         Duration() => object.inMilliseconds,
