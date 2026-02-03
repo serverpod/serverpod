@@ -236,12 +236,19 @@ class JsonStdOutLogWriter extends LogWriter {
 class TextStdOutLogWriter extends LogWriter {
   static bool headersWritten = false;
 
-  /// Formats a duration value expressed in milliseconds so that it is easy to
-  /// read in logs. Very short durations will be printed using microseconds
-  /// while longer ones will switch to milliseconds or seconds.
-  static String _printDuration(double? milliseconds) {
-    if (milliseconds == null) return 'n/a';
-    var micros = (milliseconds * Duration.microsecondsPerMillisecond).round();
+  /// Converts a duration value expressed in seconds to a [Duration].
+  static Duration? _secondsToDuration(double? seconds) {
+    if (seconds == null) return null;
+    var microseconds = (seconds * Duration.microsecondsPerSecond);
+    return Duration(microseconds: microseconds.round());
+  }
+
+  /// Formats a [Duration] so that it is easy to read in logs. Very short
+  /// durations will be printed using microseconds while longer ones will
+  /// switch to milliseconds or seconds.
+  static String _printDuration(Duration? duration) {
+    if (duration == null) return 'n/a';
+    var micros = duration.inMicroseconds;
     if (micros < 1000) {
       // Ignore required because dart does not understand that "µ" is a valid
       // character in a string.
@@ -326,7 +333,7 @@ class TextStdOutLogWriter extends LogWriter {
       id: _logId,
       fields: {
         'id': entry.id,
-        'duration': _printDuration(entry.duration),
+        'duration': _printDuration(_secondsToDuration(entry.duration)),
         'query': entry.query,
       },
       error: entry.error,
@@ -365,7 +372,7 @@ class TextStdOutLogWriter extends LogWriter {
           fields: {
             'user': entry.userId,
             'queries': entry.numQueries,
-            'duration': _printDuration(entry.duration),
+            'duration': _printDuration(_secondsToDuration(entry.duration)),
           },
           error: entry.error,
           stackTrace: entry.stackTrace,
@@ -378,7 +385,7 @@ class TextStdOutLogWriter extends LogWriter {
           id: _logId,
           fields: {
             'queries': entry.numQueries,
-            'duration': _printDuration(entry.duration),
+            'duration': _printDuration(_secondsToDuration(entry.duration)),
           },
           error: entry.error,
           stackTrace: entry.stackTrace,
@@ -392,7 +399,7 @@ class TextStdOutLogWriter extends LogWriter {
           fields: {
             'user': entry.userId,
             'queries': entry.numQueries,
-            'duration': _printDuration(entry.duration),
+            'duration': _printDuration(_secondsToDuration(entry.duration)),
           },
           error: entry.error,
           stackTrace: entry.stackTrace,
@@ -407,7 +414,7 @@ class TextStdOutLogWriter extends LogWriter {
           fields: {
             'user': entry.userId,
             'queries': entry.numQueries,
-            'duration': _printDuration(entry.duration),
+            'duration': _printDuration(_secondsToDuration(entry.duration)),
           },
           error: entry.error,
           stackTrace: entry.stackTrace,
@@ -420,7 +427,7 @@ class TextStdOutLogWriter extends LogWriter {
           id: _logId,
           fields: {
             'queries': entry.numQueries,
-            'duration': _printDuration(entry.duration),
+            'duration': _printDuration(_secondsToDuration(entry.duration)),
           },
           error: entry.error,
           stackTrace: entry.stackTrace,
@@ -435,7 +442,7 @@ class TextStdOutLogWriter extends LogWriter {
           fields: {
             'sessionType': _session.runtimeType.toString(),
             'queries': entry.numQueries,
-            'duration': _printDuration(entry.duration),
+            'duration': _printDuration(_secondsToDuration(entry.duration)),
           },
           error: entry.error,
           stackTrace: entry.stackTrace,

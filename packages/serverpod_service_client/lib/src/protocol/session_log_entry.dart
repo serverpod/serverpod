@@ -87,8 +87,8 @@ abstract class SessionLogEntry implements _i1.SerializableModel {
   /// The method this session is associated with, if any.
   String? method;
 
-  /// The running time of this session. May be null if the session is still
-  /// active.
+  /// The running time of this session, in seconds. May be null if the session
+  /// is still active.
   double? duration;
 
   /// The number of queries performed during this session.
