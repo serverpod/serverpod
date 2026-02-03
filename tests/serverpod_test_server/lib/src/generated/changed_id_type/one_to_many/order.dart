@@ -371,6 +371,8 @@ class OrderUuidRepository {
     _i1.OrderByListBuilder<OrderUuidTable>? orderByList,
     _i1.Transaction? transaction,
     OrderUuidInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<OrderUuid>(
       where: where?.call(OrderUuid.t),
@@ -381,6 +383,8 @@ class OrderUuidRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -410,6 +414,8 @@ class OrderUuidRepository {
     _i1.OrderByListBuilder<OrderUuidTable>? orderByList,
     _i1.Transaction? transaction,
     OrderUuidInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<OrderUuid>(
       where: where?.call(OrderUuid.t),
@@ -419,6 +425,8 @@ class OrderUuidRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -428,11 +436,15 @@ class OrderUuidRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     OrderUuidInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<OrderUuid>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -590,6 +602,22 @@ class OrderUuidRepository {
     return session.db.count<OrderUuid>(
       where: where?.call(OrderUuid.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [OrderUuid] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<OrderUuidTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<OrderUuid>(
+      where: where(OrderUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

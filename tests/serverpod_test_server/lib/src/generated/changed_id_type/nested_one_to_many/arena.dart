@@ -268,6 +268,8 @@ class ArenaUuidRepository {
     _i1.OrderByListBuilder<ArenaUuidTable>? orderByList,
     _i1.Transaction? transaction,
     ArenaUuidInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ArenaUuid>(
       where: where?.call(ArenaUuid.t),
@@ -278,6 +280,8 @@ class ArenaUuidRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -307,6 +311,8 @@ class ArenaUuidRepository {
     _i1.OrderByListBuilder<ArenaUuidTable>? orderByList,
     _i1.Transaction? transaction,
     ArenaUuidInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ArenaUuid>(
       where: where?.call(ArenaUuid.t),
@@ -316,6 +322,8 @@ class ArenaUuidRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -325,11 +333,15 @@ class ArenaUuidRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     ArenaUuidInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ArenaUuid>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -487,6 +499,22 @@ class ArenaUuidRepository {
     return session.db.count<ArenaUuid>(
       where: where?.call(ArenaUuid.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ArenaUuid] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<ArenaUuidTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ArenaUuid>(
+      where: where(ArenaUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

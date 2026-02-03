@@ -183,6 +183,8 @@ class ServerOnlyChangedIdFieldClassRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ServerOnlyChangedIdFieldClass>(
       where: where?.call(ServerOnlyChangedIdFieldClass.t),
@@ -192,6 +194,8 @@ class ServerOnlyChangedIdFieldClassRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -220,6 +224,8 @@ class ServerOnlyChangedIdFieldClassRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ServerOnlyChangedIdFieldClass>(
       where: where?.call(ServerOnlyChangedIdFieldClass.t),
@@ -228,6 +234,8 @@ class ServerOnlyChangedIdFieldClassRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -236,10 +244,14 @@ class ServerOnlyChangedIdFieldClassRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ServerOnlyChangedIdFieldClass>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -405,6 +417,23 @@ class ServerOnlyChangedIdFieldClassRepository {
     return session.db.count<ServerOnlyChangedIdFieldClass>(
       where: where?.call(ServerOnlyChangedIdFieldClass.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ServerOnlyChangedIdFieldClass] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>
+    where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ServerOnlyChangedIdFieldClass>(
+      where: where(ServerOnlyChangedIdFieldClass.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

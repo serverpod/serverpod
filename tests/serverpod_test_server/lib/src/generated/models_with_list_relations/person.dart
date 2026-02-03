@@ -353,6 +353,8 @@ class PersonRepository {
     _i1.OrderByListBuilder<PersonTable>? orderByList,
     _i1.Transaction? transaction,
     PersonInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Person>(
       where: where?.call(Person.t),
@@ -363,6 +365,8 @@ class PersonRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -392,6 +396,8 @@ class PersonRepository {
     _i1.OrderByListBuilder<PersonTable>? orderByList,
     _i1.Transaction? transaction,
     PersonInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Person>(
       where: where?.call(Person.t),
@@ -401,6 +407,8 @@ class PersonRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -410,11 +418,15 @@ class PersonRepository {
     int id, {
     _i1.Transaction? transaction,
     PersonInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Person>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -572,6 +584,22 @@ class PersonRepository {
     return session.db.count<Person>(
       where: where?.call(Person.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Person] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<PersonTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Person>(
+      where: where(Person.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

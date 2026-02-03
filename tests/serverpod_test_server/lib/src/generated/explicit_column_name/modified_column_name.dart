@@ -246,6 +246,8 @@ class ModifiedColumnNameRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ModifiedColumnName>(
       where: where?.call(ModifiedColumnName.t),
@@ -255,6 +257,8 @@ class ModifiedColumnNameRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -283,6 +287,8 @@ class ModifiedColumnNameRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ModifiedColumnName>(
       where: where?.call(ModifiedColumnName.t),
@@ -291,6 +297,8 @@ class ModifiedColumnNameRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -299,10 +307,14 @@ class ModifiedColumnNameRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ModifiedColumnName>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -462,6 +474,22 @@ class ModifiedColumnNameRepository {
     return session.db.count<ModifiedColumnName>(
       where: where?.call(ModifiedColumnName.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ModifiedColumnName] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<ModifiedColumnNameTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ModifiedColumnName>(
+      where: where(ModifiedColumnName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

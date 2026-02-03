@@ -289,6 +289,8 @@ class PlayerRepository {
     _i1.OrderByListBuilder<PlayerTable>? orderByList,
     _i1.Transaction? transaction,
     PlayerInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Player>(
       where: where?.call(Player.t),
@@ -299,6 +301,8 @@ class PlayerRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -328,6 +332,8 @@ class PlayerRepository {
     _i1.OrderByListBuilder<PlayerTable>? orderByList,
     _i1.Transaction? transaction,
     PlayerInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Player>(
       where: where?.call(Player.t),
@@ -337,6 +343,8 @@ class PlayerRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -346,11 +354,15 @@ class PlayerRepository {
     int id, {
     _i1.Transaction? transaction,
     PlayerInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Player>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -508,6 +520,22 @@ class PlayerRepository {
     return session.db.count<Player>(
       where: where?.call(Player.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Player] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<PlayerTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Player>(
+      where: where(Player.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

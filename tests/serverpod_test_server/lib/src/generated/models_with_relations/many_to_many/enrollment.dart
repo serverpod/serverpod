@@ -338,6 +338,8 @@ class EnrollmentRepository {
     _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
     _i1.Transaction? transaction,
     EnrollmentInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Enrollment>(
       where: where?.call(Enrollment.t),
@@ -348,6 +350,8 @@ class EnrollmentRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -377,6 +381,8 @@ class EnrollmentRepository {
     _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
     _i1.Transaction? transaction,
     EnrollmentInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Enrollment>(
       where: where?.call(Enrollment.t),
@@ -386,6 +392,8 @@ class EnrollmentRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -395,11 +403,15 @@ class EnrollmentRepository {
     int id, {
     _i1.Transaction? transaction,
     EnrollmentInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Enrollment>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -557,6 +569,22 @@ class EnrollmentRepository {
     return session.db.count<Enrollment>(
       where: where?.call(Enrollment.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Enrollment] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<EnrollmentTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Enrollment>(
+      where: where(Enrollment.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

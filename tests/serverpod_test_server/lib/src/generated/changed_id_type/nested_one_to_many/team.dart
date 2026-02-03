@@ -374,6 +374,8 @@ class TeamIntRepository {
     _i1.OrderByListBuilder<TeamIntTable>? orderByList,
     _i1.Transaction? transaction,
     TeamIntInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<TeamInt>(
       where: where?.call(TeamInt.t),
@@ -384,6 +386,8 @@ class TeamIntRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -413,6 +417,8 @@ class TeamIntRepository {
     _i1.OrderByListBuilder<TeamIntTable>? orderByList,
     _i1.Transaction? transaction,
     TeamIntInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<TeamInt>(
       where: where?.call(TeamInt.t),
@@ -422,6 +428,8 @@ class TeamIntRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -431,11 +439,15 @@ class TeamIntRepository {
     int id, {
     _i1.Transaction? transaction,
     TeamIntInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<TeamInt>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -593,6 +605,22 @@ class TeamIntRepository {
     return session.db.count<TeamInt>(
       where: where?.call(TeamInt.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [TeamInt] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<TeamIntTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<TeamInt>(
+      where: where(TeamInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }
