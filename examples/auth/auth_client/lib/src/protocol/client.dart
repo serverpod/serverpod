@@ -263,6 +263,30 @@ class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
 }
 
 /// {@category Endpoint}
+class EndpointFacebookIdp extends _i1.EndpointFacebookIdpBase {
+  EndpointFacebookIdp(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'facebookIdp';
+
+  /// Validates a Facebook access token and either logs in the associated user or
+  /// creates a new user account if the Facebook account ID is not yet known.
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  ///
+  /// The access token is verified using Facebook's Debug Token API to ensure
+  /// it's valid and belongs to the correct app.
+  /// If the token is invalid or expired, the [FacebookAccessTokenVerificationException] will be thrown.
+  @override
+  _i3.Future<_i4.AuthSuccess> login({required String accessToken}) =>
+      caller.callServerEndpoint<_i4.AuthSuccess>(
+        'facebookIdp',
+        'login',
+        {'accessToken': accessToken},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointFirebaseIdp extends _i1.EndpointFirebaseIdpBase {
   EndpointFirebaseIdp(_i2.EndpointCaller caller) : super(caller);
 
@@ -549,6 +573,7 @@ class Client extends _i2.ServerpodClientShared {
     anonymousIdp = EndpointAnonymousIdp(this);
     appleIdp = EndpointAppleIdp(this);
     emailIdp = EndpointEmailIdp(this);
+    facebookIdp = EndpointFacebookIdp(this);
     firebaseIdp = EndpointFirebaseIdp(this);
     gitHubIdp = EndpointGitHubIdp(this);
     googleIdp = EndpointGoogleIdp(this);
@@ -564,6 +589,8 @@ class Client extends _i2.ServerpodClientShared {
   late final EndpointAppleIdp appleIdp;
 
   late final EndpointEmailIdp emailIdp;
+
+  late final EndpointFacebookIdp facebookIdp;
 
   late final EndpointFirebaseIdp firebaseIdp;
 
@@ -586,6 +613,7 @@ class Client extends _i2.ServerpodClientShared {
     'anonymousIdp': anonymousIdp,
     'appleIdp': appleIdp,
     'emailIdp': emailIdp,
+    'facebookIdp': facebookIdp,
     'firebaseIdp': firebaseIdp,
     'gitHubIdp': gitHubIdp,
     'googleIdp': googleIdp,

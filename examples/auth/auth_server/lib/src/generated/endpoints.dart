@@ -49,25 +49,31 @@ class Endpoints extends _i1.EndpointDispatch {
           'emailIdp',
           null,
         ),
-      'firebaseIdp': _i5.FirebaseIdpEndpoint()
+      'facebookIdp': _i5.FacebookIdpEndpoint()
+        ..initialize(
+          server,
+          'facebookIdp',
+          null,
+        ),
+      'firebaseIdp': _i6.FirebaseIdpEndpoint()
         ..initialize(
           server,
           'firebaseIdp',
           null,
         ),
-      'gitHubIdp': _i6.GitHubIdpEndpoint()
+      'gitHubIdp': _i7.GitHubIdpEndpoint()
         ..initialize(
           server,
           'gitHubIdp',
           null,
         ),
-      'googleIdp': _i7.GoogleIdpEndpoint()
+      'googleIdp': _i8.GoogleIdpEndpoint()
         ..initialize(
           server,
           'googleIdp',
           null,
         ),
-      'refreshJwtTokens': _i8.RefreshJwtTokensEndpoint()
+      'refreshJwtTokens': _i9.RefreshJwtTokensEndpoint()
         ..initialize(
           server,
           'refreshJwtTokens',
@@ -355,6 +361,31 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['facebookIdp'] = _i1.EndpointConnector(
+      name: 'facebookIdp',
+      endpoint: endpoints['facebookIdp']!,
+      methodConnectors: {
+        'login': _i1.MethodConnector(
+          name: 'login',
+          params: {
+            'accessToken': _i1.ParameterDescription(
+              name: 'accessToken',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['facebookIdp'] as _i5.FacebookIdpEndpoint).login(
+                    session,
+                    accessToken: params['accessToken'],
+                  ),
+        ),
+      },
+    );
     connectors['firebaseIdp'] = _i1.EndpointConnector(
       name: 'firebaseIdp',
       endpoint: endpoints['firebaseIdp']!,
@@ -373,7 +404,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['firebaseIdp'] as _i5.FirebaseIdpEndpoint).login(
+                  (endpoints['firebaseIdp'] as _i6.FirebaseIdpEndpoint).login(
                     session,
                     idToken: params['idToken'],
                   ),
@@ -418,7 +449,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['gitHubIdp'] as _i6.GitHubIdpEndpoint).login(
+                  (endpoints['gitHubIdp'] as _i7.GitHubIdpEndpoint).login(
                     session,
                     code: params['code'],
                     codeVerifier: params['codeVerifier'],
@@ -460,7 +491,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['googleIdp'] as _i7.GoogleIdpEndpoint).login(
+                  (endpoints['googleIdp'] as _i8.GoogleIdpEndpoint).login(
                     session,
                     idToken: params['idToken'],
                     accessToken: params['accessToken'],
@@ -497,7 +528,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['refreshJwtTokens']
-                          as _i8.RefreshJwtTokensEndpoint)
+                          as _i9.RefreshJwtTokensEndpoint)
                       .refreshAccessToken(
                         session,
                         refreshToken: params['refreshToken'],
