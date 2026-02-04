@@ -219,6 +219,7 @@ class ServerpodConfig {
             sessionLogsConfigJson,
             ServerpodConfigMap.sessionLogs,
             databaseEnabled: database != null,
+            runMode: runMode,
           )
         : null;
 
@@ -761,11 +762,17 @@ class SessionLogConfig {
     Map sessionLogConfigJson,
     String name, {
     required bool databaseEnabled,
+    required String runMode,
   }) {
+    final defaults = SessionLogConfig.buildDefault(
+      databaseEnabled: databaseEnabled,
+      runMode: runMode,
+    );
+
     var configuredLogFormat =
         sessionLogConfigJson[ServerpodEnv.sessionConsoleLogFormat.configKey];
 
-    ConsoleLogFormat logFormat = ConsoleLogFormat.defaultFormat;
+    ConsoleLogFormat logFormat = defaults.consoleLogFormat;
     if (configuredLogFormat != null) {
       logFormat = ConsoleLogFormat.parse(configuredLogFormat);
     }
@@ -775,7 +782,7 @@ class SessionLogConfig {
           sessionLogConfigJson[ServerpodEnv
               .sessionPersistentLogEnabled
               .configKey] ??
-          false,
+          defaults.persistentEnabled,
       cleanupInterval: _parseDurationWithValidation(
         sessionLogConfigJson[ServerpodEnv.sessionLogCleanupInterval.configKey],
       ),
@@ -786,11 +793,12 @@ class SessionLogConfig {
         sessionLogConfigJson[ServerpodEnv.sessionLogRetentionCount.configKey],
         ServerpodEnv.sessionLogRetentionCount.configKey,
       ),
+
       consoleEnabled:
           sessionLogConfigJson[ServerpodEnv
               .sessionConsoleLogEnabled
               .configKey] ??
-          false,
+          defaults.consoleEnabled,
       consoleLogFormat: logFormat,
     );
   }
