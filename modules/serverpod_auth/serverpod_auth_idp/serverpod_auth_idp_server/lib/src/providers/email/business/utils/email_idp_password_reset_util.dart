@@ -105,7 +105,7 @@ class EmailIdpPasswordResetUtil {
     );
 
     final passwordResetRequestId = resetRequest.id!;
-    _config.sendPasswordResetVerificationCode?.call(
+    await _config.sendPasswordResetVerificationCode?.call(
       session,
       email: email,
       passwordResetRequestId: passwordResetRequestId,
@@ -217,7 +217,7 @@ class EmailIdpPasswordResetUtil {
     );
 
     // Call the password reset completion callback
-    _config.onPasswordResetCompleted?.call(
+    await _config.onPasswordResetCompleted?.call(
       session,
       emailAccountId: account.id!,
       transaction: transaction,
