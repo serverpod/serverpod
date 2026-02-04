@@ -472,6 +472,67 @@ jobs:
       - name: Run version change test
         run: util/run_tests_version_change
 
+  cloud_storage_integration_tests:
+    name: Cloud Storage Integration Tests (${{ matrix.provider.name }})
+    runs-on: ubuntu-latest
+    # Only run on push events or PRs from the same repository (not forks)
+    # This prevents secrets from being exposed to fork PRs
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ["3.32.0", "3.38.4"]
+        provider:
+          - name: AWS S3
+            package: serverpod_cloud_storage_s3
+            env_prefix: AWS
+          - name: Cloudflare R2
+            package: serverpod_cloud_storage_r2
+            env_prefix: R2
+          - name: GCP
+            package: serverpod_cloud_storage_gcp
+            env_prefix: GCP
+    env:
+      # AWS S3
+      SERVERPOD_TEST_AWS_HMAC_ACCESS_KEY_ID: ${{ secrets.TEST_AWS_HMAC_ACCESS_KEY_ID }}
+      SERVERPOD_TEST_AWS_HMAC_SECRET_KEY: ${{ secrets.TEST_AWS_HMAC_SECRET_KEY }}
+      SERVERPOD_TEST_AWS_BUCKET: ${{ secrets.TEST_AWS_BUCKET }}
+      SERVERPOD_TEST_AWS_REGION: ${{ secrets.TEST_AWS_REGION }}
+      # Cloudflare R2
+      SERVERPOD_TEST_R2_HMAC_ACCESS_KEY_ID: ${{ secrets.TEST_R2_HMAC_ACCESS_KEY_ID }}
+      SERVERPOD_TEST_R2_HMAC_SECRET_KEY: ${{ secrets.TEST_R2_HMAC_SECRET_KEY }}
+      SERVERPOD_TEST_R2_BUCKET: ${{ secrets.TEST_R2_BUCKET }}
+      SERVERPOD_TEST_R2_ACCOUNT_ID: ${{ secrets.TEST_R2_ACCOUNT_ID }}
+      # GCP (S3-compatible HMAC)
+      SERVERPOD_TEST_GCP_HMAC_ACCESS_KEY_ID: ${{ secrets.TEST_GCP_HMAC_ACCESS_KEY_ID }}
+      SERVERPOD_TEST_GCP_HMAC_SECRET_KEY: ${{ secrets.TEST_GCP_HMAC_SECRET_KEY }}
+      SERVERPOD_TEST_GCP_BUCKET: ${{ secrets.TEST_GCP_BUCKET }}
+      SERVERPOD_TEST_GCP_REGION: ${{ secrets.TEST_GCP_REGION }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - name: Check if credentials are available
+        id: check-secrets
+        run: |
+          KEY_VAR="SERVERPOD_TEST_${{ matrix.provider.env_prefix }}_HMAC_ACCESS_KEY_ID"
+          if [ -n "${!KEY_VAR}" ]; then
+            echo "has_secrets=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_secrets=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Run ${{ matrix.provider.name }} integration tests
+        if: steps.check-secrets.outputs.has_secrets == 'true'
+        run: |
+          cd integrations/${{ matrix.provider.package }}
+          dart pub get
+          dart test test/integration --reporter=failures-only
+      - name: Skip ${{ matrix.provider.name }} tests (no secrets)
+        if: steps.check-secrets.outputs.has_secrets != 'true'
+        run: echo "${{ matrix.provider.name }} credentials not configured. Skipping integration tests."
+
   publish_check:
     name: Publish check
     runs-on: ubuntu-latest
