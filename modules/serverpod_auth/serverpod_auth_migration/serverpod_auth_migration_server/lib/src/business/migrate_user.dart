@@ -129,6 +129,7 @@ Future<void> _importSessions(
   for (final authKey in authKeys) {
     await AuthBackwardsCompatibility.storeLegacySession(
       session,
+      legacySessionId: authKey.id!,
       authUserId: newAuthUserId,
       scopeNames: authKey.scopeNames,
       sessionKeyHash: authKey.hash,

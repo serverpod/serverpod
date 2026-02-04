@@ -1,0 +1,13 @@
+{
+  "__className__": "serverpod.DatabaseDefinition",
+  "moduleName": "middleware",
+  "tables": [],
+  "installedModules": [
+    {
+      "__className__": "serverpod.DatabaseMigrationVersion",
+      "module": "serverpod",
+      "version": "20260129180959368"
+    }
+  ],
+  "migrationApiVersion": 1
+}

@@ -40,8 +40,7 @@ class ServerpodClientRequestDelegateImpl
             url,
             body: body,
             headers: {
-              if (authenticationValue != null)
-                'authorization': authenticationValue,
+              'authorization': ?authenticationValue,
             },
           )
           .timeout(connectionTimeout);

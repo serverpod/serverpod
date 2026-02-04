@@ -19,7 +19,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_svg: ^2.2.1
-  flutter_web_auth_2: ^5.0.0
+  flutter_web_auth_2: ^5.0.1
   google_fonts: ">=6.3.2 <9.0.0"
   google_sign_in: ^7.2.0
   google_sign_in_web: ^1.1.0

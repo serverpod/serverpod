@@ -1,0 +1,114 @@
+import 'package:serverpod/src/server/health/health_config.dart';
+import 'package:serverpod/src/server/health/health_indicator.dart';
+import 'package:test/test.dart';
+
+/// A minimal health indicator implementation for testing config.
+class _TestIndicator extends HealthIndicator<double> {
+  final String _name;
+
+  _TestIndicator(this._name);
+
+  @override
+  String get name => _name;
+
+  @override
+  Future<HealthCheckResult> check() async {
+    return pass();
+  }
+}
+
+void main() {
+  group('Given default HealthConfig when created', () {
+    late HealthConfig config;
+
+    setUp(() {
+      config = const HealthConfig();
+    });
+
+    test('then cacheTtl is 1 second', () {
+      expect(config.cacheTtl, const Duration(seconds: 1));
+    });
+
+    test('then additionalReadinessIndicators is empty', () {
+      expect(config.additionalReadinessIndicators, isEmpty);
+    });
+
+    test('then additionalStartupIndicators is empty', () {
+      expect(config.additionalStartupIndicators, isEmpty);
+    });
+  });
+
+  test(
+    'Given HealthConfig created with custom cacheTtl '
+    'when accessing cacheTtl '
+    'then the custom value is preserved',
+    () {
+      const config = HealthConfig(
+        cacheTtl: Duration(seconds: 5),
+      );
+
+      expect(config.cacheTtl, const Duration(seconds: 5));
+    },
+  );
+
+  test(
+    'Given HealthConfig created with additionalReadinessIndicators '
+    'when accessing additionalReadinessIndicators '
+    'then the indicators are preserved',
+    () {
+      final indicators = [
+        _TestIndicator('test:one'),
+        _TestIndicator('test:two'),
+      ];
+      final config = HealthConfig(
+        additionalReadinessIndicators: indicators,
+      );
+
+      expect(config.additionalReadinessIndicators, hasLength(2));
+      expect(config.additionalReadinessIndicators[0].name, 'test:one');
+      expect(config.additionalReadinessIndicators[1].name, 'test:two');
+    },
+  );
+
+  test(
+    'Given HealthConfig created with additionalStartupIndicators '
+    'when accessing additionalStartupIndicators '
+    'then the indicators are preserved',
+    () {
+      final indicators = [
+        _TestIndicator('startup:warmup'),
+      ];
+      final config = HealthConfig(
+        additionalStartupIndicators: indicators,
+      );
+
+      expect(config.additionalStartupIndicators, hasLength(1));
+      expect(config.additionalStartupIndicators[0].name, 'startup:warmup');
+    },
+  );
+
+  test(
+    'Given HealthConfig created with all custom options '
+    'when accessing all properties '
+    'then all values are preserved',
+    () {
+      final additionalReadinessIndicators = [_TestIndicator('readiness:test')];
+      final additionalStartupIndicators = [_TestIndicator('startup:test')];
+      final config = HealthConfig(
+        cacheTtl: const Duration(milliseconds: 500),
+        additionalReadinessIndicators: additionalReadinessIndicators,
+        additionalStartupIndicators: additionalStartupIndicators,
+      );
+
+      expect(config.cacheTtl, const Duration(milliseconds: 500));
+      expect(
+        config.additionalReadinessIndicators,
+        same(additionalReadinessIndicators),
+      );
+      expect(
+        config.additionalStartupIndicators,
+        same(additionalStartupIndicators),
+      );
+    },
+  );
+}

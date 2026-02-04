@@ -1,3 +1,4 @@
+@Timeout(Duration(minutes: 5))
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
