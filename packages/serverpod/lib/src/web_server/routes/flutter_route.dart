@@ -57,11 +57,15 @@ class FlutterRoute extends Route {
   /// caching of critical Flutter files (index.html, flutter_service_worker.js,
   /// flutter_bootstrap.js, manifest.json, version.json) while allowing other
   /// files to be cached according to browser heuristics.
+  ///
+  /// The [host] parameter restricts this route to a specific virtual host
+  /// (defaults to `null`, matching any host).
   FlutterRoute(
     this.directory, {
     File? indexFile,
     this.cacheControlFactory = _defaultFlutterCacheControl,
     this.cacheBustingConfig,
+    super.host,
   }) : indexFile = indexFile ?? File(path.join(directory.path, 'index.html')),
        super(methods: {Method.get, Method.head});
 

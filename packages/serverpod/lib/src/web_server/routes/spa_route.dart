@@ -37,11 +37,15 @@ class SpaRoute extends Route {
   ///
   /// Cache behavior can be customized using [cacheControlFactory] for static
   /// asset headers and [cacheBustingConfig] for cache busting support.
+  ///
+  /// The [host] parameter restricts this route to a specific virtual host
+  /// (defaults to `null`, matching any host).
   SpaRoute(
     this.directory, {
     required this.fallback,
     this.cacheControlFactory,
     this.cacheBustingConfig,
+    super.host,
   }) : super(methods: {Method.get, Method.head});
 
   @override
