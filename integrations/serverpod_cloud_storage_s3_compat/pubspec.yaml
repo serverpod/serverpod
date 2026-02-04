@@ -14,17 +14,20 @@ environment:
 dependencies:
   amazon_cognito_identity_dart_2: ^3.5.0
   crypto: ^3.0.2
-  http: '>=1.1.0 <2.0.0'
+  http: ">=1.1.0 <2.0.0"
   path: ^1.8.3
   serverpod: 3.2.3
+  serverpod_client: 3.2.3
+  test: ^1.25.5
 
 dev_dependencies:
-  lints: '>=3.0.0 <7.0.0'
-  test: ^1.25.5
+  lints: ">=3.0.0 <7.0.0"
 
 dependency_overrides:
   serverpod:
     path: ../../packages/serverpod
+  serverpod_client:
+    path: ../../packages/serverpod_client
   serverpod_serialization:
     path: ../../packages/serverpod_serialization
   serverpod_shared:

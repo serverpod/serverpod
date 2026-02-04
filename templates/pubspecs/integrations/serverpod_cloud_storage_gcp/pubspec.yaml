@@ -12,22 +12,24 @@ environment:
 
 dependencies:
   crypto: ^3.0.2
-  googleapis: '>=11.0.0 <16.0.0'
-  googleapis_auth: '>=1.6.0 <3.0.0'
-  http: '>=1.1.0 <2.0.0'
+  googleapis: ">=11.0.0 <16.0.0"
+  googleapis_auth: ">=1.6.0 <3.0.0"
+  http: ">=1.1.0 <2.0.0"
   path: ^1.8.3
-  pointycastle: '>=3.7.4 <5.0.0'
+  pointycastle: ">=3.7.4 <5.0.0"
   serverpod: SERVERPOD_VERSION
   serverpod_cloud_storage_s3_compat: SERVERPOD_VERSION
 
 dev_dependencies:
-  lints: '>=3.0.0 <7.0.0'
+  lints: ">=3.0.0 <7.0.0"
   mocktail: ^1.0.0
   test: ^1.25.5
 
 dependency_overrides:
   serverpod:
     path: ../../packages/serverpod
+  serverpod_client:
+    path: ../../packages/serverpod_client
   serverpod_cloud_storage_s3_compat:
     path: ../serverpod_cloud_storage_s3_compat
   serverpod_serialization:
