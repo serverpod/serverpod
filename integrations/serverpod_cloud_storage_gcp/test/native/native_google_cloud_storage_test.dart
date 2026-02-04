@@ -510,7 +510,10 @@ void main() {
           expect(url, contains('X-Goog-Credential='));
           expect(url, contains('X-Goog-Date='));
           expect(url, contains('X-Goog-Expires=900')); // 15 minutes
-          expect(url, contains('X-Goog-SignedHeaders=host'));
+          expect(
+            url,
+            contains('X-Goog-SignedHeaders=content-type%3Bhost%3Bx-goog-acl'),
+          );
           expect(url, contains('X-Goog-Signature='));
         },
       );
@@ -549,6 +552,72 @@ void main() {
           'application/octet-stream',
         );
       });
+
+      test(
+        'then it includes public-read ACL header when public is true',
+        () async {
+          final description = await storage.createDirectFileUploadDescription(
+            session: mockSession,
+            path: 'uploads/test-file.txt',
+          );
+
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          expect(data['headers']['x-goog-acl'], 'public-read');
+        },
+      );
     });
+  });
+
+  group('Given a NativeGoogleCloudStorage with public set to false', () {
+    late NativeGoogleCloudStorage storage;
+    late MockStorageApi mockStorageApi;
+    late MockObjectsResource mockObjects;
+    late MockSession mockSession;
+
+    setUp(() {
+      mockStorageApi = MockStorageApi();
+      mockObjects = MockObjectsResource();
+      mockSession = MockSession();
+      when(() => mockStorageApi.objects).thenReturn(mockObjects);
+
+      final keyGen = RSAKeyGenerator()
+        ..init(
+          ParametersWithRandom(
+            RSAKeyGeneratorParameters(BigInt.parse('65537'), 2048, 64),
+            SecureRandom('Fortuna')..seed(
+              KeyParameter(
+                Uint8List.fromList(
+                  List.generate(32, (i) => i),
+                ),
+              ),
+            ),
+          ),
+        );
+      final keyPair = keyGen.generateKeyPair();
+      // ignore: unnecessary_cast
+      final privateKey = keyPair.privateKey as RSAPrivateKey;
+
+      storage = NativeGoogleCloudStorage.withSigningCredentials(
+        storageId: 'private-storage',
+        bucket: 'test-bucket',
+        public: false,
+        storageApi: mockStorageApi,
+        clientEmail: 'test@test-project.iam.gserviceaccount.com',
+        privateKey: privateKey,
+      );
+    });
+
+    test(
+      'when creating direct upload description then it includes private ACL header',
+      () async {
+        final description = await storage.createDirectFileUploadDescription(
+          session: mockSession,
+          path: 'uploads/private-file.txt',
+        );
+
+        final data = jsonDecode(description!) as Map<String, dynamic>;
+        expect(data['headers']['x-goog-acl'], 'private');
+      },
+    );
   });
 }
