@@ -302,16 +302,21 @@ class NativeGoogleCloudStorage extends CloudStorage {
 
     final signingCredentials = await _signingCredentialsCompleter.future;
 
+    final fileName = p.basename(path);
+    final contentType = _detectMimeType(fileName);
+    final acl = public ? 'public-read' : 'private';
+
     final signedUrl = _createSignedUrl(
       credentials: signingCredentials,
       bucket: bucket,
       path: path,
       expiration: expirationDuration,
       method: 'PUT',
+      headers: {
+        'content-type': contentType,
+        'x-goog-acl': acl,
+      },
     );
-
-    final fileName = p.basename(path);
-    final contentType = _detectMimeType(fileName);
 
     return jsonEncode({
       'url': signedUrl,
@@ -320,6 +325,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
       'file-name': fileName,
       'headers': {
         'Content-Type': contentType,
+        'x-goog-acl': acl,
       },
     });
   }
@@ -331,6 +337,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required String path,
     required Duration expiration,
     required String method,
+    Map<String, String> headers = const {},
   }) {
     final now = DateTime.now().toUtc();
     final datestamp = _formatDatestamp(now);
@@ -341,23 +348,26 @@ class NativeGoogleCloudStorage extends CloudStorage {
     final canonicalUri = '/$bucket/$encodedPath';
     final credentialScope = '$datestamp/auto/storage/goog4_request';
 
+    // Build canonical headers (must be sorted by lowercase header name)
+    final allHeaders = {'host': host, ...headers};
+    final sortedHeaderNames = allHeaders.keys.toList()..sort();
+    final canonicalHeaders =
+        '${sortedHeaderNames.map((k) => '$k:${allHeaders[k]}').join('\n')}\n';
+    final signedHeaders = sortedHeaderNames.join(';');
+
     // Build canonical query string (sorted alphabetically)
     final queryParams = <String, String>{
       'X-Goog-Algorithm': 'GOOG4-RSA-SHA256',
       'X-Goog-Credential': '${credentials.clientEmail}/$credentialScope',
       'X-Goog-Date': timestamp,
       'X-Goog-Expires': expiration.inSeconds.toString(),
-      'X-Goog-SignedHeaders': 'host',
+      'X-Goog-SignedHeaders': signedHeaders,
     };
 
     final canonicalQueryString = queryParams.entries
         .toList()
         .map((e) => '${_uriEncode(e.key)}=${_uriEncode(e.value)}')
         .join('&');
-
-    // Build canonical headers
-    final canonicalHeaders = 'host:$host\n';
-    final signedHeaders = 'host';
 
     // Build canonical request
     final canonicalRequest = [
