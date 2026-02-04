@@ -11,6 +11,8 @@ import 'forms/password_reset_complete.dart';
 import 'forms/registration_complete.dart';
 import 'forms/verification.dart';
 
+export './forms/verification.dart' show VerificationCodeConfig;
+
 /// A widget that provides email-based authentication functionality.
 ///
 /// The widget can manage its own authentication state, or you can provide an
