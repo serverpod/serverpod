@@ -52,3 +52,7 @@ templates/serverpod_templates/modulename_server/test/integration/test_tools/
 .claude
 .augment
 .openhands
+
+# Integration test credentials (never commit)
+integrations/.env.test
+.env.test
