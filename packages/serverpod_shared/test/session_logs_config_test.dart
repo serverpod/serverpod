@@ -354,6 +354,113 @@ sessionLogs:
   );
 
   test(
+    'Given a Serverpod config with database and no sessionLogs when only SERVERPOD_SESSION_CONSOLE_LOG_ENABLED is set to true then persistent logging keeps default enabled and console logging is true',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        developmentRunMode,
+        serverId,
+        passwords,
+        {
+          'apiServer': {
+            'port': 8080,
+            'publicHost': 'localhost',
+            'publicPort': 8080,
+            'publicScheme': 'http',
+          },
+          'database': {
+            'host': 'localhost',
+            'port': 5432,
+            'name': 'testDb',
+            'user': 'testUser',
+          },
+        },
+        environment: {
+          'SERVERPOD_SESSION_CONSOLE_LOG_ENABLED': 'true',
+        },
+      );
+
+      expect(
+        config.sessionLogs.persistentEnabled,
+        isTrue,
+        reason:
+            'Persistent logging should default to true when database is enabled',
+      );
+      expect(config.sessionLogs.consoleEnabled, isTrue);
+      expect(
+        config.sessionLogs.consoleLogFormat,
+        ConsoleLogFormat.text,
+        reason: 'Development run mode defaults to text format',
+      );
+    },
+  );
+
+  test(
+    'Given a Serverpod config with database and no sessionLogs when only SERVERPOD_SESSION_CONSOLE_LOG_ENABLED is set to false then persistent logging keeps default enabled and console logging is false',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        developmentRunMode,
+        serverId,
+        passwords,
+        {
+          'apiServer': {
+            'port': 8080,
+            'publicHost': 'localhost',
+            'publicPort': 8080,
+            'publicScheme': 'http',
+          },
+          'database': {
+            'host': 'localhost',
+            'port': 5432,
+            'name': 'testDb',
+            'user': 'testUser',
+          },
+        },
+        environment: {
+          'SERVERPOD_SESSION_CONSOLE_LOG_ENABLED': 'false',
+        },
+      );
+
+      expect(config.sessionLogs.persistentEnabled, isTrue);
+      expect(config.sessionLogs.consoleEnabled, isFalse);
+    },
+  );
+
+  test(
+    'Given a Serverpod config with database and no sessionLogs when only SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED is set then console logging keeps default',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        developmentRunMode,
+        serverId,
+        passwords,
+        {
+          'apiServer': {
+            'port': 8080,
+            'publicHost': 'localhost',
+            'publicPort': 8080,
+            'publicScheme': 'http',
+          },
+          'database': {
+            'host': 'localhost',
+            'port': 5432,
+            'name': 'testDb',
+            'user': 'testUser',
+          },
+        },
+        environment: {
+          'SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED': 'false',
+        },
+      );
+
+      expect(config.sessionLogs.persistentEnabled, isFalse);
+      expect(
+        config.sessionLogs.consoleEnabled,
+        isTrue,
+        reason: 'Console logging should default to true in development',
+      );
+    },
+  );
+
+  test(
     'Given a Serverpod config with an invalid console log format when loading from Map then argument error is thrown',
     () {
       var serverpodConfig = '''
