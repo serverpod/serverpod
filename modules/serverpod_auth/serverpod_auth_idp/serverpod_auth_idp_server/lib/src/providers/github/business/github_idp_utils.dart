@@ -87,11 +87,12 @@ class GitHubIdpUtils {
     required final String redirectUri,
   }) async {
     try {
-      return await _oauth2Util.exchangeCodeForToken(
+      final tokenResponse = await _oauth2Util.exchangeCodeForToken(
         code: code,
         codeVerifier: codeVerifier,
         redirectUri: redirectUri,
       );
+      return tokenResponse.accessToken;
     } on OAuth2Exception catch (e) {
       session.log(e.toString(), level: LogLevel.debug);
       throw GitHubAccessTokenVerificationException();

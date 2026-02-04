@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
@@ -29,8 +26,11 @@ typedef GetExtraGitHubInfoCallback =
 /// This class implements both [IdentityProviderBuilder] and [OAuth2PkceServerConfig]
 /// for generic OAuth2 PKCE token exchange.
 class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
-  /// The OAuth credentials used for GitHub sign-in.
-  final GitHubOAuthCredentials oauthCredentials;
+  /// The client ID from your GitHub OAuth App.
+  final String clientId;
+
+  /// The client secret from your GitHub OAuth App.
+  final String clientSecret;
 
   /// OAuth2 PKCE server config for GitHub.
   late final OAuth2PkceServerConfig oauth2Config;
@@ -71,15 +71,16 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
 
   /// Creates a new instance of [GitHubIdpConfig].
   GitHubIdpConfig({
-    required this.oauthCredentials,
+    required this.clientId,
+    required this.clientSecret,
     this.githubAccountDetailsValidation = validateGitHubAccountDetails,
     this.getExtraGitHubInfoCallback,
   }) : oauth2Config = OAuth2PkceServerConfig(
          tokenEndpointUrl: Uri.https('github.com', '/login/oauth/access_token'),
-         clientId: oauthCredentials.clientId,
-         clientSecret: oauthCredentials.clientSecret,
+         clientId: clientId,
+         clientSecret: clientSecret,
          credentialsLocation: OAuth2CredentialsLocation.body,
-         parseAccessToken: parseAccessToken,
+         parseTokenResponse: parseTokenResponse,
        );
 
   /// Default validation function for extracting additional GitHub account details.
@@ -95,8 +96,10 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
     }
   }
 
-  /// Default GitHub access token parser for OAuth2PkceServerConfig.
-  static String parseAccessToken(final Map<String, dynamic> responseBody) {
+  /// Default GitHub token response parser for OAuth2PkceServerConfig.
+  static OAuth2PkceTokenResponse parseTokenResponse(
+    final Map<String, dynamic> responseBody,
+  ) {
     final error = responseBody['error'] as String?;
     if (error != null) {
       final errorDescription = responseBody['error_description'] as String?;
@@ -105,13 +108,15 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
         ' $error${errorDescription != null ? ' - $errorDescription' : ''}',
       );
     }
+
     final accessToken = responseBody['access_token'] as String?;
     if (accessToken == null) {
       throw const OAuth2MissingAccessTokenException(
         'No access token in GitHub response',
       );
     }
-    return accessToken;
+
+    return OAuth2PkceTokenResponse(accessToken: accessToken);
   }
 
   @override
@@ -134,8 +139,8 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
 /// This constructor requires that a [Serverpod] instance has already been initialized.
 ///
 /// The following keys must be present in the `passwords.yaml` file:
-/// - `githubClientId`: The OAuth client ID from GitHub
-/// - `githubClientSecret`: The OAuth client secret from GitHub
+/// - `githubClientId`: The client ID from your GitHub OAuth App
+/// - `githubClientSecret`: The client secret from your GitHub OAuth App
 ///
 /// Example `passwords.yaml`:
 /// ```yaml
@@ -146,75 +151,9 @@ class GitHubIdpConfigFromPasswords extends GitHubIdpConfig {
   /// Creates a new [GitHubIdpConfigFromPasswords] instance.
   GitHubIdpConfigFromPasswords()
     : super(
-        oauthCredentials: GitHubOAuthCredentials._(
-          clientId: Serverpod.instance.getPasswordOrThrow('githubClientId'),
-          clientSecret: Serverpod.instance.getPasswordOrThrow(
-            'githubClientSecret',
-          ),
+        clientId: Serverpod.instance.getPasswordOrThrow('githubClientId'),
+        clientSecret: Serverpod.instance.getPasswordOrThrow(
+          'githubClientSecret',
         ),
       );
-}
-
-/// Contains the credentials of GitHub's App.
-/// The GitHub App can be created from GitHub's
-/// developer settings at:
-/// https://github.com/settings/developers
-final class GitHubOAuthCredentials {
-  /// The OAuth client ID from GitHub.
-  final String clientId;
-
-  /// The OAuth client secret from GitHub.
-  final String clientSecret;
-
-  /// Private constructor to initialize the object.
-  const GitHubOAuthCredentials._({
-    required this.clientId,
-    required this.clientSecret,
-  });
-
-  /// Creates a new instance of [GitHubOAuthCredentials] from a JSON map.
-  /// Expects the JSON to have the following structure:
-  ///
-  /// Example:
-  /// {
-  ///   "clientId": "your-github-oauth-client-id",
-  ///   "clientSecret": "your-github-oauth-client-secret"
-  /// }
-  ///
-  factory GitHubOAuthCredentials.fromJson(final Map<String, dynamic> json) {
-    final clientId = json['clientId'] as String?;
-    if (clientId == null) {
-      throw const FormatException('Missing "clientId"');
-    }
-
-    final clientSecret = json['clientSecret'] as String?;
-    if (clientSecret == null) {
-      throw const FormatException('Missing "clientSecret"');
-    }
-
-    return GitHubOAuthCredentials._(
-      clientId: clientId,
-      clientSecret: clientSecret,
-    );
-  }
-
-  /// Creates a new instance of [GitHubOAuthCredentials] from a JSON string.
-  /// The string is expected to follow the format described in
-  /// [GitHubOAuthCredentials.fromJson].
-  factory GitHubOAuthCredentials.fromJsonString(final String jsonString) {
-    final data = jsonDecode(jsonString);
-    if (data is! Map<String, dynamic>) {
-      throw const FormatException('Not a JSON (map) object');
-    }
-
-    return GitHubOAuthCredentials.fromJson(data);
-  }
-
-  /// Creates a new instance of [GitHubOAuthCredentials] from a JSON file.
-  /// The file is expected to follow the format described in
-  /// [GitHubOAuthCredentials.fromJson].
-  factory GitHubOAuthCredentials.fromJsonFile(final File file) {
-    final jsonString = file.readAsStringSync();
-    return GitHubOAuthCredentials.fromJsonString(jsonString);
-  }
 }

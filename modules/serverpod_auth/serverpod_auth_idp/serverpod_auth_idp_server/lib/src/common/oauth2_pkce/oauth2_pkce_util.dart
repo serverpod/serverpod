@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 
 import 'oauth2_exception.dart';
 import 'oauth2_pkce_server_config.dart';
+import 'oauth2_pkce_token_response.dart';
 
 /// Generic utility class for OAuth2 token exchange with optional PKCE support.
 ///
@@ -58,14 +59,15 @@ class OAuth2PkceUtil {
   /// - [httpClient]: Optional HTTP client for testing with mocks. If not provided,
   ///   a new [http.Client] is created
   ///
-  /// Returns the access token string on success.
+  /// Returns the [OAuth2PkceTokenResponse] on success, including access token,
+  /// optional refresh token, expiration time, and provider-specific data.
   ///
   /// Throws one of the following [OAuth2Exception] subclasses in case of errors:
   /// - [OAuth2InvalidResponseException] if the response cannot be parsed
   /// - [OAuth2MissingAccessTokenException] if the access token is missing
   /// - [OAuth2NetworkErrorException] if a network error occurs
   /// - [OAuth2UnknownException] for other unexpected errors
-  Future<String> exchangeCodeForToken({
+  Future<OAuth2PkceTokenResponse> exchangeCodeForToken({
     required final String code,
     final String? codeVerifier,
     required final String redirectUri,
@@ -132,12 +134,12 @@ class OAuth2PkceUtil {
       }
 
       try {
-        return config.parseAccessToken(responseBody);
+        return config.parseTokenResponse(responseBody);
       } on OAuth2Exception {
         rethrow;
       } catch (e) {
         throw OAuth2MissingAccessTokenException(
-          'Access token missing or invalid in response: ${e.toString()}',
+          'Token response parsing failed: ${e.toString()}',
         );
       }
     } on OAuth2Exception {

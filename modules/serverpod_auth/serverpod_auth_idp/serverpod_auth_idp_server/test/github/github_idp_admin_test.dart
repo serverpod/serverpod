@@ -16,10 +16,8 @@ void main() {
 
   final githubIdp = GitHubIdp(
     GitHubIdpConfig(
-      oauthCredentials: GitHubOAuthCredentials.fromJson({
-        'clientId': 'test-client-id',
-        'clientSecret': 'test-client-secret',
-      }),
+      clientId: 'test-client-id',
+      clientSecret: 'test-client-secret',
     ),
     tokenIssuer: tokenManager,
     authUsers: authUsers,

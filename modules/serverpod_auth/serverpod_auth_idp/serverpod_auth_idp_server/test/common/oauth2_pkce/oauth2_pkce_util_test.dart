@@ -73,14 +73,14 @@ void main() {
         statusCode: 200,
         responseBody: jsonEncode({
           'access_token': accessToken,
-          'token_type': 'Bearer',
+          'refresh_token': 'test_refresh_token_67890',
           'expires_in': 3600,
         }),
       );
     });
 
     group('when exchanging code for token', () {
-      late String result;
+      late OAuth2PkceTokenResponse result;
 
       setUp(() async {
         result = await oauth2Util.exchangeCodeForToken(
@@ -92,7 +92,18 @@ void main() {
       });
 
       test('then it returns an access token', () {
-        expect(result, equals('test_access_token_12345'));
+        expect(result.accessToken, equals('test_access_token_12345'));
+      });
+
+      test('then it includes refresh token and expires in', () {
+        expect(result.refreshToken, equals('test_refresh_token_67890'));
+        expect(result.expiresIn, equals(3600));
+      });
+
+      test('then it includes raw response data', () {
+        expect(result.raw, isNotEmpty);
+        expect(result.raw['access_token'], equals('test_access_token_12345'));
+        expect(result.raw['refresh_token'], equals('test_refresh_token_67890'));
       });
     });
   });

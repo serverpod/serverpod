@@ -8,7 +8,7 @@ class TestOAuth2PkceServerConfig {
   /// The underlying OAuth2 PKCE server configuration.
   late final OAuth2PkceServerConfig oauth2Config;
 
-  /// Whether parseAccessToken should throw on error field.
+  /// Whether parseTokenResponse should throw on error field.
   final bool testShouldThrowOnError;
 
   /// Creates a test configuration with sensible defaults.
@@ -38,32 +38,37 @@ class TestOAuth2PkceServerConfig {
       clientSecretKey: testClientSecretKey,
       tokenRequestHeaders: testTokenRequestHeaders,
       tokenRequestParams: testTokenRequestParams,
-      parseAccessToken: _parseAccessToken,
+      parseTokenResponse: _parseTokenResponse,
     );
   }
 
-  /// Custom access token parser for testing.
-  String _parseAccessToken(final Map<String, dynamic> responseBody) {
-    // Check for error in response
+  /// Custom token response parser for testing.
+  OAuth2PkceTokenResponse _parseTokenResponse(
+    final Map<String, dynamic> responseBody,
+  ) {
     if (testShouldThrowOnError) {
       final error = responseBody['error'] as String?;
       if (error != null) {
         final errorDescription = responseBody['error_description'] as String?;
         throw OAuth2InvalidResponseException(
-          'Invalid response from GitHub:'
-          ' $error${errorDescription != null ? ' - $errorDescription' : ''}',
+          'Invalid response from test provider:'
+          ' $error${errorDescription != null ? " - $errorDescription" : ""}',
         );
       }
     }
 
-    // Extract access token
     final accessToken = responseBody['access_token'] as String?;
     if (accessToken == null) {
       throw const OAuth2MissingAccessTokenException(
-        'No access token in GitHub response',
+        'No access token in test response',
       );
     }
 
-    return accessToken;
+    return OAuth2PkceTokenResponse(
+      accessToken: accessToken,
+      refreshToken: responseBody['refresh_token'] as String?,
+      expiresIn: responseBody['expires_in'] as int?,
+      raw: responseBody,
+    );
   }
 }

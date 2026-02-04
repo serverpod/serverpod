@@ -1,3 +1,5 @@
+import 'oauth2_pkce_token_response.dart';
+
 /// Location where OAuth2 credentials should be sent in token requests.
 ///
 /// Per [RFC 6749 Section 2.3](https://tools.ietf.org/html/rfc6749#section-2.3),
@@ -17,8 +19,13 @@ enum OAuth2CredentialsLocation {
   body,
 }
 
-/// Signature for parsing the access token from the provider's token response.
-typedef ParseAccessToken = String Function(Map<String, dynamic> responseBody);
+/// Callback to parse the OAuth2 token response from the provider.
+///
+/// Should extract the access token, optional fields, and validate for errors.
+/// Throws [OAuth2InvalidResponseException] or [OAuth2MissingAccessTokenException]
+/// on validation failures.
+typedef ParseTokenResponse =
+    OAuth2PkceTokenResponse Function(Map<String, dynamic> responseBody);
 
 /// Configuration for OAuth2 token exchange (server-side).
 class OAuth2PkceServerConfig {
@@ -46,15 +53,15 @@ class OAuth2PkceServerConfig {
   /// Extra parameters for token requests.
   final Map<String, dynamic> tokenRequestParams;
 
-  /// Callback to parse access token from provider response.
-  final ParseAccessToken parseAccessToken;
+  /// Callback to parse the token response from the provider.
+  final ParseTokenResponse parseTokenResponse;
 
   /// Create a new server config for OAuth2 PKCE.
   const OAuth2PkceServerConfig({
     required this.tokenEndpointUrl,
     required this.clientId,
     required this.clientSecret,
-    required this.parseAccessToken,
+    required this.parseTokenResponse,
     this.clientIdKey = 'client_id',
     this.clientSecretKey = 'client_secret',
     this.credentialsLocation = OAuth2CredentialsLocation.header,
