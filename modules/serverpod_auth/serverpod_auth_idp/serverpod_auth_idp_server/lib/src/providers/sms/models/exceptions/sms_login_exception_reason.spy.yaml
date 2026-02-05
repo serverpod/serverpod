@@ -1,0 +1,17 @@
+### The reason for why the SMS login request was rejected.
+enum: SmsLoginExceptionReason
+serialized: byName
+default: unknown
+values:
+  ### The login request has expired.
+  - expired
+  ### Invalid verification code or login request id.
+  - invalid
+  ### The password does not match the configured policy.
+  - policyViolation
+  ### A password is required for new user registration.
+  - passwordRequired
+  ### Too many login attempts.
+  - tooManyAttempts
+  ### Unknown error occurred.
+  - unknown

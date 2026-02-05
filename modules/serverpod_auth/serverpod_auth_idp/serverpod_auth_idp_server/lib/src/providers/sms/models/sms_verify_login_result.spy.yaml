@@ -1,0 +1,8 @@
+### Result of verifying a SMS login code.
+class: SmsVerifyLoginResult
+fields:
+  ### The completion token for finishing the login.
+  token: String
+
+  ### Whether a password is needed (for new user auto-registration).
+  needsPassword: bool

@@ -1,0 +1,6 @@
+### Exception thrown when SMS account creation request fails.
+###
+### Inspect the [reason] to determine the cause of the failure.
+exception: SmsAccountRequestException
+fields:
+  reason: SmsAccountRequestExceptionReason

@@ -1,0 +1,6 @@
+### Exception thrown when SMS phone bind request fails.
+###
+### Inspect the [reason] to determine the cause of the failure.
+exception: SmsPhoneBindException
+fields:
+  reason: SmsPhoneBindExceptionReason

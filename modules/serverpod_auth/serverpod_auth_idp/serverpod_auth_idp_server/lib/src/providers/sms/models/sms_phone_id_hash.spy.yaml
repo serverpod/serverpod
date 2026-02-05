@@ -1,0 +1,23 @@
+### Hash-only phone ID storage.
+###
+### Stores only the hash of the phone number for privacy.
+### The original phone number cannot be recovered.
+class: SmsPhoneIdHash
+serverOnly: true
+table: serverpod_auth_idp_sms_phone_id_hash
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### The [AuthUser] this phone belongs to
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  ### The hash of the phone number.
+  phoneHash: String
+
+indexes:
+  serverpod_auth_idp_sms_phone_id_hash_auth_user_id:
+    fields: authUserId
+    unique: true
+  serverpod_auth_idp_sms_phone_id_hash_phone_hash:
+    fields: phoneHash
+    unique: true

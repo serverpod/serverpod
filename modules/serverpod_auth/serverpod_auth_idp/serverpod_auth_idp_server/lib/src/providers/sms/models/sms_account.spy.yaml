@@ -1,0 +1,22 @@
+### A fully configured SMS account to be used for logins.
+class: SmsAccount
+serverOnly: true
+table: serverpod_auth_idp_sms_account
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### The [AuthUser] this account belongs to
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  ### The time when this account was created.
+  createdAt: DateTime, defaultModel=now
+
+  ### The hashed password of the user.
+  ###
+  ### Stored in PHC format: $argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}$${base64Hash}
+  passwordHash: String
+
+indexes:
+  serverpod_auth_idp_sms_account_auth_user_id:
+    fields: authUserId
+    unique: true

@@ -1,0 +1,27 @@
+### Pending SMS phone bind request.
+class: SmsBindRequest
+serverOnly: true
+table: serverpod_auth_idp_sms_bind_request
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### The time when this request was created.
+  createdAt: DateTime, default=now
+
+  ### The [AuthUser] this bind request belongs to
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  ### The hash of the phone number.
+  phoneHash: String
+
+  ### The associated challenge for this request
+  challenge: SecretChallenge?, relation(onDelete=Cascade)
+
+  ### Used to complete the phone binding.
+  ### This will be set after the verification challenge has been validated.
+  bindChallenge: SecretChallenge?, relation(onDelete=Cascade, optional)
+
+indexes:
+  serverpod_auth_idp_sms_bind_request_unique:
+    fields: authUserId, phoneHash
+    unique: true

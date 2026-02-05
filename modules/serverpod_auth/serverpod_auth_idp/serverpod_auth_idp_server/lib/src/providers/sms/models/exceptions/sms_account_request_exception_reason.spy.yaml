@@ -1,0 +1,15 @@
+### The reason for why the SMS account creation request was rejected.
+enum: SmsAccountRequestExceptionReason
+serialized: byName
+default: unknown
+values:
+  ### The account request has expired.
+  - expired
+  ### Invalid verification code or account request id.
+  - invalid
+  ### The password does not match the configured policy.
+  - policyViolation
+  ### Too many verification attempts.
+  - tooManyAttempts
+  ### Unknown error occurred.
+  - unknown
