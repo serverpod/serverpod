@@ -10,6 +10,8 @@ environment:
 
 dependencies:
   clock: ^1.1.1
+  crypto: ^3.0.5
+  cryptography: ^2.7.0
   dart_jsonwebtoken: ^3.1.0
   email_validator: '>=2.1.17 <4.0.0'
   googleapis: '>=11.0.0 <16.0.0'
