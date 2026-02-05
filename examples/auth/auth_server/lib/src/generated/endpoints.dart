@@ -456,7 +456,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['googleIdp'] as _i6.GoogleIdpEndpoint)
+              ) async => (endpoints['googleIdp'] as _i7.GoogleIdpEndpoint)
                   .hasAccount(session),
         ),
       },
@@ -548,7 +548,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['passkeyIdp'] as _i8.PasskeyIdpEndpoint)
+              ) async => (endpoints['passkeyIdp'] as _i9.PasskeyIdpEndpoint)
                   .hasAccount(session),
         ),
       },
