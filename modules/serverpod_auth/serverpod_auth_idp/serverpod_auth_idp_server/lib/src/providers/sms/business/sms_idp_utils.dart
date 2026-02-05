@@ -1,4 +1,5 @@
 import '../../../../core.dart';
+import '../../../../generated/protocol.dart';
 import 'sms_idp_config.dart';
 import 'sms_idp_server_exceptions.dart';
 import 'utils/sms_idp_account_creation_util.dart';
@@ -112,6 +113,83 @@ class SmsIdpUtils {
       throw SmsPhoneBindInvalidException();
     } on ChallengeAlreadyUsedException {
       throw SmsPhoneBindInvalidException();
+    }
+  }
+
+  /// Wraps a function to convert server-side SMS exceptions to client-serializable exceptions.
+  ///
+  /// This converts internal [SmsServerException] types to the serializable
+  /// exception types defined in the protocol (e.g., [SmsAccountRequestException],
+  /// [SmsLoginException], [SmsPhoneBindException]).
+  static Future<T> withReplacedServerSmsException<T>(
+    Future<T> Function() fn,
+  ) async {
+    try {
+      return await fn();
+    } on SmsServerException catch (e) {
+      switch (e) {
+        case SmsAccountRequestServerException():
+          throw SmsAccountRequestException(reason: e.reason);
+        case SmsLoginServerException():
+          throw SmsLoginException(reason: e.reason);
+        case SmsPhoneBindServerException():
+          throw SmsPhoneBindException(reason: e.reason);
+      }
+    }
+  }
+}
+
+/// Extension to map [SmsAccountRequestServerException] to [SmsAccountRequestExceptionReason].
+extension on SmsAccountRequestServerException {
+  SmsAccountRequestExceptionReason get reason {
+    switch (this) {
+      case SmsAccountAlreadyRegisteredException():
+      case SmsAccountRequestInvalidVerificationCodeException():
+      case SmsAccountRequestNotFoundException():
+      case SmsAccountRequestVerificationCodeAlreadyUsedException():
+      case SmsAccountRequestNotVerifiedException():
+        return SmsAccountRequestExceptionReason.invalid;
+      case SmsAccountRequestVerificationExpiredException():
+        return SmsAccountRequestExceptionReason.expired;
+      case SmsAccountRequestVerificationTooManyAttemptsException():
+        return SmsAccountRequestExceptionReason.tooManyAttempts;
+      case SmsPasswordPolicyViolationException():
+        return SmsAccountRequestExceptionReason.policyViolation;
+    }
+  }
+}
+
+/// Extension to map [SmsLoginServerException] to [SmsLoginExceptionReason].
+extension on SmsLoginServerException {
+  SmsLoginExceptionReason get reason {
+    switch (this) {
+      case SmsLoginInvalidCredentialsException():
+      case SmsLoginNotFoundException():
+        return SmsLoginExceptionReason.invalid;
+      case SmsLoginTooManyAttemptsException():
+        return SmsLoginExceptionReason.tooManyAttempts;
+      case SmsLoginExpiredException():
+        return SmsLoginExceptionReason.expired;
+      case SmsLoginPasswordRequiredException():
+        return SmsLoginExceptionReason.passwordRequired;
+      case SmsLoginPasswordPolicyViolationException():
+        return SmsLoginExceptionReason.policyViolation;
+    }
+  }
+}
+
+/// Extension to map [SmsPhoneBindServerException] to [SmsPhoneBindExceptionReason].
+extension on SmsPhoneBindServerException {
+  SmsPhoneBindExceptionReason get reason {
+    switch (this) {
+      case SmsPhoneBindInvalidException():
+        return SmsPhoneBindExceptionReason.invalid;
+      case SmsPhoneBindTooManyAttemptsException():
+        return SmsPhoneBindExceptionReason.tooManyAttempts;
+      case SmsPhoneBindExpiredException():
+        return SmsPhoneBindExceptionReason.expired;
+      case SmsPhoneAlreadyBoundException():
+        return SmsPhoneBindExceptionReason.phoneAlreadyBound;
     }
   }
 }

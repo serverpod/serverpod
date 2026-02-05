@@ -58,6 +58,10 @@ final class SmsLoginNotFoundException extends SmsLoginServerException {}
 /// Exception thrown when a password is required for login.
 final class SmsLoginPasswordRequiredException extends SmsLoginServerException {}
 
+/// Exception thrown when the password does not meet the policy requirements during login.
+final class SmsLoginPasswordPolicyViolationException
+    extends SmsLoginServerException {}
+
 /// Exception thrown when phone bind credentials are invalid.
 final class SmsPhoneBindInvalidException extends SmsPhoneBindServerException {}
 

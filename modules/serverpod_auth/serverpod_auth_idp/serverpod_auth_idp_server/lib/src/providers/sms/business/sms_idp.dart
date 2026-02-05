@@ -56,12 +56,14 @@ class SmsIdp {
     Transaction? transaction,
   }) async {
     if (!config.enableRegistration) {
-      throw SmsAccountRequestNotFoundException();
+      throw SmsAccountRequestException(
+        reason: SmsAccountRequestExceptionReason.invalid,
+      );
     }
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (transaction) async {
+      (transaction) => SmsIdpUtils.withReplacedServerSmsException(() async {
         try {
           return await utils.accountCreation.startRegistration(
             session,
@@ -76,7 +78,7 @@ class SmsIdp {
           // Return a fake ID to avoid leaking information
           return const Uuid().v7obj();
         }
-      },
+      }),
     );
   }
 
@@ -92,11 +94,13 @@ class SmsIdp {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (transaction) => utils.accountCreation.verifyRegistrationCode(
-        session,
-        accountRequestId: accountRequestId,
-        verificationCode: verificationCode,
-        transaction: transaction,
+      (transaction) => SmsIdpUtils.withReplacedServerSmsException(
+        () => utils.accountCreation.verifyRegistrationCode(
+          session,
+          accountRequestId: accountRequestId,
+          verificationCode: verificationCode,
+          transaction: transaction,
+        ),
       ),
     );
   }
@@ -114,7 +118,7 @@ class SmsIdp {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (transaction) async {
+      (transaction) => SmsIdpUtils.withReplacedServerSmsException(() async {
         final result = await utils.accountCreation.completeAccountCreation(
           session,
           registrationToken: registrationToken,
@@ -137,7 +141,7 @@ class SmsIdp {
           scopes: result.scopes,
           transaction: transaction,
         );
-      },
+      }),
     );
   }
 
@@ -150,15 +154,17 @@ class SmsIdp {
     Transaction? transaction,
   }) async {
     if (!config.enableLogin) {
-      throw SmsLoginInvalidCredentialsException();
+      throw SmsLoginException(reason: SmsLoginExceptionReason.invalid);
     }
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (transaction) => utils.login.startLogin(
-        session,
-        phone: phone,
-        transaction: transaction,
+      (transaction) => SmsIdpUtils.withReplacedServerSmsException(
+        () => utils.login.startLogin(
+          session,
+          phone: phone,
+          transaction: transaction,
+        ),
       ),
     );
   }
@@ -175,11 +181,13 @@ class SmsIdp {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (transaction) => utils.login.verifyLoginCode(
-        session,
-        loginRequestId: loginRequestId,
-        verificationCode: verificationCode,
-        transaction: transaction,
+      (transaction) => SmsIdpUtils.withReplacedServerSmsException(
+        () => utils.login.verifyLoginCode(
+          session,
+          loginRequestId: loginRequestId,
+          verificationCode: verificationCode,
+          transaction: transaction,
+        ),
       ),
     );
   }
@@ -195,12 +203,12 @@ class SmsIdp {
     Transaction? transaction,
   }) async {
     if (!config.enableLogin) {
-      throw SmsLoginInvalidCredentialsException();
+      throw SmsLoginException(reason: SmsLoginExceptionReason.invalid);
     }
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (transaction) async {
+      (transaction) => SmsIdpUtils.withReplacedServerSmsException(() async {
         final request = await utils.login.completeLogin(
           session,
           loginToken: loginToken,
@@ -248,7 +256,7 @@ class SmsIdp {
         }
 
         if (!config.passwordValidationFunction(password ?? '')) {
-          throw SmsPasswordPolicyViolationException();
+          throw SmsLoginPasswordPolicyViolationException();
         }
 
         final authUser = await _authUsers.create(
@@ -310,7 +318,7 @@ class SmsIdp {
           scopes: authUser.scopes,
           transaction: transaction,
         );
-      },
+      }),
     );
   }
 
@@ -324,16 +332,18 @@ class SmsIdp {
     Transaction? transaction,
   }) async {
     if (!config.enableBind) {
-      throw SmsPhoneBindInvalidException();
+      throw SmsPhoneBindException(reason: SmsPhoneBindExceptionReason.invalid);
     }
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (transaction) => utils.bind.startBind(
-        session,
-        authUserId: authUserId,
-        phone: phone,
-        transaction: transaction,
+      (transaction) => SmsIdpUtils.withReplacedServerSmsException(
+        () => utils.bind.startBind(
+          session,
+          authUserId: authUserId,
+          phone: phone,
+          transaction: transaction,
+        ),
       ),
     );
   }
@@ -350,11 +360,13 @@ class SmsIdp {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (transaction) => utils.bind.verifyBindCode(
-        session,
-        bindRequestId: bindRequestId,
-        verificationCode: verificationCode,
-        transaction: transaction,
+      (transaction) => SmsIdpUtils.withReplacedServerSmsException(
+        () => utils.bind.verifyBindCode(
+          session,
+          bindRequestId: bindRequestId,
+          verificationCode: verificationCode,
+          transaction: transaction,
+        ),
       ),
     );
   }
@@ -368,12 +380,12 @@ class SmsIdp {
     Transaction? transaction,
   }) async {
     if (!config.enableBind) {
-      throw SmsPhoneBindInvalidException();
+      throw SmsPhoneBindException(reason: SmsPhoneBindExceptionReason.invalid);
     }
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (transaction) async {
+      (transaction) => SmsIdpUtils.withReplacedServerSmsException(() async {
         final request = await utils.bind.completeBind(
           session,
           bindToken: bindToken,
@@ -415,7 +427,7 @@ class SmsIdp {
           authUserId: authUserId,
           transaction: transaction,
         );
-      },
+      }),
     );
   }
 
