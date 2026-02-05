@@ -186,6 +186,8 @@ class _ConnectedScreenState extends State<ConnectedScreen> {
               SizedBox(height: 8),
               Text('User has Apple: ${connectedIdps!.hasApple ? '✅' : '❌'}'),
               SizedBox(height: 8),
+              Text('User has GitHub: ${connectedIdps!.hasGitHub ? '✅' : '❌'}'),
+              SizedBox(height: 8),
               Text(
                 'User has Firebase: ${connectedIdps!.hasFirebase ? '✅' : '❌'}',
               ),

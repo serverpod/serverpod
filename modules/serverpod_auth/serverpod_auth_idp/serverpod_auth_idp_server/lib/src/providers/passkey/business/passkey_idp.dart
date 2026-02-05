@@ -9,7 +9,7 @@ import 'passkey_idp_config.dart';
 import 'passkey_idp_utils.dart';
 
 /// Passkey account management functions.
-class PasskeyIdp extends Idp {
+class PasskeyIdp {
   /// The method used when authenticating with the Passkey identity provider.
   static const String method = 'passkey';
 
@@ -133,7 +133,7 @@ class PasskeyIdp extends Idp {
     });
   }
 
-  @override
+  /// Determines whether the current session has an associated Passkey account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
 }

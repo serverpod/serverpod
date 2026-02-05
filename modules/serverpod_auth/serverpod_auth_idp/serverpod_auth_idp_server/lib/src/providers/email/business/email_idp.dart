@@ -18,7 +18,7 @@ import 'email_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class EmailIdp extends Idp {
+class EmailIdp {
   /// The method used when authenticating with the Email identity provider.
   static const String method = 'email';
 
@@ -300,7 +300,7 @@ class EmailIdp extends Idp {
     );
   }
 
-  @override
+  /// Determines whether the current session has an associated email account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
 }

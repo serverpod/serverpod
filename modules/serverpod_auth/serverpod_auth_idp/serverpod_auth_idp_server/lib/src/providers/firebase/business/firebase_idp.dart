@@ -18,7 +18,7 @@ import 'firebase_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class FirebaseIdp extends Idp {
+class FirebaseIdp {
   /// The method used when authenticating with the Firebase identity provider.
   static const String method = 'firebase';
 
@@ -139,7 +139,7 @@ class FirebaseIdp extends Idp {
     );
   }
 
-  @override
+  /// Determines whether the current session has an associated Firebase account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
 }

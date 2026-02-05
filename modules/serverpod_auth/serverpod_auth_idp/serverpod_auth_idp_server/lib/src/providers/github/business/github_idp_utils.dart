@@ -261,6 +261,19 @@ class GitHubIdpUtils {
       transaction: transaction,
     );
   }
+
+  /// Returns the possible [GitHubAccount] associated with a session.
+  Future<GitHubAccount?> getAccount(final Session session) {
+    return switch (session.authenticated) {
+      null => Future.value(null),
+      _ => GitHubAccount.db.findFirstRow(
+        session,
+        where: (final t) => t.authUserId.equals(
+          session.authenticated!.authUserId,
+        ),
+      ),
+    };
+  }
 }
 
 extension on Session {

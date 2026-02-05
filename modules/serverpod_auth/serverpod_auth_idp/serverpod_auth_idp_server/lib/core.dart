@@ -6,7 +6,6 @@ library;
 export 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     hide Endpoints, Protocol;
 
-export 'src/common/idp/business/idp.dart';
 export 'src/common/idp/endpoints/idp_endpoint.dart';
 export 'src/common/oauth2_pkce/oauth2_exception.dart';
 export 'src/common/oauth2_pkce/oauth2_pkce_server_config.dart';

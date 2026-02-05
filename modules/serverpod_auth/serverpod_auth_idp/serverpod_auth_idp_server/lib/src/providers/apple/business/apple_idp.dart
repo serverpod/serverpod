@@ -22,7 +22,7 @@ import 'routes/apple_server_notification_route.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class AppleIdp extends Idp {
+class AppleIdp {
   /// The method used when authenticating with the Apple identity provider.
   static const String method = 'apple';
 
@@ -129,7 +129,7 @@ class AppleIdp extends Idp {
     );
   }
 
-  @override
+  /// Determines whether the current session has an associated Apple account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
 
