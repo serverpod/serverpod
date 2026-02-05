@@ -11,38 +11,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/idp_endpoint.dart' as _i2;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i3;
+    as _i2;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{
-      'idp': _i2.IdpEndpoint()
-        ..initialize(
-          server,
-          'idp',
-          'serverpod_auth_idp',
-        ),
-    };
-    connectors['idp'] = _i1.EndpointConnector(
-      name: 'idp',
-      endpoint: endpoints['idp']!,
-      methodConnectors: {
-        'idpAccounts': _i1.MethodConnector(
-          name: 'idpAccounts',
-          params: {},
-          call:
-              (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['idp'] as _i2.IdpEndpoint).idpAccounts(session),
-        ),
-      },
-    );
-    modules['serverpod_auth_core'] = _i3.Endpoints()
+    modules['serverpod_auth_core'] = _i2.Endpoints()
       ..initializeEndpoints(server);
   }
 }

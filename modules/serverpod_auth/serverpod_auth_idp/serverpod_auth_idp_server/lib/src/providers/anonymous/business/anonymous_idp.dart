@@ -8,7 +8,7 @@ import 'anonymous_idp_utils.dart';
 /// The methods defined here are intended to be called from an endpoint.
 class AnonymousIdp {
   /// The method used when authenticating with the anonymous identity provider.
-  static final String method = IdentityProvider.anonymous.name;
+  static const String method = 'anonymous';
 
   /// The configuration for the anonymous identity provider.
   final AnonymousIdpConfig config;

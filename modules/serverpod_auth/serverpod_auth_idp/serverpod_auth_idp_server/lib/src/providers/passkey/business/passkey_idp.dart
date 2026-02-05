@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:passkeys_server/passkeys_server.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/src/common/business/idp.dart';
 
 import '../../../../../core.dart';
 import 'passkey_idp_admin.dart';
@@ -12,7 +11,7 @@ import 'passkey_idp_utils.dart';
 /// Passkey account management functions.
 class PasskeyIdp extends Idp {
   /// The method used when authenticating with the Passkey identity provider.
-  static final String method = IdentityProvider.passkey.name;
+  static const String method = 'passkey';
 
   /// Administrative methods for working with Passkey-backed accounts.
   final PasskeyIdpAdmin admin;
@@ -133,9 +132,6 @@ class PasskeyIdp extends Idp {
       );
     });
   }
-
-  @override
-  String getMethod() => method;
 
   @override
   Future<bool> hasAccount(final Session session) async =>

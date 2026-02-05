@@ -2,6 +2,7 @@ anonymousIdp:
   - login:
 appleIdp:
   - login:
+  - hasAccount:
 emailIdp:
   - login:
   - startRegistration:
@@ -10,15 +11,19 @@ emailIdp:
   - startPasswordReset:
   - verifyPasswordResetCode:
   - finishPasswordReset:
+  - hasAccount:
 firebaseIdp:
   - login:
+  - hasAccount:
 googleIdp:
   - login:
+  - hasAccount:
 refreshJwtTokens:
   - refreshAccessToken:
 passkeyIdp:
   - createChallenge:
   - register:
   - login:
+  - hasAccount:
 greeting:
   - hello:

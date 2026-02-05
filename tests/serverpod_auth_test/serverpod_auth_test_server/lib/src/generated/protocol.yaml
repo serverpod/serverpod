@@ -24,10 +24,13 @@ emailAccount:
   - startPasswordReset:
   - verifyPasswordResetCode:
   - finishPasswordReset:
+  - hasAccount:
 googleAccountBackwardsCompatibilityTest:
   - login:
+  - hasAccount:
 googleAccount:
   - login:
+  - hasAccount:
 jwtRefresh:
   - refreshAccessToken:
 passwordImportingEmailAccount:
@@ -38,6 +41,7 @@ passwordImportingEmailAccount:
   - startPasswordReset:
   - verifyPasswordResetCode:
   - finishPasswordReset:
+  - hasAccount:
 userProfile:
   - removeUserImage:
   - setUserImage:

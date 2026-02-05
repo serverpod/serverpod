@@ -89,13 +89,6 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       _isSignedIn = client.auth.isAuthenticated;
     });
-
-    if (_isSignedIn) {
-      client.modules.serverpod_auth_idp.idp.idpAccounts().then(
-        // ignore: avoid_print
-        (value) => print('Connected IDPs: $value'),
-      );
-    }
   }
 
   @override
@@ -163,6 +156,18 @@ class ConnectedScreen extends StatelessWidget {
                 await client.auth.signOutDevice();
               },
               child: const Text('Sign out'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                final connectedIdps = await client.auth.idp.getConnectedIdps();
+
+                // It is possible to check IDPs by name or with a bool getter.
+                debugPrint('Connected IDPs: ${connectedIdps.names}');
+                debugPrint('Has Google: ${client.auth.idp.hasGoogle}');
+                debugPrint('Has Email: ${client.auth.idp.hasEmail}');
+                debugPrint('Has Custom: ${client.auth.idp.has('customIdp')}');
+              },
+              child: const Text('Get Connected IDPs'),
             ),
             if (client.auth.idp.hasGoogle)
               FilledButton(
