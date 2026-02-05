@@ -290,6 +290,37 @@ class EndpointFirebaseIdp extends _i1.EndpointFirebaseIdpBase {
 }
 
 /// {@category Endpoint}
+class EndpointGitHubIdp extends _i1.EndpointGitHubIdpBase {
+  EndpointGitHubIdp(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'gitHubIdp';
+
+  /// Validates a GitHub authorization code and either logs in the associated
+  /// user or creates a new user account if the GitHub account ID is not yet
+  /// known.
+  ///
+  /// This method exchanges the `authorization code` for an `access token` using
+  /// `PKCE`, then authenticates the user.
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  @override
+  _i3.Future<_i4.AuthSuccess> login({
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
+  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+    'gitHubIdp',
+    'login',
+    {
+      'code': code,
+      'codeVerifier': codeVerifier,
+      'redirectUri': redirectUri,
+    },
+  );
+}
+
+/// {@category Endpoint}
 class EndpointGoogleIdp extends _i1.EndpointGoogleIdpBase {
   EndpointGoogleIdp(_i2.EndpointCaller caller) : super(caller);
 
@@ -467,6 +498,7 @@ class Client extends _i2.ServerpodClientShared {
     appleIdp = EndpointAppleIdp(this);
     emailIdp = EndpointEmailIdp(this);
     firebaseIdp = EndpointFirebaseIdp(this);
+    gitHubIdp = EndpointGitHubIdp(this);
     googleIdp = EndpointGoogleIdp(this);
     refreshJwtTokens = EndpointRefreshJwtTokens(this);
     passkeyIdp = EndpointPasskeyIdp(this);
@@ -481,6 +513,8 @@ class Client extends _i2.ServerpodClientShared {
   late final EndpointEmailIdp emailIdp;
 
   late final EndpointFirebaseIdp firebaseIdp;
+
+  late final EndpointGitHubIdp gitHubIdp;
 
   late final EndpointGoogleIdp googleIdp;
 
@@ -498,6 +532,7 @@ class Client extends _i2.ServerpodClientShared {
     'appleIdp': appleIdp,
     'emailIdp': emailIdp,
     'firebaseIdp': firebaseIdp,
+    'gitHubIdp': gitHubIdp,
     'googleIdp': googleIdp,
     'refreshJwtTokens': refreshJwtTokens,
     'passkeyIdp': passkeyIdp,

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:relic/relic.dart';
-import 'package:relic/io_adapter.dart';
 
 /// A function that can be called to stop the server.
 typedef CloseServerCallback = Future<void> Function();

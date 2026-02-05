@@ -1,5 +1,5 @@
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
 /// Exposes information about available identity providers.
 class AvailableIdps {
@@ -25,8 +25,13 @@ class AvailableIdps {
   bool get hasAny => count > 0;
 
   /// The number of available identity providers.
-  int get count =>
-      [hasEmail, hasGoogle, hasApple, hasFirebase].where((e) => e).length;
+  int get count => [
+    hasEmail,
+    hasGoogle,
+    hasApple,
+    hasFirebase,
+    hasGitHub,
+  ].where((e) => e).length;
 
   /// Whether the anonymous authentication provider is available.
   bool get hasAnonymous => has<EndpointAnonymousIdpBase>();

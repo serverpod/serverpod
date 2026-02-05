@@ -7,10 +7,11 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
 import 'anonymous/anonymous_sign_in_widget.dart';
 import 'apple/apple_sign_in_widget.dart';
-import 'common/widgets/gaps.dart';
 import 'common/widgets/column.dart';
 import 'common/widgets/divider.dart';
+import 'common/widgets/gaps.dart';
 import 'email/email_sign_in_widget.dart';
+import 'github/github_sign_in_widget.dart';
 import 'google/google_sign_in_widget.dart';
 import 'providers.dart';
 
@@ -23,6 +24,8 @@ import 'providers.dart';
 /// Currently supports:
 /// - Email authentication (via [EndpointEmailIdpBase])
 /// - Google Sign-In (via [EndpointGoogleIdpBase])
+/// - Apple Sign-In (via [EndpointAppleIdpBase])
+/// - GitHub Sign-In (via [EndpointGitHubIdpBase])
 ///
 /// The widget separates email authentication from other providers with a
 /// visual divider showing "Or continue with" text.
@@ -65,6 +68,9 @@ class SignInWidget extends StatefulWidget {
   /// Whether to disable the Apple sign-in widget if it is available.
   final bool disableAppleSignInWidget;
 
+  /// Whether to disable the GitHub sign-in widget if it is available.
+  final bool disableGitHubSignInWidget;
+
   /// Customized widget to use for anonymous sign-in.
   final AnonymousSignInWidget? anonymousSignInWidget;
 
@@ -77,6 +83,9 @@ class SignInWidget extends StatefulWidget {
   /// Customized widget to use for Apple sign-in.
   final AppleSignInWidget? appleSignInWidget;
 
+  /// Customized widget to use for GitHub sign-in.
+  final GitHubSignInWidget? githubSignInWidget;
+
   /// Creates an authentication onboarding widget.
   const SignInWidget({
     required this.client,
@@ -86,10 +95,12 @@ class SignInWidget extends StatefulWidget {
     this.disableEmailSignInWidget = false,
     this.disableGoogleSignInWidget = false,
     this.disableAppleSignInWidget = false,
+    this.disableGitHubSignInWidget = false,
     this.anonymousSignInWidget,
     this.emailSignInWidget,
     this.googleSignInWidget,
     this.appleSignInWidget,
+    this.githubSignInWidget,
     super.key,
   });
 
@@ -105,6 +116,7 @@ class _SignInWidgetState extends State<SignInWidget> {
   bool get hasEmail => auth.idp.hasEmail && !widget.disableEmailSignInWidget;
   bool get hasGoogle => auth.idp.hasGoogle && !widget.disableGoogleSignInWidget;
   bool get hasApple => auth.idp.hasApple && !widget.disableAppleSignInWidget;
+  bool get hasGitHub => auth.idp.hasGitHub && !widget.disableGitHubSignInWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -144,6 +156,17 @@ class _SignInWidgetState extends State<SignInWidget> {
       } else {
         socialProviders.add(appleSignInWidget);
       }
+    }
+
+    if (hasGitHub) {
+      socialProviders.add(
+        widget.githubSignInWidget ??
+            GitHubSignInWidget(
+              client: widget.client,
+              onAuthenticated: widget.onAuthenticated,
+              onError: widget.onError,
+            ),
+      );
     }
 
     // TODO: Make this adaptative.

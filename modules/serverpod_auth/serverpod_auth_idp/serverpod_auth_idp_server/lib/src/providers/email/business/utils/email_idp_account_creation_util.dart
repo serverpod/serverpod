@@ -111,7 +111,7 @@ class EmailIdpAccountCreationUtil {
       transaction: transaction,
     );
 
-    _config.sendRegistrationVerificationCode?.call(
+    await _config.sendRegistrationVerificationCode?.call(
       session,
       email: email,
       accountRequestId: emailAccountRequest.id!,

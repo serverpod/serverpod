@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
+import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -250,6 +251,10 @@ class SessionLogManager {
       stderr.writeln('CALL error: $exception');
       stderr.writeln('$stackTrace');
     }
+
+    // Fire-and-forget cleanup if configured. Will only actually run if the
+    // cleanup interval has passed since the last cleanup.
+    unawaited(_session.serverpod.logCleanupManager?.performCleanup(session));
   }
 
   final Lock _openLogLock = Lock();

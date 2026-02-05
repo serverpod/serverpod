@@ -4,6 +4,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_idp_server/providers/github.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
@@ -76,6 +77,22 @@ void main() {
               (final e) => e.key,
               'key',
               'googleClientSecret',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when constructing GitHubIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      () {
+        expect(
+          () => GitHubIdpConfigFromPasswords(),
+          throwsA(
+            isA<PasswordNotFoundException>().having(
+              (final e) => e.key,
+              'key',
+              'githubClientId',
             ),
           ),
         );
@@ -194,6 +211,49 @@ test:
         () {
           final config = GoogleIdpConfigFromPasswords();
           expect(config, isA<GoogleIdpConfig>());
+        },
+      );
+    },
+  );
+
+  group(
+    'Given githubClientId and githubClientSecret passwords are present',
+    tags: TestTags.concurrencyOneTestTags,
+    () {
+      late Directory originalDir;
+
+      setUpAll(() async {
+        originalDir = Directory.current;
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
+test:
+  database: 'test'
+  githubClientId: 'Ov23liABCDEFGHIJKLMN'
+  githubClientSecret: '1234567890abcdef1234567890abcdef12345678'
+''',
+          ),
+        ]).create();
+        Directory.current = d.sandbox;
+
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+        );
+
+        addTearDown(() async {
+          Directory.current = originalDir;
+        });
+      });
+
+      test(
+        'when constructing GitHubIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = GitHubIdpConfigFromPasswords();
+          expect(config, isA<GitHubIdpConfig>());
         },
       );
     },

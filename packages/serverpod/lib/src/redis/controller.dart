@@ -312,6 +312,23 @@ class RedisController {
     }
   }
 
+  /// Tests Redis connectivity with a PING command.
+  ///
+  /// Returns true if Redis responds with PONG, false otherwise.
+  /// This is used by health checks to verify Redis availability.
+  Future<bool> ping() async {
+    if (!await _connect()) {
+      return false;
+    }
+    try {
+      var result = await _command?.send_object(['PING']);
+      return result == 'PONG';
+    } catch (e) {
+      _invalidateCommand();
+      return false;
+    }
+  }
+
   /// Returns a list of
   List<String> get subscribedChannels => _subscriptions.keys.toList();
 }

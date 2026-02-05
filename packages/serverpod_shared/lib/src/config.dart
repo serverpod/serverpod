@@ -83,6 +83,10 @@ class ServerpodConfig {
   /// Defaults to true.
   final bool validateHeaders;
 
+  /// The interval between websocket ping messages.
+  /// Default is 30 seconds.
+  final Duration websocketPingInterval;
+
   /// Creates a new [ServerpodConfig].
   ServerpodConfig({
     required this.apiServer,
@@ -104,6 +108,7 @@ class ServerpodConfig {
     this.futureCall = const FutureCallConfig(),
     this.futureCallExecutionEnabled = true,
     this.validateHeaders = true,
+    this.websocketPingInterval = const Duration(seconds: 30),
   }) : sessionLogs =
            sessionLogs ??
            SessionLogConfig.buildDefault(
@@ -214,6 +219,7 @@ class ServerpodConfig {
             sessionLogsConfigJson,
             ServerpodConfigMap.sessionLogs,
             databaseEnabled: database != null,
+            runMode: runMode,
           )
         : null;
 
@@ -238,6 +244,11 @@ class ServerpodConfig {
       environment,
     );
 
+    var websocketPingInterval = _readWebsocketPingInterval(
+      configMap,
+      environment,
+    );
+
     return ServerpodConfig(
       runMode: runMode,
       serverId: serverId,
@@ -256,6 +267,7 @@ class ServerpodConfig {
       futureCall: futureCallConfig,
       futureCallExecutionEnabled: futureCallExecutionEnabled,
       validateHeaders: validateHeaders,
+      websocketPingInterval: websocketPingInterval,
     );
   }
 
@@ -703,6 +715,15 @@ class SessionLogConfig {
   /// True if persistent logging (e.g., to Redis) should be enabled.
   final bool persistentEnabled;
 
+  /// The interval between log cleanup operations. If null, automatic cleanup is disabled.
+  final Duration? cleanupInterval;
+
+  /// The retention period for log data. If null, time-based cleanup is disabled.
+  final Duration? retentionPeriod;
+
+  /// The maximum number of log entries to keep. If null, count-based cleanup is disabled.
+  final int? retentionCount;
+
   /// True if console logging should be enabled.
   final bool consoleEnabled;
 
@@ -713,6 +734,9 @@ class SessionLogConfig {
   SessionLogConfig({
     required this.persistentEnabled,
     required this.consoleEnabled,
+    required this.cleanupInterval,
+    required this.retentionPeriod,
+    required this.retentionCount,
     ConsoleLogFormat? consoleLogFormat,
   }) : consoleLogFormat = consoleLogFormat ?? ConsoleLogFormat.defaultFormat;
 
@@ -724,6 +748,9 @@ class SessionLogConfig {
   }) {
     return SessionLogConfig(
       persistentEnabled: databaseEnabled,
+      cleanupInterval: const Duration(hours: 24),
+      retentionPeriod: const Duration(days: 90),
+      retentionCount: 100_000,
       consoleEnabled: !databaseEnabled || runMode == _developmentRunMode,
       consoleLogFormat: runMode == _developmentRunMode
           ? ConsoleLogFormat.text
@@ -735,11 +762,17 @@ class SessionLogConfig {
     Map sessionLogConfigJson,
     String name, {
     required bool databaseEnabled,
+    required String runMode,
   }) {
+    final defaults = SessionLogConfig.buildDefault(
+      databaseEnabled: databaseEnabled,
+      runMode: runMode,
+    );
+
     var configuredLogFormat =
         sessionLogConfigJson[ServerpodEnv.sessionConsoleLogFormat.configKey];
 
-    ConsoleLogFormat logFormat = ConsoleLogFormat.defaultFormat;
+    ConsoleLogFormat logFormat = defaults.consoleLogFormat;
     if (configuredLogFormat != null) {
       logFormat = ConsoleLogFormat.parse(configuredLogFormat);
     }
@@ -749,12 +782,23 @@ class SessionLogConfig {
           sessionLogConfigJson[ServerpodEnv
               .sessionPersistentLogEnabled
               .configKey] ??
-          false,
+          defaults.persistentEnabled,
+      cleanupInterval: _parseDurationWithValidation(
+        sessionLogConfigJson[ServerpodEnv.sessionLogCleanupInterval.configKey],
+      ),
+      retentionPeriod: _parseDurationWithValidation(
+        sessionLogConfigJson[ServerpodEnv.sessionLogRetentionPeriod.configKey],
+      ),
+      retentionCount: _parseIntWithValidation(
+        sessionLogConfigJson[ServerpodEnv.sessionLogRetentionCount.configKey],
+        ServerpodEnv.sessionLogRetentionCount.configKey,
+      ),
+
       consoleEnabled:
           sessionLogConfigJson[ServerpodEnv
               .sessionConsoleLogEnabled
               .configKey] ??
-          false,
+          defaults.consoleEnabled,
       consoleLogFormat: logFormat,
     );
   }
@@ -843,6 +887,26 @@ Map? _redisConfigMap(Map configMap, Map<String, String> environment) {
   ]);
 }
 
+Duration? _parseDurationWithValidation(dynamic value) {
+  if (value is Duration?) return value;
+  if (value is! String || !isValidDuration(value)) {
+    throw ArgumentError(
+      'Invalid duration: "$value". Expected a duration string in the format '
+      '"Xd Xh Xmin Xs Xms" (e.g., "1d 2h 30min 45s 100ms"). Any combination of '
+      'units is allowed.',
+    );
+  }
+  return parseDuration(value);
+}
+
+int? _parseIntWithValidation(dynamic value, String configKey) {
+  if (value is int?) return value;
+  if (value is! String || int.tryParse(value) == null) {
+    throw ArgumentError('Invalid $configKey: "$value". Expected an integer.');
+  }
+  return int.parse(value);
+}
+
 Map? _buildSessionLogsConfigMap(
   Map configMap,
   Map<String, String> environment,
@@ -851,6 +915,9 @@ Map? _buildSessionLogsConfigMap(
 
   return _buildConfigMap(logsConfig, environment, [
     (ServerpodEnv.sessionPersistentLogEnabled, bool.parse),
+    (ServerpodEnv.sessionLogCleanupInterval, _parseDurationWithValidation),
+    (ServerpodEnv.sessionLogRetentionPeriod, _parseDurationWithValidation),
+    (ServerpodEnv.sessionLogRetentionCount, int.parse),
     (ServerpodEnv.sessionConsoleLogEnabled, bool.parse),
     (ServerpodEnv.sessionConsoleLogFormat, null),
   ]);
@@ -1147,6 +1214,40 @@ bool _readValidateHeaders(
 
   validateHeaders ??= true;
   return validateHeaders;
+}
+
+Duration _readWebsocketPingInterval(
+  Map<dynamic, dynamic> configMap,
+  Map<String, String> environment,
+) {
+  final envVariable = ServerpodEnv.websocketPingInterval.envVariable;
+  final configKey = ServerpodEnv.websocketPingInterval.configKey;
+
+  var websocketPingInterval = configMap[configKey];
+  var sourceDescription = '$configKey from configuration';
+
+  if (environment[envVariable] != null) {
+    websocketPingInterval = environment[envVariable];
+    sourceDescription = '$envVariable from environment variable';
+  }
+
+  int? seconds;
+  if (websocketPingInterval == null) {
+    seconds = 30;
+  } else if (websocketPingInterval is int) {
+    seconds = websocketPingInterval;
+  } else if (websocketPingInterval is String) {
+    seconds = int.tryParse(websocketPingInterval);
+  }
+
+  if (seconds == null || seconds <= 0) {
+    throw ArgumentError(
+      'Invalid $sourceDescription: $websocketPingInterval. '
+      'Expected a positive integer greater than 0.',
+    );
+  }
+
+  return Duration(seconds: seconds);
 }
 
 /// Validates that a JSON configuration contains all required keys, and that

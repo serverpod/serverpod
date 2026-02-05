@@ -12,7 +12,7 @@ export '../util/default_code_generators.dart';
 
 /// Function to be called after a password reset is successfully completed.
 typedef OnPasswordResetCompletedFunction =
-    void Function(
+    FutureOr<void> Function(
       Session session, {
       required UuidValue emailAccountId,
       required Transaction? transaction,
@@ -26,7 +26,7 @@ typedef PasswordValidationFunction =
 
 /// Function for sending out the verification codes for password reset requests.
 typedef SendPasswordResetVerificationCodeFunction =
-    void Function(
+    FutureOr<void> Function(
       Session session, {
       required String email,
       required UuidValue passwordResetRequestId,
@@ -38,7 +38,7 @@ typedef SendPasswordResetVerificationCodeFunction =
 
 /// Function for sending out the verification codes to verify the email ownership during the initial registration.
 typedef SendRegistrationVerificationCodeFunction =
-    void Function(
+    FutureOr<void> Function(
       Session session, {
       required String email,
       required UuidValue accountRequestId,

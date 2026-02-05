@@ -14,7 +14,12 @@ emailIdp:
   - hasAccount:
 firebaseIdp:
   - login:
+<<<<<<< HEAD
   - hasAccount:
+=======
+gitHubIdp:
+  - login:
+>>>>>>> main
 googleIdp:
   - login:
   - hasAccount:

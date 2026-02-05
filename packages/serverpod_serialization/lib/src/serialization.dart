@@ -201,6 +201,60 @@ abstract class SerializationManager {
     };
   }
 
+  /// Converts an object to a JSON-encodable format.
+  /// This method is used by the JSON encoder to convert objects to JSON.
+  static Object? toEncodable(Object? object) => _toEncodable(object, false);
+
+  /// Converts the provided [object] to a format suitable for protocol serialization.
+  /// If the object is a [ProtocolSerialization], it will be converted to JSON using
+  /// the [toJsonForProtocol] method.
+  static Object? toEncodableForProtocol(Object? object) =>
+      _toEncodable(object, true);
+
+  static Object? _toEncodable(Object? object, bool encodeForProtocol) =>
+      switch (object) {
+        null => null,
+        bool() => object,
+        num() => object,
+        String() => object,
+        List<dynamic> l => [
+          for (final i in l) _toEncodable(i, encodeForProtocol),
+        ],
+        Map<String, dynamic> m => {
+          for (final i in m.entries)
+            i.key: _toEncodable(i.value, encodeForProtocol),
+        },
+        DateTime() => object.toUtc().toIso8601String(),
+        ByteData() => object.base64encodedString(),
+        Duration() => object.inMilliseconds,
+        UuidValue() => object.uuid,
+        Uri() => object.toString(),
+        BigInt() => object.toString(),
+        Vector() => object.toList(),
+        HalfVector() => object.toList(),
+        SparseVector() => object.toList(),
+        Bit() => object.toList(),
+        Set<dynamic> s => [
+          for (final i in s) _toEncodable(i, encodeForProtocol),
+        ],
+        ProtocolSerialization() when encodeForProtocol =>
+          object.toJsonForProtocol(),
+        Map(keyType: != String) => [
+          for (final e in object.entries)
+            {
+              'k': _toEncodable(e.key, encodeForProtocol),
+              'v': _toEncodable(e.value, encodeForProtocol),
+            },
+        ],
+        Record() => throw Exception(
+          'Records are not supported. '
+          'They must be converted beforehand via `Protocol.mapRecordToJson` '
+          'or the enclosing `SerializableModel`.',
+        ),
+        SerializableModel() => object.toJson(),
+        _ => object.safeToJson(),
+      };
+
   /// Encode the provided [object] to a Json-formatted [String].
   /// If [formatted] is true, the output will be formatted with two spaces
   /// indentation.
@@ -209,51 +263,11 @@ abstract class SerializationManager {
     bool formatted = false,
     bool encodeForProtocol = false,
   }) {
-    // This is the only time [jsonEncode] should be used in the project.
-    return JsonEncoder.withIndent(
+    final encoder = JsonEncoder.withIndent(
       formatted ? '  ' : null,
-      (nonEncodable) {
-        if (nonEncodable is DateTime) {
-          return nonEncodable.toUtc().toIso8601String();
-        } else if (nonEncodable is ByteData) {
-          return nonEncodable.base64encodedString();
-        } else if (nonEncodable is Duration) {
-          return nonEncodable.inMilliseconds;
-        } else if (nonEncodable is UuidValue) {
-          return nonEncodable.uuid;
-        } else if (nonEncodable is Uri) {
-          return nonEncodable.toString();
-        } else if (nonEncodable is BigInt) {
-          return nonEncodable.toString();
-        } else if (nonEncodable is Vector) {
-          return nonEncodable.toList();
-        } else if (nonEncodable is HalfVector) {
-          return nonEncodable.toList();
-        } else if (nonEncodable is SparseVector) {
-          return nonEncodable.toList();
-        } else if (nonEncodable is Bit) {
-          return nonEncodable.toList();
-        } else if (nonEncodable is Set) {
-          return nonEncodable.toList();
-        } else if (nonEncodable is Map && nonEncodable.keyType != String) {
-          return nonEncodable.entries
-              .map((e) => {'k': e.key, 'v': e.value})
-              .toList();
-        } else if (encodeForProtocol && nonEncodable is ProtocolSerialization) {
-          return nonEncodable.toJsonForProtocol();
-        } else {
-          if (object is Record) {
-            throw Exception(
-              'Records are not supported in `encode`. They must be converted beforehand via `Protocol.mapRecordToJson` or the enclosing `SerializableModel`.',
-            );
-          }
-
-          // ignore: avoid_dynamic_calls
-          return nonEncodable?.toJson();
-          // throws NoSuchMethodError if toJson is not implemented
-        }
-      },
-    ).convert(object);
+      encodeForProtocol ? toEncodableForProtocol : toEncodable,
+    );
+    return encoder.convert(object);
   }
 
   /// Encode the provided [object] to a Json-formatted [String].
@@ -263,16 +277,6 @@ abstract class SerializationManager {
     Object? object, {
     bool formatted = false,
   }) {
-    /// Added this check to avoid the multiple if-else conditions inside the encode method
-    /// If the object implements ProtocolSerialization, directly use toJsonForProtocol.
-    if (object is ProtocolSerialization) {
-      return encode(
-        object.toJsonForProtocol(),
-        formatted: formatted,
-        encodeForProtocol: true,
-      );
-    }
-
     return encode(
       object,
       formatted: formatted,
@@ -335,4 +339,17 @@ const extensionSerializedTypes = [
 
 extension<K, V> on Map<K, V> {
   Type get keyType => K;
+}
+
+extension on Object? {
+  /// Returns a safe JSON representation of the object.
+  /// If the object does not implement the [toJson] method,
+  /// it will be returned as is.
+  Object? safeToJson() {
+    try {
+      return (this as dynamic).toJson();
+    } catch (_) {
+      return this;
+    }
+  }
 }

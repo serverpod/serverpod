@@ -287,6 +287,57 @@ void main() {
           reason: 'Client protocol client file does not exist.',
         );
       });
+
+      group('then the workspace', () {
+        test('has a root pubspec.yaml file', () {
+          expect(
+            File(path.join(tempPath, projectName, 'pubspec.yaml')).existsSync(),
+            isTrue,
+            reason: 'Root workspace pubspec file does not exist.',
+          );
+        });
+
+        test('root pubspec.yaml has name: _', () {
+          final content = File(
+            path.join(tempPath, projectName, 'pubspec.yaml'),
+          ).readAsStringSync();
+          expect(content, contains('name: _'));
+        });
+
+        test(
+          'root pubspec.yaml has workspace section with server and client',
+          () {
+            final content = File(
+              path.join(tempPath, projectName, 'pubspec.yaml'),
+            ).readAsStringSync();
+            expect(content, contains('workspace:'));
+            expect(content, contains('${projectName}_client'));
+            expect(content, contains('${projectName}_server'));
+          },
+        );
+
+        test('server pubspec.yaml has resolution: workspace', () {
+          final content = File(
+            path.join(tempPath, serverDir, 'pubspec.yaml'),
+          ).readAsStringSync();
+          expect(content, contains('resolution: workspace'));
+        });
+
+        test('client pubspec.yaml has resolution: workspace', () {
+          final content = File(
+            path.join(tempPath, clientDir, 'pubspec.yaml'),
+          ).readAsStringSync();
+          expect(content, contains('resolution: workspace'));
+        });
+
+        test('root has pubspec.lock file', () {
+          expect(
+            File(path.join(tempPath, projectName, 'pubspec.lock')).existsSync(),
+            isTrue,
+            reason: 'Root pubspec.lock file does not exist.',
+          );
+        });
+      });
     });
   });
 

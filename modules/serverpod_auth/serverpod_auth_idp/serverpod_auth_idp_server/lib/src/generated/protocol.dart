@@ -42,20 +42,23 @@ import 'providers/email/models/exceptions/email_account_request_exception_reason
 import 'providers/firebase/models/firebase_account.dart' as _i19;
 import 'providers/firebase/models/firebase_id_token_verification_exception.dart'
     as _i20;
-import 'providers/google/models/google_account.dart' as _i21;
+import 'providers/github/models/github_access_token_verification_exception.dart'
+    as _i21;
+import 'providers/github/models/github_account.dart' as _i22;
+import 'providers/google/models/google_account.dart' as _i23;
 import 'providers/google/models/google_id_token_verification_exception.dart'
-    as _i22;
-import 'providers/passkey/models/passkey_account.dart' as _i23;
-import 'providers/passkey/models/passkey_challenge.dart' as _i24;
+    as _i24;
+import 'providers/passkey/models/passkey_account.dart' as _i25;
+import 'providers/passkey/models/passkey_challenge.dart' as _i26;
 import 'providers/passkey/models/passkey_challenge_expired_exception.dart'
-    as _i25;
+    as _i27;
 import 'providers/passkey/models/passkey_challenge_not_found_exception.dart'
-    as _i26;
-import 'providers/passkey/models/passkey_login_request.dart' as _i27;
-import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
     as _i28;
-import 'providers/passkey/models/passkey_registration_request.dart' as _i29;
-import 'dart:typed_data' as _i30;
+import 'providers/passkey/models/passkey_login_request.dart' as _i29;
+import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
+    as _i30;
+import 'providers/passkey/models/passkey_registration_request.dart' as _i31;
+import 'dart:typed_data' as _i32;
 export 'common/rate_limited_request_attempt/models/rate_limited_request_attempt.dart';
 export 'common/secret_challenge/models/secret_challenge.dart';
 export 'providers/anonymous/models/anonymous_account.dart';
@@ -73,6 +76,8 @@ export 'providers/email/models/exceptions/email_account_request_exception.dart';
 export 'providers/email/models/exceptions/email_account_request_exception_reason.dart';
 export 'providers/firebase/models/firebase_account.dart';
 export 'providers/firebase/models/firebase_id_token_verification_exception.dart';
+export 'providers/github/models/github_access_token_verification_exception.dart';
+export 'providers/github/models/github_account.dart';
 export 'providers/google/models/google_account.dart';
 export 'providers/google/models/google_id_token_verification_exception.dart';
 export 'providers/passkey/models/passkey_account.dart';
@@ -619,6 +624,86 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'serverpod_auth_idp_github_account',
+      dartName: 'GitHubAccount',
+      schema: 'public',
+      module: 'serverpod_auth_idp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid_v7()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userIdentifier',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'email',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'created',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_github_account_fk_0',
+          columns: ['authUserId'],
+          referenceTable: 'serverpod_auth_core_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_github_account_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_github_account_user_identifier',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userIdentifier',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'serverpod_auth_idp_google_account',
       dartName: 'GoogleAccount',
       schema: 'public',
@@ -1055,32 +1140,38 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i20.FirebaseIdTokenVerificationException) {
       return _i20.FirebaseIdTokenVerificationException.fromJson(data) as T;
     }
-    if (t == _i21.GoogleAccount) {
-      return _i21.GoogleAccount.fromJson(data) as T;
+    if (t == _i21.GitHubAccessTokenVerificationException) {
+      return _i21.GitHubAccessTokenVerificationException.fromJson(data) as T;
     }
-    if (t == _i22.GoogleIdTokenVerificationException) {
-      return _i22.GoogleIdTokenVerificationException.fromJson(data) as T;
+    if (t == _i22.GitHubAccount) {
+      return _i22.GitHubAccount.fromJson(data) as T;
     }
-    if (t == _i23.PasskeyAccount) {
-      return _i23.PasskeyAccount.fromJson(data) as T;
+    if (t == _i23.GoogleAccount) {
+      return _i23.GoogleAccount.fromJson(data) as T;
     }
-    if (t == _i24.PasskeyChallenge) {
-      return _i24.PasskeyChallenge.fromJson(data) as T;
+    if (t == _i24.GoogleIdTokenVerificationException) {
+      return _i24.GoogleIdTokenVerificationException.fromJson(data) as T;
     }
-    if (t == _i25.PasskeyChallengeExpiredException) {
-      return _i25.PasskeyChallengeExpiredException.fromJson(data) as T;
+    if (t == _i25.PasskeyAccount) {
+      return _i25.PasskeyAccount.fromJson(data) as T;
     }
-    if (t == _i26.PasskeyChallengeNotFoundException) {
-      return _i26.PasskeyChallengeNotFoundException.fromJson(data) as T;
+    if (t == _i26.PasskeyChallenge) {
+      return _i26.PasskeyChallenge.fromJson(data) as T;
     }
-    if (t == _i27.PasskeyLoginRequest) {
-      return _i27.PasskeyLoginRequest.fromJson(data) as T;
+    if (t == _i27.PasskeyChallengeExpiredException) {
+      return _i27.PasskeyChallengeExpiredException.fromJson(data) as T;
     }
-    if (t == _i28.PasskeyPublicKeyNotFoundException) {
-      return _i28.PasskeyPublicKeyNotFoundException.fromJson(data) as T;
+    if (t == _i28.PasskeyChallengeNotFoundException) {
+      return _i28.PasskeyChallengeNotFoundException.fromJson(data) as T;
     }
-    if (t == _i29.PasskeyRegistrationRequest) {
-      return _i29.PasskeyRegistrationRequest.fromJson(data) as T;
+    if (t == _i29.PasskeyLoginRequest) {
+      return _i29.PasskeyLoginRequest.fromJson(data) as T;
+    }
+    if (t == _i30.PasskeyPublicKeyNotFoundException) {
+      return _i30.PasskeyPublicKeyNotFoundException.fromJson(data) as T;
+    }
+    if (t == _i31.PasskeyRegistrationRequest) {
+      return _i31.PasskeyRegistrationRequest.fromJson(data) as T;
     }
     if (t == _i1.getType<_i4.RateLimitedRequestAttempt?>()) {
       return (data != null
@@ -1167,46 +1258,55 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == _i1.getType<_i21.GoogleAccount?>()) {
-      return (data != null ? _i21.GoogleAccount.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i22.GoogleIdTokenVerificationException?>()) {
+    if (t == _i1.getType<_i21.GitHubAccessTokenVerificationException?>()) {
       return (data != null
-              ? _i22.GoogleIdTokenVerificationException.fromJson(data)
+              ? _i21.GitHubAccessTokenVerificationException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i23.PasskeyAccount?>()) {
-      return (data != null ? _i23.PasskeyAccount.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i22.GitHubAccount?>()) {
+      return (data != null ? _i22.GitHubAccount.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i24.PasskeyChallenge?>()) {
-      return (data != null ? _i24.PasskeyChallenge.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i23.GoogleAccount?>()) {
+      return (data != null ? _i23.GoogleAccount.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i25.PasskeyChallengeExpiredException?>()) {
+    if (t == _i1.getType<_i24.GoogleIdTokenVerificationException?>()) {
       return (data != null
-              ? _i25.PasskeyChallengeExpiredException.fromJson(data)
+              ? _i24.GoogleIdTokenVerificationException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i26.PasskeyChallengeNotFoundException?>()) {
+    if (t == _i1.getType<_i25.PasskeyAccount?>()) {
+      return (data != null ? _i25.PasskeyAccount.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i26.PasskeyChallenge?>()) {
+      return (data != null ? _i26.PasskeyChallenge.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i27.PasskeyChallengeExpiredException?>()) {
       return (data != null
-              ? _i26.PasskeyChallengeNotFoundException.fromJson(data)
+              ? _i27.PasskeyChallengeExpiredException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i27.PasskeyLoginRequest?>()) {
-      return (data != null ? _i27.PasskeyLoginRequest.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i28.PasskeyPublicKeyNotFoundException?>()) {
+    if (t == _i1.getType<_i28.PasskeyChallengeNotFoundException?>()) {
       return (data != null
-              ? _i28.PasskeyPublicKeyNotFoundException.fromJson(data)
+              ? _i28.PasskeyChallengeNotFoundException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i29.PasskeyRegistrationRequest?>()) {
+    if (t == _i1.getType<_i29.PasskeyLoginRequest?>()) {
+      return (data != null ? _i29.PasskeyLoginRequest.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i30.PasskeyPublicKeyNotFoundException?>()) {
       return (data != null
-              ? _i29.PasskeyRegistrationRequest.fromJson(data)
+              ? _i30.PasskeyPublicKeyNotFoundException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i31.PasskeyRegistrationRequest?>()) {
+      return (data != null
+              ? _i31.PasskeyRegistrationRequest.fromJson(data)
               : null)
           as T;
     }
@@ -1225,9 +1325,9 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == _i1.getType<({_i30.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<({_i32.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i30.ByteData>(
+            challenge: deserialize<_i32.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -1270,19 +1370,22 @@ class Protocol extends _i1.SerializationManagerServer {
       _i19.FirebaseAccount => 'FirebaseAccount',
       _i20.FirebaseIdTokenVerificationException =>
         'FirebaseIdTokenVerificationException',
-      _i21.GoogleAccount => 'GoogleAccount',
-      _i22.GoogleIdTokenVerificationException =>
+      _i21.GitHubAccessTokenVerificationException =>
+        'GitHubAccessTokenVerificationException',
+      _i22.GitHubAccount => 'GitHubAccount',
+      _i23.GoogleAccount => 'GoogleAccount',
+      _i24.GoogleIdTokenVerificationException =>
         'GoogleIdTokenVerificationException',
-      _i23.PasskeyAccount => 'PasskeyAccount',
-      _i24.PasskeyChallenge => 'PasskeyChallenge',
-      _i25.PasskeyChallengeExpiredException =>
+      _i25.PasskeyAccount => 'PasskeyAccount',
+      _i26.PasskeyChallenge => 'PasskeyChallenge',
+      _i27.PasskeyChallengeExpiredException =>
         'PasskeyChallengeExpiredException',
-      _i26.PasskeyChallengeNotFoundException =>
+      _i28.PasskeyChallengeNotFoundException =>
         'PasskeyChallengeNotFoundException',
-      _i27.PasskeyLoginRequest => 'PasskeyLoginRequest',
-      _i28.PasskeyPublicKeyNotFoundException =>
+      _i29.PasskeyLoginRequest => 'PasskeyLoginRequest',
+      _i30.PasskeyPublicKeyNotFoundException =>
         'PasskeyPublicKeyNotFoundException',
-      _i29.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
+      _i31.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
       _ => null,
     };
   }
@@ -1334,23 +1437,27 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'FirebaseAccount';
       case _i20.FirebaseIdTokenVerificationException():
         return 'FirebaseIdTokenVerificationException';
-      case _i21.GoogleAccount():
+      case _i21.GitHubAccessTokenVerificationException():
+        return 'GitHubAccessTokenVerificationException';
+      case _i22.GitHubAccount():
+        return 'GitHubAccount';
+      case _i23.GoogleAccount():
         return 'GoogleAccount';
-      case _i22.GoogleIdTokenVerificationException():
+      case _i24.GoogleIdTokenVerificationException():
         return 'GoogleIdTokenVerificationException';
-      case _i23.PasskeyAccount():
+      case _i25.PasskeyAccount():
         return 'PasskeyAccount';
-      case _i24.PasskeyChallenge():
+      case _i26.PasskeyChallenge():
         return 'PasskeyChallenge';
-      case _i25.PasskeyChallengeExpiredException():
+      case _i27.PasskeyChallengeExpiredException():
         return 'PasskeyChallengeExpiredException';
-      case _i26.PasskeyChallengeNotFoundException():
+      case _i28.PasskeyChallengeNotFoundException():
         return 'PasskeyChallengeNotFoundException';
-      case _i27.PasskeyLoginRequest():
+      case _i29.PasskeyLoginRequest():
         return 'PasskeyLoginRequest';
-      case _i28.PasskeyPublicKeyNotFoundException():
+      case _i30.PasskeyPublicKeyNotFoundException():
         return 'PasskeyPublicKeyNotFoundException';
-      case _i29.PasskeyRegistrationRequest():
+      case _i31.PasskeyRegistrationRequest():
         return 'PasskeyRegistrationRequest';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -1427,32 +1534,40 @@ class Protocol extends _i1.SerializationManagerServer {
         data['data'],
       );
     }
+    if (dataClassName == 'GitHubAccessTokenVerificationException') {
+      return deserialize<_i21.GitHubAccessTokenVerificationException>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'GitHubAccount') {
+      return deserialize<_i22.GitHubAccount>(data['data']);
+    }
     if (dataClassName == 'GoogleAccount') {
-      return deserialize<_i21.GoogleAccount>(data['data']);
+      return deserialize<_i23.GoogleAccount>(data['data']);
     }
     if (dataClassName == 'GoogleIdTokenVerificationException') {
-      return deserialize<_i22.GoogleIdTokenVerificationException>(data['data']);
+      return deserialize<_i24.GoogleIdTokenVerificationException>(data['data']);
     }
     if (dataClassName == 'PasskeyAccount') {
-      return deserialize<_i23.PasskeyAccount>(data['data']);
+      return deserialize<_i25.PasskeyAccount>(data['data']);
     }
     if (dataClassName == 'PasskeyChallenge') {
-      return deserialize<_i24.PasskeyChallenge>(data['data']);
+      return deserialize<_i26.PasskeyChallenge>(data['data']);
     }
     if (dataClassName == 'PasskeyChallengeExpiredException') {
-      return deserialize<_i25.PasskeyChallengeExpiredException>(data['data']);
+      return deserialize<_i27.PasskeyChallengeExpiredException>(data['data']);
     }
     if (dataClassName == 'PasskeyChallengeNotFoundException') {
-      return deserialize<_i26.PasskeyChallengeNotFoundException>(data['data']);
+      return deserialize<_i28.PasskeyChallengeNotFoundException>(data['data']);
     }
     if (dataClassName == 'PasskeyLoginRequest') {
-      return deserialize<_i27.PasskeyLoginRequest>(data['data']);
+      return deserialize<_i29.PasskeyLoginRequest>(data['data']);
     }
     if (dataClassName == 'PasskeyPublicKeyNotFoundException') {
-      return deserialize<_i28.PasskeyPublicKeyNotFoundException>(data['data']);
+      return deserialize<_i30.PasskeyPublicKeyNotFoundException>(data['data']);
     }
     if (dataClassName == 'PasskeyRegistrationRequest') {
-      return deserialize<_i29.PasskeyRegistrationRequest>(data['data']);
+      return deserialize<_i31.PasskeyRegistrationRequest>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -1496,12 +1611,14 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i12.EmailAccountRequest.t;
       case _i19.FirebaseAccount:
         return _i19.FirebaseAccount.t;
-      case _i21.GoogleAccount:
-        return _i21.GoogleAccount.t;
-      case _i23.PasskeyAccount:
-        return _i23.PasskeyAccount.t;
-      case _i24.PasskeyChallenge:
-        return _i24.PasskeyChallenge.t;
+      case _i22.GitHubAccount:
+        return _i22.GitHubAccount.t;
+      case _i23.GoogleAccount:
+        return _i23.GoogleAccount.t;
+      case _i25.PasskeyAccount:
+        return _i25.PasskeyAccount.t;
+      case _i26.PasskeyChallenge:
+        return _i26.PasskeyChallenge.t;
     }
     return null;
   }
@@ -1522,7 +1639,7 @@ class Protocol extends _i1.SerializationManagerServer {
     if (record == null) {
       return null;
     }
-    if (record is ({_i30.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i32.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge,

@@ -1,4 +1,3 @@
-import 'package:postgres/postgres.dart';
 import 'package:relic/relic.dart';
 
 /// Extends [Request] with useful methods.

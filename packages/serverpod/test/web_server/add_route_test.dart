@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/protocol.dart' as internal;
 import 'package:test/test.dart';
@@ -17,7 +18,7 @@ void main() {
     publicPort: 0,
   );
 
-  group('Given WebServer.addRoute', () {
+  group('Given a WebServer.addRoute', () {
     late Serverpod pod;
 
     setUp(() async {
@@ -119,18 +120,162 @@ void main() {
         },
       );
     });
+
+    test(
+      'when adding a route without host, then it matches any host',
+      () {
+        final route = _TestRoute(path: '/');
+        expect(route.host, isNull);
+        expect(
+          () => pod.webServer.addRoute(route, '/api'),
+          returnsNormally,
+        );
+      },
+    );
+
+    test(
+      'when adding a route with host, then it is set correctly',
+      () {
+        final route = _TestRoute(host: 'api.example.com', path: '/');
+        expect(route.host, equals('api.example.com'));
+        expect(
+          () => pod.webServer.addRoute(route, '/api'),
+          returnsNormally,
+        );
+      },
+    );
+
+    test(
+      'when adding routes with different hosts, then both are accepted',
+      () {
+        final apiRoute = _TestRoute(host: 'api.example.com', path: '/');
+        final webRoute = _TestRoute(host: 'www.example.com', path: '/');
+        final anyRoute = _TestRoute(path: '/health');
+
+        expect(
+          () {
+            pod.webServer.addRoute(apiRoute, '/users');
+            pod.webServer.addRoute(webRoute, '/users');
+            pod.webServer.addRoute(anyRoute, '/');
+          },
+          returnsNormally,
+        );
+      },
+    );
+  });
+
+  group('Given a WebServer with host-specific routes', () {
+    late Serverpod pod;
+    late int port;
+
+    setUp(() async {
+      pod = Serverpod(
+        [],
+        internal.Protocol(),
+        _EmptyEndpoints(),
+        config: ServerpodConfig(
+          apiServer: portZeroConfig,
+          webServer: portZeroConfig,
+        ),
+      );
+
+      pod.webServer.addRoute(
+        _TestRoute(host: 'api.example.com', path: '/', body: 'api-host'),
+        '/data',
+      );
+      pod.webServer.addRoute(
+        _TestRoute(host: 'web.example.com', path: '/', body: 'web-host'),
+        '/data',
+      );
+      pod.webServer.addRoute(
+        _TestRoute(path: '/', body: 'any-host'),
+        '/health',
+      );
+
+      await pod.start();
+      port = pod.webServer.port!;
+    });
+
+    tearDown(() async {
+      await pod.shutdown(exitProcess: false);
+    });
+
+    test(
+      'when request has matching host header, then host-specific route responds',
+      () async {
+        final response = await http.get(
+          Uri.parse('http://localhost:$port/data'),
+          headers: {'Host': 'api.example.com'},
+        );
+
+        expect(response.statusCode, 200);
+        expect(response.body, 'api-host');
+      },
+    );
+
+    test(
+      'when request has different matching host header, then corresponding route responds',
+      () async {
+        final response = await http.get(
+          Uri.parse('http://localhost:$port/data'),
+          headers: {'Host': 'web.example.com'},
+        );
+
+        expect(response.statusCode, 200);
+        expect(response.body, 'web-host');
+      },
+    );
+
+    test(
+      'when request has non-matching host header for host-specific route, then returns 404',
+      () async {
+        final response = await http.get(
+          Uri.parse('http://localhost:$port/data'),
+          headers: {'Host': 'other.example.com'},
+        );
+
+        expect(response.statusCode, 404);
+      },
+    );
+
+    test(
+      'when route has no host restriction, then it responds to any host',
+      () async {
+        final response = await http.get(
+          Uri.parse('http://localhost:$port/health'),
+          headers: {'Host': 'any.example.com'},
+        );
+
+        expect(response.statusCode, 200);
+        expect(response.body, 'any-host');
+      },
+    );
+
+    test(
+      'when route has no host restriction, then it responds without host header',
+      () async {
+        final response = await http.get(
+          Uri.parse('http://127.0.0.1:$port/health'),
+        );
+
+        expect(response.statusCode, 200);
+        expect(response.body, 'any-host');
+      },
+    );
   });
 }
 
 class _TestRoute extends Route {
   void Function(RelicRouter)? injector;
-  _TestRoute({this.injector, super.path});
+  final String body;
+
+  _TestRoute({this.injector, super.path, super.host, this.body = ''});
 
   @override
   void injectIn(RelicRouter router) => (injector ?? super.injectIn)(router);
 
   @override
   FutureOr<Result> handleCall(Session session, Request request) {
-    return Response.ok();
+    return Response.ok(body: Body.fromString(body));
   }
 }

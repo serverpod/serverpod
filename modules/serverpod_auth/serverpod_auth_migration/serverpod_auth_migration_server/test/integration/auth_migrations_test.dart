@@ -1,5 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
+import 'package:serverpod_auth_bridge_server/src/generated/legacy_session.dart';
 import 'package:serverpod_auth_idp_server/core.dart' as new_auth_core;
 import 'package:serverpod_auth_idp_server/providers/email.dart'
     as new_auth_email;
@@ -368,6 +369,70 @@ void main() {
           isNotNull,
         );
       });
+    },
+  );
+
+  withServerpod(
+    'Given a legacy user with sessions migrated with importSessions enabled,',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late legacy_auth.AuthKey targetAuthKey;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        // Create a dummy user + session to offset auto-generated IDs.
+        // This ensures AuthKey.id for the target user does NOT coincidentally
+        // match an auto-generated LegacySession.id.
+        final dummyUser = (await legacy_auth.Emails.createUser(
+          session,
+          'dummy',
+          'dummy@test.dev',
+          'Password123!',
+        ))!;
+        await legacy_auth.UserAuthentication.signInUser(
+          session,
+          dummyUser.id!,
+          'email',
+          updateSession: false,
+        );
+
+        // Create the target user and session
+        final targetUser = (await legacy_auth.Emails.createUser(
+          session,
+          'target',
+          'target@test.dev',
+          'Password123!',
+        ))!;
+        targetAuthKey = await legacy_auth.UserAuthentication.signInUser(
+          session,
+          targetUser.id!,
+          'email',
+          updateSession: false,
+        );
+
+        // Migrate only the target user (importSessions defaults to true)
+        await AuthMigrations.migrateUsers(
+          session,
+          userMigration: null,
+          // ignore: invalid_use_of_visible_for_testing_member
+          legacyUserId: targetUser.id!,
+          transaction: session.transaction,
+        );
+      });
+
+      test(
+        'when looking up the LegacySession by the original AuthKey ID, then it is found with matching hash.',
+        () async {
+          final legacySession = await LegacySession.db.findById(
+            session,
+            targetAuthKey.id!,
+          );
+
+          expect(legacySession, isNotNull);
+          expect(legacySession?.hash, targetAuthKey.hash);
+        },
+      );
     },
   );
 }

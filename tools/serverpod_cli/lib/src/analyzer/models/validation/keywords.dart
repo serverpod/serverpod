@@ -40,6 +40,8 @@ class Keyword {
 
   static const String columnKey = 'column';
 
+  static const String jsonKey = 'jsonKey';
+
   /// Special keyword to allow keys to be any string.
   static const String any = '#any';
 }

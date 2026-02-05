@@ -11,6 +11,8 @@ import 'forms/password_reset_complete.dart';
 import 'forms/registration_complete.dart';
 import 'forms/verification.dart';
 
+export './forms/verification.dart' show VerificationCodeConfig;
+
 /// A widget that provides email-based authentication functionality.
 ///
 /// The widget can manage its own authentication state, or you can provide an
@@ -112,7 +114,7 @@ class EmailSignInWidget extends StatefulWidget {
     this.onPrivacyPolicyPressed,
     super.key,
   }) : assert(
-         (controller == null || client == null),
+         (controller == null) != (client == null),
          'Either controller or client must be provided, but not both. When '
          'passing a controller, client, startScreen, onAuthenticated, and '
          'onError parameters are ignored.',

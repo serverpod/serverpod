@@ -57,8 +57,8 @@ class Script {
     String? windowsCommand,
     String? posixCommand,
   }) : this._(name, {
-         if (windowsCommand != null) PlatformGroup.windows: windowsCommand,
-         if (posixCommand != null) PlatformGroup.posix: posixCommand,
+         PlatformGroup.windows: ?windowsCommand,
+         PlatformGroup.posix: ?posixCommand,
        });
 
   /// Creates a [Script] from a YAML node.

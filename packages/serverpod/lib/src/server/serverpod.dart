@@ -12,6 +12,7 @@ import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
+import 'package:serverpod/src/server/log_manager/log_cleanup.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/tasks/tasks.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -45,6 +46,12 @@ class Serverpod {
     return _startedTime!;
   }
 
+  /// Whether the server has completed its startup sequence.
+  ///
+  /// Returns `true` if [start] has been called and completed successfully.
+  /// Note: This remains `true` even after [shutdown] is called.
+  bool get isStartupComplete => _startedTime != null;
+
   /// The last created [Serverpod]. In most cases the [Serverpod] is a singleton
   /// object, although it may be possible to run multiple instances in the same
   /// program it's not recommended.
@@ -76,7 +83,15 @@ class Serverpod {
   /// [HealthCheckHandler] for any custom health checks. This can be used to
   /// check remotely if all services the server is depending on is up and
   /// running.
+  ///
+  /// Deprecated: Use [HealthConfig] with custom [HealthIndicator]
+  /// implementations instead. This will be removed in a future version.
   final HealthCheckHandler? healthCheckHandler;
+
+  /// Configuration for the health check system.
+  final HealthConfig _healthConfig;
+
+  late final HealthCheckService _healthCheckService;
 
   final ExperimentalApi _experimental;
 
@@ -145,6 +160,8 @@ class Serverpod {
   }
 
   LogSettingsManager? _logSettingsManager;
+
+  LogCleanupManager? _logCleanupManager;
 
   FutureCallManager? _futureCallManager;
 
@@ -368,7 +385,11 @@ class Serverpod {
     this.endpoints, {
     ServerpodConfig? config,
     this.authenticationHandler,
+    @Deprecated(
+      'Use healthConfig with custom HealthIndicator implementations instead.',
+    )
     this.healthCheckHandler,
+    HealthConfig? healthConfig,
     Headers? httpResponseHeaders,
     Headers? httpOptionsResponseHeaders,
     SecurityContextConfig? securityContextConfig,
@@ -378,6 +399,7 @@ class Serverpod {
        httpOptionsResponseHeaders =
            httpOptionsResponseHeaders ?? _defaultHttpOptionsResponseHeaders,
        _securityContextConfig = securityContextConfig,
+       _healthConfig = healthConfig ?? const HealthConfig(),
        _experimental = ExperimentalApi._(
          config: config,
          experimentalFeatures: experimentalFeatures,
@@ -436,21 +458,25 @@ class Serverpod {
     //
     // This is a workaround to allow the command line arguments to override the
     // config if the user provides a config object.
-    this.config =
-        config?.copyWith(
-          runMode: runMode,
-          serverId: serverId,
-          loggingMode: loggingMode,
-          role: role,
-          applyMigrations: applyMigrations,
-          applyRepairMigration: applyRepairMigration,
-        ) ??
-        ServerpodConfig.load(
-          runMode,
-          serverId,
-          _passwords,
-          commandLineArgs: _commandLineArgs.toMap(),
-        );
+    try {
+      this.config =
+          config?.copyWith(
+            runMode: runMode,
+            serverId: serverId,
+            loggingMode: loggingMode,
+            role: role,
+            applyMigrations: applyMigrations,
+            applyRepairMigration: applyRepairMigration,
+          ) ??
+          ServerpodConfig.load(
+            runMode,
+            serverId,
+            _passwords,
+            commandLineArgs: _commandLineArgs.toMap(),
+          );
+    } on ArgumentError catch (e) {
+      throw ExitException(1, 'Error loading ServerpodConfig: ${e.message}');
+    }
 
     stdout.writeln(_getCommandLineArgsString());
 
@@ -544,6 +570,8 @@ class Serverpod {
     endpoints.initializeEndpoints(server);
 
     _internalSession = InternalSession(server: server, enableLogging: false);
+
+    _healthCheckService = HealthCheckService(this, _healthConfig);
 
     if (Features.enableFutureCalls) {
       _futureCallManager = FutureCallManager(
@@ -767,6 +795,12 @@ class Serverpod {
         _futureCallManager!,
         serverId,
       );
+    }
+
+    if (Features.enableDatabase &&
+        config.sessionLogs.persistentEnabled == true &&
+        config.sessionLogs.cleanupInterval != null) {
+      _logCleanupManager = LogCleanupManager(config.sessionLogs);
     }
   }
 
@@ -1263,6 +1297,12 @@ class Serverpod {
         'applyMigrations: $applyMigrations\n'
         'applyRepairMigration: $applyRepairMigration';
   }
+
+  /// The health check service for orchestrator probes.
+  ///
+  /// Provides access to the service that manages `/livez`, `/readyz`,
+  /// and `/startupz` endpoints.
+  HealthCheckService get healthCheckService => _healthCheckService;
 }
 
 // _shutdownTestAuditor is a stop-gap test approach to verify the robustness
@@ -1343,6 +1383,9 @@ class ExperimentalApi {
 extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the log settings manager
   LogSettingsManager get logSettingsManager => _logSettingsManager!;
+
+  /// Retrieve the log cleanup manager
+  LogCleanupManager? get logCleanupManager => _logCleanupManager;
 
   /// Retrieve the global internal session used by the Serverpod.
   /// Logging is turned off.

@@ -54,8 +54,8 @@ class AwsS3Client {
       key: '',
       queryParams: {
         "list-type": "2",
-        if (prefix != null) "prefix": prefix,
-        if (delimiter != null) "delimiter": delimiter,
+        "prefix": ?prefix,
+        "delimiter": ?delimiter,
         if (maxKeys != null) "maxKeys": maxKeys.toString(),
       },
     );

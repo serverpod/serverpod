@@ -21,6 +21,8 @@ environment:
   sdk: DART_VERSION
   flutter: FLUTTER_VERSION
 
+#resolution: workspace #--UNCOMMENT_LINE--#
+
 dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -36,14 +38,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_flutter: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_flutter #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
-#--CONDITIONALLY_REMOVE_LINE--#
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
