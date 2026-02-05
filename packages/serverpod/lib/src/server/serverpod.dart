@@ -478,6 +478,10 @@ class Serverpod {
       throw ExitException(1, 'Error loading ServerpodConfig: ${e.message}');
     }
 
+    // Sync instance serverId from config so Server, Caches, and log entries
+    // use the same id (e.g. from --server-id) instead of staying 'default'.
+    this.serverId = this.config.serverId;
+
     stdout.writeln(_getCommandLineArgsString());
 
     logVerbose(this.config.toString());
