@@ -227,15 +227,3 @@ class SmsIdpLoginUtil {
     );
   }
 }
-
-/// Result of verifying a login code.
-class SmsVerifyLoginResult {
-  /// The completion token for finishing the login.
-  final String token;
-
-  /// Whether a password is needed (for new user auto-registration).
-  final bool needsPassword;
-
-  /// Creates a new [SmsVerifyLoginResult].
-  SmsVerifyLoginResult({required this.token, required this.needsPassword});
-}
