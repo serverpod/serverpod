@@ -20,7 +20,9 @@ class PhoneRebindNotAllowedException implements Exception {
   final String message;
 
   /// Creates a new [PhoneRebindNotAllowedException].
-  const PhoneRebindNotAllowedException([this.message = 'Phone rebind disabled']);
+  const PhoneRebindNotAllowedException([
+    this.message = 'Phone rebind disabled',
+  ]);
 
   @override
   String toString() => 'PhoneRebindNotAllowedException: $message';

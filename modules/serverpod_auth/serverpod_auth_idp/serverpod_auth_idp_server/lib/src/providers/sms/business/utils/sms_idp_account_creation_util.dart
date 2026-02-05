@@ -25,9 +25,9 @@ class SmsIdpAccountCreationUtil {
     required SmsIdpConfig config,
     required AuthUsers authUsers,
     required Argon2HashUtil hashUtil,
-  })  : _config = config,
-        _authUsers = authUsers,
-        _hashUtil = hashUtil {
+  }) : _config = config,
+       _authUsers = authUsers,
+       _hashUtil = hashUtil {
     _challengeUtil = SecretChallengeUtil(
       hashUtil: _hashUtil,
       verificationConfig: _buildVerificationConfig(),
@@ -62,11 +62,12 @@ class SmsIdpAccountCreationUtil {
       throw SmsAccountRequestVerificationTooManyAttemptsException();
     }
 
-    final existingAccount = await _config.phoneIdStore.findAuthUserIdByPhoneHash(
-      session,
-      phoneHash: phoneHash,
-      transaction: transaction,
-    );
+    final existingAccount = await _config.phoneIdStore
+        .findAuthUserIdByPhoneHash(
+          session,
+          phoneHash: phoneHash,
+          transaction: transaction,
+        );
     if (existingAccount != null) {
       throw SmsAccountAlreadyRegisteredException();
     }
@@ -200,7 +201,8 @@ class SmsIdpAccountCreationUtil {
     );
   }
 
-  SecretChallengeVerificationConfig<SmsAccountRequest> _buildVerificationConfig() {
+  SecretChallengeVerificationConfig<SmsAccountRequest>
+  _buildVerificationConfig() {
     final limiter = DatabaseRateLimitedRequestAttemptUtil<UuidValue>(
       RateLimitedRequestAttemptConfig(
         domain: 'sms',
@@ -229,21 +231,24 @@ class SmsIdpAccountCreationUtil {
       onExpired: (session, request) async {
         await SmsAccountRequest.db.deleteRow(session, request);
       },
-      linkCompletionToken: (
-        session,
-        request,
-        completionChallenge, {
-        required transaction,
-      }) async {
-        if (request.createAccountChallengeId != null) {
-          throw ChallengeAlreadyUsedException();
-        }
-        await SmsAccountRequest.db.updateRow(
-          session,
-          request.copyWith(createAccountChallengeId: completionChallenge.id),
-          transaction: transaction,
-        );
-      },
+      linkCompletionToken:
+          (
+            session,
+            request,
+            completionChallenge, {
+            required transaction,
+          }) async {
+            if (request.createAccountChallengeId != null) {
+              throw ChallengeAlreadyUsedException();
+            }
+            await SmsAccountRequest.db.updateRow(
+              session,
+              request.copyWith(
+                createAccountChallengeId: completionChallenge.id,
+              ),
+              transaction: transaction,
+            );
+          },
       rateLimiter: limiter,
     );
   }

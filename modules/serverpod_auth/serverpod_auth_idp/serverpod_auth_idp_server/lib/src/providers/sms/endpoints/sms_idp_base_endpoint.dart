@@ -75,10 +75,7 @@ abstract class SmsIdpBaseEndpoint extends Endpoint {
   /// Returns the login request ID, which should be provided along with the
   /// verification code sent via SMS to [verifyLoginCode].
   /// {@endtemplate}
-  Future<UuidValue> startLogin(
-    Session session, {
-    required String phone,
-  }) async {
+  Future<UuidValue> startLogin(Session session, {required String phone}) async {
     return smsIdp.startLogin(session, phone: phone);
   }
 
@@ -137,11 +134,7 @@ abstract class SmsIdpBaseEndpoint extends Endpoint {
     if (authUserId == null) {
       throw AuthorizationException('Not authenticated');
     }
-    return smsIdp.startBindPhone(
-      session,
-      authUserId: authUserId,
-      phone: phone,
-    );
+    return smsIdp.startBindPhone(session, authUserId: authUserId, phone: phone);
   }
 
   /// {@template sms_idp_base_endpoint.verify_bind_code}

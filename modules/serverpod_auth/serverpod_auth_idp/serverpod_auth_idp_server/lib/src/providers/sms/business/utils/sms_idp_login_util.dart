@@ -19,8 +19,8 @@ class SmsIdpLoginUtil {
   SmsIdpLoginUtil({
     required SmsIdpConfig config,
     required Argon2HashUtil hashUtil,
-  })  : _config = config,
-        _hashUtil = hashUtil {
+  }) : _config = config,
+       _hashUtil = hashUtil {
     _challengeUtil = SecretChallengeUtil(
       hashUtil: _hashUtil,
       verificationConfig: _buildVerificationConfig(),
@@ -120,12 +120,12 @@ class SmsIdpLoginUtil {
         transaction: transaction,
       );
       if (request != null) {
-        final existingAuthUserId =
-            await _config.phoneIdStore.findAuthUserIdByPhoneHash(
-          session,
-          phoneHash: request.phoneHash,
-          transaction: transaction,
-        );
+        final existingAuthUserId = await _config.phoneIdStore
+            .findAuthUserIdByPhoneHash(
+              session,
+              phoneHash: request.phoneHash,
+              transaction: transaction,
+            );
         needsPassword = existingAuthUserId == null;
       }
     }
@@ -148,7 +148,8 @@ class SmsIdpLoginUtil {
     );
   }
 
-  SecretChallengeVerificationConfig<SmsLoginRequest> _buildVerificationConfig() {
+  SecretChallengeVerificationConfig<SmsLoginRequest>
+  _buildVerificationConfig() {
     final limiter = DatabaseRateLimitedRequestAttemptUtil<UuidValue>(
       RateLimitedRequestAttemptConfig(
         domain: 'sms',
@@ -177,21 +178,22 @@ class SmsIdpLoginUtil {
       onExpired: (session, request) async {
         await SmsLoginRequest.db.deleteRow(session, request);
       },
-      linkCompletionToken: (
-        session,
-        request,
-        completionChallenge, {
-        required transaction,
-      }) async {
-        if (request.loginChallengeId != null) {
-          throw ChallengeAlreadyUsedException();
-        }
-        await SmsLoginRequest.db.updateRow(
-          session,
-          request.copyWith(loginChallengeId: completionChallenge.id),
-          transaction: transaction,
-        );
-      },
+      linkCompletionToken:
+          (
+            session,
+            request,
+            completionChallenge, {
+            required transaction,
+          }) async {
+            if (request.loginChallengeId != null) {
+              throw ChallengeAlreadyUsedException();
+            }
+            await SmsLoginRequest.db.updateRow(
+              session,
+              request.copyWith(loginChallengeId: completionChallenge.id),
+              transaction: transaction,
+            );
+          },
       rateLimiter: limiter,
     );
   }

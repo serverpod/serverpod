@@ -221,12 +221,12 @@ class SmsIdp {
           throw SmsLoginInvalidCredentialsException();
         }
 
-        final existingAuthUserId =
-            await config.phoneIdStore.findAuthUserIdByPhoneHash(
-          session,
-          phoneHash: phoneHash,
-          transaction: transaction,
-        );
+        final existingAuthUserId = await config.phoneIdStore
+            .findAuthUserIdByPhoneHash(
+              session,
+              phoneHash: phoneHash,
+              transaction: transaction,
+            );
 
         if (existingAuthUserId != null) {
           // Existing user - just log in

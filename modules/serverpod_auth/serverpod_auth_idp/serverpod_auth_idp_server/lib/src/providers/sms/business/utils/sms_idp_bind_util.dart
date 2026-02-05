@@ -19,8 +19,8 @@ class SmsIdpBindUtil {
   SmsIdpBindUtil({
     required SmsIdpConfig config,
     required Argon2HashUtil hashUtil,
-  })  : _config = config,
-        _hashUtil = hashUtil {
+  }) : _config = config,
+       _hashUtil = hashUtil {
     _challengeUtil = SecretChallengeUtil(
       hashUtil: _hashUtil,
       verificationConfig: _buildVerificationConfig(),
@@ -157,21 +157,22 @@ class SmsIdpBindUtil {
       onExpired: (session, request) async {
         await SmsBindRequest.db.deleteRow(session, request);
       },
-      linkCompletionToken: (
-        session,
-        request,
-        completionChallenge, {
-        required transaction,
-      }) async {
-        if (request.bindChallengeId != null) {
-          throw ChallengeAlreadyUsedException();
-        }
-        await SmsBindRequest.db.updateRow(
-          session,
-          request.copyWith(bindChallengeId: completionChallenge.id),
-          transaction: transaction,
-        );
-      },
+      linkCompletionToken:
+          (
+            session,
+            request,
+            completionChallenge, {
+            required transaction,
+          }) async {
+            if (request.bindChallengeId != null) {
+              throw ChallengeAlreadyUsedException();
+            }
+            await SmsBindRequest.db.updateRow(
+              session,
+              request.copyWith(bindChallengeId: completionChallenge.id),
+              transaction: transaction,
+            );
+          },
       rateLimiter: limiter,
     );
   }

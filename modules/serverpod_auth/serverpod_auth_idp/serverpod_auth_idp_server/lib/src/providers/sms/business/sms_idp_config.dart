@@ -22,30 +22,33 @@ enum PhoneStorageStrategy {
 }
 
 /// Function for sending out SMS verification codes.
-typedef SendSmsVerificationCodeFunction = FutureOr<void> Function(
-  Session session, {
-  required String phone,
-  required UuidValue requestId,
-  required String verificationCode,
-  required Transaction? transaction,
-});
+typedef SendSmsVerificationCodeFunction =
+    FutureOr<void> Function(
+      Session session, {
+      required String phone,
+      required UuidValue requestId,
+      required String verificationCode,
+      required Transaction? transaction,
+    });
 
 /// Function to check if a password meets the requirements.
 typedef PasswordValidationFunction = bool Function(String password);
 
 /// Function called after a new account is created.
-typedef AfterAccountCreatedFunction = FutureOr<void> Function(
-  Session session, {
-  required UuidValue authUserId,
-  required Transaction? transaction,
-});
+typedef AfterAccountCreatedFunction =
+    FutureOr<void> Function(
+      Session session, {
+      required UuidValue authUserId,
+      required Transaction? transaction,
+    });
 
 /// Function called after a phone is bound to a user.
-typedef AfterPhoneBoundFunction = FutureOr<void> Function(
-  Session session, {
-  required UuidValue authUserId,
-  required Transaction? transaction,
-});
+typedef AfterPhoneBoundFunction =
+    FutureOr<void> Function(
+      Session session, {
+      required UuidValue authUserId,
+      required Transaction? transaction,
+    });
 
 /// A rolling rate limit configuration.
 class SmsRateLimit {
@@ -238,9 +241,9 @@ class SmsIdpConfigFromPasswords extends SmsIdpConfig {
     super.onAfterAccountCreated,
     super.onAfterPhoneBound,
   }) : super(
-          secretHashPepper: _getPasswordOrThrow('smsSecretHashPepper'),
-          phoneIdStore: _createPhoneIdStore(phoneStorageStrategy),
-        );
+         secretHashPepper: _getPasswordOrThrow('smsSecretHashPepper'),
+         phoneIdStore: _createPhoneIdStore(phoneStorageStrategy),
+       );
 
   static String _getPasswordOrThrow(String key) {
     final value = Serverpod.instance.getPassword(key);
