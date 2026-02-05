@@ -48,6 +48,9 @@ class AvailableIdps {
   /// Whether the Firebase authentication provider is available.
   bool get hasFirebase => has<EndpointFirebaseIdpBase>();
 
+  /// Whether the GitHub authentication provider is available.
+  bool get hasGitHub => has<EndpointGitHubIdpBase>();
+
   /// Provides information about connected identity providers.
   ///
   /// Use this getter to check which identity providers are connected to the
