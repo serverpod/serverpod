@@ -138,8 +138,25 @@ class SignInScreen extends StatelessWidget {
   }
 }
 
-class ConnectedScreen extends StatelessWidget {
+class ConnectedScreen extends StatefulWidget {
   const ConnectedScreen({super.key});
+
+  @override
+  State<ConnectedScreen> createState() => _ConnectedScreenState();
+}
+
+class _ConnectedScreenState extends State<ConnectedScreen> {
+  ConnectedIdps? connectedIdps;
+
+  @override
+  void initState() {
+    client.auth.idp.getConnectedIdps().then((c) {
+      setState(() {
+        connectedIdps = c;
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,19 +174,25 @@ class ConnectedScreen extends StatelessWidget {
               },
               child: const Text('Sign out'),
             ),
-            FilledButton(
-              onPressed: () async {
-                final connectedIdps = await client.auth.idp.getConnectedIdps();
 
-                // It is possible to check IDPs by name or with a bool getter.
-                debugPrint('Connected IDPs: ${connectedIdps.names}');
-                debugPrint('Has Google: ${client.auth.idp.hasGoogle}');
-                debugPrint('Has Email: ${client.auth.idp.hasEmail}');
-                debugPrint('Has Custom: ${client.auth.idp.has('customIdp')}');
-              },
-              child: const Text('Get Connected IDPs'),
-            ),
-            if (client.auth.idp.hasGoogle)
+            if (connectedIdps == null) CircularProgressIndicator.adaptive(),
+
+            if (connectedIdps != null) ...[
+              Text('All connected Idps: ${connectedIdps!.names}'),
+              SizedBox(height: 8),
+              Text('User has Google: ${connectedIdps!.hasGoogle ? '✅' : '❌'}'),
+              SizedBox(height: 8),
+              Text('User has Email: ${connectedIdps!.hasEmail ? '✅' : '❌'}'),
+              SizedBox(height: 8),
+              Text('User has Apple: ${connectedIdps!.hasApple ? '✅' : '❌'}'),
+              SizedBox(height: 8),
+              Text(
+                'User has Firebase: ${connectedIdps!.hasFirebase ? '✅' : '❌'}',
+              ),
+              SizedBox(height: 8),
+            ],
+
+            if (connectedIdps != null && connectedIdps!.hasGoogle)
               FilledButton(
                 onPressed: () async {
                   await client.auth.disconnectGoogleAccount();
