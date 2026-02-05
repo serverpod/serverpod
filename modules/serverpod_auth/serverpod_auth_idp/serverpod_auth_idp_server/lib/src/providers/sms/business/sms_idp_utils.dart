@@ -1,5 +1,4 @@
 import '../../../../core.dart';
-import '../../../../generated/protocol.dart';
 import 'sms_idp_config.dart';
 import 'sms_idp_server_exceptions.dart';
 import 'utils/sms_idp_account_creation_util.dart';

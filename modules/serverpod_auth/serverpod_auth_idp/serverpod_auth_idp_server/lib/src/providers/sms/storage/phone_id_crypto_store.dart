@@ -5,7 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:cryptography/cryptography.dart' hide Hmac;
 import 'package:serverpod/serverpod.dart';
 
-import '../../../../generated/protocol.dart';
+import '../../../generated/protocol.dart';
 import 'phone_id_store.dart';
 
 /// Encrypted phone ID storage implementation.

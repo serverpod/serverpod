@@ -1,7 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
-import '../../../../../generated/protocol.dart';
 import '../../storage/phone_id_store.dart';
 import '../sms_idp_config.dart';
 import '../sms_idp_server_exceptions.dart';

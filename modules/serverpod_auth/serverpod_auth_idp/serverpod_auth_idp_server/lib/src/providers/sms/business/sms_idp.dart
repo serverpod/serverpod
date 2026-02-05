@@ -1,12 +1,10 @@
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../core.dart';
-import '../../../../generated/protocol.dart';
 import '../storage/phone_id_store.dart';
 import 'sms_idp_config.dart';
 import 'sms_idp_server_exceptions.dart';
 import 'sms_idp_utils.dart';
-import 'utils/sms_idp_login_util.dart';
 
 /// Main class for the SMS identity provider.
 ///
