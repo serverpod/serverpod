@@ -175,23 +175,24 @@ class _ConnectedScreenState extends State<ConnectedScreen> {
               child: const Text('Sign out'),
             ),
 
-            if (connectedIdps == null) CircularProgressIndicator.adaptive(),
+            if (connectedIdps == null)
+              const CircularProgressIndicator.adaptive(),
 
             if (connectedIdps != null) ...[
               Text('All connected Idps: ${connectedIdps!.names}'),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text('User has Google: ${connectedIdps!.hasGoogle ? '✅' : '❌'}'),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text('User has Email: ${connectedIdps!.hasEmail ? '✅' : '❌'}'),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text('User has Apple: ${connectedIdps!.hasApple ? '✅' : '❌'}'),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text('User has GitHub: ${connectedIdps!.hasGitHub ? '✅' : '❌'}'),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 'User has Firebase: ${connectedIdps!.hasFirebase ? '✅' : '❌'}',
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
             ],
 
             if (connectedIdps != null && connectedIdps!.hasGoogle)
