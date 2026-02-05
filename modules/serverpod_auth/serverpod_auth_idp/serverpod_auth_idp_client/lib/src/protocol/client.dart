@@ -19,6 +19,8 @@ import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/
     as _i5;
 import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/passkey_login_request.dart'
     as _i6;
+import 'package:serverpod_auth_idp_client/src/protocol/providers/sms/models/sms_verify_login_result.dart'
+    as _i7;
 
 /// Base endpoint for anonymous accounts.
 /// {@category Endpoint}
@@ -265,6 +267,94 @@ abstract class EndpointPasskeyIdpBase extends _i1.EndpointRef {
   _i2.Future<_i3.AuthSuccess> login({
     required _i6.PasskeyLoginRequest loginRequest,
   });
+}
+
+/// Base endpoint for SMS-based accounts.
+///
+/// Subclass this in your own application to expose an endpoint including all
+/// methods.
+///
+/// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
+///
+/// Alternatively you can build up your own endpoint on top of the same business
+/// logic by using [SmsIdp].
+/// {@category Endpoint}
+abstract class EndpointSmsIdpBase extends _i1.EndpointRef {
+  EndpointSmsIdpBase(_i1.EndpointCaller caller) : super(caller);
+
+  /// Starts the registration process for a new SMS account.
+  ///
+  /// Returns the account request ID, which should be provided along with the
+  /// verification code sent via SMS to [verifyRegistrationCode].
+  _i2.Future<_i1.UuidValue> startRegistration({required String phone});
+
+  /// Verifies the registration code sent via SMS.
+  ///
+  /// Returns a completion token to be used with [finishRegistration].
+  _i2.Future<String> verifyRegistrationCode({
+    required _i1.UuidValue accountRequestId,
+    required String verificationCode,
+  });
+
+  /// Finishes the registration process and creates the account.
+  ///
+  /// Returns an [AuthSuccess] with the authentication tokens.
+  _i2.Future<_i3.AuthSuccess> finishRegistration({
+    required String registrationToken,
+    required String phone,
+    required String password,
+  });
+
+  /// Starts the login process.
+  ///
+  /// Returns the login request ID, which should be provided along with the
+  /// verification code sent via SMS to [verifyLoginCode].
+  _i2.Future<_i1.UuidValue> startLogin({required String phone});
+
+  /// Verifies the login code sent via SMS.
+  ///
+  /// Returns a [SmsVerifyLoginResult] with:
+  /// - `token`: completion token to be used with [finishLogin]
+  /// - `needsPassword`: whether a password is required for new user registration
+  _i2.Future<_i7.SmsVerifyLoginResult> verifyLoginCode({
+    required _i1.UuidValue loginRequestId,
+    required String verificationCode,
+  });
+
+  /// Finishes the login process.
+  ///
+  /// If the phone is not registered and `requirePasswordOnUnregisteredLogin` is
+  /// enabled, a password must be provided to create a new account.
+  ///
+  /// Returns an [AuthSuccess] with the authentication tokens.
+  _i2.Future<_i3.AuthSuccess> finishLogin({
+    required String loginToken,
+    required String phone,
+    String? password,
+  });
+
+  /// Starts the phone binding process for an authenticated user.
+  ///
+  /// Returns the bind request ID, which should be provided along with the
+  /// verification code sent via SMS to [verifyBindCode].
+  _i2.Future<_i1.UuidValue> startBindPhone({required String phone});
+
+  /// Verifies the bind code sent via SMS.
+  ///
+  /// Returns a completion token to be used with [finishBindPhone].
+  _i2.Future<String> verifyBindCode({
+    required _i1.UuidValue bindRequestId,
+    required String verificationCode,
+  });
+
+  /// Finishes the phone binding process.
+  _i2.Future<void> finishBindPhone({
+    required String bindToken,
+    required String phone,
+  });
+
+  /// Returns true if the authenticated user has a phone number bound.
+  _i2.Future<bool> isPhoneBound();
 }
 
 class Caller extends _i1.ModuleEndpointCaller {

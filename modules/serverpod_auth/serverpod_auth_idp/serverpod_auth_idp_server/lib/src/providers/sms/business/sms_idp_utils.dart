@@ -29,13 +29,15 @@ class SmsIdpUtils {
   late final SmsIdpBindUtil bind;
 
   /// Creates a new instance of [SmsIdpUtils].
-  SmsIdpUtils({required SmsIdpConfig config, required AuthUsers authUsers})
-    : hashUtil = Argon2HashUtil(
-        hashPepper: config.secretHashPepper,
-        fallbackHashPeppers: config.fallbackSecretHashPeppers,
-        hashSaltLength: config.secretHashSaltLength,
-        parameters: Argon2HashParameters(memory: 19456),
-      ) {
+  SmsIdpUtils({
+    required SmsIdpConfig config,
+    required AuthUsers authUsers,
+  }) : hashUtil = Argon2HashUtil(
+         hashPepper: config.secretHashPepper,
+         fallbackHashPeppers: config.fallbackSecretHashPeppers,
+         hashSaltLength: config.secretHashSaltLength,
+         parameters: Argon2HashParameters(memory: 19456),
+       ) {
     accountCreation = SmsIdpAccountCreationUtil(
       config: config,
       authUsers: authUsers,
@@ -92,7 +94,9 @@ class SmsIdpUtils {
   }
 
   /// Wraps a function to convert challenge exceptions to phone bind exceptions.
-  static Future<T> withReplacedBindException<T>(Future<T> Function() fn) async {
+  static Future<T> withReplacedBindException<T>(
+    Future<T> Function() fn,
+  ) async {
     try {
       return await fn();
     } on ChallengeExpiredException {

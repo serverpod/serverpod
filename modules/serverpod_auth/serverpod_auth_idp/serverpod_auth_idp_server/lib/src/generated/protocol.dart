@@ -58,7 +58,24 @@ import 'providers/passkey/models/passkey_login_request.dart' as _i29;
 import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
     as _i30;
 import 'providers/passkey/models/passkey_registration_request.dart' as _i31;
-import 'dart:typed_data' as _i32;
+import 'providers/sms/models/exceptions/sms_account_request_exception.dart'
+    as _i32;
+import 'providers/sms/models/exceptions/sms_account_request_exception_reason.dart'
+    as _i33;
+import 'providers/sms/models/exceptions/sms_login_exception.dart' as _i34;
+import 'providers/sms/models/exceptions/sms_login_exception_reason.dart'
+    as _i35;
+import 'providers/sms/models/exceptions/sms_phone_bind_exception.dart' as _i36;
+import 'providers/sms/models/exceptions/sms_phone_bind_exception_reason.dart'
+    as _i37;
+import 'providers/sms/models/sms_account.dart' as _i38;
+import 'providers/sms/models/sms_account_request.dart' as _i39;
+import 'providers/sms/models/sms_bind_request.dart' as _i40;
+import 'providers/sms/models/sms_login_request.dart' as _i41;
+import 'providers/sms/models/sms_phone_id_crypto.dart' as _i42;
+import 'providers/sms/models/sms_phone_id_hash.dart' as _i43;
+import 'providers/sms/models/sms_verify_login_result.dart' as _i44;
+import 'dart:typed_data' as _i45;
 export 'common/rate_limited_request_attempt/models/rate_limited_request_attempt.dart';
 export 'common/secret_challenge/models/secret_challenge.dart';
 export 'providers/anonymous/models/anonymous_account.dart';
@@ -87,6 +104,19 @@ export 'providers/passkey/models/passkey_challenge_not_found_exception.dart';
 export 'providers/passkey/models/passkey_login_request.dart';
 export 'providers/passkey/models/passkey_public_key_not_found_exception.dart';
 export 'providers/passkey/models/passkey_registration_request.dart';
+export 'providers/sms/models/exceptions/sms_account_request_exception.dart';
+export 'providers/sms/models/exceptions/sms_account_request_exception_reason.dart';
+export 'providers/sms/models/exceptions/sms_login_exception.dart';
+export 'providers/sms/models/exceptions/sms_login_exception_reason.dart';
+export 'providers/sms/models/exceptions/sms_phone_bind_exception.dart';
+export 'providers/sms/models/exceptions/sms_phone_bind_exception_reason.dart';
+export 'providers/sms/models/sms_account.dart';
+export 'providers/sms/models/sms_account_request.dart';
+export 'providers/sms/models/sms_bind_request.dart';
+export 'providers/sms/models/sms_login_request.dart';
+export 'providers/sms/models/sms_phone_id_crypto.dart';
+export 'providers/sms/models/sms_phone_id_hash.dart';
+export 'providers/sms/models/sms_verify_login_result.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -1057,6 +1087,553 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
+    _i2.TableDefinition(
+      name: 'serverpod_auth_idp_sms_account',
+      dartName: 'SmsAccount',
+      schema: 'public',
+      module: 'serverpod_auth_idp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid_v7()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'passwordHash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_sms_account_fk_0',
+          columns: ['authUserId'],
+          referenceTable: 'serverpod_auth_core_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_sms_account_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_sms_account_auth_user_id',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'authUserId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_auth_idp_sms_account_request',
+      dartName: 'SmsAccountRequest',
+      schema: 'public',
+      module: 'serverpod_auth_idp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid_v7()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'phoneHash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'challengeId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createAccountChallengeId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: true,
+          dartType: 'UuidValue?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_sms_account_request_fk_0',
+          columns: ['challengeId'],
+          referenceTable: 'serverpod_auth_idp_secret_challenge',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_sms_account_request_fk_1',
+          columns: ['createAccountChallengeId'],
+          referenceTable: 'serverpod_auth_idp_secret_challenge',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_sms_account_request_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_sms_account_request_phone_hash',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'phoneHash',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_auth_idp_sms_bind_request',
+      dartName: 'SmsBindRequest',
+      schema: 'public',
+      module: 'serverpod_auth_idp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid_v7()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'phoneHash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'challengeId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'bindChallengeId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: true,
+          dartType: 'UuidValue?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_sms_bind_request_fk_0',
+          columns: ['authUserId'],
+          referenceTable: 'serverpod_auth_core_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_sms_bind_request_fk_1',
+          columns: ['challengeId'],
+          referenceTable: 'serverpod_auth_idp_secret_challenge',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_sms_bind_request_fk_2',
+          columns: ['bindChallengeId'],
+          referenceTable: 'serverpod_auth_idp_secret_challenge',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_sms_bind_request_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_sms_bind_request_unique',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'authUserId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'phoneHash',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_auth_idp_sms_login_request',
+      dartName: 'SmsLoginRequest',
+      schema: 'public',
+      module: 'serverpod_auth_idp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid_v7()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'CURRENT_TIMESTAMP',
+        ),
+        _i2.ColumnDefinition(
+          name: 'phoneHash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'challengeId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'loginChallengeId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: true,
+          dartType: 'UuidValue?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_sms_login_request_fk_0',
+          columns: ['challengeId'],
+          referenceTable: 'serverpod_auth_idp_secret_challenge',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_sms_login_request_fk_1',
+          columns: ['loginChallengeId'],
+          referenceTable: 'serverpod_auth_idp_secret_challenge',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_sms_login_request_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_sms_login_request_phone_hash',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'phoneHash',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_auth_idp_sms_phone_id_crypto',
+      dartName: 'SmsPhoneIdCrypto',
+      schema: 'public',
+      module: 'serverpod_auth_idp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid_v7()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'phoneHash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'phoneEncrypted',
+          columnType: _i2.ColumnType.bytea,
+          isNullable: false,
+          dartType: 'dart:typed_data:ByteData',
+        ),
+        _i2.ColumnDefinition(
+          name: 'nonce',
+          columnType: _i2.ColumnType.bytea,
+          isNullable: false,
+          dartType: 'dart:typed_data:ByteData',
+        ),
+        _i2.ColumnDefinition(
+          name: 'mac',
+          columnType: _i2.ColumnType.bytea,
+          isNullable: false,
+          dartType: 'dart:typed_data:ByteData',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_sms_phone_id_crypto_fk_0',
+          columns: ['authUserId'],
+          referenceTable: 'serverpod_auth_core_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_sms_phone_id_crypto_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_sms_phone_id_crypto_auth_user_id',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'authUserId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_sms_phone_id_crypto_phone_hash',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'phoneHash',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_auth_idp_sms_phone_id_hash',
+      dartName: 'SmsPhoneIdHash',
+      schema: 'public',
+      module: 'serverpod_auth_idp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid_v7()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'phoneHash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_sms_phone_id_hash_fk_0',
+          columns: ['authUserId'],
+          referenceTable: 'serverpod_auth_core_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_sms_phone_id_hash_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_sms_phone_id_hash_auth_user_id',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'authUserId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_sms_phone_id_hash_phone_hash',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'phoneHash',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
     ..._i3.Protocol.targetTableDefinitions,
   ];
 
@@ -1172,6 +1749,45 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i31.PasskeyRegistrationRequest) {
       return _i31.PasskeyRegistrationRequest.fromJson(data) as T;
+    }
+    if (t == _i32.SmsAccountRequestException) {
+      return _i32.SmsAccountRequestException.fromJson(data) as T;
+    }
+    if (t == _i33.SmsAccountRequestExceptionReason) {
+      return _i33.SmsAccountRequestExceptionReason.fromJson(data) as T;
+    }
+    if (t == _i34.SmsLoginException) {
+      return _i34.SmsLoginException.fromJson(data) as T;
+    }
+    if (t == _i35.SmsLoginExceptionReason) {
+      return _i35.SmsLoginExceptionReason.fromJson(data) as T;
+    }
+    if (t == _i36.SmsPhoneBindException) {
+      return _i36.SmsPhoneBindException.fromJson(data) as T;
+    }
+    if (t == _i37.SmsPhoneBindExceptionReason) {
+      return _i37.SmsPhoneBindExceptionReason.fromJson(data) as T;
+    }
+    if (t == _i38.SmsAccount) {
+      return _i38.SmsAccount.fromJson(data) as T;
+    }
+    if (t == _i39.SmsAccountRequest) {
+      return _i39.SmsAccountRequest.fromJson(data) as T;
+    }
+    if (t == _i40.SmsBindRequest) {
+      return _i40.SmsBindRequest.fromJson(data) as T;
+    }
+    if (t == _i41.SmsLoginRequest) {
+      return _i41.SmsLoginRequest.fromJson(data) as T;
+    }
+    if (t == _i42.SmsPhoneIdCrypto) {
+      return _i42.SmsPhoneIdCrypto.fromJson(data) as T;
+    }
+    if (t == _i43.SmsPhoneIdHash) {
+      return _i43.SmsPhoneIdHash.fromJson(data) as T;
+    }
+    if (t == _i44.SmsVerifyLoginResult) {
+      return _i44.SmsVerifyLoginResult.fromJson(data) as T;
     }
     if (t == _i1.getType<_i4.RateLimitedRequestAttempt?>()) {
       return (data != null
@@ -1310,6 +1926,57 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
+    if (t == _i1.getType<_i32.SmsAccountRequestException?>()) {
+      return (data != null
+              ? _i32.SmsAccountRequestException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i33.SmsAccountRequestExceptionReason?>()) {
+      return (data != null
+              ? _i33.SmsAccountRequestExceptionReason.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i34.SmsLoginException?>()) {
+      return (data != null ? _i34.SmsLoginException.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i35.SmsLoginExceptionReason?>()) {
+      return (data != null ? _i35.SmsLoginExceptionReason.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i36.SmsPhoneBindException?>()) {
+      return (data != null ? _i36.SmsPhoneBindException.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i37.SmsPhoneBindExceptionReason?>()) {
+      return (data != null
+              ? _i37.SmsPhoneBindExceptionReason.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i38.SmsAccount?>()) {
+      return (data != null ? _i38.SmsAccount.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i39.SmsAccountRequest?>()) {
+      return (data != null ? _i39.SmsAccountRequest.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i40.SmsBindRequest?>()) {
+      return (data != null ? _i40.SmsBindRequest.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i41.SmsLoginRequest?>()) {
+      return (data != null ? _i41.SmsLoginRequest.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i42.SmsPhoneIdCrypto?>()) {
+      return (data != null ? _i42.SmsPhoneIdCrypto.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i43.SmsPhoneIdHash?>()) {
+      return (data != null ? _i43.SmsPhoneIdHash.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i44.SmsVerifyLoginResult?>()) {
+      return (data != null ? _i44.SmsVerifyLoginResult.fromJson(data) : null)
+          as T;
+    }
     if (t == Map<String, String>) {
       return (data as Map).map(
             (k, v) => MapEntry(deserialize<String>(k), deserialize<String>(v)),
@@ -1325,9 +1992,9 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == _i1.getType<({_i32.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<({_i45.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i32.ByteData>(
+            challenge: deserialize<_i45.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -1386,6 +2053,20 @@ class Protocol extends _i1.SerializationManagerServer {
       _i30.PasskeyPublicKeyNotFoundException =>
         'PasskeyPublicKeyNotFoundException',
       _i31.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
+      _i32.SmsAccountRequestException => 'SmsAccountRequestException',
+      _i33.SmsAccountRequestExceptionReason =>
+        'SmsAccountRequestExceptionReason',
+      _i34.SmsLoginException => 'SmsLoginException',
+      _i35.SmsLoginExceptionReason => 'SmsLoginExceptionReason',
+      _i36.SmsPhoneBindException => 'SmsPhoneBindException',
+      _i37.SmsPhoneBindExceptionReason => 'SmsPhoneBindExceptionReason',
+      _i38.SmsAccount => 'SmsAccount',
+      _i39.SmsAccountRequest => 'SmsAccountRequest',
+      _i40.SmsBindRequest => 'SmsBindRequest',
+      _i41.SmsLoginRequest => 'SmsLoginRequest',
+      _i42.SmsPhoneIdCrypto => 'SmsPhoneIdCrypto',
+      _i43.SmsPhoneIdHash => 'SmsPhoneIdHash',
+      _i44.SmsVerifyLoginResult => 'SmsVerifyLoginResult',
       _ => null,
     };
   }
@@ -1459,6 +2140,32 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'PasskeyPublicKeyNotFoundException';
       case _i31.PasskeyRegistrationRequest():
         return 'PasskeyRegistrationRequest';
+      case _i32.SmsAccountRequestException():
+        return 'SmsAccountRequestException';
+      case _i33.SmsAccountRequestExceptionReason():
+        return 'SmsAccountRequestExceptionReason';
+      case _i34.SmsLoginException():
+        return 'SmsLoginException';
+      case _i35.SmsLoginExceptionReason():
+        return 'SmsLoginExceptionReason';
+      case _i36.SmsPhoneBindException():
+        return 'SmsPhoneBindException';
+      case _i37.SmsPhoneBindExceptionReason():
+        return 'SmsPhoneBindExceptionReason';
+      case _i38.SmsAccount():
+        return 'SmsAccount';
+      case _i39.SmsAccountRequest():
+        return 'SmsAccountRequest';
+      case _i40.SmsBindRequest():
+        return 'SmsBindRequest';
+      case _i41.SmsLoginRequest():
+        return 'SmsLoginRequest';
+      case _i42.SmsPhoneIdCrypto():
+        return 'SmsPhoneIdCrypto';
+      case _i43.SmsPhoneIdHash():
+        return 'SmsPhoneIdHash';
+      case _i44.SmsVerifyLoginResult():
+        return 'SmsVerifyLoginResult';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -1569,6 +2276,45 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'PasskeyRegistrationRequest') {
       return deserialize<_i31.PasskeyRegistrationRequest>(data['data']);
     }
+    if (dataClassName == 'SmsAccountRequestException') {
+      return deserialize<_i32.SmsAccountRequestException>(data['data']);
+    }
+    if (dataClassName == 'SmsAccountRequestExceptionReason') {
+      return deserialize<_i33.SmsAccountRequestExceptionReason>(data['data']);
+    }
+    if (dataClassName == 'SmsLoginException') {
+      return deserialize<_i34.SmsLoginException>(data['data']);
+    }
+    if (dataClassName == 'SmsLoginExceptionReason') {
+      return deserialize<_i35.SmsLoginExceptionReason>(data['data']);
+    }
+    if (dataClassName == 'SmsPhoneBindException') {
+      return deserialize<_i36.SmsPhoneBindException>(data['data']);
+    }
+    if (dataClassName == 'SmsPhoneBindExceptionReason') {
+      return deserialize<_i37.SmsPhoneBindExceptionReason>(data['data']);
+    }
+    if (dataClassName == 'SmsAccount') {
+      return deserialize<_i38.SmsAccount>(data['data']);
+    }
+    if (dataClassName == 'SmsAccountRequest') {
+      return deserialize<_i39.SmsAccountRequest>(data['data']);
+    }
+    if (dataClassName == 'SmsBindRequest') {
+      return deserialize<_i40.SmsBindRequest>(data['data']);
+    }
+    if (dataClassName == 'SmsLoginRequest') {
+      return deserialize<_i41.SmsLoginRequest>(data['data']);
+    }
+    if (dataClassName == 'SmsPhoneIdCrypto') {
+      return deserialize<_i42.SmsPhoneIdCrypto>(data['data']);
+    }
+    if (dataClassName == 'SmsPhoneIdHash') {
+      return deserialize<_i43.SmsPhoneIdHash>(data['data']);
+    }
+    if (dataClassName == 'SmsVerifyLoginResult') {
+      return deserialize<_i44.SmsVerifyLoginResult>(data['data']);
+    }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
@@ -1619,6 +2365,18 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i25.PasskeyAccount.t;
       case _i26.PasskeyChallenge:
         return _i26.PasskeyChallenge.t;
+      case _i38.SmsAccount:
+        return _i38.SmsAccount.t;
+      case _i39.SmsAccountRequest:
+        return _i39.SmsAccountRequest.t;
+      case _i40.SmsBindRequest:
+        return _i40.SmsBindRequest.t;
+      case _i41.SmsLoginRequest:
+        return _i41.SmsLoginRequest.t;
+      case _i42.SmsPhoneIdCrypto:
+        return _i42.SmsPhoneIdCrypto.t;
+      case _i43.SmsPhoneIdHash:
+        return _i43.SmsPhoneIdHash.t;
     }
     return null;
   }
@@ -1639,7 +2397,7 @@ class Protocol extends _i1.SerializationManagerServer {
     if (record == null) {
       return null;
     }
-    if (record is ({_i32.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i45.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge,

@@ -2,7 +2,6 @@ import 'package:serverpod/serverpod.dart';
 
 import '../../../../core.dart';
 import '../business/sms_idp.dart';
-import '../business/utils/sms_idp_login_util.dart';
 
 /// Base endpoint for SMS-based accounts.
 ///
@@ -27,8 +26,8 @@ abstract class SmsIdpBaseEndpoint extends Endpoint {
   /// verification code sent via SMS to [verifyRegistrationCode].
   /// {@endtemplate}
   Future<UuidValue> startRegistration(
-    Session session, {
-    required String phone,
+    final Session session, {
+    required final String phone,
   }) async {
     return smsIdp.startRegistration(session, phone: phone);
   }
@@ -39,9 +38,9 @@ abstract class SmsIdpBaseEndpoint extends Endpoint {
   /// Returns a completion token to be used with [finishRegistration].
   /// {@endtemplate}
   Future<String> verifyRegistrationCode(
-    Session session, {
-    required UuidValue accountRequestId,
-    required String verificationCode,
+    final Session session, {
+    required final UuidValue accountRequestId,
+    required final String verificationCode,
   }) async {
     return smsIdp.verifyRegistrationCode(
       session,
@@ -56,10 +55,10 @@ abstract class SmsIdpBaseEndpoint extends Endpoint {
   /// Returns an [AuthSuccess] with the authentication tokens.
   /// {@endtemplate}
   Future<AuthSuccess> finishRegistration(
-    Session session, {
-    required String registrationToken,
-    required String phone,
-    required String password,
+    final Session session, {
+    required final String registrationToken,
+    required final String phone,
+    required final String password,
   }) async {
     return smsIdp.finishRegistration(
       session,
@@ -75,7 +74,10 @@ abstract class SmsIdpBaseEndpoint extends Endpoint {
   /// Returns the login request ID, which should be provided along with the
   /// verification code sent via SMS to [verifyLoginCode].
   /// {@endtemplate}
-  Future<UuidValue> startLogin(Session session, {required String phone}) async {
+  Future<UuidValue> startLogin(
+    final Session session, {
+    required final String phone,
+  }) async {
     return smsIdp.startLogin(session, phone: phone);
   }
 
@@ -87,9 +89,9 @@ abstract class SmsIdpBaseEndpoint extends Endpoint {
   /// - `needsPassword`: whether a password is required for new user registration
   /// {@endtemplate}
   Future<SmsVerifyLoginResult> verifyLoginCode(
-    Session session, {
-    required UuidValue loginRequestId,
-    required String verificationCode,
+    final Session session, {
+    required final UuidValue loginRequestId,
+    required final String verificationCode,
   }) async {
     return smsIdp.verifyLoginCode(
       session,
@@ -107,10 +109,10 @@ abstract class SmsIdpBaseEndpoint extends Endpoint {
   /// Returns an [AuthSuccess] with the authentication tokens.
   /// {@endtemplate}
   Future<AuthSuccess> finishLogin(
-    Session session, {
-    required String loginToken,
-    required String phone,
-    String? password,
+    final Session session, {
+    required final String loginToken,
+    required final String phone,
+    final String? password,
   }) async {
     return smsIdp.finishLogin(
       session,
@@ -127,14 +129,20 @@ abstract class SmsIdpBaseEndpoint extends Endpoint {
   /// verification code sent via SMS to [verifyBindCode].
   /// {@endtemplate}
   Future<UuidValue> startBindPhone(
-    Session session, {
-    required String phone,
+    final Session session, {
+    required final String phone,
   }) async {
-    final authUserId = await session.authUserId;
+    final authUserId = session.authenticated?.authUserId;
     if (authUserId == null) {
-      throw AuthorizationException('Not authenticated');
+      throw NotAuthorizedException(
+        reason: AuthenticationFailureReason.unauthenticated,
+      );
     }
-    return smsIdp.startBindPhone(session, authUserId: authUserId, phone: phone);
+    return smsIdp.startBindPhone(
+      session,
+      authUserId: authUserId,
+      phone: phone,
+    );
   }
 
   /// {@template sms_idp_base_endpoint.verify_bind_code}
@@ -143,9 +151,9 @@ abstract class SmsIdpBaseEndpoint extends Endpoint {
   /// Returns a completion token to be used with [finishBindPhone].
   /// {@endtemplate}
   Future<String> verifyBindCode(
-    Session session, {
-    required UuidValue bindRequestId,
-    required String verificationCode,
+    final Session session, {
+    required final UuidValue bindRequestId,
+    required final String verificationCode,
   }) async {
     return smsIdp.verifyBindCode(
       session,
@@ -158,13 +166,15 @@ abstract class SmsIdpBaseEndpoint extends Endpoint {
   /// Finishes the phone binding process.
   /// {@endtemplate}
   Future<void> finishBindPhone(
-    Session session, {
-    required String bindToken,
-    required String phone,
+    final Session session, {
+    required final String bindToken,
+    required final String phone,
   }) async {
-    final authUserId = await session.authUserId;
+    final authUserId = session.authenticated?.authUserId;
     if (authUserId == null) {
-      throw AuthorizationException('Not authenticated');
+      throw NotAuthorizedException(
+        reason: AuthenticationFailureReason.unauthenticated,
+      );
     }
     return smsIdp.finishBindPhone(
       session,
@@ -177,10 +187,12 @@ abstract class SmsIdpBaseEndpoint extends Endpoint {
   /// {@template sms_idp_base_endpoint.is_phone_bound}
   /// Returns true if the authenticated user has a phone number bound.
   /// {@endtemplate}
-  Future<bool> isPhoneBound(Session session) async {
-    final authUserId = await session.authUserId;
+  Future<bool> isPhoneBound(final Session session) async {
+    final authUserId = session.authenticated?.authUserId;
     if (authUserId == null) {
-      throw AuthorizationException('Not authenticated');
+      throw NotAuthorizedException(
+        reason: AuthenticationFailureReason.unauthenticated,
+      );
     }
     return smsIdp.isPhoneBound(session, authUserId: authUserId);
   }

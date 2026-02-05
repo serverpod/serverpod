@@ -41,9 +41,20 @@ import 'providers/passkey/models/passkey_login_request.dart' as _i15;
 import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
     as _i16;
 import 'providers/passkey/models/passkey_registration_request.dart' as _i17;
-import 'dart:typed_data' as _i18;
-import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
+import 'providers/sms/models/exceptions/sms_account_request_exception.dart'
+    as _i18;
+import 'providers/sms/models/exceptions/sms_account_request_exception_reason.dart'
     as _i19;
+import 'providers/sms/models/exceptions/sms_login_exception.dart' as _i20;
+import 'providers/sms/models/exceptions/sms_login_exception_reason.dart'
+    as _i21;
+import 'providers/sms/models/exceptions/sms_phone_bind_exception.dart' as _i22;
+import 'providers/sms/models/exceptions/sms_phone_bind_exception_reason.dart'
+    as _i23;
+import 'providers/sms/models/sms_verify_login_result.dart' as _i24;
+import 'dart:typed_data' as _i25;
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
+    as _i26;
 export 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception.dart';
 export 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception_reason.dart';
 export 'providers/email/models/exceptions/email_account_login_exception.dart';
@@ -60,6 +71,13 @@ export 'providers/passkey/models/passkey_challenge_not_found_exception.dart';
 export 'providers/passkey/models/passkey_login_request.dart';
 export 'providers/passkey/models/passkey_public_key_not_found_exception.dart';
 export 'providers/passkey/models/passkey_registration_request.dart';
+export 'providers/sms/models/exceptions/sms_account_request_exception.dart';
+export 'providers/sms/models/exceptions/sms_account_request_exception_reason.dart';
+export 'providers/sms/models/exceptions/sms_login_exception.dart';
+export 'providers/sms/models/exceptions/sms_login_exception_reason.dart';
+export 'providers/sms/models/exceptions/sms_phone_bind_exception.dart';
+export 'providers/sms/models/exceptions/sms_phone_bind_exception_reason.dart';
+export 'providers/sms/models/sms_verify_login_result.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -145,6 +163,27 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i17.PasskeyRegistrationRequest) {
       return _i17.PasskeyRegistrationRequest.fromJson(data) as T;
+    }
+    if (t == _i18.SmsAccountRequestException) {
+      return _i18.SmsAccountRequestException.fromJson(data) as T;
+    }
+    if (t == _i19.SmsAccountRequestExceptionReason) {
+      return _i19.SmsAccountRequestExceptionReason.fromJson(data) as T;
+    }
+    if (t == _i20.SmsLoginException) {
+      return _i20.SmsLoginException.fromJson(data) as T;
+    }
+    if (t == _i21.SmsLoginExceptionReason) {
+      return _i21.SmsLoginExceptionReason.fromJson(data) as T;
+    }
+    if (t == _i22.SmsPhoneBindException) {
+      return _i22.SmsPhoneBindException.fromJson(data) as T;
+    }
+    if (t == _i23.SmsPhoneBindExceptionReason) {
+      return _i23.SmsPhoneBindExceptionReason.fromJson(data) as T;
+    }
+    if (t == _i24.SmsVerifyLoginResult) {
+      return _i24.SmsVerifyLoginResult.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.AnonymousAccountBlockedException?>()) {
       return (data != null
@@ -240,9 +279,42 @@ class Protocol extends _i1.SerializationManager {
               : null)
           as T;
     }
-    if (t == _i1.getType<({_i18.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<_i18.SmsAccountRequestException?>()) {
+      return (data != null
+              ? _i18.SmsAccountRequestException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i19.SmsAccountRequestExceptionReason?>()) {
+      return (data != null
+              ? _i19.SmsAccountRequestExceptionReason.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i20.SmsLoginException?>()) {
+      return (data != null ? _i20.SmsLoginException.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i21.SmsLoginExceptionReason?>()) {
+      return (data != null ? _i21.SmsLoginExceptionReason.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i22.SmsPhoneBindException?>()) {
+      return (data != null ? _i22.SmsPhoneBindException.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i23.SmsPhoneBindExceptionReason?>()) {
+      return (data != null
+              ? _i23.SmsPhoneBindExceptionReason.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i24.SmsVerifyLoginResult?>()) {
+      return (data != null ? _i24.SmsVerifyLoginResult.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<({_i25.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i18.ByteData>(
+            challenge: deserialize<_i25.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -250,7 +322,7 @@ class Protocol extends _i1.SerializationManager {
           as T;
     }
     try {
-      return _i19.Protocol().deserialize<T>(data, t);
+      return _i26.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -285,6 +357,14 @@ class Protocol extends _i1.SerializationManager {
       _i16.PasskeyPublicKeyNotFoundException =>
         'PasskeyPublicKeyNotFoundException',
       _i17.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
+      _i18.SmsAccountRequestException => 'SmsAccountRequestException',
+      _i19.SmsAccountRequestExceptionReason =>
+        'SmsAccountRequestExceptionReason',
+      _i20.SmsLoginException => 'SmsLoginException',
+      _i21.SmsLoginExceptionReason => 'SmsLoginExceptionReason',
+      _i22.SmsPhoneBindException => 'SmsPhoneBindException',
+      _i23.SmsPhoneBindExceptionReason => 'SmsPhoneBindExceptionReason',
+      _i24.SmsVerifyLoginResult => 'SmsVerifyLoginResult',
       _ => null,
     };
   }
@@ -334,8 +414,22 @@ class Protocol extends _i1.SerializationManager {
         return 'PasskeyPublicKeyNotFoundException';
       case _i17.PasskeyRegistrationRequest():
         return 'PasskeyRegistrationRequest';
+      case _i18.SmsAccountRequestException():
+        return 'SmsAccountRequestException';
+      case _i19.SmsAccountRequestExceptionReason():
+        return 'SmsAccountRequestExceptionReason';
+      case _i20.SmsLoginException():
+        return 'SmsLoginException';
+      case _i21.SmsLoginExceptionReason():
+        return 'SmsLoginExceptionReason';
+      case _i22.SmsPhoneBindException():
+        return 'SmsPhoneBindException';
+      case _i23.SmsPhoneBindExceptionReason():
+        return 'SmsPhoneBindExceptionReason';
+      case _i24.SmsVerifyLoginResult():
+        return 'SmsVerifyLoginResult';
     }
-    className = _i19.Protocol().getClassNameForObject(data);
+    className = _i26.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -404,9 +498,30 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'PasskeyRegistrationRequest') {
       return deserialize<_i17.PasskeyRegistrationRequest>(data['data']);
     }
+    if (dataClassName == 'SmsAccountRequestException') {
+      return deserialize<_i18.SmsAccountRequestException>(data['data']);
+    }
+    if (dataClassName == 'SmsAccountRequestExceptionReason') {
+      return deserialize<_i19.SmsAccountRequestExceptionReason>(data['data']);
+    }
+    if (dataClassName == 'SmsLoginException') {
+      return deserialize<_i20.SmsLoginException>(data['data']);
+    }
+    if (dataClassName == 'SmsLoginExceptionReason') {
+      return deserialize<_i21.SmsLoginExceptionReason>(data['data']);
+    }
+    if (dataClassName == 'SmsPhoneBindException') {
+      return deserialize<_i22.SmsPhoneBindException>(data['data']);
+    }
+    if (dataClassName == 'SmsPhoneBindExceptionReason') {
+      return deserialize<_i23.SmsPhoneBindExceptionReason>(data['data']);
+    }
+    if (dataClassName == 'SmsVerifyLoginResult') {
+      return deserialize<_i24.SmsVerifyLoginResult>(data['data']);
+    }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i19.Protocol().deserializeByClassName(data);
+      return _i26.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -420,7 +535,7 @@ class Protocol extends _i1.SerializationManager {
     if (record == null) {
       return null;
     }
-    if (record is ({_i18.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i25.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge,
@@ -429,7 +544,7 @@ class Protocol extends _i1.SerializationManager {
       };
     }
     try {
-      return _i19.Protocol().mapRecordToJson(record);
+      return _i26.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }
