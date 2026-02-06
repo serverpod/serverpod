@@ -54,6 +54,7 @@ class PasswordlessIdpLoginUtil {
     if (await _requestRateLimiter.hasTooManyAttempts(session, nonce: nonce)) {
       throw PasswordlessLoginTooManyAttemptsException();
     }
+    await _requestRateLimiter.recordAttempt(session, nonce: nonce);
 
     // Delete any existing request for the same nonce.
     final existingRequest = await PasswordlessLoginRequest.db.findFirstRow(
@@ -132,6 +133,7 @@ class PasswordlessIdpLoginUtil {
         domain: 'passwordless',
         source: 'login_verify',
         maxAttempts: _config.loginVerificationCodeAllowedAttempts,
+        timeframe: _config.loginVerificationCodeLifetime,
       ),
     );
 
@@ -191,6 +193,7 @@ class PasswordlessIdpLoginUtil {
         domain: 'passwordless',
         source: 'login_complete',
         maxAttempts: _config.loginVerificationCodeAllowedAttempts,
+        timeframe: _config.loginVerificationCodeLifetime,
       ),
     );
 
