@@ -133,8 +133,10 @@ class AppleIdp {
       AppleRevokedNotificationRoute(utils: utils);
 
   /// {@macro apple_idp.webAuthenticationCallbackRoute}
-  Route webAuthenticationCallbackRoute() =>
-      AppleWebAuthenticationCallbackRoute(utils: utils);
+  Route webAuthenticationCallbackRoute() => AppleWebAuthenticationCallbackRoute(
+    utils: utils,
+    androidPackageIdentifier: config.androidPackageIdentifier,
+  );
 }
 
 /// Extension to get the AppleIdp instance from the AuthServices.
