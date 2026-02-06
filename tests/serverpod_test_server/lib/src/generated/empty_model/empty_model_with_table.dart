@@ -177,6 +177,8 @@ class EmptyModelWithTableRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmptyModelWithTable>(
       where: where?.call(EmptyModelWithTable.t),
@@ -186,6 +188,8 @@ class EmptyModelWithTableRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -214,6 +218,8 @@ class EmptyModelWithTableRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmptyModelWithTable>(
       where: where?.call(EmptyModelWithTable.t),
@@ -222,6 +228,8 @@ class EmptyModelWithTableRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -230,10 +238,14 @@ class EmptyModelWithTableRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<EmptyModelWithTable>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -393,6 +405,22 @@ class EmptyModelWithTableRepository {
     return session.db.count<EmptyModelWithTable>(
       where: where?.call(EmptyModelWithTable.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [EmptyModelWithTable] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<EmptyModelWithTableTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<EmptyModelWithTable>(
+      where: where(EmptyModelWithTable.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

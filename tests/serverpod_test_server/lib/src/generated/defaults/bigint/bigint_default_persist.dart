@@ -232,6 +232,8 @@ class BigIntDefaultPersistRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BigIntDefaultPersist>(
       where: where?.call(BigIntDefaultPersist.t),
@@ -241,6 +243,8 @@ class BigIntDefaultPersistRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -269,6 +273,8 @@ class BigIntDefaultPersistRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BigIntDefaultPersist>(
       where: where?.call(BigIntDefaultPersist.t),
@@ -277,6 +283,8 @@ class BigIntDefaultPersistRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -285,10 +293,14 @@ class BigIntDefaultPersistRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<BigIntDefaultPersist>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -448,6 +460,22 @@ class BigIntDefaultPersistRepository {
     return session.db.count<BigIntDefaultPersist>(
       where: where?.call(BigIntDefaultPersist.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [BigIntDefaultPersist] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<BigIntDefaultPersistTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<BigIntDefaultPersist>(
+      where: where(BigIntDefaultPersist.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

@@ -296,6 +296,8 @@ class DepartmentRepository {
     _i1.OrderByListBuilder<DepartmentTable>? orderByList,
     _i1.Transaction? transaction,
     DepartmentInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Department>(
       where: where?.call(Department.t),
@@ -306,6 +308,8 @@ class DepartmentRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -335,6 +339,8 @@ class DepartmentRepository {
     _i1.OrderByListBuilder<DepartmentTable>? orderByList,
     _i1.Transaction? transaction,
     DepartmentInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Department>(
       where: where?.call(Department.t),
@@ -344,6 +350,8 @@ class DepartmentRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -353,11 +361,15 @@ class DepartmentRepository {
     int id, {
     _i1.Transaction? transaction,
     DepartmentInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Department>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -515,6 +527,22 @@ class DepartmentRepository {
     return session.db.count<Department>(
       where: where?.call(Department.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Department] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<DepartmentTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Department>(
+      where: where(Department.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

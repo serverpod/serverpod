@@ -292,6 +292,8 @@ class ObjectUserRepository {
     _i1.OrderByListBuilder<ObjectUserTable>? orderByList,
     _i1.Transaction? transaction,
     ObjectUserInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectUser>(
       where: where?.call(ObjectUser.t),
@@ -302,6 +304,8 @@ class ObjectUserRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -331,6 +335,8 @@ class ObjectUserRepository {
     _i1.OrderByListBuilder<ObjectUserTable>? orderByList,
     _i1.Transaction? transaction,
     ObjectUserInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectUser>(
       where: where?.call(ObjectUser.t),
@@ -340,6 +346,8 @@ class ObjectUserRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -349,11 +357,15 @@ class ObjectUserRepository {
     int id, {
     _i1.Transaction? transaction,
     ObjectUserInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectUser>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -511,6 +523,22 @@ class ObjectUserRepository {
     return session.db.count<ObjectUser>(
       where: where?.call(ObjectUser.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ObjectUser] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<ObjectUserTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ObjectUser>(
+      where: where(ObjectUser.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

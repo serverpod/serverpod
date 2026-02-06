@@ -268,6 +268,8 @@ class ChildClassWithoutIdRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
     _i2.Transaction? transaction,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChildClassWithoutId>(
       where: where?.call(ChildClassWithoutId.t),
@@ -277,6 +279,8 @@ class ChildClassWithoutIdRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -305,6 +309,8 @@ class ChildClassWithoutIdRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
     _i2.Transaction? transaction,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChildClassWithoutId>(
       where: where?.call(ChildClassWithoutId.t),
@@ -313,6 +319,8 @@ class ChildClassWithoutIdRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -321,10 +329,14 @@ class ChildClassWithoutIdRepository {
     _i2.Session session,
     _i2.UuidValue id, {
     _i2.Transaction? transaction,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ChildClassWithoutId>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -484,6 +496,22 @@ class ChildClassWithoutIdRepository {
     return session.db.count<ChildClassWithoutId>(
       where: where?.call(ChildClassWithoutId.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ChildClassWithoutId] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i2.Session session, {
+    required _i2.WhereExpressionBuilder<ChildClassWithoutIdTable> where,
+    required _i2.LockMode lockMode,
+    required _i2.Transaction transaction,
+    _i2.LockBehavior lockBehavior = _i2.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ChildClassWithoutId>(
+      where: where(ChildClassWithoutId.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

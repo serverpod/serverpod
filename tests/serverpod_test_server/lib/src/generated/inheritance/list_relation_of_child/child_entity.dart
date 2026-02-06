@@ -301,6 +301,8 @@ class ChildEntityRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
     _i2.Transaction? transaction,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChildEntity>(
       where: where?.call(ChildEntity.t),
@@ -310,6 +312,8 @@ class ChildEntityRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -338,6 +342,8 @@ class ChildEntityRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
     _i2.Transaction? transaction,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChildEntity>(
       where: where?.call(ChildEntity.t),
@@ -346,6 +352,8 @@ class ChildEntityRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -354,10 +362,14 @@ class ChildEntityRepository {
     _i2.Session session,
     int id, {
     _i2.Transaction? transaction,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ChildEntity>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -515,6 +527,22 @@ class ChildEntityRepository {
     return session.db.count<ChildEntity>(
       where: where?.call(ChildEntity.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ChildEntity] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i2.Session session, {
+    required _i2.WhereExpressionBuilder<ChildEntityTable> where,
+    required _i2.LockMode lockMode,
+    required _i2.Transaction transaction,
+    _i2.LockBehavior lockBehavior = _i2.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ChildEntity>(
+      where: where(ChildEntity.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

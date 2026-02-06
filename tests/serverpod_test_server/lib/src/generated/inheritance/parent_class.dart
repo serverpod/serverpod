@@ -215,6 +215,8 @@ class ParentClassRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ParentClass>(
       where: where?.call(ParentClass.t),
@@ -224,6 +226,8 @@ class ParentClassRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -252,6 +256,8 @@ class ParentClassRepository {
     bool orderDescending = false,
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     _i2.Transaction? transaction,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ParentClass>(
       where: where?.call(ParentClass.t),
@@ -260,6 +266,8 @@ class ParentClassRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -268,10 +276,14 @@ class ParentClassRepository {
     _i2.Session session,
     int id, {
     _i2.Transaction? transaction,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ParentClass>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -429,6 +441,22 @@ class ParentClassRepository {
     return session.db.count<ParentClass>(
       where: where?.call(ParentClass.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ParentClass] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i2.Session session, {
+    required _i2.WhereExpressionBuilder<ParentClassTable> where,
+    required _i2.LockMode lockMode,
+    required _i2.Transaction transaction,
+    _i2.LockBehavior lockBehavior = _i2.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ParentClass>(
+      where: where(ParentClass.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

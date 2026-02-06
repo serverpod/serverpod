@@ -82,6 +82,7 @@ class BuildRepositoryClass {
           _buildDeleteRowMethod(className),
           _buildDeleteWhereMethod(className),
           _buildCountMethod(className),
+          _buildLockRowsMethod(className),
         ]);
     });
   }
@@ -355,6 +356,28 @@ class BuildRepositoryClass {
                 ..name = 'include'
                 ..named = true,
             ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'LockMode'
+                  ..url = 'package:serverpod/serverpod.dart',
+              )
+              ..name = 'lockMode'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'LockBehavior'
+                  ..url = 'package:serverpod/serverpod.dart',
+              )
+              ..name = 'lockBehavior'
+              ..named = true,
+          ),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -380,6 +403,8 @@ class BuildRepositoryClass {
                 'transaction': refer('transaction'),
                 if (objectRelationFields.isNotEmpty)
                   'include': refer('include'),
+                'lockMode': refer('lockMode'),
+                'lockBehavior': refer('lockBehavior'),
               },
               [refer(className)],
             )
@@ -492,6 +517,28 @@ class BuildRepositoryClass {
                 ..name = 'include'
                 ..named = true,
             ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'LockMode'
+                  ..url = 'package:serverpod/serverpod.dart',
+              )
+              ..name = 'lockMode'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'LockBehavior'
+                  ..url = 'package:serverpod/serverpod.dart',
+              )
+              ..name = 'lockBehavior'
+              ..named = true,
+          ),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -516,6 +563,8 @@ class BuildRepositoryClass {
                 'transaction': refer('transaction'),
                 if (objectRelationFields.isNotEmpty)
                   'include': refer('include'),
+                'lockMode': refer('lockMode'),
+                'lockBehavior': refer('lockBehavior'),
               },
               [refer(className)],
             )
@@ -581,6 +630,28 @@ class BuildRepositoryClass {
                 ..name = 'include'
                 ..named = true,
             ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'LockMode'
+                  ..url = 'package:serverpod/serverpod.dart',
+              )
+              ..name = 'lockMode'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'LockBehavior'
+                  ..url = 'package:serverpod/serverpod.dart',
+              )
+              ..name = 'lockBehavior'
+              ..named = true,
+          ),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -592,6 +663,8 @@ class BuildRepositoryClass {
                 'transaction': refer('transaction'),
                 if (objectRelationFields.isNotEmpty)
                   'include': refer('include'),
+                'lockMode': refer('lockMode'),
+                'lockBehavior': refer('lockBehavior'),
               },
               [refer(className)],
             )
@@ -1308,6 +1381,80 @@ class BuildRepositoryClass {
                   [refer(className).property('t')],
                 ),
                 'limit': refer('limit'),
+                'transaction': refer('transaction'),
+              },
+              [refer(className)],
+            )
+            .returned
+            .statement;
+    });
+  }
+
+  Method _buildLockRowsMethod(String className) {
+    return Method((methodBuilder) {
+      methodBuilder
+        ..docs.add('''
+/// Acquires row-level locks on [$className] rows matching the [where] expression.''')
+        ..name = 'lockRows'
+        ..returns = refer('Future<void>')
+        ..requiredParameters.add(
+          Parameter(
+            (p) => p
+              ..type = refer('Session', 'package:serverpod/serverpod.dart')
+              ..name = 'session',
+          ),
+        )
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = typeWhereExpressionBuilder(
+                className,
+                serverCode,
+                nullable: false,
+              )
+              ..name = 'where'
+              ..named = true
+              ..required = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer('LockMode', 'package:serverpod/serverpod.dart')
+              ..name = 'lockMode'
+              ..named = true
+              ..required = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer('Transaction', 'package:serverpod/serverpod.dart')
+              ..name = 'transaction'
+              ..named = true
+              ..required = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..symbol = 'LockBehavior'
+                  ..url = 'package:serverpod/serverpod.dart',
+              )
+              ..name = 'lockBehavior'
+              ..named = true
+              ..defaultTo = refer(
+                'LockBehavior',
+                'package:serverpod/serverpod.dart',
+              ).property('wait').code,
+          ),
+        ])
+        ..modifier = MethodModifier.async
+        ..body = refer('session')
+            .property('db')
+            .property('lockRows')
+            .call(
+              [],
+              {
+                'where': refer('where').call([refer(className).property('t')]),
+                'lockMode': refer('lockMode'),
+                'lockBehavior': refer('lockBehavior'),
                 'transaction': refer('transaction'),
               },
               [refer(className)],

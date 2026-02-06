@@ -377,6 +377,8 @@ class PersonWithLongTableNameRepository {
     _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
     _i1.Transaction? transaction,
     PersonWithLongTableNameInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<PersonWithLongTableName>(
       where: where?.call(PersonWithLongTableName.t),
@@ -387,6 +389,8 @@ class PersonWithLongTableNameRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -416,6 +420,8 @@ class PersonWithLongTableNameRepository {
     _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
     _i1.Transaction? transaction,
     PersonWithLongTableNameInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<PersonWithLongTableName>(
       where: where?.call(PersonWithLongTableName.t),
@@ -425,6 +431,8 @@ class PersonWithLongTableNameRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -434,11 +442,15 @@ class PersonWithLongTableNameRepository {
     int id, {
     _i1.Transaction? transaction,
     PersonWithLongTableNameInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<PersonWithLongTableName>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -598,6 +610,22 @@ class PersonWithLongTableNameRepository {
     return session.db.count<PersonWithLongTableName>(
       where: where?.call(PersonWithLongTableName.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [PersonWithLongTableName] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<PersonWithLongTableName>(
+      where: where(PersonWithLongTableName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

@@ -280,6 +280,8 @@ class RelationEmptyModelRepository {
     _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     _i1.Transaction? transaction,
     RelationEmptyModelInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<RelationEmptyModel>(
       where: where?.call(RelationEmptyModel.t),
@@ -290,6 +292,8 @@ class RelationEmptyModelRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -319,6 +323,8 @@ class RelationEmptyModelRepository {
     _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     _i1.Transaction? transaction,
     RelationEmptyModelInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<RelationEmptyModel>(
       where: where?.call(RelationEmptyModel.t),
@@ -328,6 +334,8 @@ class RelationEmptyModelRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -337,11 +345,15 @@ class RelationEmptyModelRepository {
     int id, {
     _i1.Transaction? transaction,
     RelationEmptyModelInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<RelationEmptyModel>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -501,6 +513,22 @@ class RelationEmptyModelRepository {
     return session.db.count<RelationEmptyModel>(
       where: where?.call(RelationEmptyModel.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [RelationEmptyModel] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<RelationEmptyModelTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<RelationEmptyModel>(
+      where: where(RelationEmptyModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

@@ -269,6 +269,8 @@ class ModelWithRequiredFieldRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ModelWithRequiredField>(
       where: where?.call(ModelWithRequiredField.t),
@@ -278,6 +280,8 @@ class ModelWithRequiredFieldRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -306,6 +310,8 @@ class ModelWithRequiredFieldRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ModelWithRequiredField>(
       where: where?.call(ModelWithRequiredField.t),
@@ -314,6 +320,8 @@ class ModelWithRequiredFieldRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -322,10 +330,14 @@ class ModelWithRequiredFieldRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ModelWithRequiredField>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -485,6 +497,22 @@ class ModelWithRequiredFieldRepository {
     return session.db.count<ModelWithRequiredField>(
       where: where?.call(ModelWithRequiredField.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ModelWithRequiredField] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ModelWithRequiredField>(
+      where: where(ModelWithRequiredField.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

@@ -303,6 +303,8 @@ class CourseUuidRepository {
     _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
     _i1.Transaction? transaction,
     CourseUuidInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CourseUuid>(
       where: where?.call(CourseUuid.t),
@@ -313,6 +315,8 @@ class CourseUuidRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -342,6 +346,8 @@ class CourseUuidRepository {
     _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
     _i1.Transaction? transaction,
     CourseUuidInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CourseUuid>(
       where: where?.call(CourseUuid.t),
@@ -351,6 +357,8 @@ class CourseUuidRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -360,11 +368,15 @@ class CourseUuidRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     CourseUuidInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<CourseUuid>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -522,6 +534,22 @@ class CourseUuidRepository {
     return session.db.count<CourseUuid>(
       where: where?.call(CourseUuid.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [CourseUuid] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<CourseUuidTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<CourseUuid>(
+      where: where(CourseUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

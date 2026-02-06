@@ -385,6 +385,8 @@ class ObjectWithHalfVectorRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithHalfVector>(
       where: where?.call(ObjectWithHalfVector.t),
@@ -394,6 +396,8 @@ class ObjectWithHalfVectorRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -422,6 +426,8 @@ class ObjectWithHalfVectorRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithHalfVector>(
       where: where?.call(ObjectWithHalfVector.t),
@@ -430,6 +436,8 @@ class ObjectWithHalfVectorRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -438,10 +446,14 @@ class ObjectWithHalfVectorRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithHalfVector>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -601,6 +613,22 @@ class ObjectWithHalfVectorRepository {
     return session.db.count<ObjectWithHalfVector>(
       where: where?.call(ObjectWithHalfVector.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ObjectWithHalfVector] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ObjectWithHalfVector>(
+      where: where(ObjectWithHalfVector.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

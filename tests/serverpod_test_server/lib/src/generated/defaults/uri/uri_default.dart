@@ -251,6 +251,8 @@ class UriDefaultRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UriDefault>(
       where: where?.call(UriDefault.t),
@@ -260,6 +262,8 @@ class UriDefaultRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -288,6 +292,8 @@ class UriDefaultRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UriDefault>(
       where: where?.call(UriDefault.t),
@@ -296,6 +302,8 @@ class UriDefaultRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -304,10 +312,14 @@ class UriDefaultRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UriDefault>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -465,6 +477,22 @@ class UriDefaultRepository {
     return session.db.count<UriDefault>(
       where: where?.call(UriDefault.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [UriDefault] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<UriDefaultTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<UriDefault>(
+      where: where(UriDefault.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

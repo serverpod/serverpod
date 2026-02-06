@@ -9,6 +9,7 @@ import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/exceptions.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
+import 'package:serverpod/src/database/concepts/row_lock.dart';
 import 'package:serverpod/src/database/concepts/runtime_parameters.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
@@ -61,6 +62,8 @@ class DatabaseConnection {
     List<Order>? orderByList,
     Include? include,
     Transaction? transaction,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'find');
     orderByList = _resolveOrderBy(orderByList, orderBy, orderDescending);
@@ -72,6 +75,7 @@ class DatabaseConnection {
         .withLimit(limit)
         .withOffset(offset)
         .withInclude(include)
+        .withLockMode(lockMode, lockBehavior)
         .build();
 
     return _deserializedMappedQuery<T>(
@@ -94,6 +98,8 @@ class DatabaseConnection {
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
   }) async {
     _getTableOrAssert<T>(session, operation: 'findRow');
     var rows = await find<T>(
@@ -106,6 +112,8 @@ class DatabaseConnection {
       limit: 1,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
 
     if (rows.isEmpty) return null;
@@ -119,6 +127,8 @@ class DatabaseConnection {
     Object id, {
     Transaction? transaction,
     Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'findById');
     return await findFirstRow<T>(
@@ -126,6 +136,33 @@ class DatabaseConnection {
       where: table.id.equals(id),
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Acquires row-level locks without returning row data.
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<void> lockRows<T extends TableRow>(
+    Session session, {
+    required Expression where,
+    required LockMode lockMode,
+    required Transaction transaction,
+    LockBehavior lockBehavior = LockBehavior.wait,
+  }) async {
+    var table = _getTableOrAssert<T>(session, operation: 'lockRows');
+
+    var query = SelectQueryBuilder(table: table)
+        .withSelectFields([table.id])
+        .withWhere(where)
+        .withLockMode(lockMode, lockBehavior)
+        .build();
+
+    await _query(
+      session,
+      query,
+      ignoreRows: true,
+      context: _resolveQueryContext(transaction),
     );
   }
 

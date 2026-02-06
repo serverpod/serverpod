@@ -299,6 +299,8 @@ class StudentUuidRepository {
     _i1.OrderByListBuilder<StudentUuidTable>? orderByList,
     _i1.Transaction? transaction,
     StudentUuidInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<StudentUuid>(
       where: where?.call(StudentUuid.t),
@@ -309,6 +311,8 @@ class StudentUuidRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -338,6 +342,8 @@ class StudentUuidRepository {
     _i1.OrderByListBuilder<StudentUuidTable>? orderByList,
     _i1.Transaction? transaction,
     StudentUuidInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<StudentUuid>(
       where: where?.call(StudentUuid.t),
@@ -347,6 +353,8 @@ class StudentUuidRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -356,11 +364,15 @@ class StudentUuidRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     StudentUuidInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<StudentUuid>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -518,6 +530,22 @@ class StudentUuidRepository {
     return session.db.count<StudentUuid>(
       where: where?.call(StudentUuid.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [StudentUuid] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<StudentUuidTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<StudentUuid>(
+      where: where(StudentUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }
