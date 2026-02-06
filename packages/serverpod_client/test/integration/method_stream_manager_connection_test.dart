@@ -484,4 +484,154 @@ void main() async {
       },
     );
   });
+
+  group('Given idle method stream connection', () {
+    Completer<Uri> callbackUrlFuture;
+    late Future<void> Function() closeServer;
+    late MethodStreamConnectionDetails streamConnectionDetails;
+    setUp(() async {
+      callbackUrlFuture = Completer<Uri>();
+      var respondToPing = true;
+      closeServer = await TestWebSocketServer.startServer(
+        webSocketHandler: (webSocket) {
+          webSocket.textEvents.listen(
+            (event) {
+              var message = WebSocketMessage.fromJsonString(
+                event,
+                TestSerializationManager(),
+              );
+              if (message is PingCommand && respondToPing) {
+                webSocket.sendText(PongCommand.buildMessage());
+              } else if (message is OpenMethodStreamCommand) {
+                webSocket.sendText(
+                  OpenMethodStreamResponse.buildMessage(
+                    connectionId: message.connectionId,
+                    endpoint: message.endpoint,
+                    method: message.method,
+                    responseType: OpenMethodStreamResponseType.success,
+                  ),
+                );
+                respondToPing = false;
+              }
+            },
+          );
+        },
+        onConnected: (host) {
+          callbackUrlFuture.complete(host);
+        },
+      );
+
+      var webSocketHost = await callbackUrlFuture.future;
+      var streamManager = ClientMethodStreamManager(
+        connectionTimeout: const Duration(milliseconds: 100),
+        webSocketHost: webSocketHost,
+        serializationManager: TestSerializationManager(),
+        pingInterval: const Duration(milliseconds: 20),
+        idleTimeout: const Duration(milliseconds: 40),
+      );
+
+      streamConnectionDetails = MethodStreamConnectionDetailsBuilder().build();
+      await streamManager.openMethodStream(streamConnectionDetails);
+    });
+
+    tearDown(() async => await closeServer());
+
+    test(
+      'when no messages are received then stream closes with idle timeout exception.',
+      () async {
+        var errorCompleter = Completer<Object>();
+        streamConnectionDetails.outputController.stream.listen(
+          (e) {},
+          onError: (e, s) => errorCompleter.complete(e),
+        );
+
+        var error = await errorCompleter.future.timeout(
+          const Duration(milliseconds: 200),
+        );
+        expect(error, isA<MethodStreamIdleTimeoutException>());
+      },
+    );
+  });
+
+  group('Given active method stream connection', () {
+    Completer<Uri> callbackUrlFuture;
+    late Future<void> Function() closeServer;
+    late MethodStreamConnectionDetails streamConnectionDetails;
+    Timer? stopRespondingTimer;
+    setUp(() async {
+      callbackUrlFuture = Completer<Uri>();
+      var respondToPing = true;
+      stopRespondingTimer = Timer(
+        const Duration(milliseconds: 60),
+        () => respondToPing = false,
+      );
+      closeServer = await TestWebSocketServer.startServer(
+        webSocketHandler: (webSocket) {
+          webSocket.textEvents.listen(
+            (event) {
+              var message = WebSocketMessage.fromJsonString(
+                event,
+                TestSerializationManager(),
+              );
+              if (message is PingCommand && respondToPing) {
+                webSocket.sendText(PongCommand.buildMessage());
+              } else if (message is OpenMethodStreamCommand) {
+                webSocket.sendText(
+                  OpenMethodStreamResponse.buildMessage(
+                    connectionId: message.connectionId,
+                    endpoint: message.endpoint,
+                    method: message.method,
+                    responseType: OpenMethodStreamResponseType.success,
+                  ),
+                );
+              }
+            },
+          );
+        },
+        onConnected: (host) {
+          callbackUrlFuture.complete(host);
+        },
+      );
+
+      var webSocketHost = await callbackUrlFuture.future;
+      var streamManager = ClientMethodStreamManager(
+        connectionTimeout: const Duration(milliseconds: 100),
+        webSocketHost: webSocketHost,
+        serializationManager: TestSerializationManager(),
+        pingInterval: const Duration(milliseconds: 20),
+        idleTimeout: const Duration(milliseconds: 80),
+      );
+
+      streamConnectionDetails = MethodStreamConnectionDetailsBuilder().build();
+      await streamManager.openMethodStream(streamConnectionDetails);
+    });
+
+    tearDown(() async {
+      stopRespondingTimer?.cancel();
+      await closeServer();
+    });
+
+    test(
+      'when messages are received regularly then idle timeout is delayed until inactivity.',
+      () async {
+        var errorCompleter = Completer<Object>();
+        streamConnectionDetails.outputController.stream.listen(
+          (e) {},
+          onError: (e, s) => errorCompleter.complete(e),
+        );
+
+        expect(
+          () => errorCompleter.future.timeout(
+            const Duration(milliseconds: 70),
+          ),
+          throwsA(isA<TimeoutException>()),
+        );
+
+        var error = await errorCompleter.future.timeout(
+          const Duration(milliseconds: 250),
+        );
+        expect(error, isA<MethodStreamIdleTimeoutException>());
+      },
+    );
+  });
 }
