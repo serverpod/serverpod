@@ -88,3 +88,14 @@ class ConnectionClosedException extends MethodStreamException {
     return 'Method stream connection closed with an error';
   }
 }
+
+/// Thrown if the method stream connection is idle for too long.
+class MethodStreamIdleTimeoutException extends MethodStreamException {
+  /// Creates a new [MethodStreamIdleTimeoutException].
+  const MethodStreamIdleTimeoutException();
+
+  @override
+  String toString() {
+    return 'Method stream connection idle timeout';
+  }
+}
