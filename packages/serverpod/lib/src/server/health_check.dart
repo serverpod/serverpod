@@ -6,7 +6,7 @@ import '../../serverpod.dart';
 import '../generated/protocol.dart';
 import '../util/date_time_extension.dart';
 
-import 'package:system_resources/system_resources.dart';
+import 'package:system_resources_2/system_resources_2.dart';
 
 /// Performs all health checks on the [Serverpod].
 ///
