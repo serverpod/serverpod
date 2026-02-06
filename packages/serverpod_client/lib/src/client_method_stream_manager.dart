@@ -603,7 +603,6 @@ final class ClientMethodStreamManager {
 
     _pingTimer = Timer.periodic(_pingInterval, (_) {
       if (_webSocket == null) return;
-      print('Sending ping');
       _addMessageToWebSocket(PingCommand.buildMessage());
     });
 
