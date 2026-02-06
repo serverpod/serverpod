@@ -8,8 +8,8 @@ Serverpod 3.3 brings a lot of new features and improvements to the framework, in
 
 - feat: Adds Kubernetes-style health check endpoints `livez`, `readyz`, and `startupz` with support for custom health checks.
 - feat: Adds configurable log retention and automated purging.
-- feat: Allows defining custom jsonKey aliases in models to use in JSON serialization and deserialization. ([@FXschwartz](https://github.com/FXschwartz))
-- feat: Adds support for defining custom properties on enums models. ([@FXschwartz](https://github.com/FXschwartz))
+- feat: Allows defining custom `jsonKey` aliases in models to use in JSON serialization and deserialization. ([@FXschwartz](https://github.com/FXschwartz))
+- feat: Adds support for defining custom properties on enum models. ([@FXschwartz](https://github.com/FXschwartz))
 - fix: Preserves logging behavior settings when unrelated configs are set.
 - fix: Fixes missing source on linting error due to the `fields` key missing under `indexes`.
 - fix: Fixes console log timestamps showing actual event time instead of flush time. ([@Tokotuu](https://github.com/Tokotuu))
