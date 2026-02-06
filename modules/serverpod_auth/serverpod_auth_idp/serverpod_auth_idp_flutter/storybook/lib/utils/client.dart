@@ -191,6 +191,9 @@ class GitHubIdpEndpoint extends EndpointGitHubIdpBase {
     required String codeVerifier,
     required String redirectUri,
   }) => Future.value(_mockData.authSuccess);
+
+  @override
+  Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
 class Modules {
