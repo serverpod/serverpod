@@ -54,7 +54,6 @@ class PasswordlessIdpLoginUtil {
     if (await _requestRateLimiter.hasTooManyAttempts(session, nonce: nonce)) {
       throw PasswordlessLoginTooManyAttemptsException();
     }
-    await _requestRateLimiter.recordAttempt(session, nonce: nonce);
 
     // Delete any existing request for the same nonce.
     final existingRequest = await PasswordlessLoginRequest.db.findFirstRow(
