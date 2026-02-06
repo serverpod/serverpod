@@ -17,6 +17,7 @@ firebaseIdp:
   - hasAccount:
 gitHubIdp:
   - login:
+  - hasAccount:
 googleIdp:
   - login:
   - hasAccount:

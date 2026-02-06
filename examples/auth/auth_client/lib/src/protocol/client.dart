@@ -318,6 +318,13 @@ class EndpointGitHubIdp extends _i1.EndpointGitHubIdpBase {
       'redirectUri': redirectUri,
     },
   );
+
+  @override
+  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+    'gitHubIdp',
+    'hasAccount',
+    {},
+  );
 }
 
 /// {@category Endpoint}

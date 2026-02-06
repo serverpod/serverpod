@@ -418,6 +418,16 @@ class Endpoints extends _i1.EndpointDispatch {
                     redirectUri: params['redirectUri'],
                   ),
         ),
+        'hasAccount': _i1.MethodConnector(
+          name: 'hasAccount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['gitHubIdp'] as _i6.GitHubIdpEndpoint)
+                  .hasAccount(session),
+        ),
       },
     );
     connectors['googleIdp'] = _i1.EndpointConnector(
