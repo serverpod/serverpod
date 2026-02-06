@@ -89,6 +89,7 @@ extension on EmailLoginServerException {
     switch (this) {
       case EmailAccountNotFoundException():
       case EmailAuthenticationInvalidCredentialsException():
+      case EmailAlreadyInUseException():
         return EmailAccountLoginExceptionReason.invalidCredentials;
       case EmailAuthenticationTooManyAttemptsException():
         return EmailAccountLoginExceptionReason.tooManyAttempts;
