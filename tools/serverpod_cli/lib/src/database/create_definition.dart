@@ -11,8 +11,9 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 DatabaseDefinition createDatabaseDefinitionFromModels(
   List<SerializableModelDefinition> serializableModels,
   String moduleName,
-  List<ModuleConfig> allModules,
-) {
+  List<ModuleConfig> allModules, {
+  String defaultSchema = 'public',
+}) {
   var tables = <TableDefinition>[
     for (var classDefinition in serializableModels)
       if (classDefinition is ModelClassDefinition &&
@@ -21,7 +22,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
           module: moduleName,
           name: classDefinition.tableName!,
           dartName: classDefinition.className,
-          schema: 'public',
+          schema: classDefinition.schema ?? defaultSchema,
           columns: [
             for (var column in classDefinition.fieldsIncludingInherited)
               if (column.shouldSerializeFieldForDatabase(true))
@@ -41,7 +42,11 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                   vectorDimension: column.type.vectorDimension,
                 ),
           ],
-          foreignKeys: _createForeignKeys(classDefinition),
+          foreignKeys: _createForeignKeys(
+            classDefinition,
+            serializableModels,
+            defaultSchema,
+          ),
           indexes: [
             IndexDefinition(
               indexName: '${classDefinition.tableName!}_pkey',
@@ -113,6 +118,8 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
 
 List<ForeignKeyDefinition> _createForeignKeys(
   ModelClassDefinition classDefinition,
+  List<SerializableModelDefinition> allModels,
+  String defaultSchema,
 ) {
   var fields = classDefinition.fields
       .where((field) => field.relation is ForeignRelationDefinition)
@@ -122,12 +129,23 @@ List<ForeignKeyDefinition> _createForeignKeys(
   for (var i = 0; i < fields.length; i++) {
     var field = fields[i];
     var relation = field.relation as ForeignRelationDefinition;
+
+    // Find the schema of the referenced table
+    var referencedSchema = defaultSchema;
+    for (var model in allModels) {
+      if (model is ModelClassDefinition &&
+          model.tableName == relation.parentTable) {
+        referencedSchema = model.schema ?? defaultSchema;
+        break;
+      }
+    }
+
     foreignKeys.add(
       ForeignKeyDefinition(
         constraintName: '${classDefinition.tableName!}_fk_$i',
         columns: [field.columnName],
         referenceTable: relation.parentTable,
-        referenceTableSchema: 'public',
+        referenceTableSchema: referencedSchema,
         referenceColumns: ['id'],
         onDelete: relation.onDelete,
         onUpdate: relation.onUpdate,

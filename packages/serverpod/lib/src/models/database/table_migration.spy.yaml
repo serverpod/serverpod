@@ -4,6 +4,7 @@ fields:
   dartName: String?
   module: String?
   schema: String
+  newSchema: String?
 
   addColumns: List<ColumnDefinition>
   deleteColumns: List<String>
