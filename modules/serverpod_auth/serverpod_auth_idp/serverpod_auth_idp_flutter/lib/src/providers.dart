@@ -29,6 +29,7 @@ class AvailableIdps {
     hasGoogle,
     hasApple,
     hasFirebase,
+    hasFacebook,
     hasGitHub,
   ].where((e) => e).length;
 
@@ -46,6 +47,9 @@ class AvailableIdps {
 
   /// Whether the Firebase authentication provider is available.
   bool get hasFirebase => _isProviderAvailable<EndpointFirebaseIdpBase>();
+
+  /// Whether the Facebook authentication provider is available.
+  bool get hasFacebook => _isProviderAvailable<EndpointFacebookIdpBase>();
 
   /// Whether the GitHub authentication provider is available.
   bool get hasGitHub => _isProviderAvailable<EndpointGitHubIdpBase>();
