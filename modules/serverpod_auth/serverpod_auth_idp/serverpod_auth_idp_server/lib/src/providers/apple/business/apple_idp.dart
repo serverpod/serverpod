@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
+
 import 'package:sign_in_with_apple_server/sign_in_with_apple_server.dart';
 
 import '../../../../core.dart';
@@ -127,6 +128,10 @@ class AppleIdp {
       },
     );
   }
+
+  /// Determines whether the current session has an associated Apple account.
+  Future<bool> hasAccount(final Session session) async =>
+      await utils.getAccount(session) != null;
 
   /// {@macro apple_idp.revokedNotificationRoute}
   Route revokedNotificationRoute() =>

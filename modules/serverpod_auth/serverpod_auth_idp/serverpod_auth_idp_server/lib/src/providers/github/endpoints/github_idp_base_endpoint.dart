@@ -8,7 +8,7 @@ import '../business/github_idp.dart';
 /// This endpoint exposes methods for logging in users using GitHub authorization codes.
 /// If you would like modify the authentication flow, consider extending this
 /// class and overriding the relevant methods.
-abstract class GitHubIdpBaseEndpoint extends Endpoint {
+abstract class GitHubIdpBaseEndpoint extends IdpBaseEndpoint {
   /// Accessor for the configured GitHub Idp instance.
   /// By default this uses the global instance configured in
   /// [AuthServices].
@@ -39,4 +39,8 @@ abstract class GitHubIdpBaseEndpoint extends Endpoint {
       redirectUri: redirectUri,
     );
   }
+
+  @override
+  Future<bool> hasAccount(final Session session) async =>
+      await githubIdp.hasAccount(session);
 }

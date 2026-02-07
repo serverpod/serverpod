@@ -73,6 +73,13 @@ class EndpointAppleIdp extends _i1.EndpointAppleIdpBase {
       'lastName': lastName,
     },
   );
+
+  @override
+  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+    'appleIdp',
+    'hasAccount',
+    {},
+  );
 }
 
 /// {@category Endpoint}
@@ -246,6 +253,13 @@ class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
       'newPassword': newPassword,
     },
   );
+
+  @override
+  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+    'emailIdp',
+    'hasAccount',
+    {},
+  );
 }
 
 /// {@category Endpoint}
@@ -266,6 +280,13 @@ class EndpointFirebaseIdp extends _i1.EndpointFirebaseIdpBase {
         'login',
         {'idToken': idToken},
       );
+
+  @override
+  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+    'firebaseIdp',
+    'hasAccount',
+    {},
+  );
 }
 
 /// {@category Endpoint}
@@ -297,6 +318,13 @@ class EndpointGitHubIdp extends _i1.EndpointGitHubIdpBase {
       'redirectUri': redirectUri,
     },
   );
+
+  @override
+  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+    'gitHubIdp',
+    'hasAccount',
+    {},
+  );
 }
 
 /// {@category Endpoint}
@@ -321,6 +349,13 @@ class EndpointGoogleIdp extends _i1.EndpointGoogleIdpBase {
       'idToken': idToken,
       'accessToken': accessToken,
     },
+  );
+
+  @override
+  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+    'googleIdp',
+    'hasAccount',
+    {},
   );
 }
 
@@ -398,6 +433,13 @@ class EndpointPasskeyIdp extends _i1.EndpointPasskeyIdpBase {
     'passkeyIdp',
     'login',
     {'loginRequest': loginRequest},
+  );
+
+  @override
+  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+    'passkeyIdp',
+    'hasAccount',
+    {},
   );
 }
 

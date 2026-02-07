@@ -140,6 +140,19 @@ class AppleIdpUtils {
     );
   }
 
+  /// Returns the possible [AppleAccount] associated with a session.
+  Future<AppleAccount?> getAccount(final Session session) {
+    return switch (session.authenticated) {
+      null => Future.value(null),
+      _ => AppleAccount.db.findFirstRow(
+        session,
+        where: (final t) => t.authUserId.equals(
+          session.authenticated!.authUserId,
+        ),
+      ),
+    };
+  }
+
   /// Refreshes the Apple [appleAccount]'s refresh token to ensure it is still
   /// valid.
   ///

@@ -14,7 +14,7 @@ import '../business/email_idp.dart';
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 /// Alternatively you can build up your own endpoint on top of the same business
 /// logic by using [EmailIdp].
-abstract class EmailIdpBaseEndpoint extends Endpoint {
+abstract class EmailIdpBaseEndpoint extends IdpBaseEndpoint {
   /// Accessor for the configured Email Idp instance.
   /// By default this uses the global instance configured in
   /// [AuthServices].
@@ -196,4 +196,8 @@ abstract class EmailIdpBaseEndpoint extends Endpoint {
       newPassword: newPassword,
     );
   }
+
+  @override
+  Future<bool> hasAccount(final Session session) async =>
+      await emailIdp.hasAccount(session);
 }

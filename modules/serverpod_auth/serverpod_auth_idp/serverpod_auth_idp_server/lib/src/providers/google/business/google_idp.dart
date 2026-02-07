@@ -139,6 +139,10 @@ class GoogleIdp {
       },
     );
   }
+
+  /// Determines whether the current session has an associated Google account.
+  Future<bool> hasAccount(final Session session) async =>
+      await utils.getAccount(session) != null;
 }
 
 /// Extension to get the GoogleIdp instance from the AuthServices.

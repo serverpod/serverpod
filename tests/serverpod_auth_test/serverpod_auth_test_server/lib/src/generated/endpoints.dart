@@ -579,6 +579,16 @@ class Endpoints extends _i1.EndpointDispatch {
                     newPassword: params['newPassword'],
                   ),
         ),
+        'hasAccount': _i1.MethodConnector(
+          name: 'hasAccount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['emailAccount'] as _i5.EmailAccountEndpoint)
+                  .hasAccount(session),
+        ),
       },
     );
     connectors['googleAccountBackwardsCompatibilityTest'] = _i1.EndpointConnector(
@@ -612,6 +622,18 @@ class Endpoints extends _i1.EndpointDispatch {
                         accessToken: params['accessToken'],
                       ),
         ),
+        'hasAccount': _i1.MethodConnector(
+          name: 'hasAccount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['googleAccountBackwardsCompatibilityTest']
+                          as _i6.GoogleAccountBackwardsCompatibilityTestEndpoint)
+                      .hasAccount(session),
+        ),
       },
     );
     connectors['googleAccount'] = _i1.EndpointConnector(
@@ -643,6 +665,17 @@ class Endpoints extends _i1.EndpointDispatch {
                         idToken: params['idToken'],
                         accessToken: params['accessToken'],
                       ),
+        ),
+        'hasAccount': _i1.MethodConnector(
+          name: 'hasAccount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['googleAccount'] as _i7.GoogleAccountEndpoint)
+                      .hasAccount(session),
         ),
       },
     );
@@ -853,6 +886,18 @@ class Endpoints extends _i1.EndpointDispatch {
                             params['finishPasswordResetToken'],
                         newPassword: params['newPassword'],
                       ),
+        ),
+        'hasAccount': _i1.MethodConnector(
+          name: 'hasAccount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['passwordImportingEmailAccount']
+                          as _i9.PasswordImportingEmailAccountEndpoint)
+                      .hasAccount(session),
         ),
       },
     );

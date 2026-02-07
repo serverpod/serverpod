@@ -361,6 +361,13 @@ class EndpointEmailAccount extends _i5.EndpointEmailIdpBase {
       'newPassword': newPassword,
     },
   );
+
+  @override
+  _i2.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+    'emailAccount',
+    'hasAccount',
+    {},
+  );
 }
 
 /// Endpoint for Google-based authentication, which automatically imports legacy
@@ -385,6 +392,13 @@ class EndpointGoogleAccountBackwardsCompatibilityTest
       'idToken': idToken,
       'accessToken': accessToken,
     },
+  );
+
+  @override
+  _i2.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+    'googleAccountBackwardsCompatibilityTest',
+    'hasAccount',
+    {},
   );
 }
 
@@ -411,6 +425,13 @@ class EndpointGoogleAccount extends _i5.EndpointGoogleIdpBase {
       'idToken': idToken,
       'accessToken': accessToken,
     },
+  );
+
+  @override
+  _i2.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+    'googleAccount',
+    'hasAccount',
+    {},
   );
 }
 
@@ -616,6 +637,13 @@ class EndpointPasswordImportingEmailAccount extends _i5.EndpointEmailIdpBase {
       'finishPasswordResetToken': finishPasswordResetToken,
       'newPassword': newPassword,
     },
+  );
+
+  @override
+  _i2.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+    'passwordImportingEmailAccount',
+    'hasAccount',
+    {},
   );
 }
 

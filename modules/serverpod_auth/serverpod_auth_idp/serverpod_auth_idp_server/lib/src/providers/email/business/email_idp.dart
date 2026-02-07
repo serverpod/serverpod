@@ -299,6 +299,10 @@ class EmailIdp {
       ),
     );
   }
+
+  /// Determines whether the current session has an associated email account.
+  Future<bool> hasAccount(final Session session) async =>
+      await utils.getAccount(session) != null;
 }
 
 /// Extension to get the EmailIdp instance from the AuthServices.

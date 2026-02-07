@@ -728,8 +728,25 @@ abstract class EndpointCaller {
 
   /// Returns an endpoint of type [T]. If more than one endpoint of type [T]
   /// exists, [name] can be used to disambiguate.
+  ///
+  /// Usage:
+  /// ```dart
+  /// final connectedIdps = await client.auth.idp.getConnectedIdps();
+  ///
+  /// /// Look up an Idp by its name, in this case, the string "email"
+  /// final userHasEmailAndPassword = connectedIdps.has(EmailIdp.method);
+  ///
+  /// /// Look up an Idp by its type
+  /// final userHasGoogleAccount = connectedIdps.has<EndpointGoogleIdpBase>();
+  /// ```
   T getEndpointOfType<T extends EndpointRef>([String? name]) {
-    if (name != null) return endpointRefLookup[name] as T;
+    if (name != null) {
+      final endpoint = endpointRefLookup[name] as T?;
+      if (endpoint == null) {
+        throw ServerpodClientEndpointNotFound(T);
+      }
+      return endpoint;
+    }
 
     var foundEndpoints = endpointRefLookup.values.whereType<T>();
     switch (foundEndpoints.length) {
