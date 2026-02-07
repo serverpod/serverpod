@@ -12,9 +12,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../database/index_element_definition.dart' as _i2;
-import '../database/vector_distance_function.dart' as _i3;
-import '../database/column_type.dart' as _i4;
-import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i5;
+import '../database/gin_operator_class.dart' as _i3;
+import '../database/vector_distance_function.dart' as _i4;
+import '../database/column_type.dart' as _i5;
+import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i6;
 
 /// The definition of a (desired) index in the database.
 abstract class IndexDefinition implements _i1.SerializableModel {
@@ -26,6 +27,7 @@ abstract class IndexDefinition implements _i1.SerializableModel {
     required this.isUnique,
     required this.isPrimary,
     this.predicate,
+    this.ginOperatorClass,
     this.vectorDistanceFunction,
     this.vectorColumnType,
     this.parameters,
@@ -39,8 +41,9 @@ abstract class IndexDefinition implements _i1.SerializableModel {
     required bool isUnique,
     required bool isPrimary,
     String? predicate,
-    _i3.VectorDistanceFunction? vectorDistanceFunction,
-    _i4.ColumnType? vectorColumnType,
+    _i3.GinOperatorClass? ginOperatorClass,
+    _i4.VectorDistanceFunction? vectorDistanceFunction,
+    _i5.ColumnType? vectorColumnType,
     Map<String, String>? parameters,
   }) = _IndexDefinitionImpl;
 
@@ -48,27 +51,32 @@ abstract class IndexDefinition implements _i1.SerializableModel {
     return IndexDefinition(
       indexName: jsonSerialization['indexName'] as String,
       tableSpace: jsonSerialization['tableSpace'] as String?,
-      elements: _i5.Protocol().deserialize<List<_i2.IndexElementDefinition>>(
+      elements: _i6.Protocol().deserialize<List<_i2.IndexElementDefinition>>(
         jsonSerialization['elements'],
       ),
       type: jsonSerialization['type'] as String,
       isUnique: jsonSerialization['isUnique'] as bool,
       isPrimary: jsonSerialization['isPrimary'] as bool,
       predicate: jsonSerialization['predicate'] as String?,
+      ginOperatorClass: jsonSerialization['ginOperatorClass'] == null
+          ? null
+          : _i3.GinOperatorClass.fromJson(
+              (jsonSerialization['ginOperatorClass'] as String),
+            ),
       vectorDistanceFunction:
           jsonSerialization['vectorDistanceFunction'] == null
           ? null
-          : _i3.VectorDistanceFunction.fromJson(
+          : _i4.VectorDistanceFunction.fromJson(
               (jsonSerialization['vectorDistanceFunction'] as String),
             ),
       vectorColumnType: jsonSerialization['vectorColumnType'] == null
           ? null
-          : _i4.ColumnType.fromJson(
+          : _i5.ColumnType.fromJson(
               (jsonSerialization['vectorColumnType'] as int),
             ),
       parameters: jsonSerialization['parameters'] == null
           ? null
-          : _i5.Protocol().deserialize<Map<String, String>>(
+          : _i6.Protocol().deserialize<Map<String, String>>(
               jsonSerialization['parameters'],
             ),
     );
@@ -96,11 +104,14 @@ abstract class IndexDefinition implements _i1.SerializableModel {
   /// The predicate of this partial index, if it is one.
   String? predicate;
 
+  /// The GIN index operator class, if it is a GIN index.
+  _i3.GinOperatorClass? ginOperatorClass;
+
   /// The vector index distance function, if it is a vector index.
-  _i3.VectorDistanceFunction? vectorDistanceFunction;
+  _i4.VectorDistanceFunction? vectorDistanceFunction;
 
   /// The vector column type, if it is a vector index.
-  _i4.ColumnType? vectorColumnType;
+  _i5.ColumnType? vectorColumnType;
 
   /// Parameters for the index, if needed.
   Map<String, String>? parameters;
@@ -116,8 +127,9 @@ abstract class IndexDefinition implements _i1.SerializableModel {
     bool? isUnique,
     bool? isPrimary,
     String? predicate,
-    _i3.VectorDistanceFunction? vectorDistanceFunction,
-    _i4.ColumnType? vectorColumnType,
+    _i3.GinOperatorClass? ginOperatorClass,
+    _i4.VectorDistanceFunction? vectorDistanceFunction,
+    _i5.ColumnType? vectorColumnType,
     Map<String, String>? parameters,
   });
   @override
@@ -131,6 +143,8 @@ abstract class IndexDefinition implements _i1.SerializableModel {
       'isUnique': isUnique,
       'isPrimary': isPrimary,
       if (predicate != null) 'predicate': predicate,
+      if (ginOperatorClass != null)
+        'ginOperatorClass': ginOperatorClass?.toJson(),
       if (vectorDistanceFunction != null)
         'vectorDistanceFunction': vectorDistanceFunction?.toJson(),
       if (vectorColumnType != null)
@@ -156,8 +170,9 @@ class _IndexDefinitionImpl extends IndexDefinition {
     required bool isUnique,
     required bool isPrimary,
     String? predicate,
-    _i3.VectorDistanceFunction? vectorDistanceFunction,
-    _i4.ColumnType? vectorColumnType,
+    _i3.GinOperatorClass? ginOperatorClass,
+    _i4.VectorDistanceFunction? vectorDistanceFunction,
+    _i5.ColumnType? vectorColumnType,
     Map<String, String>? parameters,
   }) : super._(
          indexName: indexName,
@@ -167,6 +182,7 @@ class _IndexDefinitionImpl extends IndexDefinition {
          isUnique: isUnique,
          isPrimary: isPrimary,
          predicate: predicate,
+         ginOperatorClass: ginOperatorClass,
          vectorDistanceFunction: vectorDistanceFunction,
          vectorColumnType: vectorColumnType,
          parameters: parameters,
@@ -184,6 +200,7 @@ class _IndexDefinitionImpl extends IndexDefinition {
     bool? isUnique,
     bool? isPrimary,
     Object? predicate = _Undefined,
+    Object? ginOperatorClass = _Undefined,
     Object? vectorDistanceFunction = _Undefined,
     Object? vectorColumnType = _Undefined,
     Object? parameters = _Undefined,
@@ -196,11 +213,14 @@ class _IndexDefinitionImpl extends IndexDefinition {
       isUnique: isUnique ?? this.isUnique,
       isPrimary: isPrimary ?? this.isPrimary,
       predicate: predicate is String? ? predicate : this.predicate,
+      ginOperatorClass: ginOperatorClass is _i3.GinOperatorClass?
+          ? ginOperatorClass
+          : this.ginOperatorClass,
       vectorDistanceFunction:
-          vectorDistanceFunction is _i3.VectorDistanceFunction?
+          vectorDistanceFunction is _i4.VectorDistanceFunction?
           ? vectorDistanceFunction
           : this.vectorDistanceFunction,
-      vectorColumnType: vectorColumnType is _i4.ColumnType?
+      vectorColumnType: vectorColumnType is _i5.ColumnType?
           ? vectorColumnType
           : this.vectorColumnType,
       parameters: parameters is Map<String, String>?
