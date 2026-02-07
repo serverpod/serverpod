@@ -175,25 +175,19 @@ class _ConnectedScreenState extends State<ConnectedScreen> {
               child: const Text('Sign out'),
             ),
 
-            if (connectedIdps == null)
-              const CircularProgressIndicator.adaptive(),
-
-            if (connectedIdps != null) ...[
-              Text('All connected Idps: ${connectedIdps!.names}'),
-              const SizedBox(height: 8),
-              Text('User has Google: ${connectedIdps!.hasGoogle ? '✅' : '❌'}'),
-              const SizedBox(height: 8),
-              Text('User has Email: ${connectedIdps!.hasEmail ? '✅' : '❌'}'),
-              const SizedBox(height: 8),
-              Text('User has Apple: ${connectedIdps!.hasApple ? '✅' : '❌'}'),
-              const SizedBox(height: 8),
-              Text('User has GitHub: ${connectedIdps!.hasGitHub ? '✅' : '❌'}'),
-              const SizedBox(height: 8),
-              Text(
-                'User has Firebase: ${connectedIdps!.hasFirebase ? '✅' : '❌'}',
-              ),
-              const SizedBox(height: 8),
-            ],
+            connectedIdps == null
+                ? const CircularProgressIndicator.adaptive()
+                : Column(
+                    spacing: 4,
+                    children: [
+                      'All connected Idps: ${connectedIdps!.names}',
+                      'User has Google: ${connectedIdps!.hasGoogle ? '✅' : '❌'}',
+                      'User has Email: ${connectedIdps!.hasEmail ? '✅' : '❌'}',
+                      'User has Apple: ${connectedIdps!.hasApple ? '✅' : '❌'}',
+                      'User has GitHub: ${connectedIdps!.hasGitHub ? '✅' : '❌'}',
+                      'User has Firebase: ${connectedIdps!.hasFirebase ? '✅' : '❌'}',
+                    ].map((e) => Text(e)).toList(),
+                  ),
 
             if (connectedIdps != null && connectedIdps!.hasGoogle)
               FilledButton(
