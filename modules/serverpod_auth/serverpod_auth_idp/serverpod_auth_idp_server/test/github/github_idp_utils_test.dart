@@ -1,16 +1,13 @@
-import 'dart:typed_data';
-
-import 'package:passkeys_server/passkeys_server.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
-import 'package:serverpod_auth_idp_server/providers/passkey.dart';
+import 'package:serverpod_auth_idp_server/providers/github.dart';
 import 'package:test/test.dart';
 
 import '../test_tags.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
-  late PasskeyIdpUtils utils;
+  late GitHubIdpUtils utils;
   late Session session;
 
   withServerpod(
@@ -32,7 +29,7 @@ void main() {
     },
   );
 
-  withServerpod('Given an authenticated session but no passkey account', (
+  withServerpod('Given an authenticated session but no GitHub account', (
     final sessionBuilder,
     final endpoints,
   ) {
@@ -57,11 +54,11 @@ void main() {
     );
   });
 
-  withServerpod('Given an authenticated session with a passkey account', (
+  withServerpod('Given an authenticated session with a GitHub account', (
     final sessionBuilder,
     final endpoints,
   ) {
-    late PasskeyAccount passkeyAccount;
+    late GitHubAccount githubAccount;
     late AuthUserModel authUser;
 
     setUp(() async {
@@ -69,15 +66,12 @@ void main() {
 
       final setupSession = sessionBuilder.build();
       authUser = await const AuthUsers().create(setupSession);
-      passkeyAccount = await PasskeyAccount.db.insertRow(
+      githubAccount = await GitHubAccount.db.insertRow(
         setupSession,
-        PasskeyAccount(
+        GitHubAccount(
+          userIdentifier: 'github-id-${const Uuid().v4()}',
+          email: 'test-${const Uuid().v4()}@gmail.com',
           authUserId: authUser.id,
-          keyId: ByteData(0),
-          keyIdBase64: 'base64-${const Uuid().v4()}',
-          clientDataJSON: ByteData(0),
-          attestationObject: ByteData(0),
-          originalChallenge: ByteData(0),
         ),
       );
       session = sessionBuilder
@@ -95,18 +89,19 @@ void main() {
       () async {
         final account = await utils.getAccount(session);
         expect(account, isNotNull);
-        expect(account?.id, passkeyAccount.id);
+        expect(account?.id, githubAccount.id);
         expect(account?.authUserId, authUser.id);
       },
     );
   });
 }
 
-PasskeyIdpUtils _createUtils() {
-  return PasskeyIdpUtils(
-    challengeLifetime: const Duration(minutes: 5),
-    passkeys: Passkeys(
-      config: PasskeysConfig(relyingPartyId: 'id'),
+GitHubIdpUtils _createUtils() {
+  return GitHubIdpUtils(
+    config: GitHubIdpConfig(
+      clientId: 'id',
+      clientSecret: 'secret',
     ),
+    authUsers: const AuthUsers(),
   );
 }
