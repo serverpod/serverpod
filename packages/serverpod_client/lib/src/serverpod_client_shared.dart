@@ -743,7 +743,7 @@ abstract class EndpointCaller {
     if (name != null) {
       final endpoint = endpointRefLookup[name] as T?;
       if (endpoint == null) {
-        throw ServerpodClientEndpointNotFound(T);
+        throw ServerpodClientEndpointNotFound(T, name: name);
       }
       return endpoint;
     }
@@ -825,8 +825,11 @@ sealed class ServerpodClientGetEndpointException implements Exception {
 final class ServerpodClientEndpointNotFound
     extends ServerpodClientGetEndpointException {
   /// Creates an Endpoint Missing Exception.
-  const ServerpodClientEndpointNotFound(Type type)
-    : super('No endpoint of type "$type" found.');
+  const ServerpodClientEndpointNotFound(Type type, {String? name})
+    : super(
+        'No endpoint of type "$type" '
+        '${name != null ? 'with name "$name" ' : ''}found.',
+      );
 }
 
 /// Thrown if the client tries to call an endpoint by type, but multiple
