@@ -1,3 +1,6 @@
+appleAccount:
+  - login:
+  - hasAccount:
 authTest:
   - createTestUser:
   - createSasToken:
@@ -25,6 +28,12 @@ emailAccount:
   - verifyPasswordResetCode:
   - finishPasswordReset:
   - hasAccount:
+firebaseAccount:
+  - login:
+  - hasAccount:
+gitHubAccount:
+  - login:
+  - hasAccount:
 googleAccountBackwardsCompatibilityTest:
   - login:
   - hasAccount:
@@ -33,6 +42,11 @@ googleAccount:
   - hasAccount:
 jwtRefresh:
   - refreshAccessToken:
+passkeyAccount:
+  - createChallenge:
+  - register:
+  - login:
+  - hasAccount:
 passwordImportingEmailAccount:
   - login:
   - startRegistration:
