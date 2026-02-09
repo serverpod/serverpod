@@ -15,10 +15,13 @@ Serverpod 3.3 brings a lot of new features and improvements to the framework, in
 - fix: Fixes console log timestamps showing actual event time instead of flush time. ([@Tokotuu](https://github.com/Tokotuu))
 - fix: Generates `const` defaults for `Duration` and `Uuid().v#obj()` types.
 - fix: Prevent import errors during generation when renaming the server on a project to `server`.
+- fix: Adds keep-alive pings and idle timeout detection from the client to improve reliability of streaming connections.
+- fix: Fixes CPU and memory metrics when running the server inside containers.
 
 ### Authentication
 
 - feat: Adds Anonymous IDP (currently experimental). ([@craiglabenz](https://github.com/craiglabenz))
+- feat: Adds connected IDPs lookup on the server and client. ([@craiglabenz](https://github.com/craiglabenz))
 - feat: Adds GitHub identity provider support. ([@vfiruz97](https://github.com/vfiruz97))
 - feat: Adds an OAuth2 utility for building identity providers. ([@vfiruz97](https://github.com/vfiruz97))
 - fix: Fixes custom `--serverId` not being properly propagated to logs.
