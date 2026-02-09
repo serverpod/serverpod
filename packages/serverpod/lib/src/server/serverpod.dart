@@ -84,8 +84,12 @@ class Serverpod {
   /// check remotely if all services the server is depending on is up and
   /// running.
   ///
-  /// Deprecated: Use [HealthConfig] with custom [HealthIndicator]
-  /// implementations instead. This will be removed in a future version.
+  /// This parameter serves two purposes:
+  /// 1. Registering custom health checks on the legacy health endpoint.
+  /// 2. Registering custom health metrics that are stored in the database.
+  ///
+  /// For the first purpose, this parameter is deprecated in favor of the
+  /// [HealthConfig] with custom [HealthIndicator] implementations.
   final HealthCheckHandler? healthCheckHandler;
 
   /// Configuration for the health check system.
@@ -385,9 +389,6 @@ class Serverpod {
     this.endpoints, {
     ServerpodConfig? config,
     this.authenticationHandler,
-    @Deprecated(
-      'Use healthConfig with custom HealthIndicator implementations instead.',
-    )
     this.healthCheckHandler,
     HealthConfig? healthConfig,
     Headers? httpResponseHeaders,
