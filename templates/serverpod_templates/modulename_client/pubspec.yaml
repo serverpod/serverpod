@@ -9,4 +9,4 @@ environment:
 #resolution: workspace #--UNCOMMENT_LINE--#
 
 dependencies:
-  serverpod_client: 3.2.3
+  serverpod_client: 3.3.0
