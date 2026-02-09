@@ -385,9 +385,6 @@ class Serverpod {
     this.endpoints, {
     ServerpodConfig? config,
     this.authenticationHandler,
-    @Deprecated(
-      'Use healthConfig with custom HealthIndicator implementations instead.',
-    )
     this.healthCheckHandler,
     HealthConfig? healthConfig,
     Headers? httpResponseHeaders,
