@@ -157,6 +157,16 @@ class Endpoints extends _i1.EndpointDispatch {
                 lastName: params['lastName'],
               ),
         ),
+        'hasAccount': _i1.MethodConnector(
+          name: 'hasAccount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['appleIdp'] as _i3.AppleIdpEndpoint)
+                  .hasAccount(session),
+        ),
       },
     );
     connectors['emailIdp'] = _i1.EndpointConnector(
@@ -326,6 +336,16 @@ class Endpoints extends _i1.EndpointDispatch {
                     newPassword: params['newPassword'],
                   ),
         ),
+        'hasAccount': _i1.MethodConnector(
+          name: 'hasAccount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['emailIdp'] as _i4.EmailIdpEndpoint)
+                  .hasAccount(session),
+        ),
       },
     );
     connectors['firebaseIdp'] = _i1.EndpointConnector(
@@ -350,6 +370,16 @@ class Endpoints extends _i1.EndpointDispatch {
                     session,
                     idToken: params['idToken'],
                   ),
+        ),
+        'hasAccount': _i1.MethodConnector(
+          name: 'hasAccount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['firebaseIdp'] as _i5.FirebaseIdpEndpoint)
+                  .hasAccount(session),
         ),
       },
     );
@@ -388,6 +418,16 @@ class Endpoints extends _i1.EndpointDispatch {
                     redirectUri: params['redirectUri'],
                   ),
         ),
+        'hasAccount': _i1.MethodConnector(
+          name: 'hasAccount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['gitHubIdp'] as _i6.GitHubIdpEndpoint)
+                  .hasAccount(session),
+        ),
       },
     );
     connectors['googleIdp'] = _i1.EndpointConnector(
@@ -418,6 +458,16 @@ class Endpoints extends _i1.EndpointDispatch {
                     idToken: params['idToken'],
                     accessToken: params['accessToken'],
                   ),
+        ),
+        'hasAccount': _i1.MethodConnector(
+          name: 'hasAccount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['googleIdp'] as _i7.GoogleIdpEndpoint)
+                  .hasAccount(session),
         ),
       },
     );
@@ -500,6 +550,16 @@ class Endpoints extends _i1.EndpointDispatch {
                     session,
                     loginRequest: params['loginRequest'],
                   ),
+        ),
+        'hasAccount': _i1.MethodConnector(
+          name: 'hasAccount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['passkeyIdp'] as _i9.PasskeyIdpEndpoint)
+                  .hasAccount(session),
         ),
       },
     );

@@ -33,6 +33,20 @@ void main() {
         ),
       );
     });
+
+    test('when getEndpointOfType is called with a name that is not found '
+        'then it throws StateError due to no matches', () {
+      expect(
+        () => client.getEndpointOfType('wrong-name'),
+        throwsA(
+          isA<ServerpodClientEndpointNotFound>().having(
+            (e) => e.message,
+            'message',
+            'No endpoint of type "EndpointRef" with name "wrong-name" found.',
+          ),
+        ),
+      );
+    });
   });
 
   group('Given a client with endpoints that share a common base type', () {
@@ -97,6 +111,20 @@ void main() {
         expect(endpoint.name, 'concreteBase');
       },
     );
+
+    test('when getEndpointOfType is called with a name that is not found '
+        'then it throws StateError due to no matches', () {
+      expect(
+        () => client.getEndpointOfType('wrong-name'),
+        throwsA(
+          isA<ServerpodClientEndpointNotFound>().having(
+            (e) => e.message,
+            'message',
+            'No endpoint of type "EndpointRef" with name "wrong-name" found.',
+          ),
+        ),
+      );
+    });
   });
 }
 
