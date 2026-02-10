@@ -25,7 +25,7 @@ class LegacyStatusEndpoint extends Endpoint {
   Future<void> signOutAllDevices(final Session session) async {
     final userIdentifier = session.authenticated?.userIdentifier;
     if (userIdentifier != null) {
-      final uuid = UuidValue.fromString(userIdentifier);
+      final uuid = UuidValue.withValidation(userIdentifier);
       await LegacySession.db.deleteWhere(
         session,
         where: (final t) => t.authUserId.equals(uuid),
@@ -37,7 +37,7 @@ class LegacyStatusEndpoint extends Endpoint {
   Future<LegacyUserInfo?> getUserInfo(final Session session) async {
     final userIdentifier = session.authenticated?.userIdentifier;
     if (userIdentifier == null) return null;
-    final uuid = UuidValue.fromString(userIdentifier);
+    final uuid = UuidValue.withValidation(userIdentifier);
 
     final authUser = await AuthUser.db.findById(session, uuid);
     if (authUser == null) return null;
