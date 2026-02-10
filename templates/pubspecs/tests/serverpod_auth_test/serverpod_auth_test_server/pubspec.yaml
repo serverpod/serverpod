@@ -19,6 +19,9 @@ dependencies:
 dev_dependencies:
   clock: ^1.1.1
   lints: '>=3.0.0 <7.0.0'
+  serverpod_auth_client: SERVERPOD_VERSION
+  serverpod_auth_test_client:
+    path: ../serverpod_auth_test_client
   serverpod_test: SERVERPOD_VERSION
   test: ^1.25.5
 
