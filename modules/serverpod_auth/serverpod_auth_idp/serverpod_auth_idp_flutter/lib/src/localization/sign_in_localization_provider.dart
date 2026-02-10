@@ -1,22 +1,28 @@
 import 'package:flutter/widgets.dart';
 
+/// Texts for basic sign-in UI elements.
 @immutable
 class BasicSignInTexts {
+  /// Creates a new [BasicSignInTexts] configuration.
   const BasicSignInTexts({
     required this.noAuthenticationProvidersConfigured,
     required this.orContinueWith,
   });
 
+  /// Default english texts.
   static const defaults = BasicSignInTexts(
     noAuthenticationProvidersConfigured:
         'No authentication providers configured',
     orContinueWith: 'or continue with',
   );
 
+  /// Message shown when no identity provider is available on the server.
   final String noAuthenticationProvidersConfigured;
 
+  /// Text shown in the divider above social sign-in options.
   final String orContinueWith;
 
+  /// Creates a copy of this object with updated values.
   BasicSignInTexts copyWith({
     String? noAuthenticationProvidersConfigured,
     String? orContinueWith,
@@ -43,8 +49,10 @@ class BasicSignInTexts {
       Object.hash(noAuthenticationProvidersConfigured, orContinueWith);
 }
 
+/// Text for the email sign-in flow.
 @immutable
 class EmailSignInTexts {
+  /// Creates a new [EmailSignInTexts] configuration.
   const EmailSignInTexts({
     required this.title,
     required this.forgotPassword,
@@ -75,6 +83,7 @@ class EmailSignInTexts {
     required this.privacyPolicy,
   });
 
+  /// Default english texts.
   static const defaults = EmailSignInTexts(
     title: 'Sign In with email',
     forgotPassword: 'Forgot password?',
@@ -107,60 +116,88 @@ class EmailSignInTexts {
     privacyPolicy: 'Privacy Policy',
   );
 
+  /// Title on the login form.
   final String title;
 
+  /// Text for the "forgot password" action.
   final String forgotPassword;
 
+  /// Generic sign-in text.
   final String signIn;
 
+  /// Prompt shown when no account exists.
   final String dontHaveAnAccount;
 
+  /// Generic sign-up text.
   final String signUp;
 
+  /// Title on the start registration form.
   final String signUpTitle;
 
+  /// Text for continue actions in the email flow.
   final String continueAction;
 
+  /// Prompt shown when an account already exists.
   final String alreadyHaveAnAccount;
 
+  /// Title for account verification.
   final String verifyAccountTitle;
 
+  /// Title for password reset code verification.
   final String verifyResetCodeTitle;
 
+  /// Message shown in verification screens.
   final String verificationMessage;
 
+  /// Text for verification actions.
   final String verify;
 
+  /// Title on the set account password screen.
   final String setAccountPasswordTitle;
 
+  /// Label for the standard password field.
   final String passwordLabel;
 
+  /// Text for returning to the sign-up screen.
   final String backToSignUp;
 
+  /// Title on the set new password screen.
   final String setNewPasswordTitle;
 
+  /// Label for the new password field.
   final String newPasswordLabel;
 
+  /// Title on the password reset request screen.
   final String resetPasswordTitle;
 
+  /// Description shown on the password reset request screen.
   final String resetPasswordDescription;
 
+  /// Text for requesting a password reset.
   final String requestPasswordReset;
 
+  /// Text for reset password actions.
   final String resetPassword;
 
+  /// Text for returning to the sign-in screen.
   final String backToSignIn;
 
+  /// Label for email text fields.
   final String emailLabel;
 
+  /// Prefix text in the terms and privacy notice.
   final String termsIntro;
 
+  /// Text for terms and conditions.
   final String termsAndConditions;
 
+  /// Connector text between terms and privacy texts.
   final String andText;
 
+  /// Text for privacy policy.
   final String privacyPolicy;
 
+  /// Creates a copy of this object with updated values.
   EmailSignInTexts copyWith({
     String? title,
     String? forgotPassword,
@@ -288,8 +325,10 @@ class EmailSignInTexts {
   ]);
 }
 
+/// Texts for the Apple Sign-In button.
 @immutable
 class AppleSignInTexts {
+  /// Creates a new [AppleSignInTexts] configuration.
   const AppleSignInTexts({
     required this.signInWith,
     required this.continueWith,
@@ -297,6 +336,7 @@ class AppleSignInTexts {
     required this.signIn,
   });
 
+  /// Default English texts.
   static const defaults = AppleSignInTexts(
     signInWith: 'Sign in with Apple',
     continueWith: 'Continue with Apple',
@@ -304,14 +344,19 @@ class AppleSignInTexts {
     signIn: 'Sign in',
   );
 
+  /// Text for "Sign in with Apple".
   final String signInWith;
 
+  /// Text for "Continue with Apple".
   final String continueWith;
 
+  /// Text for "Sign up with Apple".
   final String signUpWith;
 
+  /// Short text for "Sign in".
   final String signIn;
 
+  /// Creates a copy of this object with updated values.
   AppleSignInTexts copyWith({
     String? signInWith,
     String? continueWith,
@@ -340,8 +385,13 @@ class AppleSignInTexts {
   int get hashCode => Object.hash(signInWith, continueWith, signUpWith, signIn);
 }
 
+/// Texts for the Google Sign-In button on native platforms.
+///
+/// On web, Google renders its own localized text based on [GSIButtonText] and
+/// locale, so these values are only applied for native buttons.
 @immutable
 class GoogleSignInTexts {
+  /// Creates a new [GoogleSignInTexts] configuration.
   const GoogleSignInTexts({
     required this.signingIn,
     required this.signInWith,
@@ -350,6 +400,7 @@ class GoogleSignInTexts {
     required this.signIn,
   });
 
+  /// Default English texts.
   static const defaults = GoogleSignInTexts(
     signingIn: 'Signing in...',
     signInWith: 'Sign in with Google',
@@ -358,16 +409,22 @@ class GoogleSignInTexts {
     signIn: 'Sign in',
   );
 
+  /// Text used while authentication is loading.
   final String signingIn;
 
+  /// Text for "Sign in with Google".
   final String signInWith;
 
+  /// Text for "Sign up with Google".
   final String signUpWith;
 
+  /// Text for "Continue with Google".
   final String continueWith;
 
+  /// Short text for "Sign in".
   final String signIn;
 
+  /// Creates a copy of this object with updated values.
   GoogleSignInTexts copyWith({
     String? signingIn,
     String? signInWith,
@@ -400,26 +457,33 @@ class GoogleSignInTexts {
       Object.hash(signingIn, signInWith, signUpWith, continueWith, signIn);
 }
 
+/// Texts for the GitHub Sign-In button.
 @immutable
 class GitHubSignInTexts {
+  /// Creates a new [GitHubSignInTexts] configuration.
   const GitHubSignInTexts({
     required this.signInWith,
     required this.signUpWith,
     required this.continueWith,
   });
 
+  /// Default english texts.
   static const defaults = GitHubSignInTexts(
     signInWith: 'Sign in with GitHub',
     signUpWith: 'Sign up with GitHub',
     continueWith: 'Continue with GitHub',
   );
 
+  /// Text for "Sign in with GitHub".
   final String signInWith;
 
+  /// Text for "Sign up with GitHub".
   final String signUpWith;
 
+  /// Text for "Continue with GitHub".
   final String continueWith;
 
+  /// Creates a copy of this object with updated values.
   GitHubSignInTexts copyWith({
     String? signInWith,
     String? signUpWith,
@@ -445,18 +509,23 @@ class GitHubSignInTexts {
   int get hashCode => Object.hash(signInWith, signUpWith, continueWith);
 }
 
+/// Texts for the anonymous sign-in widget.
 @immutable
 class AnonymousSignInTexts {
+  /// Creates a new [AnonymousSignInTexts] configuration.
   const AnonymousSignInTexts({
     required this.continueWithoutAccount,
   });
 
+  /// Default English texts.
   static const defaults = AnonymousSignInTexts(
     continueWithoutAccount: 'Continue without account',
   );
 
+  /// Text for anonymous sign-in action.
   final String continueWithoutAccount;
 
+  /// Creates a copy of this object with updated values.
   AnonymousSignInTexts copyWith({
     String? continueWithoutAccount,
   }) {
@@ -477,7 +546,9 @@ class AnonymousSignInTexts {
   int get hashCode => continueWithoutAccount.hashCode;
 }
 
+/// Inherited widget that provides customizable sign-in texts.
 class SignInLocalizationProvider extends InheritedWidget {
+  /// Creates a new [SignInLocalizationProvider].
   const SignInLocalizationProvider({
     this.basic = BasicSignInTexts.defaults,
     this.email = EmailSignInTexts.defaults,
@@ -489,23 +560,33 @@ class SignInLocalizationProvider extends InheritedWidget {
     super.key,
   });
 
+  /// Basic sign-in texts.
   final BasicSignInTexts basic;
 
+  /// Texts for the email sign-in flow.
   final EmailSignInTexts email;
 
+  /// Texts for the Apple Sign-In button.
   final AppleSignInTexts apple;
 
+  /// Texts for the Google Sign-In button.
   final GoogleSignInTexts google;
 
+  /// Texts for the GitHub Sign-In button.
   final GitHubSignInTexts github;
 
+  /// Texts for anonymous sign-in.
   final AnonymousSignInTexts anonymous;
 
+  /// Returns the nearest localization provider in the widget tree, if any.
   static SignInLocalizationProvider? maybeOf(BuildContext context) {
     return context
         .dependOnInheritedWidgetOfExactType<SignInLocalizationProvider>();
   }
 
+  /// Returns the nearest localization provider in the widget tree.
+  ///
+  /// Throws an assertion error in debug mode if no provider is found.
   static SignInLocalizationProvider of(BuildContext context) {
     final localizations = maybeOf(context);
     assert(
@@ -526,27 +607,34 @@ class SignInLocalizationProvider extends InheritedWidget {
   }
 }
 
+/// Convenience getters sign-in text.
 extension SignInLocalizationBuildContext on BuildContext {
+  /// Returns basic sign-in texts from context or defaults.
   BasicSignInTexts get basicSignInTexts =>
       SignInLocalizationProvider.maybeOf(this)?.basic ??
       BasicSignInTexts.defaults;
 
+  /// Returns email sign-in texts from context or defaults.
   EmailSignInTexts get emailSignInTexts =>
       SignInLocalizationProvider.maybeOf(this)?.email ??
       EmailSignInTexts.defaults;
 
+  /// Returns Apple Sign-In texts from context or defaults.
   AppleSignInTexts get appleSignInTexts =>
       SignInLocalizationProvider.maybeOf(this)?.apple ??
       AppleSignInTexts.defaults;
 
+  /// Returns Google Sign-In texts from context or defaults.
   GoogleSignInTexts get googleSignInTexts =>
       SignInLocalizationProvider.maybeOf(this)?.google ??
       GoogleSignInTexts.defaults;
 
+  /// Returns GitHub Sign-In texts from context or defaults.
   GitHubSignInTexts get githubSignInTexts =>
       SignInLocalizationProvider.maybeOf(this)?.github ??
       GitHubSignInTexts.defaults;
 
+  /// Returns anonymous sign-in texts from context or defaults.
   AnonymousSignInTexts get anonymousSignInTexts =>
       SignInLocalizationProvider.maybeOf(this)?.anonymous ??
       AnonymousSignInTexts.defaults;
