@@ -32,6 +32,7 @@ Serverpod 3.3 brings a lot of new features and improvements to the framework, in
 
 - feat: Adds virtual host routing to allow serving different content per based on the host of incoming requests.
 - feat: Exposes WebSocket ping interval for configuration via environment variables or configuration file.
+- chore: Serverpod now uses Relic 1.0.0! 🎉
 
 ### Developer tooling
 
