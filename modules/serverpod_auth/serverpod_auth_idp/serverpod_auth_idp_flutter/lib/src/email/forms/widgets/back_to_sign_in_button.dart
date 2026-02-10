@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../localization/sign_in_localization_provider.dart';
 import '../../email_auth_controller.dart';
 import '../../../common/widgets/buttons/text_button.dart';
 
@@ -16,11 +17,13 @@ class BackToSignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.emailSignInTexts;
+
     return Center(
       child: HyperlinkTextButton(
         onPressed: () => controller.navigateTo(EmailFlowScreen.login),
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        label: 'Back to sign in',
+        label: texts.backToSignIn,
       ),
     );
   }

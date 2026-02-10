@@ -13,6 +13,7 @@ import 'common/widgets/gaps.dart';
 import 'email/email_sign_in_widget.dart';
 import 'github/github_sign_in_widget.dart';
 import 'google/google_sign_in_widget.dart';
+import 'localization/sign_in_localization_provider.dart';
 import 'providers.dart';
 
 /// A widget that provides a complete authentication onboarding experience.
@@ -120,10 +121,12 @@ class _SignInWidgetState extends State<SignInWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.basicSignInTexts;
+
     if (!auth.idp.hasAny) {
       return Center(
         child: Text(
-          'No authentication providers configured',
+          texts.noAuthenticationProvidersConfigured,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             color: Theme.of(context).colorScheme.error,
           ),
@@ -200,6 +203,8 @@ class _SignInSeparator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.basicSignInTexts;
+
     return Column(
       children: [
         tinyGap,
@@ -209,7 +214,7 @@ class _SignInSeparator extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                'or continue with',
+                texts.orContinueWith,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(
                     context,

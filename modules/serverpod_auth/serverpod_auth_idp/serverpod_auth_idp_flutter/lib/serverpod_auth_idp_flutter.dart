@@ -30,6 +30,7 @@ export 'src/google/common/style.dart';
 export 'src/google/google_auth_controller.dart';
 export 'src/google/google_sign_in_service.dart';
 export 'src/google/google_sign_in_widget.dart';
+export 'src/localization/sign_in_localization_provider.dart';
 export 'src/providers.dart';
 export 'src/sign_in_widget.dart';
 export 'src/theme.dart';

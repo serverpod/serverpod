@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../localization/sign_in_localization_provider.dart';
 import '../common/button.dart';
 import '../common/style.dart';
 import 'icon.dart';
@@ -125,6 +126,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.googleSignInTexts;
     final buttonStyle = GoogleSignInStyle.fromConfiguration(
       theme: theme,
       shape: shape,
@@ -172,7 +174,7 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
         GSIButtonSize.small => const EdgeInsets.symmetric(vertical: 4),
       },
       child: Text(
-        getButtonText?.call(isLoading: isLoading) ?? _getButtonText(),
+        getButtonText?.call(isLoading: isLoading) ?? _getButtonText(texts),
         style: GoogleFonts.roboto(
           fontSize: 14,
           letterSpacing: 0.7,
@@ -233,13 +235,13 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
     );
   }
 
-  String _getButtonText() {
-    if (isLoading) return 'Signing in...';
+  String _getButtonText(GoogleSignInTexts texts) {
+    if (isLoading) return texts.signingIn;
     return switch (text) {
-      GSIButtonText.signinWith => 'Sign in with Google',
-      GSIButtonText.signupWith => 'Sign up with Google',
-      GSIButtonText.continueWith => 'Continue with Google',
-      GSIButtonText.signin => 'Sign in',
+      GSIButtonText.signinWith => texts.signInWith,
+      GSIButtonText.signupWith => texts.signUpWith,
+      GSIButtonText.continueWith => texts.continueWith,
+      GSIButtonText.signin => texts.signIn,
     };
   }
 }
