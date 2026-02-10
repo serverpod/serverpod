@@ -608,7 +608,7 @@ class SignInLocalizationProvider extends InheritedWidget {
 }
 
 /// Convenience getters sign-in text.
-extension SignInLocalizationBuildContext on BuildContext {
+extension BuildContextExtension on BuildContext {
   /// Returns basic sign-in texts from context or defaults.
   BasicSignInTexts get basicSignInTexts =>
       SignInLocalizationProvider.maybeOf(this)?.basic ??
