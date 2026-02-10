@@ -154,12 +154,16 @@ void main() {
       );
 
       expect(definition.indexes.length, 2);
-      
-      var emailIndex = definition.indexes.firstWhere((i) => i.name == 'example__email__unique_idx');
+
+      var emailIndex = definition.indexes.firstWhere(
+        (i) => i.name == 'example__email__unique_idx',
+      );
       expect(emailIndex.unique, true);
       expect(emailIndex.fields, ['email']);
-      
-      var usernameIndex = definition.indexes.firstWhere((i) => i.name == 'example__username__unique_idx');
+
+      var usernameIndex = definition.indexes.firstWhere(
+        (i) => i.name == 'example__username__unique_idx',
+      );
       expect(usernameIndex.unique, true);
       expect(usernameIndex.fields, ['username']);
     },
@@ -199,12 +203,16 @@ void main() {
       );
 
       expect(definition.indexes.length, 2);
-      
-      var manualIndex = definition.indexes.firstWhere((i) => i.name == 'name_index');
+
+      var manualIndex = definition.indexes.firstWhere(
+        (i) => i.name == 'name_index',
+      );
       expect(manualIndex.unique, false);
       expect(manualIndex.fields, ['name']);
-      
-      var autoIndex = definition.indexes.firstWhere((i) => i.name == 'example__email__unique_idx');
+
+      var autoIndex = definition.indexes.firstWhere(
+        (i) => i.name == 'example__email__unique_idx',
+      );
       expect(autoIndex.unique, true);
       expect(autoIndex.fields, ['email']);
     },
@@ -213,9 +221,9 @@ void main() {
   test(
     'Given a class with a field with column override marked as unique when parsed then index uses column name.',
     () {
-      var config = GeneratorConfigBuilder()
-          .withEnabledExperimentalFeatures([ExperimentalFeature.columnOverride])
-          .build();
+      var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
+        ExperimentalFeature.columnOverride,
+      ]).build();
       var models = [
         ModelSourceBuilder().withYaml(
           '''
