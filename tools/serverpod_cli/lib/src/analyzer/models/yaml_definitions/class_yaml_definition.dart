@@ -210,6 +210,10 @@ class ClassYamlDefinition {
                 Keyword.jsonKey,
                 valueRestriction: restrictions.validateJsonKey,
               ),
+              ValidateNode(
+                Keyword.unique,
+                valueRestriction: BooleanValueRestriction().validate,
+              ),
             },
           ),
         },

@@ -46,7 +46,7 @@ void main() {
           var error = collector.errors.first;
           expect(
             error.message,
-            'The "column" property is not allowed for name type. Valid keys are {type, parent, relation, scope, persist, required, database, api, default, defaultModel, defaultPersist, jsonKey}.',
+            'The "column" property is not allowed for name type. Valid keys are {type, parent, relation, scope, persist, required, database, api, default, defaultModel, defaultPersist, jsonKey, unique}.',
           );
         },
       );
