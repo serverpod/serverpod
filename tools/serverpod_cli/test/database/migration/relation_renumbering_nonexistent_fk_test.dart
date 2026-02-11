@@ -173,14 +173,14 @@ void main() {
             reason: 'Should add the new explicit relation column',
           );
 
-          // THIS IS THE KEY ISSUE: It should NOT try to drop goal_fk_0
-          // because the FK is being modified (same name, different columns)
-          // not dropped and re-added
+          // FIXED: Should NOT try to drop goal_fk_0 when the column is being dropped
+          // because dropping the column automatically drops the FK constraint
           expect(
             alterTable.deleteForeignKeys,
-            contains('goal_fk_0'),
+            isEmpty,
             reason:
-                'Should delete the FK since it points to a different column',
+                'Should NOT delete the FK explicitly when its column is being dropped, '
+                'because dropping the column automatically drops the FK',
           );
 
           expect(
@@ -293,10 +293,12 @@ void main() {
             contains('_profileGoalsProfileId'),
           );
 
-          // Should drop the FK
+          // FIXED: Should NOT drop the FK explicitly when the column is being dropped
+          // because dropping the column automatically drops the FK
           expect(
             alterTable.deleteForeignKeys,
-            contains('goal_fk_0'),
+            isEmpty,
+            reason: 'Should NOT drop FK explicitly when its column is being dropped',
           );
         },
       );
@@ -435,7 +437,7 @@ void main() {
       // 4. Migration tries to DROP goal_fk_0 (fails!) and ADD new FK
       
       test(
-        'when FK constraint name stays same but columns change then should drop old and add new FK.',
+        'when FK constraint name stays same but columns change then should NOT drop FK if column is being dropped.',
         () {
           // SOURCE: Goal has implicit FK column from Profile's List<Goal> relation
           //         FK constraint name: goal_fk_0, column: _profileGoalsProfileId
@@ -558,10 +560,13 @@ void main() {
             contains('_profileGoalsProfileId'),
           );
 
-          // 2. Drop the old FK (THIS IS THE PROBLEM if it doesn't exist!)
+          // 2. Should NOT drop the old FK because the column is being dropped!
+          //    This is the fix for the bug.
           expect(
             alterTable.deleteForeignKeys,
-            contains('goal_fk_0'),
+            isEmpty,
+            reason: 'Should not drop FK when its column is being dropped, '
+                'because dropping the column automatically drops the FK',
           );
 
           // 3. Add the new column
@@ -578,10 +583,6 @@ void main() {
             ),
             isTrue,
           );
-
-          // This is the current (buggy?) behavior - it tries to drop goal_fk_0
-          // even if it might not exist in the actual database.
-          // The fix should detect when a FK is being "modified" vs "dropped and re-added"
         },
       );
     },

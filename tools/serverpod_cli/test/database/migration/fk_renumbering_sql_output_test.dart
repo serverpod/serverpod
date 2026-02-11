@@ -9,7 +9,7 @@ import '../../test_util/builders/database/table_definition_builder.dart';
 
 void main() {
   test(
-    'Given FK renumbering scenario when generating SQL then verify DROP CONSTRAINT is generated',
+    'Given FK renumbering scenario when generating SQL then verify DROP CONSTRAINT is NOT generated when column is dropped',
     () {
       // SOURCE: goal_fk_0 on column _profileGoalsProfileId
       var sourceDefinition = DatabaseDefinitionBuilder()
@@ -120,11 +120,12 @@ void main() {
       print('Generated SQL:');
       print(sql);
 
-      // Verify the problematic DROP CONSTRAINT is in the SQL
+      // Verify the problematic DROP CONSTRAINT is NOT in the SQL
+      // This is the fix - we should not drop the FK when its column is being dropped
       expect(
         sql,
-        contains('ALTER TABLE "goal" DROP CONSTRAINT "goal_fk_0";'),
-        reason: 'Should generate DROP CONSTRAINT for the old FK',
+        isNot(contains('ALTER TABLE "goal" DROP CONSTRAINT "goal_fk_0";')),
+        reason: 'Should NOT generate DROP CONSTRAINT when column is being dropped',
       );
 
       expect(
