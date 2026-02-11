@@ -7,7 +7,6 @@ import '../test_tools/serverpod_test_tools.dart';
 void main() {
   withServerpod(
     'Given row locking',
-    runMode: 'development',
     (sessionBuilder, _) {
       late Session session;
 
@@ -181,7 +180,6 @@ void main() {
 
   withServerpod(
     'Given row locking without rollback',
-    runMode: 'development',
     rollbackDatabase: RollbackDatabase.disabled,
     (sessionBuilder, _) {
       late Session session;
