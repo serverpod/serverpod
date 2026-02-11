@@ -159,6 +159,7 @@ class SelectQueryBuilder {
     }
 
     var orderClauses = orderBy
+        .where((order) => order.column is! ColumnCount)
         .map((order) {
           var column = order.column;
           var alias = truncateIdentifier(
@@ -172,6 +173,10 @@ class SelectQueryBuilder {
           return clause;
         })
         .join(', ');
+
+    if (orderClauses.isEmpty) {
+      return '';
+    }
 
     return ' ORDER BY $orderClauses';
   }
