@@ -398,6 +398,51 @@ class EndpointRefreshJwtTokens extends _i4.EndpointRefreshJwtTokens {
 }
 
 /// {@category Endpoint}
+class EndpointMicrosoftIdp extends _i1.EndpointMicrosoftIdpBase {
+  EndpointMicrosoftIdp(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'microsoftIdp';
+
+  /// Validates a Microsoft authorization code and either logs in the associated
+  /// user or creates a new user account if the Microsoft account ID is not yet
+  /// known.
+  ///
+  /// This method exchanges the `authorization code` for an `access token` using
+  /// `PKCE`, then authenticates the user.
+  ///
+  /// The [isWebPlatform] flag indicates whether the client is a web application.
+  /// Microsoft requires the client secret only for confidential clients (web
+  /// apps). Public clients (mobile, desktop) using PKCE must not include it.
+  /// Pass `true` for web clients and `false` for native platforms.
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  @override
+  _i3.Future<_i4.AuthSuccess> login({
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
+    required bool isWebPlatform,
+  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+    'microsoftIdp',
+    'login',
+    {
+      'code': code,
+      'codeVerifier': codeVerifier,
+      'redirectUri': redirectUri,
+      'isWebPlatform': isWebPlatform,
+    },
+  );
+
+  @override
+  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+    'microsoftIdp',
+    'hasAccount',
+    {},
+  );
+}
+
+/// {@category Endpoint}
 class EndpointPasskeyIdp extends _i1.EndpointPasskeyIdpBase {
   EndpointPasskeyIdp(_i2.EndpointCaller caller) : super(caller);
 
@@ -508,6 +553,7 @@ class Client extends _i2.ServerpodClientShared {
     gitHubIdp = EndpointGitHubIdp(this);
     googleIdp = EndpointGoogleIdp(this);
     refreshJwtTokens = EndpointRefreshJwtTokens(this);
+    microsoftIdp = EndpointMicrosoftIdp(this);
     passkeyIdp = EndpointPasskeyIdp(this);
     greeting = EndpointGreeting(this);
     modules = Modules(this);
@@ -527,6 +573,8 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointRefreshJwtTokens refreshJwtTokens;
 
+  late final EndpointMicrosoftIdp microsoftIdp;
+
   late final EndpointPasskeyIdp passkeyIdp;
 
   late final EndpointGreeting greeting;
@@ -542,6 +590,7 @@ class Client extends _i2.ServerpodClientShared {
     'gitHubIdp': gitHubIdp,
     'googleIdp': googleIdp,
     'refreshJwtTokens': refreshJwtTokens,
+    'microsoftIdp': microsoftIdp,
     'passkeyIdp': passkeyIdp,
     'greeting': greeting,
   };

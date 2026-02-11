@@ -56,6 +56,14 @@ class OAuth2PkceUtil {
   ///   proves the client making this request initiated the authorization flow.
   /// - [redirectUri]: Must exactly match the redirect URI from the authorization
   ///   request (required by OAuth2 specification for security)
+  /// - [includeClientSecret]: Whether to include the client secret in the
+  ///   token request. Defaults to `true`, which sends credentials according to
+  ///   [OAuth2PkceServerConfig.credentialsLocation]. Set to `false` when the
+  ///   OAuth2 provider requires that the secret is omitted for certain client
+  ///   types (e.g., Microsoft rejects secrets for non-web clients). When
+  ///   `false`, only the client ID is sent in the request body per
+  ///   [RFC 6749 §2.3.1](https://tools.ietf.org/html/rfc6749#section-2.3.1),
+  ///   regardless of [OAuth2PkceServerConfig.credentialsLocation].
   /// - [httpClient]: Optional HTTP client for testing with mocks. If not provided,
   ///   a new [http.Client] is created
   ///
@@ -71,6 +79,7 @@ class OAuth2PkceUtil {
     required final String code,
     final String? codeVerifier,
     required final String redirectUri,
+    final bool includeClientSecret = true,
     http.Client? httpClient,
   }) async {
     final clientProvidedByUser = httpClient != null;
@@ -90,18 +99,24 @@ class OAuth2PkceUtil {
 
       final headers = Map<String, String>.from(config.tokenRequestHeaders);
 
-      switch (config.credentialsLocation) {
-        case OAuth2CredentialsLocation.header:
-          final credentials = base64Encode(
-            utf8.encode('${config.clientId}:${config.clientSecret}'),
-          );
-          headers['Authorization'] = 'Basic $credentials';
-          break;
+      if (includeClientSecret) {
+        switch (config.credentialsLocation) {
+          case OAuth2CredentialsLocation.header:
+            final credentials = base64Encode(
+              utf8.encode('${config.clientId}:${config.clientSecret}'),
+            );
+            headers['Authorization'] = 'Basic $credentials';
+            break;
 
-        case OAuth2CredentialsLocation.body:
-          bodyParams[config.clientIdKey] = config.clientId;
-          bodyParams[config.clientSecretKey] = config.clientSecret;
-          break;
+          case OAuth2CredentialsLocation.body:
+            bodyParams[config.clientIdKey] = config.clientId;
+            bodyParams[config.clientSecretKey] = config.clientSecret;
+            break;
+        }
+      } else {
+        // Without a secret, client_id is always sent in the body per
+        // RFC 6749 §2.3.1 (Authorization header requires both id and secret).
+        bodyParams[config.clientIdKey] = config.clientId;
       }
 
       final body = bodyParams.entries

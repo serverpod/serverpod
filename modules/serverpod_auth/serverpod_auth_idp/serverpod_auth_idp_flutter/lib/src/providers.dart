@@ -31,6 +31,7 @@ class AvailableIdps {
     hasApple,
     hasFirebase,
     hasGitHub,
+    hasMicrosoft,
   ].where((e) => e).length;
 
   /// Whether the anonymous authentication provider is available.
@@ -50,6 +51,9 @@ class AvailableIdps {
 
   /// Whether the GitHub authentication provider is available.
   bool get hasGitHub => has<EndpointGitHubIdpBase>();
+
+  /// Whether the Microsoft authentication provider is available.
+  bool get hasMicrosoft => has<EndpointMicrosoftIdpBase>();
 
   /// Provides information about connected identity providers.
   ///
