@@ -329,6 +329,8 @@ class ChallengeTrackerRepository {
     _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     _i1.Transaction? transaction,
     ChallengeTrackerInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChallengeTracker>(
       where: where?.call(ChallengeTracker.t),
@@ -339,6 +341,8 @@ class ChallengeTrackerRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -368,6 +372,8 @@ class ChallengeTrackerRepository {
     _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     _i1.Transaction? transaction,
     ChallengeTrackerInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChallengeTracker>(
       where: where?.call(ChallengeTracker.t),
@@ -377,6 +383,8 @@ class ChallengeTrackerRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -386,11 +394,15 @@ class ChallengeTrackerRepository {
     int id, {
     _i1.Transaction? transaction,
     ChallengeTrackerInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ChallengeTracker>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -550,6 +562,22 @@ class ChallengeTrackerRepository {
     return session.db.count<ChallengeTracker>(
       where: where?.call(ChallengeTracker.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ChallengeTracker] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<ChallengeTrackerTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ChallengeTracker>(
+      where: where(ChallengeTracker.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

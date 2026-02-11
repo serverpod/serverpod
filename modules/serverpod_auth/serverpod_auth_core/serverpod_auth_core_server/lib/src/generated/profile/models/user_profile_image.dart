@@ -389,6 +389,8 @@ class UserProfileImageRepository {
     _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
     _i1.Transaction? transaction,
     UserProfileImageInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserProfileImage>(
       where: where?.call(UserProfileImage.t),
@@ -399,6 +401,8 @@ class UserProfileImageRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -428,6 +432,8 @@ class UserProfileImageRepository {
     _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
     _i1.Transaction? transaction,
     UserProfileImageInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserProfileImage>(
       where: where?.call(UserProfileImage.t),
@@ -437,6 +443,8 @@ class UserProfileImageRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -446,11 +454,15 @@ class UserProfileImageRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     UserProfileImageInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UserProfileImage>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -610,6 +622,22 @@ class UserProfileImageRepository {
     return session.db.count<UserProfileImage>(
       where: where?.call(UserProfileImage.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [UserProfileImage] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<UserProfileImageTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<UserProfileImage>(
+      where: where(UserProfileImage.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }
