@@ -157,7 +157,8 @@ void main() {
           expect(
             alterAction.alterTable?.deleteForeignKeys,
             isEmpty,
-            reason: 'FK should not be explicitly dropped when its column is dropped',
+            reason:
+                'FK should not be explicitly dropped when its column is dropped',
           );
         },
       );

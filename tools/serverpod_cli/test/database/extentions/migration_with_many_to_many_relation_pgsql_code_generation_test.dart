@@ -391,7 +391,8 @@ fields:
       expect(
         dropSourceConstraint,
         -1,
-        reason: 'FK constraint should not be explicitly dropped when its column is dropped',
+        reason:
+            'FK constraint should not be explicitly dropped when its column is dropped',
       );
       expect(dropSourceColumnPointingTotarget, greaterThanOrEqualTo(0));
       expect(createNewTargetTable, greaterThanOrEqualTo(0));

@@ -358,7 +358,7 @@ TableMigration? generateTableMigration(
   deleteForeignKeys.removeWhere((fkName) {
     var srcKey = srcTable.findForeignKeyDefinitionNamed(fkName);
     if (srcKey == null) return false;
-    
+
     // Check if all columns referenced by this FK are being deleted
     return srcKey.columns.every((column) => deleteColumns.contains(column));
   });

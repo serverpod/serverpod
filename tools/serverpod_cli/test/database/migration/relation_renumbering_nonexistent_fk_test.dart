@@ -15,7 +15,7 @@ void main() {
       // 2. Changed to Profile has goals: List<Goal>?, relation(name=profile_goals)
       //    AND Goal has profile: Profile?, relation(name=profile_goals)
       // This changes from implicit FK to explicit named FK, causing renumbering
-      
+
       test(
         'when changing from implicit to explicit named relation then should not drop non-existent FK.',
         () {
@@ -184,7 +184,9 @@ void main() {
           );
 
           expect(
-            alterTable.addForeignKeys.any((fk) => fk.constraintName == 'goal_fk_0'),
+            alterTable.addForeignKeys.any(
+              (fk) => fk.constraintName == 'goal_fk_0',
+            ),
             isTrue,
             reason: 'Should add the new FK with the same name',
           );
@@ -298,7 +300,8 @@ void main() {
           expect(
             alterTable.deleteForeignKeys,
             isEmpty,
-            reason: 'Should NOT drop FK explicitly when its column is being dropped',
+            reason:
+                'Should NOT drop FK explicitly when its column is being dropped',
           );
         },
       );
@@ -412,7 +415,9 @@ void main() {
 
           // Should add the FK
           expect(
-            alterTable.addForeignKeys.any((fk) => fk.constraintName == 'goal_fk_0'),
+            alterTable.addForeignKeys.any(
+              (fk) => fk.constraintName == 'goal_fk_0',
+            ),
             isTrue,
           );
 
@@ -435,7 +440,7 @@ void main() {
       // 2. Source schema has goal_fk_0, but it was somehow never created in DB
       // 3. User changes to explicit named relation with different column name
       // 4. Migration tries to DROP goal_fk_0 (fails!) and ADD new FK
-      
+
       test(
         'when FK constraint name stays same but columns change then should NOT drop FK if column is being dropped.',
         () {
@@ -565,7 +570,8 @@ void main() {
           expect(
             alterTable.deleteForeignKeys,
             isEmpty,
-            reason: 'Should not drop FK when its column is being dropped, '
+            reason:
+                'Should not drop FK when its column is being dropped, '
                 'because dropping the column automatically drops the FK',
           );
 
@@ -578,8 +584,9 @@ void main() {
           // 4. Add the new FK with same name
           expect(
             alterTable.addForeignKeys.any(
-              (fk) => fk.constraintName == 'goal_fk_0' &&
-                      fk.columns.contains('_profileGoalsGoalId'),
+              (fk) =>
+                  fk.constraintName == 'goal_fk_0' &&
+                  fk.columns.contains('_profileGoalsGoalId'),
             ),
             isTrue,
           );

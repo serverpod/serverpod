@@ -125,7 +125,8 @@ void main() {
       expect(
         sql,
         isNot(contains('ALTER TABLE "goal" DROP CONSTRAINT "goal_fk_0";')),
-        reason: 'Should NOT generate DROP CONSTRAINT when column is being dropped',
+        reason:
+            'Should NOT generate DROP CONSTRAINT when column is being dropped',
       );
 
       expect(
