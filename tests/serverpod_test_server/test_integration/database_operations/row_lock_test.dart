@@ -130,6 +130,44 @@ void main() {
         );
       });
 
+      group('when finding matching rows with no lock', () {
+        test('then the operation completes normally', () async {
+          await SimpleData.db.insertRow(session, SimpleData(num: 1));
+
+          var lockAcquired = Completer<void>();
+          var testDone = Completer<void>();
+
+          // Transaction 1: acquire an exclusive lock
+          var t1 = session.db.transaction((transaction) async {
+            await SimpleData.db.find(
+              session,
+              where: (t) => Constant.bool(true),
+              lockMode: LockMode.forUpdate,
+              transaction: transaction,
+            );
+            lockAcquired.complete();
+            await testDone.future;
+          });
+
+          await lockAcquired.future;
+
+          // Transaction 2: read without lock should succeed immediately
+          await session.db.transaction((transaction) async {
+            final rows = await SimpleData.db.find(
+              session,
+              where: (t) => Constant.bool(true),
+              transaction: transaction,
+            );
+
+            expect(rows.length, 1);
+            expect(rows.first.num, 1);
+          });
+
+          testDone.complete();
+          await t1;
+        });
+      });
+
       group('when finding matching rows with noWait', () {
         test('then the operation throws due to rows being locked', () async {
           await SimpleData.db.insertRow(session, SimpleData(num: 1));
