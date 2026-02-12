@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/local_cache.dart';
@@ -25,6 +26,102 @@ void main() {
 
       var retrieved = await cache.get<SimpleData>(key);
       expect(retrieved?.num, equals(0));
+    },
+  );
+
+  test(
+    'Given a primitive int entry was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      const key = 'entry';
+      var entry = 0;
+
+      await cache.put(key, entry);
+
+      var retrieved = await cache.get<int>(key);
+      expect(retrieved, equals(0));
+    },
+  );
+
+  test(
+    'Given a primitive DateTime entry was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      const key = 'entry';
+      var entry = DateTime.now().toUtc();
+
+      await cache.put(key, entry);
+
+      var retrieved = await cache.get<DateTime>(key);
+      expect(retrieved, equals(entry));
+    },
+  );
+
+  test(
+    'Given a primitive Duration entry was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      const key = 'entry';
+      var entry = Duration(seconds: 1);
+
+      await cache.put(key, entry);
+
+      var retrieved = await cache.get<Duration>(key);
+      expect(retrieved, equals(entry));
+    },
+  );
+
+  test(
+    'Given a primitive ByteData entry was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      const key = 'entry';
+      var entry = ByteData.view(Uint8List.fromList([1, 2, 3]).buffer);
+
+      await cache.put(key, entry);
+
+      var retrieved = await cache.get<ByteData>(key);
+      expect(
+        retrieved?.buffer.asUint8List(),
+        equals(entry.buffer.asUint8List()),
+      );
+    },
+  );
+
+  test(
+    'Given a primitive UuidValue entry was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      const key = 'entry';
+      var entry = const Uuid().v4obj();
+
+      await cache.put(key, entry);
+
+      var retrieved = await cache.get<UuidValue>(key);
+      expect(retrieved, equals(entry));
+    },
+  );
+
+  test(
+    'Given a primitive String entry was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      const key = 'entry';
+      var entry = 'test';
+
+      await cache.put(key, entry);
+
+      var retrieved = await cache.get<String>(key);
+      expect(retrieved, equals(entry));
+    },
+  );
+
+  test(
+    'Given a list of serializable objects was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      const key = 'entry';
+      var entry = [SimpleData(num: 0), SimpleData(num: 1)];
+
+      await cache.put(key, entry);
+
+      var retrieved = await cache.get<List<SimpleData>>(key);
+      expect(retrieved?.length, equals(2));
+      expect(retrieved?[0].num, equals(0));
+      expect(retrieved?[1].num, equals(1));
     },
   );
 
@@ -307,6 +404,63 @@ void main() {
       );
 
       expect(retrieved?.num, equals(1));
+    },
+  );
+
+  group('Given a primitive object is not in the cache and a cache miss handler '
+      'is specified to return an object', () {
+    const cacheKey = 'testKey';
+    int? retrieved;
+    setUp(() async {
+      retrieved = await cache.get(
+        cacheKey,
+        CacheMissHandler(() async => 1337),
+      );
+    });
+
+    test('when the object is retrieved '
+        'then the cache miss handler returns the correct object', () {
+      expect(retrieved, equals(1337));
+    });
+
+    test(
+      'when the object is retrieved again '
+      'then the cache miss handler value is retrievable from the cache',
+      () async {
+        var value = await cache.get<int>(cacheKey);
+        expect(value, equals(1337));
+      },
+    );
+  });
+
+  group(
+    'Given a list of serializable objects is not in the cache and a cache miss handler '
+    'is specified to return an object',
+    () {
+      const cacheKey = 'testKey';
+      List<SimpleData>? retrieved;
+      setUp(() async {
+        retrieved = await cache.get(
+          cacheKey,
+          CacheMissHandler(() async => [SimpleData(num: 1337)]),
+        );
+      });
+
+      test('when the object is retrieved '
+          'then the cache miss handler returns the correct object', () {
+        expect(retrieved?.length, equals(1));
+        expect(retrieved?[0].num, equals(1337));
+      });
+
+      test(
+        'when the object is retrieved again '
+        'then the cache miss handler value is retrievable from the cache',
+        () async {
+          var value = await cache.get<List<SimpleData>>(cacheKey);
+          expect(value?.length, equals(1));
+          expect(value?[0].num, equals(1337));
+        },
+      );
     },
   );
 }
