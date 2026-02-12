@@ -126,10 +126,7 @@ class GitHubSignInButton extends StatelessWidget {
       ),
     );
 
-    final logo = Padding(
-      padding: const EdgeInsets.only(left: 4),
-      child: _buildGitHubLogo(buttonStyle),
-    );
+    final logo = _buildGitHubLogo(buttonStyle);
 
     if (logoAlignment == GitHubButtonLogoAlignment.center) {
       return Row(
@@ -147,7 +144,7 @@ class GitHubSignInButton extends StatelessWidget {
     return Stack(
       children: [
         Positioned(
-          left: 12,
+          left: 14,
           top: 0,
           bottom: 0,
           child: logo,
@@ -156,8 +153,9 @@ class GitHubSignInButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(width: logoSize + 8),
+            SizedBox(width: logoSize),
             Center(child: textWidget),
+            const SizedBox(width: 8),
           ],
         ),
       ],
@@ -172,12 +170,16 @@ class GitHubSignInButton extends StatelessWidget {
         ? 'assets/images/github-mark.svg'
         : 'assets/images/github-mark-white.svg';
 
-    return SvgPicture.asset(
-      svgAsset,
-      package: 'serverpod_auth_idp_flutter',
-      width: iconSize,
-      height: iconSize,
-      fit: BoxFit.contain,
+    return SizedBox.square(
+      dimension: iconSize,
+      child: SvgPicture.asset(
+        svgAsset,
+        package: 'serverpod_auth_idp_flutter',
+        colorFilter: isDisabled
+            ? const ColorFilter.mode(Color(0xff9c9c9c), BlendMode.srcIn)
+            : null,
+        fit: BoxFit.scaleDown,
+      ),
     );
   }
 
