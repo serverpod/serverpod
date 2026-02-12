@@ -144,7 +144,7 @@ class MicrosoftSignInButton extends StatelessWidget {
     );
 
     final logo = Padding(
-      padding: const EdgeInsets.only(left: 2),
+      padding: const EdgeInsets.only(left: 4),
       child: _buildMicrosoftLogo(buttonStyle),
     );
 
