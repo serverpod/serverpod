@@ -2,6 +2,7 @@ import '../../../../../core.dart';
 import 'passwordless_idp_config.dart';
 import 'passwordless_idp_server_exceptions.dart';
 import 'utils/passwordless_idp_login_util.dart';
+import 'utils/passwordless_login_request_store.dart';
 
 /// Passwordless authentication utilities.
 ///
@@ -27,7 +28,14 @@ class PasswordlessIdpUtils {
          // Keep this in line with other IDP providers.
          parameters: Argon2HashParameters(memory: 19456),
        ) {
-    login = PasswordlessIdpLoginUtil(config: config, hashUtil: hashUtil);
+    final requestStore =
+        config.loginRequestStore ??
+        const DefaultDbPasswordlessLoginRequestStore();
+    login = PasswordlessIdpLoginUtil(
+      config: config,
+      hashUtil: hashUtil,
+      requestStore: requestStore,
+    );
   }
 
   /// Wraps a function to convert challenge exceptions to passwordless login

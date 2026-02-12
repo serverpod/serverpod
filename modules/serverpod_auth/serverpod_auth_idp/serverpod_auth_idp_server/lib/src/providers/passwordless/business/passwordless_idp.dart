@@ -2,6 +2,7 @@ import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
 import 'passwordless_idp_config.dart';
+import 'passwordless_idp_server_exceptions.dart';
 import 'passwordless_idp_utils.dart';
 
 /// Main class for the passwordless identity provider.
@@ -136,11 +137,14 @@ class PasswordlessIdp {
                 transaction: transaction,
               );
 
-              await PasswordlessLoginRequest.db.deleteRow(
+              final isDeleted = await utils.login.deleteRequest(
                 session,
-                request,
+                requestId: request.id,
                 transaction: transaction,
               );
+              if (!isDeleted) {
+                throw PasswordlessLoginNotFoundException();
+              }
 
               return _tokenManager.issueToken(
                 session,

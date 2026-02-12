@@ -4,6 +4,7 @@ import '../../../../../core.dart';
 import '../passwordless_idp_config.dart';
 import '../passwordless_idp_server_exceptions.dart';
 import '../passwordless_idp_utils.dart';
+import 'passwordless_login_request_store.dart';
 
 /// {@template passwordless_idp_login_util}
 /// Utility functions for passwordless login.
@@ -11,15 +12,18 @@ import '../passwordless_idp_utils.dart';
 class PasswordlessIdpLoginUtil {
   final PasswordlessIdpConfig _config;
   final Argon2HashUtil _hashUtil;
-  late final SecretChallengeUtil<PasswordlessLoginRequest> _challengeUtil;
+  final PasswordlessLoginRequestStore _requestStore;
+  late final SecretChallengeUtil<PasswordlessLoginRequestData> _challengeUtil;
   late final DatabaseRateLimitedRequestAttemptUtil<String> _requestRateLimiter;
 
   /// Creates a new [PasswordlessIdpLoginUtil] instance.
   PasswordlessIdpLoginUtil({
     required final PasswordlessIdpConfig config,
     required final Argon2HashUtil hashUtil,
+    required final PasswordlessLoginRequestStore requestStore,
   }) : _config = config,
-       _hashUtil = hashUtil {
+       _hashUtil = hashUtil,
+       _requestStore = requestStore {
     _challengeUtil = SecretChallengeUtil(
       hashUtil: _hashUtil,
       verificationConfig: _buildVerificationConfig(),
@@ -55,19 +59,11 @@ class PasswordlessIdpLoginUtil {
       throw PasswordlessLoginTooManyAttemptsException();
     }
 
-    // Delete any existing request for the same nonce.
-    final existingRequest = await PasswordlessLoginRequest.db.findFirstRow(
+    await _requestStore.deleteByNonce(
       session,
-      where: (final t) => t.nonce.equals(nonce),
+      nonce: nonce,
       transaction: transaction,
     );
-    if (existingRequest != null) {
-      await PasswordlessLoginRequest.db.deleteRow(
-        session,
-        existingRequest,
-        transaction: transaction,
-      );
-    }
 
     final verificationCode = _config.loginVerificationCodeGenerator();
     final challenge = await _challengeUtil.createChallenge(
@@ -76,21 +72,22 @@ class PasswordlessIdpLoginUtil {
       transaction: transaction,
     );
 
-    final request = await PasswordlessLoginRequest.db.insertRow(
+    final requestId = await _requestStore.createRequest(
       session,
-      PasswordlessLoginRequest(nonce: nonce, challengeId: challenge.id!),
+      nonce: nonce,
+      challengeId: challenge.id!,
       transaction: transaction,
     );
 
     await _config.sendLoginVerificationCode?.call(
       session,
       handle: normalizedHandle,
-      requestId: request.id!,
+      requestId: requestId,
       verificationCode: verificationCode,
       transaction: transaction,
     );
 
-    return request.id!;
+    return requestId;
   }
 
   /// Verifies the login code and returns a completion token.
@@ -110,8 +107,8 @@ class PasswordlessIdpLoginUtil {
     );
   }
 
-  /// Completes the login process and returns the login request.
-  Future<PasswordlessLoginRequest> completeLogin(
+  /// Completes the login process and returns the login request data.
+  Future<PasswordlessLoginRequestData> completeLogin(
     final Session session, {
     required final String loginToken,
     required final Transaction transaction,
@@ -125,7 +122,20 @@ class PasswordlessIdpLoginUtil {
     );
   }
 
-  SecretChallengeVerificationConfig<PasswordlessLoginRequest>
+  /// Deletes a login request by id.
+  Future<bool> deleteRequest(
+    final Session session, {
+    required final UuidValue requestId,
+    required final Transaction? transaction,
+  }) async {
+    return _requestStore.deleteById(
+      session,
+      requestId: requestId,
+      transaction: transaction,
+    );
+  }
+
+  SecretChallengeVerificationConfig<PasswordlessLoginRequestData>
   _buildVerificationConfig() {
     final limiter = DatabaseRateLimitedRequestAttemptUtil<UuidValue>(
       RateLimitedRequestAttemptConfig(
@@ -143,22 +153,28 @@ class PasswordlessIdpLoginUtil {
             final requestId, {
             required final Transaction? transaction,
           }) {
-            return PasswordlessLoginRequest.db.findById(
+            return _requestStore.getRequestForVerification(
               session,
-              requestId,
+              requestId: requestId,
               transaction: transaction,
-              include: PasswordlessLoginRequest.include(
-                challenge: SecretChallenge.include(),
-              ),
             );
           },
       isAlreadyUsed: (final request) => request.loginChallengeId != null,
-      getChallenge: (final request) => request.challenge!,
+      getChallenge: (final request) {
+        final challenge = request.challenge;
+        if (challenge == null) {
+          throw ChallengeRequestNotFoundException();
+        }
+        return challenge;
+      },
       isExpired: (final request) => request.createdAt
           .add(_config.loginVerificationCodeLifetime)
           .isBefore(DateTime.now()),
       onExpired: (final session, final request) async {
-        await PasswordlessLoginRequest.db.deleteRow(session, request);
+        await _requestStore.deleteById(
+          session,
+          requestId: request.id,
+        );
       },
       linkCompletionToken:
           (
@@ -167,17 +183,14 @@ class PasswordlessIdpLoginUtil {
             final completionChallenge, {
             required final transaction,
           }) async {
-            final updated = await PasswordlessLoginRequest.db.updateWhere(
-              session,
-              columnValues: (final t) => [
-                t.loginChallengeId(completionChallenge.id!),
-              ],
-              where: (final t) =>
-                  t.id.equals(request.id!) & t.loginChallengeId.equals(null),
-              transaction: transaction,
-            );
-
-            if (updated.isEmpty) {
+            final updated = await _requestStore
+                .linkCompletionChallengeAtomically(
+                  session,
+                  requestId: request.id,
+                  completionChallengeId: completionChallenge.id!,
+                  transaction: transaction,
+                );
+            if (!updated) {
               throw ChallengeAlreadyUsedException();
             }
           },
@@ -185,7 +198,7 @@ class PasswordlessIdpLoginUtil {
     );
   }
 
-  SecretChallengeCompletionConfig<PasswordlessLoginRequest>
+  SecretChallengeCompletionConfig<PasswordlessLoginRequestData>
   _buildCompletionConfig() {
     final limiter = DatabaseRateLimitedRequestAttemptUtil<UuidValue>(
       RateLimitedRequestAttemptConfig(
@@ -203,13 +216,10 @@ class PasswordlessIdpLoginUtil {
             final requestId, {
             required final Transaction? transaction,
           }) {
-            return PasswordlessLoginRequest.db.findById(
+            return _requestStore.getRequestForCompletion(
               session,
-              requestId,
+              requestId: requestId,
               transaction: transaction,
-              include: PasswordlessLoginRequest.include(
-                loginChallenge: SecretChallenge.include(),
-              ),
             );
           },
       getCompletionChallenge: (final request) => request.loginChallenge,
@@ -217,7 +227,10 @@ class PasswordlessIdpLoginUtil {
           .add(_config.loginVerificationCodeLifetime)
           .isBefore(DateTime.now()),
       onExpired: (final session, final request) async {
-        await PasswordlessLoginRequest.db.deleteRow(session, request);
+        await _requestStore.deleteById(
+          session,
+          requestId: request.id,
+        );
       },
       rateLimiter: limiter,
     );
