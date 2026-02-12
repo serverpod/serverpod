@@ -126,31 +126,46 @@ class GitHubSignInButton extends StatelessWidget {
       ),
     );
 
+    final logo = Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: _buildGitHubLogo(buttonStyle),
+    );
+
     if (logoAlignment == GitHubButtonLogoAlignment.center) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildGitHubLogo(buttonStyle),
+          logo,
           const SizedBox(width: 12),
           textWidget,
         ],
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          _buildGitHubLogo(buttonStyle),
-          const SizedBox(width: 12),
-          Expanded(child: textWidget),
-        ],
-      ),
+    final logoSize = size == GitHubButtonSize.large ? 20.0 : 16.0;
+
+    return Stack(
+      children: [
+        Positioned(
+          left: 12,
+          top: 0,
+          bottom: 0,
+          child: logo,
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(width: logoSize + 8),
+            Center(child: textWidget),
+          ],
+        ),
+      ],
     );
   }
 
   Widget _buildGitHubLogo(GitHubSignInStyle buttonStyle) {
-    final iconSize = size == GitHubButtonSize.large ? 24.0 : 20.0;
+    final iconSize = size == GitHubButtonSize.large ? 20.0 : 16.0;
 
     // Use the appropriate SVG based on the button style
     final svgAsset = style == GitHubButtonStyle.white
