@@ -6,6 +6,7 @@ import '../../../../../core.dart';
 import '../../../utils/get_passwords_extension.dart';
 import '../util/default_code_generators.dart';
 import 'passwordless_idp.dart';
+import 'utils/passwordless_login_request_store.dart';
 
 export '../util/default_code_generators.dart';
 
@@ -103,6 +104,11 @@ class PasswordlessIdpConfig extends IdentityProviderBuilder<PasswordlessIdp> {
   /// If `null`, calling [PasswordlessIdp.finishLogin] will throw.
   final ResolveAuthUserIdFunction? resolveAuthUserId;
 
+  /// Optional custom request store for passwordless login requests.
+  ///
+  /// If `null`, [DefaultDbPasswordlessLoginRequestStore] is used.
+  final PasswordlessLoginRequestStore? loginRequestStore;
+
   /// Creates a new passwordless identity provider configuration.
   const PasswordlessIdpConfig({
     required this.secretHashPepper,
@@ -121,6 +127,7 @@ class PasswordlessIdpConfig extends IdentityProviderBuilder<PasswordlessIdp> {
     ),
     this.sendLoginVerificationCode,
     this.resolveAuthUserId,
+    this.loginRequestStore,
   });
 
   static String _defaultNormalizeHandle(final String handle) => handle.trim();
@@ -161,6 +168,7 @@ class PasswordlessIdpConfigFromPasswords extends PasswordlessIdpConfig {
     super.loginRequestRateLimit,
     super.sendLoginVerificationCode,
     super.resolveAuthUserId,
+    super.loginRequestStore,
   }) : super(
          secretHashPepper: Serverpod.instance.getPasswordOrThrow(
            'passwordlessSecretHashPepper',
