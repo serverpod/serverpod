@@ -121,7 +121,6 @@ class GitHubSignInButton extends StatelessWidget {
       _getButtonText(),
       style: TextStyle(
         fontSize: size == GitHubButtonSize.large ? 16 : 14,
-        fontWeight: FontWeight.w600,
         color: buttonStyle.foregroundColor,
       ),
     );
