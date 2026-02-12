@@ -86,7 +86,7 @@ class MicrosoftSignInStyle {
   BorderSide get borderSide {
     return BorderSide(
       color: backgroundColor == const Color(0xFFFFFFFF)
-          ? const Color(0xFF8C8C8C)
+          ? const Color(0xFFE0E0E0)
           : backgroundColor,
       width: 1,
     );

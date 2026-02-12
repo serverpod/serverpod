@@ -74,28 +74,45 @@ class MicrosoftSignInButton extends StatelessWidget {
         minHeight: buttonStyle.size.height,
         maxHeight: buttonStyle.size.height,
       ),
-      child: ElevatedButton(
-        onPressed: isLoading || isDisabled ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: buttonStyle.backgroundColor,
-          foregroundColor: buttonStyle.foregroundColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: buttonStyle.borderRadius,
-            side: style == MicrosoftButtonStyle.light
-                ? buttonStyle.borderSide
-                : BorderSide.none,
-          ),
-          padding: EdgeInsets.zero,
-          elevation: 0,
-          disabledBackgroundColor: buttonStyle.backgroundColor.withValues(
-            alpha: 0.6,
-          ),
-          disabledForegroundColor: buttonStyle.foregroundColor.withValues(
-            alpha: 0.6,
-          ),
-        ),
-        child: _buildButtonContent(buttonStyle),
-      ),
+      child: style == MicrosoftButtonStyle.light
+          ? OutlinedButton(
+              onPressed: isLoading || isDisabled ? null : onPressed,
+              style: OutlinedButton.styleFrom(
+                backgroundColor: buttonStyle.backgroundColor,
+                foregroundColor: buttonStyle.foregroundColor,
+                side: buttonStyle.borderSide,
+                shape: RoundedRectangleBorder(
+                  borderRadius: buttonStyle.borderRadius,
+                ),
+                padding: EdgeInsets.zero,
+                disabledBackgroundColor: buttonStyle.backgroundColor.withValues(
+                  alpha: 0.6,
+                ),
+                disabledForegroundColor: buttonStyle.foregroundColor.withValues(
+                  alpha: 0.6,
+                ),
+              ),
+              child: _buildButtonContent(buttonStyle),
+            )
+          : ElevatedButton(
+              onPressed: isLoading || isDisabled ? null : onPressed,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: buttonStyle.backgroundColor,
+                foregroundColor: buttonStyle.foregroundColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: buttonStyle.borderRadius,
+                ),
+                padding: EdgeInsets.zero,
+                elevation: 0,
+                disabledBackgroundColor: buttonStyle.backgroundColor.withValues(
+                  alpha: 0.6,
+                ),
+                disabledForegroundColor: buttonStyle.foregroundColor.withValues(
+                  alpha: 0.6,
+                ),
+              ),
+              child: _buildButtonContent(buttonStyle),
+            ),
     );
   }
 
@@ -126,26 +143,41 @@ class MicrosoftSignInButton extends StatelessWidget {
       ),
     );
 
+    final logo = Padding(
+      padding: const EdgeInsets.only(left: 2),
+      child: _buildMicrosoftLogo(buttonStyle),
+    );
+
     if (logoAlignment == MicrosoftButtonLogoAlignment.center) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildMicrosoftLogo(buttonStyle),
+          logo,
           const SizedBox(width: 12),
           textWidget,
         ],
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          _buildMicrosoftLogo(buttonStyle),
-          const SizedBox(width: 12),
-          Expanded(child: textWidget),
-        ],
-      ),
+    final logoSize = size == MicrosoftButtonSize.large ? 20.0 : 18.0;
+
+    return Stack(
+      children: [
+        Positioned(
+          left: 12,
+          top: 0,
+          bottom: 0,
+          child: logo,
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(width: logoSize + 8),
+            Center(child: textWidget),
+          ],
+        ),
+      ],
     );
   }
 
