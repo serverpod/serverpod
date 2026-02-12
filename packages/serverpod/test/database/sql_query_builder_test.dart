@@ -1026,23 +1026,24 @@ void main() {
     },
   );
 
-  group('Given SelectQueryBuilder with lock mode', () {
+  group('Given a SelectQueryBuilder', () {
     var table = Table<int?>(tableName: 'citizen');
 
-    test('when LockMode.forUpdate then query contains FOR UPDATE', () {
-      var query = SelectQueryBuilder(
-        table: table,
-      ).withLockMode(LockMode.forUpdate).build();
+    group('when building with lock mode forUpdate', () {
+      test('then query contains FOR UPDATE clause', () {
+        var query = SelectQueryBuilder(
+          table: table,
+        ).withLockMode(LockMode.forUpdate).build();
 
-      expect(
-        query,
-        'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR UPDATE',
-      );
+        expect(
+          query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR UPDATE',
+        );
+      });
     });
 
-    test(
-      'when LockMode.forNoKeyUpdate then query contains FOR NO KEY UPDATE',
-      () {
+    group('when building with lock mode forNoKeyUpdate', () {
+      test('then query contains FOR NO KEY UPDATE clause', () {
         var query = SelectQueryBuilder(
           table: table,
         ).withLockMode(LockMode.forNoKeyUpdate).build();
@@ -1051,67 +1052,76 @@ void main() {
           query,
           'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR NO KEY UPDATE',
         );
-      },
-    );
-
-    test('when LockMode.forShare then query contains FOR SHARE', () {
-      var query = SelectQueryBuilder(
-        table: table,
-      ).withLockMode(LockMode.forShare).build();
-
-      expect(
-        query,
-        'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR SHARE',
-      );
+      });
     });
 
-    test('when LockMode.forKeyShare then query contains FOR KEY SHARE', () {
-      var query = SelectQueryBuilder(
-        table: table,
-      ).withLockMode(LockMode.forKeyShare).build();
+    group('when building with lock mode forShare', () {
+      test('then query contains FOR SHARE clause', () {
+        var query = SelectQueryBuilder(
+          table: table,
+        ).withLockMode(LockMode.forShare).build();
 
-      expect(
-        query,
-        'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR KEY SHARE',
-      );
+        expect(
+          query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR SHARE',
+        );
+      });
     });
 
-    test('when LockBehavior.wait then query contains no suffix', () {
-      var query = SelectQueryBuilder(
-        table: table,
-      ).withLockMode(LockMode.forUpdate, LockBehavior.wait).build();
+    group('when building with lock mode forKeyShare', () {
+      test('then query contains FOR KEY SHARE clause', () {
+        var query = SelectQueryBuilder(
+          table: table,
+        ).withLockMode(LockMode.forKeyShare).build();
 
-      expect(
-        query,
-        'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR UPDATE',
-      );
+        expect(
+          query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR KEY SHARE',
+        );
+      });
     });
 
-    test('when LockBehavior.noWait then query contains NOWAIT', () {
-      var query = SelectQueryBuilder(
-        table: table,
-      ).withLockMode(LockMode.forUpdate, LockBehavior.noWait).build();
+    group('when building with lock behavior wait', () {
+      test('then query contains no behavior suffix', () {
+        var query = SelectQueryBuilder(
+          table: table,
+        ).withLockMode(LockMode.forUpdate, LockBehavior.wait).build();
 
-      expect(
-        query,
-        'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR UPDATE NOWAIT',
-      );
+        expect(
+          query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR UPDATE',
+        );
+      });
     });
 
-    test('when LockBehavior.skipLocked then query contains SKIP LOCKED', () {
-      var query = SelectQueryBuilder(
-        table: table,
-      ).withLockMode(LockMode.forUpdate, LockBehavior.skipLocked).build();
+    group('when building with lock behavior noWait', () {
+      test('then query contains NOWAIT suffix', () {
+        var query = SelectQueryBuilder(
+          table: table,
+        ).withLockMode(LockMode.forUpdate, LockBehavior.noWait).build();
 
-      expect(
-        query,
-        'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR UPDATE SKIP LOCKED',
-      );
+        expect(
+          query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR UPDATE NOWAIT',
+        );
+      });
     });
 
-    test(
-      'when lock mode with where clause then lock clause appears after where',
-      () {
+    group('when building with lock behavior skipLocked', () {
+      test('then query contains SKIP LOCKED suffix', () {
+        var query = SelectQueryBuilder(
+          table: table,
+        ).withLockMode(LockMode.forUpdate, LockBehavior.skipLocked).build();
+
+        expect(
+          query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR UPDATE SKIP LOCKED',
+        );
+      });
+    });
+
+    group('when building with lock mode and a where clause', () {
+      test('then lock clause appears after where', () {
         var query = SelectQueryBuilder(table: table)
             .withWhere(ColumnString('name', table).equals('John'))
             .withLockMode(LockMode.forUpdate)
@@ -1121,12 +1131,11 @@ void main() {
           query,
           'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."name" = \'John\' FOR UPDATE',
         );
-      },
-    );
+      });
+    });
 
-    test(
-      'when lock mode with order by then lock clause appears after order by',
-      () {
+    group('when building with lock mode and order by', () {
+      test('then lock clause appears after order by', () {
         var query = SelectQueryBuilder(table: table)
             .withOrderBy([Order(column: ColumnString('name', table))])
             .withLockMode(LockMode.forUpdate)
@@ -1136,23 +1145,24 @@ void main() {
           query,
           'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" ORDER BY "citizen"."name" FOR UPDATE',
         );
-      },
-    );
-
-    test('when lock mode with limit then lock clause appears before limit', () {
-      var query = SelectQueryBuilder(
-        table: table,
-      ).withLimit(10).withLockMode(LockMode.forUpdate).build();
-
-      expect(
-        query,
-        'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR UPDATE LIMIT 10',
-      );
+      });
     });
 
-    test(
-      'when lock mode with order by and limit then lock clause appears between them',
-      () {
+    group('when building with lock mode and limit', () {
+      test('then lock clause appears before limit', () {
+        var query = SelectQueryBuilder(
+          table: table,
+        ).withLimit(10).withLockMode(LockMode.forUpdate).build();
+
+        expect(
+          query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR UPDATE LIMIT 10',
+        );
+      });
+    });
+
+    group('when building with lock mode, order by, and limit', () {
+      test('then lock clause appears between order by and limit', () {
         var query = SelectQueryBuilder(table: table)
             .withOrderBy([Order(column: ColumnString('name', table))])
             .withLimit(10)
@@ -1163,25 +1173,29 @@ void main() {
           query,
           'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" ORDER BY "citizen"."name" FOR UPDATE NOWAIT LIMIT 10',
         );
-      },
-    );
-
-    test('when no lock mode specified then query has no lock clause', () {
-      var query = SelectQueryBuilder(table: table).build();
-
-      expect(query, isNot(contains('FOR UPDATE')));
-      expect(query, isNot(contains('FOR SHARE')));
+      });
     });
 
-    test('when forShare with skipLocked then query is correct', () {
-      var query = SelectQueryBuilder(
-        table: table,
-      ).withLockMode(LockMode.forShare, LockBehavior.skipLocked).build();
+    group('when building without lock mode', () {
+      test('then query has no lock clause', () {
+        var query = SelectQueryBuilder(table: table).build();
 
-      expect(
-        query,
-        'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR SHARE SKIP LOCKED',
-      );
+        expect(query, isNot(contains('FOR UPDATE')));
+        expect(query, isNot(contains('FOR SHARE')));
+      });
+    });
+
+    group('when specifying both mode and behavior', () {
+      test('then query is correct', () {
+        var query = SelectQueryBuilder(
+          table: table,
+        ).withLockMode(LockMode.forShare, LockBehavior.skipLocked).build();
+
+        expect(
+          query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" FOR SHARE SKIP LOCKED',
+        );
+      });
     });
   });
 }

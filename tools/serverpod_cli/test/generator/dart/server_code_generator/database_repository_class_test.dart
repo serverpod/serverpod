@@ -152,6 +152,20 @@ void main() {
             contains('Transaction? transaction'),
           );
         });
+
+        test('that takes the lockMode as an optional param', () {
+          expect(
+            findMethod?.parameters?.toSource(),
+            contains('LockMode? lockMode'),
+          );
+        });
+
+        test('that takes the lockBehavior as an optional param', () {
+          expect(
+            findMethod?.parameters?.toSource(),
+            contains('LockBehavior? lockBehavior'),
+          );
+        });
       });
 
       group('has a findFirstRow method', () {
@@ -237,6 +251,20 @@ void main() {
             contains('Transaction? transaction'),
           );
         });
+
+        test('that takes the lockMode as an optional param', () {
+          expect(
+            findRowMethod?.parameters?.toSource(),
+            contains('LockMode? lockMode'),
+          );
+        });
+
+        test('that takes the lockBehavior as an optional param', () {
+          expect(
+            findRowMethod?.parameters?.toSource(),
+            contains('LockBehavior? lockBehavior'),
+          );
+        });
       });
 
       group('has a findById method', () {
@@ -286,6 +314,86 @@ void main() {
             contains('Transaction? transaction'),
           );
         });
+
+        test('that takes the lockMode as an optional param', () {
+          expect(
+            findByIdMethod?.parameters?.toSource(),
+            contains('LockMode? lockMode'),
+          );
+        });
+
+        test('that takes the lockBehavior as an optional param', () {
+          expect(
+            findByIdMethod?.parameters?.toSource(),
+            contains('LockBehavior? lockBehavior'),
+          );
+        });
+      });
+
+      group('has a lockRows method', () {
+        var lockRowsMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'lockRows',
+        );
+
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'lockRows',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a Future<void>', () {
+          expect(
+            lockRowsMethod?.returnType?.toSource(),
+            contains('Future<void>'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            lockRowsMethod?.parameters?.toSource(),
+            contains('Session session'),
+          );
+        });
+
+        test('that takes the where callback as a named required param', () {
+          expect(
+            lockRowsMethod?.parameters?.toSource(),
+            contains(
+              'required _i1.WhereExpressionBuilder<${testClassName}Table> where',
+            ),
+          );
+        });
+
+        test('that takes the lockMode as a named required param', () {
+          expect(
+            lockRowsMethod?.parameters?.toSource(),
+            contains('required _i1.LockMode lockMode'),
+          );
+        });
+
+        test('that takes the transaction as a named required param', () {
+          expect(
+            lockRowsMethod?.parameters?.toSource(),
+            contains('required _i1.Transaction transaction'),
+          );
+        });
+
+        test(
+          'that takes the lockBehavior with a default value of wait',
+          () {
+            expect(
+              lockRowsMethod?.parameters?.toSource(),
+              contains(
+                '_i1.LockBehavior lockBehavior = _i1.LockBehavior.wait',
+              ),
+            );
+          },
+        );
       });
 
       group('has an insert method', () {

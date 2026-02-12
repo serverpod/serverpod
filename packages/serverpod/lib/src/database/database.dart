@@ -55,6 +55,12 @@ class Database {
   ///
   /// [offset] defines how many items to skip, after with [limit] (or all)
   /// items are read from the database.
+  ///
+  /// [lockMode] acquires a row-level lock on the returned rows. Requires
+  /// a [transaction]. See [LockMode] for available lock types.
+  ///
+  /// [lockBehavior] controls what happens when a row is already locked.
+  /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
   @internal
   Future<List<T>> find<T extends TableRow>({
     Expression? where,
@@ -101,6 +107,12 @@ class Database {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// [lockMode] acquires a row-level lock on the returned row. Requires
+  /// a [transaction]. See [LockMode] for available lock types.
+  ///
+  /// [lockBehavior] controls what happens when a row is already locked.
+  /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
   @internal
   Future<T?> findFirstRow<T extends TableRow>({
     Expression? where,
@@ -142,6 +154,12 @@ class Database {
   /// ```dart
   /// var myRow = session.db.findById<MyClass>(myId);
   /// ```
+  ///
+  /// [lockMode] acquires a row-level lock on the returned row. Requires
+  /// a [transaction]. See [LockMode] for available lock types.
+  ///
+  /// [lockBehavior] controls what happens when a row is already locked.
+  /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
   @internal
   Future<T?> findById<T extends TableRow>(
     Object id, {
@@ -171,6 +189,17 @@ class Database {
 
   /// Acquires row-level locks on rows matching the [where] expression without
   /// returning the row data.
+  ///
+  /// This is useful when you need to lock rows for a subsequent update without
+  /// the overhead of fetching the data.
+  ///
+  /// [lockMode] specifies the type of lock to acquire.
+  /// See [LockMode] for available lock types.
+  ///
+  /// [lockBehavior] controls what happens when a row is already locked.
+  /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
+  ///
+  /// A [transaction] is required.
   @internal
   Future<void> lockRows<T extends TableRow>({
     required Expression where,
