@@ -138,15 +138,11 @@ class MicrosoftSignInButton extends StatelessWidget {
       _getButtonText(),
       style: TextStyle(
         fontSize: size == MicrosoftButtonSize.large ? 16 : 14,
-        fontWeight: FontWeight.w600,
         color: buttonStyle.foregroundColor,
       ),
     );
 
-    final logo = Padding(
-      padding: const EdgeInsets.only(left: 4),
-      child: _buildMicrosoftLogo(buttonStyle),
-    );
+    final logo = _buildMicrosoftLogo(buttonStyle);
 
     if (logoAlignment == MicrosoftButtonLogoAlignment.center) {
       return Row(
@@ -159,12 +155,12 @@ class MicrosoftSignInButton extends StatelessWidget {
       );
     }
 
-    final logoSize = size == MicrosoftButtonSize.large ? 20.0 : 18.0;
+    final logoSize = size == MicrosoftButtonSize.large ? 20.0 : 16.0;
 
     return Stack(
       children: [
         Positioned(
-          left: 12,
+          left: 14,
           top: 0,
           bottom: 0,
           child: logo,
@@ -173,8 +169,9 @@ class MicrosoftSignInButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(width: logoSize + 8),
+            SizedBox(width: logoSize + 14),
             Center(child: textWidget),
+            const SizedBox(width: 8),
           ],
         ),
       ],
@@ -182,14 +179,18 @@ class MicrosoftSignInButton extends StatelessWidget {
   }
 
   Widget _buildMicrosoftLogo(MicrosoftSignInStyle buttonStyle) {
-    final logoSize = size == MicrosoftButtonSize.large ? 20.0 : 18.0;
+    final logoSize = size == MicrosoftButtonSize.large ? 20.0 : 16.0;
 
-    return SvgPicture.asset(
-      'assets/images/microsoft.svg',
-      package: 'serverpod_auth_idp_flutter',
-      width: logoSize,
-      height: logoSize,
-      fit: BoxFit.contain,
+    return SizedBox.square(
+      dimension: logoSize,
+      child: SvgPicture.asset(
+        'assets/images/microsoft.svg',
+        package: 'serverpod_auth_idp_flutter',
+        colorFilter: isDisabled
+            ? const ColorFilter.mode(Color(0xff9c9c9c), BlendMode.srcIn)
+            : null,
+        fit: BoxFit.scaleDown,
+      ),
     );
   }
 
