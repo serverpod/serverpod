@@ -1,3 +1,8 @@
+## 3.3.1
+
+- fix: Fixes text of GitHub IDP button not aligning correctly when using the left alignment. ([@vfiruz97](https://github.com/vfiruz97))
+- fix: Fixes missing `tokenExpiresAt` info on `AuthSuccess` for server-side sessions.
+
 ## 3.3.0
 
 Serverpod 3.3 brings a lot of new features and improvements to the framework, including two new identity providers (GitHub and Anonymous), virtual host routing, a robust Kubernetes-ready monitoring system, JSON key aliases and enum properties on models, and several improvements to logging.

@@ -33,9 +33,9 @@ dependencies:
   firebase_ui_auth: ^3.0.0
   flutter:
     sdk: flutter
-  serverpod_auth_idp_flutter: 3.3.0
-  serverpod_auth_idp_flutter_firebase: 3.3.0
-  serverpod_flutter: 3.3.0
+  serverpod_auth_idp_flutter: 3.3.1
+  serverpod_auth_idp_flutter_firebase: 3.3.1
+  serverpod_flutter: 3.3.1
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
