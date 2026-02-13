@@ -40,7 +40,7 @@ class RedisCache extends GlobalCache {
   }
 
   @override
-  Future<T?> get<T extends SerializableModel>(
+  Future<T?> get<T extends Object>(
     String key, [
     CacheMissHandler<T>? cacheMissHandler,
   ]) async {
@@ -92,9 +92,9 @@ class RedisCache extends GlobalCache {
       throw UnimplementedError('No local keys are used in RedisCache');
 
   @override
-  Future<void> put(
+  Future<void> put<T extends Object>(
     String key,
-    SerializableModel object, {
+    T object, {
     Duration? lifetime,
     String? group,
   }) async {
