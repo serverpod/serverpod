@@ -226,4 +226,99 @@ SELECT * FROM insertWithIdNotNull
       );
     },
   );
+
+  group('Given ignoreConflicts is true', () {
+    test(
+      'when building insert query with a row without id then ON CONFLICT DO NOTHING is appended.',
+      () {
+        var query = InsertQueryBuilder(
+          table: PersonTable(),
+          rows: [PersonClass(name: 'Alex', age: 33)],
+          ignoreConflicts: true,
+        ).build();
+
+        expect(
+          query,
+          'INSERT INTO "person" ("name", "age") VALUES (\'Alex\', 33) ON CONFLICT DO NOTHING RETURNING *',
+        );
+      },
+    );
+
+    test(
+      'when building insert query with a row with id then ON CONFLICT DO NOTHING is appended.',
+      () {
+        var query = InsertQueryBuilder(
+          table: PersonTable(),
+          rows: [PersonClass(id: 33, name: 'Alex', age: 33)],
+          ignoreConflicts: true,
+        ).build();
+
+        expect(
+          query,
+          'INSERT INTO "person" ("id", "name", "age") VALUES (33, \'Alex\', 33) ON CONFLICT DO NOTHING RETURNING *',
+        );
+      },
+    );
+
+    test(
+      'when building insert query with only id column then ON CONFLICT DO NOTHING is appended to DEFAULT VALUES query.',
+      () {
+        var query = InsertQueryBuilder(
+          table: Table<int?>(tableName: 'only_id'),
+          rows: [OnlyIdClass()],
+          ignoreConflicts: true,
+        ).build();
+
+        expect(
+          query,
+          'INSERT INTO "only_id" DEFAULT VALUES ON CONFLICT DO NOTHING RETURNING *',
+        );
+      },
+    );
+
+    test(
+      'when building insert query with mixed id rows then both sub-queries include ON CONFLICT DO NOTHING.',
+      () {
+        var query = InsertQueryBuilder(
+          table: PersonTable(),
+          rows: [
+            PersonClass(id: 33, name: 'Alex', age: 33),
+            PersonClass(name: 'Isak', age: 33),
+          ],
+          ignoreConflicts: true,
+        ).build();
+
+        expect(
+          query,
+          '''
+WITH
+  insertWithIdNull AS (INSERT INTO "person" ("name", "age") VALUES ('Isak', 33) ON CONFLICT DO NOTHING RETURNING *),
+  insertWithIdNotNull AS (INSERT INTO "person" ("id", "name", "age") VALUES (33, 'Alex', 33) ON CONFLICT DO NOTHING RETURNING *)
+
+SELECT * FROM insertWithIdNull
+UNION ALL
+SELECT * FROM insertWithIdNotNull
+''',
+        );
+      },
+    );
+  });
+
+  group('Given ignoreConflicts is false (default)', () {
+    test(
+      'when building insert query then ON CONFLICT DO NOTHING is not present.',
+      () {
+        var query = InsertQueryBuilder(
+          table: PersonTable(),
+          rows: [PersonClass(name: 'Alex', age: 33)],
+          ignoreConflicts: false,
+        ).build();
+
+        expect(
+          query,
+          'INSERT INTO "person" ("name", "age") VALUES (\'Alex\', 33) RETURNING *',
+        );
+      },
+    );
+  });
 }
