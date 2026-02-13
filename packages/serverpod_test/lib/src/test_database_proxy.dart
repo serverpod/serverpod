@@ -192,11 +192,13 @@ class TestDatabaseProxy implements Database {
   Future<List<T>> insert<T extends TableRow>(
     List<T> rows, {
     Transaction? transaction,
+    bool ignoreConflicts = false,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.insert<T>(
         rows,
         transaction: transaction,
+        ignoreConflicts: ignoreConflicts,
       ),
       isPartOfUserTransaction: transaction != null,
     );
