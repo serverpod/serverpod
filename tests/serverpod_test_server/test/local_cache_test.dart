@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/local_cache.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:serverpod_test_shared/serverpod_test_shared.dart';
 import 'package:test/test.dart';
 
 const cacheMaxSize = 10;
@@ -126,6 +127,26 @@ void main() {
   );
 
   test(
+    'Given a non-serializable object when trying to put it to the cache, then it will throw an Error',
+    () async {
+      var entry = Object();
+
+      await expectLater(
+        cache.put('entry', entry),
+        throwsA(
+          isA<Error>().having(
+            (e) => e.toString(),
+            'toString',
+            contains(
+              "Converting object to an encodable object failed: Instance of 'Object'",
+            ),
+          ),
+        ),
+      );
+    },
+  );
+
+  test(
     'Given an entry was written to the cache, when the size is checked, then it will be 1',
     () async {
       var entry = SimpleData(num: 0);
@@ -142,6 +163,18 @@ void main() {
       var retrieved = await cache.get<SimpleData>('missing');
 
       expect(retrieved, isNull);
+    },
+  );
+
+  test(
+    'Given a custom class with toJson/fromJson methods was `put` to the cache, when it is accessed, then it can be read',
+    () async {
+      var entry = CustomClass2('test');
+
+      await cache.put('entry', entry);
+
+      var retrieved = await cache.get<CustomClass2>('entry');
+      expect(retrieved?.value, equals('test'));
     },
   );
 
