@@ -368,6 +368,8 @@ class MicrosoftAccountRepository {
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     _i1.Transaction? transaction,
     MicrosoftAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<MicrosoftAccount>(
       where: where?.call(MicrosoftAccount.t),
@@ -378,6 +380,8 @@ class MicrosoftAccountRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -407,6 +411,8 @@ class MicrosoftAccountRepository {
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     _i1.Transaction? transaction,
     MicrosoftAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<MicrosoftAccount>(
       where: where?.call(MicrosoftAccount.t),
@@ -416,6 +422,8 @@ class MicrosoftAccountRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -425,11 +433,15 @@ class MicrosoftAccountRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     MicrosoftAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<MicrosoftAccount>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -589,6 +601,22 @@ class MicrosoftAccountRepository {
     return session.db.count<MicrosoftAccount>(
       where: where?.call(MicrosoftAccount.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [MicrosoftAccount] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<MicrosoftAccountTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<MicrosoftAccount>(
+      where: where(MicrosoftAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }
