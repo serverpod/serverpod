@@ -11,6 +11,7 @@ import 'package:serverpod_cli/src/util/command_line_tools.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 import '../commands/version.dart' show VersionCommand;
+import '../generated/completion_script_carapace.dart';
 
 Future<void> _preCommandEnvironmentChecks() async {
   // Check that required tools are installed
@@ -61,6 +62,8 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
     super.onBeforeRunCommand,
     super.setLogLevel,
     super.onAnalyticsEvent,
+    super.enableCompletionCommand,
+    super.embeddedCompletions,
   }) : _productionMode = productionMode,
        _cliVersion = cliVersion,
        super(globalOptions: GlobalOption.values);
@@ -93,6 +96,8 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
     return ServerpodCommandRunner(
       'serverpod',
       'Manage your serverpod app development',
+      enableCompletionCommand: true,
+      embeddedCompletions: [completionScriptCarapace],
       messageOutput: MessageOutput(
         usageLogger: log.info,
       ),
