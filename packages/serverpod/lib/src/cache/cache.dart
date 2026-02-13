@@ -14,7 +14,7 @@ abstract class Cache {
   /// Creates a new [Cache] of the specified size.
   Cache(this.maxLocalEntries, this.serializationManager);
 
-  /// Stores a copy of a [SerializableModel] in the cache using the specified
+  /// Stores a copy of the [Object] in the cache using the specified
   /// [key]. It's also possible to set the maximum [lifetime] of the stored
   /// [object]. If a [group] is specified, all models of the same group can be
   /// invalidated at the same time using the [invalidateGroup] method.
