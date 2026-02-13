@@ -384,6 +384,16 @@ class Endpoints extends _i1.EndpointDispatch {
                     accessToken: params['accessToken'],
                   ),
         ),
+        'hasAccount': _i1.MethodConnector(
+          name: 'hasAccount',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['facebookIdp'] as _i5.FacebookIdpEndpoint)
+                  .hasAccount(session),
+        ),
       },
     );
     connectors['firebaseIdp'] = _i1.EndpointConnector(
@@ -416,7 +426,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['firebaseIdp'] as _i5.FirebaseIdpEndpoint)
+              ) async => (endpoints['firebaseIdp'] as _i6.FirebaseIdpEndpoint)
                   .hasAccount(session),
         ),
       },
@@ -463,7 +473,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['gitHubIdp'] as _i6.GitHubIdpEndpoint)
+              ) async => (endpoints['gitHubIdp'] as _i7.GitHubIdpEndpoint)
                   .hasAccount(session),
         ),
       },
@@ -504,7 +514,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['googleIdp'] as _i7.GoogleIdpEndpoint)
+              ) async => (endpoints['googleIdp'] as _i8.GoogleIdpEndpoint)
                   .hasAccount(session),
         ),
       },

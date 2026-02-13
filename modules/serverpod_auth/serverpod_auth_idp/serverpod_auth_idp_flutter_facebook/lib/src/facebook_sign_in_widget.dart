@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
+import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
 import 'facebook_auth_controller.dart';
 import 'facebook_sign_in_button.dart';

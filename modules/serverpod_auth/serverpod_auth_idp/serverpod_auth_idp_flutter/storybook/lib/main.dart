@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
+import 'package:serverpod_auth_idp_flutter_facebook/serverpod_auth_idp_flutter_facebook.dart';
 import 'package:storybook_toolkit/storybook_toolkit.dart';
 
 import 'stories/anonymous.dart';
@@ -21,14 +22,11 @@ void main() {
   client.auth.initialize();
   client.auth.initializeGoogleSignIn();
   client.auth.initializeAppleSignIn();
-  client.auth.initializeFacebookSignIn(
-    appId: const String.fromEnvironment(
-      'FACEBOOK_APP_ID',
-      defaultValue: 'your-facebook-app-id',
-    ),
-  );
   client.auth.initializeGitHubSignIn();
   client.auth.initializeMicrosoftSignIn();
+  client.auth.initializeFacebookSignIn(
+    appId: 'your-facebook-app-id', // throws if not provided on web and macos
+  );
 
   runApp(const MainApp());
 }

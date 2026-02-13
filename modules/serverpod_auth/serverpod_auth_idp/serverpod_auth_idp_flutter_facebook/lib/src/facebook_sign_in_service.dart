@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
+import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
+
+import 'facebook_sign_in_widget.dart';
 
 /// Service to manage Facebook Sign-In and ensure it is only initialized once
 /// throughout the app lifetime.
@@ -174,6 +177,11 @@ extension FacebookSignInExtension on FlutterAuthSessionManager {
   /// when the user signs out from the app. This prevents the user from being
   /// signed in back automatically, which would undo the signing out.
   ///
+  /// Additionally, this method registers the Facebook sign-in widget with the
+  /// [ExternalIdpRegistry], allowing [SignInWidget] to automatically discover
+  /// and render the Facebook authentication option when the server has a
+  /// Facebook IDP endpoint configured.
+  ///
   /// For web and macOS platforms, the [appId] is required. If not provided, will
   /// try to load from the `FACEBOOK_APP_ID` environment variable. For Android and
   /// iOS, configuration is done through native files and this parameter is ignored.
@@ -194,6 +202,8 @@ extension FacebookSignInExtension on FlutterAuthSessionManager {
       xfbml: xfbml,
       version: version,
     );
+
+    _registerFacebookIdpWidget();
   }
 
   /// Signs out from the singleton Facebook session and from the current device.
@@ -217,6 +227,21 @@ extension FacebookSignInExtension on FlutterAuthSessionManager {
     await Future.delayed(const Duration(milliseconds: 300));
     await signOutDevice();
   }
+}
+
+void _registerFacebookIdpWidget() {
+  // Only register once, even if multiple clients call initializeFacebookSignIn.
+  if (ExternalIdpRegistry.instance.hasBuilder<EndpointFacebookIdpBase>()) {
+    return;
+  }
+
+  ExternalIdpRegistry.instance.register<EndpointFacebookIdpBase>(
+    (context, client, onAuthenticated, onError) => FacebookSignInWidget(
+      client: client,
+      onAuthenticated: onAuthenticated,
+      onError: onError,
+    ),
+  );
 }
 
 String? _getAppIdFromEnvVar() {

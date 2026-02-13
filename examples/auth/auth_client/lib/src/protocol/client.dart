@@ -272,11 +272,8 @@ class EndpointFacebookIdp extends _i1.EndpointFacebookIdpBase {
   /// Validates a Facebook access token and either logs in the associated user or
   /// creates a new user account if the Facebook account ID is not yet known.
   ///
-  /// If a new user is created an associated [UserProfile] is also created.
-  ///
-  /// The access token is verified using Facebook's Debug Token API to ensure
-  /// it's valid and belongs to the correct app.
-  /// If the token is invalid or expired, the [FacebookAccessTokenVerificationException] will be thrown.
+  /// If the access token is invalid or expired, the
+  /// [FacebookAccessTokenVerificationException] will be thrown.
   @override
   _i3.Future<_i4.AuthSuccess> login({required String accessToken}) =>
       caller.callServerEndpoint<_i4.AuthSuccess>(
@@ -284,6 +281,13 @@ class EndpointFacebookIdp extends _i1.EndpointFacebookIdpBase {
         'login',
         {'accessToken': accessToken},
       );
+
+  @override
+  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+    'facebookIdp',
+    'hasAccount',
+    {},
+  );
 }
 
 /// {@category Endpoint}

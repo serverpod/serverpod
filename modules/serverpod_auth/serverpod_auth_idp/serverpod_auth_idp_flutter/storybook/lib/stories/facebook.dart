@@ -1,4 +1,4 @@
-import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
+import 'package:serverpod_auth_idp_flutter_facebook/serverpod_auth_idp_flutter_facebook.dart';
 import 'package:storybook_toolkit/storybook_toolkit.dart';
 
 import '../utils/story.dart';
