@@ -6,6 +6,7 @@ import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/github.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
+import 'package:serverpod_auth_idp_server/providers/microsoft.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 import 'package:test/test.dart';
@@ -109,6 +110,22 @@ void main() {
               (final e) => e.key,
               'key',
               'appleServiceIdentifier',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when constructing MicrosoftIdpConfigFromPasswords then throws PasswordNotFoundException.',
+      () {
+        expect(
+          () => MicrosoftIdpConfigFromPasswords(),
+          throwsA(
+            isA<PasswordNotFoundException>().having(
+              (final e) => e.key,
+              'key',
+              'microsoftClientId',
             ),
           ),
         );
@@ -306,6 +323,49 @@ test:
         () {
           final config = AppleIdpConfigFromPasswords();
           expect(config, isA<AppleIdpConfig>());
+        },
+      );
+    },
+  );
+
+  group(
+    'Given microsoftClientId and microsoftClientSecret passwords are present',
+    tags: TestTags.concurrencyOneTestTags,
+    () {
+      late Directory originalDir;
+
+      setUpAll(() async {
+        originalDir = Directory.current;
+        await d.dir('config', [
+          d.file(
+            'passwords.yaml',
+            '''
+test:
+  database: 'test'
+  microsoftClientId: '12345678-1234-1234-1234-123456789012'
+  microsoftClientSecret: 'abc~DEF123ghi456JKL789mno012PQR345stu'
+''',
+          ),
+        ]).create();
+        Directory.current = d.sandbox;
+
+        Serverpod(
+          ['-m', 'test'],
+          Protocol(),
+          Endpoints(),
+          config: ServerpodConfig(apiServer: portZeroConfig),
+        );
+
+        addTearDown(() async {
+          Directory.current = originalDir;
+        });
+      });
+
+      test(
+        'when constructing MicrosoftIdpConfigFromPasswords then succeeds.',
+        () {
+          final config = MicrosoftIdpConfigFromPasswords();
+          expect(config, isA<MicrosoftIdpConfig>());
         },
       );
     },

@@ -23,6 +23,9 @@ googleIdp:
   - hasAccount:
 refreshJwtTokens:
   - refreshAccessToken:
+microsoftIdp:
+  - login:
+  - hasAccount:
 passkeyIdp:
   - createChallenge:
   - register:

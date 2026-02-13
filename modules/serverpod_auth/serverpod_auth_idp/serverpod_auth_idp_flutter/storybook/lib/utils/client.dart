@@ -196,6 +196,26 @@ class GitHubIdpEndpoint extends EndpointGitHubIdpBase {
   Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
+class MicrosoftIdpEndpoint extends EndpointMicrosoftIdpBase {
+  MicrosoftIdpEndpoint(super.caller);
+
+  final _mockData = MockAuthData();
+
+  @override
+  String get name => 'microsoftIdp';
+
+  @override
+  Future<AuthSuccess> login({
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
+    required bool isWebPlatform,
+  }) => Future.value(_mockData.authSuccess);
+
+  @override
+  Future<bool> hasAccount() async => _mockData.hasAccount;
+}
+
 class Modules {
   Modules(Client client) {
     auth = Caller(client);
@@ -217,6 +237,7 @@ class Client extends ServerpodClientShared {
     googleIdp = GoogleIdpEndpoint(this);
     appleIdp = AppleIdpEndpoint(this);
     githubIdp = GitHubIdpEndpoint(this);
+    microsoftIdp = MicrosoftIdpEndpoint(this);
     modules = Modules(this);
   }
 
@@ -230,6 +251,8 @@ class Client extends ServerpodClientShared {
 
   late final GitHubIdpEndpoint githubIdp;
 
+  late final MicrosoftIdpEndpoint microsoftIdp;
+
   late final Modules modules;
 
   @override
@@ -239,6 +262,7 @@ class Client extends ServerpodClientShared {
     'googleIdp': googleIdp,
     'appleIdp': appleIdp,
     'githubIdp': githubIdp,
+    'microsoftIdp': microsoftIdp,
   };
 
   @override

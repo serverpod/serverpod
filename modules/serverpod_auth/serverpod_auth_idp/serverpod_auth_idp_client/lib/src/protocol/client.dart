@@ -272,6 +272,39 @@ abstract class EndpointGoogleIdpBase extends EndpointIdpBase {
   _i2.Future<bool> hasAccount();
 }
 
+/// Base endpoint for Microsoft Account-based authentication.
+///
+/// This endpoint exposes methods for logging in users using Microsoft authorization codes.
+/// If you would like modify the authentication flow, consider extending this
+/// class and overriding the relevant methods.
+/// {@category Endpoint}
+abstract class EndpointMicrosoftIdpBase extends EndpointIdpBase {
+  EndpointMicrosoftIdpBase(_i1.EndpointCaller caller) : super(caller);
+
+  /// Validates a Microsoft authorization code and either logs in the associated
+  /// user or creates a new user account if the Microsoft account ID is not yet
+  /// known.
+  ///
+  /// This method exchanges the `authorization code` for an `access token` using
+  /// `PKCE`, then authenticates the user.
+  ///
+  /// The [isWebPlatform] flag indicates whether the client is a web application.
+  /// Microsoft requires the client secret only for confidential clients (web
+  /// apps). Public clients (mobile, desktop) using PKCE must not include it.
+  /// Pass `true` for web clients and `false` for native platforms.
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  _i2.Future<_i3.AuthSuccess> login({
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
+    required bool isWebPlatform,
+  });
+
+  @override
+  _i2.Future<bool> hasAccount();
+}
+
 /// Base endpoint for Passkey-based authentication.
 /// {@category Endpoint}
 abstract class EndpointPasskeyIdpBase extends EndpointIdpBase {
