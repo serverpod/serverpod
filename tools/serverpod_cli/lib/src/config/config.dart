@@ -5,6 +5,7 @@ import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
+import 'package:serverpod_cli/src/config/generator_config_options.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
@@ -84,6 +85,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.extraClasses,
     required this.enabledFeatures,
     this.experimentalFeatures = const [],
+    this.generatorOptions = GeneratorOptions.defaultOptions,
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
        _modules = modules;
@@ -249,6 +251,9 @@ class GeneratorConfig implements ModelLoadConfig {
   bool isExperimentalFeatureEnabled(ExperimentalFeature feature) =>
       experimentalFeatures.contains(feature) ||
       experimentalFeatures.contains(ExperimentalFeature.all);
+
+  /// Generator options parsed from the `generator` section of the config.
+  final GeneratorOptions generatorOptions;
 
   /// All the modules defined in the config (of type module).
   List<ModuleConfig> get modules => _modules
@@ -430,6 +435,8 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
+    var generatorOptions = GeneratorOptions.parse(generatorConfig);
+
     return GeneratorConfig(
       name: name,
       type: type,
@@ -443,6 +450,7 @@ class GeneratorConfig implements ModelLoadConfig {
       extraClasses: extraClasses,
       enabledFeatures: enabledFeatures,
       experimentalFeatures: enabledExperimentalFeatures,
+      generatorOptions: generatorOptions,
     );
   }
 

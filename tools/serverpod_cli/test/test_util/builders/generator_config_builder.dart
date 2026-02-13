@@ -1,10 +1,51 @@
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
+import 'package:serverpod_cli/src/config/generator_config_options.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
 const _defaultName = 'example';
 const _defaultType = PackageType.server;
+
+/// Builder for [DatabaseGeneratorOptions].
+class DatabaseGeneratorOptionsBuilder {
+  TransactionParameterMode _transactionParameterMode =
+      TransactionParameterMode.optional;
+
+  DatabaseGeneratorOptionsBuilder withTransactionParameterMode(
+    TransactionParameterMode mode,
+  ) {
+    _transactionParameterMode = mode;
+    return this;
+  }
+
+  DatabaseGeneratorOptions build() {
+    return DatabaseGeneratorOptions(
+      transactionParameterMode: _transactionParameterMode,
+    );
+  }
+}
+
+/// Builder for [GeneratorOptions].
+class GeneratorOptionsBuilder {
+  DatabaseGeneratorOptions _database = DatabaseGeneratorOptions.defaultOptions;
+
+  GeneratorOptionsBuilder withDatabase(DatabaseGeneratorOptions database) {
+    _database = database;
+    return this;
+  }
+
+  GeneratorOptionsBuilder withDatabaseBuilder(
+    DatabaseGeneratorOptions Function(DatabaseGeneratorOptionsBuilder) builder,
+  ) {
+    _database = builder(DatabaseGeneratorOptionsBuilder());
+    return this;
+  }
+
+  GeneratorOptions build() {
+    return GeneratorOptions(database: _database);
+  }
+}
 
 class GeneratorConfigBuilder {
   String _name;
@@ -19,6 +60,7 @@ class GeneratorConfigBuilder {
   List<ServerpodFeature> _enabledFeatures;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
+  GeneratorOptions _generatorOptions;
 
   GeneratorConfigBuilder()
     : _name = _defaultName,
@@ -46,7 +88,8 @@ class GeneratorConfigBuilder {
       ],
       _extraClasses = [],
       _enabledFeatures = [ServerpodFeature.database],
-      _enabledExperimentalFeatures = [];
+      _enabledExperimentalFeatures = [],
+      _generatorOptions = GeneratorOptions.defaultOptions;
 
   GeneratorConfigBuilder withName(String name) {
     _name = name;
@@ -134,6 +177,27 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withGeneratorOptions(GeneratorOptions options) {
+    _generatorOptions = options;
+    return this;
+  }
+
+  GeneratorConfigBuilder withGeneratorOptionsBuilder(
+    GeneratorOptions Function(GeneratorOptionsBuilder) builder,
+  ) {
+    _generatorOptions = builder(GeneratorOptionsBuilder());
+    return this;
+  }
+
+  GeneratorConfigBuilder withTransactionParameterMode(
+    TransactionParameterMode mode,
+  ) {
+    _generatorOptions = GeneratorOptions(
+      database: DatabaseGeneratorOptions(transactionParameterMode: mode),
+    );
+    return this;
+  }
+
   GeneratorConfig build() {
     return GeneratorConfig(
       name: _name,
@@ -148,6 +212,7 @@ class GeneratorConfigBuilder {
       enabledFeatures: _enabledFeatures,
       experimentalFeatures: _enabledExperimentalFeatures,
       relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,
+      generatorOptions: _generatorOptions,
     );
   }
 }
