@@ -50,21 +50,21 @@ import 'providers/github/models/github_access_token_verification_exception.dart'
 import 'providers/github/models/github_account.dart' as _i24;
 import 'providers/google/models/google_account.dart' as _i25;
 import 'providers/google/models/google_id_token_verification_exception.dart'
-    as _i24;
+    as _i26;
 import 'providers/microsoft/models/microsoft_access_token_verification_exception.dart'
-    as _i25;
-import 'providers/microsoft/models/microsoft_account.dart' as _i26;
-import 'providers/passkey/models/passkey_account.dart' as _i27;
-import 'providers/passkey/models/passkey_challenge.dart' as _i28;
+    as _i27;
+import 'providers/microsoft/models/microsoft_account.dart' as _i28;
+import 'providers/passkey/models/passkey_account.dart' as _i29;
+import 'providers/passkey/models/passkey_challenge.dart' as _i30;
 import 'providers/passkey/models/passkey_challenge_expired_exception.dart'
-    as _i29;
+    as _i31;
 import 'providers/passkey/models/passkey_challenge_not_found_exception.dart'
-    as _i30;
-import 'providers/passkey/models/passkey_login_request.dart' as _i31;
-import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
     as _i32;
-import 'providers/passkey/models/passkey_registration_request.dart' as _i33;
-import 'dart:typed_data' as _i34;
+import 'providers/passkey/models/passkey_login_request.dart' as _i33;
+import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
+    as _i34;
+import 'providers/passkey/models/passkey_registration_request.dart' as _i35;
+import 'dart:typed_data' as _i36;
 export 'common/rate_limited_request_attempt/models/rate_limited_request_attempt.dart';
 export 'common/secret_challenge/models/secret_challenge.dart';
 export 'providers/anonymous/models/anonymous_account.dart';
@@ -1340,32 +1340,38 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i24.GitHubAccount) {
       return _i24.GitHubAccount.fromJson(data) as T;
     }
-    if (t == _i25.MicrosoftAccessTokenVerificationException) {
-      return _i25.MicrosoftAccessTokenVerificationException.fromJson(data) as T;
+    if (t == _i25.GoogleAccount) {
+      return _i25.GoogleAccount.fromJson(data) as T;
     }
-    if (t == _i26.MicrosoftAccount) {
-      return _i26.MicrosoftAccount.fromJson(data) as T;
+    if (t == _i26.GoogleIdTokenVerificationException) {
+      return _i26.GoogleIdTokenVerificationException.fromJson(data) as T;
     }
-    if (t == _i27.PasskeyAccount) {
-      return _i27.PasskeyAccount.fromJson(data) as T;
+    if (t == _i27.MicrosoftAccessTokenVerificationException) {
+      return _i27.MicrosoftAccessTokenVerificationException.fromJson(data) as T;
     }
-    if (t == _i28.PasskeyChallenge) {
-      return _i28.PasskeyChallenge.fromJson(data) as T;
+    if (t == _i28.MicrosoftAccount) {
+      return _i28.MicrosoftAccount.fromJson(data) as T;
     }
-    if (t == _i29.PasskeyChallengeExpiredException) {
-      return _i29.PasskeyChallengeExpiredException.fromJson(data) as T;
+    if (t == _i29.PasskeyAccount) {
+      return _i29.PasskeyAccount.fromJson(data) as T;
     }
-    if (t == _i30.PasskeyChallengeNotFoundException) {
-      return _i30.PasskeyChallengeNotFoundException.fromJson(data) as T;
+    if (t == _i30.PasskeyChallenge) {
+      return _i30.PasskeyChallenge.fromJson(data) as T;
     }
-    if (t == _i31.PasskeyLoginRequest) {
-      return _i31.PasskeyLoginRequest.fromJson(data) as T;
+    if (t == _i31.PasskeyChallengeExpiredException) {
+      return _i31.PasskeyChallengeExpiredException.fromJson(data) as T;
     }
-    if (t == _i32.PasskeyPublicKeyNotFoundException) {
-      return _i32.PasskeyPublicKeyNotFoundException.fromJson(data) as T;
+    if (t == _i32.PasskeyChallengeNotFoundException) {
+      return _i32.PasskeyChallengeNotFoundException.fromJson(data) as T;
     }
-    if (t == _i33.PasskeyRegistrationRequest) {
-      return _i33.PasskeyRegistrationRequest.fromJson(data) as T;
+    if (t == _i33.PasskeyLoginRequest) {
+      return _i33.PasskeyLoginRequest.fromJson(data) as T;
+    }
+    if (t == _i34.PasskeyPublicKeyNotFoundException) {
+      return _i34.PasskeyPublicKeyNotFoundException.fromJson(data) as T;
+    }
+    if (t == _i35.PasskeyRegistrationRequest) {
+      return _i35.PasskeyRegistrationRequest.fromJson(data) as T;
     }
     if (t == _i1.getType<_i4.RateLimitedRequestAttempt?>()) {
       return (data != null
@@ -1467,46 +1473,58 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == _i1.getType<_i25.MicrosoftAccessTokenVerificationException?>()) {
+    if (t == _i1.getType<_i24.GitHubAccount?>()) {
+      return (data != null ? _i24.GitHubAccount.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i25.GoogleAccount?>()) {
+      return (data != null ? _i25.GoogleAccount.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i26.GoogleIdTokenVerificationException?>()) {
       return (data != null
-              ? _i25.MicrosoftAccessTokenVerificationException.fromJson(data)
+              ? _i26.GoogleIdTokenVerificationException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i26.MicrosoftAccount?>()) {
-      return (data != null ? _i26.MicrosoftAccount.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i27.PasskeyAccount?>()) {
-      return (data != null ? _i27.PasskeyAccount.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i28.PasskeyChallenge?>()) {
-      return (data != null ? _i28.PasskeyChallenge.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i29.PasskeyChallengeExpiredException?>()) {
+    if (t == _i1.getType<_i27.MicrosoftAccessTokenVerificationException?>()) {
       return (data != null
-              ? _i29.PasskeyChallengeExpiredException.fromJson(data)
+              ? _i27.MicrosoftAccessTokenVerificationException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i30.PasskeyChallengeNotFoundException?>()) {
+    if (t == _i1.getType<_i28.MicrosoftAccount?>()) {
+      return (data != null ? _i28.MicrosoftAccount.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i29.PasskeyAccount?>()) {
+      return (data != null ? _i29.PasskeyAccount.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i30.PasskeyChallenge?>()) {
+      return (data != null ? _i30.PasskeyChallenge.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i31.PasskeyChallengeExpiredException?>()) {
       return (data != null
-              ? _i30.PasskeyChallengeNotFoundException.fromJson(data)
+              ? _i31.PasskeyChallengeExpiredException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i31.PasskeyLoginRequest?>()) {
-      return (data != null ? _i31.PasskeyLoginRequest.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i32.PasskeyPublicKeyNotFoundException?>()) {
+    if (t == _i1.getType<_i32.PasskeyChallengeNotFoundException?>()) {
       return (data != null
-              ? _i32.PasskeyPublicKeyNotFoundException.fromJson(data)
+              ? _i32.PasskeyChallengeNotFoundException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i33.PasskeyRegistrationRequest?>()) {
+    if (t == _i1.getType<_i33.PasskeyLoginRequest?>()) {
+      return (data != null ? _i33.PasskeyLoginRequest.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i34.PasskeyPublicKeyNotFoundException?>()) {
       return (data != null
-              ? _i33.PasskeyRegistrationRequest.fromJson(data)
+              ? _i34.PasskeyPublicKeyNotFoundException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i35.PasskeyRegistrationRequest?>()) {
+      return (data != null
+              ? _i35.PasskeyRegistrationRequest.fromJson(data)
               : null)
           as T;
     }
@@ -1525,9 +1543,9 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == _i1.getType<({_i34.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<({_i36.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i34.ByteData>(
+            challenge: deserialize<_i36.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -1579,19 +1597,19 @@ class Protocol extends _i1.SerializationManagerServer {
       _i25.GoogleAccount => 'GoogleAccount',
       _i26.GoogleIdTokenVerificationException =>
         'GoogleIdTokenVerificationException',
-      _i25.MicrosoftAccessTokenVerificationException =>
+      _i27.MicrosoftAccessTokenVerificationException =>
         'MicrosoftAccessTokenVerificationException',
-      _i26.MicrosoftAccount => 'MicrosoftAccount',
-      _i27.PasskeyAccount => 'PasskeyAccount',
-      _i28.PasskeyChallenge => 'PasskeyChallenge',
-      _i29.PasskeyChallengeExpiredException =>
+      _i28.MicrosoftAccount => 'MicrosoftAccount',
+      _i29.PasskeyAccount => 'PasskeyAccount',
+      _i30.PasskeyChallenge => 'PasskeyChallenge',
+      _i31.PasskeyChallengeExpiredException =>
         'PasskeyChallengeExpiredException',
-      _i30.PasskeyChallengeNotFoundException =>
+      _i32.PasskeyChallengeNotFoundException =>
         'PasskeyChallengeNotFoundException',
-      _i31.PasskeyLoginRequest => 'PasskeyLoginRequest',
-      _i32.PasskeyPublicKeyNotFoundException =>
+      _i33.PasskeyLoginRequest => 'PasskeyLoginRequest',
+      _i34.PasskeyPublicKeyNotFoundException =>
         'PasskeyPublicKeyNotFoundException',
-      _i33.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
+      _i35.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
       _ => null,
     };
   }
@@ -1655,23 +1673,23 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'GoogleAccount';
       case _i26.GoogleIdTokenVerificationException():
         return 'GoogleIdTokenVerificationException';
-      case _i25.MicrosoftAccessTokenVerificationException():
+      case _i27.MicrosoftAccessTokenVerificationException():
         return 'MicrosoftAccessTokenVerificationException';
-      case _i26.MicrosoftAccount():
+      case _i28.MicrosoftAccount():
         return 'MicrosoftAccount';
-      case _i27.PasskeyAccount():
+      case _i29.PasskeyAccount():
         return 'PasskeyAccount';
-      case _i28.PasskeyChallenge():
+      case _i30.PasskeyChallenge():
         return 'PasskeyChallenge';
-      case _i29.PasskeyChallengeExpiredException():
+      case _i31.PasskeyChallengeExpiredException():
         return 'PasskeyChallengeExpiredException';
-      case _i30.PasskeyChallengeNotFoundException():
+      case _i32.PasskeyChallengeNotFoundException():
         return 'PasskeyChallengeNotFoundException';
-      case _i31.PasskeyLoginRequest():
+      case _i33.PasskeyLoginRequest():
         return 'PasskeyLoginRequest';
-      case _i32.PasskeyPublicKeyNotFoundException():
+      case _i34.PasskeyPublicKeyNotFoundException():
         return 'PasskeyPublicKeyNotFoundException';
-      case _i33.PasskeyRegistrationRequest():
+      case _i35.PasskeyRegistrationRequest():
         return 'PasskeyRegistrationRequest';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -1771,33 +1789,33 @@ class Protocol extends _i1.SerializationManagerServer {
       return deserialize<_i26.GoogleIdTokenVerificationException>(data['data']);
     }
     if (dataClassName == 'MicrosoftAccessTokenVerificationException') {
-      return deserialize<_i25.MicrosoftAccessTokenVerificationException>(
+      return deserialize<_i27.MicrosoftAccessTokenVerificationException>(
         data['data'],
       );
     }
     if (dataClassName == 'MicrosoftAccount') {
-      return deserialize<_i26.MicrosoftAccount>(data['data']);
+      return deserialize<_i28.MicrosoftAccount>(data['data']);
     }
     if (dataClassName == 'PasskeyAccount') {
-      return deserialize<_i27.PasskeyAccount>(data['data']);
+      return deserialize<_i29.PasskeyAccount>(data['data']);
     }
     if (dataClassName == 'PasskeyChallenge') {
-      return deserialize<_i28.PasskeyChallenge>(data['data']);
+      return deserialize<_i30.PasskeyChallenge>(data['data']);
     }
     if (dataClassName == 'PasskeyChallengeExpiredException') {
-      return deserialize<_i29.PasskeyChallengeExpiredException>(data['data']);
+      return deserialize<_i31.PasskeyChallengeExpiredException>(data['data']);
     }
     if (dataClassName == 'PasskeyChallengeNotFoundException') {
-      return deserialize<_i30.PasskeyChallengeNotFoundException>(data['data']);
+      return deserialize<_i32.PasskeyChallengeNotFoundException>(data['data']);
     }
     if (dataClassName == 'PasskeyLoginRequest') {
-      return deserialize<_i31.PasskeyLoginRequest>(data['data']);
+      return deserialize<_i33.PasskeyLoginRequest>(data['data']);
     }
     if (dataClassName == 'PasskeyPublicKeyNotFoundException') {
-      return deserialize<_i32.PasskeyPublicKeyNotFoundException>(data['data']);
+      return deserialize<_i34.PasskeyPublicKeyNotFoundException>(data['data']);
     }
     if (dataClassName == 'PasskeyRegistrationRequest') {
-      return deserialize<_i33.PasskeyRegistrationRequest>(data['data']);
+      return deserialize<_i35.PasskeyRegistrationRequest>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -1839,18 +1857,20 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i11.EmailAccountPasswordResetRequest.t;
       case _i12.EmailAccountRequest:
         return _i12.EmailAccountRequest.t;
-      case _i19.FirebaseAccount:
-        return _i19.FirebaseAccount.t;
-      case _i22.GitHubAccount:
-        return _i22.GitHubAccount.t;
-      case _i23.GoogleAccount:
-        return _i23.GoogleAccount.t;
-      case _i26.MicrosoftAccount:
-        return _i26.MicrosoftAccount.t;
-      case _i27.PasskeyAccount:
-        return _i27.PasskeyAccount.t;
-      case _i28.PasskeyChallenge:
-        return _i28.PasskeyChallenge.t;
+      case _i20.FacebookAccount:
+        return _i20.FacebookAccount.t;
+      case _i21.FirebaseAccount:
+        return _i21.FirebaseAccount.t;
+      case _i24.GitHubAccount:
+        return _i24.GitHubAccount.t;
+      case _i25.GoogleAccount:
+        return _i25.GoogleAccount.t;
+      case _i28.MicrosoftAccount:
+        return _i28.MicrosoftAccount.t;
+      case _i29.PasskeyAccount:
+        return _i29.PasskeyAccount.t;
+      case _i30.PasskeyChallenge:
+        return _i30.PasskeyChallenge.t;
     }
     return null;
   }
@@ -1871,7 +1891,7 @@ class Protocol extends _i1.SerializationManagerServer {
     if (record == null) {
       return null;
     }
-    if (record is ({_i34.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i36.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge,

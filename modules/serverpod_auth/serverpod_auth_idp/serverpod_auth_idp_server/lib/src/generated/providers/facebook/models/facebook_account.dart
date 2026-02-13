@@ -446,6 +446,8 @@ class FacebookAccountRepository {
     _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
     _i1.Transaction? transaction,
     FacebookAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<FacebookAccount>(
       where: where?.call(FacebookAccount.t),
@@ -456,6 +458,8 @@ class FacebookAccountRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -485,6 +489,8 @@ class FacebookAccountRepository {
     _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
     _i1.Transaction? transaction,
     FacebookAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<FacebookAccount>(
       where: where?.call(FacebookAccount.t),
@@ -494,6 +500,8 @@ class FacebookAccountRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -503,11 +511,15 @@ class FacebookAccountRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     FacebookAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<FacebookAccount>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -667,6 +679,22 @@ class FacebookAccountRepository {
     return session.db.count<FacebookAccount>(
       where: where?.call(FacebookAccount.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [FacebookAccount] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<FacebookAccountTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<FacebookAccount>(
+      where: where(FacebookAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }
