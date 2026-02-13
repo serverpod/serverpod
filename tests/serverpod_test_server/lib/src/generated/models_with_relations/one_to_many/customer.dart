@@ -297,6 +297,8 @@ class CustomerRepository {
     _i1.OrderByListBuilder<CustomerTable>? orderByList,
     _i1.Transaction? transaction,
     CustomerInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Customer>(
       where: where?.call(Customer.t),
@@ -307,6 +309,8 @@ class CustomerRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -336,6 +340,8 @@ class CustomerRepository {
     _i1.OrderByListBuilder<CustomerTable>? orderByList,
     _i1.Transaction? transaction,
     CustomerInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Customer>(
       where: where?.call(Customer.t),
@@ -345,6 +351,8 @@ class CustomerRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -354,11 +362,15 @@ class CustomerRepository {
     int id, {
     _i1.Transaction? transaction,
     CustomerInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Customer>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -516,6 +528,22 @@ class CustomerRepository {
     return session.db.count<Customer>(
       where: where?.call(Customer.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Customer] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<CustomerTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Customer>(
+      where: where(Customer.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

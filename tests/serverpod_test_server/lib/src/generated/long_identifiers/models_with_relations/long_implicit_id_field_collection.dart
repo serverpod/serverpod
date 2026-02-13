@@ -350,6 +350,8 @@ class LongImplicitIdFieldCollectionRepository {
     _i1.OrderByListBuilder<LongImplicitIdFieldCollectionTable>? orderByList,
     _i1.Transaction? transaction,
     LongImplicitIdFieldCollectionInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<LongImplicitIdFieldCollection>(
       where: where?.call(LongImplicitIdFieldCollection.t),
@@ -360,6 +362,8 @@ class LongImplicitIdFieldCollectionRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -389,6 +393,8 @@ class LongImplicitIdFieldCollectionRepository {
     _i1.OrderByListBuilder<LongImplicitIdFieldCollectionTable>? orderByList,
     _i1.Transaction? transaction,
     LongImplicitIdFieldCollectionInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<LongImplicitIdFieldCollection>(
       where: where?.call(LongImplicitIdFieldCollection.t),
@@ -398,6 +404,8 @@ class LongImplicitIdFieldCollectionRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -407,11 +415,15 @@ class LongImplicitIdFieldCollectionRepository {
     int id, {
     _i1.Transaction? transaction,
     LongImplicitIdFieldCollectionInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<LongImplicitIdFieldCollection>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -577,6 +589,23 @@ class LongImplicitIdFieldCollectionRepository {
     return session.db.count<LongImplicitIdFieldCollection>(
       where: where?.call(LongImplicitIdFieldCollection.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [LongImplicitIdFieldCollection] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>
+    where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<LongImplicitIdFieldCollection>(
+      where: where(LongImplicitIdFieldCollection.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

@@ -323,6 +323,8 @@ class ObjectWithSparseVectorRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithSparseVectorTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithSparseVector>(
       where: where?.call(ObjectWithSparseVector.t),
@@ -332,6 +334,8 @@ class ObjectWithSparseVectorRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -360,6 +364,8 @@ class ObjectWithSparseVectorRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithSparseVectorTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithSparseVector>(
       where: where?.call(ObjectWithSparseVector.t),
@@ -368,6 +374,8 @@ class ObjectWithSparseVectorRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -376,10 +384,14 @@ class ObjectWithSparseVectorRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithSparseVector>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -539,6 +551,22 @@ class ObjectWithSparseVectorRepository {
     return session.db.count<ObjectWithSparseVector>(
       where: where?.call(ObjectWithSparseVector.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ObjectWithSparseVector] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ObjectWithSparseVector>(
+      where: where(ObjectWithSparseVector.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

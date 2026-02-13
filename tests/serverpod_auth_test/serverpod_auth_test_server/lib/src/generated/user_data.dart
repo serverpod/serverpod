@@ -327,6 +327,8 @@ class UserDataRepository {
     _i1.OrderByListBuilder<UserDataTable>? orderByList,
     _i1.Transaction? transaction,
     UserDataInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserData>(
       where: where?.call(UserData.t),
@@ -337,6 +339,8 @@ class UserDataRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -366,6 +370,8 @@ class UserDataRepository {
     _i1.OrderByListBuilder<UserDataTable>? orderByList,
     _i1.Transaction? transaction,
     UserDataInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserData>(
       where: where?.call(UserData.t),
@@ -375,6 +381,8 @@ class UserDataRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -384,11 +392,15 @@ class UserDataRepository {
     int id, {
     _i1.Transaction? transaction,
     UserDataInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UserData>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -546,6 +558,22 @@ class UserDataRepository {
     return session.db.count<UserData>(
       where: where?.call(UserData.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [UserData] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<UserDataTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<UserData>(
+      where: where(UserData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

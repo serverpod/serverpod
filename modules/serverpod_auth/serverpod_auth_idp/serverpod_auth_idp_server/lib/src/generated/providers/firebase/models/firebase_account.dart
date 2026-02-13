@@ -392,6 +392,8 @@ class FirebaseAccountRepository {
     _i1.OrderByListBuilder<FirebaseAccountTable>? orderByList,
     _i1.Transaction? transaction,
     FirebaseAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<FirebaseAccount>(
       where: where?.call(FirebaseAccount.t),
@@ -402,6 +404,8 @@ class FirebaseAccountRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -431,6 +435,8 @@ class FirebaseAccountRepository {
     _i1.OrderByListBuilder<FirebaseAccountTable>? orderByList,
     _i1.Transaction? transaction,
     FirebaseAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<FirebaseAccount>(
       where: where?.call(FirebaseAccount.t),
@@ -440,6 +446,8 @@ class FirebaseAccountRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -449,11 +457,15 @@ class FirebaseAccountRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     FirebaseAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<FirebaseAccount>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -613,6 +625,22 @@ class FirebaseAccountRepository {
     return session.db.count<FirebaseAccount>(
       where: where?.call(FirebaseAccount.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [FirebaseAccount] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<FirebaseAccountTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<FirebaseAccount>(
+      where: where(FirebaseAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

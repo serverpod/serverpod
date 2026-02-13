@@ -534,6 +534,8 @@ class ServerSideSessionRepository {
     _i1.OrderByListBuilder<ServerSideSessionTable>? orderByList,
     _i1.Transaction? transaction,
     ServerSideSessionInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ServerSideSession>(
       where: where?.call(ServerSideSession.t),
@@ -544,6 +546,8 @@ class ServerSideSessionRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -573,6 +577,8 @@ class ServerSideSessionRepository {
     _i1.OrderByListBuilder<ServerSideSessionTable>? orderByList,
     _i1.Transaction? transaction,
     ServerSideSessionInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ServerSideSession>(
       where: where?.call(ServerSideSession.t),
@@ -582,6 +588,8 @@ class ServerSideSessionRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -591,11 +599,15 @@ class ServerSideSessionRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     ServerSideSessionInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ServerSideSession>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -755,6 +767,22 @@ class ServerSideSessionRepository {
     return session.db.count<ServerSideSession>(
       where: where?.call(ServerSideSession.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ServerSideSession] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<ServerSideSessionTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ServerSideSession>(
+      where: where(ServerSideSession.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

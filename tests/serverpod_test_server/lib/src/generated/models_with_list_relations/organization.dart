@@ -369,6 +369,8 @@ class OrganizationRepository {
     _i1.OrderByListBuilder<OrganizationTable>? orderByList,
     _i1.Transaction? transaction,
     OrganizationInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Organization>(
       where: where?.call(Organization.t),
@@ -379,6 +381,8 @@ class OrganizationRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -408,6 +412,8 @@ class OrganizationRepository {
     _i1.OrderByListBuilder<OrganizationTable>? orderByList,
     _i1.Transaction? transaction,
     OrganizationInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Organization>(
       where: where?.call(Organization.t),
@@ -417,6 +423,8 @@ class OrganizationRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -426,11 +434,15 @@ class OrganizationRepository {
     int id, {
     _i1.Transaction? transaction,
     OrganizationInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Organization>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -588,6 +600,22 @@ class OrganizationRepository {
     return session.db.count<Organization>(
       where: where?.call(Organization.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Organization] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<OrganizationTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Organization>(
+      where: where(Organization.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

@@ -346,6 +346,8 @@ class MigratedUserRepository {
     _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
     _i1.Transaction? transaction,
     MigratedUserInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<MigratedUser>(
       where: where?.call(MigratedUser.t),
@@ -356,6 +358,8 @@ class MigratedUserRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -385,6 +389,8 @@ class MigratedUserRepository {
     _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
     _i1.Transaction? transaction,
     MigratedUserInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<MigratedUser>(
       where: where?.call(MigratedUser.t),
@@ -394,6 +400,8 @@ class MigratedUserRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -403,11 +411,15 @@ class MigratedUserRepository {
     int id, {
     _i1.Transaction? transaction,
     MigratedUserInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<MigratedUser>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -565,6 +577,22 @@ class MigratedUserRepository {
     return session.db.count<MigratedUser>(
       where: where?.call(MigratedUser.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [MigratedUser] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<MigratedUserTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<MigratedUser>(
+      where: where(MigratedUser.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

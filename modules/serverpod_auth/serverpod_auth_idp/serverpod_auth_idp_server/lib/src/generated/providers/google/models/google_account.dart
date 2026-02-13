@@ -363,6 +363,8 @@ class GoogleAccountRepository {
     _i1.OrderByListBuilder<GoogleAccountTable>? orderByList,
     _i1.Transaction? transaction,
     GoogleAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<GoogleAccount>(
       where: where?.call(GoogleAccount.t),
@@ -373,6 +375,8 @@ class GoogleAccountRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -402,6 +406,8 @@ class GoogleAccountRepository {
     _i1.OrderByListBuilder<GoogleAccountTable>? orderByList,
     _i1.Transaction? transaction,
     GoogleAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<GoogleAccount>(
       where: where?.call(GoogleAccount.t),
@@ -411,6 +417,8 @@ class GoogleAccountRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -420,11 +428,15 @@ class GoogleAccountRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     GoogleAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<GoogleAccount>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -582,6 +594,22 @@ class GoogleAccountRepository {
     return session.db.count<GoogleAccount>(
       where: where?.call(GoogleAccount.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [GoogleAccount] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<GoogleAccountTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<GoogleAccount>(
+      where: where(GoogleAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }
