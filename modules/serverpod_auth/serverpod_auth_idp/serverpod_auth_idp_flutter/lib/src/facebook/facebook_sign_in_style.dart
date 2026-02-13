@@ -33,7 +33,7 @@ enum FacebookButtonText {
   signupWith,
 
   /// The button text is "Sign in".
-  signin,
+  signIn,
 }
 
 /// The shape of the Facebook Sign-In button.

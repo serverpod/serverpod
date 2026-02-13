@@ -8,7 +8,7 @@ import '../business/facebook_idp.dart';
 /// This endpoint exposes methods for logging in users using Facebook access tokens.
 /// If you would like modify the authentication flow, consider extending this
 /// class and overriding the relevant methods.
-abstract class FacebookIdpBaseEndpoint extends Endpoint {
+abstract class FacebookIdpBaseEndpoint extends IdpBaseEndpoint {
   /// Accessor for the configured Facebook Idp instance.
   /// By default this uses the global instance configured in
   /// [AuthServices].
@@ -20,11 +20,8 @@ abstract class FacebookIdpBaseEndpoint extends Endpoint {
   /// Validates a Facebook access token and either logs in the associated user or
   /// creates a new user account if the Facebook account ID is not yet known.
   ///
-  /// If a new user is created an associated [UserProfile] is also created.
-  ///
-  /// The access token is verified using Facebook's Debug Token API to ensure
-  /// it's valid and belongs to the correct app.
-  /// If the token is invalid or expired, the [FacebookAccessTokenVerificationException] will be thrown.
+  /// If the access token is invalid or expired, the
+  /// [FacebookAccessTokenVerificationException] will be thrown.
   /// {@endtemplate}
   Future<AuthSuccess> login(
     final Session session, {
@@ -35,4 +32,8 @@ abstract class FacebookIdpBaseEndpoint extends Endpoint {
       accessToken: accessToken,
     );
   }
+
+  @override
+  Future<bool> hasAccount(final Session session) async =>
+      await facebookIdp.hasAccount(session);
 }

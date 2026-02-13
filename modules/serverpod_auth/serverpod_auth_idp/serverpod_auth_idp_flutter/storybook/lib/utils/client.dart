@@ -189,6 +189,9 @@ class FacebookIdpEndpoint extends EndpointFacebookIdpBase {
   Future<AuthSuccess> login({
     required String accessToken,
   }) => Future.value(_mockData.authSuccess);
+
+  @override
+  Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
 class GitHubIdpEndpoint extends EndpointGitHubIdpBase {

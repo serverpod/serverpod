@@ -78,49 +78,60 @@ class FacebookSignInButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: buttonStyle.backgroundColor,
           foregroundColor: buttonStyle.textColor,
-          disabledBackgroundColor: buttonStyle.backgroundColor.withValues(
-            alpha: .6,
-          ),
-          disabledForegroundColor: buttonStyle.textColor.withValues(alpha: 0.6),
+
           shape: RoundedRectangleBorder(
             borderRadius: buttonStyle.borderRadius,
             side: style == FacebookButtonStyle.white
                 ? BorderSide(color: Colors.grey.shade300)
                 : BorderSide.none,
           ),
-          elevation: style == FacebookButtonStyle.white ? 0 : 2,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          minimumSize: buttonStyle.size,
-          maximumSize: Size(400, buttonStyle.size.height),
+          elevation: 0,
+          padding: EdgeInsets.zero,
+          disabledBackgroundColor: buttonStyle.backgroundColor.withValues(
+            alpha: .6,
+          ),
+          disabledForegroundColor: buttonStyle.textColor.withValues(
+            alpha: 0.6,
+          ),
         ),
-        child: isLoading
-            ? SizedBox(
-                width: buttonStyle.size.height * 0.5,
-                height: buttonStyle.size.height * 0.5,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    buttonStyle.textColor,
-                  ),
-                ),
-              )
-            : _buildButtonContent(buttonStyle),
+        child: _buildButtonContent(buttonStyle),
       ),
     );
   }
 
   Widget _buildButtonContent(FacebookSignInStyle buttonStyle) {
-    final logo = Icon(
-      Icons.facebook,
-      size: buttonStyle.size.height * 0.6,
-      color: buttonStyle.textColor,
+    if (isLoading) {
+      return SizedBox(
+        height: 20,
+        width: 20,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(
+            buttonStyle.textColor,
+          ),
+        ),
+      );
+    }
+
+    final logoSize = switch (size) {
+      FacebookButtonSize.small => 15.0,
+      FacebookButtonSize.medium => 17.0,
+      FacebookButtonSize.large => 21.0,
+    };
+
+    final logo = SizedBox.square(
+      dimension: logoSize,
+      child: Icon(
+        Icons.facebook,
+        size: logoSize,
+        color: buttonStyle.textColor,
+      ),
     );
 
-    final text = Text(
+    final textWidget = Text(
       _getButtonText(),
       style: TextStyle(
         fontSize: _getFontSize(),
-        fontWeight: FontWeight.w600,
         color: buttonStyle.textColor,
       ),
       overflow: TextOverflow.ellipsis,
@@ -128,12 +139,11 @@ class FacebookSignInButton extends StatelessWidget {
 
     if (logoAlignment == FacebookButtonLogoAlignment.center) {
       return Row(
-        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           logo,
           const SizedBox(width: 8),
-          Flexible(child: text),
+          textWidget,
         ],
       );
     }
@@ -141,7 +151,7 @@ class FacebookSignInButton extends StatelessWidget {
     return Stack(
       children: [
         Positioned(
-          left: 12,
+          left: 13,
           top: 0,
           bottom: 0,
           child: logo,
@@ -150,12 +160,8 @@ class FacebookSignInButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
-              width: buttonStyle.size.height * 0.5 + 8,
-            ),
-            Expanded(
-              child: Center(child: text),
-            ),
+            SizedBox(width: logoSize + 6),
+            Center(child: textWidget),
           ],
         ),
       ],
@@ -167,7 +173,7 @@ class FacebookSignInButton extends StatelessWidget {
       FacebookButtonText.signinWith => 'Sign in with Facebook',
       FacebookButtonText.continueWith => 'Continue with Facebook',
       FacebookButtonText.signupWith => 'Sign up with Facebook',
-      FacebookButtonText.signin => 'Sign in',
+      FacebookButtonText.signIn => 'Sign in',
     };
   }
 

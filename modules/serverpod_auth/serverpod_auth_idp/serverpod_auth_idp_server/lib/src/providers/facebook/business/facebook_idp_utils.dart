@@ -309,6 +309,19 @@ class FacebookIdpUtils {
       transaction: transaction,
     );
   }
+
+  /// Returns the possible [FacebookAccount] associated with a session.
+  Future<FacebookAccount?> getAccount(final Session session) {
+    return switch (session.authenticated) {
+      null => Future.value(null),
+      _ => FacebookAccount.db.findFirstRow(
+        session,
+        where: (final t) => t.authUserId.equals(
+          session.authenticated!.authUserId,
+        ),
+      ),
+    };
+  }
 }
 
 extension on Session {

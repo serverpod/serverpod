@@ -210,18 +210,18 @@ abstract class EndpointEmailIdpBase extends EndpointIdpBase {
 /// If you would like modify the authentication flow, consider extending this
 /// class and overriding the relevant methods.
 /// {@category Endpoint}
-abstract class EndpointFacebookIdpBase extends _i1.EndpointRef {
+abstract class EndpointFacebookIdpBase extends EndpointIdpBase {
   EndpointFacebookIdpBase(_i1.EndpointCaller caller) : super(caller);
 
   /// Validates a Facebook access token and either logs in the associated user or
   /// creates a new user account if the Facebook account ID is not yet known.
   ///
-  /// If a new user is created an associated [UserProfile] is also created.
-  ///
-  /// The access token is verified using Facebook's Debug Token API to ensure
-  /// it's valid and belongs to the correct app.
-  /// If the token is invalid or expired, the [FacebookAccessTokenVerificationException] will be thrown.
+  /// If the access token is invalid or expired, the
+  /// [FacebookAccessTokenVerificationException] will be thrown.
   _i2.Future<_i3.AuthSuccess> login({required String accessToken});
+
+  @override
+  _i2.Future<bool> hasAccount();
 }
 
 /// Base endpoint for Firebase Account-based authentication.

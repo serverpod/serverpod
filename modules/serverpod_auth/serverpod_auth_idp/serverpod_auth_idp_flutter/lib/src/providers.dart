@@ -51,7 +51,7 @@ class AvailableIdps {
   bool get hasFirebase => has<EndpointFirebaseIdpBase>();
 
   /// Whether the Facebook authentication provider is available.
-  bool get hasFacebook => _isProviderAvailable<EndpointFacebookIdpBase>();
+  bool get hasFacebook => has<EndpointFacebookIdpBase>();
 
   /// Whether the GitHub authentication provider is available.
   bool get hasGitHub => has<EndpointGitHubIdpBase>();
