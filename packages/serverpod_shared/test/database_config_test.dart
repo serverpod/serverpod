@@ -141,6 +141,7 @@ database:
       expect(config.database?.requireSsl, isFalse);
       expect(config.database?.isUnixSocket, isFalse);
       expect(config.database?.searchPaths, isNull);
+      expect(config.database?.dialect, DatabaseDialect.postgres);
     },
   );
 
@@ -171,6 +172,7 @@ database:
       expect(config.database?.port, 5432);
       expect(config.database?.name, 'serverpod');
       expect(config.database?.user, 'admin');
+      expect(config.database?.dialect, DatabaseDialect.postgres);
     },
   );
 

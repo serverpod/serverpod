@@ -88,6 +88,7 @@ class DartSharedCodeGenerator extends CodeGenerator {
           extraClasses: [],
           enabledFeatures: config.enabledFeatures,
           modules: [],
+          databaseDialect: config.databaseDialect,
           experimentalFeatures: config.experimentalFeatures,
         ),
       );

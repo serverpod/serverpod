@@ -50,7 +50,7 @@ class ServerpodConfig {
   /// Configuration for the web server (optional).
   final ServerConfig? webServer;
 
-  /// Configuration for the Postgres database.
+  /// Configuration for the database.
   final DatabaseConfig? database;
 
   /// Configuration for Redis.
@@ -432,7 +432,13 @@ class ServerConfig {
   }
 }
 
-/// Configuration for a Postgres database,
+/// Database dialect type.
+enum DatabaseDialect {
+  /// PostgreSQL database.
+  postgres,
+}
+
+/// Configuration for a database.
 class DatabaseConfig {
   /// The default maximum number of connections in the database pool.
   static const int defaultMaxConnectionCount = 10;
@@ -466,6 +472,9 @@ class DatabaseConfig {
   /// If the limit is `null`, the number of connections will be unlimited.
   final int? maxConnectionCount;
 
+  /// Database dialect.
+  final DatabaseDialect dialect;
+
   /// Creates a new [DatabaseConfig].
   DatabaseConfig({
     required this.host,
@@ -477,6 +486,7 @@ class DatabaseConfig {
     this.isUnixSocket = false,
     this.searchPaths,
     this.maxConnectionCount = defaultMaxConnectionCount,
+    this.dialect = DatabaseDialect.postgres,
   });
 
   factory DatabaseConfig._fromJson(Map dbSetup, Map passwords, String name) {
