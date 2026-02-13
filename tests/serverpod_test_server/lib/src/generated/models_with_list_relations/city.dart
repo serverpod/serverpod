@@ -373,6 +373,8 @@ class CityRepository {
     _i1.OrderByListBuilder<CityTable>? orderByList,
     _i1.Transaction? transaction,
     CityInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<City>(
       where: where?.call(City.t),
@@ -383,6 +385,8 @@ class CityRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -412,6 +416,8 @@ class CityRepository {
     _i1.OrderByListBuilder<CityTable>? orderByList,
     _i1.Transaction? transaction,
     CityInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<City>(
       where: where?.call(City.t),
@@ -421,6 +427,8 @@ class CityRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -430,11 +438,15 @@ class CityRepository {
     int id, {
     _i1.Transaction? transaction,
     CityInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<City>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -592,6 +604,22 @@ class CityRepository {
     return session.db.count<City>(
       where: where?.call(City.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [City] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<CityTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<City>(
+      where: where(City.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

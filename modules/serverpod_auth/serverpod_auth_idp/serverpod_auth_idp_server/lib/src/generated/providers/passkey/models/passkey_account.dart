@@ -441,6 +441,8 @@ class PasskeyAccountRepository {
     _i1.OrderByListBuilder<PasskeyAccountTable>? orderByList,
     _i1.Transaction? transaction,
     PasskeyAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<PasskeyAccount>(
       where: where?.call(PasskeyAccount.t),
@@ -451,6 +453,8 @@ class PasskeyAccountRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -480,6 +484,8 @@ class PasskeyAccountRepository {
     _i1.OrderByListBuilder<PasskeyAccountTable>? orderByList,
     _i1.Transaction? transaction,
     PasskeyAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<PasskeyAccount>(
       where: where?.call(PasskeyAccount.t),
@@ -489,6 +495,8 @@ class PasskeyAccountRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -498,11 +506,15 @@ class PasskeyAccountRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     PasskeyAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<PasskeyAccount>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -660,6 +672,22 @@ class PasskeyAccountRepository {
     return session.db.count<PasskeyAccount>(
       where: where?.call(PasskeyAccount.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [PasskeyAccount] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<PasskeyAccountTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<PasskeyAccount>(
+      where: where(PasskeyAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

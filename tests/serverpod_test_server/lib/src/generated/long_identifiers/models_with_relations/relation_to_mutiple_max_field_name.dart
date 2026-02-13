@@ -321,6 +321,8 @@ class RelationToMultipleMaxFieldNameRepository {
     _i1.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
     RelationToMultipleMaxFieldNameInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<RelationToMultipleMaxFieldName>(
       where: where?.call(RelationToMultipleMaxFieldName.t),
@@ -331,6 +333,8 @@ class RelationToMultipleMaxFieldNameRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -360,6 +364,8 @@ class RelationToMultipleMaxFieldNameRepository {
     _i1.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
     RelationToMultipleMaxFieldNameInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<RelationToMultipleMaxFieldName>(
       where: where?.call(RelationToMultipleMaxFieldName.t),
@@ -369,6 +375,8 @@ class RelationToMultipleMaxFieldNameRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -378,11 +386,15 @@ class RelationToMultipleMaxFieldNameRepository {
     int id, {
     _i1.Transaction? transaction,
     RelationToMultipleMaxFieldNameInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<RelationToMultipleMaxFieldName>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -548,6 +560,23 @@ class RelationToMultipleMaxFieldNameRepository {
     return session.db.count<RelationToMultipleMaxFieldName>(
       where: where?.call(RelationToMultipleMaxFieldName.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [RelationToMultipleMaxFieldName] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>
+    where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<RelationToMultipleMaxFieldName>(
+      where: where(RelationToMultipleMaxFieldName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

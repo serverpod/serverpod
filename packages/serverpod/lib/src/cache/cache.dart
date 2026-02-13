@@ -14,13 +14,13 @@ abstract class Cache {
   /// Creates a new [Cache] of the specified size.
   Cache(this.maxLocalEntries, this.serializationManager);
 
-  /// Stores a copy of a [SerializableModel] in the cache using the specified
+  /// Stores a copy of the [Object] in the cache using the specified
   /// [key]. It's also possible to set the maximum [lifetime] of the stored
   /// [object]. If a [group] is specified, all models of the same group can be
   /// invalidated at the same time using the [invalidateGroup] method.
-  Future<void> put(
+  Future<void> put<T extends Object>(
     String key,
-    SerializableModel object, {
+    T object, {
     Duration? lifetime,
     String? group,
   });
@@ -28,11 +28,11 @@ abstract class Cache {
   /// Check if a valid cache for the specified key exists.
   Future<bool> containsKey(String key);
 
-  /// Retrieves a cached [SerializableModel] using the specified [key]. If no
+  /// Retrieves a cached [Object] using the specified [key]. If no
   /// matching object can be found, null is returned.
   /// If no matching object can be found, the [CacheMissHandler] is used to
   /// write a new object to the cache before it is returned.
-  Future<T?> get<T extends SerializableModel>(
+  Future<T?> get<T extends Object>(
     String key, [
     CacheMissHandler<T>? cacheMissHandler,
   ]);

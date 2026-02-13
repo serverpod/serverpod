@@ -305,6 +305,8 @@ class AnonymousAccountRepository {
     _i1.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     _i1.Transaction? transaction,
     AnonymousAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<AnonymousAccount>(
       where: where?.call(AnonymousAccount.t),
@@ -315,6 +317,8 @@ class AnonymousAccountRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -344,6 +348,8 @@ class AnonymousAccountRepository {
     _i1.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     _i1.Transaction? transaction,
     AnonymousAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<AnonymousAccount>(
       where: where?.call(AnonymousAccount.t),
@@ -353,6 +359,8 @@ class AnonymousAccountRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -362,11 +370,15 @@ class AnonymousAccountRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     AnonymousAccountInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<AnonymousAccount>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -526,6 +538,22 @@ class AnonymousAccountRepository {
     return session.db.count<AnonymousAccount>(
       where: where?.call(AnonymousAccount.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [AnonymousAccount] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<AnonymousAccountTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<AnonymousAccount>(
+      where: where(AnonymousAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }
