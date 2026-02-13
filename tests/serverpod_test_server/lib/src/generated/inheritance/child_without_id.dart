@@ -346,14 +346,20 @@ class ChildClassWithoutIdRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<ChildClassWithoutId>> insert(
     _i2.Session session,
     List<ChildClassWithoutId> rows, {
     _i2.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<ChildClassWithoutId>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 

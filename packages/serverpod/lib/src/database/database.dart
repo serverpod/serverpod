@@ -326,16 +326,22 @@ class Database {
   /// Inserts all [TableRow]s in the list and returns the inserted rows.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   @internal
   Future<List<T>> insert<T extends TableRow>(
     List<T> rows, {
     Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return _databaseConnection.insert<T>(
       _session,
       rows,
       // ignore: invalid_use_of_visible_for_testing_member
       transaction: transaction ?? _session.transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 

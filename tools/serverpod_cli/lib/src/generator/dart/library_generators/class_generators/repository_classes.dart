@@ -682,7 +682,11 @@ class BuildRepositoryClass {
 /// The returned [$className]s will have their `id` fields set.
 ///
 /// This is an atomic operation, meaning that if one of the rows fails to
-/// insert, none of the rows will be inserted.''')
+/// insert, none of the rows will be inserted.
+///
+/// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+/// rows are silently skipped, and only the successfully inserted rows are
+/// returned.''')
         ..name = 'insert'
         ..returns = TypeReference(
           (r) => r
@@ -713,6 +717,13 @@ class BuildRepositoryClass {
               ..name = 'transaction'
               ..named = true,
           ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'ignoreConflicts'
+              ..named = true
+              ..defaultTo = literalFalse.code,
+          ),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -722,6 +733,7 @@ class BuildRepositoryClass {
               [refer('rows')],
               {
                 'transaction': refer('transaction'),
+                'ignoreConflicts': refer('ignoreConflicts'),
               },
               [refer(className)],
             )
