@@ -16,6 +16,7 @@ dependencies:
   serverpod: 3.3.0
   serverpod_auth_server: 3.3.0
   serverpod_cloud_storage_s3: 3.3.0
+  serverpod_open_metrics: 3.3.0
   serverpod_test_module_server:
     path: ../serverpod_test_module/serverpod_test_module_server
   serverpod_test_shared:
@@ -52,6 +53,8 @@ dependency_overrides:
     path: ../../integrations/serverpod_cloud_storage_s3
   serverpod_lints:
     path: ../../packages/serverpod_lints
+  serverpod_open_metrics:
+    path: ../../integrations/serverpod_open_metrics
   serverpod_serialization:
     path: ../../packages/serverpod_serialization
   serverpod_service_client:
