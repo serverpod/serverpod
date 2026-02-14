@@ -1,9 +1,14 @@
+import 'package:serverpod/src/database/adapters/postgres/value_encoder.dart';
 import 'package:serverpod/src/database/extensions.dart';
+import 'package:serverpod/src/database/interface/value_encoder.dart';
 import 'package:serverpod/src/database/migrations/table_comparison_warning.dart';
 import 'package:test/test.dart';
+
 import 'package:serverpod/protocol.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   test(
     'Given identical tables when compared then mismatches list is empty',
     () {

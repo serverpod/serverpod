@@ -5,6 +5,8 @@ import 'package:serverpod/test_util/table_relation_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   var citizenTable = Table<int?>(tableName: 'citizen');
   var companyTable = Table<int?>(tableName: 'company');
   var relationTable = TableRelationBuilder(companyTable).withRelationsFrom([

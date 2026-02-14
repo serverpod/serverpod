@@ -17,6 +17,8 @@ class TableWithColumnOverride extends Table<int?> {
 }
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given model with an explicit column field name', () {
     test(
       'when building the select query then the explicit column name '

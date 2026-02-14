@@ -2,6 +2,8 @@ import 'package:serverpod/database.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given a ColumnDouble', () {
     var columnName = 'age';
     var column = ColumnDouble(columnName, Table<int?>(tableName: 'test'));

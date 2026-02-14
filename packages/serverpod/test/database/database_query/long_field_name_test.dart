@@ -21,6 +21,8 @@ class TableWithMaxFieldName extends Table<int?> {
 }
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   // Field name is 61 characters long causing field alias to be over 63 characters
   // which is the maximum length for identifiers in Postgres.
   var table = TableWithMaxFieldName('table');
