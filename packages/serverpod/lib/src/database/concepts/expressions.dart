@@ -1,5 +1,4 @@
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/database/database_pool_manager.dart';
+import 'package:serverpod/database.dart';
 
 /// A function that returns an [Expression] for a [Table] to be used with where
 /// clauses.
@@ -67,7 +66,7 @@ class EscapedExpression extends Expression {
 
   @override
   String toString() {
-    return DatabasePoolManager.encoder.convert(_expression);
+    return ValueEncoder.instance.convert(_expression);
   }
 }
 

@@ -35,7 +35,7 @@ class DatabasePoolManager {
   }
 
   /// The encoder used to encode objects for storing in the database.
-  static final ValueEncoder encoder = ValueEncoder();
+  late final PostgresValueEncoder encoder = PostgresValueEncoder();
 
   /// Creates a new [DatabasePoolManager]. Typically, this is done automatically
   /// when starting the [Server].

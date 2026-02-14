@@ -9,6 +9,7 @@ import 'package:serverpod/src/database/concepts/order.dart';
 import 'package:serverpod/src/database/concepts/row_lock.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
+import 'package:serverpod/src/database/interface/value_encoder.dart';
 import 'package:serverpod/src/database/query_parameters.dart';
 
 import '../server/session.dart';
@@ -40,7 +41,11 @@ class Database {
     required Session session,
     required DatabasePoolManager poolManager,
   }) : _session = session,
-       _databaseConnection = DatabaseConnection(poolManager);
+       _databaseConnection = DatabaseConnection(poolManager) {
+    // Initialize the value encoder for the current database pool for query
+    // builder and expressions to correctly encode values.
+    ValueEncoder.set(poolManager.encoder);
+  }
 
   /// Returns a list of [TableRow]s matching the given query parameters.
   ///

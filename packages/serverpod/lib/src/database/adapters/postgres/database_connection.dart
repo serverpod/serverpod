@@ -302,14 +302,14 @@ class DatabaseConnection {
 
     var setClause = columnValues
         .map((cv) {
-          var value = DatabasePoolManager.encoder.convert(cv.value);
+          var value = _poolManager.encoder.convert(cv.value);
           return '"${cv.column.columnName}" = $value::${_convertToPostgresType(cv.column)}';
         })
         .join(', ');
 
     var query =
         'UPDATE "${table.tableName}" SET $setClause '
-        'WHERE "${table.id.columnName}" = ${DatabasePoolManager.encoder.convert(id)} '
+        'WHERE "${table.id.columnName}" = ${_poolManager.encoder.convert(id)} '
         'RETURNING *';
 
     var result = await _mappedResultsQuery(
@@ -357,7 +357,7 @@ class DatabaseConnection {
 
     var setClause = columnValues
         .map((cv) {
-          var value = DatabasePoolManager.encoder.convert(cv.value);
+          var value = _poolManager.encoder.convert(cv.value);
           return '"${cv.column.columnName}" = $value::${_convertToPostgresType(cv.column)}';
         })
         .join(', ');
@@ -905,7 +905,7 @@ class DatabaseConnection {
               .map((column) {
                 var unformattedValue = row[column.columnName];
 
-                var formattedValue = DatabasePoolManager.encoder.convert(
+                var formattedValue = _poolManager.encoder.convert(
                   unformattedValue,
                 );
 
