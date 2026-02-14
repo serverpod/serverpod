@@ -78,6 +78,7 @@ class MigrationGenerator {
       modelDefinitions,
       config.name,
       config.modulesAll,
+      dialect: config.databaseDialect,
     );
 
     var databaseDefinitions = await _loadModuleDatabaseDefinitions(
@@ -135,6 +136,7 @@ class MigrationGenerator {
       await migrationVersion.write(
         installedModules: databaseDefinitionNext.installedModules,
         removedModules: removedModules,
+        dialect: config.databaseDialect,
       );
       migrationRegistry.add(versionName);
       await migrationRegistry.write();
@@ -166,6 +168,7 @@ class MigrationGenerator {
     String? tag,
     required bool force,
     required String runMode,
+    required DatabaseDialect dialect,
     String? targetMigrationVersion,
   }) async {
     var migrationVersion =
@@ -232,6 +235,7 @@ class MigrationGenerator {
       migration,
       installedModules,
       removedModules,
+      dialect,
     );
   }
 
@@ -394,8 +398,10 @@ class MigrationGenerator {
     DatabaseMigration migration,
     List<DatabaseMigrationVersion> installedModules,
     List<DatabaseMigrationVersion> removedModules,
+    DatabaseDialect dialect,
   ) {
-    var repairMigrationSql = migration.toPgSql(
+    var repairMigrationSql = migration.toSql(
+      dialect: dialect,
       installedModules: installedModules,
       removedModules: removedModules,
     );
@@ -518,6 +524,7 @@ class MigrationVersion {
   Future<void> write({
     required List<DatabaseMigrationVersion> installedModules,
     required List<DatabaseMigrationVersion> removedModules,
+    required DatabaseDialect dialect,
   }) async {
     var migrationDirectory = MigrationConstants.migrationVersionDirectory(
       projectDirectory,
@@ -532,11 +539,13 @@ class MigrationVersion {
     await migrationDirectory.create(recursive: true);
 
     // Create sql for definition and migration
-    var definitionSql = databaseDefinitionFull.toPgSql(
+    var definitionSql = databaseDefinitionFull.toSql(
+      dialect: dialect,
       installedModules: installedModules,
     );
 
-    var migrationSql = migration.toPgSql(
+    var migrationSql = migration.toSql(
+      dialect: dialect,
       installedModules: installedModules,
       removedModules: removedModules,
     );

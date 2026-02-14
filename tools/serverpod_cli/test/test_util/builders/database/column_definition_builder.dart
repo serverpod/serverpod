@@ -1,6 +1,7 @@
-import 'package:serverpod_cli/src/database/create_definition.dart';
+import 'package:serverpod_cli/src/database/sql_generator.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 class ColumnDefinitionBuilder {
   String _name;
@@ -32,13 +33,14 @@ class ColumnDefinitionBuilder {
     String tableName, {
     SupportedIdType? type,
     bool nullableModelField = false,
+    DatabaseDialect dialect = DatabaseDialect.postgres,
   }) {
     var idType = type ?? SupportedIdType.int;
 
     _name = 'id';
     _isNullable = false;
     _columnType = ColumnType.values.byName(idType.type.databaseTypeEnum);
-    _columnDefault = getColumnDefault(
+    _columnDefault = SqlGenerator.forDialect(dialect).getColumnDefault(
       idType.type,
       idType.defaultValue,
       tableName,
