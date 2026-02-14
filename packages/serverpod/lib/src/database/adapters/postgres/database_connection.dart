@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod/src/database/adapters/postgres/postgres_database_result.dart';
 import 'package:serverpod/src/database/adapters/postgres/postgres_result_parser.dart';
+import 'package:serverpod/src/database/adapters/postgres/sql_query_builder.dart';
 import 'package:serverpod/src/database/concepts/column_value.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/exceptions.dart';
@@ -14,7 +15,6 @@ import 'package:serverpod/src/database/concepts/runtime_parameters.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/postgres_error_codes.dart';
-import 'package:serverpod/src/database/sql_query_builder.dart';
 import 'package:serverpod/src/generated/database/enum_serialization.dart';
 import 'package:uuid/uuid.dart';
 
