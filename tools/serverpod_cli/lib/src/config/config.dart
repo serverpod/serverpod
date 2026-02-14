@@ -78,6 +78,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.dartClientPackage,
     required this.dartClientDependsOnServiceClient,
     required this.serverPackageDirectoryPathParts,
+    required this.sharedModelsSourcePathsParts,
     List<String>? relativeServerTestToolsPathParts,
     required List<String> relativeDartClientPackagePathParts,
     required List<ModuleConfig> modules,
@@ -118,6 +119,11 @@ class GeneratorConfig implements ModelLoadConfig {
   /// The parts of the path where the server package is located at.
   /// Might be relative.
   final List<String> serverPackageDirectoryPathParts;
+
+  /// The path parts to packages of shared models.
+  /// The key is the package name, the value is the path parts to the package
+  /// relative to the server package.
+  final Map<String, List<String>> sharedModelsSourcePathsParts;
 
   @override
   List<String> get libSourcePathParts => [
@@ -400,6 +406,11 @@ class GeneratorConfig implements ModelLoadConfig {
       nickNameOverrides: manualModules,
     );
 
+    var sharedModelsSourcePathsParts = _extractSharedPackages(
+      serverRootDir,
+      generatorConfig,
+    );
+
     // Load extraClasses
     var extraClasses = <TypeDefinition>[];
     var configExtraClasses = generatorConfig['extraClasses'];
@@ -437,6 +448,7 @@ class GeneratorConfig implements ModelLoadConfig {
       dartClientPackage: dartClientPackage,
       dartClientDependsOnServiceClient: dartClientDependsOnServiceClient,
       serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
+      sharedModelsSourcePathsParts: sharedModelsSourcePathsParts,
       relativeServerTestToolsPathParts: relativeServerTestToolsPathParts,
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
       modules: modules,
@@ -538,6 +550,49 @@ generatedServerModel: ${p.joinAll(generatedServeModelPathParts)}
   }
 }
 
+Map<String, List<String>> _extractSharedPackages(
+  String serverRootDir,
+  YamlMap generatorConfig,
+) {
+  var sharedModelPackagesPathParts = <String, List<String>>{};
+
+  var sharedPackages = generatorConfig['shared_packages'];
+  if (sharedPackages == null) {
+    return sharedModelPackagesPathParts;
+  }
+
+  if (sharedPackages is! YamlList) {
+    throw SourceSpanFormatException(
+      'The "shared_packages" property must be a list of package paths.',
+      sharedPackages is YamlNode ? sharedPackages.span : null,
+    );
+  }
+
+  for (var path in sharedPackages) {
+    if (path is! String || !path.startsWith('.')) {
+      throw SourceSpanFormatException(
+        'The path for the shared package must be a string path relative to the '
+        'server package. Current path: $path',
+        sharedPackages.span,
+      );
+    }
+
+    try {
+      var pubspecFile = File(p.join(serverRootDir, path, 'pubspec.yaml'));
+      var yamlStr = pubspecFile.readAsStringSync();
+      var pubspec = Pubspec.parse(yamlStr);
+      sharedModelPackagesPathParts[pubspec.name] = p.split(path);
+    } catch (_) {
+      throw const ServerpodProjectNotFoundException(
+        'Failed to load client pubspec.yaml. If you are using a none default '
+        'path it has to be specified in the config/generator.yaml file!',
+      );
+    }
+  }
+
+  return sharedModelPackagesPathParts;
+}
+
 /// Describes the configuration of a Serverpod module a package depends on.
 class ModuleConfig implements ModelLoadConfig {
   PackageType type;
@@ -614,7 +669,7 @@ name: $name
 nickname: $nickname
 clientPackage: $dartClientPackage
 serverPackage: $serverPackage
-migrationVersions: $migrationVersions 
+migrationVersions: $migrationVersions
 ''';
   }
 }
