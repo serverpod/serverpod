@@ -12,6 +12,7 @@ environment:
   sdk: '^3.8.0'
 
 dependencies:
+  meta: ^1.15.0
   uuid: ^4.1.0
   yaml: ^3.1.2
 
