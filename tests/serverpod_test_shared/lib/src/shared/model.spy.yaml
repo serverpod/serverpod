@@ -1,0 +1,6 @@
+class: SharedModel
+fields:
+  id: UuidValue, default=random
+  name: String
+  data: int?
+  createdAt: DateTime, default=now

@@ -1,0 +1,6 @@
+class: SharedModelSubclass
+extends: SharedModel
+fields:
+  sharedModelSubclassField: String
+  sharedEnumField: SharedEnum
+  serverOnlyField: String?, scope=serverOnly

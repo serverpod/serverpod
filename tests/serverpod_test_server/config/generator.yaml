@@ -6,6 +6,9 @@ server_test_tools_path: test_integration/test_tools
 experimental_features:
   all: true # Enables all experimental features
 
+shared_packages:
+  - ../serverpod_test_shared
+
 modules:
   serverpod_test_module:
     nickname: module
