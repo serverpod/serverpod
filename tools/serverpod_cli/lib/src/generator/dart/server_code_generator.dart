@@ -23,7 +23,14 @@ class DartServerCodeGenerator extends CodeGenerator {
       config: config,
     );
 
-    var modelAllocatorContext = ModelAllocatorContext.build(models, config);
+    var serverClasses = models
+        .where((element) => !element.isSharedModel)
+        .toList();
+
+    var modelAllocatorContext = ModelAllocatorContext.build(
+      serverClasses,
+      config,
+    );
 
     return {
       for (var entry in modelAllocatorContext.entries)
@@ -43,6 +50,7 @@ class DartServerCodeGenerator extends CodeGenerator {
   }) {
     var serverClassGenerator = LibraryGenerator(
       serverCode: true,
+      sharedPackage: false,
       protocolDefinition: protocolDefinition,
       config: config,
     );

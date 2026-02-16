@@ -15,6 +15,7 @@ class EnumDefinitionBuilder {
   List<ProtocolEnumValueDefinition> _values;
   List<String>? _documentation;
   List<EnumPropertyDefinition> _properties;
+  String? _sharedPackageName;
 
   EnumDefinitionBuilder()
     : _fileName = 'example',
@@ -44,7 +45,11 @@ class EnumDefinitionBuilder {
       serverOnly: _serverOnly,
       documentation: _documentation,
       properties: _properties,
-      type: TypeDefinitionBuilder().withClassName(_className).build(),
+      sharedPackageName: _sharedPackageName,
+      type: TypeDefinitionBuilder()
+          .withClassName(_className)
+          .withUrl(_sharedPackageName)
+          .build(),
     );
     enumDefinition.type.enumDefinition = enumDefinition;
     return enumDefinition;
@@ -106,6 +111,11 @@ class EnumDefinitionBuilder {
     List<EnumPropertyDefinition> properties,
   ) {
     _properties = properties;
+    return this;
+  }
+
+  EnumDefinitionBuilder withSharedPackageName(String? sharedPackageName) {
+    _sharedPackageName = sharedPackageName;
     return this;
   }
 }

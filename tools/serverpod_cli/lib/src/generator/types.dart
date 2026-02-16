@@ -312,7 +312,14 @@ class TypeDefinition {
 
     return TypeReference(
       (t) {
-        if (url == '${_moduleRef}serverpod' ||
+        if (isEnumType &&
+            enumDefinition != null &&
+            enumDefinition!.isSharedModel) {
+          // Enum from a shared package: use package import so project models
+          // (client/server) reference the correct package.
+          var pkg = enumDefinition!.sharedPackageName!;
+          t.url = 'package:$pkg/$pkg.dart';
+        } else if (url == '${_moduleRef}serverpod' ||
             (url?.startsWith('${_moduleRef}serverpod:') ?? false)) {
           // module:serverpod reference
           t.url = serverpodUrl(serverCode);
@@ -350,19 +357,35 @@ class TypeDefinition {
               'package:'
               '${serverCode ? config.serverPackage : config.dartClientPackage}'
               '/${split[1]}';
-        } else if (url == defaultModuleAlias) {
-          // protocol: reference
+        } else if (url == defaultModuleAlias ||
+            config.sharedModelsSourcePathsParts.containsKey(url)) {
+          // protocol or shared-package reference
           var localProjectModelDefinition = projectModelDefinition;
-          String reference = switch (localProjectModelDefinition) {
-            // Import model directly
-            SerializableModelDefinition modelDefinition => getRef(
-              modelDefinition,
-            ),
-            // Import model through generated protocol file
-            null => 'protocol.dart',
-          };
-
-          t.url = p.posix.joinAll([...subDirParts.map((e) => '..'), reference]);
+          if (localProjectModelDefinition?.isSharedModel == true) {
+            // Reference to a model in a shared package: use package import
+            // (works from server/client and from within the same shared package)
+            var pkg = localProjectModelDefinition!.sharedPackageName!;
+            t.url = 'package:$pkg/$pkg.dart';
+          } else if (localProjectModelDefinition == null &&
+              config.sharedModelsSourcePathsParts.containsKey(url)) {
+            // url is a shared package but type was not run through
+            // applyProtocolReferences (e.g. model's own type used as parent class).
+            // Use package import so client/server extend the correct shared package.
+            t.url = 'package:$url/$url.dart';
+          } else {
+            String reference = switch (localProjectModelDefinition) {
+              // Import model directly
+              SerializableModelDefinition modelDefinition => getRef(
+                modelDefinition,
+              ),
+              // Import model through generated protocol file
+              null => 'protocol.dart',
+            };
+            t.url = p.posix.joinAll([
+              ...subDirParts.map((e) => '..'),
+              reference,
+            ]);
+          }
         } else if (!serverCode &&
             (url?.startsWith('package:${config.serverPackage}/') ?? false)) {
           // import from the server package
@@ -711,6 +734,23 @@ class TypeDefinition {
         .where((c) => c.className == className)
         .where((c) => c.type.moduleAlias == defaultModuleAlias)
         .firstOrNull;
+    // Resolve shared-package model when url is that package's module alias
+    var sharedModelDefinition = (url != null && url != defaultModuleAlias)
+        ? classDefinitions
+              .where((c) => c.className == className)
+              .where((c) => c.type.moduleAlias == url)
+              .firstOrNull
+        : null;
+    // Resolve shared-package model/enum when type is protocol-scoped but only
+    // defined in a shared package (e.g. field type SharedModel or SharedEnum)
+    if (modelDefinition == null &&
+        sharedModelDefinition == null &&
+        (url == defaultModuleAlias || url == null)) {
+      sharedModelDefinition = classDefinitions
+          .where((c) => c.className == className)
+          .where((c) => c.isSharedModel)
+          .firstOrNull;
+    }
     bool isProjectModel =
         url == defaultModuleAlias || (url == null && modelDefinition != null);
     return TypeDefinition(
@@ -718,7 +758,9 @@ class TypeDefinition {
       nullable: nullable,
       customClass: customClass,
       dartType: dartType,
-      projectModelDefinition: isProjectModel ? modelDefinition : null,
+      projectModelDefinition: isModuleType
+          ? null
+          : modelDefinition ?? sharedModelDefinition,
       generics: generics
           .map((e) => e.applyProtocolReferences(classDefinitions))
           .toList(),

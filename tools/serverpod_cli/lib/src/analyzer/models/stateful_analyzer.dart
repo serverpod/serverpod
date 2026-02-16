@@ -40,7 +40,11 @@ class StatefulAnalyzer {
       .where(
         (state) => !CodeAnalysisCollector.containsSevereErrors(state.errors),
       )
-      .where((state) => state.source.moduleAlias == defaultModuleAlias)
+      .where(
+        (state) =>
+            state.source.moduleAlias == defaultModuleAlias ||
+            state.source.isSharedModel,
+      )
       .map((state) => state.model)
       .whereType<SerializableModelDefinition>()
       .toList();
@@ -120,7 +124,9 @@ class StatefulAnalyzer {
 
   void _validateAllModels() {
     var modelsToValidate = _modelStates.values.where(
-      (state) => state.source.moduleAlias == defaultModuleAlias,
+      (state) =>
+          state.source.moduleAlias == defaultModuleAlias ||
+          state.source.isSharedModel,
     );
     var modelsWithDocumentPath = _modelStates.values
         .map(

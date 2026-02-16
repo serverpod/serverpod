@@ -11,6 +11,7 @@ sealed class SerializableModelDefinition {
   final List<String> subDirParts;
   final bool serverOnly;
   final TypeDefinition type;
+  final String? sharedPackageName;
 
   SerializableModelDefinition({
     required this.fileName,
@@ -19,6 +20,7 @@ sealed class SerializableModelDefinition {
     required this.serverOnly,
     required this.type,
     this.subDirParts = const [],
+    this.sharedPackageName,
   });
 
   /// Generate the file reference [String] to this file.
@@ -29,6 +31,10 @@ sealed class SerializableModelDefinition {
     // Normalize to forward slashes.
     return p.split(path).join('/');
   }
+
+  /// Whether this model is declared in a shared package. Such models are not
+  /// generated on the server or client side, but on its own shared package.
+  bool get isSharedModel => sharedPackageName != null;
 }
 
 /// A representation of a yaml file in the protocol directory defining a class
@@ -52,6 +58,7 @@ sealed class ClassDefinition extends SerializableModelDefinition {
     required super.serverOnly,
     required super.type,
     super.subDirParts,
+    super.sharedPackageName,
     this.documentation,
   });
 
@@ -105,6 +112,7 @@ final class ModelClassDefinition extends ClassDefinition {
     this.indexes = const [],
     super.subDirParts,
     super.documentation,
+    super.sharedPackageName,
   }) : childClasses = childClasses ?? <InheritanceDefinition>[];
 
   /// Returns the `SerializableModelFieldDefinition` of the 'id' field.
@@ -233,6 +241,7 @@ final class ExceptionClassDefinition extends ClassDefinition {
     required super.type,
     super.documentation,
     super.subDirParts,
+    super.sharedPackageName,
   });
 }
 
@@ -480,6 +489,7 @@ class EnumDefinition extends SerializableModelDefinition {
     super.subDirParts,
     this.documentation,
     this.properties = const [],
+    super.sharedPackageName,
   });
 
   /// Whether this is an enhanced enum with properties.
