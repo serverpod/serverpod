@@ -225,10 +225,14 @@ class ServerSideSessions {
   ///
   /// If [authUserId] is provided, only sessions for that user will be listed.
   /// If [method] is provided, only sessions created with that method will be listed.
+  /// If [expired] is provided, only sessions matching the expiration status will be listed.
+  /// A session is considered expired if either its [expiresAt] date has passed or
+  /// it has been unused for longer than [expireAfterUnusedFor].
   Future<List<ServerSideSessionInfo>> listSessions(
     final Session session, {
     final UuidValue? authUserId,
     final String? method,
+    final bool? expired,
     final Transaction? transaction,
   }) async {
     final serverSideSessions = await ServerSideSession.db.find(
@@ -251,19 +255,56 @@ class ServerSideSessions {
 
     final sessionInfos = <ServerSideSessionInfo>[
       for (final serverSideSession in serverSideSessions)
-        ServerSideSessionInfo(
-          id: serverSideSession.id!,
-          authUserId: serverSideSession.authUserId,
-          scopeNames: serverSideSession.scopeNames,
-          created: serverSideSession.createdAt,
-          lastUsed: serverSideSession.lastUsedAt,
-          expiresAt: serverSideSession.expiresAt,
-          expireAfterUnusedFor: serverSideSession.expireAfterUnusedFor,
-          method: serverSideSession.method,
-        ),
+        if (_shouldIncludeSession(serverSideSession, expired))
+          ServerSideSessionInfo(
+            id: serverSideSession.id!,
+            authUserId: serverSideSession.authUserId,
+            scopeNames: serverSideSession.scopeNames,
+            created: serverSideSession.createdAt,
+            lastUsed: serverSideSession.lastUsedAt,
+            expiresAt: serverSideSession.expiresAt,
+            expireAfterUnusedFor: serverSideSession.expireAfterUnusedFor,
+            method: serverSideSession.method,
+          ),
     ];
 
     return sessionInfos;
+  }
+
+  /// Helper method to determine if a session should be included based on expiration filter.
+  bool _shouldIncludeSession(
+    final ServerSideSession serverSideSession,
+    final bool? expiredFilter,
+  ) {
+    // If no filter is specified, include all sessions
+    if (expiredFilter == null) {
+      return true;
+    }
+
+    final isExpired = _isSessionExpired(serverSideSession);
+
+    // Return true if the session's expiration status matches the filter
+    return isExpired == expiredFilter;
+  }
+
+  /// Checks if a session is expired based on the same logic used in authenticationHandler.
+  bool _isSessionExpired(final ServerSideSession serverSideSession) {
+    // Check if session has a fixed expiration date that has passed
+    final expiresAt = serverSideSession.expiresAt;
+    if (expiresAt != null && clock.now().isAfter(expiresAt)) {
+      return true;
+    }
+
+    // Check if session has been inactive for too long
+    final expireAfterUnusedFor = serverSideSession.expireAfterUnusedFor;
+    if (expireAfterUnusedFor != null &&
+        serverSideSession.lastUsedAt
+            .add(expireAfterUnusedFor)
+            .isBefore(clock.now())) {
+      return true;
+    }
+
+    return false;
   }
 
   /// Signs out a user from the server and ends all user sessions managed by this module.

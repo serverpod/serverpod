@@ -146,4 +146,143 @@ void main() {
       },
     );
   });
+
+  withServerpod(
+    'Given sessions with different expiration states',
+    (
+      final sessionBuilder,
+      final endpoints,
+    ) {
+      late Session session;
+      late UuidValue authUserId;
+      late UuidValue activeSessionId;
+      late UuidValue expiredByDateSessionId;
+      late UuidValue expiredByInactivitySessionId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        authUserId = (await serverSideSessions.authUsers.create(session)).id;
+
+        // Create an active session (no expiration)
+        // ignore: unused_result
+        await serverSideSessions.createSession(
+          session,
+          authUserId: authUserId,
+          scopes: {},
+          method: 'active',
+        );
+
+        // Create a session expired by date
+        // ignore: unused_result
+        await serverSideSessions.createSession(
+          session,
+          authUserId: authUserId,
+          scopes: {},
+          method: 'expired-by-date',
+          expiresAt: DateTime.now().subtract(const Duration(days: 1)),
+        );
+
+        // Create a session expired by inactivity
+        final expiredByInactivitySession = await ServerSideSession.db.insertRow(
+          session,
+          ServerSideSession(
+            authUserId: authUserId,
+            createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+            lastUsedAt: DateTime.now().subtract(const Duration(hours: 2)),
+            expireAfterUnusedFor: const Duration(hours: 1),
+            scopeNames: {},
+            sessionKeyHash: ByteData(32),
+            sessionKeySalt: ByteData(16),
+            method: 'expired-by-inactivity',
+          ),
+        );
+
+        final sessions = await ServerSideSession.db.find(session);
+        activeSessionId =
+            sessions.firstWhere((s) => s.method == 'active').id!;
+        expiredByDateSessionId =
+            sessions.firstWhere((s) => s.method == 'expired-by-date').id!;
+        expiredByInactivitySessionId = expiredByInactivitySession.id!;
+      });
+
+      test(
+        'when listing all sessions without filter then all sessions are returned.',
+        () async {
+          final sessions = await serverSideSessions.listSessions(session);
+
+          expect(sessions, hasLength(3));
+        },
+      );
+
+      test(
+        'when listing only non-expired sessions then only active session is returned.',
+        () async {
+          final sessions = await serverSideSessions.listSessions(
+            session,
+            expired: false,
+          );
+
+          expect(sessions, hasLength(1));
+          expect(sessions.single.id, activeSessionId);
+        },
+      );
+
+      test(
+        'when listing only expired sessions then both expired sessions are returned.',
+        () async {
+          final sessions = await serverSideSessions.listSessions(
+            session,
+            expired: true,
+          );
+
+          expect(sessions, hasLength(2));
+          expect(
+            sessions.map((s) => s.id).toSet(),
+            {expiredByDateSessionId, expiredByInactivitySessionId},
+          );
+        },
+      );
+
+      test(
+        'when filtering by user and expired status then correct sessions are returned.',
+        () async {
+          final sessions = await serverSideSessions.listSessions(
+            session,
+            authUserId: authUserId,
+            expired: false,
+          );
+
+          expect(sessions, hasLength(1));
+          expect(sessions.single.id, activeSessionId);
+        },
+      );
+
+      test(
+        'when filtering by method and expired status then correct session is returned.',
+        () async {
+          final sessions = await serverSideSessions.listSessions(
+            session,
+            method: 'expired-by-date',
+            expired: true,
+          );
+
+          expect(sessions, hasLength(1));
+          expect(sessions.single.id, expiredByDateSessionId);
+        },
+      );
+
+      test(
+        'when filtering non-expired by method that is expired then no sessions are returned.',
+        () async {
+          final sessions = await serverSideSessions.listSessions(
+            session,
+            method: 'expired-by-date',
+            expired: false,
+          );
+
+          expect(sessions, isEmpty);
+        },
+      );
+    },
+  );
 }
