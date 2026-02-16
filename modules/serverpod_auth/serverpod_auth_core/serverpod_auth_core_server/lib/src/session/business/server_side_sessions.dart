@@ -66,23 +66,9 @@ class ServerSideSessions {
       return null;
     }
 
-    final expiresAt = serverSideSession.expiresAt;
-    if (expiresAt != null && clock.now().isAfter(expiresAt)) {
+    if (_isSessionExpired(serverSideSession)) {
       session.log(
-        'Got session after its set expiration date.',
-        level: LogLevel.debug,
-      );
-
-      return null;
-    }
-
-    final expireAfterUnusedFor = serverSideSession.expireAfterUnusedFor;
-    if (expireAfterUnusedFor != null &&
-        serverSideSession.lastUsedAt
-            .add(expireAfterUnusedFor)
-            .isBefore(clock.now())) {
-      session.log(
-        'Got session which expired due to inactivity.',
+        'Got session after its expiration.',
         level: LogLevel.debug,
       );
 
