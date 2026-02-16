@@ -172,7 +172,7 @@ void main() {
           method: 'active',
         );
 
-        // Create a session expired by date
+        // Create a session that will be expired by date
         // ignore: unused_result
         await serverSideSessions.createSession(
           session,
@@ -182,27 +182,37 @@ void main() {
           expiresAt: DateTime.now().subtract(const Duration(days: 1)),
         );
 
-        // Create a session expired by inactivity
-        final expiredByInactivitySession = await ServerSideSession.db.insertRow(
+        // Create a session that will be expired by inactivity
+        // ignore: unused_result
+        await serverSideSessions.createSession(
           session,
-          ServerSideSession(
-            authUserId: authUserId,
-            createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+          authUserId: authUserId,
+          scopes: {},
+          method: 'expired-by-inactivity',
+          expireAfterUnusedFor: const Duration(hours: 1),
+        );
+
+        // Update the last used time to make it expired
+        final expiredByInactivitySession = (await ServerSideSession.db.find(
+          session,
+          where: (t) => t.method.equals('expired-by-inactivity'),
+        )).single;
+
+        await ServerSideSession.db.updateRow(
+          session,
+          expiredByInactivitySession.copyWith(
             lastUsedAt: DateTime.now().subtract(const Duration(hours: 2)),
-            expireAfterUnusedFor: const Duration(hours: 1),
-            scopeNames: {},
-            sessionKeyHash: ByteData(32),
-            sessionKeySalt: ByteData(16),
-            method: 'expired-by-inactivity',
           ),
         );
 
         final sessions = await ServerSideSession.db.find(session);
-        activeSessionId =
-            sessions.firstWhere((s) => s.method == 'active').id!;
-        expiredByDateSessionId =
-            sessions.firstWhere((s) => s.method == 'expired-by-date').id!;
-        expiredByInactivitySessionId = expiredByInactivitySession.id!;
+        activeSessionId = sessions.firstWhere((s) => s.method == 'active').id!;
+        expiredByDateSessionId = sessions
+            .firstWhere((s) => s.method == 'expired-by-date')
+            .id!;
+        expiredByInactivitySessionId = sessions
+            .firstWhere((s) => s.method == 'expired-by-inactivity')
+            .id!;
       });
 
       test(
