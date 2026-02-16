@@ -78,6 +78,9 @@ class SignInWidget extends StatefulWidget {
   /// Whether to disable the Microsoft sign-in widget if it is available.
   final bool disableMicrosoftSignInWidget;
 
+  /// Whether to disable the Facebook sign-in widget if it is available.
+  final bool disableFacebookSignInWidget;
+
   /// Customized widget to use for anonymous sign-in.
   final AnonymousSignInWidget? anonymousSignInWidget;
 
@@ -107,6 +110,7 @@ class SignInWidget extends StatefulWidget {
     this.disableAppleSignInWidget = false,
     this.disableGitHubSignInWidget = false,
     this.disableMicrosoftSignInWidget = false,
+    this.disableFacebookSignInWidget = false,
     this.anonymousSignInWidget,
     this.emailSignInWidget,
     this.googleSignInWidget,
@@ -131,7 +135,8 @@ class _SignInWidgetState extends State<SignInWidget> {
   bool get hasGitHub => auth.idp.hasGitHub && !widget.disableGitHubSignInWidget;
   bool get hasMicrosoft =>
       auth.idp.hasMicrosoft && !widget.disableMicrosoftSignInWidget;
-  bool get hasFacebook => auth.idp.hasFacebook;
+  bool get hasFacebook =>
+      auth.idp.hasFacebook && !widget.disableFacebookSignInWidget;
 
   @override
   Widget build(BuildContext context) {
