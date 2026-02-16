@@ -206,7 +206,9 @@ void main() {
         );
 
         final sessions = await ServerSideSession.db.find(session);
-        activeSessionId = sessions.firstWhere((final s) => s.method == 'active').id!;
+        activeSessionId = sessions
+            .firstWhere((final s) => s.method == 'active')
+            .id!;
         expiredByDateSessionId = sessions
             .firstWhere((final s) => s.method == 'expired-by-date')
             .id!;
