@@ -5,7 +5,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/redis_cache.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
-import 'package:serverpod_test_shared/serverpod_test_shared.dart';
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' hide Protocol;
 import 'package:test/test.dart';
 
 void main() async {
