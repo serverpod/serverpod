@@ -195,7 +195,7 @@ void main() {
         // Update the last used time to make it expired
         final expiredByInactivitySession = (await ServerSideSession.db.find(
           session,
-          where: (t) => t.method.equals('expired-by-inactivity'),
+          where: (final t) => t.method.equals('expired-by-inactivity'),
         )).single;
 
         await ServerSideSession.db.updateRow(
@@ -206,12 +206,12 @@ void main() {
         );
 
         final sessions = await ServerSideSession.db.find(session);
-        activeSessionId = sessions.firstWhere((s) => s.method == 'active').id!;
+        activeSessionId = sessions.firstWhere((final s) => s.method == 'active').id!;
         expiredByDateSessionId = sessions
-            .firstWhere((s) => s.method == 'expired-by-date')
+            .firstWhere((final s) => s.method == 'expired-by-date')
             .id!;
         expiredByInactivitySessionId = sessions
-            .firstWhere((s) => s.method == 'expired-by-inactivity')
+            .firstWhere((final s) => s.method == 'expired-by-inactivity')
             .id!;
       });
 
@@ -247,7 +247,7 @@ void main() {
 
           expect(sessions, hasLength(2));
           expect(
-            sessions.map((s) => s.id).toSet(),
+            sessions.map((final s) => s.id).toSet(),
             {expiredByDateSessionId, expiredByInactivitySessionId},
           );
         },
