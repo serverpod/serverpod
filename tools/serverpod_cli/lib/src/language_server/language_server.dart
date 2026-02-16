@@ -79,7 +79,14 @@ Future<void> runLanguageServer() async {
     if (project.analyzer.isModelRegistered(params.textDocument.uri)) {
       return;
     }
-    if (!_isModelInServerPath(params.textDocument.uri, project.serverRootUri)) {
+
+    var isSharedModel = _isModelInSharedPackagePath(
+      params.textDocument.uri,
+      project.serverRootUri,
+      project.config,
+    );
+    if (!_isModelInServerPath(params.textDocument.uri, project.serverRootUri) &&
+        !isSharedModel) {
       return;
     }
 
@@ -92,6 +99,7 @@ Future<void> runLanguageServer() async {
           project.config,
           params.textDocument.uri,
         ),
+        isSharedModel,
       ),
     );
 
@@ -234,6 +242,20 @@ List<DiagnosticTag>? _convertToDiagnosticTags(List<SourceSpanTag>? tags) {
         return DiagnosticTag.Deprecated;
     }
   }).toList();
+}
+
+bool _isModelInSharedPackagePath(
+  Uri uri,
+  Uri serverUri,
+  GeneratorConfig config,
+) {
+  var path = uri.path;
+  for (var e in config.sharedModelsSourcePathsParts.entries) {
+    if (path.contains(e.value.join('/'))) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool _isModelInServerPath(Uri uri, Uri serverUri) {

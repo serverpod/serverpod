@@ -56,11 +56,10 @@ Future<bool> performGenerateContinuously({
         case ChangeType.MODIFY:
           var yaml = File(event.path).readAsStringSync();
           modelAnalyzer.addYamlModel(
-            ModelSource(
-              defaultModuleAlias,
+            ModelHelper.createModelSourceForPath(
+              config,
+              event.path,
               yaml,
-              modelUri,
-              ModelHelper.extractPathFromConfig(config, Uri.parse(event.path)),
             ),
           );
         case ChangeType.REMOVE:
@@ -98,6 +97,17 @@ Stream<WatchEvent> _setupAllWatchedDirectories(GeneratorConfig config) {
 
   if (_directoryPathExists(libPath)) {
     watchers.add(DirectoryWatcher(libPath));
+  }
+
+  for (var pathParts in config.sharedModelsSourcePathsParts.values) {
+    var sharedLibPath = p.joinAll([
+      ...config.serverPackageDirectoryPathParts,
+      ...pathParts,
+      'lib',
+    ]);
+    if (_directoryPathExists(sharedLibPath)) {
+      watchers.add(DirectoryWatcher(sharedLibPath));
+    }
   }
 
   bool notInGeneratedDirectory(WatchEvent e) {
