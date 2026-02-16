@@ -48,7 +48,8 @@ void main() {
       });
 
       test(
-        'when Android User-Agent and POST with form body then returns 307 with correct intent URI.',
+        'when calling endpoint with Android User-Agent and POST with form body '
+        'then it returns 307 with correct intent URI.',
         () async {
           final request = _RequestFake(
             userAgent: androidUserAgent,
@@ -61,18 +62,19 @@ void main() {
           final response = result as Response;
           expect(response.statusCode, 307);
           final location = response.headers['Location']?.first;
-          expect(location, isNotNull);
-          expect(location, startsWith('intent://callback?'));
-          expect(location, contains('code=test_auth_code'));
-          expect(location, contains('state=test_state'));
-          expect(location, contains('package=$testAndroidPackageIdentifier'));
-          expect(location, contains('scheme=signinwithapple'));
-          expect(location, endsWith(';end'));
+          expect(
+            location,
+            equals(
+              'intent://callback?code=test_auth_code&state=test_state#Intent;'
+              'package=$testAndroidPackageIdentifier;scheme=signinwithapple;end',
+            ),
+          );
         },
       );
 
       test(
-        'when Android User-Agent and params have special characters then URL encodes correctly.',
+        'when calling endpoint with Android User-Agent and params have special '
+        'characters then it URL encodes correctly.',
         () async {
           final request = _RequestFake(
             userAgent: androidUserAgent,
@@ -85,14 +87,20 @@ void main() {
           final response = result as Response;
           expect(response.statusCode, 307);
           final location = response.headers['Location']?.first;
-          expect(location, isNotNull);
-          expect(location, contains('code=abc%2B123'));
-          expect(location, contains('user=%7B%22name%22%3A%22test%22%7D'));
+          expect(
+            location,
+            equals(
+              'intent://callback?code=abc%2B123&'
+              'user=%7B%22name%22%3A%22test%22%7D#Intent;'
+              'package=$testAndroidPackageIdentifier;scheme=signinwithapple;end',
+            ),
+          );
         },
       );
 
       test(
-        'when Android User-Agent and empty body then returns 307 with empty params.',
+        'when calling endpoint with Android User-Agent and empty body '
+        'then it returns 307 with empty params.',
         () async {
           final request = _RequestFake(
             userAgent: androidUserAgent,
@@ -117,7 +125,7 @@ void main() {
       );
 
       test(
-        'when Web User-Agent then returns 500.',
+        'when calling endpoint with Web User-Agent then it returns 500.',
         () async {
           final request = _RequestFake(
             userAgent: webUserAgent,
@@ -137,7 +145,7 @@ void main() {
       );
 
       test(
-        'when no User-Agent then returns 500.',
+        'when calling endpoint with no User-Agent then it returns 500.',
         () async {
           final request = _RequestFake(
             userAgent: null,
@@ -168,7 +176,7 @@ void main() {
       });
 
       test(
-        'when Android User-Agent then returns 500.',
+        'when calling endpoint with Android User-Agent then it returns 500.',
         () async {
           final request = _RequestFake(
             userAgent: androidUserAgent,

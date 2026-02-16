@@ -105,6 +105,10 @@ final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
       h['Location'] = [intentUri];
     });
 
+    // 307 Temporary Redirect preserves the original POST method, unlike 302
+    // which may change it to GET. This is required because Apple sends the
+    // authentication callback as a POST request.
+    // See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/307
     return Response(
       307,
       headers: headers,
