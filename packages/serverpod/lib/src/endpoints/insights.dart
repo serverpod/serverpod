@@ -231,8 +231,7 @@ class InsightsEndpoint extends Endpoint {
   Future<DatabaseDefinitions> getDatabaseDefinitions(Session session) async {
     var targetTables = await getTargetTableDefinition(session);
     var live = await getLiveDatabaseDefinition(session);
-    var installedMigrations =
-        await DatabaseAnalyzer.getInstalledMigrationVersions(session);
+    var installedMigrations = await _getInstalledMigrationVersions(session);
 
     var versions = MigrationVersions.listVersions(
       projectDirectory: Directory.current,
@@ -355,5 +354,17 @@ class InsightsEndpoint extends Endpoint {
     }
 
     return await file.readAsString();
+  }
+}
+
+Future<List<DatabaseMigrationVersion>> _getInstalledMigrationVersions(
+  Session session,
+) async {
+  try {
+    return await DatabaseMigrationVersion.db.find(session);
+  } catch (e) {
+    // Ignore if the table does not exist.
+    stderr.writeln('Failed to get installed migrations: $e');
+    return [];
   }
 }
