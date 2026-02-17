@@ -566,6 +566,80 @@ void main() {
         },
       );
     });
+
+    group('when creating direct upload description with contentLength', () {
+      test('then it includes Content-Length in headers', () async {
+        final description = await storage.createDirectFileUploadDescription(
+          session: mockSession,
+          path: 'uploads/test-file.txt',
+          contentLength: 5000,
+        );
+
+        final data = jsonDecode(description!) as Map<String, dynamic>;
+        expect(data['headers']['Content-Length'], '5000');
+      });
+
+      test(
+        'then the signed URL includes content-length in signed headers',
+        () async {
+          final description = await storage.createDirectFileUploadDescription(
+            session: mockSession,
+            path: 'uploads/test-file.txt',
+            contentLength: 5000,
+          );
+
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          final url = data['url'] as String;
+
+          expect(url, contains('content-length'));
+        },
+      );
+
+      test(
+        'then it throws when contentLength exceeds maxFileSize',
+        () async {
+          expect(
+            () => storage.createDirectFileUploadDescription(
+              session: mockSession,
+              path: 'uploads/test-file.txt',
+              maxFileSize: 1024,
+              contentLength: 2048,
+            ),
+            throwsA(isA<CloudStorageException>()),
+          );
+        },
+      );
+
+      test(
+        'then it succeeds when contentLength equals maxFileSize',
+        () async {
+          final description = await storage.createDirectFileUploadDescription(
+            session: mockSession,
+            path: 'uploads/test-file.txt',
+            maxFileSize: 5000,
+            contentLength: 5000,
+          );
+
+          expect(description, isNotNull);
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          expect(data['headers']['Content-Length'], '5000');
+        },
+      );
+    });
+
+    group('when creating direct upload description without contentLength', () {
+      test('then it does not include Content-Length in headers', () async {
+        final description = await storage.createDirectFileUploadDescription(
+          session: mockSession,
+          path: 'uploads/test-file.txt',
+        );
+
+        final data = jsonDecode(description!) as Map<String, dynamic>;
+        final headers = data['headers'] as Map<String, dynamic>;
+
+        expect(headers.containsKey('Content-Length'), isFalse);
+      });
+    });
   });
 
   group('Given a NativeGoogleCloudStorage with public set to false', () {

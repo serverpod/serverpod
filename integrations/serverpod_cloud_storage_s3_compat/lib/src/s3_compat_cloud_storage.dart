@@ -150,7 +150,14 @@ class S3CompatCloudStorage extends CloudStorage {
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
+    int? contentLength,
   }) async {
+    if (contentLength != null && contentLength > maxFileSize) {
+      throw CloudStorageException(
+        'Content length ($contentLength bytes) exceeds maximum file size ($maxFileSize bytes).',
+      );
+    }
+
     return uploadStrategy.createDirectUploadDescription(
       accessKey: accessKey,
       secretKey: secretKey,
@@ -161,6 +168,7 @@ class S3CompatCloudStorage extends CloudStorage {
       maxFileSize: maxFileSize,
       public: public,
       endpoints: endpoints,
+      contentLength: contentLength,
     );
   }
 

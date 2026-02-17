@@ -531,6 +531,9 @@ class StorageAccess {
   Future<String?> createDirectFileUploadDescription({
     required String storageId,
     required String path,
+    Duration expirationDuration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
+    int? contentLength,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
@@ -540,6 +543,9 @@ class StorageAccess {
     return await storage.createDirectFileUploadDescription(
       session: _session,
       path: path,
+      expirationDuration: expirationDuration,
+      maxFileSize: maxFileSize,
+      contentLength: contentLength,
     );
   }
 
