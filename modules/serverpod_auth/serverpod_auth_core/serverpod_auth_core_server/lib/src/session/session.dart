@@ -4,5 +4,6 @@ export '../generated/protocol.dart' show AuthSuccess, ServerSideSessionInfo;
 export 'business/server_side_sessions.dart';
 export 'business/server_side_sessions_admin.dart';
 export 'business/server_side_sessions_config.dart';
+export 'util/auth_success_extension.dart' show AuthSuccessServerSideSessionId;
 export 'util/authentication_info_extension.dart'
     show AuthenticationInfoServerSideSessionId;
