@@ -214,11 +214,20 @@ class ServerSideSessions {
   /// If [expired] is provided, only sessions matching the expiration status will be listed.
   /// A session is considered expired if either its [expiresAt] date has passed or
   /// it has been unused for longer than [expireAfterUnusedFor].
+  ///
+  /// **Warning:** In production systems with many sessions, calling this method
+  /// without filter parameters (especially [authUserId]) and without a [limit]
+  /// can be slow and memory-intensive. It is recommended to always use filters
+  /// and set a reasonable [limit] when querying sessions in production.
+  ///
+  /// If [limit] is provided, the results will be sorted by session ID to ensure
+  /// deterministic ordering.
   Future<List<ServerSideSessionInfo>> listSessions(
     final Session session, {
     final UuidValue? authUserId,
     final String? method,
     final bool? expired,
+    final int? limit,
     final Transaction? transaction,
   }) async {
     final serverSideSessions = await ServerSideSession.db.find(
@@ -236,6 +245,8 @@ class ServerSideSessions {
 
         return expression;
       },
+      limit: limit,
+      orderBy: limit != null ? (final t) => t.id : null,
       transaction: transaction,
     );
 

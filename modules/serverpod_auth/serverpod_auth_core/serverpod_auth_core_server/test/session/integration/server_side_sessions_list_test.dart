@@ -297,4 +297,92 @@ void main() {
       );
     },
   );
+
+  withServerpod(
+    'Given multiple sessions',
+    (
+      final sessionBuilder,
+      final endpoints,
+    ) {
+      late Session session;
+      late UuidValue authUserId;
+      late List<UuidValue> sessionIds;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        authUserId = (await serverSideSessions.authUsers.create(session)).id;
+
+        // Create 5 sessions
+        for (var i = 0; i < 5; i++) {
+          // ignore: unused_result
+          await serverSideSessions.createSession(
+            session,
+            authUserId: authUserId,
+            scopes: {},
+            method: 'test-$i',
+          );
+        }
+
+        final sessions = await ServerSideSession.db.find(session);
+        sessionIds = sessions.map((final s) => s.id!).toList();
+      });
+
+      test(
+        'when listing sessions without limit then all sessions are returned.',
+        () async {
+          final sessions = await serverSideSessions.listSessions(session);
+
+          expect(sessions, hasLength(5));
+        },
+      );
+
+      test(
+        'when listing sessions with limit then only limited number of sessions are returned.',
+        () async {
+          final sessions = await serverSideSessions.listSessions(
+            session,
+            limit: 3,
+          );
+
+          expect(sessions, hasLength(3));
+        },
+      );
+
+      test(
+        'when listing sessions with limit then results are ordered by ID.',
+        () async {
+          final sessions = await serverSideSessions.listSessions(
+            session,
+            limit: 5,
+          );
+
+          // Results should be ordered by ID (as strings)
+          final sortedIds = sessionIds.map((final id) => id.toString()).toList()
+            ..sort();
+          final returnedIds = sessions
+              .map((final s) => s.id.toString())
+              .toList();
+
+          expect(returnedIds, sortedIds);
+        },
+      );
+
+      test(
+        'when listing sessions with limit and user filter then correct sessions are returned.',
+        () async {
+          final sessions = await serverSideSessions.listSessions(
+            session,
+            authUserId: authUserId,
+            limit: 2,
+          );
+
+          expect(sessions, hasLength(2));
+          expect(
+            sessions.every((final s) => s.authUserId == authUserId),
+            isTrue,
+          );
+        },
+      );
+    },
+  );
 }
