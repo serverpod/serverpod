@@ -162,6 +162,85 @@ void main() {
     });
   });
 
+  group(
+    'Given a PresignedPutUploadStrategy with R2 endpoints and contentLength',
+    () {
+      late PresignedPutUploadStrategy strategy;
+      late R2EndpointConfig endpoints;
+
+      setUp(() {
+        strategy = PresignedPutUploadStrategy();
+        endpoints = R2EndpointConfig(accountId: 'abc123def456');
+      });
+
+      group('when creating upload description with contentLength', () {
+        late String? description;
+
+        setUp(() async {
+          description = await strategy.createDirectUploadDescription(
+            accessKey: 'r2accesskey',
+            secretKey: 'r2secretkey',
+            bucket: 'my-bucket',
+            region: 'auto',
+            path: 'uploads/test-file.txt',
+            expiration: Duration(minutes: 10),
+            maxFileSize: 10 * 1024 * 1024,
+            public: true,
+            endpoints: endpoints,
+            contentLength: 5000,
+          );
+        });
+
+        test('then it includes Content-Length in headers', () {
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          final headers = data['headers'] as Map<String, dynamic>;
+
+          expect(headers['Content-Length'], '5000');
+        });
+
+        test('then the presigned URL signs content-length header', () {
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          final url = data['url'] as String;
+
+          expect(url, contains('X-Amz-SignedHeaders=content-length'));
+        });
+      });
+
+      group('when creating upload description without contentLength', () {
+        late String? description;
+
+        setUp(() async {
+          description = await strategy.createDirectUploadDescription(
+            accessKey: 'r2accesskey',
+            secretKey: 'r2secretkey',
+            bucket: 'my-bucket',
+            region: 'auto',
+            path: 'uploads/test-file.txt',
+            expiration: Duration(minutes: 10),
+            maxFileSize: 10 * 1024 * 1024,
+            public: true,
+            endpoints: endpoints,
+          );
+        });
+
+        test('then it does not include Content-Length in headers', () {
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          final headers = data['headers'] as Map<String, dynamic>;
+
+          expect(headers.containsKey('Content-Length'), isFalse);
+        });
+
+        test('then the presigned URL only signs host header', () {
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          final url = data['url'] as String;
+
+          expect(url, contains('X-Amz-SignedHeaders=host'));
+          expect(url, isNot(contains('content-length')));
+        });
+      });
+    },
+  );
+
   group('Given a PresignedPutUploadStrategy with custom endpoints', () {
     late PresignedPutUploadStrategy strategy;
     late CustomEndpointConfig endpoints;

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
+import 'package:serverpod/serverpod.dart' show CloudStorageException;
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
 import 'package:test/test.dart';
 
@@ -49,6 +50,7 @@ class MockUploadStrategy implements S3UploadStrategy {
   String? directUploadPath;
   Duration? directUploadExpiration;
   int? directUploadMaxFileSize;
+  int? directUploadContentLength;
 
   String? directUploadDescriptionResult;
 
@@ -81,10 +83,12 @@ class MockUploadStrategy implements S3UploadStrategy {
     required int maxFileSize,
     required bool public,
     required S3EndpointConfig endpoints,
+    int? contentLength,
   }) async {
     directUploadPath = path;
     directUploadExpiration = expiration;
     directUploadMaxFileSize = maxFileSize;
+    directUploadContentLength = contentLength;
     return directUploadDescriptionResult;
   }
 }
@@ -157,7 +161,14 @@ class TestableS3CompatCloudStorage extends S3CompatCloudStorage {
     String path, {
     Duration expiration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
+    int? contentLength,
   }) async {
+    if (contentLength != null && contentLength > maxFileSize) {
+      throw CloudStorageException(
+        'Content length ($contentLength bytes) exceeds maximum file size ($maxFileSize bytes).',
+      );
+    }
+
     return uploadStrategy.createDirectUploadDescription(
       accessKey: accessKey,
       secretKey: secretKey,
@@ -168,6 +179,7 @@ class TestableS3CompatCloudStorage extends S3CompatCloudStorage {
       maxFileSize: maxFileSize,
       public: public,
       endpoints: endpoints,
+      contentLength: contentLength,
     );
   }
 
@@ -321,6 +333,71 @@ void main() {
         expect(mockUploadStrategy.directUploadExpiration, Duration(minutes: 5));
         expect(mockUploadStrategy.directUploadMaxFileSize, 1024 * 1024);
         expect(description, '{"url":"https://example.com"}');
+      },
+    );
+
+    test(
+      'when creating direct upload description with contentLength within limit '
+      'then it forwards contentLength to the upload strategy',
+      () async {
+        mockUploadStrategy.directUploadDescriptionResult =
+            '{"url":"https://example.com"}';
+
+        await storage.testCreateDirectUploadDescription(
+          'upload/target.txt',
+          maxFileSize: 1024 * 1024,
+          contentLength: 512 * 1024,
+        );
+
+        expect(mockUploadStrategy.directUploadContentLength, 512 * 1024);
+      },
+    );
+
+    test(
+      'when creating direct upload description without contentLength '
+      'then it forwards null contentLength to the upload strategy',
+      () async {
+        mockUploadStrategy.directUploadDescriptionResult =
+            '{"url":"https://example.com"}';
+
+        await storage.testCreateDirectUploadDescription(
+          'upload/target.txt',
+        );
+
+        expect(mockUploadStrategy.directUploadContentLength, isNull);
+      },
+    );
+
+    test(
+      'when creating direct upload description with contentLength exceeding maxFileSize '
+      'then it throws CloudStorageException',
+      () async {
+        expect(
+          () => storage.testCreateDirectUploadDescription(
+            'upload/target.txt',
+            maxFileSize: 1024 * 1024,
+            contentLength: 2 * 1024 * 1024,
+          ),
+          throwsA(isA<CloudStorageException>()),
+        );
+      },
+    );
+
+    test(
+      'when creating direct upload description with contentLength equal to maxFileSize '
+      'then it succeeds',
+      () async {
+        mockUploadStrategy.directUploadDescriptionResult =
+            '{"url":"https://example.com"}';
+
+        final description = await storage.testCreateDirectUploadDescription(
+          'upload/target.txt',
+          maxFileSize: 1024 * 1024,
+          contentLength: 1024 * 1024,
+        );
+
+        expect(description, isNotNull);
+        expect(mockUploadStrategy.directUploadContentLength, 1024 * 1024);
       },
     );
 
