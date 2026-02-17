@@ -179,12 +179,15 @@ class MicrosoftIdpConfig extends IdentityProviderBuilder<MicrosoftIdp> {
 /// ```
 class MicrosoftIdpConfigFromPasswords extends MicrosoftIdpConfig {
   /// Creates a new [MicrosoftIdpConfigFromPasswords] instance.
-  MicrosoftIdpConfigFromPasswords()
-    : super(
-        clientId: Serverpod.instance.getPasswordOrThrow('microsoftClientId'),
-        clientSecret: Serverpod.instance.getPasswordOrThrow(
-          'microsoftClientSecret',
-        ),
-        tenant: Serverpod.instance.getPassword('microsoftTenant') ?? 'common',
-      );
+  MicrosoftIdpConfigFromPasswords({
+    super.fetchProfilePhoto,
+    super.microsoftAccountDetailsValidation,
+    super.getExtraMicrosoftInfoCallback,
+  }) : super(
+         clientId: Serverpod.instance.getPasswordOrThrow('microsoftClientId'),
+         clientSecret: Serverpod.instance.getPasswordOrThrow(
+           'microsoftClientSecret',
+         ),
+         tenant: Serverpod.instance.getPassword('microsoftTenant') ?? 'common',
+       );
 }
