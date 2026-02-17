@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod/src/database/adapters/postgres/postgres_database_result.dart';
+import 'package:serverpod/src/database/adapters/postgres/postgres_pool_manager.dart';
 import 'package:serverpod/src/database/adapters/postgres/postgres_result_parser.dart';
 import 'package:serverpod/src/database/adapters/postgres/sql_query_builder.dart';
 import 'package:serverpod/src/database/concepts/column_value.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
+import 'package:serverpod/src/database/interface/database_connection.dart';
 import 'package:serverpod/src/database/concepts/exceptions.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
@@ -21,7 +23,6 @@ import 'package:uuid/uuid.dart';
 import '../../../server/session.dart';
 import '../../concepts/expressions.dart';
 import '../../concepts/table.dart';
-import '../../database_pool_manager.dart';
 import '../../query_parameters.dart';
 
 part 'postgres_exceptions.dart';
@@ -29,29 +30,25 @@ part 'postgres_exceptions.dart';
 /// A connection to the database. In most cases the [Database] db object in
 /// the [Session] object should be used when connecting with the database.
 @internal
-class DatabaseConnection {
-  /// Database configuration.
-  final DatabasePoolManager _poolManager;
-
+class PostgresDatabaseConnection
+    extends DatabaseConnection<PostgresPoolManager> {
   /// Access to the raw Postgresql connection pool.
-  pg.Pool get _postgresConnection => _poolManager.pool;
+  pg.Pool get _postgresConnection => poolManager.pool;
 
   /// Creates a new database connection from the configuration. For most cases
   /// this shouldn't be called directly, use the db object in the [Session] to
   /// access the database.
-  DatabaseConnection(this._poolManager);
+  PostgresDatabaseConnection(super.poolManager);
 
   /// Tests the database connection.
   /// Throws an exception if the connection is not working.
+  @override
   Future<bool> testConnection() async {
-    await _postgresConnection.execute(
-      'SELECT 1;',
-      timeout: const Duration(seconds: 2),
-    );
-    return true;
+    return poolManager.testConnection();
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<List<T>> find<T extends TableRow>(
     Session session, {
     Expression? where,
@@ -89,6 +86,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<T?> findFirstRow<T extends TableRow>(
     Session session, {
     Expression? where,
@@ -122,6 +120,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<T?> findById<T extends TableRow>(
     Session session,
     Object id, {
@@ -143,6 +142,7 @@ class DatabaseConnection {
 
   /// Acquires row-level locks without returning row data.
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<void> lockRows<T extends TableRow>(
     Session session, {
     required Expression where,
@@ -167,6 +167,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<List<T>> insert<T extends TableRow>(
     Session session,
     List<T> rows, {
@@ -186,11 +187,12 @@ class DatabaseConnection {
           query,
           transaction: transaction,
         ).then((_mergeResultsWithNonPersistedFields(rows))))
-        .map(_poolManager.serializationManager.deserialize<T>)
+        .map(poolManager.serializationManager.deserialize<T>)
         .toList();
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<T> insertRow<T extends TableRow>(
     Session session,
     T row, {
@@ -212,6 +214,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<List<T>> update<T extends TableRow>(
     Session session,
     List<T> rows, {
@@ -255,11 +258,12 @@ class DatabaseConnection {
           query,
           transaction: transaction,
         ).then((_mergeResultsWithNonPersistedFields(rows))))
-        .map(_poolManager.serializationManager.deserialize<T>)
+        .map(poolManager.serializationManager.deserialize<T>)
         .toList();
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<T> updateRow<T extends TableRow>(
     Session session,
     T row, {
@@ -288,6 +292,7 @@ class DatabaseConnection {
   /// Throws [ArgumentError] if [columnValues] is empty.
   ///
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<T> updateById<T extends TableRow>(
     Session session,
     Object id, {
@@ -302,14 +307,14 @@ class DatabaseConnection {
 
     var setClause = columnValues
         .map((cv) {
-          var value = _poolManager.encoder.convert(cv.value);
+          var value = poolManager.encoder.convert(cv.value);
           return '"${cv.column.columnName}" = $value::${_convertToPostgresType(cv.column)}';
         })
         .join(', ');
 
     var query =
         'UPDATE "${table.tableName}" SET $setClause '
-        'WHERE "${table.id.columnName}" = ${_poolManager.encoder.convert(id)} '
+        'WHERE "${table.id.columnName}" = ${poolManager.encoder.convert(id)} '
         'RETURNING *';
 
     var result = await _mappedResultsQuery(
@@ -324,7 +329,7 @@ class DatabaseConnection {
       );
     }
 
-    return _poolManager.serializationManager.deserialize<T>(
+    return poolManager.serializationManager.deserialize<T>(
       result.first,
     );
   }
@@ -338,6 +343,7 @@ class DatabaseConnection {
   /// only the rows selected by these parameters will be updated.
   ///
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<List<T>> updateWhere<T extends TableRow>(
     Session session, {
     required List<ColumnValue> columnValues,
@@ -357,7 +363,7 @@ class DatabaseConnection {
 
     var setClause = columnValues
         .map((cv) {
-          var value = _poolManager.encoder.convert(cv.value);
+          var value = poolManager.encoder.convert(cv.value);
           return '"${cv.column.columnName}" = $value::${_convertToPostgresType(cv.column)}';
         })
         .join(', ');
@@ -410,12 +416,11 @@ class DatabaseConnection {
       transaction: transaction,
     );
 
-    return result
-        .map(_poolManager.serializationManager.deserialize<T>)
-        .toList();
+    return result.map(poolManager.serializationManager.deserialize<T>).toList();
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<List<T>> delete<T extends TableRow>(
     Session session,
     List<T> rows, {
@@ -436,6 +441,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<T> deleteRow<T extends TableRow>(
     Session session,
     T row, {
@@ -457,6 +463,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<List<T>> deleteWhere<T extends TableRow>(
     Session session,
     Expression where, {
@@ -477,6 +484,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<int> count<T extends TableRow>(
     Session session, {
     Expression? where,
@@ -504,6 +512,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<PostgresDatabaseResult> simpleQuery(
     Session session,
     String query, {
@@ -522,6 +531,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<PostgresDatabaseResult> query(
     Session session,
     String query, {
@@ -615,6 +625,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<int> execute(
     Session session,
     String query, {
@@ -635,6 +646,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<int> simpleExecute(
     Session session,
     String query, {
@@ -717,7 +729,7 @@ class DatabaseConnection {
             include: include,
           ),
         )
-        .map(_poolManager.serializationManager.deserialize<T>)
+        .map(poolManager.serializationManager.deserialize<T>)
         .toList();
   }
 
@@ -744,6 +756,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  @override
   Future<R> transaction<R>(
     TransactionFunction<R> transactionFunction, {
     required TransactionSettings settings,
@@ -781,6 +794,7 @@ class DatabaseConnection {
   /// not have any effect on the Postgres level.
   ///
   /// This ensures that we are only running migrations one at a time.
+  @override
   Future<void> runMigrations(
     Session session,
     Future<void> Function(Transaction? transaction) action,
@@ -938,7 +952,7 @@ class DatabaseConnection {
               .map((column) {
                 var unformattedValue = row[column.columnName];
 
-                var formattedValue = _poolManager.encoder.convert(
+                var formattedValue = poolManager.encoder.convert(
                   unformattedValue,
                 );
 
@@ -1060,7 +1074,7 @@ class _PostgresTransaction implements Transaction {
   }
 
   Future<void> _query(String query, {QueryParameters? parameters}) async {
-    await DatabaseConnection._query(
+    await PostgresDatabaseConnection._query(
       _session,
       query,
       parameters: parameters,

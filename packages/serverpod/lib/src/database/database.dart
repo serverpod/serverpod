@@ -8,12 +8,14 @@ import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
 import 'package:serverpod/src/database/concepts/row_lock.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
-import 'package:serverpod/src/database/database_pool_manager.dart';
+import 'package:serverpod/src/database/interface/database_connection.dart';
+import 'package:serverpod/src/database/interface/database_pool_manager.dart';
 import 'package:serverpod/src/database/interface/value_encoder.dart';
 import 'package:serverpod/src/database/query_parameters.dart';
 
 import '../server/session.dart';
 import 'adapters/postgres/database_connection.dart';
+import 'adapters/postgres/postgres_pool_manager.dart';
 import 'concepts/expressions.dart';
 import 'concepts/table.dart';
 
@@ -25,7 +27,10 @@ extension DatabaseConstructor on Database {
     required Session session,
     required DatabasePoolManager poolManager,
   }) {
-    return Database._(session: session, poolManager: poolManager);
+    return Database._(
+      session: session,
+      poolManager: poolManager as PostgresPoolManager,
+    );
   }
 }
 
@@ -39,9 +44,9 @@ class Database {
   /// when a [Session] is created.
   Database._({
     required Session session,
-    required DatabasePoolManager poolManager,
+    required PostgresPoolManager poolManager,
   }) : _session = session,
-       _databaseConnection = DatabaseConnection(poolManager) {
+       _databaseConnection = PostgresDatabaseConnection(poolManager) {
     // Initialize the value encoder for the current database pool for query
     // builder and expressions to correctly encode values.
     ValueEncoder.set(poolManager.encoder);
