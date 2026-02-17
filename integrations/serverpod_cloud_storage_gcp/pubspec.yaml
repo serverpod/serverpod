@@ -12,21 +12,14 @@ environment:
   sdk: '^3.8.0'
 
 dependencies:
-  amazon_cognito_identity_dart_2: ^3.5.0
-  built_collection: ^5.1.1
-  built_value: ^8.4.4
-  http: '>=1.1.0 <2.0.0'
-  path: ^1.8.3
-  serverpod: 3.3.1
-  xml2json: ^6.0.0
   crypto: ^3.0.2
-  googleapis: ">=11.0.0 <16.0.0"
+  googleapis: ">=11.0.0 <17.0.0"
   googleapis_auth: ">=1.6.0 <3.0.0"
   http: ">=1.1.0 <2.0.0"
   path: ^1.8.3
-  pointycastle: '>=3.7.4 <5.0.0'
-  serverpod: 3.2.3
-  serverpod_cloud_storage_s3_compat: 3.2.3
+  pointycastle: ">=3.7.4 <5.0.0"
+  serverpod: 3.3.1
+  serverpod_cloud_storage_s3_compat: 3.3.1
 
 dev_dependencies:
   lints: ">=3.0.0 <7.0.0"
