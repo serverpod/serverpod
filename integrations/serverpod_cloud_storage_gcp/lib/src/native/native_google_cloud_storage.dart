@@ -294,7 +294,14 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
+    int? contentLength,
   }) async {
+    if (contentLength != null && contentLength > maxFileSize) {
+      throw CloudStorageException(
+        'Content length ($contentLength bytes) exceeds maximum file size ($maxFileSize bytes).',
+      );
+    }
+
     // Check if signing credentials are available
     if (!_signingCredentialsCompleter.isCompleted) {
       return null;
@@ -306,27 +313,37 @@ class NativeGoogleCloudStorage extends CloudStorage {
     final contentType = _detectMimeType(fileName);
     final acl = public ? 'public-read' : 'private';
 
+    final signingHeaders = <String, String>{
+      'content-type': contentType,
+      'x-goog-acl': acl,
+    };
+    if (contentLength != null) {
+      signingHeaders['content-length'] = contentLength.toString();
+    }
+
     final signedUrl = _createSignedUrl(
       credentials: signingCredentials,
       bucket: bucket,
       path: path,
       expiration: expirationDuration,
       method: 'PUT',
-      headers: {
-        'content-type': contentType,
-        'x-goog-acl': acl,
-      },
+      headers: signingHeaders,
     );
+
+    final responseHeaders = <String, String>{
+      'Content-Type': contentType,
+      'x-goog-acl': acl,
+    };
+    if (contentLength != null) {
+      responseHeaders['Content-Length'] = contentLength.toString();
+    }
 
     return jsonEncode({
       'url': signedUrl,
       'type': 'binary',
       'method': 'PUT',
       'file-name': fileName,
-      'headers': {
-        'Content-Type': contentType,
-        'x-goog-acl': acl,
-      },
+      'headers': responseHeaders,
     });
   }
 

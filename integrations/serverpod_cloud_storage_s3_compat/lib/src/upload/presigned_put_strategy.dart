@@ -118,6 +118,7 @@ $payloadHash''';
     required int maxFileSize,
     required bool public,
     required S3EndpointConfig endpoints,
+    int? contentLength,
   }) async {
     final presignedUrl = _createPresignedUrl(
       accessKey: accessKey,
@@ -127,25 +128,34 @@ $payloadHash''';
       path: path,
       expiration: expiration,
       endpoints: endpoints,
+      contentLength: contentLength,
     );
 
     final fileName = p.basename(path);
     final contentType = _detectMimeType(fileName);
+
+    final headers = <String, String>{
+      'Content-Type': contentType,
+    };
+    if (contentLength != null) {
+      headers['Content-Length'] = contentLength.toString();
+    }
 
     final uploadDescriptionData = {
       'url': presignedUrl,
       'type': uploadType,
       'method': 'PUT',
       'file-name': fileName,
-      'headers': {
-        'Content-Type': contentType,
-      },
+      'headers': headers,
     };
 
     return jsonEncode(uploadDescriptionData);
   }
 
   /// Creates a presigned PUT URL for direct uploads.
+  ///
+  /// When [contentLength] is provided, the `content-length` header is included
+  /// in the signed headers, so the storage provider enforces the exact size.
   String _createPresignedUrl({
     required String accessKey,
     required String secretKey,
@@ -154,6 +164,7 @@ $payloadHash''';
     required String path,
     required Duration expiration,
     required S3EndpointConfig endpoints,
+    int? contentLength,
   }) {
     final bucketUri = endpoints.buildBucketUri(bucket, region);
     final objectPath = bucketUri.path.endsWith('/')
@@ -163,12 +174,16 @@ $payloadHash''';
     final datetime = SigV4.generateDatetime();
     final credentialScope = SigV4.buildCredentialScope(datetime, region, 's3');
 
+    final signedHeaders = contentLength != null
+        ? 'content-length;host'
+        : 'host';
+
     final queryParams = <String, String>{
       'X-Amz-Algorithm': 'AWS4-HMAC-SHA256',
       'X-Amz-Credential': '$accessKey/$credentialScope',
       'X-Amz-Date': datetime,
       'X-Amz-Expires': expiration.inSeconds.toString(),
-      'X-Amz-SignedHeaders': 'host',
+      'X-Amz-SignedHeaders': signedHeaders,
     };
 
     final host = bucketUri.host;
@@ -178,13 +193,18 @@ $payloadHash''';
         .split('/')
         .map(Uri.encodeComponent)
         .join('/');
+
+    final canonicalHeaderLines = contentLength != null
+        ? 'content-length:$contentLength\nhost:$host'
+        : 'host:$host';
+
     final canonicalRequest =
         '''PUT
 $encodedPath
 $canonicalQuery
-host:$host
+$canonicalHeaderLines
 
-host
+$signedHeaders
 UNSIGNED-PAYLOAD''';
 
     final stringToSign = SigV4.buildStringToSign(
