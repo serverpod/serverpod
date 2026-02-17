@@ -40,6 +40,7 @@ abstract class S3UploadStrategy {
     required int maxFileSize,
     required bool public,
     required S3EndpointConfig endpoints,
+    int? contentLength,
   });
 
   /// The upload type identifier for client-side handling.

@@ -117,7 +117,13 @@ class DatabaseCloudStorage extends CloudStorage {
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
+    int? contentLength,
   }) async {
+    if (contentLength != null && contentLength > maxFileSize) {
+      throw CloudStorageException(
+        'Content length ($contentLength bytes) exceeds maximum file size ($maxFileSize bytes).',
+      );
+    }
     var config = session.server.serverpod.config;
 
     var expiration = DateTime.now().add(expirationDuration);
