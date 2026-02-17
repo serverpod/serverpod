@@ -114,11 +114,13 @@ class FacebookIdpConfig extends IdentityProviderBuilder<FacebookIdp> {
 /// ```
 class FacebookIdpConfigFromPasswords extends FacebookIdpConfig {
   /// Creates a new [FacebookIdpConfigFromPasswords] instance.
-  FacebookIdpConfigFromPasswords()
-    : super(
-        appId: Serverpod.instance.getPasswordOrThrow('facebookAppId'),
-        appSecret: Serverpod.instance.getPasswordOrThrow('facebookAppSecret'),
-      );
+  FacebookIdpConfigFromPasswords({
+    super.facebookAccountDetailsValidation,
+    super.getExtraFacebookInfoCallback,
+  }) : super(
+         appId: Serverpod.instance.getPasswordOrThrow('facebookAppId'),
+         appSecret: Serverpod.instance.getPasswordOrThrow('facebookAppSecret'),
+       );
 }
 
 /// Exception thrown when Facebook user information is missing required data.
