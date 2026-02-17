@@ -92,12 +92,14 @@ class GoogleIdpConfig extends IdentityProviderBuilder<GoogleIdp> {
 /// This constructor requires that a [Serverpod] instance has already been initialized.
 class GoogleIdpConfigFromPasswords extends GoogleIdpConfig {
   /// Creates a new [GoogleIdpConfigFromPasswords] instance.
-  GoogleIdpConfigFromPasswords()
-    : super(
-        clientSecret: GoogleClientSecret.fromJsonString(
-          Serverpod.instance.getPasswordOrThrow('googleClientSecret'),
-        ),
-      );
+  GoogleIdpConfigFromPasswords({
+    super.googleAccountDetailsValidation,
+    super.getExtraGoogleInfoCallback,
+  }) : super(
+         clientSecret: GoogleClientSecret.fromJsonString(
+           Serverpod.instance.getPasswordOrThrow('googleClientSecret'),
+         ),
+       );
 }
 
 /// Contains information about the credentials for the server to access Google's
