@@ -25,19 +25,6 @@ class FutureCallsAnalyzer {
   final String absoluteIncludedPaths;
   final FutureCallMethodParameterValidator parameterValidator;
 
-  static Directory _findPackageRoot(Directory directory) {
-    var current = directory.absolute;
-
-    while (true) {
-      final pubspec = File(p.join(current.path, 'pubspec.yaml'));
-      if (pubspec.existsSync()) return current;
-
-      final parent = current.parent;
-      if (parent.path == current.path) return directory.absolute;
-      current = parent;
-    }
-  }
-
   /// Create a new [FutureCallsAnalyzer], containing a
   /// [AnalysisContextCollection] that analyzes all dart files in the
   /// provided [directory].
@@ -45,15 +32,11 @@ class FutureCallsAnalyzer {
     required Directory directory,
     required this.parameterValidator,
   }) : collection = AnalysisContextCollection(
-         // Always anchor the analysis context at the nearest package root.
-         // This prevents the analyzer from accidentally selecting a parent
-         // package context (and excluding this directory as a nested package),
-         // which can happen in CI environments on Windows.
-         includedPaths: [p.normalize(_findPackageRoot(directory).path)],
+         includedPaths: [directory.absolute.path],
          resourceProvider: PhysicalResourceProvider.INSTANCE,
          sdkPath: findDartSdk(),
        ),
-       absoluteIncludedPaths = p.normalize(directory.absolute.path);
+       absoluteIncludedPaths = directory.absolute.path;
 
   Set<FutureCallDefinition> _futureCallDefinitions = {};
 
@@ -303,9 +286,7 @@ class FutureCallsAnalyzer {
       analyzedFiles.sort();
       var analyzedDartFiles = analyzedFiles
           .where((path) => path.endsWith('.dart'))
-          .where((path) => !path.endsWith('_test.dart'))
-          // Only analyze files under the originally requested directory.
-          .where((path) => p.isWithin(absoluteIncludedPaths, path));
+          .where((path) => !path.endsWith('_test.dart'));
       for (var filePath in analyzedDartFiles) {
         var library = await context.currentSession.getResolvedLibrary(filePath);
         if (library is ResolvedLibraryResult) {
