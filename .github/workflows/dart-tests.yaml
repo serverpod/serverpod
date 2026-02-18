@@ -486,12 +486,19 @@ jobs:
           - name: AWS S3
             package: serverpod_cloud_storage_s3
             env_prefix: AWS
+            test_path: test/integration
           - name: Cloudflare R2
             package: serverpod_cloud_storage_r2
             env_prefix: R2
+            test_path: test/integration
           - name: GCP
             package: serverpod_cloud_storage_gcp
             env_prefix: GCP
+            test_path: test/integration/gcp_s3_compat_integration_test.dart
+          - name: GCP Native
+            package: serverpod_cloud_storage_gcp
+            env_prefix: GCP_NATIVE
+            test_path: test/integration/native_gcp_integration_test.dart
     env:
       # AWS S3
       SERVERPOD_TEST_AWS_HMAC_ACCESS_KEY_ID: ${{ secrets.TEST_AWS_HMAC_ACCESS_KEY_ID }}
@@ -508,6 +515,8 @@ jobs:
       SERVERPOD_TEST_GCP_HMAC_SECRET_KEY: ${{ secrets.TEST_GCP_HMAC_SECRET_KEY }}
       SERVERPOD_TEST_GCP_BUCKET: ${{ secrets.TEST_GCP_BUCKET }}
       SERVERPOD_TEST_GCP_REGION: ${{ secrets.TEST_GCP_REGION }}
+      # GCP (Native API with service account)
+      SERVERPOD_TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON }}
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -518,7 +527,8 @@ jobs:
         id: check-secrets
         run: |
           KEY_VAR="SERVERPOD_TEST_${{ matrix.provider.env_prefix }}_HMAC_ACCESS_KEY_ID"
-          if [ -n "${!KEY_VAR}" ]; then
+          ALT_KEY_VAR="SERVERPOD_TEST_${{ matrix.provider.env_prefix }}_SERVICE_ACCOUNT_JSON"
+          if [ -n "${!KEY_VAR}" ] || [ -n "${!ALT_KEY_VAR}" ]; then
             echo "has_secrets=true" >> $GITHUB_OUTPUT
           else
             echo "has_secrets=false" >> $GITHUB_OUTPUT
@@ -528,7 +538,7 @@ jobs:
         run: |
           cd integrations/${{ matrix.provider.package }}
           dart pub get
-          dart test test/integration --reporter=failures-only
+          dart test ${{ matrix.provider.test_path }} --reporter=failures-only
       - name: Skip ${{ matrix.provider.name }} tests (no secrets)
         if: steps.check-secrets.outputs.has_secrets != 'true'
         run: echo "${{ matrix.provider.name }} credentials not configured. Skipping integration tests."
