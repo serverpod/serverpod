@@ -1,8 +1,13 @@
-#!/usr/bin/env bash
+#!/bin/bash
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/generate_completion"
+    exit 1
+fi
+
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-CLI_DIR="$SCRIPT_DIR/../tools/serverpod_cli"
+CLI_DIR="tools/serverpod_cli"
 
 TEMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TEMP_DIR"' EXIT
@@ -16,4 +21,4 @@ dart run "$CLI_DIR/bin/serverpod_cli.dart" completion embed \
   -t carapace -f "$TEMP_DIR/serverpod.yaml" \
   -d "$CLI_DIR/lib/src/generated/"
 
-echo "Done. Completion spec written to tools/serverpod_cli/lib/src/generated/completion_script_carapace.dart"
+echo "Done. Completion spec written to $CLI_DIR/lib/src/generated/completion_script_carapace.dart"
