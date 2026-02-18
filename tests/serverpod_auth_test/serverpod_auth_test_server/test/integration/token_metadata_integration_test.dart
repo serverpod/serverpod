@@ -142,4 +142,79 @@ void main() {
       });
     },
   );
+
+  withServerpod(
+    'Given an AuthServices configured with a ServerSideSessions with onSessionCreated callback that attaches custom metadata from the session dynamic userObject',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late UuidValue authUserId;
+
+      setUp(() async {
+        AuthServices.set(
+          tokenManagerBuilders: [
+            ServerSideSessionsConfig(
+              sessionKeyHashPepper: 'test-pepper',
+              onSessionCreated:
+                  (
+                    final session, {
+                    required final authUserId,
+                    required final serverSideSessionId,
+                    required final transaction,
+                  }) async {
+                    final object = session.userObject as Map<String, dynamic>;
+                    final deviceName = object['deviceName'] as String;
+                    final userAgent = object['userAgent'] as String;
+
+                    await SessionMetadata.db.insertRow(
+                      session,
+                      SessionMetadata(
+                        serverSideSessionId: serverSideSessionId,
+                        deviceName: deviceName,
+                        ipAddress: session
+                            .request
+                            ?.connectionInfo
+                            .remote
+                            .address
+                            .toString(),
+                        userAgent: userAgent,
+                        metadata: null,
+                      ),
+                      transaction: transaction,
+                    );
+                  },
+            ),
+          ],
+          identityProviderBuilders: [],
+        );
+
+        session = sessionBuilder.build();
+        authUserId = await endpoints.authTest.createTestUser(sessionBuilder);
+      });
+
+      test(
+        'when creating a token from the AuthServices token manager, '
+        'then the dynamic userObject metadata is attached to the token',
+        () async {
+          // Must be attached before issuing the token.
+          session.userObject = {
+            'deviceName': 'Test Device',
+            'userAgent': 'TestAgent/1.0',
+          };
+
+          await AuthServices.instance.tokenManager.issueToken(
+            session,
+            authUserId: authUserId,
+            method: 'test',
+            scopes: {},
+          );
+
+          final tokenMetadata = await SessionMetadata.db.find(session);
+
+          expect(tokenMetadata.length, equals(1));
+          expect(tokenMetadata.first.deviceName, equals('Test Device'));
+          expect(tokenMetadata.first.userAgent, equals('TestAgent/1.0'));
+        },
+      );
+    },
+  );
 }
