@@ -206,6 +206,73 @@ void runS3CompatIntegrationTests({
         );
       });
 
+      group('when overwriting an existing file', () {
+        test(
+          'then the new content replaces the old content',
+          () async {
+            final path = testPath('overwrite-test.txt');
+            final originalContent = 'Original content';
+            final originalData = ByteData.view(
+              Uint8List.fromList(originalContent.codeUnits).buffer,
+            );
+
+            await uploadStrategy.uploadData(
+              accessKey: config!.accessKey,
+              secretKey: config.secretKey,
+              bucket: config.bucket,
+              region: config.region,
+              data: originalData,
+              path: path,
+              public: false,
+              endpoints: endpoints,
+            );
+
+            final updatedContent = 'Updated content';
+            final updatedData = ByteData.view(
+              Uint8List.fromList(updatedContent.codeUnits).buffer,
+            );
+
+            await uploadStrategy.uploadData(
+              accessKey: config.accessKey,
+              secretKey: config.secretKey,
+              bucket: config.bucket,
+              region: config.region,
+              data: updatedData,
+              path: path,
+              public: false,
+              endpoints: endpoints,
+            );
+
+            final response = await client.getObject(path);
+            expect(response.statusCode, 200);
+            expect(response.body, updatedContent);
+          },
+        );
+      });
+
+      group('when retrieving or deleting non-existent files', () {
+        test(
+          'then retrieving a non-existent file returns 404',
+          () async {
+            final response = await client.getObject(
+              'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
+            );
+
+            expect(response.statusCode, 404);
+          },
+        );
+
+        test(
+          'then deleting a non-existent file does not throw',
+          () async {
+            // Should complete without error
+            await client.deleteObject(
+              'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
+            );
+          },
+        );
+      });
+
       group('when working with binary data', () {
         test(
           'then uploading a binary file preserves the exact bytes',
@@ -322,6 +389,42 @@ void runS3CompatIntegrationTests({
             expect(success, isTrue);
 
             // Verify the file was actually uploaded
+            final response = await client.getObject(path);
+            expect(response.statusCode, 200);
+            expect(response.body, content);
+          },
+        );
+
+        test(
+          'then a file can be uploaded with contentLength via FileUploader',
+          () async {
+            final path = testPath('direct-upload-content-length-test.txt');
+            final content = 'Content with known length ${DateTime.now()}';
+            final data = ByteData.view(
+              Uint8List.fromList(content.codeUnits).buffer,
+            );
+
+            final description = await uploadStrategy
+                .createDirectUploadDescription(
+                  accessKey: config!.accessKey,
+                  secretKey: config.secretKey,
+                  bucket: config.bucket,
+                  region: config.region,
+                  path: path,
+                  expiration: Duration(minutes: 5),
+                  maxFileSize: 10 * 1024 * 1024,
+                  public: false,
+                  endpoints: endpoints,
+                  contentLength: data.lengthInBytes,
+                );
+
+            expect(description, isNotNull);
+
+            final uploader = FileUploader(description!);
+            final success = await uploader.uploadByteData(data);
+
+            expect(success, isTrue);
+
             final response = await client.getObject(path);
             expect(response.statusCode, 200);
             expect(response.body, content);
