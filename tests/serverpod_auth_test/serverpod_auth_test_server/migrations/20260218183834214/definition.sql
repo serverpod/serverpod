@@ -470,6 +470,23 @@ CREATE TABLE "serverpod_auth_idp_email_account_request" (
 CREATE UNIQUE INDEX "serverpod_auth_idp_email_account_request_email" ON "serverpod_auth_idp_email_account_request" USING btree ("email");
 
 --
+-- Class FacebookAccount as table serverpod_auth_idp_facebook_account
+--
+CREATE TABLE "serverpod_auth_idp_facebook_account" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
+    "authUserId" uuid NOT NULL,
+    "createdAt" timestamp without time zone NOT NULL,
+    "userIdentifier" text NOT NULL,
+    "email" text,
+    "fullName" text,
+    "firstName" text,
+    "lastName" text
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_facebook_account_user_identifier" ON "serverpod_auth_idp_facebook_account" USING btree ("userIdentifier");
+
+--
 -- Class FirebaseAccount as table serverpod_auth_idp_firebase_account
 --
 CREATE TABLE "serverpod_auth_idp_firebase_account" (
@@ -916,6 +933,16 @@ ALTER TABLE ONLY "serverpod_auth_idp_email_account_request"
     ON UPDATE NO ACTION;
 
 --
+-- Foreign relations for "serverpod_auth_idp_facebook_account" table
+--
+ALTER TABLE ONLY "serverpod_auth_idp_facebook_account"
+    ADD CONSTRAINT "serverpod_auth_idp_facebook_account_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_core_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
 -- Foreign relations for "serverpod_auth_idp_firebase_account" table
 --
 ALTER TABLE ONLY "serverpod_auth_idp_firebase_account"
@@ -986,9 +1013,9 @@ ALTER TABLE ONLY "serverpod_auth_migration_migrated_user"
 -- MIGRATION VERSION FOR serverpod_auth_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_test', '20260217164201252', now())
+    VALUES ('serverpod_auth_test', '20260218183834214', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260217164201252', "timestamp" = now();
+    DO UPDATE SET "version" = '20260218183834214', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -1002,9 +1029,9 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
 -- MIGRATION VERSION FOR serverpod_auth_bridge
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_bridge', '20260211142601486', now())
+    VALUES ('serverpod_auth_bridge', '20260213194701269', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260211142601486', "timestamp" = now();
+    DO UPDATE SET "version" = '20260213194701269', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_core
@@ -1018,17 +1045,17 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
 -- MIGRATION VERSION FOR serverpod_auth_idp
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_idp', '20260210191707839', now())
+    VALUES ('serverpod_auth_idp', '20260213194423028', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260210191707839', "timestamp" = now();
+    DO UPDATE SET "version" = '20260213194423028', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_migration
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_migration', '20260211142607252', now())
+    VALUES ('serverpod_auth_migration', '20260213194706631', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260211142607252', "timestamp" = now();
+    DO UPDATE SET "version" = '20260213194706631', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

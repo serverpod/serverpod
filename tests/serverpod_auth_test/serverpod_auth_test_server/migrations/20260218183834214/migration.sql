@@ -55,9 +55,9 @@ ALTER TABLE ONLY "token_metadata"
 -- MIGRATION VERSION FOR serverpod_auth_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_test', '20260217164201252', now())
+    VALUES ('serverpod_auth_test', '20260218183834214', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260217164201252', "timestamp" = now();
+    DO UPDATE SET "version" = '20260218183834214', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
@@ -71,9 +71,9 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
 -- MIGRATION VERSION FOR serverpod_auth_bridge
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_bridge', '20260211142601486', now())
+    VALUES ('serverpod_auth_bridge', '20260213194701269', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260211142601486', "timestamp" = now();
+    DO UPDATE SET "version" = '20260213194701269', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_core
@@ -87,17 +87,17 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
 -- MIGRATION VERSION FOR serverpod_auth_idp
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_idp', '20260210191707839', now())
+    VALUES ('serverpod_auth_idp', '20260213194423028', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260210191707839', "timestamp" = now();
+    DO UPDATE SET "version" = '20260213194423028', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_migration
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_migration', '20260211142607252', now())
+    VALUES ('serverpod_auth_migration', '20260213194706631', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260211142607252', "timestamp" = now();
+    DO UPDATE SET "version" = '20260213194706631', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth

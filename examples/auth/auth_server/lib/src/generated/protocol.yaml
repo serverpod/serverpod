@@ -12,6 +12,9 @@ emailIdp:
   - verifyPasswordResetCode:
   - finishPasswordReset:
   - hasAccount:
+facebookIdp:
+  - login:
+  - hasAccount:
 firebaseIdp:
   - login:
   - hasAccount:

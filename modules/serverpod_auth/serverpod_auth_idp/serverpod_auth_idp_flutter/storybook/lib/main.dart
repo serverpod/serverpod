@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
+import 'package:serverpod_auth_idp_flutter_facebook/serverpod_auth_idp_flutter_facebook.dart';
 import 'package:storybook_toolkit/storybook_toolkit.dart';
 
 import 'stories/anonymous.dart';
 import 'stories/apple.dart';
 import 'stories/email.dart';
+import 'stories/facebook.dart';
 import 'stories/github.dart';
 import 'stories/google.dart';
 import 'stories/microsoft.dart';
@@ -22,6 +24,9 @@ void main() {
   client.auth.initializeAppleSignIn();
   client.auth.initializeGitHubSignIn();
   client.auth.initializeMicrosoftSignIn();
+  client.auth.initializeFacebookSignIn(
+    appId: 'your-facebook-app-id', // throws if not provided on web and macos
+  );
 
   runApp(const MainApp());
 }
@@ -51,6 +56,7 @@ class MainApp extends StatelessWidget {
           ...emailStories,
           ...googleStories,
           ...appleStories,
+          ...facebookStories,
           ...githubStories,
           ...microsoftStories,
           ...signInStories,
