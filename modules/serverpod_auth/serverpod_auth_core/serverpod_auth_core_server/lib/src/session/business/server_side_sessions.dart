@@ -215,6 +215,7 @@ class ServerSideSessions {
         secret: secret,
         serverSideSessionId: serverSideSession.id!,
       ),
+      tokenExpiresAt: effectiveExpiresAt,
       authUserId: authUserId,
       scopeNames: scopeNames,
     );

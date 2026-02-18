@@ -82,6 +82,16 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withServerPackage(String serverPackage) {
+    _serverPackage = serverPackage;
+    return this;
+  }
+
+  GeneratorConfigBuilder withDartClientPackage(String dartClientPackage) {
+    _dartClientPackage = dartClientPackage;
+    return this;
+  }
+
   GeneratorConfigBuilder withAuthModule() {
     _modules.add(
       ModuleConfig(

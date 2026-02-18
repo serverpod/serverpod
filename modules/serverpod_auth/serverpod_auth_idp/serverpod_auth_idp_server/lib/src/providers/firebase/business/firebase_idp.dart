@@ -138,6 +138,10 @@ class FirebaseIdp {
       },
     );
   }
+
+  /// Determines whether the current session has an associated Firebase account.
+  Future<bool> hasAccount(final Session session) async =>
+      await utils.getAccount(session) != null;
 }
 
 /// Extension to get the FirebaseIdp instance from the AuthServices.

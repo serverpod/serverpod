@@ -288,6 +288,8 @@ class CompanyRepository {
     _i1.OrderByListBuilder<CompanyTable>? orderByList,
     _i1.Transaction? transaction,
     CompanyInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Company>(
       where: where?.call(Company.t),
@@ -298,6 +300,8 @@ class CompanyRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -327,6 +331,8 @@ class CompanyRepository {
     _i1.OrderByListBuilder<CompanyTable>? orderByList,
     _i1.Transaction? transaction,
     CompanyInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Company>(
       where: where?.call(Company.t),
@@ -336,6 +342,8 @@ class CompanyRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -345,11 +353,15 @@ class CompanyRepository {
     int id, {
     _i1.Transaction? transaction,
     CompanyInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Company>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -507,6 +519,22 @@ class CompanyRepository {
     return session.db.count<Company>(
       where: where?.call(Company.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Company] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<CompanyTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Company>(
+      where: where(Company.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

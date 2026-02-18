@@ -15,15 +15,15 @@ class LocalCache extends Cache {
 
   /// New cache values currently being computed by a [CacheMissHandler]
   // The future values in here must not be resolved (at which state the value should just be in the cache), but just pending
-  final _inProgressCacheValues = <String, Future<SerializableModel?>>{};
+  final _inProgressCacheValues = <String, Future<Object?>>{};
 
   /// Creates a new [LocalCache].
   LocalCache(super.maxEntries, super.serializationManager);
 
   @override
-  Future<void> put(
+  Future<void> put<T extends Object>(
     String key,
-    SerializableModel object, {
+    T object, {
     Duration? lifetime,
     String? group,
   }) async {
@@ -91,7 +91,7 @@ class LocalCache extends Cache {
   }
 
   @override
-  Future<T?> get<T extends SerializableModel>(
+  Future<T?> get<T extends Object>(
     String key, [
 
     /// Handler to generate a new value in case there is no active value in the cache

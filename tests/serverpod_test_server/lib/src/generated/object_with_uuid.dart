@@ -251,6 +251,8 @@ class ObjectWithUuidRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithUuid>(
       where: where?.call(ObjectWithUuid.t),
@@ -260,6 +262,8 @@ class ObjectWithUuidRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -288,6 +292,8 @@ class ObjectWithUuidRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithUuid>(
       where: where?.call(ObjectWithUuid.t),
@@ -296,6 +302,8 @@ class ObjectWithUuidRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -304,10 +312,14 @@ class ObjectWithUuidRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithUuid>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -465,6 +477,22 @@ class ObjectWithUuidRepository {
     return session.db.count<ObjectWithUuid>(
       where: where?.call(ObjectWithUuid.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ObjectWithUuid] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<ObjectWithUuidTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ObjectWithUuid>(
+      where: where(ObjectWithUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

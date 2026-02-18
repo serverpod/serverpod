@@ -9,10 +9,11 @@ void main() {
   group(
     'Given ServerSideSessions with default session lifetime configured',
     () {
+      const defaultSessionLifetime = Duration(days: 7);
       final serverSideSessions = ServerSideSessions(
         config: ServerSideSessionsConfig(
           sessionKeyHashPepper: 'test-pepper',
-          defaultSessionLifetime: const Duration(days: 7),
+          defaultSessionLifetime: defaultSessionLifetime,
         ),
       );
 
@@ -76,6 +77,27 @@ void main() {
               );
             },
           );
+
+          test(
+            'then tokenExpiresAt matches default session lifetime.',
+            () async {
+              final now = clock.now();
+              late AuthSuccess authSuccess;
+
+              await withClock(Clock.fixed(now), () async {
+                authSuccess = await serverSideSessions.createSession(
+                  session,
+                  authUserId: authUserId,
+                  method: 'test',
+                );
+              });
+
+              final expirationExpected = now.add(defaultSessionLifetime);
+
+              expect(authSuccess.tokenExpiresAt, isA<DateTime>());
+              expect(authSuccess.tokenExpiresAt, expirationExpected);
+            },
+          );
         },
       );
 
@@ -118,6 +140,27 @@ void main() {
                   expect(authInfo, isNull);
                 },
               );
+            },
+          );
+
+          test(
+            'then tokenExpiresAt matches explicit expiresAt.',
+            () async {
+              final now = clock.now();
+              final explicitExpiresAt = now.add(const Duration(days: 1));
+              late AuthSuccess authSuccess;
+
+              await withClock(Clock.fixed(now), () async {
+                authSuccess = await serverSideSessions.createSession(
+                  session,
+                  authUserId: authUserId,
+                  method: 'test',
+                  expiresAt: explicitExpiresAt,
+                );
+              });
+
+              expect(authSuccess.tokenExpiresAt, isA<DateTime>());
+              expect(authSuccess.tokenExpiresAt, explicitExpiresAt);
             },
           );
         },
@@ -297,6 +340,19 @@ void main() {
             },
           );
         });
+
+        test(
+          'then tokenExpiresAt is null due to no default expiration.',
+          () async {
+            final authSuccess = await serverSideSessions.createSession(
+              session,
+              authUserId: authUserId,
+              method: 'test',
+            );
+
+            expect(authSuccess.tokenExpiresAt, isNull);
+          },
+        );
       },
     );
   });

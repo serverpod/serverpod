@@ -328,6 +328,8 @@ class FutureCallEntryRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<FutureCallEntry>(
       where: where?.call(FutureCallEntry.t),
@@ -337,6 +339,8 @@ class FutureCallEntryRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -365,6 +369,8 @@ class FutureCallEntryRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<FutureCallEntry>(
       where: where?.call(FutureCallEntry.t),
@@ -373,6 +379,8 @@ class FutureCallEntryRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -381,10 +389,14 @@ class FutureCallEntryRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<FutureCallEntry>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -544,6 +556,22 @@ class FutureCallEntryRepository {
     return session.db.count<FutureCallEntry>(
       where: where?.call(FutureCallEntry.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [FutureCallEntry] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<FutureCallEntry>(
+      where: where(FutureCallEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

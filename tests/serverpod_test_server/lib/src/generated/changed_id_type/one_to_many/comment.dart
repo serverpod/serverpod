@@ -293,6 +293,8 @@ class CommentIntRepository {
     _i1.OrderByListBuilder<CommentIntTable>? orderByList,
     _i1.Transaction? transaction,
     CommentIntInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CommentInt>(
       where: where?.call(CommentInt.t),
@@ -303,6 +305,8 @@ class CommentIntRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -332,6 +336,8 @@ class CommentIntRepository {
     _i1.OrderByListBuilder<CommentIntTable>? orderByList,
     _i1.Transaction? transaction,
     CommentIntInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CommentInt>(
       where: where?.call(CommentInt.t),
@@ -341,6 +347,8 @@ class CommentIntRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -350,11 +358,15 @@ class CommentIntRepository {
     int id, {
     _i1.Transaction? transaction,
     CommentIntInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<CommentInt>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -512,6 +524,22 @@ class CommentIntRepository {
     return session.db.count<CommentInt>(
       where: where?.call(CommentInt.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [CommentInt] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<CommentIntTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<CommentInt>(
+      where: where(CommentInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

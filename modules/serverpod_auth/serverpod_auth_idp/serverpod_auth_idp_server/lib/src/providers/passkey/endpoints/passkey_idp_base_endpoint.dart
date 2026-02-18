@@ -4,7 +4,7 @@ import '../../../../../core.dart';
 import '../business/passkey_idp.dart';
 
 /// Base endpoint for Passkey-based authentication.
-abstract class PasskeyIdpBaseEndpoint extends Endpoint {
+abstract class PasskeyIdpBaseEndpoint extends IdpBaseEndpoint {
   /// Gets the [PasskeyIdp] instance from the [AuthServices] instance.
   ///
   /// If you want to use a different instance, override this getter.
@@ -39,4 +39,8 @@ abstract class PasskeyIdpBaseEndpoint extends Endpoint {
   }) async {
     return await passkeyIdp.login(session, request: loginRequest);
   }
+
+  @override
+  Future<bool> hasAccount(final Session session) async =>
+      await passkeyIdp.hasAccount(session);
 }

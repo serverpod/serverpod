@@ -6,6 +6,7 @@ import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/database_result.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
+import 'package:serverpod/src/database/concepts/row_lock.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/query_parameters.dart';
@@ -54,6 +55,12 @@ class Database {
   ///
   /// [offset] defines how many items to skip, after with [limit] (or all)
   /// items are read from the database.
+  ///
+  /// [lockMode] acquires a row-level lock on the returned rows. Requires
+  /// a [transaction]. See [LockMode] for available lock types.
+  ///
+  /// [lockBehavior] controls what happens when a row is already locked.
+  /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
   @internal
   Future<List<T>> find<T extends TableRow>({
     Expression? where,
@@ -64,7 +71,18 @@ class Database {
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
   }) async {
+    // ignore: invalid_use_of_visible_for_testing_member
+    final resolvedTransaction = transaction ?? _session.transaction;
+    if (lockMode != null && resolvedTransaction == null) {
+      throw ArgumentError(
+        'A transaction is required when using row locking. '
+        'Wrap your query in session.db.transaction().',
+      );
+    }
+
     return _databaseConnection.find<T>(
       _session,
       where: where,
@@ -73,9 +91,10 @@ class Database {
       orderBy: orderBy,
       orderByList: orderByList,
       orderDescending: orderDescending,
-      // ignore: invalid_use_of_visible_for_testing_member
-      transaction: transaction ?? _session.transaction,
+      transaction: resolvedTransaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -88,6 +107,12 @@ class Database {
   /// when sorting by multiple columns.
   ///
   /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// [lockMode] acquires a row-level lock on the returned row. Requires
+  /// a [transaction]. See [LockMode] for available lock types.
+  ///
+  /// [lockBehavior] controls what happens when a row is already locked.
+  /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
   @internal
   Future<T?> findFirstRow<T extends TableRow>({
     Expression? where,
@@ -97,7 +122,18 @@ class Database {
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
   }) async {
+    // ignore: invalid_use_of_visible_for_testing_member
+    final resolvedTransaction = transaction ?? _session.transaction;
+    if (lockMode != null && resolvedTransaction == null) {
+      throw ArgumentError(
+        'A transaction is required when using row locking. '
+        'Wrap your query in session.db.transaction().',
+      );
+    }
+
     return await _databaseConnection.findFirstRow<T>(
       _session,
       where: where,
@@ -105,9 +141,10 @@ class Database {
       orderBy: orderBy,
       orderByList: orderByList,
       orderDescending: orderDescending,
-      // ignore: invalid_use_of_visible_for_testing_member
-      transaction: transaction ?? _session.transaction,
+      transaction: resolvedTransaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -117,18 +154,65 @@ class Database {
   /// ```dart
   /// var myRow = session.db.findById<MyClass>(myId);
   /// ```
+  ///
+  /// [lockMode] acquires a row-level lock on the returned row. Requires
+  /// a [transaction]. See [LockMode] for available lock types.
+  ///
+  /// [lockBehavior] controls what happens when a row is already locked.
+  /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
   @internal
   Future<T?> findById<T extends TableRow>(
     Object id, {
     Transaction? transaction,
     Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
   }) async {
+    // ignore: invalid_use_of_visible_for_testing_member
+    final resolvedTransaction = transaction ?? _session.transaction;
+    if (lockMode != null && resolvedTransaction == null) {
+      throw ArgumentError(
+        'A transaction is required when using row locking. '
+        'Wrap your query in session.db.transaction().',
+      );
+    }
+
     return _databaseConnection.findById<T>(
       _session,
       id,
-      // ignore: invalid_use_of_visible_for_testing_member
-      transaction: transaction ?? _session.transaction,
+      transaction: resolvedTransaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Acquires row-level locks on rows matching the [where] expression without
+  /// returning the row data.
+  ///
+  /// This is useful when you need to lock rows for a subsequent update without
+  /// the overhead of fetching the data.
+  ///
+  /// [lockMode] specifies the type of lock to acquire.
+  /// See [LockMode] for available lock types.
+  ///
+  /// [lockBehavior] controls what happens when a row is already locked.
+  /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
+  ///
+  /// A [transaction] is required.
+  @internal
+  Future<void> lockRows<T extends TableRow>({
+    required Expression where,
+    required LockMode lockMode,
+    required Transaction transaction,
+    LockBehavior lockBehavior = LockBehavior.wait,
+  }) async {
+    return _databaseConnection.lockRows<T>(
+      _session,
+      where: where,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+      transaction: transaction,
     );
   }
 

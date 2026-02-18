@@ -288,6 +288,8 @@ class CommentRepository {
     _i1.OrderByListBuilder<CommentTable>? orderByList,
     _i1.Transaction? transaction,
     CommentInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Comment>(
       where: where?.call(Comment.t),
@@ -298,6 +300,8 @@ class CommentRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -327,6 +331,8 @@ class CommentRepository {
     _i1.OrderByListBuilder<CommentTable>? orderByList,
     _i1.Transaction? transaction,
     CommentInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Comment>(
       where: where?.call(Comment.t),
@@ -336,6 +342,8 @@ class CommentRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -345,11 +353,15 @@ class CommentRepository {
     int id, {
     _i1.Transaction? transaction,
     CommentInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Comment>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -507,6 +519,22 @@ class CommentRepository {
     return session.db.count<Comment>(
       where: where?.call(Comment.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Comment] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<CommentTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Comment>(
+      where: where(Comment.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

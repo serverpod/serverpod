@@ -37,6 +37,7 @@ class EndpointAuthEmail extends EndpointEmailIdpBase {
         reason: EmailAccountLoginExceptionReason.invalidCredentials,
       );
     }
+    _mockData.hasAccount = true;
     return _mockData.authSuccess;
   }
 
@@ -126,6 +127,9 @@ class EndpointAuthEmail extends EndpointEmailIdpBase {
     _mockData.passwordResetToken = null;
     return _mockData.authSuccess;
   }
+
+  @override
+  Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
 class GoogleIdpEndpoint extends EndpointGoogleIdpBase {
@@ -140,7 +144,13 @@ class GoogleIdpEndpoint extends EndpointGoogleIdpBase {
   Future<AuthSuccess> login({
     required String idToken,
     required String? accessToken,
-  }) => Future.value(_mockData.authSuccess);
+  }) async {
+    _mockData.hasAccount = true;
+    return _mockData.authSuccess;
+  }
+
+  @override
+  Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
 class AppleIdpEndpoint extends EndpointAppleIdpBase {
@@ -158,7 +168,13 @@ class AppleIdpEndpoint extends EndpointAppleIdpBase {
     required bool isNativeApplePlatformSignIn,
     String? firstName,
     String? lastName,
-  }) => Future.value(_mockData.authSuccess);
+  }) async {
+    _mockData.hasAccount = true;
+    return _mockData.authSuccess;
+  }
+
+  @override
+  Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
 class GitHubIdpEndpoint extends EndpointGitHubIdpBase {
@@ -175,6 +191,29 @@ class GitHubIdpEndpoint extends EndpointGitHubIdpBase {
     required String codeVerifier,
     required String redirectUri,
   }) => Future.value(_mockData.authSuccess);
+
+  @override
+  Future<bool> hasAccount() async => _mockData.hasAccount;
+}
+
+class MicrosoftIdpEndpoint extends EndpointMicrosoftIdpBase {
+  MicrosoftIdpEndpoint(super.caller);
+
+  final _mockData = MockAuthData();
+
+  @override
+  String get name => 'microsoftIdp';
+
+  @override
+  Future<AuthSuccess> login({
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
+    required bool isWebPlatform,
+  }) => Future.value(_mockData.authSuccess);
+
+  @override
+  Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
 class Modules {
@@ -198,6 +237,7 @@ class Client extends ServerpodClientShared {
     googleIdp = GoogleIdpEndpoint(this);
     appleIdp = AppleIdpEndpoint(this);
     githubIdp = GitHubIdpEndpoint(this);
+    microsoftIdp = MicrosoftIdpEndpoint(this);
     modules = Modules(this);
   }
 
@@ -211,6 +251,8 @@ class Client extends ServerpodClientShared {
 
   late final GitHubIdpEndpoint githubIdp;
 
+  late final MicrosoftIdpEndpoint microsoftIdp;
+
   late final Modules modules;
 
   @override
@@ -220,6 +262,7 @@ class Client extends ServerpodClientShared {
     'googleIdp': googleIdp,
     'appleIdp': appleIdp,
     'githubIdp': githubIdp,
+    'microsoftIdp': microsoftIdp,
   };
 
   @override
@@ -249,6 +292,7 @@ class MockAuthData {
   String? passwordResetCode;
   String? registrationToken;
   String? passwordResetToken;
+  bool hasAccount = false;
 
   UuidValue? registrationRequestId;
   UuidValue? passwordResetRequestId;

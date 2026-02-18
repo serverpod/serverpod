@@ -20,6 +20,17 @@ import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/
 import 'package:serverpod_auth_idp_client/src/protocol/providers/passkey/models/passkey_login_request.dart'
     as _i6;
 
+/// Base endpoint for identity providers.
+/// {@category Endpoint}
+abstract class EndpointIdpBase extends _i1.EndpointRef {
+  EndpointIdpBase(_i1.EndpointCaller caller) : super(caller);
+
+  /// Returns the `method` value for each connected [Idp] subclass if the
+  /// current session is authenticated and if the user has an account connected
+  /// to the [Idp].
+  _i2.Future<bool> hasAccount();
+}
+
 /// Base endpoint for anonymous accounts.
 /// {@category Endpoint}
 abstract class EndpointAnonymousIdpBase extends _i1.EndpointRef {
@@ -38,7 +49,7 @@ abstract class EndpointAnonymousIdpBase extends _i1.EndpointRef {
 /// concrete class.
 /// For further details see https://docs.serverpod.dev/concepts/working-with-endpoints#inheriting-from-an-endpoint-class-marked-abstract
 /// {@category Endpoint}
-abstract class EndpointAppleIdpBase extends _i1.EndpointRef {
+abstract class EndpointAppleIdpBase extends EndpointIdpBase {
   EndpointAppleIdpBase(_i1.EndpointCaller caller) : super(caller);
 
   /// Signs in a user with their Apple account.
@@ -56,6 +67,9 @@ abstract class EndpointAppleIdpBase extends _i1.EndpointRef {
     String? firstName,
     String? lastName,
   });
+
+  @override
+  _i2.Future<bool> hasAccount();
 }
 
 /// Base endpoint for email-based accounts.
@@ -70,7 +84,7 @@ abstract class EndpointAppleIdpBase extends _i1.EndpointRef {
 /// Alternatively you can build up your own endpoint on top of the same business
 /// logic by using [EmailIdp].
 /// {@category Endpoint}
-abstract class EndpointEmailIdpBase extends _i1.EndpointRef {
+abstract class EndpointEmailIdpBase extends EndpointIdpBase {
   EndpointEmailIdpBase(_i1.EndpointCaller caller) : super(caller);
 
   /// Logs in the user and returns a new session.
@@ -185,6 +199,9 @@ abstract class EndpointEmailIdpBase extends _i1.EndpointRef {
     required String finishPasswordResetToken,
     required String newPassword,
   });
+
+  @override
+  _i2.Future<bool> hasAccount();
 }
 
 /// Base endpoint for Firebase Account-based authentication.
@@ -193,7 +210,7 @@ abstract class EndpointEmailIdpBase extends _i1.EndpointRef {
 /// If you would like modify the authentication flow, consider extending this
 /// class and overriding the relevant methods.
 /// {@category Endpoint}
-abstract class EndpointFirebaseIdpBase extends _i1.EndpointRef {
+abstract class EndpointFirebaseIdpBase extends EndpointIdpBase {
   EndpointFirebaseIdpBase(_i1.EndpointCaller caller) : super(caller);
 
   /// Validates a Firebase ID token and either logs in the associated user or
@@ -201,6 +218,9 @@ abstract class EndpointFirebaseIdpBase extends _i1.EndpointRef {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   _i2.Future<_i3.AuthSuccess> login({required String idToken});
+
+  @override
+  _i2.Future<bool> hasAccount();
 }
 
 /// Base endpoint for GitHub Account-based authentication.
@@ -209,7 +229,7 @@ abstract class EndpointFirebaseIdpBase extends _i1.EndpointRef {
 /// If you would like modify the authentication flow, consider extending this
 /// class and overriding the relevant methods.
 /// {@category Endpoint}
-abstract class EndpointGitHubIdpBase extends _i1.EndpointRef {
+abstract class EndpointGitHubIdpBase extends EndpointIdpBase {
   EndpointGitHubIdpBase(_i1.EndpointCaller caller) : super(caller);
 
   /// Validates a GitHub authorization code and either logs in the associated
@@ -225,6 +245,9 @@ abstract class EndpointGitHubIdpBase extends _i1.EndpointRef {
     required String codeVerifier,
     required String redirectUri,
   });
+
+  @override
+  _i2.Future<bool> hasAccount();
 }
 
 /// Base endpoint for Google Account-based authentication.
@@ -233,7 +256,7 @@ abstract class EndpointGitHubIdpBase extends _i1.EndpointRef {
 /// If you would like modify the authentication flow, consider extending this
 /// class and overriding the relevant methods.
 /// {@category Endpoint}
-abstract class EndpointGoogleIdpBase extends _i1.EndpointRef {
+abstract class EndpointGoogleIdpBase extends EndpointIdpBase {
   EndpointGoogleIdpBase(_i1.EndpointCaller caller) : super(caller);
 
   /// Validates a Google ID token and either logs in the associated user or
@@ -244,11 +267,47 @@ abstract class EndpointGoogleIdpBase extends _i1.EndpointRef {
     required String idToken,
     required String? accessToken,
   });
+
+  @override
+  _i2.Future<bool> hasAccount();
+}
+
+/// Base endpoint for Microsoft Account-based authentication.
+///
+/// This endpoint exposes methods for logging in users using Microsoft authorization codes.
+/// If you would like modify the authentication flow, consider extending this
+/// class and overriding the relevant methods.
+/// {@category Endpoint}
+abstract class EndpointMicrosoftIdpBase extends EndpointIdpBase {
+  EndpointMicrosoftIdpBase(_i1.EndpointCaller caller) : super(caller);
+
+  /// Validates a Microsoft authorization code and either logs in the associated
+  /// user or creates a new user account if the Microsoft account ID is not yet
+  /// known.
+  ///
+  /// This method exchanges the `authorization code` for an `access token` using
+  /// `PKCE`, then authenticates the user.
+  ///
+  /// The [isWebPlatform] flag indicates whether the client is a web application.
+  /// Microsoft requires the client secret only for confidential clients (web
+  /// apps). Public clients (mobile, desktop) using PKCE must not include it.
+  /// Pass `true` for web clients and `false` for native platforms.
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  _i2.Future<_i3.AuthSuccess> login({
+    required String code,
+    required String codeVerifier,
+    required String redirectUri,
+    required bool isWebPlatform,
+  });
+
+  @override
+  _i2.Future<bool> hasAccount();
 }
 
 /// Base endpoint for Passkey-based authentication.
 /// {@category Endpoint}
-abstract class EndpointPasskeyIdpBase extends _i1.EndpointRef {
+abstract class EndpointPasskeyIdpBase extends EndpointIdpBase {
   EndpointPasskeyIdpBase(_i1.EndpointCaller caller) : super(caller);
 
   /// Returns a new challenge to be used for a login or registration request.
@@ -265,6 +324,9 @@ abstract class EndpointPasskeyIdpBase extends _i1.EndpointRef {
   _i2.Future<_i3.AuthSuccess> login({
     required _i6.PasskeyLoginRequest loginRequest,
   });
+
+  @override
+  _i2.Future<bool> hasAccount();
 }
 
 /// Base endpoint for passwordless login.

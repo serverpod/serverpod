@@ -23,6 +23,7 @@ import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i7;
 import 'challenge_tracker.dart' as _i8;
 import 'user_data.dart' as _i9;
+import 'dart:typed_data' as _i10;
 export 'challenge_tracker.dart';
 export 'user_data.dart';
 
@@ -232,6 +233,15 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == Set<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
     }
+    if (t == _i1.getType<({_i10.ByteData challenge, _i1.UuidValue id})>()) {
+      return (
+            challenge: deserialize<_i10.ByteData>(
+              ((data as Map)['n'] as Map)['challenge'],
+            ),
+            id: deserialize<_i1.UuidValue>(data['n']['id']),
+          )
+          as T;
+    }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
@@ -408,6 +418,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (record == null) {
       return null;
     }
+    if (record is ({_i10.ByteData challenge, _i1.UuidValue id})) {
+      return {
+        "n": {
+          "challenge": record.challenge,
+          "id": record.id,
+        },
+      };
+    }
     try {
       return _i3.Protocol().mapRecordToJson(record);
     } catch (_) {}
@@ -424,5 +442,57 @@ class Protocol extends _i1.SerializationManagerServer {
       return _i7.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
+  }
+
+  /// Maps container types (like [List], [Map], [Set]) containing
+  /// [Record]s or non-String-keyed [Map]s to their JSON representation.
+  ///
+  /// It should not be called for [SerializableModel] types. These
+  /// handle the "[Record] in container" mapping internally already.
+  ///
+  /// It is only supposed to be called from generated protocol code.
+  ///
+  /// Returns either a `List<dynamic>` (for List, Sets, and Maps with
+  /// non-String keys) or a `Map<String, dynamic>` in case the input was
+  /// a `Map<String, …>`.
+  Object? mapContainerToJson(Object obj) {
+    if (obj is! Iterable && obj is! Map) {
+      throw ArgumentError.value(
+        obj,
+        'obj',
+        'The object to serialize should be of type List, Map, or Set',
+      );
+    }
+
+    dynamic mapIfNeeded(Object? obj) {
+      return switch (obj) {
+        Record record => mapRecordToJson(record),
+        Iterable iterable => mapContainerToJson(iterable),
+        Map map => mapContainerToJson(map),
+        Object? value => value,
+      };
+    }
+
+    switch (obj) {
+      case Map<String, dynamic>():
+        return {
+          for (var entry in obj.entries) entry.key: mapIfNeeded(entry.value),
+        };
+      case Map():
+        return [
+          for (var entry in obj.entries)
+            {
+              'k': mapIfNeeded(entry.key),
+              'v': mapIfNeeded(entry.value),
+            },
+        ];
+
+      case Iterable():
+        return [
+          for (var e in obj) mapIfNeeded(e),
+        ];
+    }
+
+    return obj;
   }
 }

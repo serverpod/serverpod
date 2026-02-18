@@ -5,6 +5,7 @@ import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_idp_server/providers/github.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
+import 'package:serverpod_auth_idp_server/providers/microsoft.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
 
 import 'src/generated/endpoints.dart';
@@ -65,6 +66,12 @@ void run(List<String> args) async {
     clientSecret: pod.getPassword('githubClientSecret')!,
   );
 
+  final microsoftIdpConfig = MicrosoftIdpConfig(
+    clientId: pod.getPassword('microsoftClientId')!,
+    clientSecret: pod.getPassword('microsoftClientSecret')!,
+    tenant: pod.getPassword('microsoftTenant') ?? 'common',
+  );
+
   final passkeyIdpConfig = PasskeyIdpConfig(
     challengeLifetime: Duration(seconds: 30),
     hostname: 'localhost',
@@ -83,6 +90,7 @@ void run(List<String> args) async {
       appleIdpConfig,
       emailIdpConfig,
       githubIdpConfig,
+      microsoftIdpConfig,
       passkeyIdpConfig,
     ],
   );

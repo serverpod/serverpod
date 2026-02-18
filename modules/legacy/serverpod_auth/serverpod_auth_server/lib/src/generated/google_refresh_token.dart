@@ -248,6 +248,8 @@ class GoogleRefreshTokenRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
@@ -257,6 +259,8 @@ class GoogleRefreshTokenRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -285,6 +289,8 @@ class GoogleRefreshTokenRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
@@ -293,6 +299,8 @@ class GoogleRefreshTokenRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -301,10 +309,14 @@ class GoogleRefreshTokenRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<GoogleRefreshToken>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -464,6 +476,22 @@ class GoogleRefreshTokenRepository {
     return session.db.count<GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [GoogleRefreshToken] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<GoogleRefreshToken>(
+      where: where(GoogleRefreshToken.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

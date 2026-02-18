@@ -303,6 +303,8 @@ class UuidDefaultMixRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UuidDefaultMix>(
       where: where?.call(UuidDefaultMix.t),
@@ -312,6 +314,8 @@ class UuidDefaultMixRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -340,6 +344,8 @@ class UuidDefaultMixRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UuidDefaultMix>(
       where: where?.call(UuidDefaultMix.t),
@@ -348,6 +354,8 @@ class UuidDefaultMixRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -356,10 +364,14 @@ class UuidDefaultMixRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UuidDefaultMix>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -517,6 +529,22 @@ class UuidDefaultMixRepository {
     return session.db.count<UuidDefaultMix>(
       where: where?.call(UuidDefaultMix.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [UuidDefaultMix] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<UuidDefaultMixTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<UuidDefaultMix>(
+      where: where(UuidDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

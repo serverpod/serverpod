@@ -44,7 +44,7 @@ final class AppleRevokedNotificationRoute extends _SignInWithAppleRoute {
 /// Route for handling callbacks during authentication with [AppleIdp] on
 /// foreign platforms such as Web, Android, etc, as opposed to iOS and macOS.
 ///
-/// To be mounted as a `GET` handler under the URL configured in Apple's
+/// To be mounted as a `POST` handler under the URL configured in Apple's
 /// developer portal, for example:
 ///
 /// ```dart
@@ -53,15 +53,89 @@ final class AppleRevokedNotificationRoute extends _SignInWithAppleRoute {
 ///    '/auth/apple/callback',
 /// );
 /// ```
+///
+/// For Android clients, this route will redirect to the app using an Android
+/// intent URI with the `signinwithapple` scheme. This requires the
+/// `androidPackageIdentifier` to be configured in [AppleIdpConfig].
+///
+/// For Web clients, this route currently returns a 500 error as web support
+/// is not yet implemented.
 /// {@endtemplate}
 final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
-  /// Create a new route to handle Apple Idp authentication callbacks for web and
+  final String? _androidPackageIdentifier;
+
+  /// Route handling Apple Idp authentication callbacks for web and
   /// other foreign platforms (Android, etc.).
-  AppleWebAuthenticationCallbackRoute({required final AppleIdpUtils utils})
-    : super(utils, methods: {Method.get});
+  ///
+  /// The [androidPackageIdentifier] is the Android package identifier for the
+  /// app, required for Apple Sign In to work on Android.
+  AppleWebAuthenticationCallbackRoute({
+    required final AppleIdpUtils utils,
+    final String? androidPackageIdentifier,
+  }) : _androidPackageIdentifier = androidPackageIdentifier,
+       super(utils, methods: {Method.post});
 
   @override
-  FutureOr<Result> handleCall(final Session session, final Request request) {
-    return Response.internalServerError();
+  Future<Result> handleCall(
+    final Session session,
+    final Request request,
+  ) async {
+    return _isUserAgentAndroid(request.headers)
+        ? _handleAndroidRedirection(request)
+        : _handleWebRedirection();
+  }
+
+  Future<Result> _handleAndroidRedirection(final Request request) async {
+    if (_androidPackageIdentifier == null) {
+      return Response.internalServerError(
+        body: Body.fromString(
+          'Parameter androidPackageIdentifier must be set for '
+          'Apple Sign In to work on Android.',
+        ),
+      );
+    }
+
+    final queryString = await _convertRequestBodyToQueryString(request);
+
+    final intentUri =
+        'intent://callback?$queryString#Intent;'
+        'package=$_androidPackageIdentifier;scheme=signinwithapple;end';
+
+    final headers = Headers.build((final h) {
+      h['Location'] = [intentUri];
+    });
+
+    // 307 Temporary Redirect preserves the original POST method, unlike 302
+    // which may change it to GET. This is required because Apple sends the
+    // authentication callback as a POST request.
+    // See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/307
+    return Response(
+      307,
+      headers: headers,
+      body: Body.empty(),
+    );
+  }
+
+  bool _isUserAgentAndroid(final Headers headers) {
+    final userAgent = headers.userAgent ?? '';
+    return userAgent.toLowerCase().contains('android');
+  }
+
+  Future<String> _convertRequestBodyToQueryString(final Request request) async {
+    final body = await request.readAsString();
+    final params = Uri.splitQueryString(body);
+
+    return params.entries
+        .map(
+          (final e) =>
+              '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}',
+        )
+        .join('&');
+  }
+
+  Future<Result> _handleWebRedirection() async {
+    return Response.internalServerError(
+      body: Body.fromString('@todo: apple sign in redirection for web'),
+    );
   }
 }

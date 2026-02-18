@@ -311,6 +311,8 @@ class LegacyExternalUserIdentifierRepository {
     _i1.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
     _i1.Transaction? transaction,
     LegacyExternalUserIdentifierInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<LegacyExternalUserIdentifier>(
       where: where?.call(LegacyExternalUserIdentifier.t),
@@ -321,6 +323,8 @@ class LegacyExternalUserIdentifierRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -350,6 +354,8 @@ class LegacyExternalUserIdentifierRepository {
     _i1.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
     _i1.Transaction? transaction,
     LegacyExternalUserIdentifierInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<LegacyExternalUserIdentifier>(
       where: where?.call(LegacyExternalUserIdentifier.t),
@@ -359,6 +365,8 @@ class LegacyExternalUserIdentifierRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -368,11 +376,15 @@ class LegacyExternalUserIdentifierRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     LegacyExternalUserIdentifierInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<LegacyExternalUserIdentifier>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -534,6 +546,23 @@ class LegacyExternalUserIdentifierRepository {
     return session.db.count<LegacyExternalUserIdentifier>(
       where: where?.call(LegacyExternalUserIdentifier.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [LegacyExternalUserIdentifier] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>
+    where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<LegacyExternalUserIdentifier>(
+      where: where(LegacyExternalUserIdentifier.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

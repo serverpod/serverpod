@@ -8,7 +8,7 @@ import '../business/google_idp.dart';
 /// This endpoint exposes methods for logging in users using Google ID tokens.
 /// If you would like modify the authentication flow, consider extending this
 /// class and overriding the relevant methods.
-abstract class GoogleIdpBaseEndpoint extends Endpoint {
+abstract class GoogleIdpBaseEndpoint extends IdpBaseEndpoint {
   /// Accessor for the configured Google Idp instance.
   /// By default this uses the global instance configured in
   /// [AuthServices].
@@ -33,4 +33,8 @@ abstract class GoogleIdpBaseEndpoint extends Endpoint {
       accessToken: accessToken,
     );
   }
+
+  @override
+  Future<bool> hasAccount(final Session session) async =>
+      await googleIdp.hasAccount(session);
 }

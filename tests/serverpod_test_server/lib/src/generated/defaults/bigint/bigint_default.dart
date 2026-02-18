@@ -261,6 +261,8 @@ class BigIntDefaultRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BigIntDefault>(
       where: where?.call(BigIntDefault.t),
@@ -270,6 +272,8 @@ class BigIntDefaultRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -298,6 +302,8 @@ class BigIntDefaultRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BigIntDefault>(
       where: where?.call(BigIntDefault.t),
@@ -306,6 +312,8 @@ class BigIntDefaultRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -314,10 +322,14 @@ class BigIntDefaultRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<BigIntDefault>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -475,6 +487,22 @@ class BigIntDefaultRepository {
     return session.db.count<BigIntDefault>(
       where: where?.call(BigIntDefault.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [BigIntDefault] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<BigIntDefaultTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<BigIntDefault>(
+      where: where(BigIntDefault.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

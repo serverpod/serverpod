@@ -149,11 +149,13 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
 /// ```
 class GitHubIdpConfigFromPasswords extends GitHubIdpConfig {
   /// Creates a new [GitHubIdpConfigFromPasswords] instance.
-  GitHubIdpConfigFromPasswords()
-    : super(
-        clientId: Serverpod.instance.getPasswordOrThrow('githubClientId'),
-        clientSecret: Serverpod.instance.getPasswordOrThrow(
-          'githubClientSecret',
-        ),
-      );
+  GitHubIdpConfigFromPasswords({
+    super.githubAccountDetailsValidation,
+    super.getExtraGitHubInfoCallback,
+  }) : super(
+         clientId: Serverpod.instance.getPasswordOrThrow('githubClientId'),
+         clientSecret: Serverpod.instance.getPasswordOrThrow(
+           'githubClientSecret',
+         ),
+       );
 }
