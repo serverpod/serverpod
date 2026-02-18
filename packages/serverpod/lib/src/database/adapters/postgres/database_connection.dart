@@ -168,6 +168,17 @@ class PostgresDatabaseConnection
   }) async {
     if (rows.isEmpty) return [];
 
+    // When ignoring conflicts AND the model has non-persistent fields,
+    // fall back to single-row inserts so we can safely merge non-persistent
+    // fields with each successfully inserted row.
+    if (ignoreConflicts && _hasNonPersistedFields(rows.first)) {
+      return _insertRowsIndividuallyIgnoringConflicts<T>(
+        session,
+        rows,
+        transaction: transaction,
+      );
+    }
+
     var table = rows.first.table;
 
     var query = InsertQueryBuilder(
@@ -985,6 +996,55 @@ class PostgresDatabaseConnection
             ...dbResults.elementAt(i),
           };
         });
+  }
+
+  /// Returns true if the model has fields in [TableRow.toJson] that are not
+  /// represented in the table's columns (i.e., non-persistent fields).
+  bool _hasNonPersistedFields(TableRow row) {
+    var json = row.toJson();
+    if (json is! Map<String, dynamic>) return false;
+
+    var columnFieldNames = row.table.columns.map((c) => c.fieldName).toSet();
+    return json.keys
+        .where((k) => k != '__className__')
+        .any((key) => !columnFieldNames.contains(key));
+  }
+
+  /// Inserts rows one at a time with [InsertQueryBuilder.ignoreConflicts],
+  /// properly merging non-persisted fields for each successfully inserted row.
+  ///
+  /// This is used as a fallback when [ignoreConflicts] is true and the model
+  /// has non-persistent fields, since the batch insert path cannot safely merge
+  /// non-persistent fields when some rows are skipped due to conflicts.
+  Future<List<T>> _insertRowsIndividuallyIgnoringConflicts<T extends TableRow>(
+    DatabaseSession session,
+    List<T> rows, {
+    Transaction? transaction,
+  }) async {
+    var results = <T>[];
+
+    for (var row in rows) {
+      var query = InsertQueryBuilder(
+        table: row.table,
+        rows: [row],
+        ignoreConflicts: true,
+      ).build();
+
+      var dbResults = await _mappedResultsQuery(
+        session,
+        query,
+        transaction: transaction,
+      );
+
+      if (dbResults.isEmpty) continue;
+
+      var merged = _mergeResultsWithNonPersistedFields([row])(dbResults);
+      results.add(
+        poolManager.serializationManager.deserialize<T>(merged.first),
+      );
+    }
+
+    return results;
   }
 
   Table _getTableOrAssert<T>(

@@ -227,67 +227,89 @@ SELECT * FROM insertWithIdNotNull
     },
   );
 
-  group('Given ignoreConflicts is true', () {
-    test(
-      'when building insert query with a row without id then ON CONFLICT DO NOTHING is appended.',
-      () {
-        var query = InsertQueryBuilder(
-          table: PersonTable(),
-          rows: [PersonClass(name: 'Alex', age: 33)],
-          ignoreConflicts: true,
-        ).build();
+  group('Given ignoreConflicts is true and a row without id', () {
+    late String query;
 
+    setUp(() {
+      query = InsertQueryBuilder(
+        table: PersonTable(),
+        rows: [PersonClass(name: 'Alex', age: 33)],
+        ignoreConflicts: true,
+      ).build();
+    });
+
+    test(
+      'when building insert query then ON CONFLICT DO NOTHING is appended.',
+      () {
         expect(
           query,
           'INSERT INTO "person" ("name", "age") VALUES (\'Alex\', 33) ON CONFLICT DO NOTHING RETURNING *',
         );
       },
     );
+  });
+
+  group('Given ignoreConflicts is true and a row with id', () {
+    late String query;
+
+    setUp(() {
+      query = InsertQueryBuilder(
+        table: PersonTable(),
+        rows: [PersonClass(id: 33, name: 'Alex', age: 33)],
+        ignoreConflicts: true,
+      ).build();
+    });
 
     test(
-      'when building insert query with a row with id then ON CONFLICT DO NOTHING is appended.',
+      'when building insert query then ON CONFLICT DO NOTHING is appended.',
       () {
-        var query = InsertQueryBuilder(
-          table: PersonTable(),
-          rows: [PersonClass(id: 33, name: 'Alex', age: 33)],
-          ignoreConflicts: true,
-        ).build();
-
         expect(
           query,
           'INSERT INTO "person" ("id", "name", "age") VALUES (33, \'Alex\', 33) ON CONFLICT DO NOTHING RETURNING *',
         );
       },
     );
+  });
+
+  group('Given ignoreConflicts is true and only id column', () {
+    late String query;
+
+    setUp(() {
+      query = InsertQueryBuilder(
+        table: Table<int?>(tableName: 'only_id'),
+        rows: [OnlyIdClass()],
+        ignoreConflicts: true,
+      ).build();
+    });
 
     test(
-      'when building insert query with only id column then ON CONFLICT DO NOTHING is appended to DEFAULT VALUES query.',
+      'when building insert query then ON CONFLICT DO NOTHING is appended to DEFAULT VALUES query.',
       () {
-        var query = InsertQueryBuilder(
-          table: Table<int?>(tableName: 'only_id'),
-          rows: [OnlyIdClass()],
-          ignoreConflicts: true,
-        ).build();
-
         expect(
           query,
           'INSERT INTO "only_id" DEFAULT VALUES ON CONFLICT DO NOTHING RETURNING *',
         );
       },
     );
+  });
+
+  group('Given ignoreConflicts is true and mixed id rows', () {
+    late String query;
+
+    setUp(() {
+      query = InsertQueryBuilder(
+        table: PersonTable(),
+        rows: [
+          PersonClass(id: 33, name: 'Alex', age: 33),
+          PersonClass(name: 'Isak', age: 33),
+        ],
+        ignoreConflicts: true,
+      ).build();
+    });
 
     test(
-      'when building insert query with mixed id rows then both sub-queries include ON CONFLICT DO NOTHING.',
+      'when building insert query then both sub-queries include ON CONFLICT DO NOTHING.',
       () {
-        var query = InsertQueryBuilder(
-          table: PersonTable(),
-          rows: [
-            PersonClass(id: 33, name: 'Alex', age: 33),
-            PersonClass(name: 'Isak', age: 33),
-          ],
-          ignoreConflicts: true,
-        ).build();
-
         expect(
           query,
           '''
@@ -305,15 +327,19 @@ SELECT * FROM insertWithIdNotNull
   });
 
   group('Given ignoreConflicts is false (default)', () {
+    late String query;
+
+    setUp(() {
+      query = InsertQueryBuilder(
+        table: PersonTable(),
+        rows: [PersonClass(name: 'Alex', age: 33)],
+        ignoreConflicts: false,
+      ).build();
+    });
+
     test(
       'when building insert query then ON CONFLICT DO NOTHING is not present.',
       () {
-        var query = InsertQueryBuilder(
-          table: PersonTable(),
-          rows: [PersonClass(name: 'Alex', age: 33)],
-          ignoreConflicts: false,
-        ).build();
-
         expect(
           query,
           'INSERT INTO "person" ("name", "age") VALUES (\'Alex\', 33) RETURNING *',
