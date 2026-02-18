@@ -656,4 +656,53 @@ END
       },
     );
   });
+
+  group('Given a table definition with a text field', () {
+    var modelName = 'myModel';
+    var fieldName = 'content';
+
+    var models = [
+      ModelClassDefinitionBuilder()
+          .withClassName(modelName.sentenceCase)
+          .withFileName(modelName)
+          .withTableName(modelName)
+          .withSimpleField(fieldName, 'String')
+          .build(),
+    ];
+
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      models,
+      'example',
+      [],
+    );
+    var tableDefinition = databaseDefinition.tables.first;
+
+    test(
+      'Given a table definition with a GIN index with trigram ops on a text field, then the SQL should include gin_trgm_ops.',
+      () {
+        var indexName = '${modelName}_trgm_idx';
+        var index = IndexDefinitionBuilder()
+            .withIndexName(indexName)
+            .withElements([
+              IndexElementDefinition(
+                type: IndexElementDefinitionType.column,
+                definition: fieldName,
+              ),
+            ])
+            .withType('GIN')
+            .withGinOperatorClass(GinOperatorClass.trigram)
+            .withIsUnique(false)
+            .withIsPrimary(false)
+            .build();
+
+        var sql = index.toPgSql(tableName: tableDefinition.name);
+
+        expect(
+          sql,
+          'CREATE INDEX "$indexName" ON "${tableDefinition.name}" '
+          'USING GIN ("$fieldName" gin_trgm_ops);\n',
+        );
+      },
+    );
+  });
 }
