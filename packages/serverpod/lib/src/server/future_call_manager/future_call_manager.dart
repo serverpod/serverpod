@@ -199,8 +199,11 @@ class FutureCallManager {
       final futureCall = _futureCalls[entry.name];
 
       if (futureCall == null) {
-        // ISSUE(https://github.com/serverpod/serverpod/issues/3485):
-        // This should be logged or caught otherwise.
+        stdout.writeln(
+          'Failed to execute future call (${entry.name}) which was scheduled but not registered. '
+          'This is likely due to using the legacy approach. '
+          'Consider migrating to the typed interface for future calls.',
+        );
         return null;
       }
 
