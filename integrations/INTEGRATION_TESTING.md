@@ -26,6 +26,9 @@ SERVERPOD_TEST_GCP_HMAC_ACCESS_KEY_ID=GOOG...
 SERVERPOD_TEST_GCP_HMAC_SECRET_KEY=...
 SERVERPOD_TEST_GCP_BUCKET=your-gcs-bucket
 SERVERPOD_TEST_GCP_REGION=us-central1
+
+# GCP (Native API with service account)
+SERVERPOD_TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON={"client_email":"...","private_key":"..."}
 ```
 
 You only need credentials for the providers you want to test. Tests for unconfigured providers are skipped automatically.
@@ -77,7 +80,7 @@ Create an API token at R2 → Manage R2 API Tokens → Create API Token with Obj
 
 Get your Account ID from the dashboard URL: `dash.cloudflare.com/<ACCOUNT_ID>/r2`
 
-### Google Cloud Storage
+### Google Cloud Storage (S3-compatible)
 
 Create a bucket:
 
@@ -86,6 +89,16 @@ gsutil mb -l us-central1 gs://my-serverpod-test-bucket
 ```
 
 Create HMAC keys at Cloud Storage → Settings → Interoperability → Create a key. See https://cloud.google.com/storage/docs/authentication/hmackeys for details.
+
+### Google Cloud Storage (Native)
+
+Uses the same GCP project and bucket as the S3-compatible tests, but authenticates with a service account instead of HMAC keys.
+
+Create a service account at IAM & Admin → Service Accounts → Create service account. Grant the `Storage Object Admin` role scoped to your test bucket.
+
+Create a JSON key: click the service account → Keys → Add Key → Create new key → JSON. Download the file.
+
+Set the `SERVERPOD_TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON` environment variable to the full JSON content of the key file.
 
 ## CI/CD Setup
 
@@ -97,13 +110,18 @@ Add these secrets to your repository (Settings → Secrets → Actions):
 |----------|------------------|
 | AWS S3 | `TEST_AWS_HMAC_ACCESS_KEY_ID`, `TEST_AWS_HMAC_SECRET_KEY`, `TEST_AWS_BUCKET`, `TEST_AWS_REGION` |
 | Cloudflare R2 | `TEST_R2_HMAC_ACCESS_KEY_ID`, `TEST_R2_HMAC_SECRET_KEY`, `TEST_R2_BUCKET`, `TEST_R2_ACCOUNT_ID` |
-| GCP | `TEST_GCP_HMAC_ACCESS_KEY_ID`, `TEST_GCP_HMAC_SECRET_KEY`, `TEST_GCP_BUCKET`, `TEST_GCP_REGION` |
+| GCP (S3-compatible) | `TEST_GCP_HMAC_ACCESS_KEY_ID`, `TEST_GCP_HMAC_SECRET_KEY`, `TEST_GCP_BUCKET`, `TEST_GCP_REGION` |
+| GCP Native | `TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON`, `TEST_GCP_BUCKET` |
 
 The CI workflow automatically skips providers without configured secrets and only runs on push events or same-repo PRs (not fork PRs, for security).
 
 ## Adding a New Provider
 
-### Create the Test File
+There are two approaches depending on whether your provider has an S3-compatible API.
+
+### Option A: S3-Compatible Provider
+
+If the provider supports the S3 API (e.g., MinIO, Backblaze B2, DigitalOcean Spaces), you can reuse the shared test suite from `serverpod_cloud_storage_s3_compat`. This gives you full test coverage with minimal code.
 
 Create `integrations/serverpod_cloud_storage_<provider>/test/integration/<provider>_integration_test.dart`:
 
@@ -150,16 +168,29 @@ void main() {
 }
 ```
 
+### Option B: Non-S3 Provider (Custom `CloudStorage` Implementation)
+
+If the provider uses its own API (e.g., GCP Native, local filesystem), you need to write your own integration tests. The tests should cover the same operations as the shared S3-compat suite:
+
+- **Basic operations**: `storeFile`, `retrieveFile`, `fileExists`, `deleteFile`
+- **Binary data**: exact byte preservation, large files (1MB)
+- **Direct uploads**: `createDirectFileUploadDescription` + upload via `FileUploader` + `verifyDirectFileUpload` (if supported)
+- **Special characters**: paths with spaces and unicode
+
+See `serverpod_cloud_storage_gcp/test/integration/native_gcp_integration_test.dart` for an example. Key patterns:
+
+- Load credentials from environment variables, return `null` to skip if missing
+- Use a mock `Session` (the `CloudStorage` methods require it but most implementations don't use it)
+- Track created files and clean up in `tearDownAll`
+
 ### Update the Local Test Runner
 
 Add your provider to `util/run_tests_integration_cloud`:
 
 ```bash
 PROVIDERS=(
-    "AWS S3|serverpod_cloud_storage_s3|AWS"
-    "Cloudflare R2|serverpod_cloud_storage_r2|R2"
-    "GCP|serverpod_cloud_storage_gcp|GCP"
-    "<Provider Name>|serverpod_cloud_storage_<provider>|<PROVIDER>"  # Add this
+    # ... existing providers ...
+    "<Provider Name>|serverpod_cloud_storage_<provider>|<PROVIDER>|test/integration"  # Add this
 )
 ```
 
@@ -175,6 +206,7 @@ provider:
   - name: <Provider Name>
     package: serverpod_cloud_storage_<provider>
     env_prefix: <PROVIDER>
+    test_path: test/integration
 ```
 
 Add to the env block:
@@ -182,9 +214,7 @@ Add to the env block:
 ```yaml
 env:
   # ... existing env vars ...
-  SERVERPOD_TEST_<PROVIDER>_HMAC_ACCESS_KEY_ID: ${{ secrets.TEST_<PROVIDER>_HMAC_ACCESS_KEY_ID }}
-  SERVERPOD_TEST_<PROVIDER>_HMAC_SECRET_KEY: ${{ secrets.TEST_<PROVIDER>_HMAC_SECRET_KEY }}
-  SERVERPOD_TEST_<PROVIDER>_BUCKET: ${{ secrets.TEST_<PROVIDER>_BUCKET }}
+  SERVERPOD_TEST_<PROVIDER>_<CREDENTIAL>: ${{ secrets.TEST_<PROVIDER>_<CREDENTIAL> }}
   # Add any provider-specific variables
 ```
 

@@ -95,6 +95,21 @@ class NativeGoogleCloudStorage extends CloudStorage {
     // No signing credentials available in test mode
   }
 
+  /// Creates a [NativeGoogleCloudStorage] from a service account JSON string.
+  ///
+  /// This constructor authenticates directly with the provided JSON credentials
+  /// without requiring a [Serverpod] instance, making it suitable for
+  /// integration testing and standalone usage.
+  NativeGoogleCloudStorage.withServiceAccountJson({
+    required String storageId,
+    required this.bucket,
+    required this.public,
+    required String serviceAccountJson,
+    this.publicHost,
+  }) : super(storageId) {
+    _initializeAsync(serviceAccountJson);
+  }
+
   /// Creates a [NativeGoogleCloudStorage] with signing credentials for testing.
   ///
   /// This constructor allows testing direct upload functionality.

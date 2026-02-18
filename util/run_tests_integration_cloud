@@ -17,33 +17,35 @@ fi
 exit_code=0
 BASE=`pwd`
 
-# Provider configurations: name|package|env_prefix
+# Provider configurations: name|package|env_prefix|test_path
 PROVIDERS=(
-    "AWS S3|serverpod_cloud_storage_s3|AWS"
-    "Cloudflare R2|serverpod_cloud_storage_r2|R2"
-    "GCP|serverpod_cloud_storage_gcp|GCP"
+    "AWS S3|serverpod_cloud_storage_s3|AWS|test/integration"
+    "Cloudflare R2|serverpod_cloud_storage_r2|R2|test/integration"
+    "GCP|serverpod_cloud_storage_gcp|GCP|test/integration/gcp_s3_compat_integration_test.dart"
+    "GCP Native|serverpod_cloud_storage_gcp|GCP_NATIVE|test/integration/native_gcp_integration_test.dart"
 )
 
 echo "==================== Cloud Storage Integration Tests ===================="
 echo ""
 
 for provider_config in "${PROVIDERS[@]}"; do
-    IFS='|' read -r name package env_prefix <<< "$provider_config"
+    IFS='|' read -r name package env_prefix test_path <<< "$provider_config"
 
     echo "=== $name Integration Tests ==="
 
-    # Check for HMAC access key
+    # Check for credentials (HMAC key or service account JSON)
     key_var="SERVERPOD_TEST_${env_prefix}_HMAC_ACCESS_KEY_ID"
+    alt_key_var="SERVERPOD_TEST_${env_prefix}_SERVICE_ACCOUNT_JSON"
 
-    if [ -z "${!key_var}" ]; then
+    if [ -z "${!key_var}" ] && [ -z "${!alt_key_var}" ]; then
         echo "$name credentials not configured. Skipping."
-        echo "Set ${key_var} and related variables to run these tests."
+        echo "Set ${key_var} or ${alt_key_var} and related variables to run these tests."
         echo ""
     else
         echo "$name credentials found. Running tests..."
         cd "$BASE/integrations/$package"
         dart pub get --no-precompile
-        dart test test/integration --reporter=failures-only
+        dart test $test_path --reporter=failures-only
         last_exit_code=$?
 
         if [ $last_exit_code != 0 ] && [ $last_exit_code != 79 ]; then
