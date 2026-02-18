@@ -1054,4 +1054,187 @@ void main() async {
       );
     },
   );
+
+  test(
+    'Given a deeply nested includeList with orderBy and limit when querying with include then the innermost list is correctly ordered and limited.',
+    () async {
+      // Mirrors the original issue structure: Node -> Sensor -> Data
+      // Using: City -> Organization (includeList) -> include -> Person (includeList with orderBy + limit)
+      var city = await City.db.insertRow(session, City(name: 'Stockholm'));
+
+      var orgAlpha = await Organization.db.insertRow(
+        session,
+        Organization(name: 'Alpha'),
+      );
+      var orgBeta = await Organization.db.insertRow(
+        session,
+        Organization(name: 'Beta'),
+      );
+
+      await City.db.attach.organizations(session, city, [orgAlpha, orgBeta]);
+
+      // Create people and attach in non-alphabetical order
+      var alice = await Person.db.insertRow(session, Person(name: 'Alice'));
+      var bob = await Person.db.insertRow(session, Person(name: 'Bob'));
+      var charlie = await Person.db.insertRow(session, Person(name: 'Charlie'));
+      var diana = await Person.db.insertRow(session, Person(name: 'Diana'));
+
+      var eve = await Person.db.insertRow(session, Person(name: 'Eve'));
+      var frank = await Person.db.insertRow(session, Person(name: 'Frank'));
+      var grace = await Person.db.insertRow(session, Person(name: 'Grace'));
+
+      await Organization.db.attach.people(session, orgAlpha, [
+        diana, // Intentionally non-alphabetical
+        alice,
+        charlie,
+        bob,
+      ]);
+
+      await Organization.db.attach.people(session, orgBeta, [
+        grace,
+        eve,
+        frank,
+      ]);
+
+      // Query pattern matching the original issue:
+      // find -> includeList -> include -> includeList(orderBy, limit)
+      var result = await City.db.findById(
+        session,
+        city.id!,
+        include: City.include(
+          organizations: Organization.includeList(
+            orderBy: (t) => t.name,
+            include: Organization.include(
+              people: Person.includeList(
+                orderBy: (t) => t.name,
+                limit: 2,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(result?.organizations, hasLength(2));
+
+      // Alpha comes first alphabetically
+      var alphaResult = result?.organizations?.first;
+      expect(alphaResult?.name, 'Alpha');
+      expect(alphaResult?.people, hasLength(2));
+      expect(
+        alphaResult?.people?.map((e) => e.name).toList(),
+        ['Alice', 'Bob'],
+        reason: 'Expected first 2 people alphabetically: Alice, Bob',
+      );
+
+      // Beta comes second
+      var betaResult = result?.organizations?.last;
+      expect(betaResult?.name, 'Beta');
+      expect(betaResult?.people, hasLength(2));
+      expect(
+        betaResult?.people?.map((e) => e.name).toList(),
+        ['Eve', 'Frank'],
+        reason: 'Expected first 2 people alphabetically: Eve, Frank',
+      );
+    },
+  );
+
+  test(
+    'Given a list relation with orderBy and limit when sorting is disabled in PostgreSQL then the ORM query still returns correctly ordered rows.',
+    () async {
+      var city = await City.db.insertRow(session, City(name: 'TestCity'));
+
+      var org1 = await Organization.db.insertRow(
+        session,
+        Organization(name: 'Org1'),
+      );
+      var org2 = await Organization.db.insertRow(
+        session,
+        Organization(name: 'Org2'),
+      );
+
+      await City.db.attach.organizations(session, city, [org1, org2]);
+
+      // Insert many persons per organization in reverse alphabetical order.
+      // This creates heap storage where the physical order is opposite to
+      // the desired sort order.
+      var names1 = List.generate(
+        50,
+        (i) => 'Person_${(99 - i).toString().padLeft(2, '0')}',
+      );
+      var names2 = List.generate(
+        50,
+        (i) => 'Member_${(99 - i).toString().padLeft(2, '0')}',
+      );
+
+      var persons1 = <Person>[];
+      for (var name in names1) {
+        persons1.add(
+          await Person.db.insertRow(session, Person(name: name)),
+        );
+      }
+      var persons2 = <Person>[];
+      for (var name in names2) {
+        persons2.add(
+          await Person.db.insertRow(session, Person(name: name)),
+        );
+      }
+
+      await Organization.db.attach.people(session, org1, persons1);
+      await Organization.db.attach.people(session, org2, persons2);
+
+      // Disable sorting to force PostgreSQL to use hash-based operations
+      // for the window function's PARTITION BY. This simulates conditions
+      // where the CTE's materialized order is not preserved, which is the
+      // root cause of issue #4110.
+      await session.db.transaction((transaction) async {
+        await session.db.unsafeExecute(
+          'SET LOCAL enable_sort = off;',
+          transaction: transaction,
+        );
+
+        // Query pattern matching the original issue:
+        // find -> includeList -> include -> includeList(orderBy, limit)
+        var result = await City.db.findById(
+          session,
+          city.id!,
+          include: City.include(
+            organizations: Organization.includeList(
+              orderBy: (t) => t.name,
+              include: Organization.include(
+                people: Person.includeList(
+                  orderBy: (t) => t.name,
+                  limit: 3,
+                ),
+              ),
+            ),
+          ),
+          transaction: transaction,
+        );
+
+        expect(result?.organizations, hasLength(2));
+
+        var org1Result = result?.organizations?.firstWhere(
+          (o) => o.name == 'Org1',
+        );
+        expect(org1Result?.people, hasLength(3));
+        expect(
+          org1Result?.people?.map((e) => e.name).toList(),
+          ['Person_50', 'Person_51', 'Person_52'],
+          reason:
+              'Expected first 3 people alphabetically: Person_50, Person_51, Person_52',
+        );
+
+        var org2Result = result?.organizations?.firstWhere(
+          (o) => o.name == 'Org2',
+        );
+        expect(org2Result?.people, hasLength(3));
+        expect(
+          org2Result?.people?.map((e) => e.name).toList(),
+          ['Member_50', 'Member_51', 'Member_52'],
+          reason:
+              'Expected first 3 people alphabetically: Member_50, Member_51, Member_52',
+        );
+      });
+    },
+  );
 }
