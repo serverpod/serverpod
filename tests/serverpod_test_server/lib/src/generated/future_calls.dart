@@ -65,6 +65,7 @@ class FutureCalls extends _i1.FutureCallDispatch<_FutureCallRef> {
       'TestGeneratedCallByeFutureCall': TestGeneratedCallByeFutureCall(),
       'TestGeneratedCallLogDataFutureCall':
           TestGeneratedCallLogDataFutureCall(),
+      'TestGeneratedCallDoTaskFutureCall': TestGeneratedCallDoTaskFutureCall(),
     };
     _futureCallManager = futureCallManager;
     _serverId = serverId;
@@ -158,6 +159,13 @@ class _TestGeneratedCallFutureCallDispatcher {
       data,
     );
   }
+
+  Future<void> doTask() {
+    return _invokeFutureCall(
+      'TestGeneratedCallDoTaskFutureCall',
+      null,
+    );
+  }
 }
 
 class TestGeneratedCallHelloFutureCall
@@ -205,5 +213,15 @@ class TestGeneratedCallLogDataFutureCall
       session,
       data!,
     );
+  }
+}
+
+class TestGeneratedCallDoTaskFutureCall extends _i1.FutureCall {
+  @override
+  _i5.Future<void> invoke(
+    _i1.Session session,
+    _i1.SerializableModel? object,
+  ) async {
+    await _i6.TestGeneratedCall().doTask(session);
   }
 }

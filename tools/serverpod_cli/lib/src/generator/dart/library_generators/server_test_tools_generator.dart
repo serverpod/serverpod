@@ -186,7 +186,9 @@ class ServerTestToolsGenerator {
                   if (method.futureCallMethodParameter != null)
                     refer('object')
                   else if (requiredParameters.isNotEmpty)
-                    refer(requiredParameters.first.name),
+                    refer(requiredParameters.first.name)
+                  else
+                    refer('null'),
                 ],
               )
               .awaited

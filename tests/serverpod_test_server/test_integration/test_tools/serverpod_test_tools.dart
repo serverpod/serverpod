@@ -15620,4 +15620,17 @@ class _TestGeneratedCallFutureCall {
       await _localUniqueSession.close();
     }
   }
+
+  Future<void> doTask(_i1.TestSessionBuilder sessionBuilder) async {
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      await _i32.TestGeneratedCallDoTaskFutureCall().invoke(
+        _localUniqueSession,
+        null,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
+  }
 }
