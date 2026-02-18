@@ -32,32 +32,38 @@ volatile;
 --
 -- ACTION CREATE TABLE
 --
-CREATE TABLE "serverpod_auth_idp_generic_passwordless_login_request" (
-    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
-    "createdAt" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "nonce" text NOT NULL,
-    "challengeId" uuid NOT NULL,
-    "loginChallengeId" uuid
-);
+DO $serverpod_mig$
+BEGIN
+    IF to_regclass('public.serverpod_auth_idp_generic_passwordless_login_request') IS NULL THEN
+        CREATE TABLE "serverpod_auth_idp_generic_passwordless_login_request" (
+            "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
+            "createdAt" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            "nonce" text NOT NULL,
+            "challengeId" uuid NOT NULL,
+            "loginChallengeId" uuid
+        );
 
--- Indexes
-CREATE UNIQUE INDEX "serverpod_auth_idp_generic_passwordless_login_request_nonce" ON "serverpod_auth_idp_generic_passwordless_login_request" USING btree ("nonce");
+        -- Indexes
+        CREATE UNIQUE INDEX "serverpod_auth_idp_generic_passwordless_login_request_nonce" ON "serverpod_auth_idp_generic_passwordless_login_request" USING btree ("nonce");
 
---
--- ACTION CREATE FOREIGN KEY
---
-ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
-    ADD CONSTRAINT "serverpod_auth_idp_generic_passwordless_login_request_fk_0"
-    FOREIGN KEY("challengeId")
-    REFERENCES "serverpod_auth_idp_secret_challenge"("id")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION;
-ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
-    ADD CONSTRAINT "serverpod_auth_idp_generic_passwordless_login_request_fk_1"
-    FOREIGN KEY("loginChallengeId")
-    REFERENCES "serverpod_auth_idp_secret_challenge"("id")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION;
+        --
+        -- ACTION CREATE FOREIGN KEY
+        --
+        ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
+            ADD CONSTRAINT "serverpod_auth_idp_generic_passwordless_login_request_fk_0"
+            FOREIGN KEY("challengeId")
+            REFERENCES "serverpod_auth_idp_secret_challenge"("id")
+            ON DELETE CASCADE
+            ON UPDATE NO ACTION;
+        ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
+            ADD CONSTRAINT "serverpod_auth_idp_generic_passwordless_login_request_fk_1"
+            FOREIGN KEY("loginChallengeId")
+            REFERENCES "serverpod_auth_idp_secret_challenge"("id")
+            ON DELETE CASCADE
+            ON UPDATE NO ACTION;
+    END IF;
+END
+$serverpod_mig$;
 
 
 --
