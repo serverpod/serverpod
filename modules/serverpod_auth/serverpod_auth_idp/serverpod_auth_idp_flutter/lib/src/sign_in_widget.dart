@@ -7,6 +7,7 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
 import 'anonymous/anonymous_sign_in_widget.dart';
 import 'apple/apple_sign_in_widget.dart';
+import 'common/external_idp_registry.dart';
 import 'common/widgets/column.dart';
 import 'common/widgets/divider.dart';
 import 'common/widgets/gaps.dart';
@@ -28,6 +29,7 @@ import 'providers.dart';
 /// - Apple Sign-In (via [EndpointAppleIdpBase])
 /// - GitHub Sign-In (via [EndpointGitHubIdpBase])
 /// - Microsoft Sign-In (via [EndpointMicrosoftIdpBase])
+/// - External providers registered via [ExternalIdpRegistry]
 ///
 /// The widget separates email authentication from other providers with a
 /// visual divider showing "Or continue with" text.
@@ -76,6 +78,9 @@ class SignInWidget extends StatefulWidget {
   /// Whether to disable the Microsoft sign-in widget if it is available.
   final bool disableMicrosoftSignInWidget;
 
+  /// Whether to disable the Facebook sign-in widget if it is available.
+  final bool disableFacebookSignInWidget;
+
   /// Customized widget to use for anonymous sign-in.
   final AnonymousSignInWidget? anonymousSignInWidget;
 
@@ -105,6 +110,7 @@ class SignInWidget extends StatefulWidget {
     this.disableAppleSignInWidget = false,
     this.disableGitHubSignInWidget = false,
     this.disableMicrosoftSignInWidget = false,
+    this.disableFacebookSignInWidget = false,
     this.anonymousSignInWidget,
     this.emailSignInWidget,
     this.googleSignInWidget,
@@ -129,6 +135,8 @@ class _SignInWidgetState extends State<SignInWidget> {
   bool get hasGitHub => auth.idp.hasGitHub && !widget.disableGitHubSignInWidget;
   bool get hasMicrosoft =>
       auth.idp.hasMicrosoft && !widget.disableMicrosoftSignInWidget;
+  bool get hasFacebook =>
+      auth.idp.hasFacebook && !widget.disableFacebookSignInWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -167,6 +175,21 @@ class _SignInWidgetState extends State<SignInWidget> {
         socialProviders.insert(0, appleSignInWidget);
       } else {
         socialProviders.add(appleSignInWidget);
+      }
+    }
+
+    if (hasFacebook) {
+      final builder = ExternalIdpRegistry.instance
+          .getBuilder<EndpointFacebookIdpBase>();
+      if (builder != null) {
+        socialProviders.add(
+          builder(
+            context,
+            widget.client,
+            widget.onAuthenticated,
+            widget.onError,
+          ),
+        );
       }
     }
 

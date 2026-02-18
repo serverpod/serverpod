@@ -3,6 +3,7 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/anonymous.dart';
 import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_idp_server/providers/facebook.dart';
 import 'package:serverpod_auth_idp_server/providers/github.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'package:serverpod_auth_idp_server/providers/microsoft.dart';
@@ -61,6 +62,11 @@ void run(List<String> args) async {
     sendPasswordResetVerificationCode: _sendPasswordResetCode,
   );
 
+  final facebookIdpConfig = FacebookIdpConfig(
+    appId: pod.getPassword('facebookAppId')!,
+    appSecret: pod.getPassword('facebookAppSecret')!,
+  );
+
   final githubIdpConfig = GitHubIdpConfig(
     clientId: pod.getPassword('githubClientId')!,
     clientSecret: pod.getPassword('githubClientSecret')!,
@@ -89,6 +95,7 @@ void run(List<String> args) async {
       googleIdpConfig,
       appleIdpConfig,
       emailIdpConfig,
+      facebookIdpConfig,
       githubIdpConfig,
       microsoftIdpConfig,
       passkeyIdpConfig,
