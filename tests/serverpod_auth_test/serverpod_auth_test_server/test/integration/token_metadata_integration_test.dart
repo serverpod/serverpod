@@ -217,4 +217,113 @@ void main() {
       );
     },
   );
+
+  withServerpod(
+    'Given an AuthSuccess generated from a ServerSideSessions with no onSessionCreated callback',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AuthSuccess authSuccess;
+
+      setUp(() async {
+        AuthServices.set(
+          tokenManagerBuilders: [
+            ServerSideSessionsConfig(
+              sessionKeyHashPepper: 'test-pepper',
+            ),
+          ],
+          identityProviderBuilders: [],
+        );
+
+        session = sessionBuilder.build();
+        final authUserId = await endpoints.authTest.createTestUser(
+          sessionBuilder,
+        );
+
+        authSuccess = await AuthServices.instance.tokenManager.issueToken(
+          session,
+          authUserId: authUserId,
+          method: 'test',
+          scopes: {},
+        );
+      });
+
+      test(
+        'when attaching metadata to the token using the `serverSideSessionId` getter, '
+        'then the metadata is attached to the token.',
+        () async {
+          await SessionMetadata.db.insertRow(
+            session,
+            SessionMetadata(
+              serverSideSessionId: authSuccess.serverSideSessionId,
+              deviceName: 'Test Device',
+              ipAddress: '192.168.1.1',
+              userAgent: 'TestAgent/1.0',
+            ),
+          );
+
+          final tokenMetadata = await SessionMetadata.db.find(session);
+
+          expect(tokenMetadata.length, equals(1));
+          expect(tokenMetadata.first.deviceName, equals('Test Device'));
+          expect(tokenMetadata.first.userAgent, equals('TestAgent/1.0'));
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given an AuthSuccess generated from a JwtConfig with no onRefreshTokenCreated callback',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AuthSuccess authSuccess;
+
+      setUp(() async {
+        AuthServices.set(
+          tokenManagerBuilders: [
+            JwtConfig(
+              refreshTokenHashPepper: 'test-pepper',
+              algorithm: JwtAlgorithm.hmacSha512(
+                SecretKey('test-private-key-for-HS512'),
+              ),
+            ),
+          ],
+          identityProviderBuilders: [],
+        );
+
+        session = sessionBuilder.build();
+        final authUserId = await endpoints.authTest.createTestUser(
+          sessionBuilder,
+        );
+
+        authSuccess = await AuthServices.instance.tokenManager.issueToken(
+          session,
+          authUserId: authUserId,
+          method: 'test',
+          scopes: {},
+        );
+      });
+
+      test(
+        'when attaching metadata to the refresh token using the `jwtRefreshTokenId` getter, '
+        'then the metadata is attached to the refresh token.',
+        () async {
+          await TokenMetadata.db.insertRow(
+            session,
+            TokenMetadata(
+              refreshTokenId: authSuccess.jwtRefreshTokenId,
+              deviceName: 'JWT Device',
+              ipAddress: '10.0.0.1',
+              userAgent: 'JWTClient/1.0',
+            ),
+          );
+
+          final tokenMetadata = await TokenMetadata.db.find(session);
+
+          expect(tokenMetadata.length, equals(1));
+          expect(tokenMetadata.first.deviceName, equals('JWT Device'));
+          expect(tokenMetadata.first.userAgent, equals('JWTClient/1.0'));
+        },
+      );
+    },
+  );
 }
