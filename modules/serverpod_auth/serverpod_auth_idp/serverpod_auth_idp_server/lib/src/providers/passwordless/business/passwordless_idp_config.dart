@@ -26,13 +26,13 @@ typedef NormalizeHandleFunction = String Function(String handle);
 /// Function for creating an opaque nonce for a login handle.
 ///
 /// The nonce is stored on the server and later used to resolve an auth user.
-typedef BuildNonceFunction = String Function(String normalizedHandle);
+typedef BuildNonceFunction<TNonce> = TNonce Function(String normalizedHandle);
 
 /// Function for resolving an auth user id from a nonce.
-typedef ResolveAuthUserIdFunction =
+typedef ResolveAuthUserIdFunction<TNonce> =
     FutureOr<UuidValue> Function(
       Session session, {
-      required String nonce,
+      required TNonce nonce,
       required Transaction? transaction,
     });
 
@@ -54,7 +54,8 @@ class PasswordlessRateLimit {
 /// {@template passwordless_idp_config}
 /// Configuration options for the passwordless identity provider.
 /// {@endtemplate}
-class PasswordlessIdpConfig extends IdentityProviderBuilder<PasswordlessIdp> {
+class PasswordlessIdpConfig<TNonce>
+    extends IdentityProviderBuilder<PasswordlessIdp<TNonce>> {
   /// The pepper used for hashing verification codes.
   ///
   /// To rotate peppers without invalidating existing codes, use
@@ -79,7 +80,7 @@ class PasswordlessIdpConfig extends IdentityProviderBuilder<PasswordlessIdp> {
   /// Function for creating an opaque nonce for a login handle.
   ///
   /// Defaults to returning the normalized handle as is.
-  final BuildNonceFunction buildNonce;
+  final BuildNonceFunction<TNonce> buildNonce;
 
   /// The lifetime of login verification codes.
   final Duration loginVerificationCodeLifetime;
@@ -102,21 +103,19 @@ class PasswordlessIdpConfig extends IdentityProviderBuilder<PasswordlessIdp> {
   /// request has been verified.
   ///
   /// If `null`, calling [PasswordlessIdp.finishLogin] will throw.
-  final ResolveAuthUserIdFunction? resolveAuthUserId;
+  final ResolveAuthUserIdFunction<TNonce>? resolveAuthUserId;
 
-  /// Optional custom request store for passwordless login requests.
-  ///
-  /// If `null`, [DefaultDbPasswordlessLoginRequestStore] is used.
-  final PasswordlessLoginRequestStore? loginRequestStore;
+  /// Custom request store for passwordless login requests.
+  final PasswordlessLoginRequestStore<TNonce> loginRequestStore;
 
   /// Creates a new passwordless identity provider configuration.
-  const PasswordlessIdpConfig({
+  PasswordlessIdpConfig({
     required this.secretHashPepper,
     this.fallbackSecretHashPeppers = const [],
     this.secretHashSaltLength = 16,
     this.enableLogin = true,
     this.normalizeHandle = _defaultNormalizeHandle,
-    this.buildNonce = _defaultBuildNonce,
+    final BuildNonceFunction<TNonce>? buildNonce,
     this.loginVerificationCodeLifetime = const Duration(minutes: 10),
     this.loginVerificationCodeAllowedAttempts = 3,
     this.loginVerificationCodeGenerator =
@@ -127,16 +126,25 @@ class PasswordlessIdpConfig extends IdentityProviderBuilder<PasswordlessIdp> {
     ),
     this.sendLoginVerificationCode,
     this.resolveAuthUserId,
-    this.loginRequestStore,
-  });
+    required this.loginRequestStore,
+  }) : buildNonce = _resolveBuildNonce(buildNonce);
 
   static String _defaultNormalizeHandle(final String handle) => handle.trim();
 
-  static String _defaultBuildNonce(final String normalizedHandle) =>
-      normalizedHandle;
+  static BuildNonceFunction<TNonce> _resolveBuildNonce<TNonce>(
+    final BuildNonceFunction<TNonce>? buildNonce,
+  ) {
+    if (buildNonce != null) return buildNonce;
+    if (TNonce == String) {
+      return (final normalizedHandle) => normalizedHandle as TNonce;
+    }
+    throw ArgumentError(
+      'buildNonce must be provided when TNonce is not String.',
+    );
+  }
 
   @override
-  PasswordlessIdp build({
+  PasswordlessIdp<TNonce> build({
     required final TokenManager tokenManager,
     required final AuthUsers authUsers,
     required final UserProfiles userProfiles,
@@ -154,7 +162,8 @@ class PasswordlessIdpConfig extends IdentityProviderBuilder<PasswordlessIdp> {
 ///
 /// This constructor requires that a [Serverpod] instance has already been
 /// initialized.
-class PasswordlessIdpConfigFromPasswords extends PasswordlessIdpConfig {
+class PasswordlessIdpConfigFromPasswords<TNonce>
+    extends PasswordlessIdpConfig<TNonce> {
   /// Creates a new [PasswordlessIdpConfigFromPasswords] instance.
   PasswordlessIdpConfigFromPasswords({
     super.fallbackSecretHashPeppers,
@@ -168,7 +177,7 @@ class PasswordlessIdpConfigFromPasswords extends PasswordlessIdpConfig {
     super.loginRequestRateLimit,
     super.sendLoginVerificationCode,
     super.resolveAuthUserId,
-    super.loginRequestStore,
+    required super.loginRequestStore,
   }) : super(
          secretHashPepper: Serverpod.instance.getPasswordOrThrow(
            'passwordlessSecretHashPepper',

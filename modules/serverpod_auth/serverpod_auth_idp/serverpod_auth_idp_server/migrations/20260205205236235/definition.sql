@@ -168,9 +168,9 @@ CREATE TABLE "serverpod_auth_idp_passkey_challenge" (
 );
 
 --
--- Class PasswordlessLoginRequest as table serverpod_auth_idp_passwordless_login_request
+-- Class GenericPasswordlessLoginRequest as table serverpod_auth_idp_generic_passwordless_login_request
 --
-CREATE TABLE "serverpod_auth_idp_passwordless_login_request" (
+CREATE TABLE "serverpod_auth_idp_generic_passwordless_login_request" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
     "createdAt" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "nonce" text NOT NULL,
@@ -179,7 +179,7 @@ CREATE TABLE "serverpod_auth_idp_passwordless_login_request" (
 );
 
 -- Indexes
-CREATE UNIQUE INDEX "serverpod_auth_idp_passwordless_login_request_nonce" ON "serverpod_auth_idp_passwordless_login_request" USING btree ("nonce");
+CREATE UNIQUE INDEX "serverpod_auth_idp_generic_passwordless_login_request_nonce" ON "serverpod_auth_idp_generic_passwordless_login_request" USING btree ("nonce");
 
 --
 -- Class RateLimitedRequestAttempt as table serverpod_auth_idp_rate_limited_request_attempt
@@ -594,16 +594,16 @@ ALTER TABLE ONLY "serverpod_auth_idp_passkey_account"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "serverpod_auth_idp_passwordless_login_request" table
+-- Foreign relations for "serverpod_auth_idp_generic_passwordless_login_request" table
 --
-ALTER TABLE ONLY "serverpod_auth_idp_passwordless_login_request"
-    ADD CONSTRAINT "serverpod_auth_idp_passwordless_login_request_fk_0"
+ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
+    ADD CONSTRAINT "serverpod_auth_idp_generic_passwordless_login_request_fk_0"
     FOREIGN KEY("challengeId")
     REFERENCES "serverpod_auth_idp_secret_challenge"("id")
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
-ALTER TABLE ONLY "serverpod_auth_idp_passwordless_login_request"
-    ADD CONSTRAINT "serverpod_auth_idp_passwordless_login_request_fk_1"
+ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
+    ADD CONSTRAINT "serverpod_auth_idp_generic_passwordless_login_request_fk_1"
     FOREIGN KEY("loginChallengeId")
     REFERENCES "serverpod_auth_idp_secret_challenge"("id")
     ON DELETE CASCADE

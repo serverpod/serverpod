@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
+import '../passwordless_idp_server_exceptions.dart';
 
 /// Snapshot of a passwordless login request used by business logic.
-class PasswordlessLoginRequestData {
+class PasswordlessLoginRequestData<TNonce> {
   /// Request identifier.
   final UuidValue id;
 
@@ -11,7 +14,7 @@ class PasswordlessLoginRequestData {
   final DateTime createdAt;
 
   /// Opaque user handle nonce.
-  final String nonce;
+  final TNonce nonce;
 
   /// Verification challenge.
   final SecretChallenge? challenge;
@@ -34,31 +37,31 @@ class PasswordlessLoginRequestData {
 }
 
 /// Storage contract for passwordless login requests.
-abstract interface class PasswordlessLoginRequestStore {
+abstract interface class PasswordlessLoginRequestStore<TNonce> {
   /// Deletes requests for [nonce].
   Future<void> deleteByNonce(
     final Session session, {
-    required final String nonce,
+    required final TNonce nonce,
     required final Transaction transaction,
   });
 
   /// Creates a new request row.
   Future<UuidValue> createRequest(
     final Session session, {
-    required final String nonce,
+    required final TNonce nonce,
     required final UuidValue challengeId,
     required final Transaction transaction,
   });
 
   /// Loads request data for verification step.
-  Future<PasswordlessLoginRequestData?> getRequestForVerification(
+  Future<PasswordlessLoginRequestData<TNonce>?> getRequestForVerification(
     final Session session, {
     required final UuidValue requestId,
     required final Transaction? transaction,
   });
 
   /// Loads request data for completion step.
-  Future<PasswordlessLoginRequestData?> getRequestForCompletion(
+  Future<PasswordlessLoginRequestData<TNonce>?> getRequestForCompletion(
     final Session session, {
     required final UuidValue requestId,
     required final Transaction? transaction,
@@ -82,21 +85,45 @@ abstract interface class PasswordlessLoginRequestStore {
   });
 }
 
-/// Default DB-backed request store using [PasswordlessLoginRequest].
-class DefaultDbPasswordlessLoginRequestStore
-    implements PasswordlessLoginRequestStore {
-  /// Creates a new default DB-backed store.
-  const DefaultDbPasswordlessLoginRequestStore();
+/// Generic DB-backed request store using [GenericPasswordlessLoginRequest].
+class GenericPasswordlessLoginRequestStore<TNonce>
+    implements PasswordlessLoginRequestStore<TNonce> {
+  /// Domain segment used in namespaced nonces.
+  final String domain;
+
+  /// Source segment used in namespaced nonces.
+  final String source;
+
+  /// Encodes nonce values to stable strings before DB persistence.
+  final String Function(TNonce nonce) encodeNonce;
+
+  /// Decodes nonce values from stable strings read from DB.
+  final TNonce Function(String nonce) decodeNonce;
+
+  /// Creates a generic DB-backed store.
+  GenericPasswordlessLoginRequestStore({
+    required final String domain,
+    required final String source,
+    required this.encodeNonce,
+    required this.decodeNonce,
+  }) : domain = _validateNamespaceSegment(
+         name: 'domain',
+         value: domain,
+       ),
+       source = _validateNamespaceSegment(
+         name: 'source',
+         value: source,
+       );
 
   @override
   Future<void> deleteByNonce(
     final Session session, {
-    required final String nonce,
+    required final TNonce nonce,
     required final Transaction transaction,
   }) async {
-    await PasswordlessLoginRequest.db.deleteWhere(
+    await GenericPasswordlessLoginRequest.db.deleteWhere(
       session,
-      where: (final t) => t.nonce.equals(nonce),
+      where: (final t) => t.nonce.equals(_toNamespacedNonce(nonce)),
       transaction: transaction,
     );
   }
@@ -104,14 +131,14 @@ class DefaultDbPasswordlessLoginRequestStore
   @override
   Future<UuidValue> createRequest(
     final Session session, {
-    required final String nonce,
+    required final TNonce nonce,
     required final UuidValue challengeId,
     required final Transaction transaction,
   }) async {
-    final request = await PasswordlessLoginRequest.db.insertRow(
+    final request = await GenericPasswordlessLoginRequest.db.insertRow(
       session,
-      PasswordlessLoginRequest(
-        nonce: nonce,
+      GenericPasswordlessLoginRequest(
+        nonce: _toNamespacedNonce(nonce),
         challengeId: challengeId,
       ),
       transaction: transaction,
@@ -120,37 +147,37 @@ class DefaultDbPasswordlessLoginRequestStore
   }
 
   @override
-  Future<PasswordlessLoginRequestData?> getRequestForVerification(
+  Future<PasswordlessLoginRequestData<TNonce>?> getRequestForVerification(
     final Session session, {
     required final UuidValue requestId,
     required final Transaction? transaction,
   }) async {
-    final request = await PasswordlessLoginRequest.db.findById(
+    final request = await GenericPasswordlessLoginRequest.db.findById(
       session,
       requestId,
       transaction: transaction,
-      include: PasswordlessLoginRequest.include(
+      include: GenericPasswordlessLoginRequest.include(
         challenge: SecretChallenge.include(),
       ),
     );
-    return request?._toStoreData();
+    return request?._toStoreData(store: this);
   }
 
   @override
-  Future<PasswordlessLoginRequestData?> getRequestForCompletion(
+  Future<PasswordlessLoginRequestData<TNonce>?> getRequestForCompletion(
     final Session session, {
     required final UuidValue requestId,
     required final Transaction? transaction,
   }) async {
-    final request = await PasswordlessLoginRequest.db.findById(
+    final request = await GenericPasswordlessLoginRequest.db.findById(
       session,
       requestId,
       transaction: transaction,
-      include: PasswordlessLoginRequest.include(
+      include: GenericPasswordlessLoginRequest.include(
         loginChallenge: SecretChallenge.include(),
       ),
     );
-    return request?._toStoreData();
+    return request?._toStoreData(store: this);
   }
 
   @override
@@ -160,7 +187,7 @@ class DefaultDbPasswordlessLoginRequestStore
     required final UuidValue completionChallengeId,
     required final Transaction? transaction,
   }) async {
-    final updated = await PasswordlessLoginRequest.db.updateWhere(
+    final updated = await GenericPasswordlessLoginRequest.db.updateWhere(
       session,
       columnValues: (final t) => [
         t.loginChallengeId(completionChallengeId),
@@ -178,21 +205,68 @@ class DefaultDbPasswordlessLoginRequestStore
     required final UuidValue requestId,
     final Transaction? transaction,
   }) async {
-    final deleted = await PasswordlessLoginRequest.db.deleteWhere(
+    final deleted = await GenericPasswordlessLoginRequest.db.deleteWhere(
       session,
       where: (final t) => t.id.equals(requestId),
       transaction: transaction,
     );
     return deleted.isNotEmpty;
   }
+
+  String _toNamespacedNonce(final TNonce nonce) {
+    final rawEncodedNonce = encodeNonce(nonce);
+    if (rawEncodedNonce.isEmpty) {
+      throw PasswordlessLoginInvalidException();
+    }
+    final encodedNonce = base64UrlEncode(utf8.encode(rawEncodedNonce));
+    return '$domain::$source::$encodedNonce';
+  }
+
+  TNonce _fromNamespacedNonce(final String namespacedNonce) {
+    final parts = namespacedNonce.split('::');
+    if (parts.length != 3) {
+      throw PasswordlessLoginInvalidException();
+    }
+    if (parts[0] != domain || parts[1] != source || parts[2].isEmpty) {
+      throw PasswordlessLoginInvalidException();
+    }
+
+    try {
+      final decodedNonce = utf8.decode(
+        base64Url.decode(base64Url.normalize(parts[2])),
+      );
+      if (decodedNonce.isEmpty) {
+        throw PasswordlessLoginInvalidException();
+      }
+      return decodeNonce(decodedNonce);
+    } catch (_) {
+      throw PasswordlessLoginInvalidException();
+    }
+  }
+
+  static String _validateNamespaceSegment({
+    required final String name,
+    required final String value,
+  }) {
+    final normalized = value.trim();
+    if (normalized.isEmpty) {
+      throw ArgumentError.value(value, name, 'must not be empty');
+    }
+    if (normalized.contains('::')) {
+      throw ArgumentError.value(value, name, 'must not contain "::"');
+    }
+    return normalized;
+  }
 }
 
-extension on PasswordlessLoginRequest {
-  PasswordlessLoginRequestData _toStoreData() {
+extension on GenericPasswordlessLoginRequest {
+  PasswordlessLoginRequestData<TNonce> _toStoreData<TNonce>({
+    required final GenericPasswordlessLoginRequestStore<TNonce> store,
+  }) {
     return PasswordlessLoginRequestData(
       id: id!,
       createdAt: createdAt,
-      nonce: nonce,
+      nonce: store._fromNamespacedNonce(nonce),
       challenge: challenge,
       loginChallengeId: loginChallengeId,
       loginChallenge: loginChallenge,

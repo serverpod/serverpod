@@ -9,18 +9,19 @@ import 'passwordless_login_request_store.dart';
 /// {@template passwordless_idp_login_util}
 /// Utility functions for passwordless login.
 /// {@endtemplate}
-class PasswordlessIdpLoginUtil {
-  final PasswordlessIdpConfig _config;
+class PasswordlessIdpLoginUtil<TNonce> {
+  final PasswordlessIdpConfig<TNonce> _config;
   final Argon2HashUtil _hashUtil;
-  final PasswordlessLoginRequestStore _requestStore;
-  late final SecretChallengeUtil<PasswordlessLoginRequestData> _challengeUtil;
-  late final DatabaseRateLimitedRequestAttemptUtil<String> _requestRateLimiter;
+  final PasswordlessLoginRequestStore<TNonce> _requestStore;
+  late final SecretChallengeUtil<PasswordlessLoginRequestData<TNonce>>
+  _challengeUtil;
+  late final DatabaseRateLimitedRequestAttemptUtil<TNonce> _requestRateLimiter;
 
   /// Creates a new [PasswordlessIdpLoginUtil] instance.
   PasswordlessIdpLoginUtil({
-    required final PasswordlessIdpConfig config,
+    required final PasswordlessIdpConfig<TNonce> config,
     required final Argon2HashUtil hashUtil,
-    required final PasswordlessLoginRequestStore requestStore,
+    required final PasswordlessLoginRequestStore<TNonce> requestStore,
   }) : _config = config,
        _hashUtil = hashUtil,
        _requestStore = requestStore {
@@ -30,7 +31,7 @@ class PasswordlessIdpLoginUtil {
       completionConfig: _buildCompletionConfig(),
     );
     _requestRateLimiter = DatabaseRateLimitedRequestAttemptUtil(
-      RateLimitedRequestAttemptConfig(
+      RateLimitedRequestAttemptConfig<TNonce>(
         domain: 'passwordless',
         source: 'login_request',
         maxAttempts: _config.loginRequestRateLimit.maxAttempts,
@@ -51,7 +52,7 @@ class PasswordlessIdpLoginUtil {
     }
 
     final nonce = _config.buildNonce(normalizedHandle);
-    if (nonce.isEmpty) {
+    if (nonce is String && nonce.isEmpty) {
       throw PasswordlessLoginInvalidException();
     }
 
@@ -108,7 +109,7 @@ class PasswordlessIdpLoginUtil {
   }
 
   /// Completes the login process and returns the login request data.
-  Future<PasswordlessLoginRequestData> completeLogin(
+  Future<PasswordlessLoginRequestData<TNonce>> completeLogin(
     final Session session, {
     required final String loginToken,
     required final Transaction transaction,
@@ -135,7 +136,7 @@ class PasswordlessIdpLoginUtil {
     );
   }
 
-  SecretChallengeVerificationConfig<PasswordlessLoginRequestData>
+  SecretChallengeVerificationConfig<PasswordlessLoginRequestData<TNonce>>
   _buildVerificationConfig() {
     final limiter = DatabaseRateLimitedRequestAttemptUtil<UuidValue>(
       RateLimitedRequestAttemptConfig(
@@ -198,7 +199,7 @@ class PasswordlessIdpLoginUtil {
     );
   }
 
-  SecretChallengeCompletionConfig<PasswordlessLoginRequestData>
+  SecretChallengeCompletionConfig<PasswordlessLoginRequestData<TNonce>>
   _buildCompletionConfig() {
     final limiter = DatabaseRateLimitedRequestAttemptUtil<UuidValue>(
       RateLimitedRequestAttemptConfig(

@@ -15,7 +15,8 @@ abstract class PasswordlessIdpBaseEndpoint extends Endpoint {
   /// By default this uses the global instance configured in [AuthServices].
   ///
   /// If you want to use a different instance, override this getter.
-  PasswordlessIdp get passwordlessIdp => AuthServices.instance.passwordlessIdp;
+  PasswordlessIdp<String> get passwordlessIdp =>
+      AuthServices.instance.passwordlessIdp;
 
   /// Starts the login process and delivers a verification code using the
   /// configured callback.

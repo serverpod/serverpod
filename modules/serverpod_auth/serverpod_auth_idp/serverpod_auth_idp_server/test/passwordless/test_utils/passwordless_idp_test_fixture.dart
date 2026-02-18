@@ -3,13 +3,13 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/passwordless.dart';
 
 final class PasswordlessIdpTestFixture {
-  late final PasswordlessIdp passwordlessIdp;
+  late final PasswordlessIdp<String> passwordlessIdp;
   late final TokenManager tokenManager;
   final AuthUsers authUsers = const AuthUsers();
   final UserProfiles userProfiles = const UserProfiles();
 
   PasswordlessIdpTestFixture({
-    required final PasswordlessIdpConfig config,
+    required final PasswordlessIdpConfig<String> config,
     TokenManager? tokenManager,
   }) {
     tokenManager ??= AuthServices(
@@ -35,7 +35,7 @@ final class PasswordlessIdpTestFixture {
   Future<void> tearDown(final Session session) async {
     await session.db.transaction((final transaction) async {
       await Future.wait([
-        PasswordlessLoginRequest.db.deleteWhere(
+        GenericPasswordlessLoginRequest.db.deleteWhere(
           session,
           where: (final _) => Constant.bool(true),
           transaction: transaction,

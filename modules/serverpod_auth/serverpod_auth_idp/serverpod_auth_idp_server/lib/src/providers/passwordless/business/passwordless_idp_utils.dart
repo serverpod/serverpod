@@ -2,7 +2,6 @@ import '../../../../../core.dart';
 import 'passwordless_idp_config.dart';
 import 'passwordless_idp_server_exceptions.dart';
 import 'utils/passwordless_idp_login_util.dart';
-import 'utils/passwordless_login_request_store.dart';
 
 /// Passwordless authentication utilities.
 ///
@@ -11,16 +10,16 @@ import 'utils/passwordless_login_request_store.dart';
 ///
 /// - [hashUtil] - Utilities for hashing verification codes
 /// - [login] - Utilities for logging in users
-class PasswordlessIdpUtils {
+class PasswordlessIdpUtils<TNonce> {
   /// General hash util for the passwordless provider.
   final Argon2HashUtil hashUtil;
 
   /// {@macro passwordless_idp_login_util}
-  late final PasswordlessIdpLoginUtil login;
+  late final PasswordlessIdpLoginUtil<TNonce> login;
 
   /// Creates a new instance of [PasswordlessIdpUtils].
   PasswordlessIdpUtils({
-    required final PasswordlessIdpConfig config,
+    required final PasswordlessIdpConfig<TNonce> config,
   }) : hashUtil = Argon2HashUtil(
          hashPepper: config.secretHashPepper,
          fallbackHashPeppers: config.fallbackSecretHashPeppers,
@@ -28,13 +27,10 @@ class PasswordlessIdpUtils {
          // Keep this in line with other IDP providers.
          parameters: Argon2HashParameters(memory: 19456),
        ) {
-    final requestStore =
-        config.loginRequestStore ??
-        const DefaultDbPasswordlessLoginRequestStore();
     login = PasswordlessIdpLoginUtil(
       config: config,
       hashUtil: hashUtil,
-      requestStore: requestStore,
+      requestStore: config.loginRequestStore,
     );
   }
 

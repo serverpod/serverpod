@@ -3196,8 +3196,8 @@
     },
     {
       "__className__": "serverpod.TableDefinition",
-      "name": "serverpod_auth_idp_passwordless_login_request",
-      "dartName": "PasswordlessLoginRequest",
+      "name": "serverpod_auth_idp_generic_passwordless_login_request",
+      "dartName": "GenericPasswordlessLoginRequest",
       "module": "serverpod_auth_idp",
       "schema": "public",
       "columns": [
@@ -3242,7 +3242,7 @@
       "foreignKeys": [
         {
           "__className__": "serverpod.ForeignKeyDefinition",
-          "constraintName": "serverpod_auth_idp_passwordless_login_request_fk_0",
+          "constraintName": "serverpod_auth_idp_generic_passwordless_login_request_fk_0",
           "columns": [
             "challengeId"
           ],
@@ -3256,7 +3256,7 @@
         },
         {
           "__className__": "serverpod.ForeignKeyDefinition",
-          "constraintName": "serverpod_auth_idp_passwordless_login_request_fk_1",
+          "constraintName": "serverpod_auth_idp_generic_passwordless_login_request_fk_1",
           "columns": [
             "loginChallengeId"
           ],
@@ -3272,7 +3272,7 @@
       "indexes": [
         {
           "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_auth_idp_passwordless_login_request_pkey",
+          "indexName": "serverpod_auth_idp_generic_passwordless_login_request_pkey",
           "elements": [
             {
               "__className__": "serverpod.IndexElementDefinition",
@@ -3286,7 +3286,7 @@
         },
         {
           "__className__": "serverpod.IndexDefinition",
-          "indexName": "serverpod_auth_idp_passwordless_login_request_nonce",
+          "indexName": "serverpod_auth_idp_generic_passwordless_login_request_nonce",
           "elements": [
             {
               "__className__": "serverpod.IndexElementDefinition",

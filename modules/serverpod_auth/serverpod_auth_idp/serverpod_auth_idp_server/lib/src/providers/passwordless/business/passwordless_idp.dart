@@ -11,15 +11,15 @@ import 'passwordless_idp_utils.dart';
 ///
 /// The `utils` property provides access to [PasswordlessIdpUtils], which contains
 /// utility methods for working with passwordless login requests.
-class PasswordlessIdp {
+class PasswordlessIdp<TNonce> {
   /// The method used when authenticating with the passwordless identity provider.
   static const String method = 'passwordless';
 
   /// The configuration for the passwordless identity provider.
-  final PasswordlessIdpConfig config;
+  final PasswordlessIdpConfig<TNonce> config;
 
   /// Utility functions for the passwordless identity provider.
-  final PasswordlessIdpUtils utils;
+  final PasswordlessIdpUtils<TNonce> utils;
 
   final TokenManager _tokenManager;
   final AuthUsers _authUsers;
@@ -33,11 +33,11 @@ class PasswordlessIdp {
 
   /// Creates a new instance of [PasswordlessIdp].
   factory PasswordlessIdp(
-    final PasswordlessIdpConfig config, {
+    final PasswordlessIdpConfig<TNonce> config, {
     required final TokenManager tokenManager,
     required final AuthUsers authUsers,
   }) {
-    final utils = PasswordlessIdpUtils(config: config);
+    final utils = PasswordlessIdpUtils<TNonce>(config: config);
     return PasswordlessIdp._(config, utils, tokenManager, authUsers);
   }
 
@@ -162,6 +162,6 @@ class PasswordlessIdp {
 /// Extension to get the PasswordlessIdp instance from the AuthServices.
 extension PasswordlessIdpGetter on AuthServices {
   /// Returns the PasswordlessIdp instance from the AuthServices.
-  PasswordlessIdp get passwordlessIdp =>
-      AuthServices.getIdentityProvider<PasswordlessIdp>();
+  PasswordlessIdp<String> get passwordlessIdp =>
+      AuthServices.getIdentityProvider<PasswordlessIdp<String>>();
 }

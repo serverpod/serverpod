@@ -9,7 +9,7 @@ export '../src/generated/protocol.dart'
     show
         PasswordlessLoginException,
         PasswordlessLoginExceptionReason,
-        PasswordlessLoginRequest;
+        GenericPasswordlessLoginRequest;
 export '../src/providers/passwordless/business/passwordless_idp.dart';
 export '../src/providers/passwordless/business/passwordless_idp_config.dart';
 export '../src/providers/passwordless/business/passwordless_idp_server_exceptions.dart';
