@@ -169,6 +169,74 @@ void main() {
       );
     });
 
+    group('when overwriting an existing file', () {
+      test(
+        'then the new content replaces the old content',
+        () async {
+          final path = testPath('overwrite-test.txt');
+          final originalContent = 'Original content';
+          final originalData = ByteData.view(
+            Uint8List.fromList(originalContent.codeUnits).buffer,
+          );
+
+          await storage!.storeFile(
+            session: session,
+            path: path,
+            byteData: originalData,
+          );
+
+          final updatedContent = 'Updated content';
+          final updatedData = ByteData.view(
+            Uint8List.fromList(updatedContent.codeUnits).buffer,
+          );
+
+          await storage.storeFile(
+            session: session,
+            path: path,
+            byteData: updatedData,
+          );
+
+          final retrieved = await storage.retrieveFile(
+            session: session,
+            path: path,
+          );
+
+          expect(retrieved, isNotNull);
+          final retrievedContent = String.fromCharCodes(
+            retrieved!.buffer.asUint8List(),
+          );
+          expect(retrievedContent, updatedContent);
+        },
+      );
+    });
+
+    group('when retrieving or deleting non-existent files', () {
+      test(
+        'then retrieving a non-existent file returns null',
+        () async {
+          final retrieved = await storage!.retrieveFile(
+            session: session,
+            path:
+                'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
+          );
+
+          expect(retrieved, isNull);
+        },
+      );
+
+      test(
+        'then deleting a non-existent file does not throw',
+        () async {
+          // Should complete without error
+          await storage!.deleteFile(
+            session: session,
+            path:
+                'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
+          );
+        },
+      );
+    });
+
     group('when working with binary data', () {
       test(
         'then uploading a binary file preserves the exact bytes',
@@ -274,6 +342,87 @@ void main() {
             retrieved!.buffer.asUint8List(),
           );
           expect(retrievedContent, content);
+        },
+      );
+
+      test(
+        'then a file can be uploaded with contentLength via FileUploader',
+        () async {
+          final path = testPath('direct-upload-content-length-test.txt');
+          final content = 'Content with known length ${DateTime.now()}';
+          final data = ByteData.view(
+            Uint8List.fromList(content.codeUnits).buffer,
+          );
+
+          final description = await storage!.createDirectFileUploadDescription(
+            session: session,
+            path: path,
+            expirationDuration: Duration(minutes: 5),
+            maxFileSize: 10 * 1024 * 1024,
+            contentLength: data.lengthInBytes,
+          );
+
+          expect(description, isNotNull);
+
+          final uploader = FileUploader(description!);
+          final success = await uploader.uploadByteData(data);
+
+          expect(success, isTrue);
+
+          final retrieved = await storage.retrieveFile(
+            session: session,
+            path: path,
+          );
+
+          expect(retrieved, isNotNull);
+          final retrievedContent = String.fromCharCodes(
+            retrieved!.buffer.asUint8List(),
+          );
+          expect(retrievedContent, content);
+        },
+      );
+
+      test(
+        'then verifyDirectFileUpload returns true for an uploaded file',
+        () async {
+          final path = testPath('verify-upload-test.txt');
+          final content = 'Verify upload content ${DateTime.now()}';
+          final data = ByteData.view(
+            Uint8List.fromList(content.codeUnits).buffer,
+          );
+
+          final description = await storage!.createDirectFileUploadDescription(
+            session: session,
+            path: path,
+            expirationDuration: Duration(minutes: 5),
+            maxFileSize: 10 * 1024 * 1024,
+          );
+
+          expect(description, isNotNull);
+
+          final uploader = FileUploader(description!);
+          final success = await uploader.uploadByteData(data);
+          expect(success, isTrue);
+
+          final verified = await storage.verifyDirectFileUpload(
+            session: session,
+            path: path,
+          );
+
+          expect(verified, isTrue);
+        },
+      );
+
+      test(
+        'then verifyDirectFileUpload returns false for a non-existent file',
+        () async {
+          final verified = await storage!.verifyDirectFileUpload(
+            session: session,
+            path:
+                'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
+          );
+
+          expect(verified, isFalse);
         },
       );
 
