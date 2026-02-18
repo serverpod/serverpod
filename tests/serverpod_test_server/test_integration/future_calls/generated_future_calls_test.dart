@@ -139,6 +139,24 @@ void main() {
           expect(futureCallEntries, isEmpty);
         },
       );
+
+      test(
+        'when scheduling a future call that does not require any parameter'
+        'then a FutureCallEntry is added to the database',
+        () async {
+          final callName = 'TestGeneratedCallDoTaskFutureCall';
+          final time = DateTime.now().toUtc();
+          await pod.futureCalls.callAtTime(time).testGeneratedCall.doTask();
+
+          final futureCallEntries = await FutureCallEntry.db.find(
+            session,
+            where: (entry) => entry.name.equals(callName),
+          );
+
+          expect(futureCallEntries, hasLength(1));
+          expect(futureCallEntries.firstOrNull?.time, time);
+        },
+      );
     },
   );
 }
