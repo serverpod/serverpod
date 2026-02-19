@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:serverpod/protocol.dart';
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/database.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A function that returns a [Column] for a [Table].
 typedef ColumnSelections<T extends Table> = List<Column> Function(T);
