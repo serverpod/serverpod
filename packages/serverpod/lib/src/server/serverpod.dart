@@ -405,6 +405,14 @@ class Serverpod {
          config: config,
          experimentalFeatures: experimentalFeatures,
        ) {
+    if (serializationManager is internal.Protocol) {
+      throw ArgumentError(
+        'The serializationManager passed to Serverpod is the internal '
+        'Protocol class from package:serverpod. This is not allowed. '
+        'Please use the Protocol class generated for your project, which '
+        'can be found at lib/src/generated/protocol.dart.',
+      );
+    }
     try {
       _initializeServerpod(
         args,

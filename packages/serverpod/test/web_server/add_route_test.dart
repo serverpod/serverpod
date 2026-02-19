@@ -2,12 +2,23 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/generated/protocol.dart' as internal;
+import 'package:serverpod/protocol.dart' show TableDefinition;
 import 'package:test/test.dart';
 
 class _EmptyEndpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {}
+}
+
+class _TestSerializationManager extends SerializationManagerServer {
+  @override
+  String getModuleName() => 'test';
+
+  @override
+  Table? getTableForType(Type t) => null;
+
+  @override
+  List<TableDefinition> getTargetTableDefinitions() => [];
 }
 
 void main() {
@@ -24,7 +35,7 @@ void main() {
     setUp(() async {
       pod = Serverpod(
         [],
-        internal.Protocol(),
+        _TestSerializationManager(),
         _EmptyEndpoints(),
         config: ServerpodConfig(
           apiServer: portZeroConfig,
@@ -171,7 +182,7 @@ void main() {
     setUp(() async {
       pod = Serverpod(
         [],
-        internal.Protocol(),
+        _TestSerializationManager(),
         _EmptyEndpoints(),
         config: ServerpodConfig(
           apiServer: portZeroConfig,

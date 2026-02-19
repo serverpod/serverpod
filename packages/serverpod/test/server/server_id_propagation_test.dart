@@ -1,5 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/generated/protocol.dart' as internal;
+import 'package:serverpod/protocol.dart' show TableDefinition;
 import 'package:test/test.dart';
 
 void main() {
@@ -17,7 +17,7 @@ void main() {
     setUp(() {
       pod = Serverpod(
         ['--server-id', customServerId],
-        internal.Protocol(),
+        _TestSerializationManager(),
         _EmptyEndpoints(),
         config: ServerpodConfig(
           apiServer: portZeroConfig,
@@ -47,7 +47,7 @@ void main() {
     setUp(() {
       pod = Serverpod(
         [],
-        internal.Protocol(),
+        _TestSerializationManager(),
         _EmptyEndpoints(),
         config: ServerpodConfig(
           apiServer: portZeroConfig,
@@ -75,4 +75,15 @@ void main() {
 class _EmptyEndpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {}
+}
+
+class _TestSerializationManager extends SerializationManagerServer {
+  @override
+  String getModuleName() => 'test';
+
+  @override
+  Table? getTableForType(Type t) => null;
+
+  @override
+  List<TableDefinition> getTargetTableDefinitions() => [];
 }

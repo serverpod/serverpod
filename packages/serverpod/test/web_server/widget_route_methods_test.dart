@@ -1,8 +1,19 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/protocol.dart' show TableDefinition;
 import 'package:serverpod/src/generated/endpoints.dart';
-import 'package:serverpod/src/generated/protocol.dart' as internal;
 import 'package:test/test.dart';
 import 'package:http/http.dart' as http;
+
+class _TestSerializationManager extends SerializationManagerServer {
+  @override
+  String getModuleName() => 'test';
+
+  @override
+  Table? getTableForType(Type t) => null;
+
+  @override
+  List<TableDefinition> getTargetTableDefinitions() => [];
+}
 
 class TestWidget extends WebWidget {
   final String method;
@@ -30,7 +41,7 @@ void main() {
     setUp(() async {
       pod = Serverpod(
         [],
-        internal.Protocol(),
+        _TestSerializationManager(),
         Endpoints(),
         config: ServerpodConfig(
           apiServer: ServerConfig(
