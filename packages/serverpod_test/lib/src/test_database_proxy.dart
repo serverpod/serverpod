@@ -23,6 +23,9 @@ class TestDatabaseProxy implements Database {
   );
 
   @override
+  DatabaseDialect get dialect => _db.dialect;
+
+  @override
   Future<int> count<T extends TableRow>({
     Expression? where,
     int? limit,

@@ -4,7 +4,8 @@ import 'dart:io';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
-import 'package:serverpod/src/database/database_pool_manager.dart';
+import 'package:serverpod/src/database/interface/database_pool_manager.dart';
+import 'package:serverpod/src/database/interface/provider.dart';
 import 'package:serverpod/src/database/migrations/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
@@ -516,7 +517,9 @@ class Serverpod {
     // Setup database
     var databaseConfiguration = config.database;
     if (Features.enableDatabase && databaseConfiguration != null) {
-      _databasePoolManager = DatabasePoolManager(
+      final databaseDialect = databaseConfiguration.dialect;
+      final databaseProvider = DatabaseProvider.forDialect(databaseDialect);
+      _databasePoolManager = databaseProvider.createPoolManager(
         serializationManager,
         runtimeParametersBuilder,
         databaseConfiguration,
