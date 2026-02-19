@@ -11,6 +11,10 @@ abstract interface class DatabasePoolManager {
   /// The dialect of the database pool manager.
   DatabaseDialect get dialect;
 
+  /// The last time a database operation was performed. This can be used to
+  /// determine if the database is sleeping.
+  DateTime? lastDatabaseOperationTime;
+
   /// Access to the serialization manager.
   SerializationManagerServer get serializationManager;
 

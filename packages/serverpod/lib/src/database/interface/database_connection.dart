@@ -1,6 +1,5 @@
 import 'package:meta/meta.dart';
 
-import '../../server/session.dart';
 import '../concepts/column_value.dart';
 import '../concepts/columns.dart';
 import '../concepts/database_result.dart';
@@ -12,16 +11,17 @@ import '../concepts/table.dart';
 import '../concepts/transaction.dart';
 import '../query_parameters.dart';
 import 'database_pool_manager.dart';
+import 'database_session.dart';
 
 /// A connection to the database. In most cases the [Database] db object in
-/// the [Session] object should be used when connecting with the database.
+/// the [DatabaseSession] object should be used when connecting with the database.
 @internal
 abstract class DatabaseConnection<D extends DatabasePoolManager> {
   /// Database configuration.
   final D poolManager;
 
   /// Creates a new database connection from the configuration. For most cases
-  /// this shouldn't be called directly, use the db object in the [Session] to
+  /// this shouldn't be called directly, use the db object in the [DatabaseSession] to
   /// access the database.
   DatabaseConnection(this.poolManager);
 
@@ -33,7 +33,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<List<T>> find<T extends TableRow>(
-    Session session, {
+    DatabaseSession session, {
     Expression? where,
     int? limit,
     int? offset,
@@ -48,7 +48,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<T?> findFirstRow<T extends TableRow>(
-    Session session, {
+    DatabaseSession session, {
     Expression? where,
     int? offset,
     Column? orderBy,
@@ -62,7 +62,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<T?> findById<T extends TableRow>(
-    Session session,
+    DatabaseSession session,
     Object id, {
     Transaction? transaction,
     Include? include,
@@ -72,7 +72,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<void> lockRows<T extends TableRow>(
-    Session session, {
+    DatabaseSession session, {
     required Expression where,
     required LockMode lockMode,
     required Transaction transaction,
@@ -81,21 +81,21 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<List<T>> insert<T extends TableRow>(
-    Session session,
+    DatabaseSession session,
     List<T> rows, {
     Transaction? transaction,
   });
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<T> insertRow<T extends TableRow>(
-    Session session,
+    DatabaseSession session,
     T row, {
     Transaction? transaction,
   });
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<List<T>> update<T extends TableRow>(
-    Session session,
+    DatabaseSession session,
     List<T> rows, {
     List<Column>? columns,
     Transaction? transaction,
@@ -103,7 +103,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<T> updateRow<T extends TableRow>(
-    Session session,
+    DatabaseSession session,
     T row, {
     List<Column>? columns,
     Transaction? transaction,
@@ -116,7 +116,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   ///
   /// For most cases use the corresponding method in [Database] instead.
   Future<T> updateById<T extends TableRow>(
-    Session session,
+    DatabaseSession session,
     Object id, {
     required List<ColumnValue> columnValues,
     Transaction? transaction,
@@ -132,7 +132,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   ///
   /// For most cases use the corresponding method in [Database] instead.
   Future<List<T>> updateWhere<T extends TableRow>(
-    Session session, {
+    DatabaseSession session, {
     required List<ColumnValue> columnValues,
     required Expression where,
     int? limit,
@@ -145,28 +145,28 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<List<T>> delete<T extends TableRow>(
-    Session session,
+    DatabaseSession session,
     List<T> rows, {
     Transaction? transaction,
   });
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<T> deleteRow<T extends TableRow>(
-    Session session,
+    DatabaseSession session,
     T row, {
     Transaction? transaction,
   });
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<List<T>> deleteWhere<T extends TableRow>(
-    Session session,
+    DatabaseSession session,
     Expression where, {
     Transaction? transaction,
   });
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<int> count<T extends TableRow>(
-    Session session, {
+    DatabaseSession session, {
     Expression? where,
     int? limit,
     Transaction? transaction,
@@ -174,7 +174,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<DatabaseResult> simpleQuery(
-    Session session,
+    DatabaseSession session,
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
@@ -182,7 +182,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<DatabaseResult> query(
-    Session session,
+    DatabaseSession session,
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
@@ -191,7 +191,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<int> execute(
-    Session session,
+    DatabaseSession session,
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
@@ -200,7 +200,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<int> simpleExecute(
-    Session session,
+    DatabaseSession session,
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
@@ -210,12 +210,12 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   Future<R> transaction<R>(
     TransactionFunction<R> transactionFunction, {
     required TransactionSettings settings,
-    required Session session,
+    required DatabaseSession session,
   });
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<void> runMigrations(
-    Session session,
+    DatabaseSession session,
     Future<void> Function(Transaction? transaction) action,
   );
 }

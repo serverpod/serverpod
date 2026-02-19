@@ -119,7 +119,8 @@ class Serverpod {
 
   /// The last time a database operation was performed. This can be used to
   /// determine if the database is sleeping.
-  DateTime? lastDatabaseOperationTime;
+  DateTime? get lastDatabaseOperationTime =>
+      _databasePoolManager?.lastDatabaseOperationTime;
 
   late Caches _caches;
 

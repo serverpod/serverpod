@@ -15,6 +15,11 @@ class PostgresPoolManager implements DatabasePoolManager {
   @override
   DatabaseDialect get dialect => DatabaseDialect.postgres;
 
+  /// The last time a database operation was performed. This can be used to
+  /// determine if the database is sleeping.
+  @override
+  DateTime? lastDatabaseOperationTime;
+
   /// Database configuration.
   final DatabaseConfig config;
 
