@@ -1,26 +1,38 @@
-name: Update CLI Completion Specs
+name: Validate CLI Completion Specs
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - dev
+      - stable-*
+    paths:
+      - "tools/serverpod_cli/lib/src/commands/**"
+      - "tools/serverpod_cli/lib/src/runner/**"
+      - "tools/serverpod_cli/bin/**"
+  pull_request:
+    branches:
+      - main
+      - dev
+      - stable-*
     paths:
       - "tools/serverpod_cli/lib/src/commands/**"
       - "tools/serverpod_cli/lib/src/runner/**"
       - "tools/serverpod_cli/bin/**"
 
 jobs:
-  update-completion:
-    name: Update completion specs
+  validate-completion:
+    name: Validate completion specs
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
+    strategy:
+      matrix:
+        flutter-version: ["3.32.0", "3.38.4"]
     steps:
       - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.38.4"
+          flutter-version: ${{ matrix.flutter-version }}
           cache: true
 
       - name: Install melos
@@ -32,27 +44,7 @@ jobs:
       - name: Generate completion specs
         run: util/generate_completion
 
-      - name: Check for changes
-        id: diff
+      - name: Verify no changes
         run: |
-          if git diff --quiet tools/serverpod_cli/lib/src/generated/completion_script_carapace.dart; then
-            echo "No changes to completion specs."
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Create Pull Request
-        if: steps.diff.outputs.changed == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          BRANCH="chore/update-cli-completion-specs-$(date +%Y%m%d%H%M%S)"
-          git checkout -b "$BRANCH"
-          git add tools/serverpod_cli/lib/src/generated/completion_script_carapace.dart
-          git commit -m "chore: Update CLI completion specs"
-          git push origin "$BRANCH"
-          gh pr create \
-            --title "chore: Update CLI completion specs" \
-            --body "Auto-generated update to CLI completion specs after command changes on main."
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          echo "### If this fails, run util/generate_completion and commit the result"
+          util/ensure_no_changes
