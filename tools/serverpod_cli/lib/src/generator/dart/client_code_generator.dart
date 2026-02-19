@@ -21,7 +21,9 @@ class DartClientCodeGenerator extends CodeGenerator {
       config: config,
     );
 
-    var clientClasses = models.where((element) => !element.serverOnly).toList();
+    var clientClasses = models
+        .where((element) => !element.serverOnly && !element.isSharedModel)
+        .toList();
 
     var modelAllocatorContext = ModelAllocatorContext.build(
       clientClasses,
@@ -46,6 +48,7 @@ class DartClientCodeGenerator extends CodeGenerator {
   }) {
     var clientClassGenerator = LibraryGenerator(
       serverCode: false,
+      sharedPackage: false,
       protocolDefinition: protocolDefinition,
       config: config,
     );

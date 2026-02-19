@@ -13,6 +13,7 @@ class GeneratorConfigBuilder {
   String _dartClientPackage;
   bool _dartClientDependsOnServiceClient;
   List<String> _serverPackageDirectoryPathParts;
+  Map<String, List<String>> _sharedModelsSourcePathsParts;
   List<String> _relativeDartClientPackagePathParts;
   List<ModuleConfig> _modules;
   List<TypeDefinition> _extraClasses;
@@ -27,6 +28,7 @@ class GeneratorConfigBuilder {
       _dartClientPackage = 'example_client',
       _dartClientDependsOnServiceClient = false,
       _serverPackageDirectoryPathParts = [],
+      _sharedModelsSourcePathsParts = {},
       _relativeDartClientPackagePathParts = ['..', 'example_client'],
       _modules = [
         ModuleConfig(
@@ -72,6 +74,13 @@ class GeneratorConfigBuilder {
     List<String> serverPackageDirectoryPathParts,
   ) {
     _serverPackageDirectoryPathParts = serverPackageDirectoryPathParts;
+    return this;
+  }
+
+  GeneratorConfigBuilder withSharedModelsSourcePathsParts(
+    Map<String, List<String>> sharedModelsSourcePathsParts,
+  ) {
+    _sharedModelsSourcePathsParts = sharedModelsSourcePathsParts;
     return this;
   }
 
@@ -142,6 +151,7 @@ class GeneratorConfigBuilder {
       dartClientPackage: _dartClientPackage,
       dartClientDependsOnServiceClient: _dartClientDependsOnServiceClient,
       serverPackageDirectoryPathParts: _serverPackageDirectoryPathParts,
+      sharedModelsSourcePathsParts: _sharedModelsSourcePathsParts,
       relativeDartClientPackagePathParts: _relativeDartClientPackagePathParts,
       modules: _modules,
       extraClasses: _extraClasses,

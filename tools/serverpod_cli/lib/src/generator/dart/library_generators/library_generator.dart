@@ -21,12 +21,14 @@ const mapContainerToJsonFunctionName = 'mapContainerToJson';
 /// dart libraries (basically the content of a standalone dart file).
 class LibraryGenerator {
   final bool serverCode;
+  final bool sharedPackage;
 
   final ProtocolDefinition protocolDefinition;
   final GeneratorConfig config;
 
   LibraryGenerator({
     required this.serverCode,
+    required this.sharedPackage,
     required this.protocolDefinition,
     required this.config,
   });
@@ -40,6 +42,11 @@ class LibraryGenerator {
     var allModels =
         (protocolDefinition.models
                 .where((model) => serverCode || !model.serverOnly)
+                .where(
+                  (model) =>
+                      (sharedPackage && model.isSharedModel) ||
+                      (!sharedPackage && !model.isSharedModel),
+                )
                 .toList()
               ..sort((a, b) => a.filePath.compareTo(b.filePath)))
             .topologicalSort();
@@ -63,7 +70,7 @@ class LibraryGenerator {
       for (var classInfo in topLevelModels)
         if (classInfo.shouldExport)
           Directive.export(TypeDefinition.getRef(classInfo)),
-      if (!serverCode) Directive.export('client.dart'),
+      if (!serverCode && !sharedPackage) Directive.export('client.dart'),
     ]);
 
     var protocol = ClassBuilder();
@@ -278,6 +285,13 @@ class LibraryGenerator {
                     'try{return ${a(refer('Protocol', module.dartImportUrl(serverCode)))}().deserialize<T>(data,t);}'
                     'on ${a(refer('DeserializationTypeNotFoundException', serverpodUrl(serverCode)))} catch(_){}',
               ),
+            if (!sharedPackage)
+              for (var packageName in config.sharedModelsSourcePathsParts.keys)
+                Code.scope(
+                  (a) =>
+                      'try{return ${a(refer('Protocol', 'package:$packageName/$packageName.dart'))}().deserialize<T>(data,t);}'
+                      'on ${a(refer('DeserializationTypeNotFoundException', serverpodUrl(serverCode)))} catch(_){}',
+                ),
             if (config.name != 'serverpod' &&
                 (serverCode || config.dartClientDependsOnServiceClient))
               Code.scope(

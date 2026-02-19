@@ -122,8 +122,23 @@ extension SerializableModelPath on SerializableModelDefinition {
   ]);
 
   /// Returns a String with the full server or client path followed by
-  /// `filename.dart`.
+  /// `filename.dart`. When the model is a shared model, returns the path inside
+  /// the shared package's generated directory.
   String getFullFilePath(GeneratorConfig config, {required bool serverCode}) {
+    if (isSharedModel && sharedPackageName != null) {
+      var pathParts = config.sharedModelsSourcePathsParts[sharedPackageName];
+      if (pathParts != null) {
+        return p.joinAll([
+          ...config.serverPackageDirectoryPathParts,
+          ...pathParts,
+          'lib',
+          'src',
+          'generated',
+          filePath,
+        ]);
+      }
+    }
+
     return p.joinAll([
       ...serverCode
           ? config.generatedServeModelPathParts

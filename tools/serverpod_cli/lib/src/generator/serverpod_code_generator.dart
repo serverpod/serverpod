@@ -5,6 +5,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/shared_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/temp_protocol_generator.dart';
 import 'package:serverpod_cli/src/generator/yaml/endpoint_description_generator.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
@@ -15,6 +16,7 @@ abstract class ServerpodCodeGenerator {
     const DartTemporaryProtocolGenerator(),
     const DartServerCodeGenerator(),
     const DartClientCodeGenerator(),
+    const DartSharedCodeGenerator(),
     const EndpointDescriptionGenerator(),
   ];
 
@@ -112,6 +114,14 @@ List<String> _getDirectoriesRequiringCleaning({
   return [
     p.joinAll(config.generatedServeModelPathParts),
     p.joinAll(config.generatedDartClientModelPathParts),
+    for (var pathParts in config.sharedModelsSourcePathsParts.values)
+      p.joinAll([
+        ...config.serverPackageDirectoryPathParts,
+        ...pathParts,
+        'lib',
+        'src',
+        'generated',
+      ]),
   ];
 }
 

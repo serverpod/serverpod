@@ -12,6 +12,8 @@ class ExceptionClassDefinitionBuilder {
   bool _serverOnly;
   List<_FieldBuilder> _fields;
   List<String>? _documentation;
+  String? _sharedPackageName;
+  String? _typeUrl;
 
   ExceptionClassDefinitionBuilder()
     : _fileName = 'example',
@@ -30,7 +32,11 @@ class ExceptionClassDefinitionBuilder {
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
       documentation: _documentation,
-      type: TypeDefinitionBuilder().withClassName(_className).build(),
+      type: TypeDefinitionBuilder()
+          .withClassName(_className)
+          .withUrl(_typeUrl)
+          .build(),
+      sharedPackageName: _sharedPackageName,
     );
   }
 
@@ -82,6 +88,18 @@ class ExceptionClassDefinitionBuilder {
     List<String>? documentation,
   ) {
     _documentation = documentation;
+    return this;
+  }
+
+  ExceptionClassDefinitionBuilder withSharedPackageName(
+    String? sharedPackageName,
+  ) {
+    _sharedPackageName = sharedPackageName;
+    return this;
+  }
+
+  ExceptionClassDefinitionBuilder withTypeUrl(String? url) {
+    _typeUrl = url;
     return this;
   }
 }
