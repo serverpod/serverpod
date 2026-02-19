@@ -141,6 +141,7 @@ class AppleIdp {
   Route webAuthenticationCallbackRoute() => AppleWebAuthenticationCallbackRoute(
     utils: utils,
     androidPackageIdentifier: config.androidPackageIdentifier,
+    webRedirectUri: config.webRedirectUri,
   );
 }
 

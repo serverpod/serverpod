@@ -54,6 +54,8 @@ void run(List<String> args) async {
     teamId: pod.getPassword('appleTeamId')!,
     keyId: pod.getPassword('appleKeyId')!,
     key: pod.getPassword('appleKey')!,
+    androidPackageIdentifier: pod.getPassword('appleAndroidPackageIdentifier'),
+    webRedirectUri: pod.getPassword('appleWebRedirectUri'),
   );
 
   final emailIdpConfig = EmailIdpConfig(

@@ -58,21 +58,29 @@ final class AppleRevokedNotificationRoute extends _SignInWithAppleRoute {
 /// intent URI with the `signinwithapple` scheme. This requires the
 /// `androidPackageIdentifier` to be configured in [AppleIdpConfig].
 ///
-/// For Web clients, this route currently returns a 500 error as web support
-/// is not yet implemented.
+/// For Web clients, this route redirects to the configured `webRedirectUri`
+/// while forwarding the callback parameters in the query string. This requires
+/// `webRedirectUri` to be configured in [AppleIdpConfig].
 /// {@endtemplate}
 final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
   final String? _androidPackageIdentifier;
+  final String? _webRedirectUri;
 
   /// Route handling Apple Idp authentication callbacks for web and
   /// other foreign platforms (Android, etc.).
   ///
   /// The [androidPackageIdentifier] is the Android package identifier for the
   /// app, required for Apple Sign In to work on Android.
+  ///
+  /// The [webRedirectUri] is the browser URL to redirect to after receiving
+  /// Apple's web callback, required for Apple Sign In to work on web when
+  /// this server route is used as Apple's callback endpoint.
   AppleWebAuthenticationCallbackRoute({
     required final AppleIdpUtils utils,
     final String? androidPackageIdentifier,
+    final String? webRedirectUri,
   }) : _androidPackageIdentifier = androidPackageIdentifier,
+       _webRedirectUri = webRedirectUri,
        super(utils, methods: {Method.post});
 
   @override
@@ -82,7 +90,7 @@ final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
   ) async {
     return _isUserAgentAndroid(request.headers)
         ? _handleAndroidRedirection(request)
-        : _handleWebRedirection();
+        : _handleWebRedirection(request);
   }
 
   Future<Result> _handleAndroidRedirection(final Request request) async {
@@ -98,7 +106,7 @@ final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
     final queryString = await _convertRequestBodyToQueryString(request);
 
     final intentUri =
-        'intent://callback?$queryString#Intent;'
+        'intent://callback$queryString#Intent;'
         'package=$_androidPackageIdentifier;scheme=signinwithapple;end';
 
     final headers = Headers.build((final h) {
@@ -116,6 +124,33 @@ final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
     );
   }
 
+  Future<Result> _handleWebRedirection(final Request request) async {
+    if (_webRedirectUri == null) {
+      return Response.internalServerError(
+        body: Body.fromString(
+          'Parameter webRedirectUri must be set for Apple Sign In to work on '
+          'Web when using the server callback route.',
+        ),
+      );
+    }
+
+    final queryString = await _convertRequestBodyToQueryString(request);
+
+    final headers = Headers.build((final h) {
+      h['Location'] = ['$_webRedirectUri$queryString'];
+    });
+
+    // 303 See Other converts the callback POST into a GET, allowing the
+    // browser to follow the redirect while preserving callback parameters
+    // in the query string.
+    // See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/303
+    return Response(
+      303,
+      headers: headers,
+      body: Body.empty(),
+    );
+  }
+
   bool _isUserAgentAndroid(final Headers headers) {
     final userAgent = headers.userAgent ?? '';
     return userAgent.toLowerCase().contains('android');
@@ -123,19 +158,16 @@ final class AppleWebAuthenticationCallbackRoute extends _SignInWithAppleRoute {
 
   Future<String> _convertRequestBodyToQueryString(final Request request) async {
     final body = await request.readAsString();
-    final params = Uri.splitQueryString(body);
+    if (body.isEmpty) return '';
 
-    return params.entries
+    final params = Uri.splitQueryString(body);
+    final query = params.entries
         .map(
           (final e) =>
               '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}',
         )
         .join('&');
-  }
 
-  Future<Result> _handleWebRedirection() async {
-    return Response.internalServerError(
-      body: Body.fromString('@todo: apple sign in redirection for web'),
-    );
+    return '?$query';
   }
 }

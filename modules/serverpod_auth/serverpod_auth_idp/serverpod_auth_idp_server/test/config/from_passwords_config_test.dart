@@ -361,6 +361,8 @@ test:
     PrivateKeyContentHereBase64EncodedDataExample1234567890
     abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
     -----END PRIVATE KEY-----
+  appleAndroidPackageIdentifier: 'com.example.app'
+  appleWebRedirectUri: 'https://example.com/auth/apple/web-complete'
 ''',
           ),
         ]).create();
@@ -383,6 +385,11 @@ test:
         () {
           final config = AppleIdpConfigFromPasswords();
           expect(config, isA<AppleIdpConfig>());
+          expect(config.androidPackageIdentifier, 'com.example.app');
+          expect(
+            config.webRedirectUri,
+            'https://example.com/auth/apple/web-complete',
+          );
         },
       );
     },
