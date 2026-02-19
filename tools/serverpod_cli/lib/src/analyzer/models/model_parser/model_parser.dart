@@ -64,6 +64,7 @@ class ModelParser {
               documentation: classDocumentation,
               serverOnly: serverOnly,
               type: classType,
+              sharedPackageName: protocolSource.sharedPackageName,
             );
           },
     );
@@ -101,6 +102,7 @@ class ModelParser {
             type: classType,
             subDirParts: protocolSource.subDirPathParts,
             documentation: classDocumentation,
+            sharedPackageName: protocolSource.sharedPackageName,
           ),
     );
   }
@@ -203,6 +205,7 @@ class ModelParser {
       serverOnly: serverOnly,
       type: enumType,
       properties: properties,
+      sharedPackageName: protocolSource.sharedPackageName,
     );
     enumDef.type.enumDefinition = enumDef;
     return enumDef;

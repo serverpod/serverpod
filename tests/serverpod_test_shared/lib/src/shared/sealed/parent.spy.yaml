@@ -1,0 +1,4 @@
+class: SharedSealedParent
+sealed: true
+fields:
+  sharedSealedField: String

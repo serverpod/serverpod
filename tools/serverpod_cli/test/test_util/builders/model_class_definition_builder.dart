@@ -26,6 +26,7 @@ class ModelClassDefinitionBuilder {
   bool _isImmutable;
   List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
+  String? _sharedPackageName;
 
   ModelClassDefinitionBuilder()
     : _fileName = 'example',
@@ -73,7 +74,11 @@ class ModelClassDefinitionBuilder {
       extendsClass: _extendsClass,
       isSealed: _isSealed,
       isImmutable: _isImmutable,
-      type: TypeDefinitionBuilder().withClassName(_className).build(),
+      sharedPackageName: _sharedPackageName,
+      type: TypeDefinitionBuilder()
+          .withClassName(_className)
+          .withUrl(_sharedPackageName)
+          .build(),
     );
   }
 
@@ -434,6 +439,11 @@ class ModelClassDefinitionBuilder {
 
   ModelClassDefinitionBuilder withIsImmutable(bool isImmutable) {
     _isImmutable = isImmutable;
+    return this;
+  }
+
+  ModelClassDefinitionBuilder withSharedPackageName(String? sharedPackageName) {
+    _sharedPackageName = sharedPackageName;
     return this;
   }
 }

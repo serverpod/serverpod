@@ -12,6 +12,10 @@ String serverpodProtocolUrl(bool serverCode) {
       : 'package:serverpod_client/serverpod_client.dart';
 }
 
+/// The import url of the serverpod serialization package.
+const String serverpodSerializationUrl =
+    'package:serverpod_serialization/serverpod_serialization.dart';
+
 /// The import url of the serverpod test package.
 const String serverpodTestUrl = 'package:serverpod_test/serverpod_test.dart';
 const String serverpodTestPublicExportsUrl =

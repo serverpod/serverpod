@@ -1131,4 +1131,50 @@ class ExampleFutureCall extends FutureCall {
       });
     },
   );
+
+  group(
+    'Given a future call with a method that has a positional `Session` parameter only',
+    () {
+      var collector = CodeGenerationCollector();
+      var testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+
+      late List<FutureCallDefinition> futureCallDefinitions;
+      late FutureCallsAnalyzer analyzer;
+
+      setUpAll(() async {
+        var futureCallFile = File(
+          path.join(testDirectory.path, 'future_call.dart'),
+        );
+        futureCallFile.createSync(recursive: true);
+        futureCallFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleFutureCall extends FutureCall {
+  Future<void> hello(Session session) async {
+    session.log('Hello \$name');
+  }
+}
+''');
+
+        final parameterValidator = FutureCallMethodParameterValidator(
+          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
+        );
+
+        analyzer = FutureCallsAnalyzer(
+          directory: testDirectory,
+          parameterValidator: parameterValidator,
+        );
+
+        futureCallDefinitions = await analyzer.analyze(collector: collector);
+      });
+
+      test('then future call definition has method defined.', () {
+        var methods = futureCallDefinitions.firstOrNull?.methods;
+        expect(methods, hasLength(1));
+        expect(methods?.firstOrNull?.name, 'hello');
+      });
+    },
+  );
 }

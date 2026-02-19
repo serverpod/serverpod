@@ -54,6 +54,18 @@ class ServerSideSessionsConfig
   /// Defaults to `null` (no inactivity timeout).
   final Duration? defaultSessionInactivityTimeout;
 
+  /// Called when a server side session has been created.
+  ///
+  /// Useful to attaching additional data to the server side session that can be
+  /// later used on the server to find or revoke sessions.
+  final Future<void> Function(
+    Session session, {
+    required UuidValue authUserId,
+    required UuidValue serverSideSessionId,
+    required Transaction? transaction,
+  })?
+  onSessionCreated;
+
   /// Create a new user session configuration.
   ServerSideSessionsConfig({
     required this.sessionKeyHashPepper,
@@ -62,6 +74,7 @@ class ServerSideSessionsConfig
     this.sessionKeyHashSaltLength = 16,
     this.defaultSessionLifetime,
     this.defaultSessionInactivityTimeout,
+    this.onSessionCreated,
   }) {
     _validateSessionKeyHashPepper(sessionKeyHashPepper);
     for (final fallbackPepper in fallbackSessionKeyHashPeppers) {

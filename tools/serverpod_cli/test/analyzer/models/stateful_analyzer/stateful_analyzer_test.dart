@@ -95,6 +95,32 @@ fields:
   );
 
   test(
+    'Given a valid shared model as the initial state, when validating all, then the class is serialized and has sharedPackageName set.',
+    () {
+      var yamlSource = ModelSourceBuilder()
+          .withYaml(
+            '''
+      class: SharedExample
+      fields:
+        name: String
+      ''',
+          )
+          .withIsSharedModel(true)
+          .withModuleAlias('shared')
+          .build();
+
+      var statefulAnalyzer = StatefulAnalyzer(config, [yamlSource]);
+
+      var models = statefulAnalyzer.validateAll();
+
+      expect(models.length, 1);
+      expect(models.first.className, 'SharedExample');
+      expect(models.first.isSharedModel, true);
+      expect(models.first.sharedPackageName, 'shared');
+    },
+  );
+
+  test(
     'Given a valid model class and an error callback is registered, when validating all, then the callback is triggered.',
     () {
       var yamlSource = ModelSourceBuilder().withYaml(
@@ -189,7 +215,7 @@ and neither is this line
           .withYamlSourceUri(modelUri)
           .withYaml(
             '''
-      class: 
+      class:
       fields:
         name: String
       ''',

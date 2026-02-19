@@ -425,7 +425,9 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
                 if (method.futureCallMethodParameter != null)
                   refer('object')
                 else if (method.parameters.isNotEmpty)
-                  refer(method.parameters.first.name),
+                  refer(method.parameters.first.name)
+                else
+                  refer('null'),
               ])
               .returned
               .statement,
@@ -539,6 +541,15 @@ extension FutureCallsLibraryGenerator on LibraryGenerator {
                                 true,
                                 config: config,
                               ),
+                      )
+                    else
+                      Parameter(
+                        (p) => p
+                          ..name = 'object'
+                          ..type = refer(
+                            'SerializableModel?',
+                            serverpodUrl(true),
+                          ),
                       ),
                   ])
                   ..body = futureCall.isAbstract

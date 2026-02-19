@@ -17,3 +17,6 @@ analyzer:
   errors:
     invalid_annotation_target: ignore
     non_constant_identifier_names: ignore
+
+formatter:
+  trailing_commas: preserve

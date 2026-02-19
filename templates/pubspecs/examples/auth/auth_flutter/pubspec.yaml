@@ -33,6 +33,7 @@ dependencies:
   flutter:
     sdk: flutter
   serverpod_auth_idp_flutter: SERVERPOD_VERSION
+  serverpod_auth_idp_flutter_facebook: SERVERPOD_VERSION
   serverpod_auth_idp_flutter_firebase: SERVERPOD_VERSION
   serverpod_flutter: SERVERPOD_VERSION
 
@@ -50,6 +51,8 @@ dependency_overrides:
     path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_client
   serverpod_auth_idp_flutter:
     path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter
+  serverpod_auth_idp_flutter_facebook:
+    path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter_facebook
   serverpod_auth_idp_flutter_firebase:
     path: ../../../modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter_firebase
   serverpod_client:

@@ -14,4 +14,8 @@ class TestGeneratedCall extends FutureCall {
   Future<void> logData(Session session, SimpleData data) async {
     session.log('Data: ${data.num}');
   }
+
+  Future<void> doTask(Session session) async {
+    session.log('Sample future call with only session parameter');
+  }
 }

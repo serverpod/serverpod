@@ -13,6 +13,7 @@ declare -a FLUTTER_PACKAGES_PATHS=(
     "modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_flutter"
     "modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter"
     "modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter"
+    "modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter_facebook"
     "modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter_firebase"
     "modules/legacy/serverpod_auth/serverpod_auth_apple_flutter"
     "modules/legacy/serverpod_auth/serverpod_auth_email_flutter"

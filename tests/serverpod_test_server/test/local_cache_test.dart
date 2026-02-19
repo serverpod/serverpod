@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/local_cache.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_shared/serverpod_test_shared.dart';
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' hide Protocol;
 import 'package:test/test.dart';
 
 const cacheMaxSize = 10;

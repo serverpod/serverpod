@@ -176,6 +176,14 @@ class ModelDependencyResolver {
           e.type.moduleAlias == typeDefinition.moduleAlias,
     );
 
+    // If no enum in same module (e.g. protocol), allow reference from shared package
+    if (enumDefinitionList.isEmpty) {
+      enumDefinitionList = modelDefinitions
+          .whereType<EnumDefinition>()
+          .where((e) => e.className == typeDefinition.className)
+          .toList();
+    }
+
     if (enumDefinitionList.isEmpty) return;
 
     typeDefinition.enumDefinition = enumDefinitionList.first;

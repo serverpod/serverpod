@@ -30,9 +30,12 @@ String buildServerSideSessionToken({
 /// parts.
 ///
 /// Returns `null` if it does not match the spec or parsing fails for any reason.
+///
+/// If the [session] is provided, it will be used to log a warning if the parsing fails.
+/// Otherwise, the error is ignored.
 @internal
 SessionKeyData? tryParseServerSideSessionToken(
-  final Session session,
+  final Session? session,
   final String key,
 ) {
   try {
@@ -57,7 +60,7 @@ SessionKeyData? tryParseServerSideSessionToken(
 
     return (serverSideSessionId: serverSideSessionId, secret: secret);
   } catch (e, stackTrace) {
-    session.log(
+    session?.log(
       'Failed to parse session key: "$key"',
       level: LogLevel.error,
       exception: e,
