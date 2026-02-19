@@ -7,6 +7,8 @@ fi
 
 set -euo pipefail
 
+export SERVERPOD_HOME=$(pwd)
+
 CLI_DIR="tools/serverpod_cli"
 
 TEMP_DIR=$(mktemp -d)
