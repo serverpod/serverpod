@@ -31,7 +31,11 @@ void main() {
               isA<ArgumentError>().having(
                 (e) => e.message,
                 'message',
-                contains('lib/src/generated/protocol.dart'),
+                '''
+The "Serverpod" class was initialized with the internal "Protocol" class
+from "package:serverpod/protocol.dart", which is not allowed. Please import the "Protocol"
+class generated for your project from "src/generated/protocol.dart".
+''',
               ),
             ),
           );
