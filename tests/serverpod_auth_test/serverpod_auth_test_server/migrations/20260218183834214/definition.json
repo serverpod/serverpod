@@ -4485,6 +4485,113 @@
         }
       ],
       "managed": true
+    },
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "serverpod_auth_idp_generic_passwordless_login_request",
+      "dartName": "GenericPasswordlessLoginRequest",
+      "module": "serverpod_auth_idp",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "columnType": 7,
+          "isNullable": false,
+          "columnDefault": "gen_random_uuid_v7()",
+          "dartType": "UuidValue?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "createdAt",
+          "columnType": 4,
+          "isNullable": false,
+          "columnDefault": "CURRENT_TIMESTAMP",
+          "dartType": "DateTime"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "nonce",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "challengeId",
+          "columnType": 7,
+          "isNullable": false,
+          "dartType": "UuidValue"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "loginChallengeId",
+          "columnType": 7,
+          "isNullable": true,
+          "dartType": "UuidValue?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "serverpod_auth_idp_generic_passwordless_login_request_fk_0",
+          "columns": [
+            "challengeId"
+          ],
+          "referenceTable": "serverpod_auth_idp_secret_challenge",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        },
+        {
+          "__className__": "serverpod.ForeignKeyDefinition",
+          "constraintName": "serverpod_auth_idp_generic_passwordless_login_request_fk_1",
+          "columns": [
+            "loginChallengeId"
+          ],
+          "referenceTable": "serverpod_auth_idp_secret_challenge",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 4
+        }
+      ],
+      "indexes": [
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "serverpod_auth_idp_generic_passwordless_login_request_pkey",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        },
+        {
+          "__className__": "serverpod.IndexDefinition",
+          "indexName": "serverpod_auth_idp_generic_passwordless_login_request_nonce",
+          "elements": [
+            {
+              "__className__": "serverpod.IndexElementDefinition",
+              "type": 0,
+              "definition": "nonce"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "managed": true
     }
   ],
   "installedModules": [
@@ -4511,7 +4618,7 @@
     {
       "__className__": "serverpod.DatabaseMigrationVersion",
       "module": "serverpod_auth_idp",
-      "version": "20260213194423028"
+      "version": "20260218004947617"
     },
     {
       "__className__": "serverpod.DatabaseMigrationVersion",

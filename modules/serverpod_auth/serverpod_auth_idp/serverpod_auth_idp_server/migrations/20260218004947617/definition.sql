@@ -500,6 +500,23 @@ CREATE TABLE "serverpod_auth_core_user" (
 );
 
 --
+-- Class FacebookAccount as table serverpod_auth_idp_facebook_account
+--
+CREATE TABLE "serverpod_auth_idp_facebook_account" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
+    "authUserId" uuid NOT NULL,
+    "createdAt" timestamp without time zone NOT NULL,
+    "userIdentifier" text NOT NULL,
+    "email" text,
+    "fullName" text,
+    "firstName" text,
+    "lastName" text
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_facebook_account_user_identifier" ON "serverpod_auth_idp_facebook_account" USING btree ("userIdentifier");
+
+--
 -- Foreign relations for "serverpod_auth_idp_anonymous_account" table
 --
 ALTER TABLE ONLY "serverpod_auth_idp_anonymous_account"
@@ -709,6 +726,16 @@ ALTER TABLE ONLY "serverpod_auth_core_session"
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
+--
+-- Foreign relations for "serverpod_auth_idp_facebook_account" table
+--
+ALTER TABLE ONLY "serverpod_auth_idp_facebook_account"
+    ADD CONSTRAINT "serverpod_auth_idp_facebook_account_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_core_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_idp
@@ -736,3 +763,4 @@ INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
 
 
 COMMIT;
+
