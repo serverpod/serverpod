@@ -455,7 +455,9 @@ fields:
     test(
       'when removing models under /dir/subdir/ then returns true and removes both models.',
       () {
-        var removed = statefulAnalyzer.removeYamlModelsUnderPath('/dir/subdir/');
+        var removed = statefulAnalyzer.removeYamlModelsUnderPath(
+          '/dir/subdir/',
+        );
 
         expect(removed, isTrue);
 
