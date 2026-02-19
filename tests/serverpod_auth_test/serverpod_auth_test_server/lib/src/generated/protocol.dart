@@ -22,9 +22,13 @@ import 'package:serverpod_auth_migration_server/serverpod_auth_migration_server.
     as _i6;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i7;
 import 'challenge_tracker.dart' as _i8;
-import 'user_data.dart' as _i9;
-import 'dart:typed_data' as _i10;
+import 'session_metadata.dart' as _i9;
+import 'token_metadata.dart' as _i10;
+import 'user_data.dart' as _i11;
+import 'dart:typed_data' as _i12;
 export 'challenge_tracker.dart';
+export 'session_metadata.dart';
+export 'token_metadata.dart';
 export 'user_data.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
@@ -100,6 +104,178 @@ class Protocol extends _i1.SerializationManagerServer {
             _i2.IndexElementDefinition(
               type: _i2.IndexElementDefinitionType.column,
               definition: 'secretChallengeId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'session_metadata',
+      dartName: 'SessionMetadata',
+      schema: 'public',
+      module: 'serverpod_auth_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'session_metadata_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'serverSideSessionId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deviceName',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'ipAddress',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userAgent',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'metadata',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'session_metadata_fk_0',
+          columns: ['serverSideSessionId'],
+          referenceTable: 'serverpod_auth_core_session',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'session_metadata_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'server_side_session_id_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'serverSideSessionId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'token_metadata',
+      dartName: 'TokenMetadata',
+      schema: 'public',
+      module: 'serverpod_auth_test',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'token_metadata_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'refreshTokenId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deviceName',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'ipAddress',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userAgent',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'metadata',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'token_metadata_fk_0',
+          columns: ['refreshTokenId'],
+          referenceTable: 'serverpod_auth_core_jwt_refresh_token',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'token_metadata_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'refresh_token_id_unique_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'refreshTokenId',
             ),
           ],
           type: 'btree',
@@ -221,21 +397,33 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i8.ChallengeTracker) {
       return _i8.ChallengeTracker.fromJson(data) as T;
     }
-    if (t == _i9.UserData) {
-      return _i9.UserData.fromJson(data) as T;
+    if (t == _i9.SessionMetadata) {
+      return _i9.SessionMetadata.fromJson(data) as T;
+    }
+    if (t == _i10.TokenMetadata) {
+      return _i10.TokenMetadata.fromJson(data) as T;
+    }
+    if (t == _i11.UserData) {
+      return _i11.UserData.fromJson(data) as T;
     }
     if (t == _i1.getType<_i8.ChallengeTracker?>()) {
       return (data != null ? _i8.ChallengeTracker.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.UserData?>()) {
-      return (data != null ? _i9.UserData.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i9.SessionMetadata?>()) {
+      return (data != null ? _i9.SessionMetadata.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i10.TokenMetadata?>()) {
+      return (data != null ? _i10.TokenMetadata.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i11.UserData?>()) {
+      return (data != null ? _i11.UserData.fromJson(data) : null) as T;
     }
     if (t == Set<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
     }
-    if (t == _i1.getType<({_i10.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<({_i12.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i10.ByteData>(
+            challenge: deserialize<_i12.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -266,7 +454,9 @@ class Protocol extends _i1.SerializationManagerServer {
   static String? getClassNameForType(Type type) {
     return switch (type) {
       _i8.ChallengeTracker => 'ChallengeTracker',
-      _i9.UserData => 'UserData',
+      _i9.SessionMetadata => 'SessionMetadata',
+      _i10.TokenMetadata => 'TokenMetadata',
+      _i11.UserData => 'UserData',
       _ => null,
     };
   }
@@ -286,7 +476,11 @@ class Protocol extends _i1.SerializationManagerServer {
     switch (data) {
       case _i8.ChallengeTracker():
         return 'ChallengeTracker';
-      case _i9.UserData():
+      case _i9.SessionMetadata():
+        return 'SessionMetadata';
+      case _i10.TokenMetadata():
+        return 'TokenMetadata';
+      case _i11.UserData():
         return 'UserData';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -325,8 +519,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'ChallengeTracker') {
       return deserialize<_i8.ChallengeTracker>(data['data']);
     }
+    if (dataClassName == 'SessionMetadata') {
+      return deserialize<_i9.SessionMetadata>(data['data']);
+    }
+    if (dataClassName == 'TokenMetadata') {
+      return deserialize<_i10.TokenMetadata>(data['data']);
+    }
     if (dataClassName == 'UserData') {
-      return deserialize<_i9.UserData>(data['data']);
+      return deserialize<_i11.UserData>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -396,8 +596,12 @@ class Protocol extends _i1.SerializationManagerServer {
     switch (t) {
       case _i8.ChallengeTracker:
         return _i8.ChallengeTracker.t;
-      case _i9.UserData:
-        return _i9.UserData.t;
+      case _i9.SessionMetadata:
+        return _i9.SessionMetadata.t;
+      case _i10.TokenMetadata:
+        return _i10.TokenMetadata.t;
+      case _i11.UserData:
+        return _i11.UserData.t;
     }
     return null;
   }
@@ -418,7 +622,7 @@ class Protocol extends _i1.SerializationManagerServer {
     if (record == null) {
       return null;
     }
-    if (record is ({_i10.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i12.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge,

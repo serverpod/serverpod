@@ -845,6 +845,76 @@ void main() {
     );
   });
 
+  withServerpod(
+    'Given a JwtConfig with onRefreshTokenCreated callback',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late UuidValue authUserId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        const authUsers = AuthUsers();
+        final authUser = await authUsers.create(session);
+        authUserId = authUser.id;
+      });
+
+      test(
+        'when createTokens is called, then onRefreshTokenCreated is invoked with session, refreshTokenId and transaction.',
+        () async {
+          Session? capturedSession;
+          UuidValue? capturedAuthUserId;
+          UuidValue? capturedRefreshTokenId;
+          Transaction? capturedTransaction;
+
+          await session.db.transaction((final transaction) async {
+            final jwtWithCallback = Jwt(
+              config: JwtConfig(
+                algorithm: HmacSha512JwtAlgorithmConfiguration(
+                  key: SecretKey('test-private-key-for-HS512'),
+                ),
+                refreshTokenHashPepper: 'test-pepper',
+                onRefreshTokenCreated:
+                    (
+                      final session, {
+                      required final authUserId,
+                      required final refreshTokenId,
+                      required final transaction,
+                    }) async {
+                      capturedSession = session;
+                      capturedAuthUserId = authUserId;
+                      capturedRefreshTokenId = refreshTokenId;
+                      capturedTransaction = transaction;
+                    },
+              ),
+            );
+
+            await jwtWithCallback.createTokens(
+              session,
+              authUserId: authUserId,
+              scopes: {},
+              method: 'test',
+              transaction: transaction,
+            );
+
+            expect(capturedAuthUserId, equals(authUserId));
+            expect(capturedSession, same(session));
+            expect(capturedTransaction, same(transaction));
+
+            final refreshToken = await RefreshToken.db.findById(
+              session,
+              capturedRefreshTokenId!,
+              transaction: capturedTransaction,
+            );
+            expect(refreshToken, isNotNull);
+            expect(refreshToken!.id, capturedRefreshTokenId);
+            expect(refreshToken.authUserId, authUserId);
+          });
+        },
+      );
+    },
+  );
+
   withServerpod('Given an auth user with an expired refresh token,', (
     final sessionBuilder,
     final endpoints,

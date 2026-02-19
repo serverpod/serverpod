@@ -19,4 +19,5 @@ export 'business/jwt_admin.dart';
 export 'business/jwt_config.dart';
 export 'business/refresh_token_exceptions.dart';
 export 'endpoints/jwt_tokens_endpoint.dart';
+export 'util/jwt_auth_success_extension.dart' show AuthSuccessJwtRefreshTokenId;
 export 'util/jwt_token_info_extension.dart' show JwtTokenInfoExtension;

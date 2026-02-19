@@ -195,6 +195,13 @@ class ServerSideSessions {
       transaction: transaction,
     );
 
+    await _config.onSessionCreated?.call(
+      session,
+      authUserId: authUserId,
+      serverSideSessionId: serverSideSession.id!,
+      transaction: transaction,
+    );
+
     return AuthSuccess(
       authStrategy: AuthStrategy.session.name,
       token: buildServerSideSessionToken(
