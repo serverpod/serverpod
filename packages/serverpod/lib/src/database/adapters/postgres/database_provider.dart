@@ -8,6 +8,7 @@ import '../../interface/database_pool_manager.dart';
 import 'postgres_pool_manager.dart';
 import 'database_connection.dart';
 import 'postgres_analyzer.dart';
+import 'postgres_migration_runner.dart';
 
 /// Provides a [DatabaseProvider] for the Postgres database.
 class PostgresDatabaseProvider implements DatabaseProvider {
@@ -30,6 +31,11 @@ class PostgresDatabaseProvider implements DatabaseProvider {
       throw ArgumentError('Pool manager must be a "PostgresPoolManager".');
     }
     return PostgresDatabaseConnection(poolManager);
+  }
+
+  @override
+  PostgresDatabaseMigrationRunner createMigrationRunner() {
+    return const PostgresDatabaseMigrationRunner();
   }
 
   @override

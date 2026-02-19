@@ -10,8 +10,8 @@ import 'package:serverpod/src/database/migrations/repair_migrations.dart';
 import 'package:serverpod/src/database/migrations/table_comparison_warning.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import '../database.dart';
 import '../extensions.dart';
+import '../interface/provider.dart';
 
 /// The migration manager handles migrations of the database.
 class MigrationManager {
@@ -246,9 +246,9 @@ class MigrationManager {
     DatabaseSession session,
     Future<void> Function(Transaction? transaction) action,
   ) async {
-    await session.db.runMigrations((transaction) async {
-      await action(transaction);
-    });
+    final provider = DatabaseProvider.forDialect(session.db.dialect);
+    final migrationRunner = provider.createMigrationRunner();
+    await migrationRunner.runMigrations(session, action);
   }
 
   /// Returns true if the database structure is up to date. If not, it will

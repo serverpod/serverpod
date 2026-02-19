@@ -7,6 +7,7 @@ import '../concepts/runtime_parameters.dart';
 import 'analyzer.dart';
 import 'database_connection.dart';
 import 'database_pool_manager.dart';
+import 'migration_runner.dart';
 import 'serialization_manager.dart';
 
 /// Abstract interface for database providers.
@@ -28,6 +29,9 @@ abstract interface class DatabaseProvider {
 
   /// Creates a new [DatabaseConnection] for the given [poolManager].
   DatabaseConnection createConnection(DatabasePoolManager poolManager);
+
+  /// Creates a new [MigrationRunner].
+  MigrationRunner createMigrationRunner();
 
   /// Creates a new [DatabaseAnalyzer] for the given [database].
   DatabaseAnalyzer createAnalyzer(Database database);
