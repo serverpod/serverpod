@@ -159,7 +159,8 @@ shared_packages:
               isA<SourceSpanFormatException>().having(
                 (e) => e.message,
                 'message',
-                contains('relative to the'),
+                'The path for the shared package must be a string path relative '
+                    'to the server package. Current path: 123',
               ),
             ),
           );
@@ -169,14 +170,14 @@ shared_packages:
   );
 
   group(
-    'Given a generator.yaml with shared_packages path not starting with "."',
+    'Given a generator.yaml with an absolute shared_packages path',
     () {
       setUpAll(() async {
         var projectDir = _createProject(
           generatorYamlContent: '''
 type: server
 shared_packages:
-  - packages/shared
+  - /packages/shared
 ''',
         );
         await projectDir.create();
@@ -194,7 +195,8 @@ shared_packages:
               isA<SourceSpanFormatException>().having(
                 (e) => e.message,
                 'message',
-                contains('must be a string path relative to the'),
+                'The path for the shared package must be a string path relative '
+                    'to the server package. Current path: /packages/shared',
               ),
             ),
           );
@@ -230,7 +232,8 @@ shared_packages:
               isA<ServerpodProjectNotFoundException>().having(
                 (e) => e.message,
                 'message',
-                contains('Failed to load'),
+                'Failed to load shared package pubspec.yaml. Make sure the path '
+                    'is correctly specified in the config/generator.yaml file.',
               ),
             ),
           );

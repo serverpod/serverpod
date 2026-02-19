@@ -554,12 +554,12 @@ Map<String, List<String>> _extractSharedPackages(
   String serverRootDir,
   YamlMap generatorConfig,
 ) {
-  var sharedModelPackagesPathParts = <String, List<String>>{};
-
   var sharedPackages = generatorConfig['shared_packages'];
   if (sharedPackages == null) {
-    return sharedModelPackagesPathParts;
+    return {};
   }
+
+  var sharedModelPackagesPathParts = <String, List<String>>{};
 
   if (sharedPackages is! YamlList) {
     throw SourceSpanFormatException(
@@ -569,7 +569,7 @@ Map<String, List<String>> _extractSharedPackages(
   }
 
   for (var path in sharedPackages) {
-    if (path is! String || !path.startsWith('.')) {
+    if (path is! String || p.isAbsolute(path)) {
       throw SourceSpanFormatException(
         'The path for the shared package must be a string path relative to the '
         'server package. Current path: $path',
@@ -584,8 +584,8 @@ Map<String, List<String>> _extractSharedPackages(
       sharedModelPackagesPathParts[pubspec.name] = p.split(path);
     } catch (_) {
       throw const ServerpodProjectNotFoundException(
-        'Failed to load client pubspec.yaml. If you are using a none default '
-        'path it has to be specified in the config/generator.yaml file!',
+        'Failed to load shared package pubspec.yaml. Make sure the path is '
+        'correctly specified in the config/generator.yaml file.',
       );
     }
   }
