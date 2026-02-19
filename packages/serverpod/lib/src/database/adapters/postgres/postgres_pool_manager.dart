@@ -2,7 +2,7 @@ import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod/src/database/concepts/runtime_parameters.dart';
 import 'package:serverpod/src/database/interface/database_pool_manager.dart';
-import 'package:serverpod/src/serialization/serialization_manager.dart';
+import 'package:serverpod/src/database/interface/serialization_manager.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import 'pgvector_encoder.dart';

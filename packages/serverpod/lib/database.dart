@@ -15,6 +15,7 @@ export 'src/database/concepts/transaction.dart';
 export 'src/database/query_parameters.dart';
 export 'src/database/postgres_error_codes.dart';
 export 'src/database/interface/database_session.dart';
+export 'src/database/interface/serialization_manager.dart';
 export 'src/database/interface/value_encoder.dart';
 export 'src/database/database.dart' show Database;
 export 'src/generated/database/enum_serialization.dart';

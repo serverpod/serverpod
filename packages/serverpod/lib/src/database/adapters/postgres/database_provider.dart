@@ -1,6 +1,6 @@
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import '../../../serialization/serialization_manager.dart';
+import '../../interface/serialization_manager.dart';
 import '../../concepts/runtime_parameters.dart';
 import '../../database.dart';
 import '../../interface/provider.dart';

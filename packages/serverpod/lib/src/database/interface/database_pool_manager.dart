@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import '../../serialization/serialization_manager.dart';
+import 'serialization_manager.dart';
 import 'value_encoder.dart';
 
 /// Abstract interface for database pool managers.
