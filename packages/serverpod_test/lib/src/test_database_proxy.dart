@@ -26,6 +26,10 @@ class TestDatabaseProxy implements Database {
   DatabaseDialect get dialect => _db.dialect;
 
   @override
+  SerializationManagerServer get serializationManager =>
+      _db.serializationManager;
+
+  @override
   Future<int> count<T extends TableRow>({
     Expression? where,
     int? limit,

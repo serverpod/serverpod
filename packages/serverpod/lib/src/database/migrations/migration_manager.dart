@@ -2,8 +2,9 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:serverpod/protocol.dart';
-import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
+import 'package:serverpod/src/database/concepts/transaction.dart';
+import 'package:serverpod/src/database/interface/database_session.dart';
 import 'package:serverpod/src/database/migrations/migrations.dart';
 import 'package:serverpod/src/database/migrations/repair_migrations.dart';
 import 'package:serverpod/src/database/migrations/table_comparison_warning.dart';
@@ -30,7 +31,7 @@ class MigrationManager {
   MigrationManager(this._projectDirectory);
 
   /// Applies the repair migration to the database.
-  Future<String?> applyRepairMigration(Session session) async {
+  Future<String?> applyRepairMigration(DatabaseSession session) async {
     var repairMigration = RepairMigration.load(_projectDirectory);
     if (repairMigration == null) {
       return null;
@@ -38,11 +39,11 @@ class MigrationManager {
 
     String? appliedVersionName = repairMigration.versionName;
     await _withMigrationLock(session, (transaction) async {
-      var appliedRepairMigration = await DatabaseMigrationVersion.db
-          .findFirstRow(
-            session,
-            where: (t) =>
-                t.module.equals(MigrationConstants.repairMigrationModuleName),
+      var appliedRepairMigration = await session.db
+          .findFirstRow<DatabaseMigrationVersion>(
+            where: DatabaseMigrationVersion.t.module.equals(
+              MigrationConstants.repairMigrationModuleName,
+            ),
             transaction: transaction,
           );
 
@@ -67,14 +68,14 @@ class MigrationManager {
   ///
   /// Returns the migrations applied.
   /// Returns null if latest version was already installed.
-  Future<List<String>?> migrateToLatest(Session session) async {
+  Future<List<String>?> migrateToLatest(DatabaseSession session) async {
     List<String>? migrationsApplied = [];
 
     await _withMigrationLock(session, (transaction) async {
       await _updateState(session, transaction);
       var latestVersion = _getLatestVersion();
 
-      var moduleName = session.serverpod.serializationManager.getModuleName();
+      var moduleName = session.db.serializationManager.getModuleName();
 
       if (_isVersionInstalled(moduleName, latestVersion)) {
         migrationsApplied = null;
@@ -174,7 +175,7 @@ class MigrationManager {
   ///
   /// Returns the migrations applied.
   Future<List<String>> _migrateToLatestModule(
-    Session session, {
+    DatabaseSession session, {
     required String latestVersion,
     String? fromVersion,
     Transaction? transaction,
@@ -201,12 +202,14 @@ class MigrationManager {
 
   /// Updates the state of the [MigrationManager] by loading the current version
   /// from the database and available migrations.
-  Future<void> _updateState(Session session, Transaction? transaction) async {
+  Future<void> _updateState(
+    DatabaseSession session,
+    Transaction? transaction,
+  ) async {
     installedVersions.clear();
     try {
       installedVersions.addAll(
-        await DatabaseMigrationVersion.db.find(
-          session,
+        await session.db.find<DatabaseMigrationVersion>(
           transaction: transaction,
         ),
       );
@@ -240,7 +243,7 @@ class MigrationManager {
   }
 
   Future<void> _withMigrationLock(
-    Session session,
+    DatabaseSession session,
     Future<void> Function(Transaction? transaction) action,
   ) async {
     await session.db.runMigrations((transaction) async {
@@ -250,11 +253,11 @@ class MigrationManager {
 
   /// Returns true if the database structure is up to date. If not, it will
   /// print a warning to stderr.
-  static Future<bool> verifyDatabaseIntegrity(Session session) async {
+  static Future<bool> verifyDatabaseIntegrity(DatabaseSession session) async {
     var warnings = <String>[];
 
     var liveDatabase = await DatabaseAnalyzer.analyze(session.db);
-    var targetTables = session.serverpod.serializationManager
+    var targetTables = session.db.serializationManager
         .getTargetTableDefinitions();
 
     for (var table in targetTables) {

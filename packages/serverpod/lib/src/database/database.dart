@@ -11,6 +11,7 @@ import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/interface/database_connection.dart';
 import 'package:serverpod/src/database/interface/database_pool_manager.dart';
 import 'package:serverpod/src/database/interface/provider.dart';
+import 'package:serverpod/src/database/interface/serialization_manager.dart';
 import 'package:serverpod/src/database/interface/value_encoder.dart';
 import 'package:serverpod/src/database/query_parameters.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -56,6 +57,10 @@ class Database {
 
   /// The dialect of the database.
   DatabaseDialect get dialect => _databaseConnection.poolManager.dialect;
+
+  /// The serialization manager to use for the database.
+  SerializationManagerServer get serializationManager =>
+      _databaseConnection.poolManager.serializationManager;
 
   /// Returns a list of [TableRow]s matching the given query parameters.
   ///
