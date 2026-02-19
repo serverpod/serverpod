@@ -1,8 +1,8 @@
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/src/database/database.dart';
 
-import '../../../util/column_type_extension.dart';
 import '../../interface/analyzer.dart';
+import '../../util/column_type_extension.dart';
 
 /// Analyzes the structure of [Database]s.
 class PostgresDatabaseAnalyzer extends DatabaseAnalyzer {

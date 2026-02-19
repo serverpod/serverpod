@@ -18,5 +18,5 @@ export 'src/database/interface/database_session.dart';
 export 'src/database/interface/serialization_manager.dart';
 export 'src/database/interface/value_encoder.dart';
 export 'src/database/database.dart' show Database;
+export 'src/database/util/database_util.dart';
 export 'src/generated/database/enum_serialization.dart';
-export 'src/util/database_util.dart';
