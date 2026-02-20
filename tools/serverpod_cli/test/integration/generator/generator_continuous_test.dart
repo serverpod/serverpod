@@ -156,54 +156,6 @@ void main() {
 
   group('DirectoryWatcher integration', () {
     test(
-      'Given a DirectoryWatcher when a pre-populated directory tree is moved into the watched directory '
-      'then file ADD events are emitted for all files in the subtree.',
-      () async {
-        // Build the directory tree outside the watched directory first so it
-        // can be moved in atomically (simulating a `git switch` or a copy from
-        // outside the project).
-        var srcDir = await Directory.systemTemp
-            .createTemp('serverpod_cli_src_test_');
-        try {
-          await File(p.join(srcDir.path, 'model_a.yaml'))
-              .writeAsString('class: A\n');
-          await File(p.join(srcDir.path, 'model_b.yaml'))
-              .writeAsString('class: B\n');
-
-          var watcher = DirectoryWatcher(tempDir.path);
-          var receivedEvents = <WatchEvent>[];
-          var expandedStream = expandDirectoryAddEvents(watcher.events);
-          var subscription = expandedStream.listen(receivedEvents.add);
-
-          await watcher.ready;
-
-          // Atomically move the pre-populated directory into the watched dir.
-          await srcDir.rename(p.join(tempDir.path, 'models'));
-
-          await Future<void>.delayed(const Duration(milliseconds: 500));
-          await subscription.cancel();
-
-          var addedYamlNames = receivedEvents
-              .where(
-                (e) => e.type == ChangeType.ADD && e.path.endsWith('.yaml'),
-              )
-              .map((e) => p.basename(e.path))
-              .toList();
-
-          expect(
-            addedYamlNames,
-            containsAll(['model_a.yaml', 'model_b.yaml']),
-          );
-        } finally {
-          // Source dir may have been renamed; ignore delete errors.
-          try {
-            await srcDir.delete(recursive: true);
-          } catch (_) {}
-        }
-      },
-    );
-
-    test(
       'Given a DirectoryWatcher when a pre-populated nested directory tree is moved into the watched directory '
       'then file ADD events are emitted for all files in the subtree recursively.',
       () async {
