@@ -172,9 +172,7 @@ class PostgresDatabaseConnection
     // When ignoring conflicts AND the model has non-persistent fields,
     // fall back to single-row inserts so we can safely merge non-persistent
     // fields with each successfully inserted row.
-    if (ignoreConflicts &&
-        rows.length > 1 &&
-        _hasNonPersistedFields(rows)) {
+    if (ignoreConflicts && rows.length > 1 && _hasNonPersistedFields(rows)) {
       return [
         for (var row in rows)
           await insert<T>(
@@ -1030,7 +1028,6 @@ class PostgresDatabaseConnection
 
     return hasNonPersisted;
   }
-
 
   Table _getTableOrAssert<T>(
     DatabaseSession session, {
