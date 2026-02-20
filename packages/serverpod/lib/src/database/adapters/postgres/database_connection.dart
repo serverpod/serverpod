@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
@@ -171,12 +172,18 @@ class PostgresDatabaseConnection
     // When ignoring conflicts AND the model has non-persistent fields,
     // fall back to single-row inserts so we can safely merge non-persistent
     // fields with each successfully inserted row.
-    if (ignoreConflicts && _hasNonPersistedFields(rows.first)) {
-      return _insertRowsIndividuallyIgnoringConflicts<T>(
-        session,
-        rows,
-        transaction: transaction,
-      );
+    if (ignoreConflicts &&
+        rows.length > 1 &&
+        _hasNonPersistedFields(rows)) {
+      return [
+        for (var row in rows)
+          await insert<T>(
+            session,
+            [row],
+            transaction: transaction,
+            ignoreConflicts: ignoreConflicts,
+          ).then((results) => results.firstOrNull),
+      ].whereType<T>().toList();
     }
 
     var table = rows.first.table;
@@ -1000,52 +1007,30 @@ class PostgresDatabaseConnection
 
   /// Returns true if the model has fields in [TableRow.toJson] that are not
   /// represented in the table's columns (i.e., non-persistent fields).
-  bool _hasNonPersistedFields(TableRow row) {
+  /// Logs a warning if the number of rows may cause performance issues,
+  /// since the fallback inserts rows individually.
+  bool _hasNonPersistedFields(List<TableRow> rows) {
+    var row = rows.first;
     var json = row.toJson();
     if (json is! Map<String, dynamic>) return false;
 
     var columnFieldNames = row.table.columns.map((c) => c.fieldName).toSet();
-    return json.keys
+    var hasNonPersisted = json.keys
         .where((k) => k != '__className__')
         .any((key) => !columnFieldNames.contains(key));
-  }
 
-  /// Inserts rows one at a time with [InsertQueryBuilder.ignoreConflicts],
-  /// properly merging non-persisted fields for each successfully inserted row.
-  ///
-  /// This is used as a fallback when [ignoreConflicts] is true and the model
-  /// has non-persistent fields, since the batch insert path cannot safely merge
-  /// non-persistent fields when some rows are skipped due to conflicts.
-  Future<List<T>> _insertRowsIndividuallyIgnoringConflicts<T extends TableRow>(
-    DatabaseSession session,
-    List<T> rows, {
-    Transaction? transaction,
-  }) async {
-    var results = <T>[];
-
-    for (var row in rows) {
-      var query = InsertQueryBuilder(
-        table: row.table,
-        rows: [row],
-        ignoreConflicts: true,
-      ).build();
-
-      var dbResults = await _mappedResultsQuery(
-        session,
-        query,
-        transaction: transaction,
-      );
-
-      if (dbResults.isEmpty) continue;
-
-      var merged = _mergeResultsWithNonPersistedFields([row])(dbResults);
-      results.add(
-        poolManager.serializationManager.deserialize<T>(merged.first),
+    if (hasNonPersisted && rows.length > 100) {
+      stderr.writeln(
+        'WARNING: Inserting ${rows.length} rows with ignoreConflicts on a '
+        'model with non-persistent fields. This requires individual inserts '
+        'and may cause performance issues. Consider removing non-persistent '
+        'fields or inserting in smaller batches.',
       );
     }
 
-    return results;
+    return hasNonPersisted;
   }
+
 
   Table _getTableOrAssert<T>(
     DatabaseSession session, {
