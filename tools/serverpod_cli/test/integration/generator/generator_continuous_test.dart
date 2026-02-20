@@ -156,50 +156,19 @@ void main() {
 
   group('DirectoryWatcher integration', () {
     test(
-      'Given a DirectoryWatcher when a new directory tree is created '
+      'Given a DirectoryWatcher when a pre-populated directory tree is moved into the watched directory '
       'then file ADD events are emitted for all files in the subtree.',
       () async {
-        var watcher = DirectoryWatcher(tempDir.path);
-        var receivedEvents = <WatchEvent>[];
-        var expandedStream = expandDirectoryAddEvents(watcher.events);
-        var subscription = expandedStream.listen(receivedEvents.add);
-
-        await watcher.ready;
-
-        var newDir = Directory(p.join(tempDir.path, 'models'));
-        await newDir.create();
-        await File(p.join(newDir.path, 'model_a.yaml'))
-            .writeAsString('class: A\n');
-        await File(p.join(newDir.path, 'model_b.yaml'))
-            .writeAsString('class: B\n');
-
-        await Future<void>.delayed(const Duration(milliseconds: 500));
-        await subscription.cancel();
-
-        var addedYamlNames = receivedEvents
-            .where(
-              (e) => e.type == ChangeType.ADD && e.path.endsWith('.yaml'),
-            )
-            .map((e) => p.basename(e.path))
-            .toList();
-
-        expect(addedYamlNames, containsAll(['model_a.yaml', 'model_b.yaml']));
-      },
-    );
-
-    test(
-      'Given a DirectoryWatcher when a directory tree is moved into the watched directory '
-      'then file ADD events are emitted for all files in the subtree.',
-      () async {
+        // Build the directory tree outside the watched directory first so it
+        // can be moved in atomically (simulating a `git switch` or a copy from
+        // outside the project).
         var srcDir = await Directory.systemTemp
             .createTemp('serverpod_cli_src_test_');
         try {
-          var srcSubDir =
-              await Directory(p.join(srcDir.path, 'models')).create();
-          await File(p.join(srcSubDir.path, 'model_x.yaml'))
-              .writeAsString('class: X\n');
-          await File(p.join(srcSubDir.path, 'model_y.yaml'))
-              .writeAsString('class: Y\n');
+          await File(p.join(srcDir.path, 'model_a.yaml'))
+              .writeAsString('class: A\n');
+          await File(p.join(srcDir.path, 'model_b.yaml'))
+              .writeAsString('class: B\n');
 
           var watcher = DirectoryWatcher(tempDir.path);
           var receivedEvents = <WatchEvent>[];
@@ -208,8 +177,8 @@ void main() {
 
           await watcher.ready;
 
-          // Move the directory tree into the watched directory.
-          await srcSubDir.rename(p.join(tempDir.path, 'models'));
+          // Atomically move the pre-populated directory into the watched dir.
+          await srcDir.rename(p.join(tempDir.path, 'models'));
 
           await Future<void>.delayed(const Duration(milliseconds: 500));
           await subscription.cancel();
@@ -223,10 +192,59 @@ void main() {
 
           expect(
             addedYamlNames,
-            containsAll(['model_x.yaml', 'model_y.yaml']),
+            containsAll(['model_a.yaml', 'model_b.yaml']),
           );
         } finally {
-          await srcDir.delete(recursive: true);
+          // Source dir may have been renamed; ignore delete errors.
+          try {
+            await srcDir.delete(recursive: true);
+          } catch (_) {}
+        }
+      },
+    );
+
+    test(
+      'Given a DirectoryWatcher when a pre-populated nested directory tree is moved into the watched directory '
+      'then file ADD events are emitted for all files in the subtree recursively.',
+      () async {
+        var srcDir = await Directory.systemTemp
+            .createTemp('serverpod_cli_src_test_');
+        try {
+          var nestedDir =
+              await Directory(p.join(srcDir.path, 'nested')).create();
+          await File(p.join(srcDir.path, 'top.yaml'))
+              .writeAsString('class: Top\n');
+          await File(p.join(nestedDir.path, 'nested.yaml'))
+              .writeAsString('class: Nested\n');
+
+          var watcher = DirectoryWatcher(tempDir.path);
+          var receivedEvents = <WatchEvent>[];
+          var expandedStream = expandDirectoryAddEvents(watcher.events);
+          var subscription = expandedStream.listen(receivedEvents.add);
+
+          await watcher.ready;
+
+          // Atomically move the pre-populated directory into the watched dir.
+          await srcDir.rename(p.join(tempDir.path, 'models'));
+
+          await Future<void>.delayed(const Duration(milliseconds: 500));
+          await subscription.cancel();
+
+          var addedYamlNames = receivedEvents
+              .where(
+                (e) => e.type == ChangeType.ADD && e.path.endsWith('.yaml'),
+              )
+              .map((e) => p.basename(e.path))
+              .toList();
+
+          expect(
+            addedYamlNames,
+            containsAll(['top.yaml', 'nested.yaml']),
+          );
+        } finally {
+          try {
+            await srcDir.delete(recursive: true);
+          } catch (_) {}
         }
       },
     );
