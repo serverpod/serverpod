@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:intl/intl.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
@@ -33,7 +34,7 @@ Future<bool> performGenerateContinuously({
   );
 
   Timer? debouncedGenerate;
-  await for (WatchEvent event in _expandDirectoryAddEvents(watchers)) {
+  await for (WatchEvent event in expandDirectoryAddEvents(watchers)) {
     log.debug('File changed: $event');
 
     final shouldGenerateEndpoints = await endpointsAnalyzer.updateFileContexts({
@@ -138,7 +139,8 @@ bool _directoryPathExists(String path) {
 /// the new directory's subtree. All other events are passed through unchanged.
 /// This handles the case where platforms emit a single directory-level ADD
 /// event instead of individual file events for each file in the new directory.
-Stream<WatchEvent> _expandDirectoryAddEvents(Stream<WatchEvent> events) {
+@visibleForTesting
+Stream<WatchEvent> expandDirectoryAddEvents(Stream<WatchEvent> events) {
   return events.asyncExpand((event) async* {
     if (event.type == ChangeType.ADD) {
       final dir = Directory(event.path);
