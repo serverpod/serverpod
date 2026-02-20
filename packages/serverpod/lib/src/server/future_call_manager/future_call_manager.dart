@@ -199,10 +199,16 @@ class FutureCallManager {
       final futureCall = _futureCalls[entry.name];
 
       if (futureCall == null) {
-        stdout.writeln(
-          'Failed to execute future call (${entry.name}) which was scheduled but not registered. '
-          'This is likely due to using the legacy approach. '
-          'Consider migrating to the typed interface for future calls.',
+        _internalSession.log(
+          'Failed to run unregistered FutureCall. '
+          'Likely causes include: '
+          '1. Existing FutureCall method code was updated causing a name change '
+          'in the generated code and when server restarted, '
+          'the FutureCall was registered with a different name. '
+          '2. If you are using the legacy approach, '
+          'you may have forgotten to register the FutureCall. '
+          'Consider migrating to the typed interface for future calls in this case. '
+          '$entry',
         );
         return null;
       }
