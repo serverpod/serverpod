@@ -33,6 +33,7 @@ class AvailableIdps {
     hasFacebook,
     hasGitHub,
     hasMicrosoft,
+    hasTwitch,
   ].where((e) => e).length;
 
   /// Whether the anonymous authentication provider is available.
@@ -58,6 +59,9 @@ class AvailableIdps {
 
   /// Whether the Microsoft authentication provider is available.
   bool get hasMicrosoft => has<EndpointMicrosoftIdpBase>();
+
+  /// Whether the Twitch authentication provider is available.
+  bool get hasTwitch => has<EndpointTwitchIdpBase>();
 
   /// Provides information about connected identity providers.
   ///

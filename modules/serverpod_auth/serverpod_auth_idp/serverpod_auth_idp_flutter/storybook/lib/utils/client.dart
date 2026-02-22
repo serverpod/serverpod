@@ -37,7 +37,6 @@ class EndpointAuthEmail extends EndpointEmailIdpBase {
         reason: EmailAccountLoginExceptionReason.invalidCredentials,
       );
     }
-    _mockData.hasAccount = true;
     return _mockData.authSuccess;
   }
 
@@ -127,9 +126,6 @@ class EndpointAuthEmail extends EndpointEmailIdpBase {
     _mockData.passwordResetToken = null;
     return _mockData.authSuccess;
   }
-
-  @override
-  Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
 class GoogleIdpEndpoint extends EndpointGoogleIdpBase {
@@ -144,13 +140,7 @@ class GoogleIdpEndpoint extends EndpointGoogleIdpBase {
   Future<AuthSuccess> login({
     required String idToken,
     required String? accessToken,
-  }) async {
-    _mockData.hasAccount = true;
-    return _mockData.authSuccess;
-  }
-
-  @override
-  Future<bool> hasAccount() async => _mockData.hasAccount;
+  }) => Future.value(_mockData.authSuccess);
 }
 
 class AppleIdpEndpoint extends EndpointAppleIdpBase {
@@ -168,30 +158,7 @@ class AppleIdpEndpoint extends EndpointAppleIdpBase {
     required bool isNativeApplePlatformSignIn,
     String? firstName,
     String? lastName,
-  }) async {
-    _mockData.hasAccount = true;
-    return _mockData.authSuccess;
-  }
-
-  @override
-  Future<bool> hasAccount() async => _mockData.hasAccount;
-}
-
-class FacebookIdpEndpoint extends EndpointFacebookIdpBase {
-  FacebookIdpEndpoint(super.caller);
-
-  final _mockData = MockAuthData();
-
-  @override
-  String get name => 'facebookIdp';
-
-  @override
-  Future<AuthSuccess> login({
-    required String accessToken,
   }) => Future.value(_mockData.authSuccess);
-
-  @override
-  Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
 class GitHubIdpEndpoint extends EndpointGitHubIdpBase {
@@ -208,29 +175,21 @@ class GitHubIdpEndpoint extends EndpointGitHubIdpBase {
     required String codeVerifier,
     required String redirectUri,
   }) => Future.value(_mockData.authSuccess);
-
-  @override
-  Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
-class MicrosoftIdpEndpoint extends EndpointMicrosoftIdpBase {
-  MicrosoftIdpEndpoint(super.caller);
+class TwitchIdpEndpoint extends EndpointTwitchIdpBase {
+  TwitchIdpEndpoint(super.caller);
 
   final _mockData = MockAuthData();
 
   @override
-  String get name => 'microsoftIdp';
+  String get name => 'twitchIdp';
 
   @override
   Future<AuthSuccess> login({
     required String code,
-    required String codeVerifier,
     required String redirectUri,
-    required bool isWebPlatform,
   }) => Future.value(_mockData.authSuccess);
-
-  @override
-  Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
 class Modules {
@@ -253,9 +212,8 @@ class Client extends ServerpodClientShared {
     authEmail = EndpointAuthEmail(this);
     googleIdp = GoogleIdpEndpoint(this);
     appleIdp = AppleIdpEndpoint(this);
-    facebookIdp = FacebookIdpEndpoint(this);
     githubIdp = GitHubIdpEndpoint(this);
-    microsoftIdp = MicrosoftIdpEndpoint(this);
+    twitchIdp = TwitchIdpEndpoint(this);
     modules = Modules(this);
   }
 
@@ -267,11 +225,9 @@ class Client extends ServerpodClientShared {
 
   late final AppleIdpEndpoint appleIdp;
 
-  late final FacebookIdpEndpoint facebookIdp;
-
   late final GitHubIdpEndpoint githubIdp;
 
-  late final MicrosoftIdpEndpoint microsoftIdp;
+  late final TwitchIdpEndpoint twitchIdp;
 
   late final Modules modules;
 
@@ -281,9 +237,8 @@ class Client extends ServerpodClientShared {
     'emailAuth': authEmail,
     'googleIdp': googleIdp,
     'appleIdp': appleIdp,
-    'facebookIdp': facebookIdp,
     'githubIdp': githubIdp,
-    'microsoftIdp': microsoftIdp,
+    'twitchIdp': twitchIdp,
   };
 
   @override
@@ -313,7 +268,6 @@ class MockAuthData {
   String? passwordResetCode;
   String? registrationToken;
   String? passwordResetToken;
-  bool hasAccount = false;
 
   UuidValue? registrationRequestId;
   UuidValue? passwordResetRequestId;

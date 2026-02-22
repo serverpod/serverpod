@@ -12,6 +12,7 @@ import 'stories/github.dart';
 import 'stories/google.dart';
 import 'stories/microsoft.dart';
 import 'stories/signin.dart';
+import 'stories/twitch.dart';
 import 'utils/client.dart';
 import 'utils/wrapper.dart';
 
@@ -24,6 +25,7 @@ void main() {
   client.auth.initializeAppleSignIn();
   client.auth.initializeGitHubSignIn();
   client.auth.initializeMicrosoftSignIn();
+  client.auth.initializeTwitchSignIn();
   client.auth.initializeFacebookSignIn(
     appId: 'your-facebook-app-id', // throws if not provided on web and macos
   );
@@ -59,6 +61,7 @@ class MainApp extends StatelessWidget {
           ...facebookStories,
           ...githubStories,
           ...microsoftStories,
+          ...twitchStories,
           ...signInStories,
         ],
       ),
