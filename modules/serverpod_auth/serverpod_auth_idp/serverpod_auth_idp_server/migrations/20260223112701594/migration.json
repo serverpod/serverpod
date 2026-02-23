@@ -65,15 +65,15 @@
             "__className__": "serverpod.ColumnDefinition",
             "name": "expiresIn",
             "columnType": 6,
-            "isNullable": false,
-            "dartType": "int"
+            "isNullable": true,
+            "dartType": "int?"
           },
           {
             "__className__": "serverpod.ColumnDefinition",
             "name": "refreshToken",
             "columnType": 0,
-            "isNullable": false,
-            "dartType": "String"
+            "isNullable": true,
+            "dartType": "String?"
           },
           {
             "__className__": "serverpod.ColumnDefinition",

@@ -99,6 +99,23 @@ CREATE TABLE "serverpod_auth_idp_email_account_request" (
 CREATE UNIQUE INDEX "serverpod_auth_idp_email_account_request_email" ON "serverpod_auth_idp_email_account_request" USING btree ("email");
 
 --
+-- Class FacebookAccount as table serverpod_auth_idp_facebook_account
+--
+CREATE TABLE "serverpod_auth_idp_facebook_account" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
+    "authUserId" uuid NOT NULL,
+    "createdAt" timestamp without time zone NOT NULL,
+    "userIdentifier" text NOT NULL,
+    "email" text,
+    "fullName" text,
+    "firstName" text,
+    "lastName" text
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_facebook_account_user_identifier" ON "serverpod_auth_idp_facebook_account" USING btree ("userIdentifier");
+
+--
 -- Class FirebaseAccount as table serverpod_auth_idp_firebase_account
 --
 CREATE TABLE "serverpod_auth_idp_firebase_account" (
@@ -140,6 +157,20 @@ CREATE TABLE "serverpod_auth_idp_google_account" (
 
 -- Indexes
 CREATE UNIQUE INDEX "serverpod_auth_google_account_user_identifier" ON "serverpod_auth_idp_google_account" USING btree ("userIdentifier");
+
+--
+-- Class MicrosoftAccount as table serverpod_auth_idp_microsoft_account
+--
+CREATE TABLE "serverpod_auth_idp_microsoft_account" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
+    "authUserId" uuid NOT NULL,
+    "userIdentifier" text NOT NULL,
+    "email" text,
+    "created" timestamp without time zone NOT NULL
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_microsoft_account_user_identifier" ON "serverpod_auth_idp_microsoft_account" USING btree ("userIdentifier");
 
 --
 -- Class PasskeyAccount as table serverpod_auth_idp_passkey_account
@@ -202,8 +233,8 @@ CREATE TABLE "serverpod_auth_idp_twitch_account" (
     "displayName" text NOT NULL,
     "email" text,
     "accessToken" text NOT NULL,
-    "expiresIn" bigint NOT NULL,
-    "refreshToken" text NOT NULL,
+    "expiresIn" bigint,
+    "refreshToken" text,
     "created" timestamp without time zone NOT NULL
 );
 
@@ -414,6 +445,7 @@ CREATE TABLE "serverpod_session_log" (
 
 -- Indexes
 CREATE INDEX "serverpod_session_log_serverid_idx" ON "serverpod_session_log" USING btree ("serverId");
+CREATE INDEX "serverpod_session_log_time_idx" ON "serverpod_session_log" USING btree ("time");
 CREATE INDEX "serverpod_session_log_touched_idx" ON "serverpod_session_log" USING btree ("touched");
 CREATE INDEX "serverpod_session_log_isopen_idx" ON "serverpod_session_log" USING btree ("isOpen");
 
@@ -558,6 +590,16 @@ ALTER TABLE ONLY "serverpod_auth_idp_email_account_request"
     ON UPDATE NO ACTION;
 
 --
+-- Foreign relations for "serverpod_auth_idp_facebook_account" table
+--
+ALTER TABLE ONLY "serverpod_auth_idp_facebook_account"
+    ADD CONSTRAINT "serverpod_auth_idp_facebook_account_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_core_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
 -- Foreign relations for "serverpod_auth_idp_firebase_account" table
 --
 ALTER TABLE ONLY "serverpod_auth_idp_firebase_account"
@@ -582,6 +624,16 @@ ALTER TABLE ONLY "serverpod_auth_idp_github_account"
 --
 ALTER TABLE ONLY "serverpod_auth_idp_google_account"
     ADD CONSTRAINT "serverpod_auth_idp_google_account_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_core_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
+-- Foreign relations for "serverpod_auth_idp_microsoft_account" table
+--
+ALTER TABLE ONLY "serverpod_auth_idp_microsoft_account"
+    ADD CONSTRAINT "serverpod_auth_idp_microsoft_account_fk_0"
     FOREIGN KEY("authUserId")
     REFERENCES "serverpod_auth_core_user"("id")
     ON DELETE CASCADE
@@ -688,25 +740,25 @@ ALTER TABLE ONLY "serverpod_auth_core_session"
 -- MIGRATION VERSION FOR serverpod_auth_idp
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_idp', '20260124154246901', now())
+    VALUES ('serverpod_auth_idp', '20260223112701594', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260124154246901', "timestamp" = now();
+    DO UPDATE SET "version" = '20260223112701594', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod', '20251208110333922-v3-0-0', now())
+    VALUES ('serverpod', '20260129180959368', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20251208110333922-v3-0-0', "timestamp" = now();
+    DO UPDATE SET "version" = '20260129180959368', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth_core
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_core', '20251208110412389-v3-0-0', now())
+    VALUES ('serverpod_auth_core', '20260129181112269', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20251208110412389-v3-0-0', "timestamp" = now();
+    DO UPDATE SET "version" = '20260129181112269', "timestamp" = now();
 
 
 COMMIT;
