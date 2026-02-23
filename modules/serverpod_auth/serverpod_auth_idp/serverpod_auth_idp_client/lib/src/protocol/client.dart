@@ -355,7 +355,7 @@ abstract class EndpointPasskeyIdpBase extends EndpointIdpBase {
 /// If you would like modify the authentication flow, consider extending this
 /// class and overriding the relevant methods.
 /// {@category Endpoint}
-abstract class EndpointTwitchIdpBase extends _i1.EndpointRef {
+abstract class EndpointTwitchIdpBase extends EndpointIdpBase {
   EndpointTwitchIdpBase(_i1.EndpointCaller caller) : super(caller);
 
   /// Validates a Twitch authorization code and either logs in the associated
@@ -370,6 +370,9 @@ abstract class EndpointTwitchIdpBase extends _i1.EndpointRef {
     required String code,
     required String redirectUri,
   });
+
+  @override
+  _i2.Future<bool> hasAccount();
 }
 
 class Caller extends _i1.ModuleEndpointCaller {
