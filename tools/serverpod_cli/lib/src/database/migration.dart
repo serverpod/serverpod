@@ -176,6 +176,166 @@ bool _sameColumns(List<String> columns1, List<String> columns2) {
   return true;
 }
 
+/// Detects column renames by matching deleted columns with added columns that
+/// have compatible types.
+///
+/// This function identifies columns that appear to be renamed by comparing
+/// deleted columns from the source table with added columns in the target table.
+/// A column is considered renamed if:
+/// - Same column type (e.g., both are text, integer, etc.)
+/// - Same Dart type representation
+/// - Same vector dimension (for vector columns)
+///
+/// When a rename is detected, the columns are removed from the [deleteColumns]
+/// and [addColumns] lists and added to the returned rename map.
+///
+/// Returns a map where keys are old column names and values are new column names.
+Map<String, String> _detectColumnRenames({
+  required TableDefinition srcTable,
+  required List<String> deleteColumns,
+  required List<ColumnDefinition> addColumns,
+}) {
+  var renameColumns = <String, String>{};
+  var deleteColumnsCopy = List<String>.from(deleteColumns);
+  var addColumnsCopy = List<ColumnDefinition>.from(addColumns);
+
+  for (var deleteColumnName in deleteColumnsCopy) {
+    var srcColumn = srcTable.findColumnNamed(deleteColumnName);
+    if (srcColumn == null) continue;
+
+    for (var addColumn in addColumnsCopy) {
+      if (srcColumn.columnType == addColumn.columnType &&
+          srcColumn.dartType == addColumn.dartType &&
+          srcColumn.vectorDimension == addColumn.vectorDimension) {
+        // Found a matching column - treat as rename
+        renameColumns[deleteColumnName] = addColumn.name;
+        deleteColumns.remove(deleteColumnName);
+        addColumns.remove(addColumn);
+        break;
+      }
+    }
+  }
+
+  return renameColumns;
+}
+
+/// Processes column modifications for both regular and renamed columns.
+///
+/// This function examines columns that exist in both source and target tables
+/// (including renamed columns) to detect changes in nullability, default values,
+/// or column types. For renamed columns, it uses special comparison logic that
+/// ignores the column name difference.
+///
+/// The function populates:
+/// - [modifyColumns]: Columns with nullability or default changes
+/// - [deleteColumns]: Columns that must be dropped due to incompatible changes
+/// - [addColumns]: New column definitions for dropped columns
+/// - [warnings]: Warnings about destructive or risky changes
+void _processColumnModifications({
+  required TableDefinition srcTable,
+  required TableDefinition dstTable,
+  required Map<String, String> renameColumns,
+  required List<ColumnMigration> modifyColumns,
+  required List<String> deleteColumns,
+  required List<ColumnDefinition> addColumns,
+  required List<DatabaseMigrationWarning> warnings,
+}) {
+  for (var srcColumn in srcTable.columns) {
+    var renamedTo = renameColumns[srcColumn.name];
+    var dstColumn = renamedTo != null
+        ? dstTable.findColumnNamed(renamedTo)
+        : dstTable.findColumnNamed(srcColumn.name);
+
+    if (dstColumn == null) {
+      continue;
+    }
+
+    bool columnsAreDifferent;
+    if (renamedTo != null) {
+      // For renamed columns, compare properties excluding name
+      columnsAreDifferent =
+          srcColumn.isNullable != dstColumn.isNullable ||
+          srcColumn.columnDefault != dstColumn.columnDefault ||
+          srcColumn.columnType != dstColumn.columnType ||
+          srcColumn.dartType != dstColumn.dartType ||
+          srcColumn.vectorDimension != dstColumn.vectorDimension;
+    } else {
+      // For non-renamed columns, use standard comparison
+      columnsAreDifferent = !srcColumn.like(dstColumn);
+    }
+
+    if (columnsAreDifferent) {
+      bool canMigrate;
+      if (renamedTo != null) {
+        // For renamed columns, check type compatibility ignoring name
+        canMigrate =
+            srcColumn.columnType == dstColumn.columnType &&
+            (srcColumn.dartType == null ||
+                dstColumn.dartType == null ||
+                srcColumn.dartType == dstColumn.dartType) &&
+            srcColumn.vectorDimension == dstColumn.vectorDimension;
+      } else {
+        canMigrate = srcColumn.canMigrateTo(dstColumn);
+      }
+
+      if (canMigrate) {
+        var addNullable = !srcColumn.isNullable && dstColumn.isNullable;
+        var removeNullable = srcColumn.isNullable && !dstColumn.isNullable;
+        var changeDefault = srcColumn.columnDefault != dstColumn.columnDefault;
+
+        if (srcColumn.name == defaultPrimaryKeyName &&
+            !addNullable &&
+            !removeNullable &&
+            !changeDefault) {
+          continue;
+        }
+
+        modifyColumns.add(
+          ColumnMigration(
+            columnName: renamedTo ?? srcColumn.name,
+            addNullable: addNullable,
+            removeNullable: removeNullable,
+            changeDefault: changeDefault,
+            newDefault: dstColumn.columnDefault,
+          ),
+        );
+
+        if (removeNullable) {
+          warnings.add(
+            DatabaseMigrationWarning(
+              type: DatabaseMigrationWarningType.notNullAdded,
+              table: srcTable.name,
+              columns: [dstColumn.name],
+              message:
+                  'Column "${dstColumn.name}" of table "${srcTable.name}" is '
+                  'modified to be not null. If there are existing rows with '
+                  'null values, this migration will fail.',
+              destrucive: false,
+            ),
+          );
+        }
+      } else {
+        // Column must be deleted and recreated
+        if (renamedTo == null) {
+          deleteColumns.add(srcColumn.name);
+          addColumns.add(dstColumn);
+          warnings.add(
+            DatabaseMigrationWarning(
+              type: DatabaseMigrationWarningType.columnDropped,
+              table: srcTable.name,
+              columns: [srcColumn.name],
+              message:
+                  'Column "${srcColumn.name}" of table "${srcTable.name}" is '
+                  'modified in a way that it must be deleted and recreated.',
+              destrucive: true,
+            ),
+          );
+        }
+      }
+    }
+  }
+}
+
 TableMigration? generateTableMigration(
   TableDefinition srcTable,
   TableDefinition dstTable,
@@ -194,87 +354,43 @@ TableMigration? generateTableMigration(
   for (var srcColumn in srcTable.columns) {
     if (!dstTable.containsColumnNamed(srcColumn.name)) {
       deleteColumns.add(srcColumn.name);
-      warnings.add(
-        DatabaseMigrationWarning(
-          type: DatabaseMigrationWarningType.columnDropped,
-          table: srcTable.name,
-          columns: [srcColumn.name],
-          message:
-              'Column "${srcColumn.name}" of table "${srcTable.name}" '
-              'will be dropped.',
-          destrucive: true,
-        ),
-      );
     }
+  }
+
+  // Detect column renames
+  var renameColumns = _detectColumnRenames(
+    srcTable: srcTable,
+    deleteColumns: deleteColumns,
+    addColumns: addColumns,
+  );
+
+  // Add warnings for columns that will actually be dropped (not renamed)
+  for (var deleteColumnName in deleteColumns) {
+    warnings.add(
+      DatabaseMigrationWarning(
+        type: DatabaseMigrationWarningType.columnDropped,
+        table: srcTable.name,
+        columns: [deleteColumnName],
+        message:
+            'Column "$deleteColumnName" of table "${srcTable.name}" '
+            'will be dropped.',
+        destrucive: true,
+      ),
+    );
   }
 
   var modifyColumns = <ColumnMigration>[];
 
-  // Find modified columns
-  for (var srcColumn in srcTable.columns) {
-    var dstColumn = dstTable.findColumnNamed(srcColumn.name);
-    if (dstColumn == null) {
-      continue;
-    }
-    if (!srcColumn.like(dstColumn)) {
-      if (srcColumn.canMigrateTo(dstColumn)) {
-        // Column can be modified
-        var addNullable = !srcColumn.isNullable && dstColumn.isNullable;
-        var removeNullable = srcColumn.isNullable && !dstColumn.isNullable;
-        var changeDefault = srcColumn.columnDefault != dstColumn.columnDefault;
-
-        // Id column can have its model type changed between non-nullable and
-        // nullable, but the database type will remain the same. In this case,
-        // we don't want to generate a migration.
-        if (srcColumn.name == defaultPrimaryKeyName &&
-            !addNullable &&
-            !removeNullable &&
-            !changeDefault) {
-          continue;
-        }
-
-        modifyColumns.add(
-          ColumnMigration(
-            columnName: srcColumn.name,
-            addNullable: addNullable,
-            removeNullable: removeNullable,
-            changeDefault: changeDefault,
-            newDefault: dstColumn.columnDefault,
-          ),
-        );
-
-        if (removeNullable) {
-          warnings.add(
-            DatabaseMigrationWarning(
-              type: DatabaseMigrationWarningType.notNullAdded,
-              table: srcTable.name,
-              columns: [srcColumn.name],
-              message:
-                  'Column "${srcColumn.name}" of table "${srcTable.name}" is '
-                  'modified to be not null. If there are existing rows with '
-                  'null values, this migration will fail.',
-              destrucive: false,
-            ),
-          );
-        }
-      } else {
-        // Column must be deleted and recreated
-        deleteColumns.add(srcColumn.name);
-        addColumns.add(dstColumn);
-        warnings.add(
-          DatabaseMigrationWarning(
-            type: DatabaseMigrationWarningType.columnDropped,
-            table: srcTable.name,
-            columns: [srcColumn.name],
-            message:
-                'Column "${srcColumn.name}" of table "${srcTable.name}" is '
-                'modified in a way that it must be deleted and recreated.',
-            destrucive: true,
-          ),
-        );
-      }
-    }
-  }
+  // Process column modifications for both regular and renamed columns
+  _processColumnModifications(
+    srcTable: srcTable,
+    dstTable: dstTable,
+    renameColumns: renameColumns,
+    modifyColumns: modifyColumns,
+    deleteColumns: deleteColumns,
+    addColumns: addColumns,
+    warnings: warnings,
+  );
 
   // Find added indexes
   var addIndexes = <IndexDefinition>[];
@@ -375,6 +491,7 @@ TableMigration? generateTableMigration(
     deleteColumns: deleteColumns,
     addColumns: addColumns,
     modifyColumns: modifyColumns,
+    renameColumns: renameColumns,
     deleteIndexes: deleteIndexes,
     addIndexes: addIndexes,
     deleteForeignKeys: deleteForeignKeys,
