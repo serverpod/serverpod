@@ -73,6 +73,40 @@ DatabaseMigration generateDatabaseMigration({
       );
     } else {
       // Table exists in src and dst
+      // Check if schema has changed
+      if (srcTable.schema != dstTable.schema) {
+        // Schema has changed - generate ALTER TABLE SET SCHEMA migration
+        actions.add(
+          DatabaseMigrationAction(
+            type: DatabaseMigrationActionType.alterTable,
+            alterTable: TableMigration(
+              name: srcTable.name,
+              schema: srcTable.schema,
+              newSchema: dstTable.schema,
+              deleteColumns: [],
+              addColumns: [],
+              modifyColumns: [],
+              deleteIndexes: [],
+              addIndexes: [],
+              deleteForeignKeys: [],
+              addForeignKeys: [],
+              warnings: [],
+            ),
+          ),
+        );
+        warnings.add(
+          DatabaseMigrationWarning(
+            type: DatabaseMigrationWarningType.tableDropped,
+            message:
+                'Table "${srcTable.name}" will be moved from schema "${srcTable.schema}" '
+                'to schema "${dstTable.schema}".',
+            table: srcTable.name,
+            destrucive: false,
+            columns: [],
+          ),
+        );
+      }
+
       var diff = generateTableMigration(srcTable, dstTable, warnings);
       if (diff == null) {
         // Table was modified, but cannot be migrated. Recreate the table.

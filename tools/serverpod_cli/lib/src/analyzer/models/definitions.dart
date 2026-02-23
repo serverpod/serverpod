@@ -73,6 +73,10 @@ final class ModelClassDefinition extends ClassDefinition {
   /// database.
   final String? tableName;
 
+  /// If set, the name of the database schema where the table resides.
+  /// If null, the default schema from the generator config will be used.
+  final String? schema;
+
   /// The indexes that should be created for the table [tableName] representing
   /// this class.
   ///
@@ -109,6 +113,7 @@ final class ModelClassDefinition extends ClassDefinition {
     List<InheritanceDefinition>? childClasses,
     this.extendsClass,
     this.tableName,
+    this.schema,
     this.indexes = const [],
     super.subDirParts,
     super.documentation,
