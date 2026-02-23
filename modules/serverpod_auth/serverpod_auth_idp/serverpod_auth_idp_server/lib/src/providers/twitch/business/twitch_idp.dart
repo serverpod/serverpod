@@ -135,6 +135,10 @@ class TwitchIdp {
       },
     );
   }
+
+  /// Determines whether the current session has an associated GitHub account.
+  Future<bool> hasAccount(final Session session) async =>
+      await utils.getAccount(session) != null;
 }
 
 /// Extension to get the TwitchIdp instance from the AuthServices.

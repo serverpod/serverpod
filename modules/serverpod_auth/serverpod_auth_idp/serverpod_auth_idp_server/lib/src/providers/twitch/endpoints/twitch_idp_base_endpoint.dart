@@ -8,7 +8,7 @@ import '../business/twitch_idp.dart';
 /// This endpoint exposes methods for logging in users using Twitch authorization codes.
 /// If you would like modify the authentication flow, consider extending this
 /// class and overriding the relevant methods.
-abstract class TwitchIdpBaseEndpoint extends Endpoint {
+abstract class TwitchIdpBaseEndpoint extends IdpBaseEndpoint {
   /// Accessor for the configured Twitch Idp instance.
   /// By default this uses the global instance configured in
   /// [AuthServices].
@@ -37,4 +37,8 @@ abstract class TwitchIdpBaseEndpoint extends Endpoint {
       redirectUri: redirectUri,
     );
   }
+
+  @override
+  Future<bool> hasAccount(final Session session) async =>
+      await twitchIdp.hasAccount(session);
 }

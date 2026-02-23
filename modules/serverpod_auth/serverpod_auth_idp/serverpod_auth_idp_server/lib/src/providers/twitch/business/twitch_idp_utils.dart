@@ -274,6 +274,19 @@ class TwitchIdpUtils {
       )).first,
     };
   }
+
+  /// Returns the possible [TwitchAccount] associated with a session.
+  Future<TwitchAccount?> getAccount(final Session session) {
+    return switch (session.authenticated) {
+      null => Future.value(null),
+      _ => TwitchAccount.db.findFirstRow(
+        session,
+        where: (final t) => t.authUserId.equals(
+          session.authenticated!.authUserId,
+        ),
+      ),
+    };
+  }
 }
 
 extension on Session {
