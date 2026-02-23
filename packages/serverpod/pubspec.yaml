@@ -35,7 +35,7 @@ dependencies:
   serverpod_shared: 3.3.1
   synchronized: ^3.1.0
   system_resources_2: ^2.2.2
-  uuid: ^4.1.0
+  uuid: ^4.5.3
   vm_service: '>=13.0.0 <16.0.0'
   web_socket: ^1.0.1
   yaml: ^3.1.2
