@@ -472,8 +472,6 @@ class EmailAccountPasswordResetRequestRepository {
     _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     _i1.Transaction? transaction,
     EmailAccountPasswordResetRequestInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmailAccountPasswordResetRequest>(
       where: where?.call(EmailAccountPasswordResetRequest.t),
@@ -484,8 +482,6 @@ class EmailAccountPasswordResetRequestRepository {
       offset: offset,
       transaction: transaction,
       include: include,
-      lockMode: lockMode,
-      lockBehavior: lockBehavior,
     );
   }
 
@@ -515,8 +511,6 @@ class EmailAccountPasswordResetRequestRepository {
     _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     _i1.Transaction? transaction,
     EmailAccountPasswordResetRequestInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmailAccountPasswordResetRequest>(
       where: where?.call(EmailAccountPasswordResetRequest.t),
@@ -526,8 +520,6 @@ class EmailAccountPasswordResetRequestRepository {
       offset: offset,
       transaction: transaction,
       include: include,
-      lockMode: lockMode,
-      lockBehavior: lockBehavior,
     );
   }
 
@@ -537,15 +529,11 @@ class EmailAccountPasswordResetRequestRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     EmailAccountPasswordResetRequestInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<EmailAccountPasswordResetRequest>(
       id,
       transaction: transaction,
       include: include,
-      lockMode: lockMode,
-      lockBehavior: lockBehavior,
     );
   }
 
@@ -715,23 +703,6 @@ class EmailAccountPasswordResetRequestRepository {
     return session.db.count<EmailAccountPasswordResetRequest>(
       where: where?.call(EmailAccountPasswordResetRequest.t),
       limit: limit,
-      transaction: transaction,
-    );
-  }
-
-  /// Acquires row-level locks on [EmailAccountPasswordResetRequest] rows matching the [where] expression.
-  Future<void> lockRows(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>
-    where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
-  }) async {
-    return session.db.lockRows<EmailAccountPasswordResetRequest>(
-      where: where(EmailAccountPasswordResetRequest.t),
-      lockMode: lockMode,
-      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

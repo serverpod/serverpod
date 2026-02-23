@@ -21,10 +21,10 @@ fields:
     accessToken: String
 
     ### Token expiry in timestamp format
-    expiresIn: int
+    expiresIn: int?
 
     ### Saved refresh token after first authentication with code exchange
-    refreshToken: String
+    refreshToken: String?
 
     ### The date and time when this authentication was created.
     created: DateTime, defaultModel=now

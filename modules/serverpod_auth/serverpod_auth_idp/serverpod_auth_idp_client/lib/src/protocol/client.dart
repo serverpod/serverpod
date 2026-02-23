@@ -349,6 +349,29 @@ abstract class EndpointPasskeyIdpBase extends EndpointIdpBase {
   _i2.Future<bool> hasAccount();
 }
 
+/// Base endpoint for Twitch Account-based authentication.
+///
+/// This endpoint exposes methods for logging in users using Twitch authorization codes.
+/// If you would like modify the authentication flow, consider extending this
+/// class and overriding the relevant methods.
+/// {@category Endpoint}
+abstract class EndpointTwitchIdpBase extends _i1.EndpointRef {
+  EndpointTwitchIdpBase(_i1.EndpointCaller caller) : super(caller);
+
+  /// Validates a Twitch authorization code and either logs in the associated
+  /// user or creates a new user account if the Twitch account ID is not yet
+  /// known.
+  ///
+  /// This method exchanges the `authorization code` for an `access token` using
+  /// `PKCE`, then authenticates the user.
+  ///
+  /// If a new user is created an associated [UserProfile] is also created.
+  _i2.Future<_i3.AuthSuccess> login({
+    required String code,
+    required String redirectUri,
+  });
+}
+
 class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {}
 

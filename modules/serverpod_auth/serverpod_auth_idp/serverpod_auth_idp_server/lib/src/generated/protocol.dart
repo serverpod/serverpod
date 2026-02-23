@@ -64,7 +64,10 @@ import 'providers/passkey/models/passkey_login_request.dart' as _i33;
 import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
     as _i34;
 import 'providers/passkey/models/passkey_registration_request.dart' as _i35;
-import 'dart:typed_data' as _i36;
+import 'providers/twitch/models/twitch_access_token_verification_exception.dart'
+    as _i36;
+import 'providers/twitch/models/twitch_account.dart' as _i37;
+import 'dart:typed_data' as _i38;
 export 'common/rate_limited_request_attempt/models/rate_limited_request_attempt.dart';
 export 'common/secret_challenge/models/secret_challenge.dart';
 export 'providers/anonymous/models/anonymous_account.dart';
@@ -97,6 +100,8 @@ export 'providers/passkey/models/passkey_challenge_not_found_exception.dart';
 export 'providers/passkey/models/passkey_login_request.dart';
 export 'providers/passkey/models/passkey_public_key_not_found_exception.dart';
 export 'providers/passkey/models/passkey_registration_request.dart';
+export 'providers/twitch/models/twitch_access_token_verification_exception.dart';
+export 'providers/twitch/models/twitch_account.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -1245,6 +1250,116 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       managed: true,
     ),
+    _i2.TableDefinition(
+      name: 'serverpod_auth_idp_twitch_account',
+      dartName: 'TwitchAccount',
+      schema: 'public',
+      module: 'serverpod_auth_idp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue?',
+          columnDefault: 'gen_random_uuid_v7()',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userIdentifier',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'login',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'displayName',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'email',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'accessToken',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'expiresIn',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'refreshToken',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'created',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_auth_idp_twitch_account_fk_0',
+          columns: ['authUserId'],
+          referenceTable: 'serverpod_auth_core_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_twitch_account_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_auth_idp_twitch_user_identifier',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userIdentifier',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
     ..._i3.Protocol.targetTableDefinitions,
   ];
 
@@ -1372,6 +1487,12 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i35.PasskeyRegistrationRequest) {
       return _i35.PasskeyRegistrationRequest.fromJson(data) as T;
+    }
+    if (t == _i36.TwitchAccessTokenVerificationException) {
+      return _i36.TwitchAccessTokenVerificationException.fromJson(data) as T;
+    }
+    if (t == _i37.TwitchAccount) {
+      return _i37.TwitchAccount.fromJson(data) as T;
     }
     if (t == _i1.getType<_i4.RateLimitedRequestAttempt?>()) {
       return (data != null
@@ -1528,6 +1649,15 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
+    if (t == _i1.getType<_i36.TwitchAccessTokenVerificationException?>()) {
+      return (data != null
+              ? _i36.TwitchAccessTokenVerificationException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i37.TwitchAccount?>()) {
+      return (data != null ? _i37.TwitchAccount.fromJson(data) : null) as T;
+    }
     if (t == Map<String, String>) {
       return (data as Map).map(
             (k, v) => MapEntry(deserialize<String>(k), deserialize<String>(v)),
@@ -1543,9 +1673,9 @@ class Protocol extends _i1.SerializationManagerServer {
               : null)
           as T;
     }
-    if (t == _i1.getType<({_i36.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<({_i38.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i36.ByteData>(
+            challenge: deserialize<_i38.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -1610,6 +1740,9 @@ class Protocol extends _i1.SerializationManagerServer {
       _i34.PasskeyPublicKeyNotFoundException =>
         'PasskeyPublicKeyNotFoundException',
       _i35.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
+      _i36.TwitchAccessTokenVerificationException =>
+        'TwitchAccessTokenVerificationException',
+      _i37.TwitchAccount => 'TwitchAccount',
       _ => null,
     };
   }
@@ -1691,6 +1824,10 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'PasskeyPublicKeyNotFoundException';
       case _i35.PasskeyRegistrationRequest():
         return 'PasskeyRegistrationRequest';
+      case _i36.TwitchAccessTokenVerificationException():
+        return 'TwitchAccessTokenVerificationException';
+      case _i37.TwitchAccount():
+        return 'TwitchAccount';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -1817,6 +1954,14 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'PasskeyRegistrationRequest') {
       return deserialize<_i35.PasskeyRegistrationRequest>(data['data']);
     }
+    if (dataClassName == 'TwitchAccessTokenVerificationException') {
+      return deserialize<_i36.TwitchAccessTokenVerificationException>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'TwitchAccount') {
+      return deserialize<_i37.TwitchAccount>(data['data']);
+    }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
       return _i2.Protocol().deserializeByClassName(data);
@@ -1871,6 +2016,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i29.PasskeyAccount.t;
       case _i30.PasskeyChallenge:
         return _i30.PasskeyChallenge.t;
+      case _i37.TwitchAccount:
+        return _i37.TwitchAccount.t;
     }
     return null;
   }
@@ -1891,7 +2038,7 @@ class Protocol extends _i1.SerializationManagerServer {
     if (record == null) {
       return null;
     }
-    if (record is ({_i36.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i38.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge,

@@ -25,10 +25,10 @@ void main() {
   client.auth.initializeAppleSignIn();
   client.auth.initializeGitHubSignIn();
   client.auth.initializeMicrosoftSignIn();
-  client.auth.initializeTwitchSignIn();
   client.auth.initializeFacebookSignIn(
     appId: 'your-facebook-app-id', // throws if not provided on web and macos
   );
+  client.auth.initializeTwitchSignIn();
 
   runApp(const MainApp());
 }
