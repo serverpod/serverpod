@@ -126,48 +126,64 @@ class GitHubSignInButton extends StatelessWidget {
       texts.signInButton ?? _getButtonText(),
       style: TextStyle(
         fontSize: size == GitHubButtonSize.large ? 16 : 14,
-        fontWeight: FontWeight.w600,
         color: buttonStyle.foregroundColor,
       ),
     );
+
+    final logo = _buildGitHubLogo(buttonStyle);
 
     if (logoAlignment == GitHubButtonLogoAlignment.center) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildGitHubLogo(buttonStyle),
+          logo,
           const SizedBox(width: 12),
           textWidget,
         ],
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          _buildGitHubLogo(buttonStyle),
-          const SizedBox(width: 12),
-          Expanded(child: textWidget),
-        ],
-      ),
+    final logoSize = size == GitHubButtonSize.large ? 20.0 : 16.0;
+
+    return Stack(
+      children: [
+        Positioned(
+          left: 14,
+          top: 0,
+          bottom: 0,
+          child: logo,
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(width: logoSize),
+            Center(child: textWidget),
+            const SizedBox(width: 8),
+          ],
+        ),
+      ],
     );
   }
 
   Widget _buildGitHubLogo(GitHubSignInStyle buttonStyle) {
-    final iconSize = size == GitHubButtonSize.large ? 24.0 : 20.0;
+    final iconSize = size == GitHubButtonSize.large ? 20.0 : 16.0;
 
     // Use the appropriate SVG based on the button style
     final svgAsset = style == GitHubButtonStyle.white
         ? 'assets/images/github-mark.svg'
         : 'assets/images/github-mark-white.svg';
 
-    return SvgPicture.asset(
-      svgAsset,
-      package: 'serverpod_auth_idp_flutter',
-      width: iconSize,
-      height: iconSize,
-      fit: BoxFit.contain,
+    return SizedBox.square(
+      dimension: iconSize,
+      child: SvgPicture.asset(
+        svgAsset,
+        package: 'serverpod_auth_idp_flutter',
+        colorFilter: isDisabled
+            ? const ColorFilter.mode(Color(0xff9c9c9c), BlendMode.srcIn)
+            : null,
+        fit: BoxFit.scaleDown,
+      ),
     );
   }
 

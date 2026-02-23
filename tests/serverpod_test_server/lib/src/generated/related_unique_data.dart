@@ -294,6 +294,8 @@ class RelatedUniqueDataRepository {
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
@@ -304,6 +306,8 @@ class RelatedUniqueDataRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -333,6 +337,8 @@ class RelatedUniqueDataRepository {
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
@@ -342,6 +348,8 @@ class RelatedUniqueDataRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -351,11 +359,15 @@ class RelatedUniqueDataRepository {
     int id, {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<RelatedUniqueData>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -515,6 +527,22 @@ class RelatedUniqueDataRepository {
     return session.db.count<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [RelatedUniqueData] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<RelatedUniqueData>(
+      where: where(RelatedUniqueData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

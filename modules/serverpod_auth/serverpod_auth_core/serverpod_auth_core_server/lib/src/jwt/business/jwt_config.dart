@@ -153,6 +153,18 @@ class JwtConfig implements TokenManagerBuilder<JwtTokenManager> {
   )?
   extraClaimsProvider;
 
+  /// Called when a refresh token has been created.
+  ///
+  /// Useful to attaching additional data to the refresh token that can be later
+  /// used on the server to find or revoke tokens.
+  final Future<void> Function(
+    Session session, {
+    required UuidValue authUserId,
+    required UuidValue refreshTokenId,
+    required Transaction? transaction,
+  })?
+  onRefreshTokenCreated;
+
   /// Create a new user profile configuration.
   JwtConfig({
     required this.algorithm,
@@ -166,6 +178,7 @@ class JwtConfig implements TokenManagerBuilder<JwtTokenManager> {
     this.refreshTokenRotatingSecretLength = 64,
     this.refreshTokenRotatingSecretSaltLength = 16,
     this.extraClaimsProvider,
+    this.onRefreshTokenCreated,
   }) {
     _validateRefreshTokenHashPepper(refreshTokenHashPepper);
     for (final fallbackPepper in fallbackRefreshTokenHashPeppers) {

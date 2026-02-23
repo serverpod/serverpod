@@ -295,6 +295,8 @@ class StudentRepository {
     _i1.OrderByListBuilder<StudentTable>? orderByList,
     _i1.Transaction? transaction,
     StudentInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Student>(
       where: where?.call(Student.t),
@@ -305,6 +307,8 @@ class StudentRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -334,6 +338,8 @@ class StudentRepository {
     _i1.OrderByListBuilder<StudentTable>? orderByList,
     _i1.Transaction? transaction,
     StudentInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Student>(
       where: where?.call(Student.t),
@@ -343,6 +349,8 @@ class StudentRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -352,11 +360,15 @@ class StudentRepository {
     int id, {
     _i1.Transaction? transaction,
     StudentInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Student>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -514,6 +526,22 @@ class StudentRepository {
     return session.db.count<Student>(
       where: where?.call(Student.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Student] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<StudentTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Student>(
+      where: where(Student.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

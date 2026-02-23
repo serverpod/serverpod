@@ -1,3 +1,48 @@
+## 3.3.1
+
+- fix: Fixes text of GitHub IDP button not aligning correctly when using the left alignment. ([@vfiruz97](https://github.com/vfiruz97))
+- fix: Fixes missing `tokenExpiresAt` info on `AuthSuccess` for server-side sessions.
+
+## 3.3.0
+
+Serverpod 3.3 brings a lot of new features and improvements to the framework, including two new identity providers (GitHub and Anonymous), virtual host routing, a robust Kubernetes-ready monitoring system, JSON key aliases and enum properties on models, and several improvements to logging.
+
+> The Anonymous IDP is currently experimental and can not be completely used yet due to the missing support for account linking. The missing parts will be added in the next releases.
+
+### Core
+
+- feat: Adds Kubernetes-style health check endpoints `livez`, `readyz`, and `startupz` with support for custom health checks.
+- feat: Adds configurable log retention and automated purging.
+- feat: Allows defining custom `jsonKey` aliases in models to use in JSON serialization and deserialization. ([@FXschwartz](https://github.com/FXschwartz))
+- feat: Adds support for defining custom properties on enum models. ([@FXschwartz](https://github.com/FXschwartz))
+- fix: Preserves logging behavior settings when unrelated configs are set.
+- fix: Fixes missing source on linting error due to the `fields` key missing under `indexes`.
+- fix: Fixes console log timestamps showing actual event time instead of flush time. ([@Tokotuu](https://github.com/Tokotuu))
+- fix: Generates `const` defaults for `Duration` and `Uuid().v#obj()` types.
+- fix: Prevent import errors during generation when renaming the server on a project to `server`.
+- fix: Adds keep-alive pings and idle timeout detection from the client to improve reliability of streaming connections.
+- fix: Fixes CPU and memory metrics when running the server inside containers.
+
+### Authentication
+
+- feat: Adds Anonymous IDP (currently experimental). ([@craiglabenz](https://github.com/craiglabenz))
+- feat: Adds connected IDPs lookup on the server and client. ([@craiglabenz](https://github.com/craiglabenz))
+- feat: Adds GitHub identity provider support. ([@vfiruz97](https://github.com/vfiruz97))
+- feat: Adds an OAuth2 utility for building identity providers. ([@vfiruz97](https://github.com/vfiruz97))
+- fix: Fixes custom `--serverId` not being properly propagated to logs.
+- fix: Fixes Email IDP callbacks for sending verification codes not allowing `async` functions.
+- fix: Exposes `VerificationCodeConfig` in the `serverpod_auth_idp_flutter` package with no extra imports. ([@NeroSong](https://github.com/NeroSong))
+
+### Web server
+
+- feat: Adds virtual host routing to allow serving different content per based on the host of incoming requests.
+- feat: Exposes WebSocket ping interval for configuration via environment variables or configuration file.
+- chore: Serverpod now uses Relic 1.0.0! 🎉
+
+### Developer tooling
+
+- feat: Uses pub workspaces by default for new projects.
+
 ## 3.2.3
 
 - fix: Fixes `flutter_build` script on the template project for Windows.

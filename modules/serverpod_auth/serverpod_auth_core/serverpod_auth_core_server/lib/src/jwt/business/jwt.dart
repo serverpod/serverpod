@@ -179,6 +179,13 @@ class Jwt {
       transaction: transaction,
     );
 
+    await config.onRefreshTokenCreated?.call(
+      session,
+      authUserId: authUserId,
+      refreshTokenId: refreshToken.id!,
+      transaction: transaction,
+    );
+
     final token = jwtUtil.createJwt(refreshToken);
 
     return AuthSuccess(

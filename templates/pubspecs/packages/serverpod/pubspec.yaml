@@ -28,12 +28,12 @@ dependencies:
   path: ^1.8.3
   postgres: ^3.4.0
   redis: ^4.0.0
-  relic: ^0.15.1
+  relic: ^1.0.0
   retry: ^3.1.1
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
   synchronized: ^3.1.0
-  system_resources: ^1.6.0
+  system_resources_2: ^2.2.2
   uuid: ^4.1.0
   vm_service: '>=13.0.0 <16.0.0'
   web_socket: ^1.0.1

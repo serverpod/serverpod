@@ -279,6 +279,8 @@ class DatabaseMigrationVersionRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
@@ -288,6 +290,8 @@ class DatabaseMigrationVersionRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -316,6 +320,8 @@ class DatabaseMigrationVersionRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
@@ -324,6 +330,8 @@ class DatabaseMigrationVersionRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -332,10 +340,14 @@ class DatabaseMigrationVersionRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<DatabaseMigrationVersion>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -495,6 +507,22 @@ class DatabaseMigrationVersionRepository {
     return session.db.count<DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [DatabaseMigrationVersion] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<DatabaseMigrationVersion>(
+      where: where(DatabaseMigrationVersion.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

@@ -1,7 +1,7 @@
 /// Provides authentication UI widgets for Serverpod applications.
 ///
 /// This library allows developers to integrate authentication flows with various
-/// identity providers (email, Google, Apple, GitHub) into their Flutter apps. It works
+/// identity providers (email, Google, Apple, GitHub, Microsoft) into their Flutter apps. It works
 /// with the Serverpod auth system and provides ready-to-use UI components.
 library;
 
@@ -15,6 +15,7 @@ export 'src/apple/apple_sign_in_button.dart';
 export 'src/apple/apple_sign_in_service.dart';
 export 'src/apple/apple_sign_in_style.dart';
 export 'src/apple/apple_sign_in_widget.dart';
+export 'src/common/external_idp_registry.dart';
 export 'src/common/oauth2_pkce/oauth2_pkce_client_config.dart';
 export 'src/common/oauth2_pkce/oauth2_pkce_exception.dart';
 export 'src/common/oauth2_pkce/oauth2_pkce_result.dart';
@@ -31,6 +32,11 @@ export 'src/google/google_auth_controller.dart';
 export 'src/google/google_sign_in_service.dart';
 export 'src/google/google_sign_in_widget.dart';
 export 'src/localization/sign_in_localization_provider.dart';
+export 'src/microsoft/microsoft_auth_controller.dart';
+export 'src/microsoft/microsoft_sign_in_button.dart';
+export 'src/microsoft/microsoft_sign_in_service.dart';
+export 'src/microsoft/microsoft_sign_in_style.dart';
+export 'src/microsoft/microsoft_sign_in_widget.dart';
 export 'src/providers.dart';
 export 'src/sign_in_widget.dart';
 export 'src/theme.dart';

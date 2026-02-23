@@ -361,6 +361,8 @@ class ServerHealthConnectionInfoRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
@@ -370,6 +372,8 @@ class ServerHealthConnectionInfoRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -398,6 +402,8 @@ class ServerHealthConnectionInfoRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
@@ -406,6 +412,8 @@ class ServerHealthConnectionInfoRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -414,10 +422,14 @@ class ServerHealthConnectionInfoRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ServerHealthConnectionInfo>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -577,6 +589,22 @@ class ServerHealthConnectionInfoRepository {
     return session.db.count<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ServerHealthConnectionInfo] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ServerHealthConnectionInfo>(
+      where: where(ServerHealthConnectionInfo.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

@@ -8,7 +8,7 @@ import '../business/firebase_idp.dart';
 /// This endpoint exposes methods for logging in users using Firebase ID tokens.
 /// If you would like modify the authentication flow, consider extending this
 /// class and overriding the relevant methods.
-abstract class FirebaseIdpBaseEndpoint extends Endpoint {
+abstract class FirebaseIdpBaseEndpoint extends IdpBaseEndpoint {
   /// Accessor for the configured Firebase Idp instance.
   /// By default this uses the global instance configured in
   /// [AuthServices].
@@ -31,4 +31,8 @@ abstract class FirebaseIdpBaseEndpoint extends Endpoint {
       idToken: idToken,
     );
   }
+
+  @override
+  Future<bool> hasAccount(final Session session) async =>
+      await firebaseIdp.hasAccount(session);
 }

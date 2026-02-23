@@ -335,4 +335,102 @@ void main() {
       },
     );
   });
+
+  group(
+    'Given OAuth2PkceUtil with includeClientSecret set to false in header mode',
+    () {
+      late MockHttpClient mockClient;
+
+      setUp(() {
+        config = TestOAuth2PkceServerConfig(
+          testCredentialsLocation: OAuth2CredentialsLocation.header,
+        );
+        oauth2Util = OAuth2PkceUtil(config: config.oauth2Config);
+
+        mockClient = MockHttpClient(
+          statusCode: 200,
+          responseBody: jsonEncode({
+            'access_token': 'token',
+            'token_type': 'Bearer',
+          }),
+        );
+      });
+
+      group('when exchanging code for token', () {
+        setUp(() async {
+          await oauth2Util.exchangeCodeForToken(
+            code: 'auth_code',
+            codeVerifier: 'verifier',
+            redirectUri: 'https://example.com/callback',
+            includeClientSecret: false,
+            httpClient: mockClient,
+          );
+        });
+
+        test('then it does not send Authorization header', () {
+          expect(
+            mockClient.capturedHeaders,
+            isNot(containsPair('Authorization', startsWith('Basic '))),
+          );
+        });
+
+        test('then it sends client_id in body', () {
+          expect(mockClient.capturedBody, contains('client_id='));
+        });
+
+        test('then it does not send client_secret in body', () {
+          expect(mockClient.capturedBody, isNot(contains('client_secret=')));
+        });
+      });
+    },
+  );
+
+  group(
+    'Given OAuth2PkceUtil with includeClientSecret set to false in body mode',
+    () {
+      late MockHttpClient mockClient;
+
+      setUp(() {
+        config = TestOAuth2PkceServerConfig(
+          testCredentialsLocation: OAuth2CredentialsLocation.body,
+        );
+        oauth2Util = OAuth2PkceUtil(config: config.oauth2Config);
+
+        mockClient = MockHttpClient(
+          statusCode: 200,
+          responseBody: jsonEncode({
+            'access_token': 'token',
+            'token_type': 'Bearer',
+          }),
+        );
+      });
+
+      group('when exchanging code for token', () {
+        setUp(() async {
+          await oauth2Util.exchangeCodeForToken(
+            code: 'auth_code',
+            codeVerifier: 'verifier',
+            redirectUri: 'https://example.com/callback',
+            includeClientSecret: false,
+            httpClient: mockClient,
+          );
+        });
+
+        test('then it sends client_id in body', () {
+          expect(mockClient.capturedBody, contains('client_id='));
+        });
+
+        test('then it does not send client_secret in body', () {
+          expect(mockClient.capturedBody, isNot(contains('client_secret=')));
+        });
+
+        test('then it does not send Authorization header', () {
+          expect(
+            mockClient.capturedHeaders,
+            isNot(containsPair('Authorization', startsWith('Basic '))),
+          );
+        });
+      });
+    },
+  );
 }

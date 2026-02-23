@@ -71,16 +71,6 @@ abstract class FutureCallParameterAnalyzer {
       );
     }
 
-    if (parameters.withoutSessionParameter.isEmpty) {
-      exceptions.add(
-        SourceSpanSeverityException(
-          'Future call methods must have at least one parameter (besides Session) that is supported for serialization.',
-          parameters.first.span,
-        ),
-      );
-      return exceptions;
-    }
-
     exceptions.addAll(
       parameters.withoutSessionParameter.map((parameter) {
         var type = parameter.type;

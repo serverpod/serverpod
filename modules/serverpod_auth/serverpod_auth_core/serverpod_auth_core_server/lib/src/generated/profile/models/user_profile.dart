@@ -480,6 +480,8 @@ class UserProfileRepository {
     _i1.OrderByListBuilder<UserProfileTable>? orderByList,
     _i1.Transaction? transaction,
     UserProfileInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserProfile>(
       where: where?.call(UserProfile.t),
@@ -490,6 +492,8 @@ class UserProfileRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -519,6 +523,8 @@ class UserProfileRepository {
     _i1.OrderByListBuilder<UserProfileTable>? orderByList,
     _i1.Transaction? transaction,
     UserProfileInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserProfile>(
       where: where?.call(UserProfile.t),
@@ -528,6 +534,8 @@ class UserProfileRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -537,11 +545,15 @@ class UserProfileRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     UserProfileInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UserProfile>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -699,6 +711,22 @@ class UserProfileRepository {
     return session.db.count<UserProfile>(
       where: where?.call(UserProfile.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [UserProfile] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<UserProfileTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<UserProfile>(
+      where: where(UserProfile.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

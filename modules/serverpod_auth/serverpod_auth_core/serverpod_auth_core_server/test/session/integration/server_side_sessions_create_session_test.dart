@@ -9,10 +9,11 @@ void main() {
   group(
     'Given ServerSideSessions with default session lifetime configured',
     () {
+      const defaultSessionLifetime = Duration(days: 7);
       final serverSideSessions = ServerSideSessions(
         config: ServerSideSessionsConfig(
           sessionKeyHashPepper: 'test-pepper',
-          defaultSessionLifetime: const Duration(days: 7),
+          defaultSessionLifetime: defaultSessionLifetime,
         ),
       );
 
@@ -76,6 +77,27 @@ void main() {
               );
             },
           );
+
+          test(
+            'then tokenExpiresAt matches default session lifetime.',
+            () async {
+              final now = clock.now();
+              late AuthSuccess authSuccess;
+
+              await withClock(Clock.fixed(now), () async {
+                authSuccess = await serverSideSessions.createSession(
+                  session,
+                  authUserId: authUserId,
+                  method: 'test',
+                );
+              });
+
+              final expirationExpected = now.add(defaultSessionLifetime);
+
+              expect(authSuccess.tokenExpiresAt, isA<DateTime>());
+              expect(authSuccess.tokenExpiresAt, expirationExpected);
+            },
+          );
         },
       );
 
@@ -118,6 +140,27 @@ void main() {
                   expect(authInfo, isNull);
                 },
               );
+            },
+          );
+
+          test(
+            'then tokenExpiresAt matches explicit expiresAt.',
+            () async {
+              final now = clock.now();
+              final explicitExpiresAt = now.add(const Duration(days: 1));
+              late AuthSuccess authSuccess;
+
+              await withClock(Clock.fixed(now), () async {
+                authSuccess = await serverSideSessions.createSession(
+                  session,
+                  authUserId: authUserId,
+                  method: 'test',
+                  expiresAt: explicitExpiresAt,
+                );
+              });
+
+              expect(authSuccess.tokenExpiresAt, isA<DateTime>());
+              expect(authSuccess.tokenExpiresAt, explicitExpiresAt);
             },
           );
         },
@@ -250,6 +293,74 @@ void main() {
     },
   );
 
+  withServerpod(
+    'Given ServerSideSessions with onSessionCreated callback',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late UuidValue authUserId;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        const authUsers = AuthUsers();
+        final authUser = await authUsers.create(session);
+        authUserId = authUser.id;
+      });
+
+      test(
+        'when createSession is called, then onSessionCreated is invoked with session, serverSideSessionId and transaction.',
+        () async {
+          Session? capturedSession;
+          UuidValue? capturedAuthUserId;
+          UuidValue? capturedServerSideSessionId;
+          Transaction? capturedTransaction;
+
+          final serverSideSessionsWithCallback = ServerSideSessions(
+            config: ServerSideSessionsConfig(
+              sessionKeyHashPepper: 'test-pepper',
+              onSessionCreated:
+                  (
+                    final session, {
+                    required final authUserId,
+                    required final serverSideSessionId,
+                    required final transaction,
+                  }) async {
+                    capturedSession = session;
+                    capturedAuthUserId = authUserId;
+                    capturedServerSideSessionId = serverSideSessionId;
+                    capturedTransaction = transaction;
+                  },
+            ),
+          );
+
+          await session.db.transaction((final transaction) async {
+            // ignore: unused_result
+            await serverSideSessionsWithCallback.createSession(
+              session,
+              authUserId: authUserId,
+              method: 'test',
+              transaction: transaction,
+            );
+
+            expect(capturedAuthUserId, equals(authUserId));
+            expect(capturedSession, same(session));
+            expect(capturedTransaction, same(transaction));
+
+            final expectedSession = await ServerSideSession.db.findById(
+              session,
+              capturedServerSideSessionId!,
+              transaction: transaction,
+            );
+
+            expect(expectedSession, isNotNull);
+            expect(expectedSession!.id, capturedServerSideSessionId);
+            expect(expectedSession.authUserId, authUserId);
+          });
+        },
+      );
+    },
+  );
+
   group('Given ServerSideSessions with no session configuration defaults', () {
     final serverSideSessions = ServerSideSessions(
       config: ServerSideSessionsConfig(
@@ -297,6 +408,19 @@ void main() {
             },
           );
         });
+
+        test(
+          'then tokenExpiresAt is null due to no default expiration.',
+          () async {
+            final authSuccess = await serverSideSessions.createSession(
+              session,
+              authUserId: authUserId,
+              method: 'test',
+            );
+
+            expect(authSuccess.tokenExpiresAt, isNull);
+          },
+        );
       },
     );
   });

@@ -219,6 +219,15 @@ class Restrictions {
     String _,
     SourceSpan? span,
   ) {
+    if (documentDefinition?.isSharedModel ?? false) {
+      return [
+        SourceSpanSeverityException(
+          'The "table" property is not allowed in shared packages.',
+          span,
+        ),
+      ];
+    }
+
     if (!config.isFeatureEnabled(ServerpodFeature.database)) {
       return [
         SourceSpanSeverityException(
@@ -307,6 +316,23 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateServerOnlyKey(
+    String parentNodeName,
+    String _,
+    SourceSpan? span,
+  ) {
+    if (documentDefinition?.isSharedModel ?? false) {
+      return [
+        SourceSpanSeverityException(
+          'The "serverOnly" property is not allowed in shared packages.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateExtendingClassName(
     String parentNodeName,
     dynamic parentClassName,
@@ -332,10 +358,22 @@ class Restrictions {
       ];
     }
 
-    if (parentClass.type.moduleAlias != defaultModuleAlias) {
+    if (parentClass.type.moduleAlias != defaultModuleAlias &&
+        !parentClass.isSharedModel) {
       return [
         SourceSpanSeverityException(
           'You can only extend classes from your own project.',
+          span,
+        ),
+      ];
+    }
+
+    if (parentClass.type.moduleAlias != documentDefinition?.type.moduleAlias &&
+        parentClass is ModelClassDefinition &&
+        parentClass.isSealed) {
+      return [
+        SourceSpanSeverityException(
+          'Can not extend a sealed model from another package.',
           span,
         ),
       ];
@@ -964,6 +1002,21 @@ class Restrictions {
 
     var field = classDefinition.findField(parentNodeName);
     if (field == null) return errors;
+
+    if (classDefinition.isSharedModel &&
+        classDefinition.fields.any(
+          (field) => field.scope == ModelFieldScopeDefinition.serverOnly,
+        )) {
+      errors.add(
+        SourceSpanSeverityException(
+          'Field "$parentNodeName" is part of a shared model and can not have '
+          'scope defined to "serverOnly". To create a server only field, define '
+          'a subclass of the shared model on the server project and set the '
+          'field to "serverOnly" in the subclass.',
+          span,
+        ),
+      );
+    }
 
     errors.addAll(_validateFieldDataType(field.type, span));
     errors.addAll(_validateIdFieldDataType(field, span));

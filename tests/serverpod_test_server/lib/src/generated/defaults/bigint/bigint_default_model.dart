@@ -264,6 +264,8 @@ class BigIntDefaultModelRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BigIntDefaultModel>(
       where: where?.call(BigIntDefaultModel.t),
@@ -273,6 +275,8 @@ class BigIntDefaultModelRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -301,6 +305,8 @@ class BigIntDefaultModelRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<BigIntDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BigIntDefaultModel>(
       where: where?.call(BigIntDefaultModel.t),
@@ -309,6 +315,8 @@ class BigIntDefaultModelRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -317,10 +325,14 @@ class BigIntDefaultModelRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<BigIntDefaultModel>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -480,6 +492,22 @@ class BigIntDefaultModelRepository {
     return session.db.count<BigIntDefaultModel>(
       where: where?.call(BigIntDefaultModel.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [BigIntDefaultModel] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<BigIntDefaultModelTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<BigIntDefaultModel>(
+      where: where(BigIntDefaultModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

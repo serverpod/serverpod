@@ -25,6 +25,13 @@ class AppleIdpConfig extends IdentityProviderBuilder<AppleIdp> {
   /// The secret contents of the private key file received once from Apple.
   final String key;
 
+  /// The Android package identifier for the app using Sign in with Apple.
+  ///
+  /// Required for Android Sign in with Apple to work. If not provided, the
+  /// web authentication callback route will return a 500 error for Android
+  /// clients.
+  final String? androidPackageIdentifier;
+
   /// Creates a new Sign in with Apple configuration.
   const AppleIdpConfig({
     required this.serviceIdentifier,
@@ -33,6 +40,7 @@ class AppleIdpConfig extends IdentityProviderBuilder<AppleIdp> {
     required this.teamId,
     required this.keyId,
     required this.key,
+    this.androidPackageIdentifier,
   });
 
   @override
@@ -67,6 +75,9 @@ class AppleIdpConfigFromPasswords extends AppleIdpConfig {
         teamId: Serverpod.instance.getPasswordOrThrow('appleTeamId'),
         keyId: Serverpod.instance.getPasswordOrThrow('appleKeyId'),
         key: Serverpod.instance.getPasswordOrThrow('appleKey'),
+        androidPackageIdentifier: Serverpod.instance.getPassword(
+          'appleAndroidPackageIdentifier',
+        ),
       );
 }
 

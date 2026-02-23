@@ -132,6 +132,10 @@ class PasskeyIdp {
       );
     });
   }
+
+  /// Determines whether the current session has an associated Passkey account.
+  Future<bool> hasAccount(final Session session) async =>
+      await utils.getAccount(session) != null;
 }
 
 /// A challenge to be used for a passkey registration or login.

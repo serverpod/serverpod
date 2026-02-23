@@ -1,3 +1,4 @@
+export 'package:meta/meta.dart' show useResult, immutable;
 export 'package:uuid/uuid.dart';
 
 export 'src/auth_encoding.dart';

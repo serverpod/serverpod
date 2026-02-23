@@ -106,11 +106,11 @@ class GitHubSignInStyle {
 
     final foregroundColor = switch (style) {
       GitHubButtonStyle.black => Colors.white,
-      GitHubButtonStyle.white => const Color(0xFF24292F), // GitHub dark color
+      GitHubButtonStyle.white => const Color(0xFF24292F),
     };
 
     final backgroundColor = switch (style) {
-      GitHubButtonStyle.black => const Color(0xFF24292F), // GitHub dark color
+      GitHubButtonStyle.black => const Color(0xFF24292F),
       GitHubButtonStyle.white => Colors.white,
     };
 

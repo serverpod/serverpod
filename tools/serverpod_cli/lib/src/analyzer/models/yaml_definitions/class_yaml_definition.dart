@@ -54,6 +54,7 @@ class ClassYamlDefinition {
       ),
       ValidateNode(
         Keyword.serverOnly,
+        keyRestriction: restrictions.validateServerOnlyKey,
         valueRestriction: BooleanValueRestriction().validate,
       ),
       ValidateNode(

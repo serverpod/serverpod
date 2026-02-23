@@ -32,11 +32,11 @@ dependencies:
   cupertino_icons: ^1.0.5
   flutter:
     sdk: flutter
-  serverpod_auth_apple_flutter: 3.2.3
-  serverpod_auth_email_flutter: 3.2.3
-  serverpod_auth_google_flutter: 3.2.3
-  serverpod_auth_shared_flutter: 3.2.3
-  serverpod_flutter: 3.2.3
+  serverpod_auth_apple_flutter: 3.3.1
+  serverpod_auth_email_flutter: 3.3.1
+  serverpod_auth_google_flutter: 3.3.1
+  serverpod_auth_shared_flutter: 3.3.1
+  serverpod_flutter: 3.3.1
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'

@@ -6,12 +6,16 @@ final class AnonymousIdpTestFixture {
   late final AnonymousIdp anonymousIdp;
   late final TokenManager tokenManager;
   final UserProfiles userProfiles = const UserProfiles();
-  final AuthUsers authUsers = const AuthUsers();
+  final AuthUsers defaultAuthUsers = const AuthUsers();
 
   AnonymousIdpTestFixture({
-    final AnonymousIdpConfig? config,
+    AnonymousIdpConfig? config,
     final TokenManager? tokenManager,
+    AuthUsersConfig? authUsersConfig,
   }) {
+    config ??= const AnonymousIdpConfig();
+    authUsersConfig ??= const AuthUsersConfig();
+    final authUsers = AuthUsers(config: authUsersConfig);
     this.tokenManager =
         tokenManager ??
         AuthServices(
@@ -23,9 +27,10 @@ final class AnonymousIdpTestFixture {
           identityProviderBuilders: [],
         ).tokenManager;
 
-    anonymousIdp = AnonymousIdp(
-      config ?? const AnonymousIdpConfig(),
+    anonymousIdp = config.build(
       tokenManager: this.tokenManager,
+      authUsers: authUsers,
+      userProfiles: userProfiles,
     );
   }
 

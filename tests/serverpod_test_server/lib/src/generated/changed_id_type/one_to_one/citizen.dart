@@ -421,6 +421,8 @@ class CitizenIntRepository {
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
     CitizenIntInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CitizenInt>(
       where: where?.call(CitizenInt.t),
@@ -431,6 +433,8 @@ class CitizenIntRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -460,6 +464,8 @@ class CitizenIntRepository {
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     _i1.Transaction? transaction,
     CitizenIntInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CitizenInt>(
       where: where?.call(CitizenInt.t),
@@ -469,6 +475,8 @@ class CitizenIntRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -478,11 +486,15 @@ class CitizenIntRepository {
     int id, {
     _i1.Transaction? transaction,
     CitizenIntInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<CitizenInt>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -640,6 +652,22 @@ class CitizenIntRepository {
     return session.db.count<CitizenInt>(
       where: where?.call(CitizenInt.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [CitizenInt] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<CitizenIntTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<CitizenInt>(
+      where: where(CitizenInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

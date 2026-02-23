@@ -28,6 +28,8 @@ class SelectQueryBuilder {
   bool _joinOneLevelManyRelationWhereExpressions = false;
   bool _wrapWhereInNot = false;
   TableRelation? _countTableRelation;
+  LockMode? _lockMode;
+  LockBehavior? _lockBehavior;
 
   /// Creates a new [SelectQueryBuilder].
   /// Throws an [ArgumentError] if the table has no columns.
@@ -104,6 +106,8 @@ class SelectQueryBuilder {
     if (groupBy != null) query += ' GROUP BY $groupBy';
     if (_having != null) query += ' HAVING $_having';
     if (orderBy != null) query += ' ORDER BY $orderBy';
+    var lockClause = _buildLockClause();
+    if (lockClause != null) query += ' $lockClause';
     if (limit != null) query += ' LIMIT $limit';
     if (offset != null) query += ' OFFSET $_offset';
 
@@ -269,6 +273,16 @@ class SelectQueryBuilder {
     return this;
   }
 
+  /// Sets the row-level lock mode for the query.
+  SelectQueryBuilder withLockMode(
+    LockMode? lockMode, [
+    LockBehavior? lockBehavior,
+  ]) {
+    _lockMode = lockMode;
+    _lockBehavior = lockBehavior;
+    return this;
+  }
+
   /// Determines whether to join or create sub queries for one level many
   /// relations. if set to true, the query will join the many relation in the
   /// where expression.
@@ -287,6 +301,27 @@ class SelectQueryBuilder {
   SelectQueryBuilder forceGroupBy() {
     _forceGroupBy = true;
     return this;
+  }
+
+  String? _buildLockClause() {
+    if (_lockMode == null) return null;
+
+    var clause = switch (_lockMode!) {
+      LockMode.forUpdate => 'FOR UPDATE',
+      LockMode.forNoKeyUpdate => 'FOR NO KEY UPDATE',
+      LockMode.forShare => 'FOR SHARE',
+      LockMode.forKeyShare => 'FOR KEY SHARE',
+    };
+
+    if (_lockBehavior != null && _lockBehavior != LockBehavior.wait) {
+      clause += switch (_lockBehavior!) {
+        LockBehavior.wait => '',
+        LockBehavior.noWait => ' NOWAIT',
+        LockBehavior.skipLocked => ' SKIP LOCKED',
+      };
+    }
+
+    return clause;
   }
 }
 

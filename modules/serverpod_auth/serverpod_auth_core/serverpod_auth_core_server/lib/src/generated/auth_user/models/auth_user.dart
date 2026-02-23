@@ -286,6 +286,8 @@ class AuthUserRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<AuthUserTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<AuthUser>(
       where: where?.call(AuthUser.t),
@@ -295,6 +297,8 @@ class AuthUserRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -323,6 +327,8 @@ class AuthUserRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<AuthUserTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<AuthUser>(
       where: where?.call(AuthUser.t),
@@ -331,6 +337,8 @@ class AuthUserRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -339,10 +347,14 @@ class AuthUserRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<AuthUser>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -500,6 +512,22 @@ class AuthUserRepository {
     return session.db.count<AuthUser>(
       where: where?.call(AuthUser.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [AuthUser] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<AuthUserTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<AuthUser>(
+      where: where(AuthUser.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

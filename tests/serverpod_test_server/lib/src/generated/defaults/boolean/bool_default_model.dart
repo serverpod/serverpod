@@ -276,6 +276,8 @@ class BoolDefaultModelRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BoolDefaultModel>(
       where: where?.call(BoolDefaultModel.t),
@@ -285,6 +287,8 @@ class BoolDefaultModelRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -313,6 +317,8 @@ class BoolDefaultModelRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BoolDefaultModel>(
       where: where?.call(BoolDefaultModel.t),
@@ -321,6 +327,8 @@ class BoolDefaultModelRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -329,10 +337,14 @@ class BoolDefaultModelRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<BoolDefaultModel>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -492,6 +504,22 @@ class BoolDefaultModelRepository {
     return session.db.count<BoolDefaultModel>(
       where: where?.call(BoolDefaultModel.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [BoolDefaultModel] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<BoolDefaultModelTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<BoolDefaultModel>(
+      where: where(BoolDefaultModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

@@ -1,0 +1,23 @@
+class: TokenMetadata
+serverOnly: true
+table: token_metadata
+fields:
+  ### The [RefreshToken] this metadata belongs to
+  refreshToken: module:serverpod_auth_core:RefreshToken?, relation(onDelete=Cascade)
+  
+  ### Device information for the token
+  deviceName: String
+  
+  ### IP address from which the token was created
+  ipAddress: String?
+  
+  ### User agent string
+  userAgent: String?
+  
+  ### Additional metadata stored as JSON
+  metadata: String?
+
+indexes:
+  refresh_token_id_unique_idx:
+    fields: refreshTokenId
+    unique: true

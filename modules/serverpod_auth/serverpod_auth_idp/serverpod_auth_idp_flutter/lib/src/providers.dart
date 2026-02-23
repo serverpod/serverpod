@@ -9,9 +9,10 @@ class AvailableIdps {
   /// Creates a new instance of [AvailableIdps].
   const AvailableIdps(this.client);
 
-  bool _isProviderAvailable<T extends EndpointRef>() {
+  /// Whether the identity provider is available.
+  bool has<T extends EndpointRef>([String? name]) {
     try {
-      client.getEndpointOfType<T>();
+      client.getEndpointOfType<T>(name);
       return true;
     } on ServerpodClientEndpointNotFound {
       return false;
@@ -29,26 +30,82 @@ class AvailableIdps {
     hasGoogle,
     hasApple,
     hasFirebase,
+    hasFacebook,
     hasGitHub,
+    hasMicrosoft,
   ].where((e) => e).length;
 
   /// Whether the anonymous authentication provider is available.
-  bool get hasAnonymous => _isProviderAvailable<EndpointAnonymousIdpBase>();
+  bool get hasAnonymous => has<EndpointAnonymousIdpBase>();
 
   /// Whether the email authentication provider is available.
-  bool get hasEmail => _isProviderAvailable<EndpointEmailIdpBase>();
+  bool get hasEmail => has<EndpointEmailIdpBase>();
 
   /// Whether the Google authentication provider is available.
-  bool get hasGoogle => _isProviderAvailable<EndpointGoogleIdpBase>();
+  bool get hasGoogle => has<EndpointGoogleIdpBase>();
 
   /// Whether the Apple authentication provider is available.
-  bool get hasApple => _isProviderAvailable<EndpointAppleIdpBase>();
+  bool get hasApple => has<EndpointAppleIdpBase>();
 
   /// Whether the Firebase authentication provider is available.
-  bool get hasFirebase => _isProviderAvailable<EndpointFirebaseIdpBase>();
+  bool get hasFirebase => has<EndpointFirebaseIdpBase>();
+
+  /// Whether the Facebook authentication provider is available.
+  bool get hasFacebook => has<EndpointFacebookIdpBase>();
 
   /// Whether the GitHub authentication provider is available.
-  bool get hasGitHub => _isProviderAvailable<EndpointGitHubIdpBase>();
+  bool get hasGitHub => has<EndpointGitHubIdpBase>();
+
+  /// Whether the Microsoft authentication provider is available.
+  bool get hasMicrosoft => has<EndpointMicrosoftIdpBase>();
+
+  /// Provides information about connected identity providers.
+  ///
+  /// Use this getter to check which identity providers are connected to the
+  /// current user's account.
+  ///
+  /// Example usage:
+  /// ```dart
+  /// final connectedIdps = await client.auth.idp.getConnectedIdps();
+  /// if (connectedIdps.email.hasAccount) {
+  ///   // Show email sign-in option.
+  /// }
+  Future<ConnectedIdps> getConnectedIdps() async {
+    final connectedProviders = <EndpointIdpBase>{};
+
+    for (final endpoint in client.endpointRefLookup.values) {
+      if (endpoint is EndpointIdpBase) {
+        try {
+          if (await endpoint.hasAccount()) {
+            connectedProviders.add(endpoint);
+          }
+        } catch (_) {
+          continue;
+        }
+      }
+    }
+
+    return ConnectedIdps(client, connectedProviders);
+  }
+}
+
+/// Provides information about connected identity providers.
+class ConnectedIdps extends AvailableIdps {
+  /// Creates a new instance of [ConnectedIdps].
+  const ConnectedIdps(super.client, this._connectedIdps);
+
+  final Iterable<EndpointIdpBase> _connectedIdps;
+
+  /// The names of the endpoints of the connected identity providers.
+  Iterable<String> get names => _connectedIdps.map((e) => e.name);
+
+  @override
+  bool has<T extends EndpointRef>([String? name]) {
+    return _connectedIdps
+        .whereType<T>()
+        .where((e) => name == null || e.name == name)
+        .isNotEmpty;
+  }
 }
 
 /// Extension to provide information about available identity providers.

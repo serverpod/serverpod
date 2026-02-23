@@ -225,6 +225,8 @@ class SecretChallengeRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SecretChallenge>(
       where: where?.call(SecretChallenge.t),
@@ -234,6 +236,8 @@ class SecretChallengeRepository {
       limit: limit,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -262,6 +266,8 @@ class SecretChallengeRepository {
     bool orderDescending = false,
     _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SecretChallenge>(
       where: where?.call(SecretChallenge.t),
@@ -270,6 +276,8 @@ class SecretChallengeRepository {
       orderDescending: orderDescending,
       offset: offset,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -278,10 +286,14 @@ class SecretChallengeRepository {
     _i1.Session session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<SecretChallenge>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -441,6 +453,22 @@ class SecretChallengeRepository {
     return session.db.count<SecretChallenge>(
       where: where?.call(SecretChallenge.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [SecretChallenge] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<SecretChallengeTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<SecretChallenge>(
+      where: where(SecretChallenge.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

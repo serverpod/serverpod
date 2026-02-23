@@ -64,6 +64,7 @@ class AnonymousIdpConfig extends IdentityProviderBuilder<AnonymousIdp> {
     return AnonymousIdp(
       this,
       tokenManager: tokenManager,
+      authUsers: authUsers,
       userProfiles: userProfiles,
     );
   }

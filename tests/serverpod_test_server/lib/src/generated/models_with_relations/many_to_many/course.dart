@@ -298,6 +298,8 @@ class CourseRepository {
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
     CourseInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Course>(
       where: where?.call(Course.t),
@@ -308,6 +310,8 @@ class CourseRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -337,6 +341,8 @@ class CourseRepository {
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
     CourseInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Course>(
       where: where?.call(Course.t),
@@ -346,6 +352,8 @@ class CourseRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -355,11 +363,15 @@ class CourseRepository {
     int id, {
     _i1.Transaction? transaction,
     CourseInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Course>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -517,6 +529,22 @@ class CourseRepository {
     return session.db.count<Course>(
       where: where?.call(Course.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Course] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<CourseTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Course>(
+      where: where(Course.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

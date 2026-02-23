@@ -342,6 +342,8 @@ class BlockingRepository {
     _i1.OrderByListBuilder<BlockingTable>? orderByList,
     _i1.Transaction? transaction,
     BlockingInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Blocking>(
       where: where?.call(Blocking.t),
@@ -352,6 +354,8 @@ class BlockingRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -381,6 +385,8 @@ class BlockingRepository {
     _i1.OrderByListBuilder<BlockingTable>? orderByList,
     _i1.Transaction? transaction,
     BlockingInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Blocking>(
       where: where?.call(Blocking.t),
@@ -390,6 +396,8 @@ class BlockingRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -399,11 +407,15 @@ class BlockingRepository {
     int id, {
     _i1.Transaction? transaction,
     BlockingInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Blocking>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -561,6 +573,22 @@ class BlockingRepository {
     return session.db.count<Blocking>(
       where: where?.call(Blocking.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [Blocking] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<BlockingTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<Blocking>(
+      where: where(Blocking.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

@@ -317,6 +317,8 @@ class UserNoteCollectionRepository {
     _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserNoteCollection>(
       where: where?.call(UserNoteCollection.t),
@@ -327,6 +329,8 @@ class UserNoteCollectionRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -356,6 +360,8 @@ class UserNoteCollectionRepository {
     _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserNoteCollection>(
       where: where?.call(UserNoteCollection.t),
@@ -365,6 +371,8 @@ class UserNoteCollectionRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -374,11 +382,15 @@ class UserNoteCollectionRepository {
     int id, {
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UserNoteCollection>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -538,6 +550,22 @@ class UserNoteCollectionRepository {
     return session.db.count<UserNoteCollection>(
       where: where?.call(UserNoteCollection.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [UserNoteCollection] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<UserNoteCollection>(
+      where: where(UserNoteCollection.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

@@ -22,9 +22,6 @@ typedef GetExtraGitHubInfoCallback =
     });
 
 /// Configuration for the GitHub identity provider.
-///
-/// This class implements both [IdentityProviderBuilder] and [OAuth2PkceServerConfig]
-/// for generic OAuth2 PKCE token exchange.
 class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
   /// The client ID from your GitHub OAuth App.
   final String clientId;
@@ -149,11 +146,13 @@ class GitHubIdpConfig extends IdentityProviderBuilder<GitHubIdp> {
 /// ```
 class GitHubIdpConfigFromPasswords extends GitHubIdpConfig {
   /// Creates a new [GitHubIdpConfigFromPasswords] instance.
-  GitHubIdpConfigFromPasswords()
-    : super(
-        clientId: Serverpod.instance.getPasswordOrThrow('githubClientId'),
-        clientSecret: Serverpod.instance.getPasswordOrThrow(
-          'githubClientSecret',
-        ),
-      );
+  GitHubIdpConfigFromPasswords({
+    super.githubAccountDetailsValidation,
+    super.getExtraGitHubInfoCallback,
+  }) : super(
+         clientId: Serverpod.instance.getPasswordOrThrow('githubClientId'),
+         clientSecret: Serverpod.instance.getPasswordOrThrow(
+           'githubClientSecret',
+         ),
+       );
 }

@@ -302,6 +302,8 @@ class ChildWithInheritedIdRepository {
     _i2.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
     _i2.Transaction? transaction,
     ChildWithInheritedIdInclude? include,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChildWithInheritedId>(
       where: where?.call(ChildWithInheritedId.t),
@@ -312,6 +314,8 @@ class ChildWithInheritedIdRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -341,6 +345,8 @@ class ChildWithInheritedIdRepository {
     _i2.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
     _i2.Transaction? transaction,
     ChildWithInheritedIdInclude? include,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChildWithInheritedId>(
       where: where?.call(ChildWithInheritedId.t),
@@ -350,6 +356,8 @@ class ChildWithInheritedIdRepository {
       offset: offset,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -359,11 +367,15 @@ class ChildWithInheritedIdRepository {
     _i2.UuidValue id, {
     _i2.Transaction? transaction,
     ChildWithInheritedIdInclude? include,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ChildWithInheritedId>(
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
     );
   }
 
@@ -523,6 +535,22 @@ class ChildWithInheritedIdRepository {
     return session.db.count<ChildWithInheritedId>(
       where: where?.call(ChildWithInheritedId.t),
       limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ChildWithInheritedId] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i2.Session session, {
+    required _i2.WhereExpressionBuilder<ChildWithInheritedIdTable> where,
+    required _i2.LockMode lockMode,
+    required _i2.Transaction transaction,
+    _i2.LockBehavior lockBehavior = _i2.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ChildWithInheritedId>(
+      where: where(ChildWithInheritedId.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }

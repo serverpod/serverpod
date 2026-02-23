@@ -260,6 +260,13 @@ void main() {
     },
   );
 
+  test(
+    'Given command runner then completion command is registered',
+    () {
+      expect(fixture.runner.commands.containsKey('completion'), isTrue);
+    },
+  );
+
   group('Interactive flag - ', () {
     test(
       'when no interactive flag is provided then value should be null',
