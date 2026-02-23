@@ -1,32 +1,22 @@
-import 'dart:io';
-import 'package:serverpod/src/server/session.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/src/database/database.dart';
 
-import '../util/column_type_extension.dart';
+import '../../interface/analyzer.dart';
+import '../../util/column_type_extension.dart';
 
 /// Analyzes the structure of [Database]s.
-class DatabaseAnalyzer {
-  /// Analyze the structure of the [database].
-  static Future<DatabaseDefinition> analyze(Database database) async {
+class PostgresDatabaseAnalyzer extends DatabaseAnalyzer {
+  /// Creates a new [PostgresDatabaseAnalyzer] for the given [database].
+  PostgresDatabaseAnalyzer({required super.database});
+
+  @override
+  Future<String> getCurrentDatabaseName() async {
     var currentDb = await database.unsafeQuery('SELECT current_database();');
-
-    var name = currentDb.first.first;
-    var installedModules = await _getInstalledMigrationVersions(database);
-
-    return DatabaseDefinition(
-      moduleName: Protocol().getModuleName(),
-      name: name,
-      tables: await _getTableDefinitions(database),
-      migrationApiVersion: DatabaseConstants.migrationApiVersion,
-      installedModules: installedModules,
-    );
+    return currentDb.first.first;
   }
 
-  static Future<List<TableDefinition>> _getTableDefinitions(
-    Database database,
-  ) async {
+  @override
+  Future<List<TableDefinition>> getTableDefinitions() async {
     var tableSchemas = await database.unsafeQuery(
       // Get list of all tables and the schema they are in.
       '''
@@ -41,18 +31,19 @@ WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
         var schemaName = tableSchema.first;
         var tableName = tableSchema.last;
 
-        var columns = _getColumnDefinitions(database, schemaName, tableName);
-
-        var foreignKeys = _getForeignKeyDefinitions(
-          database,
-          schemaName,
-          tableName,
+        var columns = getColumnDefinitions(
+          schemaName: schemaName,
+          tableName: tableName,
         );
 
-        var indexes = _getIndexDefinitions(
-          database,
-          schemaName,
-          tableName,
+        var foreignKeys = getForeignKeyDefinitions(
+          schemaName: schemaName,
+          tableName: tableName,
+        );
+
+        var indexes = getIndexDefinitions(
+          schemaName: schemaName,
+          tableName: tableName,
         );
 
         return TableDefinition(
@@ -66,11 +57,11 @@ WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
     );
   }
 
-  static Future<List<ColumnDefinition>> _getColumnDefinitions(
-    Database database,
-    String schemaName,
-    String tableName,
-  ) async {
+  @override
+  Future<List<ColumnDefinition>> getColumnDefinitions({
+    required String schemaName,
+    required String tableName,
+  }) async {
     final vectorTypes = VectorColumnType.vectorTypes
         .map((e) => "'${e.name}'")
         .join(', ');
@@ -105,11 +96,11 @@ ORDER BY ordinal_position;
         .toList();
   }
 
-  static Future<List<IndexDefinition>> _getIndexDefinitions(
-    Database database,
-    String schemaName,
-    String tableName,
-  ) async {
+  @override
+  Future<List<IndexDefinition>> getIndexDefinitions({
+    required String schemaName,
+    required String tableName,
+  }) async {
     var queryResult = await database.unsafeQuery(
       // We want to get the name (0), tablespace (1), isUnique (2), isPrimary (3),
       // elements (4), isElementAColumn (5), predicate (6) and type of each index for this table.
@@ -241,11 +232,11 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
     }).toList();
   }
 
-  static Future<List<ForeignKeyDefinition>> _getForeignKeyDefinitions(
-    Database database,
-    String schemaName,
-    String tableName,
-  ) async {
+  @override
+  Future<List<ForeignKeyDefinition>> getForeignKeyDefinitions({
+    required String schemaName,
+    required String tableName,
+  }) async {
     var queryResult = await database.unsafeQuery(
       // We want to get the constraint name (0), on update type (1),
       // on delete type (2), match type (3), constraint columns (4)
@@ -296,32 +287,6 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
           ),
         )
         .toList();
-  }
-
-  /// Retrieves a list of installed database migrations.
-  static Future<List<DatabaseMigrationVersion>> _getInstalledMigrationVersions(
-    Database database,
-  ) async {
-    try {
-      return await database.find<DatabaseMigrationVersion>();
-    } catch (e) {
-      // Ignore if the table does not exist.
-      stderr.writeln('Failed to get installed migrations: $e');
-      return [];
-    }
-  }
-
-  /// Retrieves a list of installed database migrations.
-  static Future<List<DatabaseMigrationVersion>> getInstalledMigrationVersions(
-    Session session,
-  ) async {
-    try {
-      return await DatabaseMigrationVersion.db.find(session);
-    } catch (e) {
-      // Ignore if the table does not exist.
-      stderr.writeln('Failed to get installed migrations: $e');
-      return [];
-    }
   }
 }
 

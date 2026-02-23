@@ -3,6 +3,8 @@ import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given table relation with explicit column name', () {
     var table = Table<int?>(tableName: 'company');
     var foreignTable = Table<int?>(tableName: 'citizen');

@@ -1,5 +1,4 @@
 import 'package:serverpod/database.dart';
-import 'package:serverpod/src/database/database_pool_manager.dart';
 
 /// Base class for runtime parameters group to apply to the database.
 abstract class RuntimeParameters {
@@ -16,7 +15,7 @@ abstract class RuntimeParameters {
   Iterable<String> buildStatements({required bool isLocal}) => options.entries
       .map((e) {
         var value = e.value;
-        if (value is String) value = DatabasePoolManager.encoder.convert(value);
+        if (value is String) value = ValueEncoder.instance.convert(value);
         if (value is RuntimeParameters) return value.build(isLocal: isLocal);
         if (value is IterativeScan) value = value.alias;
         if (value is bool) value = (value == true) ? 'on' : 'off';
@@ -25,7 +24,7 @@ abstract class RuntimeParameters {
           value = 'TO DEFAULT';
         } else if (this is SearchPathsConfig) {
           value = (value as List<String>)
-              .map((s) => DatabasePoolManager.encoder.convert(s))
+              .map((s) => ValueEncoder.instance.convert(s))
               .join(', ');
           value = 'TO $value';
         } else {

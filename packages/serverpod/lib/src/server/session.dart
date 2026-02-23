@@ -19,7 +19,7 @@ typedef WillCloseListener = FutureOr<void> Function(Session session);
 /// When a call is made to the [Server] a [Session] object is created. It
 /// contains all data associated with the current connection and provides
 /// easy access to the database.
-abstract class Session implements DatabaseAccessor {
+abstract class Session implements DatabaseSession {
   final LinkedHashSet<WillCloseListener> _willCloseListeners = LinkedHashSet();
 
   /// Adds a listener that will be called when the session is about to close.
@@ -116,6 +116,9 @@ abstract class Session implements DatabaseAccessor {
   final bool enableLogging;
 
   late final SessionLogManager? _logManager;
+
+  @override
+  LogQueryFunction? get logQuery => _logManager?.logQuery;
 
   /// Endpoint that triggered this session.
   final String endpoint;

@@ -1,5 +1,6 @@
 import 'package:serverpod/protocol.dart';
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/database.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// The [SerializationManager] is responsible for creating objects from a
 /// serialization, but also for serializing objects. This class is typically

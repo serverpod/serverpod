@@ -3,10 +3,9 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:serverpod/protocol.dart';
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/database/analyze.dart';
-import 'package:serverpod/src/database/database_pool_manager.dart';
+import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/extensions.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Provides a way to export raw data from the database. The data is serialized
 /// using JSON. Primarily used for Serverpod Insights.
@@ -67,7 +66,7 @@ class DatabaseBulkData {
       );
     }
 
-    String strLastId = DatabasePoolManager.encoder.convert(lastId);
+    String strLastId = ValueEncoder.instance.convert(lastId);
 
     List<List<dynamic>> data;
     var query =
@@ -156,7 +155,7 @@ class DatabaseBulkData {
     Database database,
     String table,
   ) async {
-    var tableDefinitions = Serverpod.instance.serializationManager
+    var tableDefinitions = database.serializationManager
         .getTargetTableDefinitions();
 
     var tableDefinition = tableDefinitions.firstWhereOrNull(
@@ -185,7 +184,7 @@ class DatabaseBulkData {
     Database database,
   ) async {
     if (_cachedDatabaseDefinition == null) {
-      _cachedDatabaseDefinition = await DatabaseAnalyzer.analyze(database);
+      _cachedDatabaseDefinition = await database.analyzer.analyze();
 
       // Invalidate the cache after 1 minute.
       Timer(const Duration(minutes: 1), () {

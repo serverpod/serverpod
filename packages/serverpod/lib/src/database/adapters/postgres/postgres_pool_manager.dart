@@ -1,21 +1,28 @@
 import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod/src/database/concepts/runtime_parameters.dart';
-import 'package:serverpod/src/serialization/serialization_manager.dart';
+import 'package:serverpod/src/database/interface/database_pool_manager.dart';
+import 'package:serverpod/src/database/interface/serialization_manager.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import 'adapters/postgres/pgvector_encoder.dart';
-import 'adapters/postgres/value_encoder.dart';
+import 'pgvector_encoder.dart';
+import 'value_encoder.dart';
 
 /// Configuration for connecting to the Postgresql database.
 @internal
-class DatabasePoolManager {
+class PostgresPoolManager implements DatabasePoolManager {
+  @override
+  DatabaseDialect get dialect => DatabaseDialect.postgres;
+
+  @override
+  DateTime? lastDatabaseOperationTime;
+
   /// Database configuration.
   final DatabaseConfig config;
 
   late SerializationManagerServer _serializationManager;
 
-  /// Access to the serialization manager.
+  @override
   SerializationManagerServer get serializationManager => _serializationManager;
 
   pg.Pool? _pgPool;
@@ -34,12 +41,12 @@ class DatabasePoolManager {
     return pgPool;
   }
 
-  /// The encoder used to encode objects for storing in the database.
-  static final ValueEncoder encoder = ValueEncoder();
+  @override
+  PostgresValueEncoder get encoder => PostgresValueEncoder();
 
-  /// Creates a new [DatabasePoolManager]. Typically, this is done automatically
+  /// Creates a new [PostgresPoolManager]. Typically, this is done automatically
   /// when starting the [Server].
-  DatabasePoolManager(
+  PostgresPoolManager(
     SerializationManagerServer serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
     this.config,
@@ -73,7 +80,7 @@ class DatabasePoolManager {
     _serializationManager = serializationManager;
   }
 
-  /// Starts the database connection pool.
+  @override
   void start() {
     // Setup database connection pool
     _pgPool ??= pg.Pool.withEndpoints(
@@ -91,9 +98,18 @@ class DatabasePoolManager {
     );
   }
 
-  /// Closes the database connection pool.
+  @override
   Future<void> stop() async {
     await _pgPool?.close();
     _pgPool = null;
+  }
+
+  @override
+  Future<bool> testConnection() async {
+    await pool.execute(
+      'SELECT 1;',
+      timeout: const Duration(seconds: 2),
+    );
+    return true;
   }
 }

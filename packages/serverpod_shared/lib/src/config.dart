@@ -50,7 +50,7 @@ class ServerpodConfig {
   /// Configuration for the web server (optional).
   final ServerConfig? webServer;
 
-  /// Configuration for the Postgres database.
+  /// Configuration for the database.
   final DatabaseConfig? database;
 
   /// Configuration for Redis.
@@ -432,8 +432,17 @@ class ServerConfig {
   }
 }
 
-/// Configuration for a Postgres database,
-class DatabaseConfig {
+/// Database dialect type.
+enum DatabaseDialect {
+  /// PostgreSQL database.
+  postgres,
+}
+
+/// Configuration for a database.
+///
+/// Use [DatabaseConfig.forDialect] to create a dialect-specific configuration,
+/// or the default constructor (returns PostgreSQL config by default).
+abstract class DatabaseConfig {
   /// The default maximum number of connections in the database pool.
   static const int defaultMaxConnectionCount = 10;
 
@@ -466,20 +475,96 @@ class DatabaseConfig {
   /// If the limit is `null`, the number of connections will be unlimited.
   final int? maxConnectionCount;
 
-  /// Creates a new [DatabaseConfig].
-  DatabaseConfig({
+  /// Database dialect.
+  final DatabaseDialect dialect;
+
+  /// Private constructor for subclasses.
+  DatabaseConfig._({
     required this.host,
     required this.port,
     required this.user,
     required this.password,
     required this.name,
-    this.requireSsl = false,
-    this.isUnixSocket = false,
-    this.searchPaths,
-    this.maxConnectionCount = defaultMaxConnectionCount,
+    required this.requireSsl,
+    required this.isUnixSocket,
+    required this.searchPaths,
+    required this.maxConnectionCount,
+    required this.dialect,
   });
 
+  /// Creates a new [DatabaseConfig] (PostgreSQL by default).
+  factory DatabaseConfig({
+    required String host,
+    required int port,
+    required String user,
+    required String password,
+    required String name,
+    bool requireSsl = false,
+    bool isUnixSocket = false,
+    List<String>? searchPaths,
+    int? maxConnectionCount = defaultMaxConnectionCount,
+    DatabaseDialect dialect = DatabaseDialect.postgres,
+  }) => switch (dialect) {
+    DatabaseDialect.postgres => PostgresDatabaseConfig(
+      host: host,
+      port: port,
+      user: user,
+      password: password,
+      name: name,
+      requireSsl: requireSsl,
+      isUnixSocket: isUnixSocket,
+      searchPaths: searchPaths,
+      maxConnectionCount: maxConnectionCount,
+    ),
+  };
+
+  /// Parses the database configuration from the given JSON map.
+  ///
+  /// This method will try to parse the database configuration for all available
+  /// database dialects.
   factory DatabaseConfig._fromJson(Map dbSetup, Map passwords, String name) {
+    return PostgresDatabaseConfig._fromJson(dbSetup, passwords, name);
+  }
+
+  @override
+  String toString() {
+    var str = '';
+    str += 'database host: $host\n';
+    str += 'database port: $port\n';
+    str += 'database name: $name\n';
+    str += 'database user: $user\n';
+    str += 'database require SSL: $requireSsl\n';
+    str += 'database unix socket: $isUnixSocket\n';
+    str += 'database pass: ********\n';
+    if (searchPaths != null) {
+      str += 'database search path overrides: $searchPaths\n';
+    }
+    str += 'database max connection count: $maxConnectionCount\n';
+    str += 'database dialect: $dialect\n';
+    return str;
+  }
+}
+
+/// PostgreSQL-specific database configuration.
+class PostgresDatabaseConfig extends DatabaseConfig {
+  /// Creates a new [PostgresDatabaseConfig].
+  PostgresDatabaseConfig({
+    required super.host,
+    required super.port,
+    required super.user,
+    required super.password,
+    required super.name,
+    super.requireSsl = false,
+    super.isUnixSocket = false,
+    super.searchPaths,
+    super.maxConnectionCount,
+  }) : super._(dialect: DatabaseDialect.postgres);
+
+  factory PostgresDatabaseConfig._fromJson(
+    Map dbSetup,
+    Map passwords,
+    String name,
+  ) {
     _validateJsonConfig(
       {
         ServerpodEnv.databaseHost.configKey: String,
@@ -500,7 +585,7 @@ class DatabaseConfig {
 
     int? maxConnectionCount =
         dbSetup[ServerpodEnv.databaseMaxConnectionCount.configKey] ??
-        defaultMaxConnectionCount;
+        DatabaseConfig.defaultMaxConnectionCount;
 
     // If the user sets the max connection count to 0 or a negative number,
     // this means they want to enable unlimited connections
@@ -508,7 +593,7 @@ class DatabaseConfig {
       maxConnectionCount = null;
     }
 
-    return DatabaseConfig(
+    return PostgresDatabaseConfig(
       host: dbSetup[ServerpodEnv.databaseHost.configKey],
       port: dbSetup[ServerpodEnv.databasePort.configKey],
       name: dbSetup[ServerpodEnv.databaseName.configKey],
@@ -522,23 +607,6 @@ class DatabaseConfig {
       ),
       maxConnectionCount: maxConnectionCount,
     );
-  }
-
-  @override
-  String toString() {
-    var str = '';
-    str += 'database host: $host\n';
-    str += 'database port: $port\n';
-    str += 'database name: $name\n';
-    str += 'database user: $user\n';
-    str += 'database require SSL: $requireSsl\n';
-    str += 'database unix socket: $isUnixSocket\n';
-    str += 'database pass: ********\n';
-    if (searchPaths != null) {
-      str += 'database search path overrides: $searchPaths\n';
-    }
-    str += 'database max connection count: $maxConnectionCount\n';
-    return str;
   }
 }
 

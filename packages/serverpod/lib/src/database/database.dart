@@ -8,11 +8,15 @@ import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
 import 'package:serverpod/src/database/concepts/row_lock.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
-import 'package:serverpod/src/database/database_pool_manager.dart';
+import 'package:serverpod/src/database/interface/database_connection.dart';
+import 'package:serverpod/src/database/interface/database_pool_manager.dart';
+import 'package:serverpod/src/database/interface/provider.dart';
+import 'package:serverpod/src/database/interface/serialization_manager.dart';
+import 'package:serverpod/src/database/interface/value_encoder.dart';
 import 'package:serverpod/src/database/query_parameters.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../server/session.dart';
-import 'adapters/postgres/database_connection.dart';
 import 'concepts/expressions.dart';
 import 'concepts/table.dart';
 
@@ -24,7 +28,10 @@ extension DatabaseConstructor on Database {
     required Session session,
     required DatabasePoolManager poolManager,
   }) {
-    return Database._(session: session, poolManager: poolManager);
+    return Database._(
+      session: session,
+      poolManager: poolManager,
+    );
   }
 }
 
@@ -40,7 +47,25 @@ class Database {
     required Session session,
     required DatabasePoolManager poolManager,
   }) : _session = session,
-       _databaseConnection = DatabaseConnection(poolManager);
+       _databaseConnection = DatabaseProvider.forDialect(
+         poolManager.dialect,
+       ).createConnection(poolManager) {
+    // Initialize the value encoder for the current database pool for query
+    // builder and expressions to correctly encode values.
+    ValueEncoder.set(poolManager.encoder);
+  }
+
+  /// The dialect of the database.
+  DatabaseDialect get dialect => _databaseConnection.poolManager.dialect;
+
+  /// The serialization manager to use for the database.
+  SerializationManagerServer get serializationManager =>
+      _databaseConnection.poolManager.serializationManager;
+
+  /// The analyzer for this database.
+  late final analyzer = DatabaseProvider.forDialect(
+    dialect,
+  ).createAnalyzer(this);
 
   /// Returns a list of [TableRow]s matching the given query parameters.
   ///

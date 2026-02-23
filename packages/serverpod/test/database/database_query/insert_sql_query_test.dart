@@ -1,5 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/database/sql_query_builder.dart';
+import 'package:serverpod/src/database/adapters/postgres/sql_query_builder.dart';
 import 'package:test/test.dart';
 
 class PersonTable extends Table<int?> {
@@ -107,6 +107,8 @@ class UserClass implements TableRow<int?>, ProtocolSerialization {
 }
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given model with a couple of columns', () {
     test(
       'when building insert query with a row then output is a valid SQL query that lists the columns.',

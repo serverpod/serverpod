@@ -1,5 +1,5 @@
 import 'package:serverpod/database.dart';
-import 'package:serverpod/src/database/sql_query_builder.dart';
+import 'package:serverpod/src/database/adapters/postgres/sql_query_builder.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:test/test.dart';
 
@@ -50,6 +50,8 @@ class _TableWithManyRelation extends Table<int?> {
 }
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   var citizenTable = Table<int?>(tableName: 'citizen');
   var companyTable = Table<int?>(tableName: 'company');
 

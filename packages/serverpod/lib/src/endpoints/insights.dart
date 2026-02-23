@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/bulk_data.dart';
 import 'package:serverpod/src/database/migrations/migrations.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
@@ -220,7 +219,7 @@ class InsightsEndpoint extends Endpoint {
   /// - [getTargetTableDefinition]
   Future<DatabaseDefinition> getLiveDatabaseDefinition(Session session) async {
     // Get database definition of the live database.
-    var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
+    var databaseDefinition = await session.db.analyzer.analyze();
 
     return databaseDefinition;
   }
@@ -231,8 +230,7 @@ class InsightsEndpoint extends Endpoint {
   Future<DatabaseDefinitions> getDatabaseDefinitions(Session session) async {
     var targetTables = await getTargetTableDefinition(session);
     var live = await getLiveDatabaseDefinition(session);
-    var installedMigrations =
-        await DatabaseAnalyzer.getInstalledMigrationVersions(session);
+    var installedMigrations = await _getInstalledMigrationVersions(session);
 
     var versions = MigrationVersions.listVersions(
       projectDirectory: Directory.current,
@@ -355,5 +353,17 @@ class InsightsEndpoint extends Endpoint {
     }
 
     return await file.readAsString();
+  }
+}
+
+Future<List<DatabaseMigrationVersion>> _getInstalledMigrationVersions(
+  Session session,
+) async {
+  try {
+    return await DatabaseMigrationVersion.db.find(session);
+  } catch (e) {
+    // Ignore if the table does not exist.
+    stderr.writeln('Failed to get installed migrations: $e');
+    return [];
   }
 }

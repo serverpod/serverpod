@@ -1,11 +1,15 @@
+import 'package:serverpod/src/database/adapters/postgres/value_encoder.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/table.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
+import 'package:serverpod/src/database/interface/value_encoder.dart';
 import 'package:serverpod/test_util/table_relation_builder.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   test(
     'Given empty list when trying to construct TableRelation then throws',
     () {

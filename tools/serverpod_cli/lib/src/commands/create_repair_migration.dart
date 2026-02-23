@@ -111,6 +111,7 @@ class CreateRepairMigrationCommand
           tag: tag,
           force: force,
           runMode: mode,
+          dialect: config.databaseDialect,
           targetMigrationVersion: targetVersion,
         );
       } on MigrationRepairTargetNotFoundException catch (e) {

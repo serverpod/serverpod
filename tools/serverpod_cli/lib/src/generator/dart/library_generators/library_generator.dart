@@ -125,6 +125,7 @@ class LibraryGenerator {
                   allModels,
                   config.name,
                   config.modulesAll,
+                  dialect: config.databaseDialect,
                 ).toCode(
                   config: config,
                   serverCode: serverCode,

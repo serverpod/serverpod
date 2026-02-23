@@ -4,7 +4,6 @@ import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
-import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Builds a SQL query for a select statement.
@@ -243,7 +242,7 @@ class SelectQueryBuilder {
 
     var relationFieldName = tableRelation.foreignFieldBaseQuery;
 
-    var strIds = ids.map(DatabasePoolManager.encoder.convert).join(', ');
+    var strIds = ids.map(ValueEncoder.instance.convert).join(', ');
     var whereAddition = Expression('$relationFieldName IN ($strIds)');
 
     _listQueryAdditions = _ListQueryAdditions(
@@ -380,7 +379,7 @@ class InsertQueryBuilder {
           var values = selectedColumns
               .map((column) {
                 var unformattedValue = row[column.columnName];
-                return DatabasePoolManager.encoder.convert(
+                return ValueEncoder.instance.convert(
                   unformattedValue,
                   hasDefaults: column.hasDefault,
                 );

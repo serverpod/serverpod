@@ -8,6 +8,8 @@ enum TestEnum {
 }
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given a ColumnEnum serialized as index', () {
     var columnName = 'color';
     var column = ColumnEnum<TestEnum>(

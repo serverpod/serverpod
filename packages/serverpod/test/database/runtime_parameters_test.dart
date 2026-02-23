@@ -2,6 +2,8 @@ import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given a comprehensive RuntimeParameters implementation', () {
     test(
       'when build is called with all parameter types then correct SQL statements are returned.',

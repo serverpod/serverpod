@@ -2,6 +2,8 @@ import 'package:serverpod/database.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given ColumnBigInt', () {
     var columnName = 'bigint';
     var column = ColumnBigInt(columnName, Table<int?>(tableName: 'test'));

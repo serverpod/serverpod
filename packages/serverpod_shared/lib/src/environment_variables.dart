@@ -72,6 +72,9 @@ enum ServerpodEnv {
   /// The maximum number of connections in the database pool.
   databaseMaxConnectionCount,
 
+  /// The dialect of the database.
+  databaseDialect,
+
   /// The address to the redis broker.
   redisHost,
 
@@ -191,6 +194,7 @@ enum ServerpodEnv {
       (ServerpodEnv.databaseRequireSsl) => 'requireSsl',
       (ServerpodEnv.databaseIsUnixSocket) => 'isUnixSocket',
       (ServerpodEnv.databaseMaxConnectionCount) => 'maxConnectionCount',
+      (ServerpodEnv.databaseDialect) => 'dialect',
       (ServerpodEnv.redisHost) => 'host',
       (ServerpodEnv.redisPort) => 'port',
       (ServerpodEnv.redisUser) => 'user',
@@ -245,6 +249,7 @@ enum ServerpodEnv {
         'SERVERPOD_DATABASE_IS_UNIX_SOCKET',
       (ServerpodEnv.databaseMaxConnectionCount) =>
         'SERVERPOD_DATABASE_MAX_CONNECTION_COUNT',
+      (ServerpodEnv.databaseDialect) => 'SERVERPOD_DATABASE_DIALECT',
       (ServerpodEnv.redisHost) => 'SERVERPOD_REDIS_HOST',
       (ServerpodEnv.redisPort) => 'SERVERPOD_REDIS_PORT',
       (ServerpodEnv.redisUser) => 'SERVERPOD_REDIS_USER',
