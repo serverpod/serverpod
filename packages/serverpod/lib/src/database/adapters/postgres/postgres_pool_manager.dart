@@ -11,12 +11,9 @@ import 'value_encoder.dart';
 /// Configuration for connecting to the Postgresql database.
 @internal
 class PostgresPoolManager implements DatabasePoolManager {
-  /// The dialect of the database pool manager.
   @override
   DatabaseDialect get dialect => DatabaseDialect.postgres;
 
-  /// The last time a database operation was performed. This can be used to
-  /// determine if the database is sleeping.
   @override
   DateTime? lastDatabaseOperationTime;
 
@@ -25,7 +22,6 @@ class PostgresPoolManager implements DatabasePoolManager {
 
   late SerializationManagerServer _serializationManager;
 
-  /// Access to the serialization manager.
   @override
   SerializationManagerServer get serializationManager => _serializationManager;
 
@@ -45,7 +41,6 @@ class PostgresPoolManager implements DatabasePoolManager {
     return pgPool;
   }
 
-  /// The encoder used to encode objects for storing in the database.
   @override
   PostgresValueEncoder get encoder => PostgresValueEncoder();
 
@@ -85,7 +80,6 @@ class PostgresPoolManager implements DatabasePoolManager {
     _serializationManager = serializationManager;
   }
 
-  /// Starts the database connection pool.
   @override
   void start() {
     // Setup database connection pool
@@ -104,14 +98,12 @@ class PostgresPoolManager implements DatabasePoolManager {
     );
   }
 
-  /// Closes the database connection pool.
   @override
   Future<void> stop() async {
     await _pgPool?.close();
     _pgPool = null;
   }
 
-  /// Tests the database connection.
   @override
   Future<bool> testConnection() async {
     await pool.execute(

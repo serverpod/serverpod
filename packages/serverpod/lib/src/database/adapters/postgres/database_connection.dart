@@ -40,14 +40,11 @@ class PostgresDatabaseConnection
   /// to access the database.
   PostgresDatabaseConnection(super.poolManager);
 
-  /// Tests the database connection.
-  /// Throws an exception if the connection is not working.
   @override
   Future<bool> testConnection() async {
     return poolManager.testConnection();
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<List<T>> find<T extends TableRow>(
     DatabaseSession session, {
@@ -85,7 +82,6 @@ class PostgresDatabaseConnection
     );
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<T?> findFirstRow<T extends TableRow>(
     DatabaseSession session, {
@@ -119,7 +115,6 @@ class PostgresDatabaseConnection
     return rows.first;
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<T?> findById<T extends TableRow>(
     DatabaseSession session,
@@ -140,8 +135,6 @@ class PostgresDatabaseConnection
     );
   }
 
-  /// Acquires row-level locks without returning row data.
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<void> lockRows<T extends TableRow>(
     DatabaseSession session, {
@@ -166,7 +159,6 @@ class PostgresDatabaseConnection
     );
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<List<T>> insert<T extends TableRow>(
     DatabaseSession session,
@@ -191,7 +183,6 @@ class PostgresDatabaseConnection
         .toList();
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<T> insertRow<T extends TableRow>(
     DatabaseSession session,
@@ -213,7 +204,6 @@ class PostgresDatabaseConnection
     return result.first;
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<List<T>> update<T extends TableRow>(
     DatabaseSession session,
@@ -262,7 +252,6 @@ class PostgresDatabaseConnection
         .toList();
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<T> updateRow<T extends TableRow>(
     DatabaseSession session,
@@ -286,12 +275,6 @@ class PostgresDatabaseConnection
     return updated.first;
   }
 
-  /// Updates a single row by its ID with the specified column values.
-  ///
-  /// Returns the updated row or null if no row with the given ID exists.
-  /// Throws [ArgumentError] if [columnValues] is empty.
-  ///
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<T> updateById<T extends TableRow>(
     DatabaseSession session,
@@ -334,15 +317,6 @@ class PostgresDatabaseConnection
     );
   }
 
-  /// Updates all rows matching the WHERE expression with the specified column values.
-  ///
-  /// Returns a list of all updated rows. Returns an empty list if no rows match.
-  /// Throws [ArgumentError] if [columnValues] is empty.
-  ///
-  /// When [limit], [offset], [orderBy], [orderByList], or [orderDescending] are provided,
-  /// only the rows selected by these parameters will be updated.
-  ///
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<List<T>> updateWhere<T extends TableRow>(
     DatabaseSession session, {
@@ -419,7 +393,6 @@ class PostgresDatabaseConnection
     return result.map(poolManager.serializationManager.deserialize<T>).toList();
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<List<T>> delete<T extends TableRow>(
     DatabaseSession session,
@@ -440,7 +413,6 @@ class PostgresDatabaseConnection
     );
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<T> deleteRow<T extends TableRow>(
     DatabaseSession session,
@@ -462,7 +434,6 @@ class PostgresDatabaseConnection
     return result.first;
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<List<T>> deleteWhere<T extends TableRow>(
     DatabaseSession session,
@@ -483,7 +454,6 @@ class PostgresDatabaseConnection
     );
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<int> count<T extends TableRow>(
     DatabaseSession session, {
@@ -511,7 +481,6 @@ class PostgresDatabaseConnection
     return rows.first;
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<PostgresDatabaseResult> simpleQuery(
     DatabaseSession session,
@@ -530,7 +499,6 @@ class PostgresDatabaseConnection
     return PostgresDatabaseResult(result);
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<PostgresDatabaseResult> query(
     DatabaseSession session,
@@ -624,7 +592,6 @@ class PostgresDatabaseConnection
     }
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<int> execute(
     DatabaseSession session,
@@ -645,7 +612,6 @@ class PostgresDatabaseConnection
     return result.affectedRows;
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<int> simpleExecute(
     DatabaseSession session,
@@ -665,7 +631,6 @@ class PostgresDatabaseConnection
     return result.affectedRows;
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   Future<Iterable<Map<String, dynamic>>> _mappedResultsQuery(
     DatabaseSession session,
     String query, {
@@ -755,7 +720,6 @@ class PostgresDatabaseConnection
     );
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
   @override
   Future<R> transaction<R>(
     TransactionFunction<R> transactionFunction, {
