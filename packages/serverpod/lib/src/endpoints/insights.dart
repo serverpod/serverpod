@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/bulk_data.dart';
 import 'package:serverpod/src/database/migrations/migrations.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
@@ -220,7 +219,7 @@ class InsightsEndpoint extends Endpoint {
   /// - [getTargetTableDefinition]
   Future<DatabaseDefinition> getLiveDatabaseDefinition(Session session) async {
     // Get database definition of the live database.
-    var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
+    var databaseDefinition = await session.db.analyzer.analyze();
 
     return databaseDefinition;
   }

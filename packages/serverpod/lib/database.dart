@@ -14,6 +14,7 @@ export 'src/database/concepts/update_table.dart';
 export 'src/database/concepts/row_lock.dart';
 export 'src/database/concepts/transaction.dart';
 export 'src/database/query_parameters.dart';
+export 'src/database/interface/analyzer.dart' show DatabaseAnalyzer;
 export 'src/database/interface/database_session.dart';
 export 'src/database/interface/serialization_manager.dart';
 export 'src/database/interface/value_encoder.dart';

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:serverpod/protocol.dart';
-import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/interface/database_session.dart';
 import 'package:serverpod/src/database/migrations/migrations.dart';
@@ -256,7 +255,7 @@ class MigrationManager {
   static Future<bool> verifyDatabaseIntegrity(DatabaseSession session) async {
     var warnings = <String>[];
 
-    var liveDatabase = await DatabaseAnalyzer.analyze(session.db);
+    var liveDatabase = await session.db.analyzer.analyze();
     var targetTables = session.db.serializationManager
         .getTargetTableDefinitions();
 

@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/database.dart';
-import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/extensions.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -185,7 +184,7 @@ class DatabaseBulkData {
     Database database,
   ) async {
     if (_cachedDatabaseDefinition == null) {
-      _cachedDatabaseDefinition = await DatabaseAnalyzer.analyze(database);
+      _cachedDatabaseDefinition = await database.analyzer.analyze();
 
       // Invalidate the cache after 1 minute.
       Timer(const Duration(minutes: 1), () {

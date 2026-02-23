@@ -62,6 +62,11 @@ class Database {
   SerializationManagerServer get serializationManager =>
       _databaseConnection.poolManager.serializationManager;
 
+  /// The analyzer for this database.
+  late final analyzer = DatabaseProvider.forDialect(
+    dialect,
+  ).createAnalyzer(this);
+
   /// Returns a list of [TableRow]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.

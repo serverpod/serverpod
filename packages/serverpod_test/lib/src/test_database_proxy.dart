@@ -23,6 +23,9 @@ class TestDatabaseProxy implements Database {
   );
 
   @override
+  DatabaseAnalyzer get analyzer => _db.analyzer;
+
+  @override
   DatabaseDialect get dialect => _db.dialect;
 
   @override
