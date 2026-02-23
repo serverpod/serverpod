@@ -123,7 +123,7 @@ class GitHubSignInButton extends StatelessWidget {
     }
 
     final textWidget = Text(
-      _getButtonText(texts),
+      texts.signInButton ?? _getButtonText(),
       style: TextStyle(
         fontSize: size == GitHubButtonSize.large ? 16 : 14,
         fontWeight: FontWeight.w600,
@@ -171,11 +171,11 @@ class GitHubSignInButton extends StatelessWidget {
     );
   }
 
-  String _getButtonText(GitHubSignInTexts texts) {
+  String _getButtonText() {
     return switch (text) {
-      GitHubButtonText.signIn => texts.signInWith,
-      GitHubButtonText.signUp => texts.signUpWith,
-      GitHubButtonText.continueWith => texts.continueWith,
+      GitHubButtonText.signIn => 'Sign in with GitHub',
+      GitHubButtonText.signUp => 'Sign up with GitHub',
+      GitHubButtonText.continueWith => 'Continue with GitHub',
     };
   }
 }

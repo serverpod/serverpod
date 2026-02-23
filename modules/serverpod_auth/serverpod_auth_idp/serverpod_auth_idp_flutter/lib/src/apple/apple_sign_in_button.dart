@@ -79,7 +79,7 @@ class AppleSignInButton extends StatelessWidget {
       ),
       child: SignInWithAppleButton(
         onPressed: isLoading || isDisabled ? null : onPressed ?? () {},
-        text: _getButtonText(texts),
+        text: texts.signInButton ?? _getButtonText(),
         height: buttonStyle.size.height,
         style: style,
         borderRadius: buttonStyle.borderRadius,
@@ -88,12 +88,12 @@ class AppleSignInButton extends StatelessWidget {
     );
   }
 
-  String _getButtonText(AppleSignInTexts texts) {
+  String _getButtonText() {
     return switch (type) {
-      AppleButtonText.signinWith => texts.signInWith,
-      AppleButtonText.continueWith => texts.continueWith,
-      AppleButtonText.signupWith => texts.signUpWith,
-      AppleButtonText.signin => texts.signIn,
+      AppleButtonText.signinWith => 'Sign in with Apple',
+      AppleButtonText.continueWith => 'Continue with Apple',
+      AppleButtonText.signupWith => 'Sign up with Apple',
+      AppleButtonText.signin => 'Sign in',
     };
   }
 }

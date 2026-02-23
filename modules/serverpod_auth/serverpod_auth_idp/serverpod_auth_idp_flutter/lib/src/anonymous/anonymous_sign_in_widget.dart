@@ -75,6 +75,8 @@ class AnonymousSignInWidget extends StatefulWidget {
 }
 
 class _AnonymousSignInWidgetState extends State<AnonymousSignInWidget> {
+  static const _defaultButtonText = 'Continue without account';
+
   late final AnonymousAuthController _controller;
 
   @override
@@ -127,7 +129,7 @@ class _AnonymousSignInWidgetState extends State<AnonymousSignInWidget> {
               ),
             ),
             onPressed: _controller.login,
-            child: Text(texts.continueWithoutAccount),
+            child: Text(texts.signInButton ?? _defaultButtonText),
           ),
         );
       },

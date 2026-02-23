@@ -6,37 +6,28 @@ import '../localization/sign_in_localization_provider_widget.dart';
 @immutable
 class AnonymousSignInTexts {
   /// Creates a new [AnonymousSignInTexts] configuration.
-  const AnonymousSignInTexts({
-    required this.continueWithoutAccount,
-  });
+  const AnonymousSignInTexts({this.signInButton});
 
   /// Default English texts.
-  static const defaults = AnonymousSignInTexts(
-    continueWithoutAccount: 'Continue without account',
-  );
+  static const defaults = AnonymousSignInTexts(signInButton: null);
 
-  /// Text for anonymous sign-in action.
-  final String continueWithoutAccount;
+  /// Optional override text for the anonymous sign-in button.
+  ///
+  /// If null, the default provider text is used.
+  final String? signInButton;
 
   /// Creates a copy of this object with updated values.
-  AnonymousSignInTexts copyWith({
-    String? continueWithoutAccount,
-  }) {
-    return AnonymousSignInTexts(
-      continueWithoutAccount:
-          continueWithoutAccount ?? this.continueWithoutAccount,
-    );
-  }
+  AnonymousSignInTexts copyWith({String? signInButton}) =>
+      AnonymousSignInTexts(signInButton: signInButton ?? this.signInButton);
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is AnonymousSignInTexts &&
-        other.continueWithoutAccount == continueWithoutAccount;
+    return other is AnonymousSignInTexts && other.signInButton == signInButton;
   }
 
   @override
-  int get hashCode => continueWithoutAccount.hashCode;
+  int get hashCode => signInButton.hashCode;
 }
 
 /// Convenience getter for [AnonymousSignInTexts] on [BuildContext].

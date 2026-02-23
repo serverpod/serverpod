@@ -174,7 +174,9 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
         GSIButtonSize.small => const EdgeInsets.symmetric(vertical: 4),
       },
       child: Text(
-        getButtonText?.call(isLoading: isLoading) ?? _getButtonText(texts),
+        getButtonText?.call(isLoading: isLoading) ??
+            texts.signInButton ??
+            _getButtonText(),
         style: GoogleFonts.roboto(
           fontSize: 14,
           letterSpacing: 0.7,
@@ -235,13 +237,12 @@ class GoogleSignInNativeButton extends GoogleSignInBaseButton {
     );
   }
 
-  String _getButtonText(GoogleSignInTexts texts) {
-    if (isLoading) return texts.signingIn;
+  String _getButtonText() {
     return switch (text) {
-      GSIButtonText.signinWith => texts.signInWith,
-      GSIButtonText.signupWith => texts.signUpWith,
-      GSIButtonText.continueWith => texts.continueWith,
-      GSIButtonText.signin => texts.signIn,
+      GSIButtonText.signinWith => 'Sign in with Google',
+      GSIButtonText.signupWith => 'Sign up with Google',
+      GSIButtonText.continueWith => 'Continue with Google',
+      GSIButtonText.signin => 'Sign in',
     };
   }
 }

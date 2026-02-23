@@ -6,60 +6,28 @@ import '../localization/sign_in_localization_provider_widget.dart';
 @immutable
 class AppleSignInTexts {
   /// Creates a new [AppleSignInTexts] configuration.
-  const AppleSignInTexts({
-    required this.signInWith,
-    required this.continueWith,
-    required this.signUpWith,
-    required this.signIn,
-  });
+  const AppleSignInTexts({this.signInButton});
 
-  /// Default English texts.
-  static const defaults = AppleSignInTexts(
-    signInWith: 'Sign in with Apple',
-    continueWith: 'Continue with Apple',
-    signUpWith: 'Sign up with Apple',
-    signIn: 'Sign in',
-  );
+  /// Defaults to provider-managed button text.
+  static const defaults = AppleSignInTexts(signInButton: null);
 
-  /// Text for "Sign in with Apple".
-  final String signInWith;
-
-  /// Text for "Continue with Apple".
-  final String continueWith;
-
-  /// Text for "Sign up with Apple".
-  final String signUpWith;
-
-  /// Short text for "Sign in".
-  final String signIn;
+  /// Optional override text for the Apple sign-in button.
+  ///
+  /// If null, the button uses its configured text variant.
+  final String? signInButton;
 
   /// Creates a copy of this object with updated values.
-  AppleSignInTexts copyWith({
-    String? signInWith,
-    String? continueWith,
-    String? signUpWith,
-    String? signIn,
-  }) {
-    return AppleSignInTexts(
-      signInWith: signInWith ?? this.signInWith,
-      continueWith: continueWith ?? this.continueWith,
-      signUpWith: signUpWith ?? this.signUpWith,
-      signIn: signIn ?? this.signIn,
-    );
-  }
+  AppleSignInTexts copyWith({String? signInButton}) =>
+      AppleSignInTexts(signInButton: signInButton ?? this.signInButton);
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is AppleSignInTexts &&
-        other.signInWith == signInWith &&
-        other.continueWith == continueWith &&
-        other.signUpWith == signUpWith &&
-        other.signIn == signIn;
+    return other is AppleSignInTexts && other.signInButton == signInButton;
   }
 
   @override
-  int get hashCode => Object.hash(signInWith, continueWith, signUpWith, signIn);
+  int get hashCode => signInButton.hashCode;
 }
 
 /// Convenience getter for [AppleSignInTexts] on [BuildContext].
