@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:googleapis/storage/v1.dart' as gcs;
 import 'package:googleapis_auth/auth_io.dart' as gcs;
+import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_gcp/serverpod_cloud_storage_gcp.dart';
@@ -52,6 +53,8 @@ class MockObject extends Mock implements gcs.Object {}
 
 class MockSession extends Mock implements Session {}
 
+class MockAuthClient extends Mock implements gcs.AuthClient {}
+
 void main() {
   late MockSession mockSession;
 
@@ -59,6 +62,7 @@ void main() {
     registerFallbackValue(gcs.DownloadOptions.metadata);
     registerFallbackValue(gcs.Object());
     registerFallbackValue(gcs.Media(Stream.empty(), 0));
+    registerFallbackValue(Uri.parse('https://example.com'));
   });
 
   setUp(() {
@@ -792,6 +796,193 @@ void main() {
 
         final data = jsonDecode(description!) as Map<String, dynamic>;
         expect(data['headers']['x-goog-acl'], 'private');
+      },
+    );
+  });
+
+  group('Given a NativeGoogleCloudStorage with ADC (authClient) signing', () {
+    late NativeGoogleCloudStorage storage;
+    late MockStorageApi mockStorageApi;
+    late MockObjectsResource mockObjects;
+    late MockAuthClient mockAuthClient;
+    late MockSession mockSession;
+
+    setUp(() {
+      mockStorageApi = MockStorageApi();
+      mockObjects = MockObjectsResource();
+      mockAuthClient = MockAuthClient();
+      mockSession = MockSession();
+      when(() => mockStorageApi.objects).thenReturn(mockObjects);
+
+      // Mock the IAM signBlob response — return a fixed signature for any
+      // request to the signBlob endpoint.
+      when(
+        () => mockAuthClient.post(
+          any(),
+          headers: any(named: 'headers'),
+          body: any(named: 'body'),
+          encoding: any(named: 'encoding'),
+        ),
+      ).thenAnswer((_) async {
+        return http.Response(
+          jsonEncode({
+            'signedBlob': base64.encode([1, 2, 3, 4]),
+          }),
+          200,
+        );
+      });
+
+      storage = NativeGoogleCloudStorage.withAuthClient(
+        storageId: 'adc-storage',
+        bucket: 'test-bucket',
+        public: true,
+        storageApi: mockStorageApi,
+        email: 'sa@project.iam.gserviceaccount.com',
+        authClient: mockAuthClient,
+      );
+    });
+
+    test(
+      'when creating direct upload description '
+      'then it calls IAM signBlob API',
+      () async {
+        final description = await storage.createDirectFileUploadDescription(
+          session: mockSession,
+          path: 'uploads/test-file.txt',
+        );
+
+        expect(description, isNotNull);
+
+        // Verify signBlob was called with the correct endpoint
+        final captured = verify(
+          () => mockAuthClient.post(
+            captureAny(),
+            headers: any(named: 'headers'),
+            body: any(named: 'body'),
+            encoding: any(named: 'encoding'),
+          ),
+        ).captured;
+
+        final url = captured.first as Uri;
+        expect(url.host, 'iamcredentials.googleapis.com');
+        expect(
+          url.path,
+          contains('sa@project.iam.gserviceaccount.com:signBlob'),
+        );
+      },
+    );
+
+    test(
+      'when creating direct upload description '
+      'then it returns a valid upload description with signed URL',
+      () async {
+        final description = await storage.createDirectFileUploadDescription(
+          session: mockSession,
+          path: 'uploads/test-file.txt',
+        );
+
+        expect(description, isNotNull);
+
+        final data = jsonDecode(description!) as Map<String, dynamic>;
+        expect(data['type'], 'binary');
+        expect(data['method'], 'PUT');
+        expect(data['file-name'], 'test-file.txt');
+
+        final url = data['url'] as String;
+        expect(url, startsWith('https://storage.googleapis.com/'));
+        expect(url, contains('X-Goog-Algorithm=GOOG4-RSA-SHA256'));
+        expect(url, contains('X-Goog-Signature='));
+        expect(
+          url,
+          contains(
+            Uri.encodeComponent('sa@project.iam.gserviceaccount.com'),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when creating direct upload description '
+      'then the signBlob request contains the payload',
+      () async {
+        await storage.createDirectFileUploadDescription(
+          session: mockSession,
+          path: 'uploads/test-file.txt',
+        );
+
+        final captured = verify(
+          () => mockAuthClient.post(
+            any(),
+            headers: any(named: 'headers'),
+            body: captureAny(named: 'body'),
+            encoding: any(named: 'encoding'),
+          ),
+        ).captured;
+
+        final body =
+            jsonDecode(captured.first as String) as Map<String, dynamic>;
+        expect(body, contains('payload'));
+        // payload should be base64-encoded string-to-sign
+        expect(body['payload'], isA<String>());
+        expect(() => base64.decode(body['payload'] as String), returnsNormally);
+      },
+    );
+
+    test(
+      'when IAM signBlob returns an error '
+      'then createDirectFileUploadDescription throws',
+      () async {
+        when(
+          () => mockAuthClient.post(
+            any(),
+            headers: any(named: 'headers'),
+            body: any(named: 'body'),
+            encoding: any(named: 'encoding'),
+          ),
+        ).thenAnswer((_) async {
+          return http.Response('Permission denied', 403);
+        });
+
+        expect(
+          () => storage.createDirectFileUploadDescription(
+            session: mockSession,
+            path: 'uploads/test-file.txt',
+          ),
+          throwsA(isA<StateError>()),
+        );
+      },
+    );
+
+    test(
+      'when storing a file '
+      'then it works the same as with service account credentials',
+      () async {
+        when(
+          () => mockObjects.insert(
+            any(),
+            'test-bucket',
+            uploadMedia: any(named: 'uploadMedia'),
+            predefinedAcl: any(named: 'predefinedAcl'),
+            ifGenerationMatch: any(named: 'ifGenerationMatch'),
+          ),
+        ).thenAnswer((_) async => MockObject());
+
+        final data = ByteData(5);
+        await storage.storeFile(
+          session: mockSession,
+          path: 'upload/test.txt',
+          byteData: data,
+        );
+
+        verify(
+          () => mockObjects.insert(
+            any(),
+            'test-bucket',
+            uploadMedia: any(named: 'uploadMedia'),
+            predefinedAcl: 'publicRead',
+            ifGenerationMatch: null,
+          ),
+        ).called(1);
       },
     );
   });

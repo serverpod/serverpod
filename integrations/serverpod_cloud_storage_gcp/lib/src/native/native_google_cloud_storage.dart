@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -22,7 +21,7 @@ import 'package:serverpod/serverpod.dart';
 ///
 /// Example:
 /// ```dart
-/// pod.addCloudStorage(NativeGoogleCloudStorage(
+/// pod.addCloudStorage(await NativeGoogleCloudStorage.create(
 ///   serverpod: pod,
 ///   storageId: 'public',
 ///   bucket: 'my-bucket',
@@ -40,30 +39,32 @@ class NativeGoogleCloudStorage extends CloudStorage {
   /// If not provided, defaults to 'storage.googleapis.com/bucket'.
   final String? publicHost;
 
-  final Completer<gcs.StorageApi> _storageApiCompleter = Completer();
-  final Completer<_SigningContext> _signingContextCompleter = Completer();
+  final gcs.StorageApi _storageApi;
+  final _SigningContext? _signingContext;
 
-  /// Creates a new [NativeGoogleCloudStorage] reference.
-  ///
-  /// The [serverpod] instance is used to load the service account JSON from
-  /// the password system. The service account can be set via:
-  /// - `passwords.yaml`: `gcpServiceAccount` key with JSON content
-  /// - Environment variable: `SERVERPOD_PASSWORD_gcpServiceAccount`
-  ///
-  /// The [storageId] uniquely identifies this storage configuration.
-  ///
-  /// Set [public] to true if files should be publicly accessible.
-  ///
-  /// The [bucket] is the name of the GCS bucket.
-  ///
-  /// Optionally specify [publicHost] to use a custom domain for public URLs.
-  NativeGoogleCloudStorage({
-    required Serverpod serverpod,
+  NativeGoogleCloudStorage._({
     required String storageId,
     required this.bucket,
     required this.public,
+    required gcs.StorageApi storageApi,
+    _SigningContext? signingContext,
     this.publicHost,
-  }) : super(storageId) {
+  }) : _storageApi = storageApi,
+       _signingContext = signingContext,
+       super(storageId);
+
+  /// Creates a new [NativeGoogleCloudStorage] from a [Serverpod] instance.
+  ///
+  /// The service account JSON is loaded from the password system via:
+  /// - `passwords.yaml`: `gcpServiceAccount` key with JSON content
+  /// - Environment variable: `SERVERPOD_PASSWORD_gcpServiceAccount`
+  static Future<NativeGoogleCloudStorage> create({
+    required Serverpod serverpod,
+    required String storageId,
+    required String bucket,
+    required bool public,
+    String? publicHost,
+  }) async {
     final serviceAccountJson = serverpod.getPassword('gcpServiceAccount');
     if (serviceAccountJson == null) {
       throw StateError(
@@ -74,7 +75,75 @@ class NativeGoogleCloudStorage extends CloudStorage {
       );
     }
 
-    _initializeAsync(serviceAccountJson);
+    return fromServiceAccountJson(
+      storageId: storageId,
+      bucket: bucket,
+      public: public,
+      serviceAccountJson: serviceAccountJson,
+      publicHost: publicHost,
+    );
+  }
+
+  /// Creates a [NativeGoogleCloudStorage] from a service account JSON string.
+  ///
+  /// This factory authenticates directly with the provided JSON credentials
+  /// without requiring a [Serverpod] instance, making it suitable for
+  /// integration testing and standalone usage.
+  static Future<NativeGoogleCloudStorage> fromServiceAccountJson({
+    required String storageId,
+    required String bucket,
+    required bool public,
+    required String serviceAccountJson,
+    String? publicHost,
+  }) async {
+    final credentials = gcs.ServiceAccountCredentials.fromJson(
+      serviceAccountJson,
+    );
+
+    final authClient = await gcs.clientViaServiceAccount(
+      credentials,
+      [gcs.StorageApi.devstorageFullControlScope],
+    );
+
+    return NativeGoogleCloudStorage._(
+      storageId: storageId,
+      bucket: bucket,
+      public: public,
+      storageApi: gcs.StorageApi(authClient),
+      signingContext: _SigningContext.fromCredentials(credentials),
+      publicHost: publicHost,
+    );
+  }
+
+  /// Creates a [NativeGoogleCloudStorage] using Application Default Credentials.
+  ///
+  /// This factory uses ADC to authenticate, which automatically detects
+  /// credentials from the environment (GKE workload identity, Cloud Run
+  /// service account, `GOOGLE_APPLICATION_CREDENTIALS` env var, etc.).
+  ///
+  /// Signed URL generation requires the service account to have the
+  /// `iam.serviceAccounts.signBlob` IAM permission, since ADC does not
+  /// provide a local private key for signing.
+  static Future<NativeGoogleCloudStorage> fromApplicationDefaultCredentials({
+    required String storageId,
+    required String bucket,
+    required bool public,
+    String? publicHost,
+  }) async {
+    final authClient = await gcs.clientViaApplicationDefaultCredentials(
+      scopes: [gcs.StorageApi.devstorageFullControlScope],
+    );
+
+    final email = await _getServiceAccountEmail();
+
+    return NativeGoogleCloudStorage._(
+      storageId: storageId,
+      bucket: bucket,
+      public: public,
+      storageApi: gcs.StorageApi(authClient),
+      signingContext: _SigningContext.fromAuthClient(email, authClient),
+      publicHost: publicHost,
+    );
   }
 
   /// Creates a [NativeGoogleCloudStorage] with an already-initialized
@@ -90,47 +159,14 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required this.public,
     required gcs.StorageApi storageApi,
     this.publicHost,
-  }) : super(storageId) {
-    _storageApiCompleter.complete(storageApi);
-    // No signing credentials available in test mode
-  }
-
-  /// Creates a [NativeGoogleCloudStorage] from a service account JSON string.
-  ///
-  /// This constructor authenticates directly with the provided JSON credentials
-  /// without requiring a [Serverpod] instance, making it suitable for
-  /// integration testing and standalone usage.
-  NativeGoogleCloudStorage.withServiceAccountJson({
-    required String storageId,
-    required this.bucket,
-    required this.public,
-    required String serviceAccountJson,
-    this.publicHost,
-  }) : super(storageId) {
-    _initializeAsync(serviceAccountJson);
-  }
-
-  /// Creates a [NativeGoogleCloudStorage] using Application Default Credentials.
-  ///
-  /// This constructor uses ADC to authenticate, which automatically detects
-  /// credentials from the environment (GKE workload identity, Cloud Run
-  /// service account, `GOOGLE_APPLICATION_CREDENTIALS` env var, etc.).
-  ///
-  /// Signed URL generation requires the service account to have the
-  /// `iam.serviceAccounts.signBlob` IAM permission, since ADC does not
-  /// provide a local private key for signing.
-  NativeGoogleCloudStorage.withApplicationDefaultCredentials({
-    required String storageId,
-    required this.bucket,
-    required this.public,
-    this.publicHost,
-  }) : super(storageId) {
-    _initializeWithAdc();
-  }
+  }) : _storageApi = storageApi,
+       _signingContext = null,
+       super(storageId);
 
   /// Creates a [NativeGoogleCloudStorage] with signing credentials for testing.
   ///
-  /// This constructor allows testing direct upload functionality.
+  /// This constructor allows testing direct upload functionality with
+  /// service account credentials (local RSA signing).
   NativeGoogleCloudStorage.withSigningCredentials({
     required String storageId,
     required this.bucket,
@@ -138,79 +174,52 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required gcs.StorageApi storageApi,
     required gcs.ServiceAccountCredentials credentials,
     this.publicHost,
-  }) : super(storageId) {
-    _storageApiCompleter.complete(storageApi);
-    _signingContextCompleter.complete(
-      _SigningContext.fromCredentials(credentials),
-    );
-  }
+  }) : _storageApi = storageApi,
+       _signingContext = _SigningContext.fromCredentials(credentials),
+       super(storageId);
 
-  Future<void> _initializeAsync(String serviceAccountJson) async {
-    try {
-      final credentials = gcs.ServiceAccountCredentials.fromJson(
-        serviceAccountJson,
-      );
-
-      final authClient = await gcs.clientViaServiceAccount(
-        credentials,
-        [gcs.StorageApi.devstorageFullControlScope],
-      );
-
-      _storageApiCompleter.complete(gcs.StorageApi(authClient));
-      _signingContextCompleter.complete(
-        _SigningContext.fromCredentials(credentials),
-      );
-    } catch (e) {
-      if (!_storageApiCompleter.isCompleted) {
-        _storageApiCompleter.completeError(e);
-      }
-      if (!_signingContextCompleter.isCompleted) {
-        _signingContextCompleter.completeError(e);
-      }
-    }
-  }
-
-  Future<void> _initializeWithAdc() async {
-    try {
-      final authClient = await gcs.clientViaApplicationDefaultCredentials(
-        scopes: [gcs.StorageApi.devstorageFullControlScope],
-      );
-
-      _storageApiCompleter.complete(gcs.StorageApi(authClient));
-
-      final email = await _getServiceAccountEmail();
-      _signingContextCompleter.complete(
-        _SigningContext.fromAuthClient(email, authClient),
-      );
-    } catch (e) {
-      if (!_storageApiCompleter.isCompleted) {
-        _storageApiCompleter.completeError(e);
-      }
-      if (!_signingContextCompleter.isCompleted) {
-        _signingContextCompleter.completeError(e);
-      }
-    }
-  }
+  /// Creates a [NativeGoogleCloudStorage] with ADC-style signing for testing.
+  ///
+  /// This constructor allows testing the IAM signBlob signing path without
+  /// requiring real Application Default Credentials. The [authClient] is used
+  /// for IAM signBlob requests, and [email] identifies the service account.
+  NativeGoogleCloudStorage.withAuthClient({
+    required String storageId,
+    required this.bucket,
+    required this.public,
+    required gcs.StorageApi storageApi,
+    required String email,
+    required gcs.AuthClient authClient,
+    this.publicHost,
+  }) : _storageApi = storageApi,
+       _signingContext = _SigningContext.fromAuthClient(email, authClient),
+       super(storageId);
 
   /// Retrieves the default service account email from the GCE metadata server.
-  static Future<String> _getServiceAccountEmail() async {
-    final response = await http.get(
-      Uri.parse(
-        'http://metadata.google.internal/computeMetadata/v1/'
-        'instance/service-accounts/default/email',
-      ),
-      headers: {'Metadata-Flavor': 'Google'},
-    );
-    if (response.statusCode != 200) {
-      throw StateError(
-        'Failed to get service account email from metadata server: '
-        '${response.statusCode} ${response.body}',
+  ///
+  /// An optional [client] can be provided for testing; otherwise uses a
+  /// default HTTP client.
+  static Future<String> _getServiceAccountEmail({http.Client? client}) async {
+    final effectiveClient = client ?? http.Client();
+    try {
+      final response = await effectiveClient.get(
+        Uri.parse(
+          'http://metadata.google.internal/computeMetadata/v1/'
+          'instance/service-accounts/default/email',
+        ),
+        headers: {'Metadata-Flavor': 'Google'},
       );
+      if (response.statusCode != 200) {
+        throw StateError(
+          'Failed to get service account email from metadata server: '
+          '${response.statusCode} ${response.body}',
+        );
+      }
+      return response.body.trim();
+    } finally {
+      if (client == null) effectiveClient.close();
     }
-    return response.body.trim();
   }
-
-  Future<gcs.StorageApi> get _storageApi => _storageApiCompleter.future;
 
   @override
   Future<void> storeFile({
@@ -221,8 +230,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
     bool verified = true,
     bool preventOverwrite = false,
   }) async {
-    final storageApi = await _storageApi;
-
     final media = gcs.Media(
       Stream.value(byteData.buffer.asUint8List()),
       byteData.lengthInBytes,
@@ -232,7 +239,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
       ..name = path
       ..bucket = bucket;
 
-    await storageApi.objects.insert(
+    await _storageApi.objects.insert(
       object,
       bucket,
       uploadMedia: media,
@@ -246,10 +253,8 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required Session session,
     required String path,
   }) async {
-    final storageApi = await _storageApi;
-
     try {
-      final response = await storageApi.objects.get(
+      final response = await _storageApi.objects.get(
         bucket,
         path,
         downloadOptions: gcs.DownloadOptions.fullMedia,
@@ -286,10 +291,8 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required Session session,
     required String path,
   }) async {
-    final storageApi = await _storageApi;
-
     try {
-      await storageApi.objects.get(bucket, path);
+      await _storageApi.objects.get(bucket, path);
       return true;
     } on gcs.DetailedApiRequestError catch (e) {
       if (e.status == 404) return false;
@@ -302,10 +305,8 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required Session session,
     required String path,
   }) async {
-    final storageApi = await _storageApi;
-
     try {
-      await storageApi.objects.delete(bucket, path);
+      await _storageApi.objects.delete(bucket, path);
     } on gcs.DetailedApiRequestError catch (e) {
       if (e.status == 404) return; // Already deleted
       rethrow;
@@ -327,12 +328,10 @@ class NativeGoogleCloudStorage extends CloudStorage {
       );
     }
 
-    // Check if signing context is available
-    if (!_signingContextCompleter.isCompleted) {
+    final signingContext = _signingContext;
+    if (signingContext == null) {
       return null;
     }
-
-    final signingContext = await _signingContextCompleter.future;
 
     final fileName = p.basename(path);
     final contentType = _detectMimeType(fileName);
