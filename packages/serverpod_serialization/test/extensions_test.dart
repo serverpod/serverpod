@@ -100,6 +100,18 @@ void main() {
   );
 
   test(
+    'Given a JSON-formatted integer representing milliseconds, when deserialized then it matches the original time',
+    () {
+      DateTime time = DateTime.utc(2024, 1, 1, 10, 11, 12, 13);
+      int milliseconds = time.millisecondsSinceEpoch;
+
+      DateTime dateTime = DateTimeJsonExtension.fromJson(milliseconds);
+
+      expect(dateTime, time);
+    },
+  );
+
+  test(
     'Given an integer representing milliseconds, when deserialized to a Duration and then serialized back to milliseconds, then it matches the original integer',
     () {
       int milliseconds = 100000;

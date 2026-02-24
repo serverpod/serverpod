@@ -28,6 +28,9 @@ extension DateTimeJsonExtension on DateTime {
   /// Returns a deserialized version of the [DateTime].
   static DateTime fromJson(dynamic value) {
     if (value is DateTime) return value;
+    if (value is int) {
+      return DateTime.fromMillisecondsSinceEpoch(value, isUtc: true);
+    }
     return DateTime.parse(value as String);
   }
 

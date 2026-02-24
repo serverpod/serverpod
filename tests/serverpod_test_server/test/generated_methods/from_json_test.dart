@@ -190,10 +190,20 @@ void main() {
     );
 
     test(
+      'when deserializing from JSON with an integer representing milliseconds, then the result matches the expected value',
+      () {
+        expect(
+          Types.fromJson({'aDateTime': 111}).aDateTime,
+          DateTime.fromMillisecondsSinceEpoch(111, isUtc: true),
+        );
+      },
+    );
+
+    test(
       'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
       () {
         expect(
-          () => Types.fromJson({'aDateTime': 111}).aString,
+          () => Types.fromJson({'aDateTime': 111.1}).aString,
           throwsA(isA<TypeError>()),
         );
       },
@@ -237,18 +247,8 @@ void main() {
       'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
       () {
         expect(
-          () => Types.fromJson({'aDateTime': 111}).aString,
+          () => Types.fromJson({'aDuration': 111.1}).aDuration,
           throwsA(isA<TypeError>()),
-        );
-      },
-    );
-
-    test(
-      'when deserializing from JSON with an incorrect value, then a FormatException is thrown',
-      () {
-        expect(
-          () => Types.fromJson({'aDateTime': "111"}).aString,
-          throwsA(isA<FormatException>()),
         );
       },
     );
@@ -295,7 +295,7 @@ void main() {
       'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
       () {
         expect(
-          () => Types.fromJson({'aDateTime': 111}).aString,
+          () => Types.fromJson({'aUuid': 111}).aUuid,
           throwsA(isA<TypeError>()),
         );
       },
@@ -592,7 +592,7 @@ void main() {
         expect(
           () => TypesSet.fromJson({
             'anObject': [
-              {'aDateTime': 1},
+              {'aDateTime': 111.1},
             ],
           }),
           throwsA(isA<TypeError>()),
@@ -679,7 +679,7 @@ void main() {
         expect(
           () => TypesList.fromJson({
             'anObject': [
-              {'aDateTime': 1},
+              {'aDateTime': 111.1},
             ],
           }),
           throwsA(isA<TypeError>()),
