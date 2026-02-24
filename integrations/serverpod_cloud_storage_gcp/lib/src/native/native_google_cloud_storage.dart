@@ -1,10 +1,10 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:googleapis/storage/v1.dart' as gcs;
-import 'package:googleapis_auth/auth_io.dart';
+import 'package:googleapis_auth/auth_io.dart' as gcs;
+import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:pointycastle/asn1.dart';
 import 'package:pointycastle/export.dart';
@@ -21,7 +21,7 @@ import 'package:serverpod/serverpod.dart';
 ///
 /// Example:
 /// ```dart
-/// pod.addCloudStorage(NativeGoogleCloudStorage(
+/// pod.addCloudStorage(await NativeGoogleCloudStorage.create(
 ///   serverpod: pod,
 ///   storageId: 'public',
 ///   bucket: 'my-bucket',
@@ -39,31 +39,32 @@ class NativeGoogleCloudStorage extends CloudStorage {
   /// If not provided, defaults to 'storage.googleapis.com/bucket'.
   final String? publicHost;
 
-  final Completer<gcs.StorageApi> _storageApiCompleter = Completer();
-  final Completer<_SigningCredentials> _signingCredentialsCompleter =
-      Completer();
+  final gcs.StorageApi _storageApi;
+  final _SigningContext? _signingContext;
 
-  /// Creates a new [NativeGoogleCloudStorage] reference.
-  ///
-  /// The [serverpod] instance is used to load the service account JSON from
-  /// the password system. The service account can be set via:
-  /// - `passwords.yaml`: `gcpServiceAccount` key with JSON content
-  /// - Environment variable: `SERVERPOD_PASSWORD_gcpServiceAccount`
-  ///
-  /// The [storageId] uniquely identifies this storage configuration.
-  ///
-  /// Set [public] to true if files should be publicly accessible.
-  ///
-  /// The [bucket] is the name of the GCS bucket.
-  ///
-  /// Optionally specify [publicHost] to use a custom domain for public URLs.
-  NativeGoogleCloudStorage({
-    required Serverpod serverpod,
+  NativeGoogleCloudStorage._({
     required String storageId,
     required this.bucket,
     required this.public,
+    required gcs.StorageApi storageApi,
+    _SigningContext? signingContext,
     this.publicHost,
-  }) : super(storageId) {
+  }) : _storageApi = storageApi,
+       _signingContext = signingContext,
+       super(storageId);
+
+  /// Creates a new [NativeGoogleCloudStorage] from a [Serverpod] instance.
+  ///
+  /// The service account JSON is loaded from the password system via:
+  /// - `passwords.yaml`: `gcpServiceAccount` key with JSON content
+  /// - Environment variable: `SERVERPOD_PASSWORD_gcpServiceAccount`
+  static Future<NativeGoogleCloudStorage> create({
+    required Serverpod serverpod,
+    required String storageId,
+    required String bucket,
+    required bool public,
+    String? publicHost,
+  }) async {
     final serviceAccountJson = serverpod.getPassword('gcpServiceAccount');
     if (serviceAccountJson == null) {
       throw StateError(
@@ -74,7 +75,75 @@ class NativeGoogleCloudStorage extends CloudStorage {
       );
     }
 
-    _initializeAsync(serviceAccountJson);
+    return fromServiceAccountJson(
+      storageId: storageId,
+      bucket: bucket,
+      public: public,
+      serviceAccountJson: serviceAccountJson,
+      publicHost: publicHost,
+    );
+  }
+
+  /// Creates a [NativeGoogleCloudStorage] from a service account JSON string.
+  ///
+  /// This factory authenticates directly with the provided JSON credentials
+  /// without requiring a [Serverpod] instance, making it suitable for
+  /// integration testing and standalone usage.
+  static Future<NativeGoogleCloudStorage> fromServiceAccountJson({
+    required String storageId,
+    required String bucket,
+    required bool public,
+    required String serviceAccountJson,
+    String? publicHost,
+  }) async {
+    final credentials = gcs.ServiceAccountCredentials.fromJson(
+      serviceAccountJson,
+    );
+
+    final authClient = await gcs.clientViaServiceAccount(
+      credentials,
+      [gcs.StorageApi.devstorageFullControlScope],
+    );
+
+    return NativeGoogleCloudStorage._(
+      storageId: storageId,
+      bucket: bucket,
+      public: public,
+      storageApi: gcs.StorageApi(authClient),
+      signingContext: _SigningContext.fromCredentials(credentials),
+      publicHost: publicHost,
+    );
+  }
+
+  /// Creates a [NativeGoogleCloudStorage] using Application Default Credentials.
+  ///
+  /// This factory uses ADC to authenticate, which automatically detects
+  /// credentials from the environment (GKE workload identity, Cloud Run
+  /// service account, `GOOGLE_APPLICATION_CREDENTIALS` env var, etc.).
+  ///
+  /// Signed URL generation requires the service account to have the
+  /// `iam.serviceAccounts.signBlob` IAM permission, since ADC does not
+  /// provide a local private key for signing.
+  static Future<NativeGoogleCloudStorage> fromApplicationDefaultCredentials({
+    required String storageId,
+    required String bucket,
+    required bool public,
+    String? publicHost,
+  }) async {
+    final authClient = await gcs.clientViaApplicationDefaultCredentials(
+      scopes: [gcs.StorageApi.devstorageFullControlScope],
+    );
+
+    final email = await _getServiceAccountEmail();
+
+    return NativeGoogleCloudStorage._(
+      storageId: storageId,
+      bucket: bucket,
+      public: public,
+      storageApi: gcs.StorageApi(authClient),
+      signingContext: _SigningContext.fromAuthClient(email, authClient),
+      publicHost: publicHost,
+    );
   }
 
   /// Creates a [NativeGoogleCloudStorage] with an already-initialized
@@ -90,120 +159,67 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required this.public,
     required gcs.StorageApi storageApi,
     this.publicHost,
-  }) : super(storageId) {
-    _storageApiCompleter.complete(storageApi);
-    // No signing credentials available in test mode
-  }
-
-  /// Creates a [NativeGoogleCloudStorage] from a service account JSON string.
-  ///
-  /// This constructor authenticates directly with the provided JSON credentials
-  /// without requiring a [Serverpod] instance, making it suitable for
-  /// integration testing and standalone usage.
-  NativeGoogleCloudStorage.withServiceAccountJson({
-    required String storageId,
-    required this.bucket,
-    required this.public,
-    required String serviceAccountJson,
-    this.publicHost,
-  }) : super(storageId) {
-    _initializeAsync(serviceAccountJson);
-  }
+  }) : _storageApi = storageApi,
+       _signingContext = null,
+       super(storageId);
 
   /// Creates a [NativeGoogleCloudStorage] with signing credentials for testing.
   ///
-  /// This constructor allows testing direct upload functionality.
+  /// This constructor allows testing direct upload functionality with
+  /// service account credentials (local RSA signing).
   NativeGoogleCloudStorage.withSigningCredentials({
     required String storageId,
     required this.bucket,
     required this.public,
     required gcs.StorageApi storageApi,
-    required String clientEmail,
-    required RSAPrivateKey privateKey,
+    required gcs.ServiceAccountCredentials credentials,
     this.publicHost,
-  }) : super(storageId) {
-    _storageApiCompleter.complete(storageApi);
-    _signingCredentialsCompleter.complete(
-      _SigningCredentials(
-        clientEmail: clientEmail,
-        privateKey: privateKey,
-      ),
-    );
-  }
+  }) : _storageApi = storageApi,
+       _signingContext = _SigningContext.fromCredentials(credentials),
+       super(storageId);
 
-  Future<void> _initializeAsync(String serviceAccountJson) async {
+  /// Creates a [NativeGoogleCloudStorage] with ADC-style signing for testing.
+  ///
+  /// This constructor allows testing the IAM signBlob signing path without
+  /// requiring real Application Default Credentials. The [authClient] is used
+  /// for IAM signBlob requests, and [email] identifies the service account.
+  NativeGoogleCloudStorage.withAuthClient({
+    required String storageId,
+    required this.bucket,
+    required this.public,
+    required gcs.StorageApi storageApi,
+    required String email,
+    required gcs.AuthClient authClient,
+    this.publicHost,
+  }) : _storageApi = storageApi,
+       _signingContext = _SigningContext.fromAuthClient(email, authClient),
+       super(storageId);
+
+  /// Retrieves the default service account email from the GCE metadata server.
+  ///
+  /// An optional [client] can be provided for testing; otherwise uses a
+  /// default HTTP client.
+  static Future<String> _getServiceAccountEmail({http.Client? client}) async {
+    final effectiveClient = client ?? http.Client();
     try {
-      final jsonData = jsonDecode(serviceAccountJson) as Map<String, dynamic>;
-      final credentials = ServiceAccountCredentials.fromJson(jsonData);
-
-      final authClient = await clientViaServiceAccount(
-        credentials,
-        [gcs.StorageApi.devstorageFullControlScope],
+      final response = await effectiveClient.get(
+        Uri.parse(
+          'http://metadata.google.internal/computeMetadata/v1/'
+          'instance/service-accounts/default/email',
+        ),
+        headers: {'Metadata-Flavor': 'Google'},
       );
-
-      _storageApiCompleter.complete(gcs.StorageApi(authClient));
-
-      // Parse signing credentials for direct uploads
-      final clientEmail = jsonData['client_email'] as String?;
-      final privateKeyPem = jsonData['private_key'] as String?;
-
-      if (clientEmail != null && privateKeyPem != null) {
-        final privateKey = _parsePrivateKeyFromPem(privateKeyPem);
-        _signingCredentialsCompleter.complete(
-          _SigningCredentials(
-            clientEmail: clientEmail,
-            privateKey: privateKey,
-          ),
-        );
-      } else {
-        _signingCredentialsCompleter.completeError(
-          StateError(
-            'Service account JSON missing client_email or private_key',
-          ),
+      if (response.statusCode != 200) {
+        throw StateError(
+          'Failed to get service account email from metadata server: '
+          '${response.statusCode} ${response.body}',
         );
       }
-    } catch (e) {
-      if (!_storageApiCompleter.isCompleted) {
-        _storageApiCompleter.completeError(e);
-      }
-      if (!_signingCredentialsCompleter.isCompleted) {
-        _signingCredentialsCompleter.completeError(e);
-      }
+      return response.body.trim();
+    } finally {
+      if (client == null) effectiveClient.close();
     }
   }
-
-  /// Parses an RSA private key from PEM format.
-  RSAPrivateKey _parsePrivateKeyFromPem(String pem) {
-    final lines = pem
-        .split('\n')
-        .where((line) => !line.startsWith('-----'))
-        .join();
-    final bytes = base64.decode(lines);
-    final asn1Parser = ASN1Parser(Uint8List.fromList(bytes));
-    final topLevelSeq = asn1Parser.nextObject() as ASN1Sequence;
-
-    // PKCS#8 format: PrivateKeyInfo ::= SEQUENCE { version, algorithm, privateKey }
-    // The privateKey is an OCTET STRING containing the RSA private key
-    ASN1Sequence rsaSeq;
-    if (topLevelSeq.elements!.length == 3) {
-      // PKCS#8 format
-      final privateKeyOctet = topLevelSeq.elements![2] as ASN1OctetString;
-      final pkParser = ASN1Parser(privateKeyOctet.valueBytes);
-      rsaSeq = pkParser.nextObject() as ASN1Sequence;
-    } else {
-      // PKCS#1 format (raw RSA key)
-      rsaSeq = topLevelSeq;
-    }
-
-    final modulus = (rsaSeq.elements![1] as ASN1Integer).integer!;
-    final privateExponent = (rsaSeq.elements![3] as ASN1Integer).integer!;
-    final p = (rsaSeq.elements![4] as ASN1Integer).integer!;
-    final q = (rsaSeq.elements![5] as ASN1Integer).integer!;
-
-    return RSAPrivateKey(modulus, privateExponent, p, q);
-  }
-
-  Future<gcs.StorageApi> get _storageApi => _storageApiCompleter.future;
 
   @override
   Future<void> storeFile({
@@ -213,8 +229,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
     DateTime? expiration,
     bool verified = true,
   }) async {
-    final storageApi = await _storageApi;
-
     final media = gcs.Media(
       Stream.value(Uint8List.sublistView(byteData)),
       byteData.lengthInBytes,
@@ -224,7 +238,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
       ..name = path
       ..bucket = bucket;
 
-    await storageApi.objects.insert(
+    await _storageApi.objects.insert(
       object,
       bucket,
       uploadMedia: media,
@@ -237,10 +251,8 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required Session session,
     required String path,
   }) async {
-    final storageApi = await _storageApi;
-
     try {
-      final response = await storageApi.objects.get(
+      final response = await _storageApi.objects.get(
         bucket,
         path,
         downloadOptions: gcs.DownloadOptions.fullMedia,
@@ -277,10 +289,8 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required Session session,
     required String path,
   }) async {
-    final storageApi = await _storageApi;
-
     try {
-      await storageApi.objects.get(bucket, path);
+      await _storageApi.objects.get(bucket, path);
       return true;
     } on gcs.DetailedApiRequestError catch (e) {
       if (e.status == 404) return false;
@@ -293,10 +303,8 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required Session session,
     required String path,
   }) async {
-    final storageApi = await _storageApi;
-
     try {
-      await storageApi.objects.delete(bucket, path);
+      await _storageApi.objects.delete(bucket, path);
     } on gcs.DetailedApiRequestError catch (e) {
       if (e.status == 404) return; // Already deleted
       rethrow;
@@ -317,60 +325,50 @@ class NativeGoogleCloudStorage extends CloudStorage {
       );
     }
 
-    // Check if signing credentials are available
-    if (!_signingCredentialsCompleter.isCompleted) {
+    final signingContext = _signingContext;
+    if (signingContext == null) {
       return null;
     }
-
-    final signingCredentials = await _signingCredentialsCompleter.future;
 
     final fileName = p.basename(path);
     final contentType = _detectMimeType(fileName);
     final acl = public ? 'public-read' : 'private';
 
-    final signingHeaders = <String, String>{
-      'content-type': contentType,
-      'x-goog-acl': acl,
-    };
-    if (contentLength != null) {
-      signingHeaders['content-length'] = contentLength.toString();
-    }
-
-    final signedUrl = _createSignedUrl(
-      credentials: signingCredentials,
-      bucket: bucket,
-      path: path,
-      expiration: expirationDuration,
-      method: 'PUT',
-      headers: signingHeaders,
-    );
-
-    final responseHeaders = <String, String>{
+    final headers = <String, String>{
       'Content-Type': contentType,
       'x-goog-acl': acl,
     };
     if (contentLength != null) {
-      responseHeaders['Content-Length'] = contentLength.toString();
+      headers['Content-Length'] = contentLength.toString();
     }
+
+    final signedUrl = await _createSignedUrl(
+      signingContext: signingContext,
+      bucket: bucket,
+      path: path,
+      expiration: expirationDuration,
+      method: 'PUT',
+      headers: headers,
+    );
 
     return jsonEncode({
       'url': signedUrl,
       'type': 'binary',
       'method': 'PUT',
       'file-name': fileName,
-      'headers': responseHeaders,
+      'headers': headers,
     });
   }
 
   /// Creates a V4 signed URL for GCS operations.
-  String _createSignedUrl({
-    required _SigningCredentials credentials,
+  Future<String> _createSignedUrl({
+    required _SigningContext signingContext,
     required String bucket,
     required String path,
     required Duration expiration,
     required String method,
     Map<String, String> headers = const {},
-  }) {
+  }) async {
     final now = DateTime.now().toUtc();
     final datestamp = _formatDatestamp(now);
     final timestamp = _formatTimestamp(now);
@@ -381,7 +379,10 @@ class NativeGoogleCloudStorage extends CloudStorage {
     final credentialScope = '$datestamp/auto/storage/goog4_request';
 
     // Build canonical headers (must be sorted by lowercase header name)
-    final allHeaders = {'host': host, ...headers};
+    final allHeaders = {
+      'host': host,
+      for (final entry in headers.entries) entry.key.toLowerCase(): entry.value,
+    };
     final sortedHeaderNames = allHeaders.keys.toList()..sort();
     final canonicalHeaders =
         '${sortedHeaderNames.map((k) => '$k:${allHeaders[k]}').join('\n')}\n';
@@ -390,7 +391,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
     // Build canonical query string (sorted alphabetically)
     final queryParams = <String, String>{
       'X-Goog-Algorithm': 'GOOG4-RSA-SHA256',
-      'X-Goog-Credential': '${credentials.clientEmail}/$credentialScope',
+      'X-Goog-Credential': '${signingContext.email}/$credentialScope',
       'X-Goog-Date': timestamp,
       'X-Goog-Expires': expiration.inSeconds.toString(),
       'X-Goog-SignedHeaders': signedHeaders,
@@ -422,24 +423,14 @@ class NativeGoogleCloudStorage extends CloudStorage {
       hashedCanonicalRequest,
     ].join('\n');
 
-    // Sign with RSA-SHA256
-    final signature = _rsaSign(credentials.privateKey, stringToSign);
+    // Sign the string
+    final signature = await signingContext.sign(utf8.encode(stringToSign));
     final signatureHex = signature
         .map((b) => b.toRadixString(16).padLeft(2, '0'))
         .join();
 
     // Build final URL
     return 'https://$host$canonicalUri?$canonicalQueryString&X-Goog-Signature=$signatureHex';
-  }
-
-  /// Signs data using RSA-SHA256.
-  Uint8List _rsaSign(RSAPrivateKey privateKey, String data) {
-    final signer = RSASigner(SHA256Digest(), '0609608648016503040201');
-    signer.init(true, PrivateKeyParameter<RSAPrivateKey>(privateKey));
-    final signature = signer.generateSignature(
-      Uint8List.fromList(utf8.encode(data)),
-    );
-    return signature.bytes;
   }
 
   /// Formats a DateTime as YYYYMMDD.
@@ -511,13 +502,113 @@ class NativeGoogleCloudStorage extends CloudStorage {
   }
 }
 
-/// Internal class to hold signing credentials.
-class _SigningCredentials {
-  final String clientEmail;
-  final RSAPrivateKey privateKey;
+/// Abstraction over signing strategies for V4 signed URL generation.
+///
+/// Supports both service account credentials (local RSA signing via
+/// pointycastle) and Application Default Credentials (IAM signBlob API).
+class _SigningContext {
+  final String email;
+  final RSAPrivateKey? _privateKey;
+  final gcs.AuthClient? _authClient;
 
-  _SigningCredentials({
-    required this.clientEmail,
-    required this.privateKey,
-  });
+  /// Creates a signing context from service account credentials.
+  ///
+  /// Parses the private key from the credentials JSON and signs locally
+  /// using RSA-SHA256 — no network call needed.
+  _SigningContext.fromCredentials(gcs.ServiceAccountCredentials credentials)
+    : email = credentials.email,
+      _privateKey = _parsePrivateKey(credentials),
+      _authClient = null;
+
+  /// Creates a signing context from an authenticated client (ADC).
+  ///
+  /// Signs via the IAM signBlob API — requires
+  /// `iam.serviceAccounts.signBlob` permission.
+  _SigningContext.fromAuthClient(this.email, gcs.AuthClient authClient)
+    : _privateKey = null,
+      _authClient = authClient;
+
+  /// Signs the given [data] and returns the raw signature bytes.
+  Future<Uint8List> sign(List<int> data) async {
+    if (_privateKey != null) {
+      return _rsaSign(_privateKey, data);
+    }
+    return _iamSignBlob(_authClient!, email, data);
+  }
+
+  /// Signs data locally using RSA-SHA256 with pointycastle.
+  static Uint8List _rsaSign(RSAPrivateKey privateKey, List<int> data) {
+    final signer = RSASigner(SHA256Digest(), '0609608648016503040201');
+    signer.init(true, PrivateKeyParameter<RSAPrivateKey>(privateKey));
+    final signature = signer.generateSignature(Uint8List.fromList(data));
+    return signature.bytes;
+  }
+
+  /// Signs data via the IAM Credentials signBlob API.
+  static Future<Uint8List> _iamSignBlob(
+    gcs.AuthClient authClient,
+    String email,
+    List<int> data,
+  ) async {
+    final url = Uri.parse(
+      'https://iamcredentials.googleapis.com/v1/'
+      'projects/-/serviceAccounts/$email:signBlob',
+    );
+
+    final response = await authClient.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'payload': base64.encode(data)}),
+    );
+
+    if (response.statusCode != 200) {
+      throw StateError(
+        'IAM signBlob failed: ${response.statusCode} ${response.body}',
+      );
+    }
+
+    final responseJson = jsonDecode(response.body) as Map<String, dynamic>;
+    return base64.decode(responseJson['signedBlob'] as String);
+  }
+
+  /// Parses the RSA private key from service account credentials.
+  ///
+  /// The private key PEM is embedded in the JSON that was used to create
+  /// the [ServiceAccountCredentials]. We re-parse it here since
+  /// googleapis_auth <2.1.0 does not expose a `.sign()` method.
+  static RSAPrivateKey _parsePrivateKey(
+    gcs.ServiceAccountCredentials credentials,
+  ) {
+    // ServiceAccountCredentials stores the private key as an RSAPrivateKey
+    // internally, but doesn't expose signing until 2.1.0. We access the
+    // private key PEM via the credentials' JSON representation.
+    final pem = credentials.privateKey;
+    final lines = pem
+        .split('\n')
+        .where((line) => !line.startsWith('-----'))
+        .join();
+    final bytes = base64.decode(lines);
+    final asn1Parser = ASN1Parser(Uint8List.fromList(bytes));
+    final topLevelSeq = asn1Parser.nextObject() as ASN1Sequence;
+
+    // PKCS#8 format: PrivateKeyInfo ::= SEQUENCE { version, algorithm, privateKey }
+    // The privateKey is an OCTET STRING containing the RSA private key
+    ASN1Sequence rsaSeq;
+    if (topLevelSeq.elements!.length == 3) {
+      // PKCS#8 format
+      final privateKeyOctet = topLevelSeq.elements![2] as ASN1OctetString;
+      final pkParser = ASN1Parser(privateKeyOctet.valueBytes);
+      rsaSeq = pkParser.nextObject() as ASN1Sequence;
+    } else {
+      // PKCS#1 format (raw RSA key)
+      rsaSeq = topLevelSeq;
+    }
+
+    final modulus = (rsaSeq.elements![1] as ASN1Integer).integer!;
+    final privateExponent = (rsaSeq.elements![3] as ASN1Integer).integer!;
+    final p = (rsaSeq.elements![4] as ASN1Integer).integer!;
+    final q = (rsaSeq.elements![5] as ASN1Integer).integer!;
+
+    return RSAPrivateKey(modulus, privateExponent, p, q);
+  }
 }
