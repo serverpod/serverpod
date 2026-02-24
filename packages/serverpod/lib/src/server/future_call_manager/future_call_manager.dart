@@ -200,15 +200,11 @@ class FutureCallManager {
 
       if (futureCall == null) {
         _internalSession.log(
-          'Failed to run unregistered FutureCall. '
-          'Likely causes include: '
-          '1. Existing FutureCall method code was updated causing a name change '
-          'in the generated code and when server restarted, '
-          'the FutureCall was registered with a different name. '
-          '2. If you are using the legacy approach, '
-          'you may have forgotten to register the FutureCall. '
-          'Consider migrating to the typed interface for future calls in this case. '
-          '$entry',
+          'Attempted to run a FutureCall that was not registered. This is likely due '
+          'to changing a FutureCall method after it was scheduled, leading to an '
+          'entry that no longer has a matching method. For legacy future calls, '
+          'make sure they are registered in the server start. Entry: $entry',
+          level: LogLevel.error,
         );
         return null;
       }
