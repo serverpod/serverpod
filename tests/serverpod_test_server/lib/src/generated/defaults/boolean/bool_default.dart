@@ -33,9 +33,21 @@ abstract class BoolDefault
   factory BoolDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return BoolDefault(
       id: jsonSerialization['id'] as int?,
-      boolDefaultTrue: jsonSerialization['boolDefaultTrue'] as bool?,
-      boolDefaultFalse: jsonSerialization['boolDefaultFalse'] as bool?,
-      boolDefaultNullFalse: jsonSerialization['boolDefaultNullFalse'] as bool?,
+      boolDefaultTrue: jsonSerialization['boolDefaultTrue'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultTrue'],
+            ),
+      boolDefaultFalse: jsonSerialization['boolDefaultFalse'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultFalse'],
+            ),
+      boolDefaultNullFalse: jsonSerialization['boolDefaultNullFalse'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultNullFalse'],
+            ),
     );
   }
 

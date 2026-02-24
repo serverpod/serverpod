@@ -45,7 +45,9 @@ abstract class AuthUser
       scopeNames: _i2.Protocol().deserialize<Set<String>>(
         jsonSerialization['scopeNames'],
       ),
-      blocked: jsonSerialization['blocked'] as bool?,
+      blocked: jsonSerialization['blocked'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
     );
   }
 

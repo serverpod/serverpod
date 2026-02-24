@@ -43,7 +43,9 @@ abstract class DatabaseMigrationWarning implements _i1.SerializableModel {
       columns: _i3.Protocol().deserialize<List<String>>(
         jsonSerialization['columns'],
       ),
-      destrucive: jsonSerialization['destrucive'] as bool,
+      destrucive: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['destrucive'],
+      ),
     );
   }
 

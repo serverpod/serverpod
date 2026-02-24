@@ -59,9 +59,9 @@ abstract class AppleAccount
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       userIdentifier: jsonSerialization['userIdentifier'] as String,
       refreshToken: jsonSerialization['refreshToken'] as String,
-      refreshTokenRequestedWithBundleIdentifier:
-          jsonSerialization['refreshTokenRequestedWithBundleIdentifier']
-              as bool,
+      refreshTokenRequestedWithBundleIdentifier: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['refreshTokenRequestedWithBundleIdentifier'],
+      ),
       lastRefreshedAt: jsonSerialization['lastRefreshedAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(
@@ -79,8 +79,14 @@ abstract class AppleAccount
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       email: jsonSerialization['email'] as String?,
-      isEmailVerified: jsonSerialization['isEmailVerified'] as bool?,
-      isPrivateEmail: jsonSerialization['isPrivateEmail'] as bool?,
+      isEmailVerified: jsonSerialization['isEmailVerified'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['isEmailVerified'],
+            ),
+      isPrivateEmail: jsonSerialization['isPrivateEmail'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['isPrivateEmail']),
       firstName: jsonSerialization['firstName'] as String?,
       lastName: jsonSerialization['lastName'] as String?,
     );

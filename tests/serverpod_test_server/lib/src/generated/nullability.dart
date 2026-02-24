@@ -122,8 +122,10 @@ abstract class Nullability
       aDouble: (jsonSerialization['aDouble'] as num).toDouble(),
       aNullableDouble: (jsonSerialization['aNullableDouble'] as num?)
           ?.toDouble(),
-      aBool: jsonSerialization['aBool'] as bool,
-      aNullableBool: jsonSerialization['aNullableBool'] as bool?,
+      aBool: _i1.BoolJsonExtension.fromJson(jsonSerialization['aBool']),
+      aNullableBool: jsonSerialization['aNullableBool'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['aNullableBool']),
       aString: jsonSerialization['aString'] as String,
       aNullableString: jsonSerialization['aNullableString'] as String?,
       aDateTime: _i1.DateTimeJsonExtension.fromJson(

@@ -53,8 +53,8 @@ abstract class IndexDefinition
         jsonSerialization['elements'],
       ),
       type: jsonSerialization['type'] as String,
-      isUnique: jsonSerialization['isUnique'] as bool,
-      isPrimary: jsonSerialization['isPrimary'] as bool,
+      isUnique: _i1.BoolJsonExtension.fromJson(jsonSerialization['isUnique']),
+      isPrimary: _i1.BoolJsonExtension.fromJson(jsonSerialization['isPrimary']),
       predicate: jsonSerialization['predicate'] as String?,
       vectorDistanceFunction:
           jsonSerialization['vectorDistanceFunction'] == null
