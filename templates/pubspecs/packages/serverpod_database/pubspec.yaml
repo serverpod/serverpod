@@ -1,0 +1,27 @@
+# TEMPLATE
+
+name: serverpod_database
+version: SERVERPOD_VERSION
+description: Database implementations for Serverpod.
+repository: https://github.com/serverpod/serverpod
+homepage: https://serverpod.dev
+issue_tracker: https://github.com/serverpod/serverpod/issues
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  serverpod_serialization: SERVERPOD_VERSION
+  serverpod_shared: SERVERPOD_VERSION
+
+dev_dependencies:
+  serverpod_lints: SERVERPOD_VERSION
+  test: ^1.25.5
+
+dependency_overrides:
+  serverpod_lints:
+    path: ../serverpod_lints
+  serverpod_serialization:
+    path: ../serverpod_serialization
+  serverpod_shared:
+    path: ../serverpod_shared

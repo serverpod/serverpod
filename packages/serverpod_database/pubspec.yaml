@@ -1,0 +1,28 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+name: serverpod_database
+version: 3.4.3
+description: Database implementations for Serverpod.
+repository: https://github.com/serverpod/serverpod
+homepage: https://serverpod.dev
+issue_tracker: https://github.com/serverpod/serverpod/issues
+
+environment:
+  sdk: '^3.8.0'
+
+dependencies:
+  serverpod_serialization: 3.4.3
+  serverpod_shared: 3.4.3
+
+dev_dependencies:
+  serverpod_lints: 3.4.3
+  test: ^1.25.5
+
+dependency_overrides:
+  serverpod_lints:
+    path: ../serverpod_lints
+  serverpod_serialization:
+    path: ../serverpod_serialization
+  serverpod_shared:
+    path: ../serverpod_shared
