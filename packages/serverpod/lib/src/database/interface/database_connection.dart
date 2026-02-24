@@ -84,6 +84,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     DatabaseSession session,
     List<T> rows, {
     Transaction? transaction,
+    bool ignoreConflicts = false,
   });
 
   /// For most cases use the corresponding method in [Database] instead.
