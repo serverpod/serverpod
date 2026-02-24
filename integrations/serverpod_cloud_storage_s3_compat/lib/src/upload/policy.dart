@@ -62,12 +62,14 @@ class Policy {
     bool public = true,
   }) {
     final datetime = SigV4.generateDatetime();
-    final expiration = (DateTime.now())
-        .add(Duration(minutes: expiryMinutes))
-        .toUtc()
-        .toString()
-        .split(' ')
-        .join('T');
+    final exp = DateTime.now().add(Duration(minutes: expiryMinutes)).toUtc();
+    final expiration =
+        '${exp.year}-'
+        '${exp.month.toString().padLeft(2, '0')}-'
+        '${exp.day.toString().padLeft(2, '0')}T'
+        '${exp.hour.toString().padLeft(2, '0')}:'
+        '${exp.minute.toString().padLeft(2, '0')}:'
+        '${exp.second.toString().padLeft(2, '0')}.000Z';
     final cred =
         '$accessKeyId/${SigV4.buildCredentialScope(datetime, region, 's3')}';
 

@@ -107,21 +107,26 @@ $payloadHash''';
       ...signedHeaderMap,
     };
 
-    final response = await http.put(
-      uri,
-      headers: requestHeaders,
-      body: payloadBytes,
-    );
+    final client = http.Client();
+    try {
+      final response = await client.put(
+        uri,
+        headers: requestHeaders,
+        body: payloadBytes,
+      );
 
-    if (response.statusCode == 200 || response.statusCode == 204) {
-      return;
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return;
+      }
+
+      if (response.statusCode == 403) {
+        throw NoPermissionsException(response);
+      }
+
+      throw S3Exception(response);
+    } finally {
+      client.close();
     }
-
-    if (response.statusCode == 403) {
-      throw NoPermissionsException(response);
-    }
-
-    throw S3Exception(response);
   }
 
   @override

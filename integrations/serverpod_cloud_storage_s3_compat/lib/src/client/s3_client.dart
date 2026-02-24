@@ -38,6 +38,11 @@ class S3Client {
        _endpoints = endpoints,
        _httpClient = httpClient ?? http.Client();
 
+  /// Closes the underlying HTTP client.
+  void close() {
+    _httpClient.close();
+  }
+
   /// Gets an object from the bucket.
   ///
   /// Returns the HTTP response containing the object data.

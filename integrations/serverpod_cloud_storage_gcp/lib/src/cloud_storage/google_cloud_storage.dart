@@ -51,7 +51,11 @@ class GoogleCloudStorage extends S3CompatCloudStorage {
     ]);
     var accessKey = serverpod.getPassword('HMACAccessKeyId');
     if (accessKey == null) {
-      throw StateError('HMACAccessKeyId must be configured in your passwords.');
+      throw StateError(
+        'GCP HMAC access key not configured. '
+        'Set HMACAccessKeyId in passwords.yaml or '
+        'SERVERPOD_HMAC_ACCESS_KEY_ID environment variable.',
+      );
     }
     return accessKey;
   }
@@ -62,7 +66,11 @@ class GoogleCloudStorage extends S3CompatCloudStorage {
     ]);
     var secretKey = serverpod.getPassword('HMACSecretKey');
     if (secretKey == null) {
-      throw StateError('HMACSecretKey must be configured in your passwords.');
+      throw StateError(
+        'GCP HMAC secret key not configured. '
+        'Set HMACSecretKey in passwords.yaml or '
+        'SERVERPOD_HMAC_SECRET_KEY environment variable.',
+      );
     }
     return secretKey;
   }

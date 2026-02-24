@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 
+import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
 
+import 'client/exceptions.dart';
 import 'client/s3_client.dart';
 import 'endpoints/s3_endpoint_config.dart';
 import 'upload/s3_upload_strategy.dart';
@@ -84,6 +86,15 @@ class S3CompatCloudStorage extends CloudStorage {
         );
   }
 
+  /// Closes the underlying HTTP client.
+  ///
+  /// Call this when the storage instance is no longer needed to free
+  /// resources. After calling [close], no further operations should be
+  /// performed on this instance.
+  void close() {
+    _client.close();
+  }
+
   @override
   Future<void> storeFile({
     required Session session,
@@ -115,7 +126,8 @@ class S3CompatCloudStorage extends CloudStorage {
     if (response.statusCode == 200) {
       return ByteData.sublistView(response.bodyBytes);
     }
-    return null;
+    if (response.statusCode == 404) return null;
+    _throwForResponse(response);
   }
 
   @override
@@ -123,6 +135,8 @@ class S3CompatCloudStorage extends CloudStorage {
     required Session session,
     required String path,
   }) async {
+    if (!public) return null;
+
     if (await fileExists(session: session, path: path)) {
       return endpoints.buildPublicUri(bucket, region, path);
     }
@@ -135,7 +149,9 @@ class S3CompatCloudStorage extends CloudStorage {
     required String path,
   }) async {
     final response = await _client.headObject(path);
-    return response.statusCode == 200;
+    if (response.statusCode == 200) return true;
+    if (response.statusCode == 404) return false;
+    _throwForResponse(response);
   }
 
   @override
@@ -143,7 +159,18 @@ class S3CompatCloudStorage extends CloudStorage {
     required Session session,
     required String path,
   }) async {
-    await _client.deleteObject(path);
+    final response = await _client.deleteObject(path);
+    // 204 = deleted, 404 = already gone — both are success.
+    if (response.statusCode == 204 || response.statusCode == 404) return;
+    _throwForResponse(response);
+  }
+
+  /// Throws an appropriate exception for a non-success response.
+  Never _throwForResponse(http.Response response) {
+    if (response.statusCode == 403) {
+      throw NoPermissionsException(response);
+    }
+    throw S3Exception(response);
   }
 
   @override

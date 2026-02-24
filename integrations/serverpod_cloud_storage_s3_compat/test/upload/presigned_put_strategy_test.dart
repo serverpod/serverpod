@@ -145,7 +145,7 @@ void main() {
           secretKey: 'secret',
           bucket: 'bucket',
           region: 'auto',
-          path: 'data/file.xyz',
+          path: 'data/file.unknownext',
           expiration: Duration(minutes: 10),
           maxFileSize: 1024 * 1024,
           public: true,
