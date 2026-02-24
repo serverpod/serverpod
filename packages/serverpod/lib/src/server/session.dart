@@ -454,13 +454,19 @@ class StorageAccess {
     required String path,
     required ByteData byteData,
     DateTime? expiration,
+    bool preventOverwrite = false,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    await storage.storeFile(session: _session, path: path, byteData: byteData);
+    await storage.storeFile(
+      session: _session,
+      path: path,
+      byteData: byteData,
+      preventOverwrite: preventOverwrite,
+    );
   }
 
   /// Retrieve a file from cloud storage.
@@ -537,6 +543,7 @@ class StorageAccess {
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
     int? contentLength,
+    bool preventOverwrite = false,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
@@ -549,6 +556,7 @@ class StorageAccess {
       expirationDuration: expirationDuration,
       maxFileSize: maxFileSize,
       contentLength: contentLength,
+      preventOverwrite: preventOverwrite,
     );
   }
 

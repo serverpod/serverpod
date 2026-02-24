@@ -99,6 +99,7 @@ class DatabaseCloudStorage extends CloudStorage {
     required ByteData byteData,
     DateTime? expiration,
     bool verified = true,
+    bool preventOverwrite = false,
   }) async {
     var addedTime = DateTime.now().toUtc();
     var encoded = byteData.base64encodedString();
@@ -118,6 +119,7 @@ class DatabaseCloudStorage extends CloudStorage {
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
     int? contentLength,
+    bool preventOverwrite = false,
   }) async {
     if (contentLength != null && contentLength > maxFileSize) {
       throw CloudStorageException(

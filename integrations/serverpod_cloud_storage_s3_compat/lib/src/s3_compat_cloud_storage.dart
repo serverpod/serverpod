@@ -91,6 +91,7 @@ class S3CompatCloudStorage extends CloudStorage {
     required ByteData byteData,
     DateTime? expiration,
     bool verified = true,
+    bool preventOverwrite = false,
   }) async {
     await uploadStrategy.uploadData(
       accessKey: accessKey,
@@ -101,6 +102,7 @@ class S3CompatCloudStorage extends CloudStorage {
       path: path,
       public: public,
       endpoints: endpoints,
+      preventOverwrite: preventOverwrite,
     );
   }
 
@@ -151,6 +153,7 @@ class S3CompatCloudStorage extends CloudStorage {
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
     int? contentLength,
+    bool preventOverwrite = false,
   }) async {
     if (contentLength != null && contentLength > maxFileSize) {
       throw CloudStorageException(
@@ -169,6 +172,7 @@ class S3CompatCloudStorage extends CloudStorage {
       public: public,
       endpoints: endpoints,
       contentLength: contentLength,
+      preventOverwrite: preventOverwrite,
     );
   }
 

@@ -47,6 +47,7 @@ class MockS3Client extends S3Client {
 class MockUploadStrategy implements S3UploadStrategy {
   String? uploadedPath;
   ByteData? uploadedData;
+  bool? uploadedPreventOverwrite;
   String? directUploadPath;
   Duration? directUploadExpiration;
   int? directUploadMaxFileSize;
@@ -67,9 +68,11 @@ class MockUploadStrategy implements S3UploadStrategy {
     required String path,
     required bool public,
     required S3EndpointConfig endpoints,
+    bool preventOverwrite = false,
   }) async {
     uploadedPath = path;
     uploadedData = data;
+    uploadedPreventOverwrite = preventOverwrite;
   }
 
   @override
@@ -84,6 +87,7 @@ class MockUploadStrategy implements S3UploadStrategy {
     required bool public,
     required S3EndpointConfig endpoints,
     int? contentLength,
+    bool preventOverwrite = false,
   }) async {
     directUploadPath = path;
     directUploadExpiration = expiration;
@@ -115,7 +119,11 @@ class TestableS3CompatCloudStorage extends S3CompatCloudStorage {
        );
 
   /// Test helper to call storeFile without a real Session.
-  Future<void> testStoreFile(String path, ByteData data) async {
+  Future<void> testStoreFile(
+    String path,
+    ByteData data, {
+    bool preventOverwrite = false,
+  }) async {
     await uploadStrategy.uploadData(
       accessKey: accessKey,
       secretKey: secretKey,
@@ -125,6 +133,7 @@ class TestableS3CompatCloudStorage extends S3CompatCloudStorage {
       path: path,
       public: public,
       endpoints: endpoints,
+      preventOverwrite: preventOverwrite,
     );
   }
 
@@ -162,6 +171,7 @@ class TestableS3CompatCloudStorage extends S3CompatCloudStorage {
     Duration expiration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
     int? contentLength,
+    bool preventOverwrite = false,
   }) async {
     if (contentLength != null && contentLength > maxFileSize) {
       throw CloudStorageException(
@@ -180,6 +190,7 @@ class TestableS3CompatCloudStorage extends S3CompatCloudStorage {
       public: public,
       endpoints: endpoints,
       contentLength: contentLength,
+      preventOverwrite: preventOverwrite,
     );
   }
 
@@ -223,6 +234,23 @@ void main() {
 
         expect(mockUploadStrategy.uploadedPath, 'test/file.txt');
         expect(mockUploadStrategy.uploadedData, data);
+        expect(mockUploadStrategy.uploadedPreventOverwrite, isFalse);
+      },
+    );
+
+    test(
+      'when storing a file with preventOverwrite '
+      'then it forwards preventOverwrite to the upload strategy',
+      () async {
+        final data = ByteData(10);
+
+        await storage.testStoreFile(
+          'test/file.txt',
+          data,
+          preventOverwrite: true,
+        );
+
+        expect(mockUploadStrategy.uploadedPreventOverwrite, isTrue);
       },
     );
 

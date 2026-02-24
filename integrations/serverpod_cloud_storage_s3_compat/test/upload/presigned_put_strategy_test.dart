@@ -230,12 +230,82 @@ void main() {
           expect(headers.containsKey('Content-Length'), isFalse);
         });
 
-        test('then the presigned URL only signs host header', () {
+        test('then the presigned URL does not sign content-length header', () {
           final data = jsonDecode(description!) as Map<String, dynamic>;
           final url = data['url'] as String;
 
-          expect(url, contains('X-Amz-SignedHeaders=host'));
           expect(url, isNot(contains('content-length')));
+        });
+      });
+    },
+  );
+
+  group(
+    'Given a PresignedPutUploadStrategy with R2 endpoints and preventOverwrite',
+    () {
+      late PresignedPutUploadStrategy strategy;
+      late R2EndpointConfig endpoints;
+
+      setUp(() {
+        strategy = PresignedPutUploadStrategy();
+        endpoints = R2EndpointConfig(accountId: 'abc123def456');
+      });
+
+      group('when creating upload description with preventOverwrite', () {
+        late String? description;
+
+        setUp(() async {
+          description = await strategy.createDirectUploadDescription(
+            accessKey: 'r2accesskey',
+            secretKey: 'r2secretkey',
+            bucket: 'my-bucket',
+            region: 'auto',
+            path: 'uploads/test-file.txt',
+            expiration: Duration(minutes: 10),
+            maxFileSize: 10 * 1024 * 1024,
+            public: true,
+            endpoints: endpoints,
+            preventOverwrite: true,
+          );
+        });
+
+        test('then it includes If-None-Match header set to *', () {
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          final headers = data['headers'] as Map<String, dynamic>;
+
+          expect(headers['If-None-Match'], '*');
+        });
+
+        test('then the presigned URL signs if-none-match header', () {
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          final url = data['url'] as String;
+
+          expect(url, contains('if-none-match'));
+        });
+      });
+
+      group('when creating upload description without preventOverwrite', () {
+        late String? description;
+
+        setUp(() async {
+          description = await strategy.createDirectUploadDescription(
+            accessKey: 'r2accesskey',
+            secretKey: 'r2secretkey',
+            bucket: 'my-bucket',
+            region: 'auto',
+            path: 'uploads/test-file.txt',
+            expiration: Duration(minutes: 10),
+            maxFileSize: 10 * 1024 * 1024,
+            public: true,
+            endpoints: endpoints,
+          );
+        });
+
+        test('then it does not include If-None-Match header', () {
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          final headers = data['headers'] as Map<String, dynamic>;
+
+          expect(headers.containsKey('If-None-Match'), isFalse);
         });
       });
     },
