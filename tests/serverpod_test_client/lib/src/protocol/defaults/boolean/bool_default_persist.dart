@@ -29,9 +29,17 @@ abstract class BoolDefaultPersist implements _i1.SerializableModel {
     return BoolDefaultPersist(
       id: jsonSerialization['id'] as int?,
       boolDefaultPersistTrue:
-          jsonSerialization['boolDefaultPersistTrue'] as bool?,
+          jsonSerialization['boolDefaultPersistTrue'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultPersistTrue'],
+            ),
       boolDefaultPersistFalse:
-          jsonSerialization['boolDefaultPersistFalse'] as bool?,
+          jsonSerialization['boolDefaultPersistFalse'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultPersistFalse'],
+            ),
     );
   }
 

@@ -55,9 +55,11 @@ abstract class ChatMessage implements _i1.SerializableModel {
           : _i4.Protocol().deserialize<_i2.UserInfoPublic>(
               jsonSerialization['senderInfo'],
             ),
-      removed: jsonSerialization['removed'] as bool,
+      removed: _i1.BoolJsonExtension.fromJson(jsonSerialization['removed']),
       clientMessageId: jsonSerialization['clientMessageId'] as int?,
-      sent: jsonSerialization['sent'] as bool?,
+      sent: jsonSerialization['sent'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['sent']),
       attachments: jsonSerialization['attachments'] == null
           ? null
           : _i4.Protocol().deserialize<List<_i3.ChatMessageAttachment>>(

@@ -32,9 +32,15 @@ abstract class ColumnMigration implements _i1.SerializableModel {
   factory ColumnMigration.fromJson(Map<String, dynamic> jsonSerialization) {
     return ColumnMigration(
       columnName: jsonSerialization['columnName'] as String,
-      addNullable: jsonSerialization['addNullable'] as bool,
-      removeNullable: jsonSerialization['removeNullable'] as bool,
-      changeDefault: jsonSerialization['changeDefault'] as bool,
+      addNullable: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['addNullable'],
+      ),
+      removeNullable: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['removeNullable'],
+      ),
+      changeDefault: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['changeDefault'],
+      ),
       newDefault: jsonSerialization['newDefault'] as String?,
     );
   }
