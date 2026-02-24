@@ -136,7 +136,7 @@ class SelectQueryBuilder {
     String query = 'WITH $wrappedBaseQueryAlias AS ($baseQuery)';
 
     query +=
-        ', $partitionedQueryAlias AS (SELECT *, row_number() OVER ( PARTITION BY $wrappedBaseQueryAlias."$relationalFieldName") FROM $wrappedBaseQueryAlias)';
+        ', $partitionedQueryAlias AS (SELECT *, row_number() OVER ( PARTITION BY $wrappedBaseQueryAlias."$relationalFieldName") AS row_number FROM $wrappedBaseQueryAlias)';
 
     var rowLimitClause = _buildMultiRowLimitClause(limit, offset);
 
