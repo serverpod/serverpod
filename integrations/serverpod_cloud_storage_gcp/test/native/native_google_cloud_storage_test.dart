@@ -2,11 +2,47 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:googleapis/storage/v1.dart' as gcs;
+import 'package:googleapis_auth/auth_io.dart' as gcs;
 import 'package:mocktail/mocktail.dart';
-import 'package:pointycastle/export.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_gcp/serverpod_cloud_storage_gcp.dart';
 import 'package:test/test.dart';
+
+/// Test-only service account JSON with a generated RSA key (not a real credential).
+const _testServiceAccountJson = {
+  'type': 'service_account',
+  'client_id': '123456789',
+  'client_email': 'test@test-project.iam.gserviceaccount.com',
+  'private_key':
+      '-----BEGIN PRIVATE KEY-----\n'
+      'MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCxkSpRCFvuTbtG\n'
+      'bVSwbxyr8UrkvOuiK37/Svmr55UKXL7ISTXTisr1S0SMpgolCYRHcE2WWXTAdyP9\n'
+      'Qu9kOIiaa6puFtpSrUE3Lr89tyE9L9BR1NJmbQZO2eK4p802+gwSrhsk8W2eRgQp\n'
+      '6jvGhfZOhc/JCRFQiaI71G15gjntLHoVeDmwzmUv0OBkxmpa6I7OHzUEcU00W8CX\n'
+      'MuPUX69SDY7+yIwtjJWkr4/Shzvwcq0HEwT9lQnvS16l8UvWKuFW/0q0O5P5pEMY\n'
+      'GfEJM7UwapEZFxeFQ5RPG9Q8dhOonOpelzW95oVY8uIwgpvWUnjHlR8B2feT1hXk\n'
+      '1wjVX09tAgMBAAECggEABDiWctnZ75q0ReVm8uZtSM7CBZknw9GODGJl+CwXkFO/\n'
+      'QEfHP7RdWe0/ClXkc1gcJ3jtYJKB/T+dINHfcCM3khjW8r+DKJ3QPqV969O84Uq6\n'
+      'mcYPS1qHoMZlW+zh6rmRIbzhoyREbhOtg9PliwpXs4BS/cKEAXAIJdfJU28Lp/jm\n'
+      'y8XSIydW4dbFpvCbgrG00nZpngHiNFojzVbkcCzCHM4o5W6FfKvIcVzeTd8et8vN\n'
+      'ApCW+696QVrr1tpp3YKDi6UEqFEDmevn85LSlyjOb9BbbssL/f9Z4PmxY+DKzJeC\n'
+      'w00Tuh/9qe7r1etQNohOO/J9kU8mCyzGNVcz+XjRCQKBgQDgx3Q6ZX+d9MwPeQ3V\n'
+      'PYuMVsqcGsxdqKN7ky6xnW9yuZ0xyFGUbXKMamb/PU0PFYUkRcC/ZDUAcOxZkrz6\n'
+      '3Y1hhrLYWjV2dYYPP64iAURD7nAA2iTY5QUpkPF6yYru+W6vO0jOq2FX+90WqZBc\n'
+      'IuGcdTfLQ9onvBjf693oPqFgaQKBgQDKOvnkfIopO6aXs6+GiU0KU2o4TfL0MLKB\n'
+      'tWzBU/o6EL8RkYo/dYKKMk3ErLXamTIrpdJ2aYzaGbxrK3SAvyZX0PkLcd0MXmQk\n'
+      'dQ6f+Cnl2hC01m1X6Rr1GmSfqFITWot+cetoXg8Qe5gO5eLgbubeVY8uxnenedTk\n'
+      'czBCpKlWZQKBgQCJL3HySgwPHV6Fev5ETOGkbzwM9hYQe2H7g6KV6F4iiMI1peqU\n'
+      'ShAFPtNJp+Il+J5fuuqeZMwsTr8RFAuemCU3hnwUq0nB2IxPNjBStK8zPozBGGIw\n'
+      'teXmrn2S0PqoSzeQXwBakiJBDoiq0iY29Vr4oFnDBtBYO+Z6k3vFyKO5MQKBgEHS\n'
+      'blGrI4EGNFP+HSxp9hRdUB5haKmITCGhvnMydSh/GOGMAHZlNgbrFprkKBCtekHw\n'
+      'qA74jerTI5uyOipJjR5aGyVZezwyYN/o5ci1ilWQ440omdBaQ/bxDz1UGNrJxsty\n'
+      'ItAGhVq1D6oRswWfsy88o+zyljGBmwR8ZYHbfG5tAoGAcbcNzQ0SZvIfqhcT9TqB\n'
+      'CVk3VFaNgZtK4kqvJ3Mz63NFwSz7Oc2evcrVpZ0DGznFP84CUEUNNK7Q2DFiGurS\n'
+      'KU0ofhHRXHfCqrM1rFT3WgrhwuZ/I8MiSJ01lf2UHFgjlFubZYYsViUidzEXeBdN\n'
+      'pj/dFNrOpQf2Ekt+C9xN6p4=\n'
+      '-----END PRIVATE KEY-----\n',
+};
 
 class MockStorageApi extends Mock implements gcs.StorageApi {}
 
@@ -446,31 +482,16 @@ void main() {
       mockSession = MockSession();
       when(() => mockStorageApi.objects).thenReturn(mockObjects);
 
-      // Generate a test RSA key pair
-      final keyGen = RSAKeyGenerator()
-        ..init(
-          ParametersWithRandom(
-            RSAKeyGeneratorParameters(BigInt.parse('65537'), 2048, 64),
-            SecureRandom('Fortuna')..seed(
-              KeyParameter(
-                Uint8List.fromList(
-                  List.generate(32, (i) => i),
-                ),
-              ),
-            ),
-          ),
-        );
-      final keyPair = keyGen.generateKeyPair();
-      // ignore: unnecessary_cast
-      final privateKey = keyPair.privateKey as RSAPrivateKey;
+      final credentials = gcs.ServiceAccountCredentials.fromJson(
+        _testServiceAccountJson,
+      );
 
       storage = NativeGoogleCloudStorage.withSigningCredentials(
         storageId: 'signed-storage',
         bucket: 'test-bucket',
         public: true,
         storageApi: mockStorageApi,
-        clientEmail: 'test@test-project.iam.gserviceaccount.com',
-        privateKey: privateKey,
+        credentials: credentials,
       );
     });
 
@@ -654,30 +675,16 @@ void main() {
       mockSession = MockSession();
       when(() => mockStorageApi.objects).thenReturn(mockObjects);
 
-      final keyGen = RSAKeyGenerator()
-        ..init(
-          ParametersWithRandom(
-            RSAKeyGeneratorParameters(BigInt.parse('65537'), 2048, 64),
-            SecureRandom('Fortuna')..seed(
-              KeyParameter(
-                Uint8List.fromList(
-                  List.generate(32, (i) => i),
-                ),
-              ),
-            ),
-          ),
-        );
-      final keyPair = keyGen.generateKeyPair();
-      // ignore: unnecessary_cast
-      final privateKey = keyPair.privateKey as RSAPrivateKey;
+      final credentials = gcs.ServiceAccountCredentials.fromJson(
+        _testServiceAccountJson,
+      );
 
       storage = NativeGoogleCloudStorage.withSigningCredentials(
         storageId: 'private-storage',
         bucket: 'test-bucket',
         public: false,
         storageApi: mockStorageApi,
-        clientEmail: 'test@test-project.iam.gserviceaccount.com',
-        privateKey: privateKey,
+        credentials: credentials,
       );
     });
 
