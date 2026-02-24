@@ -16,7 +16,7 @@ class _MockSession extends Mock implements Session {}
 /// Loads native GCS configuration from environment variables.
 ///
 /// Returns null if credentials are not configured, causing tests to skip.
-NativeGoogleCloudStorage? _createStorageFromEnvironment() {
+Future<NativeGoogleCloudStorage?> _createStorageFromEnvironment() async {
   final serviceAccountJson =
       Platform.environment['SERVERPOD_TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON'];
   final bucket = Platform.environment['SERVERPOD_TEST_GCP_BUCKET'];
@@ -25,7 +25,7 @@ NativeGoogleCloudStorage? _createStorageFromEnvironment() {
     return null;
   }
 
-  return NativeGoogleCloudStorage.withServiceAccountJson(
+  return NativeGoogleCloudStorage.fromServiceAccountJson(
     storageId: 'test',
     bucket: bucket,
     public: false,
@@ -34,26 +34,31 @@ NativeGoogleCloudStorage? _createStorageFromEnvironment() {
 }
 
 void main() {
-  final storage = _createStorageFromEnvironment();
+  final hasCredentials =
+      Platform.environment['SERVERPOD_TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON'] !=
+          null &&
+      Platform.environment['SERVERPOD_TEST_GCP_BUCKET'] != null;
 
-  final skipReason = storage == null
+  final skipReason = !hasCredentials
       ? 'GCP native credentials not configured in environment. '
             'Set SERVERPOD_TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON and '
             'SERVERPOD_TEST_GCP_BUCKET to run these tests.'
       : null;
 
   group('Given a real GCP Native bucket', skip: skipReason, () {
+    late NativeGoogleCloudStorage storage;
     late Session session;
     final testFiles = <String>[];
 
-    setUpAll(() {
+    setUpAll(() async {
       session = _MockSession();
+      storage = (await _createStorageFromEnvironment())!;
     });
 
     tearDownAll(() async {
       for (final path in testFiles) {
         try {
-          await storage!.deleteFile(session: session, path: path);
+          await storage.deleteFile(session: session, path: path);
         } catch (_) {
           // Ignore cleanup errors
         }
@@ -77,7 +82,7 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          await storage!.storeFile(
+          await storage.storeFile(
             session: session,
             path: path,
             byteData: data,
@@ -104,7 +109,7 @@ void main() {
             Uint8List.fromList('test content'.codeUnits).buffer,
           );
 
-          await storage!.storeFile(
+          await storage.storeFile(
             session: session,
             path: path,
             byteData: data,
@@ -122,7 +127,7 @@ void main() {
       test(
         'then fileExists returns false for a non-existent file',
         () async {
-          final exists = await storage!.fileExists(
+          final exists = await storage.fileExists(
             session: session,
             path:
                 'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
@@ -140,7 +145,7 @@ void main() {
             Uint8List.fromList('to be deleted'.codeUnits).buffer,
           );
 
-          await storage!.storeFile(
+          await storage.storeFile(
             session: session,
             path: path,
             byteData: data,
@@ -179,7 +184,7 @@ void main() {
             Uint8List.fromList(originalContent.codeUnits).buffer,
           );
 
-          await storage!.storeFile(
+          await storage.storeFile(
             session: session,
             path: path,
             byteData: originalData,
@@ -214,7 +219,7 @@ void main() {
       test(
         'then retrieving a non-existent file returns null',
         () async {
-          final retrieved = await storage!.retrieveFile(
+          final retrieved = await storage.retrieveFile(
             session: session,
             path:
                 'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
@@ -228,7 +233,7 @@ void main() {
         'then deleting a non-existent file does not throw',
         () async {
           // Should complete without error
-          await storage!.deleteFile(
+          await storage.deleteFile(
             session: session,
             path:
                 'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
@@ -245,7 +250,7 @@ void main() {
           final bytes = Uint8List.fromList(List.generate(256, (i) => i));
           final data = ByteData.view(bytes.buffer);
 
-          await storage!.storeFile(
+          await storage.storeFile(
             session: session,
             path: path,
             byteData: data,
@@ -270,7 +275,7 @@ void main() {
           );
           final data = ByteData.view(bytes.buffer);
 
-          await storage!.storeFile(
+          await storage.storeFile(
             session: session,
             path: path,
             byteData: data,
@@ -292,7 +297,7 @@ void main() {
         () async {
           final path = testPath('presigned-description-test.txt');
 
-          final description = await storage!.createDirectFileUploadDescription(
+          final description = await storage.createDirectFileUploadDescription(
             session: session,
             path: path,
             expirationDuration: Duration(minutes: 5),
@@ -316,7 +321,7 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          final description = await storage!.createDirectFileUploadDescription(
+          final description = await storage.createDirectFileUploadDescription(
             session: session,
             path: path,
             expirationDuration: Duration(minutes: 5),
@@ -354,7 +359,7 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          final description = await storage!.createDirectFileUploadDescription(
+          final description = await storage.createDirectFileUploadDescription(
             session: session,
             path: path,
             expirationDuration: Duration(minutes: 5),
@@ -391,7 +396,7 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          final description = await storage!.createDirectFileUploadDescription(
+          final description = await storage.createDirectFileUploadDescription(
             session: session,
             path: path,
             expirationDuration: Duration(minutes: 5),
@@ -416,7 +421,7 @@ void main() {
       test(
         'then verifyDirectFileUpload returns false for a non-existent file',
         () async {
-          final verified = await storage!.verifyDirectFileUpload(
+          final verified = await storage.verifyDirectFileUpload(
             session: session,
             path:
                 'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
@@ -435,7 +440,7 @@ void main() {
           );
           final data = ByteData.view(bytes.buffer);
 
-          final description = await storage!.createDirectFileUploadDescription(
+          final description = await storage.createDirectFileUploadDescription(
             session: session,
             path: path,
             expirationDuration: Duration(minutes: 5),
@@ -472,7 +477,7 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          await storage!.storeFile(
+          await storage.storeFile(
             session: session,
             path: path,
             byteData: data,
@@ -501,7 +506,7 @@ void main() {
           );
 
           // First upload succeeds
-          await storage!.storeFile(
+          await storage.storeFile(
             session: session,
             path: path,
             byteData: data,
@@ -547,7 +552,7 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          final description = await storage!.createDirectFileUploadDescription(
+          final description = await storage.createDirectFileUploadDescription(
             session: session,
             path: path,
             expirationDuration: Duration(minutes: 5),
@@ -584,7 +589,7 @@ void main() {
           );
 
           // First upload without preventOverwrite
-          await storage!.storeFile(
+          await storage.storeFile(
             session: session,
             path: path,
             byteData: originalData,
@@ -636,7 +641,7 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          await storage!.storeFile(
+          await storage.storeFile(
             session: session,
             path: path,
             byteData: data,
@@ -664,7 +669,7 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          await storage!.storeFile(
+          await storage.storeFile(
             session: session,
             path: path,
             byteData: data,
