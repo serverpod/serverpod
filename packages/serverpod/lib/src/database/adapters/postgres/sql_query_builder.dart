@@ -1094,7 +1094,7 @@ String? _buildOrderByQuery({List<Order>? orderBy, _SubQueries? subQueries}) {
           str = _formatOrderByCount(index, subQueries, orderDescending);
         } else {
           str = '$column';
-          if (orderDescending) str += ' DESC';
+          str += orderDescending ? ' DESC NULLS FIRST' : ' ASC NULLS LAST';
         }
 
         return str;
