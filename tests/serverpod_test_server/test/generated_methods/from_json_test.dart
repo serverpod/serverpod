@@ -114,11 +114,11 @@ void main() {
     );
 
     test(
-      'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
+      'when deserializing from JSON with an incorrect value type, then a DeserializationTypeNotFoundException is thrown',
       () {
         expect(
           () => Types.fromJson({'aBool': 'true'}).aBool,
-          throwsA(isA<TypeError>()),
+          throwsA(isA<DeserializationTypeNotFoundException>()),
         );
       },
     );

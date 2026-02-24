@@ -72,7 +72,8 @@ abstract class SerializationManager {
     } else if (_isNullableType<String>(t)) {
       return data;
     } else if (_isNullableType<bool>(t)) {
-      return data;
+      if (data == null) return null as T;
+      return BoolJsonExtension.fromJson(data) as T;
     } else if (_isNullableType<DateTime>(t)) {
       if (data == null) return null as T;
       return DateTimeJsonExtension.fromJson(data) as T;

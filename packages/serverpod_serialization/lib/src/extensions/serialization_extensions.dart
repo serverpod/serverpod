@@ -3,6 +3,25 @@ import 'dart:typed_data';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
+/// Expose static fromJson builder for bool that handles bool or int values.
+/// Required to handle SQL boolean values that are stored as 0 or 1.
+extension BoolJsonExtension on bool {
+  /// Returns a deserialized version of the [bool].
+  static bool fromJson(dynamic value) {
+    if (value is bool) return value;
+    if (value is int) {
+      if (value != 0 && value != 1) {
+        throw DeserializationTypeNotFoundException(
+          message: 'Expected int to be 0 or 1, but got $value',
+          type: int,
+        );
+      }
+      return value == 1;
+    }
+    throw DeserializationTypeNotFoundException(type: value.runtimeType);
+  }
+}
+
 /// Expose toJson on DateTime
 /// Expose static fromJson builder
 extension DateTimeJsonExtension on DateTime {

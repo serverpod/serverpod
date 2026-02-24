@@ -7,6 +7,60 @@ import 'package:test/scaffolding.dart';
 
 void main() {
   test(
+    'Given a bool true, when passed to BoolJsonExtension.fromJson, then it returns true',
+    () {
+      expect(BoolJsonExtension.fromJson(true), isTrue);
+    },
+  );
+
+  test(
+    'Given a bool false, when passed to BoolJsonExtension.fromJson, then it returns false',
+    () {
+      expect(BoolJsonExtension.fromJson(false), isFalse);
+    },
+  );
+
+  test(
+    'Given an int 1 (SQL boolean true), when passed to BoolJsonExtension.fromJson, then it returns true',
+    () {
+      expect(BoolJsonExtension.fromJson(1), isTrue);
+    },
+  );
+
+  test(
+    'Given an int 0 (SQL boolean false), when passed to BoolJsonExtension.fromJson, then it returns false',
+    () {
+      expect(BoolJsonExtension.fromJson(0), isFalse);
+    },
+  );
+
+  test(
+    'Given an int other than 0 or 1, when passed to BoolJsonExtension.fromJson, then it throws a DeserializationTypeNotFoundException',
+    () {
+      expect(
+        () => BoolJsonExtension.fromJson(2),
+        throwsA(
+          isA<DeserializationTypeNotFoundException>().having(
+            (e) => e.message,
+            'message',
+            'Expected int to be 0 or 1, but got 2',
+          ),
+        ),
+      );
+    },
+  );
+
+  test(
+    'Given an unsupported type, when deserialized to a bool using BoolJsonExtension.fromJson, then it throws a DeserializationTypeNotFoundException',
+    () {
+      expect(
+        () => BoolJsonExtension.fromJson('true'),
+        throwsA(isA<DeserializationTypeNotFoundException>()),
+      );
+    },
+  );
+
+  test(
     'Given a JSON-formatted UTC date string, when deserialized and then serialized back to JSON, then it matches the original string',
     () {
       String time = '2024-01-01T00:00:00.000Z';
