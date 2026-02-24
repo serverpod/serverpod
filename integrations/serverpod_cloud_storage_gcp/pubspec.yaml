@@ -16,6 +16,7 @@ dependencies:
   googleapis: ">=11.0.0 <17.0.0"
   googleapis_auth: ">=1.6.0 <3.0.0"
   http: ">=1.1.0 <2.0.0"
+  mime: ^2.0.0
   path: ^1.8.3
   pointycastle: ">=3.7.4 <5.0.0"
   serverpod: 3.3.1

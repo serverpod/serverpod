@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
+import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 
 import '../client/exceptions.dart';
@@ -138,7 +139,7 @@ $payloadHash''';
     bool preventOverwrite = false,
   }) async {
     final fileName = p.basename(path);
-    final contentType = _detectMimeType(fileName);
+    final contentType = lookupMimeType(fileName) ?? 'application/octet-stream';
 
     final headers = <String, String>{
       'Content-Type': contentType,
@@ -256,54 +257,5 @@ UNSIGNED-PAYLOAD''';
     );
 
     return uri.toString();
-  }
-
-  /// Detects MIME type based on file extension.
-  static String _detectMimeType(String filename) {
-    final ext = p.extension(filename).toLowerCase();
-
-    const mimeTypes = {
-      '.jpg': 'image/jpeg',
-      '.jpeg': 'image/jpeg',
-      '.png': 'image/png',
-      '.gif': 'image/gif',
-      '.webp': 'image/webp',
-      '.svg': 'image/svg+xml',
-      '.ico': 'image/x-icon',
-      '.bmp': 'image/bmp',
-      '.tiff': 'image/tiff',
-      '.tif': 'image/tiff',
-      '.pdf': 'application/pdf',
-      '.txt': 'text/plain',
-      '.html': 'text/html',
-      '.htm': 'text/html',
-      '.css': 'text/css',
-      '.js': 'application/javascript',
-      '.json': 'application/json',
-      '.xml': 'application/xml',
-      '.mp4': 'video/mp4',
-      '.webm': 'video/webm',
-      '.mov': 'video/quicktime',
-      '.avi': 'video/x-msvideo',
-      '.mp3': 'audio/mpeg',
-      '.wav': 'audio/wav',
-      '.ogg': 'audio/ogg',
-      '.zip': 'application/zip',
-      '.gz': 'application/gzip',
-      '.tar': 'application/x-tar',
-      '.rar': 'application/vnd.rar',
-      '.7z': 'application/x-7z-compressed',
-      '.doc': 'application/msword',
-      '.docx':
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      '.xls': 'application/vnd.ms-excel',
-      '.xlsx':
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      '.ppt': 'application/vnd.ms-powerpoint',
-      '.pptx':
-          'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    };
-
-    return mimeTypes[ext] ?? 'application/octet-stream';
   }
 }

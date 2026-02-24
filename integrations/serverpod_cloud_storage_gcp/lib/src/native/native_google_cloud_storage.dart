@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:googleapis/storage/v1.dart' as gcs;
 import 'package:googleapis_auth/auth_io.dart' as gcs;
 import 'package:http/http.dart' as http;
+import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:pointycastle/asn1.dart';
 import 'package:pointycastle/export.dart';
@@ -41,6 +42,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
 
   final gcs.StorageApi _storageApi;
   final _SigningContext? _signingContext;
+  final http.Client? _authClient;
 
   NativeGoogleCloudStorage._({
     required String storageId,
@@ -48,9 +50,11 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required this.public,
     required gcs.StorageApi storageApi,
     _SigningContext? signingContext,
+    http.Client? authClient,
     this.publicHost,
   }) : _storageApi = storageApi,
        _signingContext = signingContext,
+       _authClient = authClient,
        super(storageId);
 
   /// Creates a new [NativeGoogleCloudStorage] from a [Serverpod] instance.
@@ -111,6 +115,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
       public: public,
       storageApi: gcs.StorageApi(authClient),
       signingContext: _SigningContext.fromCredentials(credentials),
+      authClient: authClient,
       publicHost: publicHost,
     );
   }
@@ -142,6 +147,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
       public: public,
       storageApi: gcs.StorageApi(authClient),
       signingContext: _SigningContext.fromAuthClient(email, authClient),
+      authClient: authClient,
       publicHost: publicHost,
     );
   }
@@ -161,6 +167,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
     this.publicHost,
   }) : _storageApi = storageApi,
        _signingContext = null,
+       _authClient = null,
        super(storageId);
 
   /// Creates a [NativeGoogleCloudStorage] with signing credentials for testing.
@@ -176,6 +183,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
     this.publicHost,
   }) : _storageApi = storageApi,
        _signingContext = _SigningContext.fromCredentials(credentials),
+       _authClient = null,
        super(storageId);
 
   /// Creates a [NativeGoogleCloudStorage] with ADC-style signing for testing.
@@ -193,6 +201,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
     this.publicHost,
   }) : _storageApi = storageApi,
        _signingContext = _SigningContext.fromAuthClient(email, authClient),
+       _authClient = null,
        super(storageId);
 
   /// Retrieves the default service account email from the GCE metadata server.
@@ -219,6 +228,18 @@ class NativeGoogleCloudStorage extends CloudStorage {
     } finally {
       if (client == null) effectiveClient.close();
     }
+  }
+
+  /// Closes the underlying HTTP client.
+  ///
+  /// Call this when the storage instance is no longer needed to free
+  /// resources. After calling [close], no further operations should be
+  /// performed on this instance.
+  ///
+  /// Has no effect if this instance was created with a test constructor
+  /// ([withStorageApi], [withSigningCredentials], [withAuthClient]).
+  void close() {
+    _authClient?.close();
   }
 
   @override
@@ -334,7 +355,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
     }
 
     final fileName = p.basename(path);
-    final contentType = _detectMimeType(fileName);
+    final contentType = lookupMimeType(fileName) ?? 'application/octet-stream';
     final acl = public ? 'public-read' : 'private';
 
     final headers = <String, String>{
@@ -394,18 +415,18 @@ class NativeGoogleCloudStorage extends CloudStorage {
         '${sortedHeaderNames.map((k) => '$k:${allHeaders[k]}').join('\n')}\n';
     final signedHeaders = sortedHeaderNames.join(';');
 
-    // Build canonical query string (sorted alphabetically)
-    final queryParams = <String, String>{
+    // Build canonical query string (must be sorted by parameter name)
+    final queryParams = {
       'X-Goog-Algorithm': 'GOOG4-RSA-SHA256',
       'X-Goog-Credential': '${signingContext.email}/$credentialScope',
       'X-Goog-Date': timestamp,
       'X-Goog-Expires': expiration.inSeconds.toString(),
       'X-Goog-SignedHeaders': signedHeaders,
     };
+    final sortedQueryKeys = queryParams.keys.toList()..sort();
 
-    final canonicalQueryString = queryParams.entries
-        .toList()
-        .map((e) => '${_uriEncode(e.key)}=${_uriEncode(e.value)}')
+    final canonicalQueryString = sortedQueryKeys
+        .map((k) => '${_uriEncode(k)}=${_uriEncode(queryParams[k]!)}')
         .join('&');
 
     // Build canonical request
@@ -454,32 +475,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
     return Uri.encodeComponent(input).replaceAll('+', '%2B');
   }
 
-  /// Detects MIME type based on file extension.
-  static String _detectMimeType(String filename) {
-    final ext = p.extension(filename).toLowerCase();
-
-    const mimeTypes = {
-      '.jpg': 'image/jpeg',
-      '.jpeg': 'image/jpeg',
-      '.png': 'image/png',
-      '.gif': 'image/gif',
-      '.webp': 'image/webp',
-      '.svg': 'image/svg+xml',
-      '.pdf': 'application/pdf',
-      '.txt': 'text/plain',
-      '.html': 'text/html',
-      '.css': 'text/css',
-      '.js': 'application/javascript',
-      '.json': 'application/json',
-      '.xml': 'application/xml',
-      '.mp4': 'video/mp4',
-      '.mp3': 'audio/mpeg',
-      '.zip': 'application/zip',
-    };
-
-    return mimeTypes[ext] ?? 'application/octet-stream';
-  }
-
   @override
   Future<bool> verifyDirectFileUpload({
     required Session session,
@@ -490,21 +485,11 @@ class NativeGoogleCloudStorage extends CloudStorage {
 
   /// Collects all bytes from a stream into a single Uint8List.
   Future<Uint8List> _collectBytes(Stream<List<int>> stream) async {
-    final chunks = <List<int>>[];
+    final builder = BytesBuilder(copy: false);
     await for (final chunk in stream) {
-      chunks.add(chunk);
+      builder.add(chunk);
     }
-
-    final totalLength = chunks.fold<int>(0, (sum, chunk) => sum + chunk.length);
-    final result = Uint8List(totalLength);
-
-    var offset = 0;
-    for (final chunk in chunks) {
-      result.setRange(offset, offset + chunk.length, chunk);
-      offset += chunk.length;
-    }
-
-    return result;
+    return builder.takeBytes();
   }
 }
 
