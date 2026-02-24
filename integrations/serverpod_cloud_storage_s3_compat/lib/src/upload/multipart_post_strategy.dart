@@ -28,6 +28,7 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
     required String path,
     required bool public,
     required S3EndpointConfig endpoints,
+    bool preventOverwrite = false,
   }) async {
     final uploadUri = endpoints.buildBucketUri(bucket, region);
     final stream = http.ByteStream.fromBytes(Uint8List.sublistView(data));
@@ -93,6 +94,7 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
     required bool public,
     required S3EndpointConfig endpoints,
     int? contentLength,
+    bool preventOverwrite = false,
   }) async {
     final uploadUri = endpoints.buildBucketUri(bucket, region);
 

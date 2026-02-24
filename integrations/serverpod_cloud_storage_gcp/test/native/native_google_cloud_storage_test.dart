@@ -178,6 +178,7 @@ void main() {
             'test-bucket',
             uploadMedia: any(named: 'uploadMedia'),
             predefinedAcl: any(named: 'predefinedAcl'),
+            ifGenerationMatch: any(named: 'ifGenerationMatch'),
           ),
         ).thenAnswer((_) async => MockObject());
 
@@ -194,9 +195,43 @@ void main() {
             'test-bucket',
             uploadMedia: any(named: 'uploadMedia'),
             predefinedAcl: 'publicRead',
+            ifGenerationMatch: null,
           ),
         ).called(1);
       });
+
+      test(
+        'then it passes ifGenerationMatch 0 when preventOverwrite is true',
+        () async {
+          when(
+            () => mockObjects.insert(
+              any(),
+              'test-bucket',
+              uploadMedia: any(named: 'uploadMedia'),
+              predefinedAcl: any(named: 'predefinedAcl'),
+              ifGenerationMatch: any(named: 'ifGenerationMatch'),
+            ),
+          ).thenAnswer((_) async => MockObject());
+
+          final data = ByteData(5);
+          await storage.storeFile(
+            session: mockSession,
+            path: 'upload/test.txt',
+            byteData: data,
+            preventOverwrite: true,
+          );
+
+          verify(
+            () => mockObjects.insert(
+              any(),
+              'test-bucket',
+              uploadMedia: any(named: 'uploadMedia'),
+              predefinedAcl: 'publicRead',
+              ifGenerationMatch: '0',
+            ),
+          ).called(1);
+        },
+      );
     });
 
     group('when retrieving a file', () {
@@ -401,6 +436,7 @@ void main() {
             'private-bucket',
             uploadMedia: any(named: 'uploadMedia'),
             predefinedAcl: any(named: 'predefinedAcl'),
+            ifGenerationMatch: any(named: 'ifGenerationMatch'),
           ),
         ).thenAnswer((_) async => MockObject());
 
@@ -417,6 +453,7 @@ void main() {
             'private-bucket',
             uploadMedia: any(named: 'uploadMedia'),
             predefinedAcl: null,
+            ifGenerationMatch: null,
           ),
         ).called(1);
       });
@@ -665,6 +702,63 @@ void main() {
         expect(headers.containsKey('Content-Length'), isFalse);
       });
     });
+
+    group('when creating direct upload description with preventOverwrite', () {
+      test(
+        'then it includes x-goog-if-generation-match header set to 0',
+        () async {
+          final description = await storage.createDirectFileUploadDescription(
+            session: mockSession,
+            path: 'uploads/test-file.txt',
+            preventOverwrite: true,
+          );
+
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          final headers = data['headers'] as Map<String, dynamic>;
+
+          expect(headers['x-goog-if-generation-match'], '0');
+        },
+      );
+
+      test(
+        'then the signed URL includes x-goog-if-generation-match in signed headers',
+        () async {
+          final description = await storage.createDirectFileUploadDescription(
+            session: mockSession,
+            path: 'uploads/test-file.txt',
+            preventOverwrite: true,
+          );
+
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          final url = data['url'] as String;
+
+          expect(url, contains('x-goog-if-generation-match'));
+        },
+      );
+    });
+
+    group(
+      'when creating direct upload description without preventOverwrite',
+      () {
+        test(
+          'then it does not include x-goog-if-generation-match header',
+          () async {
+            final description = await storage.createDirectFileUploadDescription(
+              session: mockSession,
+              path: 'uploads/test-file.txt',
+            );
+
+            final data = jsonDecode(description!) as Map<String, dynamic>;
+            final headers = data['headers'] as Map<String, dynamic>;
+
+            expect(
+              headers.containsKey('x-goog-if-generation-match'),
+              isFalse,
+            );
+          },
+        );
+      },
+    );
   });
 
   group('Given a NativeGoogleCloudStorage with public set to false', () {
