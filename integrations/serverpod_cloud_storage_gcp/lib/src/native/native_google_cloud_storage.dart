@@ -219,6 +219,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required ByteData byteData,
     DateTime? expiration,
     bool verified = true,
+    bool preventOverwrite = false,
   }) async {
     final storageApi = await _storageApi;
 
@@ -236,6 +237,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
       bucket,
       uploadMedia: media,
       predefinedAcl: public ? 'publicRead' : null,
+      ifGenerationMatch: preventOverwrite ? '0' : null,
     );
   }
 
@@ -317,6 +319,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
     int? contentLength,
+    bool preventOverwrite = false,
   }) async {
     if (contentLength != null && contentLength > maxFileSize) {
       throw CloudStorageException(
@@ -341,6 +344,9 @@ class NativeGoogleCloudStorage extends CloudStorage {
     };
     if (contentLength != null) {
       headers['Content-Length'] = contentLength.toString();
+    }
+    if (preventOverwrite) {
+      headers['x-goog-if-generation-match'] = '0';
     }
 
     final signedUrl = await _createSignedUrl(

@@ -29,6 +29,7 @@ class PresignedPutUploadStrategy implements S3UploadStrategy {
     required String path,
     required bool public,
     required S3EndpointConfig endpoints,
+    bool preventOverwrite = false,
   }) async {
     final bucketUri = endpoints.buildBucketUri(bucket, region);
     final objectPath = bucketUri.path.endsWith('/')
@@ -43,6 +44,23 @@ class PresignedPutUploadStrategy implements S3UploadStrategy {
     final payloadHash = sha256.convert(payloadBytes).toString();
 
     final host = bucketUri.host;
+
+    // Build headers that need to be signed
+    final signedHeaderMap = <String, String>{
+      'host': host,
+      'x-amz-content-sha256': payloadHash,
+      'x-amz-date': datetime,
+    };
+    if (preventOverwrite) {
+      signedHeaderMap['if-none-match'] = '*';
+    }
+
+    final sortedHeaderNames = signedHeaderMap.keys.toList()..sort();
+    final signedHeaders = sortedHeaderNames.join(';');
+    final canonicalHeaderLines = sortedHeaderNames
+        .map((k) => '$k:${signedHeaderMap[k]}')
+        .join('\n');
+
     // URL-encode each path segment for the canonical request
     final encodedPath = objectPath
         .split('/')
@@ -52,11 +70,9 @@ class PresignedPutUploadStrategy implements S3UploadStrategy {
         '''PUT
 $encodedPath
 
-host:$host
-x-amz-content-sha256:$payloadHash
-x-amz-date:$datetime
+$canonicalHeaderLines
 
-host;x-amz-content-sha256;x-amz-date
+$signedHeaders
 $payloadHash''';
 
     final stringToSign = SigV4.buildStringToSign(
@@ -75,7 +91,7 @@ $payloadHash''';
 
     final authorization =
         'AWS4-HMAC-SHA256 Credential=$accessKey/$credentialScope, '
-        'SignedHeaders=host;x-amz-content-sha256;x-amz-date, '
+        'SignedHeaders=$signedHeaders, '
         'Signature=$signature';
 
     final uri = Uri(
@@ -85,14 +101,14 @@ $payloadHash''';
       path: objectPath,
     );
 
+    final requestHeaders = <String, String>{
+      'Authorization': authorization,
+      ...signedHeaderMap,
+    };
+
     final response = await http.put(
       uri,
-      headers: {
-        'Authorization': authorization,
-        'x-amz-content-sha256': payloadHash,
-        'x-amz-date': datetime,
-        'host': host,
-      },
+      headers: requestHeaders,
       body: payloadBytes,
     );
 
@@ -119,18 +135,8 @@ $payloadHash''';
     required bool public,
     required S3EndpointConfig endpoints,
     int? contentLength,
+    bool preventOverwrite = false,
   }) async {
-    final presignedUrl = _createPresignedUrl(
-      accessKey: accessKey,
-      secretKey: secretKey,
-      bucket: bucket,
-      region: region,
-      path: path,
-      expiration: expiration,
-      endpoints: endpoints,
-      contentLength: contentLength,
-    );
-
     final fileName = p.basename(path);
     final contentType = _detectMimeType(fileName);
 
@@ -140,6 +146,20 @@ $payloadHash''';
     if (contentLength != null) {
       headers['Content-Length'] = contentLength.toString();
     }
+    if (preventOverwrite) {
+      headers['If-None-Match'] = '*';
+    }
+
+    final presignedUrl = _createPresignedUrl(
+      accessKey: accessKey,
+      secretKey: secretKey,
+      bucket: bucket,
+      region: region,
+      path: path,
+      expiration: expiration,
+      endpoints: endpoints,
+      headers: headers,
+    );
 
     final uploadDescriptionData = {
       'url': presignedUrl,
@@ -154,8 +174,8 @@ $payloadHash''';
 
   /// Creates a presigned PUT URL for direct uploads.
   ///
-  /// When [contentLength] is provided, the `content-length` header is included
-  /// in the signed headers, so the storage provider enforces the exact size.
+  /// The [headers] map contains all headers that should be signed into the URL.
+  /// The client must send exactly these headers when making the PUT request.
   String _createPresignedUrl({
     required String accessKey,
     required String secretKey,
@@ -164,7 +184,7 @@ $payloadHash''';
     required String path,
     required Duration expiration,
     required S3EndpointConfig endpoints,
-    int? contentLength,
+    required Map<String, String> headers,
   }) {
     final bucketUri = endpoints.buildBucketUri(bucket, region);
     final objectPath = bucketUri.path.endsWith('/')
@@ -174,9 +194,18 @@ $payloadHash''';
     final datetime = SigV4.generateDatetime();
     final credentialScope = SigV4.buildCredentialScope(datetime, region, 's3');
 
-    final signedHeaders = contentLength != null
-        ? 'content-length;host'
-        : 'host';
+    final host = bucketUri.host;
+
+    // Build canonical headers (must be sorted by lowercase key)
+    final allHeaders = {
+      'host': host,
+      for (final entry in headers.entries) entry.key.toLowerCase(): entry.value,
+    };
+    final sortedHeaderNames = allHeaders.keys.toList()..sort();
+    final signedHeaders = sortedHeaderNames.join(';');
+    final canonicalHeaderLines = sortedHeaderNames
+        .map((k) => '$k:${allHeaders[k]}')
+        .join('\n');
 
     final queryParams = <String, String>{
       'X-Amz-Algorithm': 'AWS4-HMAC-SHA256',
@@ -186,17 +215,12 @@ $payloadHash''';
       'X-Amz-SignedHeaders': signedHeaders,
     };
 
-    final host = bucketUri.host;
     final canonicalQuery = SigV4.buildCanonicalQueryString(queryParams);
     // URL-encode each path segment for the canonical request
     final encodedPath = objectPath
         .split('/')
         .map(Uri.encodeComponent)
         .join('/');
-
-    final canonicalHeaderLines = contentLength != null
-        ? 'content-length:$contentLength\nhost:$host'
-        : 'host:$host';
 
     final canonicalRequest =
         '''PUT

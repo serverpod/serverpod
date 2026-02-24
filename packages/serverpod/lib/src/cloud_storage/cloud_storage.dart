@@ -26,12 +26,17 @@ abstract class CloudStorage {
   /// path should be relative to the root directory of the storage (i.e. the
   /// string shouldn't start with a slash).
   /// This method should throw an IOException if the file upload fails.
+  ///
+  /// When [preventOverwrite] is true, the upload will fail if an object
+  /// already exists at the given [path]. Not all storage implementations
+  /// support this — those that don't will ignore the flag.
   Future<void> storeFile({
     required Session session,
     required String path,
     required ByteData byteData,
     DateTime? expiration,
     bool verified = true,
+    bool preventOverwrite = false,
   });
 
   /// Retrieves a file from the cloud storage or null if no such file exists.
@@ -66,12 +71,19 @@ abstract class CloudStorage {
   /// within the specified duration. After the file has been sent, the
   /// [verifyDirectFileUpload] method should be called. If the file upload
   /// hasn't been confirmed before the URL expires, the file will be deleted.
+  ///
+  /// When [preventOverwrite] is true, the upload will fail if an object
+  /// already exists at the given [path]. This can be used to prevent race
+  /// conditions where two clients upload to the same path simultaneously.
+  /// Not all storage implementations support this — those that don't will
+  /// ignore the flag.
   Future<String?> createDirectFileUploadDescription({
     required Session session,
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
     int? contentLength,
+    bool preventOverwrite = false,
   });
 
   /// Call this method once a direct file upload is completed. Failure to call
