@@ -462,6 +462,170 @@ void main() {
       );
     });
 
+    group('when using preventOverwrite with storeFile', () {
+      test(
+        'then uploading to a new path succeeds',
+        () async {
+          final path = testPath('prevent-overwrite-new.txt');
+          final content = 'New file content';
+          final data = ByteData.view(
+            Uint8List.fromList(content.codeUnits).buffer,
+          );
+
+          await storage!.storeFile(
+            session: session,
+            path: path,
+            byteData: data,
+            preventOverwrite: true,
+          );
+
+          final retrieved = await storage.retrieveFile(
+            session: session,
+            path: path,
+          );
+
+          expect(retrieved, isNotNull);
+          final retrievedContent = String.fromCharCodes(
+            retrieved!.buffer.asUint8List(),
+          );
+          expect(retrievedContent, content);
+        },
+      );
+
+      test(
+        'then uploading to an existing path throws',
+        () async {
+          final path = testPath('prevent-overwrite-existing.txt');
+          final data = ByteData.view(
+            Uint8List.fromList('original'.codeUnits).buffer,
+          );
+
+          // First upload succeeds
+          await storage!.storeFile(
+            session: session,
+            path: path,
+            byteData: data,
+          );
+
+          // Second upload with preventOverwrite should fail
+          final duplicateData = ByteData.view(
+            Uint8List.fromList('duplicate'.codeUnits).buffer,
+          );
+
+          expect(
+            () => storage.storeFile(
+              session: session,
+              path: path,
+              byteData: duplicateData,
+              preventOverwrite: true,
+            ),
+            throwsA(isA<Exception>()),
+          );
+
+          // Original content should be preserved
+          final retrieved = await storage.retrieveFile(
+            session: session,
+            path: path,
+          );
+
+          expect(retrieved, isNotNull);
+          final retrievedContent = String.fromCharCodes(
+            retrieved!.buffer.asUint8List(),
+          );
+          expect(retrievedContent, 'original');
+        },
+      );
+    });
+
+    group('when using preventOverwrite with direct uploads', () {
+      test(
+        'then a direct upload to a new path succeeds',
+        () async {
+          final path = testPath('prevent-overwrite-direct-new.txt');
+          final content = 'New direct upload content';
+          final data = ByteData.view(
+            Uint8List.fromList(content.codeUnits).buffer,
+          );
+
+          final description = await storage!.createDirectFileUploadDescription(
+            session: session,
+            path: path,
+            expirationDuration: Duration(minutes: 5),
+            maxFileSize: 10 * 1024 * 1024,
+            preventOverwrite: true,
+          );
+
+          expect(description, isNotNull);
+
+          final uploader = FileUploader(description!);
+          final success = await uploader.uploadByteData(data);
+
+          expect(success, isTrue);
+
+          final retrieved = await storage.retrieveFile(
+            session: session,
+            path: path,
+          );
+
+          expect(retrieved, isNotNull);
+          final retrievedContent = String.fromCharCodes(
+            retrieved!.buffer.asUint8List(),
+          );
+          expect(retrievedContent, content);
+        },
+      );
+
+      test(
+        'then a direct upload to an existing path fails',
+        () async {
+          final path = testPath('prevent-overwrite-direct-existing.txt');
+          final originalData = ByteData.view(
+            Uint8List.fromList('original'.codeUnits).buffer,
+          );
+
+          // First upload without preventOverwrite
+          await storage!.storeFile(
+            session: session,
+            path: path,
+            byteData: originalData,
+          );
+
+          // Create direct upload description with preventOverwrite
+          final description = await storage.createDirectFileUploadDescription(
+            session: session,
+            path: path,
+            expirationDuration: Duration(minutes: 5),
+            maxFileSize: 10 * 1024 * 1024,
+            preventOverwrite: true,
+          );
+
+          expect(description, isNotNull);
+
+          final duplicateData = ByteData.view(
+            Uint8List.fromList('duplicate'.codeUnits).buffer,
+          );
+
+          // Upload should fail (returns false or throws)
+          final uploader = FileUploader(description!);
+          final success = await uploader.uploadByteData(duplicateData);
+
+          expect(success, isFalse);
+
+          // Original content should be preserved
+          final retrieved = await storage.retrieveFile(
+            session: session,
+            path: path,
+          );
+
+          expect(retrieved, isNotNull);
+          final retrievedContent = String.fromCharCodes(
+            retrieved!.buffer.asUint8List(),
+          );
+          expect(retrievedContent, 'original');
+        },
+      );
+    });
+
     group('when working with paths containing special characters', () {
       test(
         'then paths with spaces are handled correctly',

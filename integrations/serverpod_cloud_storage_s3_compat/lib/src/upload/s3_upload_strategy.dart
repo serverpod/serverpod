@@ -13,6 +13,10 @@ import '../endpoints/s3_endpoint_config.dart';
 abstract class S3UploadStrategy {
   /// Upload file data directly from server.
   ///
+  /// When [preventOverwrite] is true, the upload should fail if the object
+  /// already exists. Not all strategies support this — those that don't
+  /// will ignore the flag.
+  ///
   /// Throws [S3Exception] if the upload fails.
   Future<void> uploadData({
     required String accessKey,
@@ -23,6 +27,7 @@ abstract class S3UploadStrategy {
     required String path,
     required bool public,
     required S3EndpointConfig endpoints,
+    bool preventOverwrite = false,
   });
 
   /// Generate upload description for client-side direct uploads.
@@ -30,6 +35,10 @@ abstract class S3UploadStrategy {
   /// Returns a JSON-encoded description containing the upload URL,
   /// required fields, and other information needed by the client
   /// to upload directly to the storage provider.
+  ///
+  /// When [preventOverwrite] is true, the upload should fail if the object
+  /// already exists. Not all strategies support this — those that don't
+  /// will ignore the flag.
   Future<String?> createDirectUploadDescription({
     required String accessKey,
     required String secretKey,
@@ -41,6 +50,7 @@ abstract class S3UploadStrategy {
     required bool public,
     required S3EndpointConfig endpoints,
     int? contentLength,
+    bool preventOverwrite = false,
   });
 
   /// The upload type identifier for client-side handling.
