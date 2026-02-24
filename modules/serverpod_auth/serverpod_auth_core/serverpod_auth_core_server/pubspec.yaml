@@ -19,7 +19,7 @@ dependencies:
   pointycastle: '>=3.7.4 <5.0.0'
   serverpod: 3.3.1
   serverpod_shared: 3.3.1
-  uuid: ^4.1.0
+  uuid: ^4.5.3
 
 dev_dependencies:
   serverpod_lints: 3.3.1

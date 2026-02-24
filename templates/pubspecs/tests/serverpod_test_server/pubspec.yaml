@@ -19,7 +19,7 @@ dependencies:
     path: ../serverpod_test_module/serverpod_test_module_server
   serverpod_test_shared:
     path: ../serverpod_test_shared
-  uuid: ^4.1.0
+  uuid: ^4.5.3
   web: '>=0.3.0 <2.0.0'
   web_socket: ^1.0.1
 

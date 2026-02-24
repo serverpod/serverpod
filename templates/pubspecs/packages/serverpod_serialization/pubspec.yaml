@@ -12,7 +12,7 @@ environment:
 
 dependencies:
   meta: ^1.15.0
-  uuid: ^4.1.0
+  uuid: ^4.5.3
   yaml: ^3.1.2
 
 dev_dependencies:

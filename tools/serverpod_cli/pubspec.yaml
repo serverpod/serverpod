@@ -38,7 +38,7 @@ dependencies:
   source_span: ^1.10.0
   stream_channel: ^2.1.1
   super_string: ^1.0.3
-  uuid: ^4.1.0
+  uuid: ^4.5.3
   watcher: ^1.0.2
   yaml: ^3.1.2
   yaml_edit: ^2.2.2

@@ -20,7 +20,7 @@ dependencies:
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
   test: ^1.25.5
-  uuid: ^4.1.0
+  uuid: ^4.5.3
 
 dependency_overrides:
   serverpod_lints:

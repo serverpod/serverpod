@@ -10,7 +10,7 @@ environment:
 dependencies:
   http: '>=1.1.0 <2.0.0'
   serverpod: 3.3.1
-  uuid: ^4.1.0
+  uuid: ^4.5.3
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
