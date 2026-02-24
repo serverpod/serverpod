@@ -247,18 +247,8 @@ void main() {
       'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
       () {
         expect(
-          () => Types.fromJson({'aDateTime': 111}).aString,
+          () => Types.fromJson({'aDuration': 111.1}).aDuration,
           throwsA(isA<TypeError>()),
-        );
-      },
-    );
-
-    test(
-      'when deserializing from JSON with an incorrect value, then a FormatException is thrown',
-      () {
-        expect(
-          () => Types.fromJson({'aDateTime': "111"}).aString,
-          throwsA(isA<FormatException>()),
         );
       },
     );
@@ -305,7 +295,7 @@ void main() {
       'when deserializing from JSON with an incorrect value type, then a TypeError is thrown',
       () {
         expect(
-          () => Types.fromJson({'aDateTime': 111}).aString,
+          () => Types.fromJson({'aUuid': 111}).aUuid,
           throwsA(isA<TypeError>()),
         );
       },
