@@ -605,7 +605,7 @@ void main() {
         final unknownDescription = await storage
             .createDirectFileUploadDescription(
               session: mockSession,
-              path: 'data/file.xyz',
+              path: 'data/file.unknownext',
             );
         final unknownData =
             jsonDecode(unknownDescription!) as Map<String, dynamic>;
