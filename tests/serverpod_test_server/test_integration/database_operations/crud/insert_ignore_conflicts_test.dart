@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:serverpod/protocol.dart' as protocol;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
@@ -16,6 +15,10 @@ void main() async {
     await UniqueDataWithNonPersist.db.deleteWhere(
       session,
       where: (t) => Constant.bool(true),
+    );
+    await protocol.LogEntry.db.deleteWhere(
+      session,
+      where: (t) => t.message.like('%ignoreConflicts%'),
     );
   });
 
@@ -131,72 +134,41 @@ void main() async {
     );
   });
 
-  group('Given an empty database and a table model with non persistent fields', () {
-    test(
-      'when inserting more than 100 rows with ignoreConflicts then a performance warning is logged.',
-      () async {
-        var data = List.generate(
-          101,
-          (i) => UniqueDataWithNonPersist(
-            number: i,
-            email: '$i@serverpod.dev',
-            extra: 'extra-$i',
-          ),
-        );
+  group(
+    'Given an empty database and a table model with non persistent fields',
+    () {
+      test(
+        'when inserting with ignoreConflicts then all rows are inserted with non-persistent fields preserved.',
+        () async {
+          var data = <UniqueDataWithNonPersist>[
+            UniqueDataWithNonPersist(
+              number: 1,
+              email: 'a@serverpod.dev',
+              extra: 'extra-a',
+            ),
+            UniqueDataWithNonPersist(
+              number: 2,
+              email: 'b@serverpod.dev',
+              extra: 'extra-b',
+            ),
+          ];
 
-        var output = StringBuffer();
-        await IOOverrides.runZoned(
-          () async {
-            await UniqueDataWithNonPersist.db.insert(
-              session,
-              data,
-              ignoreConflicts: true,
-            );
-          },
-          stderr: () => _StderrCapture(output),
-        );
+          var inserted = await UniqueDataWithNonPersist.db.insert(
+            session,
+            data,
+            ignoreConflicts: true,
+          );
 
-        expect(
-          output.toString(),
-          contains(
-            'WARNING: Inserting 101 rows with ignoreConflicts on a model '
-            'with non-persistent fields.',
-          ),
-        );
-      },
-    );
+          expect(inserted, hasLength(2));
+          expect(inserted[0].extra, 'extra-a');
+          expect(inserted[1].extra, 'extra-b');
 
-    test(
-      'when inserting with ignoreConflicts then all rows are inserted with non-persistent fields preserved.',
-      () async {
-        var data = <UniqueDataWithNonPersist>[
-          UniqueDataWithNonPersist(
-            number: 1,
-            email: 'a@serverpod.dev',
-            extra: 'extra-a',
-          ),
-          UniqueDataWithNonPersist(
-            number: 2,
-            email: 'b@serverpod.dev',
-            extra: 'extra-b',
-          ),
-        ];
-
-        var inserted = await UniqueDataWithNonPersist.db.insert(
-          session,
-          data,
-          ignoreConflicts: true,
-        );
-
-        expect(inserted, hasLength(2));
-        expect(inserted[0].extra, 'extra-a');
-        expect(inserted[1].extra, 'extra-b');
-
-        var allRows = await UniqueDataWithNonPersist.db.find(session);
-        expect(allRows, hasLength(2));
-      },
-    );
-  });
+          var allRows = await UniqueDataWithNonPersist.db.find(session);
+          expect(allRows, hasLength(2));
+        },
+      );
+    },
+  );
 
   group(
     'Given a row with a unique constraint and a table model with non persistent fields',
@@ -319,19 +291,47 @@ void main() async {
       );
     },
   );
-}
 
-class _StderrCapture implements Stdout {
-  final StringBuffer _buffer;
+  group(
+    'Given a model with non-persistent fields and a batch of more than 100 entries',
+    () {
+      test(
+        'when inserting all rows with ignoreConflicts then a performance warning is logged.',
+        () async {
+          // Use a separate session that can be closed to flush cached logs
+          // to the database.
+          var logServer = IntegrationTestServer();
+          var logSession = await logServer.session();
 
-  _StderrCapture(this._buffer);
+          var data = List.generate(
+            101,
+            (i) => UniqueDataWithNonPersist(
+              number: i,
+              email: '$i@serverpod.dev',
+              extra: 'extra-$i',
+            ),
+          );
 
-  @override
-  void writeln([Object? object = '']) => _buffer.writeln(object);
+          await UniqueDataWithNonPersist.db.insert(
+            logSession,
+            data,
+            ignoreConflicts: true,
+          );
 
-  @override
-  void write(Object? object) => _buffer.write(object);
+          // Closing the session flushes cached log entries to the database.
+          await logSession.close();
 
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+          var logEntries = await protocol.LogEntry.db.find(
+            session,
+            where: (t) => t.message.like(
+              '%Inserting 101 rows with ignoreConflicts%',
+            ),
+          );
+
+          expect(logEntries, hasLength(1));
+          expect(logEntries.first.logLevel, LogLevel.warning);
+        },
+      );
+    },
+  );
 }
