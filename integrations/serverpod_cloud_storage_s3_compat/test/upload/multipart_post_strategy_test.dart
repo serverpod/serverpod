@@ -160,8 +160,8 @@ void main() {
     setUp(() {
       strategy = MultipartPostUploadStrategy();
       endpoints = CustomEndpointConfig(
-        baseUri: Uri.http('localhost:9000', '/'),
-        serviceName: 'MinIO',
+        baseUri: Uri.http('localhost:4566', '/'),
+        serviceName: 'LocalStack',
       );
     });
 
@@ -170,8 +170,8 @@ void main() {
 
       setUp(() async {
         description = await strategy.createDirectUploadDescription(
-          accessKey: 'minioadmin',
-          secretKey: 'minioadmin',
+          accessKey: 'testAccessKey',
+          secretKey: 'testSecretKey',
           bucket: 'test-bucket',
           region: 'us-east-1',
           path: 'test/file.txt',
@@ -185,7 +185,7 @@ void main() {
       test('then it contains the custom upload URL', () {
         final data = jsonDecode(description!) as Map<String, dynamic>;
 
-        expect(data['url'], 'http://localhost:9000/test-bucket');
+        expect(data['url'], 'http://localhost:4566/test-bucket');
       });
     });
   });

@@ -7,8 +7,8 @@ void main() {
 
     setUp(() {
       config = CustomEndpointConfig(
-        baseUri: Uri.http('localhost:9000', '/'),
-        serviceName: 'MinIO',
+        baseUri: Uri.http('localhost:4566', '/'),
+        serviceName: 'LocalStack',
       );
     });
 
@@ -20,7 +20,7 @@ void main() {
 
         expect(uri.scheme, 'http');
         expect(uri.host, 'localhost');
-        expect(uri.port, 9000);
+        expect(uri.port, 4566);
         expect(uri.path, '/my-bucket');
       },
     );
@@ -48,7 +48,7 @@ void main() {
 
         expect(
           uri.toString(),
-          'http://localhost:9000/my-bucket/path/to/file.txt',
+          'http://localhost:4566/my-bucket/path/to/file.txt',
         );
       },
     );
@@ -57,7 +57,7 @@ void main() {
       'when getting service name '
       'then it returns the configured name',
       () {
-        expect(config.serviceName, 'MinIO');
+        expect(config.serviceName, 'LocalStack');
       },
     );
 
@@ -119,7 +119,7 @@ void main() {
     'then it returns the default',
     () {
       final config = CustomEndpointConfig(
-        baseUri: Uri.http('localhost:9000', '/'),
+        baseUri: Uri.http('localhost:4566', '/'),
       );
 
       expect(config.serviceName, 'S3-compatible storage');

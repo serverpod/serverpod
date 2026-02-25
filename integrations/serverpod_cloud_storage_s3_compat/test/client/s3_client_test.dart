@@ -135,12 +135,12 @@ void main() {
 
     setUp(() {
       client = S3Client(
-        accessKey: 'minioadmin',
-        secretKey: 'minioadmin',
+        accessKey: 'testAccessKey',
+        secretKey: 'testSecretKey',
         bucket: 'test-bucket',
         region: 'us-east-1',
         endpoints: CustomEndpointConfig(
-          baseUri: Uri.http('localhost:9000', '/'),
+          baseUri: Uri.http('localhost:4566', '/'),
         ),
       );
     });
@@ -153,7 +153,7 @@ void main() {
 
         expect(params.uri.scheme, 'http');
         expect(params.uri.host, 'localhost');
-        expect(params.uri.port, 9000);
+        expect(params.uri.port, 4566);
       },
     );
   });

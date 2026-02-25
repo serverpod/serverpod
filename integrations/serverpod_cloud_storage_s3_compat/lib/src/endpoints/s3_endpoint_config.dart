@@ -25,7 +25,7 @@ extension UriPathExtension on Uri {
 /// Different S3-compatible providers use different URL patterns:
 /// - AWS S3: Virtual-hosted style (bucket.s3.region.amazonaws.com)
 /// - GCP: Path-style (storage.googleapis.com/bucket)
-/// - MinIO: Custom host with path-style
+/// - LocalStack: Custom host with path-style
 ///
 /// Implementations of this interface encapsulate these differences.
 abstract class S3EndpointConfig {

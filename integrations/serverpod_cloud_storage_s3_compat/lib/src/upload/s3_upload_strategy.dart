@@ -6,7 +6,7 @@ import '../endpoints/s3_endpoint_config.dart';
 /// Strategy for uploading files to S3-compatible storage.
 ///
 /// Different S3-compatible providers may use different upload mechanisms:
-/// - AWS S3, GCP, MinIO: POST with presigned policy (multipart)
+/// - AWS S3, GCP, LocalStack: POST with presigned policy (multipart)
 /// - Cloudflare R2: PUT with presigned URL
 ///
 /// Implementations of this interface encapsulate these differences.

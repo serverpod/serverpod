@@ -121,7 +121,7 @@ There are two approaches depending on whether your provider has an S3-compatible
 
 ### Option A: S3-Compatible Provider
 
-If the provider supports the S3 API (e.g., MinIO, Backblaze B2, DigitalOcean Spaces), you can reuse the shared test suite from `cloud_storage_integration_test_support`. This gives you full test coverage with minimal code.
+If the provider supports the S3 API (e.g., LocalStack, Backblaze B2, DigitalOcean Spaces), you can reuse the shared test suite from `cloud_storage_integration_test_support`. This gives you full test coverage with minimal code.
 
 Create `integrations/serverpod_cloud_storage_<provider>/test/integration/<provider>_integration_test.dart`:
 

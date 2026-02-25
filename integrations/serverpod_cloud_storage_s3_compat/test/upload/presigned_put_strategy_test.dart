@@ -318,8 +318,8 @@ void main() {
     setUp(() {
       strategy = PresignedPutUploadStrategy();
       endpoints = CustomEndpointConfig(
-        baseUri: Uri.http('localhost:9000', '/'),
-        serviceName: 'MinIO',
+        baseUri: Uri.http('localhost:4566', '/'),
+        serviceName: 'LocalStack',
       );
     });
 
@@ -328,8 +328,8 @@ void main() {
 
       setUp(() async {
         description = await strategy.createDirectUploadDescription(
-          accessKey: 'minioadmin',
-          secretKey: 'minioadmin',
+          accessKey: 'testAccessKey',
+          secretKey: 'testSecretKey',
           bucket: 'test-bucket',
           region: 'us-east-1',
           path: 'test/file.txt',
@@ -344,7 +344,7 @@ void main() {
         final data = jsonDecode(description!) as Map<String, dynamic>;
         final url = data['url'] as String;
 
-        expect(url, contains('localhost:9000'));
+        expect(url, contains('localhost:4566'));
         expect(url, contains('test-bucket'));
       });
     });

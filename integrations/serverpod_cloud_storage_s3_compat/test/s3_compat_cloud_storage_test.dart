@@ -522,17 +522,17 @@ void main() {
       final storage = TestableS3CompatCloudStorage(
         mockClient: mockClient,
         mockUploadStrategy: MockUploadStrategy(),
-        storageId: 'minio',
+        storageId: 'localstack',
         bucket: 'local-bucket',
         region: 'us-east-1',
         endpoints: CustomEndpointConfig(
-          baseUri: Uri.http('localhost:9000', '/'),
+          baseUri: Uri.http('localhost:4566', '/'),
         ),
       );
 
       final url = await storage.testGetPublicUrl('file.txt');
 
-      expect(url.toString(), 'http://localhost:9000/local-bucket/file.txt');
+      expect(url.toString(), 'http://localhost:4566/local-bucket/file.txt');
     },
   );
 }

@@ -14,13 +14,13 @@ Limitations:
 - **No native GCP support** - GCP package uses S3 compatibility layer
 - **Limited extensibility** - Adding new providers requires duplicating the entire codebase
 
-Community demand exists for additional providers (MinIO, Cloudflare R2, local filesystem).
+Community demand exists for additional providers (Cloudflare R2, local filesystem).
 
 ### Related Issues and PRs
 
 - Issue #4623: Cloud storage improvements (light)
 - Issue #3128: Cloud storage improvements RFC (comprehensive)
-- PR #4200: S3Options abstraction for MinIO/LocalStack
+- PR #4200: S3Options abstraction for LocalStack
 - PR #3938: Cloudflare R2 support
 - PR #4525: Local filesystem storage
 
@@ -50,7 +50,7 @@ integrations/
 Different providers use different URL patterns:
 - **AWS**: Virtual-hosted style (`bucket.s3.region.amazonaws.com`)
 - **GCP**: Path style (`storage.googleapis.com/bucket`)
-- **Custom**: Configurable base URI for MinIO, etc.
+- **Custom**: Configurable base URI for LocalStack, etc.
 
 ```dart
 abstract class S3EndpointConfig {
@@ -71,7 +71,7 @@ Built-in implementations: `AwsEndpointConfig`, `GcpEndpointConfig`, `R2EndpointC
 
 | Provider           | Upload Method | Request Format                       |
 | ------------------ | ------------- | ------------------------------------ |
-| AWS S3, GCP, MinIO | POST          | Multipart form with presigned policy |
+| AWS S3, GCP, LocalStack | POST          | Multipart form with presigned policy |
 | Cloudflare R2      | PUT           | Raw bytes with presigned URL         |
 
 ```dart

@@ -13,7 +13,7 @@ import 's3_upload_strategy.dart';
 /// Upload strategy using multipart POST with presigned policy.
 ///
 /// This is the standard upload mechanism for AWS S3, GCP (via S3 compatibility),
-/// and MinIO. It uses a presigned policy document to authorize uploads.
+/// and LocalStack. It uses a presigned policy document to authorize uploads.
 ///
 /// Note: This strategy does not support [preventOverwrite]. The S3 POST
 /// policy mechanism has no equivalent of `If-None-Match`. The flag is

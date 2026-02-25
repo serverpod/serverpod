@@ -2,7 +2,7 @@
 ///
 /// This package provides abstractions for building cloud storage integrations
 /// that work with S3-compatible APIs, including AWS S3, Google Cloud Storage
-/// (via S3 compatibility), Cloudflare R2, MinIO, and other providers.
+/// (via S3 compatibility), Cloudflare R2, LocalStack, and other providers.
 ///
 /// ## Key Components
 ///
@@ -18,7 +18,7 @@
 ///
 /// ### Upload Strategy
 /// - [S3UploadStrategy] - Abstract interface for upload mechanisms
-/// - [MultipartPostUploadStrategy] - POST with presigned policy (AWS, GCP, MinIO)
+/// - [MultipartPostUploadStrategy] - POST with presigned policy (AWS, GCP, LocalStack)
 /// - [PresignedPutUploadStrategy] - PUT with presigned URL (Cloudflare R2)
 ///
 /// ### S3 Client
