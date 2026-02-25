@@ -1,48 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:serverpod_client/serverpod_client.dart';
-// Testing-support library — only imported by integration tests.
-// ignore: depend_on_referenced_packages
+import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
 import 'package:test/test.dart';
 
-import '../client/s3_client.dart';
-import '../endpoints/s3_endpoint_config.dart';
-import '../upload/s3_upload_strategy.dart';
-
-/// Configuration for running S3-compatible integration tests.
-class S3CompatTestConfig {
-  /// The access key for authentication.
-  final String accessKey;
-
-  /// The secret key for authentication.
-  final String secretKey;
-
-  /// The bucket name.
-  final String bucket;
-
-  /// The region (or 'auto' for R2).
-  final String region;
-
-  /// The endpoint configuration for the provider.
-  final S3EndpointConfig endpoints;
-
-  /// The upload strategy for the provider.
-  final S3UploadStrategy uploadStrategy;
-
-  /// Human-readable provider name for test descriptions.
-  final String providerName;
-
-  /// Creates a new test configuration.
-  S3CompatTestConfig({
-    required this.accessKey,
-    required this.secretKey,
-    required this.bucket,
-    required this.region,
-    required this.endpoints,
-    required this.uploadStrategy,
-    required this.providerName,
-  });
-}
+import 's3_compat_test_config.dart';
 
 /// Runs the standard S3-compatible integration test suite.
 ///
@@ -52,17 +14,10 @@ class S3CompatTestConfig {
 ///
 /// Tests are automatically skipped if [config] is null, allowing graceful
 /// handling of missing credentials.
-///
-/// Example usage:
-/// ```dart
-/// void main() {
-///   final config = _loadConfigFromEnvironment();
-///   runS3CompatIntegrationTests(config: config);
-/// }
-/// ```
 void runS3CompatIntegrationTests({
   required S3CompatTestConfig? config,
   String? skipReason,
+  bool supportsPreventOverwrite = false,
 }) {
   final effectiveSkipReason = config == null
       ? (skipReason ?? 'Credentials not configured in environment')
@@ -472,173 +427,185 @@ void runS3CompatIntegrationTests({
         );
       });
 
-      group('when using preventOverwrite with uploadData', () {
-        test(
-          'then uploading to a new path succeeds',
-          () async {
-            final path = testPath('prevent-overwrite-new.txt');
-            final content = 'New file content';
-            final data = ByteData.view(
-              Uint8List.fromList(content.codeUnits).buffer,
-            );
+      group(
+        'when using preventOverwrite with uploadData',
+        skip: supportsPreventOverwrite
+            ? null
+            : 'Upload strategy does not support preventOverwrite',
+        () {
+          test(
+            'then uploading to a new path succeeds',
+            () async {
+              final path = testPath('prevent-overwrite-new.txt');
+              final content = 'New file content';
+              final data = ByteData.view(
+                Uint8List.fromList(content.codeUnits).buffer,
+              );
 
-            await uploadStrategy.uploadData(
-              accessKey: config!.accessKey,
-              secretKey: config.secretKey,
-              bucket: config.bucket,
-              region: config.region,
-              data: data,
-              path: path,
-              public: false,
-              endpoints: endpoints,
-              preventOverwrite: true,
-            );
-
-            final response = await client.getObject(path);
-            expect(response.statusCode, 200);
-            expect(response.body, content);
-          },
-        );
-
-        test(
-          'then uploading to an existing path throws',
-          () async {
-            final path = testPath('prevent-overwrite-existing.txt');
-            final data = ByteData.view(
-              Uint8List.fromList('original'.codeUnits).buffer,
-            );
-
-            // First upload succeeds
-            await uploadStrategy.uploadData(
-              accessKey: config!.accessKey,
-              secretKey: config.secretKey,
-              bucket: config.bucket,
-              region: config.region,
-              data: data,
-              path: path,
-              public: false,
-              endpoints: endpoints,
-            );
-
-            // Second upload with preventOverwrite should fail
-            final duplicateData = ByteData.view(
-              Uint8List.fromList('duplicate'.codeUnits).buffer,
-            );
-
-            expect(
-              () => uploadStrategy.uploadData(
-                accessKey: config.accessKey,
+              await uploadStrategy.uploadData(
+                accessKey: config!.accessKey,
                 secretKey: config.secretKey,
                 bucket: config.bucket,
                 region: config.region,
-                data: duplicateData,
+                data: data,
                 path: path,
                 public: false,
                 endpoints: endpoints,
                 preventOverwrite: true,
-              ),
-              throwsA(isA<Exception>()),
-            );
+              );
 
-            // Original content should be preserved
-            final response = await client.getObject(path);
-            expect(response.statusCode, 200);
-            expect(response.body, 'original');
-          },
-        );
-      });
+              final response = await client.getObject(path);
+              expect(response.statusCode, 200);
+              expect(response.body, content);
+            },
+          );
 
-      group('when using preventOverwrite with direct uploads', () {
-        test(
-          'then a direct upload to a new path succeeds',
-          () async {
-            final path = testPath('prevent-overwrite-direct-new.txt');
-            final content = 'New direct upload content';
-            final data = ByteData.view(
-              Uint8List.fromList(content.codeUnits).buffer,
-            );
+          test(
+            'then uploading to an existing path throws',
+            () async {
+              final path = testPath('prevent-overwrite-existing.txt');
+              final data = ByteData.view(
+                Uint8List.fromList('original'.codeUnits).buffer,
+              );
 
-            final description = await uploadStrategy
-                .createDirectUploadDescription(
-                  accessKey: config!.accessKey,
-                  secretKey: config.secretKey,
-                  bucket: config.bucket,
-                  region: config.region,
-                  path: path,
-                  expiration: Duration(minutes: 5),
-                  maxFileSize: 10 * 1024 * 1024,
-                  public: false,
-                  endpoints: endpoints,
-                  preventOverwrite: true,
-                );
+              // First upload succeeds
+              await uploadStrategy.uploadData(
+                accessKey: config!.accessKey,
+                secretKey: config.secretKey,
+                bucket: config.bucket,
+                region: config.region,
+                data: data,
+                path: path,
+                public: false,
+                endpoints: endpoints,
+              );
 
-            expect(description, isNotNull);
+              // Second upload with preventOverwrite should fail
+              final duplicateData = ByteData.view(
+                Uint8List.fromList('duplicate'.codeUnits).buffer,
+              );
 
-            final uploader = FileUploader(description!);
-            final success = await uploader.uploadByteData(data);
-
-            expect(success, isTrue);
-
-            final response = await client.getObject(path);
-            expect(response.statusCode, 200);
-            expect(response.body, content);
-          },
-        );
-
-        test(
-          'then a direct upload to an existing path fails',
-          () async {
-            final path = testPath('prevent-overwrite-direct-existing.txt');
-            final originalData = ByteData.view(
-              Uint8List.fromList('original'.codeUnits).buffer,
-            );
-
-            // First upload without preventOverwrite
-            await uploadStrategy.uploadData(
-              accessKey: config!.accessKey,
-              secretKey: config.secretKey,
-              bucket: config.bucket,
-              region: config.region,
-              data: originalData,
-              path: path,
-              public: false,
-              endpoints: endpoints,
-            );
-
-            // Create direct upload description with preventOverwrite
-            final description = await uploadStrategy
-                .createDirectUploadDescription(
+              expect(
+                () => uploadStrategy.uploadData(
                   accessKey: config.accessKey,
                   secretKey: config.secretKey,
                   bucket: config.bucket,
                   region: config.region,
+                  data: duplicateData,
                   path: path,
-                  expiration: Duration(minutes: 5),
-                  maxFileSize: 10 * 1024 * 1024,
                   public: false,
                   endpoints: endpoints,
                   preventOverwrite: true,
-                );
+                ),
+                throwsA(isA<Exception>()),
+              );
 
-            expect(description, isNotNull);
+              // Original content should be preserved
+              final response = await client.getObject(path);
+              expect(response.statusCode, 200);
+              expect(response.body, 'original');
+            },
+          );
+        },
+      );
 
-            final duplicateData = ByteData.view(
-              Uint8List.fromList('duplicate'.codeUnits).buffer,
-            );
+      group(
+        'when using preventOverwrite with direct uploads',
+        skip: supportsPreventOverwrite
+            ? null
+            : 'Upload strategy does not support preventOverwrite',
+        () {
+          test(
+            'then a direct upload to a new path succeeds',
+            () async {
+              final path = testPath('prevent-overwrite-direct-new.txt');
+              final content = 'New direct upload content';
+              final data = ByteData.view(
+                Uint8List.fromList(content.codeUnits).buffer,
+              );
 
-            // Upload should fail (returns false or throws)
-            final uploader = FileUploader(description!);
-            final success = await uploader.uploadByteData(duplicateData);
+              final description = await uploadStrategy
+                  .createDirectUploadDescription(
+                    accessKey: config!.accessKey,
+                    secretKey: config.secretKey,
+                    bucket: config.bucket,
+                    region: config.region,
+                    path: path,
+                    expiration: Duration(minutes: 5),
+                    maxFileSize: 10 * 1024 * 1024,
+                    public: false,
+                    endpoints: endpoints,
+                    preventOverwrite: true,
+                  );
 
-            expect(success, isFalse);
+              expect(description, isNotNull);
 
-            // Original content should be preserved
-            final response = await client.getObject(path);
-            expect(response.statusCode, 200);
-            expect(response.body, 'original');
-          },
-        );
-      });
+              final uploader = FileUploader(description!);
+              final success = await uploader.uploadByteData(data);
+
+              expect(success, isTrue);
+
+              final response = await client.getObject(path);
+              expect(response.statusCode, 200);
+              expect(response.body, content);
+            },
+          );
+
+          test(
+            'then a direct upload to an existing path fails',
+            () async {
+              final path = testPath('prevent-overwrite-direct-existing.txt');
+              final originalData = ByteData.view(
+                Uint8List.fromList('original'.codeUnits).buffer,
+              );
+
+              // First upload without preventOverwrite
+              await uploadStrategy.uploadData(
+                accessKey: config!.accessKey,
+                secretKey: config.secretKey,
+                bucket: config.bucket,
+                region: config.region,
+                data: originalData,
+                path: path,
+                public: false,
+                endpoints: endpoints,
+              );
+
+              // Create direct upload description with preventOverwrite
+              final description = await uploadStrategy
+                  .createDirectUploadDescription(
+                    accessKey: config.accessKey,
+                    secretKey: config.secretKey,
+                    bucket: config.bucket,
+                    region: config.region,
+                    path: path,
+                    expiration: Duration(minutes: 5),
+                    maxFileSize: 10 * 1024 * 1024,
+                    public: false,
+                    endpoints: endpoints,
+                    preventOverwrite: true,
+                  );
+
+              expect(description, isNotNull);
+
+              final duplicateData = ByteData.view(
+                Uint8List.fromList('duplicate'.codeUnits).buffer,
+              );
+
+              // Upload should fail (returns false or throws)
+              final uploader = FileUploader(description!);
+              final success = await uploader.uploadByteData(duplicateData);
+
+              expect(success, isFalse);
+
+              // Original content should be preserved
+              final response = await client.getObject(path);
+              expect(response.statusCode, 200);
+              expect(response.body, 'original');
+            },
+          );
+        },
+      );
 
       group('when working with paths containing special characters', () {
         test(

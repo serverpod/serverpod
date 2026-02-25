@@ -23,6 +23,8 @@ dependencies:
   serverpod_cloud_storage_s3_compat: 3.3.1
 
 dev_dependencies:
+  cloud_storage_integration_test_support:
+    path: ../cloud_storage_integration_test_support
   lints: ">=3.0.0 <7.0.0"
   mocktail: ^1.0.0
   serverpod_client: 3.3.1

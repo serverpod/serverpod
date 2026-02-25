@@ -4,8 +4,8 @@ library;
 
 import 'dart:io';
 
+import 'package:cloud_storage_integration_test_support/cloud_storage_integration_test_support.dart';
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
-import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat_testing.dart';
 import 'package:test/test.dart';
 
 S3CompatTestConfig? _loadConfigFromEnvironment() {

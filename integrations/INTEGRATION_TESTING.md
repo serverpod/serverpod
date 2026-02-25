@@ -121,7 +121,7 @@ There are two approaches depending on whether your provider has an S3-compatible
 
 ### Option A: S3-Compatible Provider
 
-If the provider supports the S3 API (e.g., MinIO, Backblaze B2, DigitalOcean Spaces), you can reuse the shared test suite from `serverpod_cloud_storage_s3_compat`. This gives you full test coverage with minimal code.
+If the provider supports the S3 API (e.g., MinIO, Backblaze B2, DigitalOcean Spaces), you can reuse the shared test suite from `cloud_storage_integration_test_support`. This gives you full test coverage with minimal code.
 
 Create `integrations/serverpod_cloud_storage_<provider>/test/integration/<provider>_integration_test.dart`:
 
@@ -132,8 +132,8 @@ library;
 
 import 'dart:io';
 
+import 'package:cloud_storage_integration_test_support/cloud_storage_integration_test_support.dart';
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
-import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat_testing.dart';
 import 'package:test/test.dart';
 
 S3CompatTestConfig? _loadConfigFromEnvironment() {
@@ -218,9 +218,9 @@ env:
   # Add any provider-specific variables
 ```
 
-### Add Test Dependency
+### Add Test Dependencies
 
-Ensure the package's `pubspec.yaml` template includes `test` as a dev dependency and has the `serverpod_client` override (for the `FileUploader` used in direct upload tests).
+Add `cloud_storage_integration_test_support` as a dev dependency (path dependency pointing to `../cloud_storage_integration_test_support`) and ensure the package has the `serverpod_client` override (for the `FileUploader` used in direct upload tests).
 
 ## Test Coverage
 
