@@ -382,89 +382,85 @@ void main() {
   );
 
   withServerpod(
-    'Given disabled registration and password operations,',
+    'Given unsupported legacy email methods,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       _configurePublicLegacySupport(sessionBuilder);
 
       test(
-        'when calling createAccountRequest then returns false.',
+        'when calling createAccountRequest then returns not found.',
         () async {
           final client = _createClient(sessionBuilder);
-          final result = await client.modules.auth.email.createAccountRequest(
-            'test',
-            'test@test.com',
-            'pass',
+          await expectLater(
+            client.modules.auth.email.createAccountRequest(
+              'test',
+              'test@test.com',
+              'pass',
+            ),
+            throwsA(isA<ServerpodClientNotFound>()),
           );
-
-          expect(result, isFalse);
         },
       );
 
       test(
-        'when calling changePassword then returns false.',
+        'when calling changePassword then returns not found.',
         () async {
           final client = _createClient(sessionBuilder);
-          final result = await client.modules.auth.email.changePassword(
-            'old',
-            'new',
+          await expectLater(
+            client.modules.auth.email.changePassword(
+              'old',
+              'new',
+            ),
+            throwsA(isA<ServerpodClientNotFound>()),
           );
-
-          expect(result, isFalse);
         },
       );
 
       test(
-        'when calling initiatePasswordReset then returns false.',
+        'when calling initiatePasswordReset then returns not found.',
         () async {
           final client = _createClient(sessionBuilder);
-          final result = await client.modules.auth.email.initiatePasswordReset(
-            'test@test.com',
+          await expectLater(
+            client.modules.auth.email.initiatePasswordReset(
+              'test@test.com',
+            ),
+            throwsA(isA<ServerpodClientNotFound>()),
           );
-
-          expect(result, isFalse);
         },
       );
     },
   );
 
   withServerpod(
-    'Given social auth stubs,',
+    'Given unsupported legacy social auth endpoints,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       _configurePublicLegacySupport(sessionBuilder);
 
       test(
-        'when calling Google authenticate then returns internalError.',
+        'when calling Google authenticate then returns not found.',
         () async {
           final client = _createClient(sessionBuilder);
-          final result = await client.modules.auth.google
-              .authenticateWithIdToken(
-                'fake-token',
-              );
-
-          expect(result.success, isFalse);
-          expect(
-            result.failReason,
-            equals(legacy_auth.AuthenticationFailReason.internalError),
+          await expectLater(
+            client.modules.auth.google.authenticateWithIdToken(
+              'fake-token',
+            ),
+            throwsA(isA<ServerpodClientNotFound>()),
           );
         },
       );
 
       test(
-        'when calling Firebase authenticate then returns internalError.',
+        'when calling Firebase authenticate then returns not found.',
         () async {
           final client = _createClient(sessionBuilder);
-          final result = await client.modules.auth.firebase.authenticate(
-            'fake-token',
-          );
-
-          expect(result.success, isFalse);
-          expect(
-            result.failReason,
-            equals(legacy_auth.AuthenticationFailReason.internalError),
+          await expectLater(
+            client.modules.auth.firebase.authenticate(
+              'fake-token',
+            ),
+            throwsA(isA<ServerpodClientNotFound>()),
           );
         },
       );
