@@ -195,23 +195,13 @@ class PostgresDatabaseConnection
       ignoreConflicts: ignoreConflicts,
     ).build();
 
-    var dbResults = await _mappedResultsQuery(
-      session,
-      query,
-      transaction: transaction,
-    );
-
-    // When ignoring conflicts, RETURNING only yields actually inserted rows,
-    // so we can't match them back to input rows by index. Skip the merge step.
-    if (ignoreConflicts) {
-      return dbResults
-          .map(poolManager.serializationManager.deserialize<T>)
-          .toList();
-    }
-
-    return _mergeResultsWithNonPersistedFields(rows)(
-      dbResults,
-    ).map(poolManager.serializationManager.deserialize<T>).toList();
+    return (await _mappedResultsQuery(
+          session,
+          query,
+          transaction: transaction,
+        ).then((_mergeResultsWithNonPersistedFields(rows))))
+        .map(poolManager.serializationManager.deserialize<T>)
+        .toList();
   }
 
   @override
