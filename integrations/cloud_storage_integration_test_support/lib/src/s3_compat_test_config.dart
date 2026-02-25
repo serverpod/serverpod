@@ -33,4 +33,25 @@ class S3CompatTestConfig {
     required this.uploadStrategy,
     required this.providerName,
   });
+
+  /// Creates a copy with the given fields replaced.
+  S3CompatTestConfig copyWith({
+    String? accessKey,
+    String? secretKey,
+    String? bucket,
+    String? region,
+    S3EndpointConfig? endpoints,
+    S3UploadStrategy? uploadStrategy,
+    String? providerName,
+  }) {
+    return S3CompatTestConfig(
+      accessKey: accessKey ?? this.accessKey,
+      secretKey: secretKey ?? this.secretKey,
+      bucket: bucket ?? this.bucket,
+      region: region ?? this.region,
+      endpoints: endpoints ?? this.endpoints,
+      uploadStrategy: uploadStrategy ?? this.uploadStrategy,
+      providerName: providerName ?? this.providerName,
+    );
+  }
 }

@@ -36,6 +36,7 @@ S3CompatTestConfig? _loadConfigFromEnvironment() {
 void main() {
   runS3CompatIntegrationTests(
     config: _loadConfigFromEnvironment(),
+    supportsPreventOverwrite: true,
     skipReason:
         'R2 credentials not configured in environment. '
         'Set SERVERPOD_TEST_R2_HMAC_ACCESS_KEY_ID, SERVERPOD_TEST_R2_HMAC_SECRET_KEY, '

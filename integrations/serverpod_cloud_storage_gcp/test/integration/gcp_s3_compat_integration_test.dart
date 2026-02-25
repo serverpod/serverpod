@@ -36,11 +36,23 @@ S3CompatTestConfig? _loadConfigFromEnvironment() {
 }
 
 void main() {
+  final config = _loadConfigFromEnvironment();
+  const skipReason =
+      'GCP HMAC credentials not configured in environment. '
+      'Set SERVERPOD_TEST_GCP_HMAC_ACCESS_KEY_ID, SERVERPOD_TEST_GCP_HMAC_SECRET_KEY, '
+      'and SERVERPOD_TEST_GCP_BUCKET to run these tests.';
+
   runS3CompatIntegrationTests(
-    config: _loadConfigFromEnvironment(),
-    skipReason:
-        'GCP HMAC credentials not configured in environment. '
-        'Set SERVERPOD_TEST_GCP_HMAC_ACCESS_KEY_ID, SERVERPOD_TEST_GCP_HMAC_SECRET_KEY, '
-        'and SERVERPOD_TEST_GCP_BUCKET to run these tests.',
+    config: config,
+    skipReason: skipReason,
+  );
+
+  runS3CompatIntegrationTests(
+    config: config?.copyWith(
+      uploadStrategy: PresignedPutUploadStrategy(),
+      providerName: 'GCP S3-compatible (PresignedPut)',
+    ),
+    supportsPreventOverwrite: true,
+    skipReason: skipReason,
   );
 }
