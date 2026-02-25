@@ -15,8 +15,7 @@
             "type": "dart",
             "program": "bin/main.dart",
             "args": [
-                "--role",
-                "monolith"
+                "--apply-migrations"
             ]
         }
     ],
