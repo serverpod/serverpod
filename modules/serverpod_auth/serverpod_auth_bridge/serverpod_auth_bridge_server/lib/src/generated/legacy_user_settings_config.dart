@@ -34,11 +34,21 @@ abstract class LegacyUserSettingsConfig
     Map<String, dynamic> jsonSerialization,
   ) {
     return LegacyUserSettingsConfig(
-      canSeeUserName: jsonSerialization['canSeeUserName'] as bool,
-      canSeeFullName: jsonSerialization['canSeeFullName'] as bool,
-      canEditUserName: jsonSerialization['canEditUserName'] as bool,
-      canEditFullName: jsonSerialization['canEditFullName'] as bool,
-      canEditUserImage: jsonSerialization['canEditUserImage'] as bool,
+      canSeeUserName: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['canSeeUserName'],
+      ),
+      canSeeFullName: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['canSeeFullName'],
+      ),
+      canEditUserName: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['canEditUserName'],
+      ),
+      canEditFullName: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['canEditFullName'],
+      ),
+      canEditUserImage: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['canEditUserImage'],
+      ),
     );
   }
 

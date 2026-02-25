@@ -52,7 +52,7 @@ abstract class LegacyUserInfo
       scopeNames: _i2.Protocol().deserialize<List<String>>(
         jsonSerialization['scopeNames'],
       ),
-      blocked: jsonSerialization['blocked'] as bool,
+      blocked: _i1.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
     );
   }
 

@@ -38,7 +38,7 @@ abstract class LegacyAuthenticationResponse
     Map<String, dynamic> jsonSerialization,
   ) {
     return LegacyAuthenticationResponse(
-      success: jsonSerialization['success'] as bool,
+      success: _i1.BoolJsonExtension.fromJson(jsonSerialization['success']),
       key: jsonSerialization['key'] as String?,
       keyId: jsonSerialization['keyId'] as int?,
       userInfo: jsonSerialization['userInfo'] == null
