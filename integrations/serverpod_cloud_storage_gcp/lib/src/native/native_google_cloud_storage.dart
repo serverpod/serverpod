@@ -29,7 +29,8 @@ import 'package:serverpod/serverpod.dart';
 ///   public: true,
 /// ));
 /// ```
-class NativeGoogleCloudStorage extends CloudStorage {
+class NativeGoogleCloudStorage extends CloudStorage
+    with CloudStorageWithOptions {
   /// The GCS bucket name.
   final String bucket;
 
@@ -249,7 +250,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required ByteData byteData,
     DateTime? expiration,
     bool verified = true,
-    bool preventOverwrite = false,
   }) async {
     final media = gcs.Media(
       Stream.value(Uint8List.sublistView(byteData)),
@@ -265,7 +265,6 @@ class NativeGoogleCloudStorage extends CloudStorage {
       bucket,
       uploadMedia: media,
       predefinedAcl: public ? 'publicRead' : null,
-      ifGenerationMatch: preventOverwrite ? '0' : null,
     );
   }
 
@@ -340,12 +339,77 @@ class NativeGoogleCloudStorage extends CloudStorage {
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
-    int? contentLength,
-    bool preventOverwrite = false,
   }) async {
-    if (contentLength != null && contentLength > maxFileSize) {
+    final signingContext = _signingContext;
+    if (signingContext == null) {
+      return null;
+    }
+
+    final fileName = p.basename(path);
+    final contentType = lookupMimeType(fileName) ?? 'application/octet-stream';
+    final acl = public ? 'public-read' : 'private';
+
+    final headers = <String, String>{
+      'Content-Type': contentType,
+      'x-goog-acl': acl,
+    };
+
+    final signedUrl = await _createSignedUrl(
+      signingContext: signingContext,
+      bucket: bucket,
+      path: path,
+      expiration: expirationDuration,
+      method: 'PUT',
+      headers: headers,
+    );
+
+    return jsonEncode({
+      'url': signedUrl,
+      'type': 'binary',
+      'method': 'PUT',
+      'file-name': fileName,
+      'headers': headers,
+    });
+  }
+
+  @override
+  Future<void> storeFileWithOptions({
+    required Session session,
+    required String path,
+    required ByteData byteData,
+    DateTime? expiration,
+    bool verified = true,
+    required CloudStorageOptions options,
+  }) async {
+    final media = gcs.Media(
+      Stream.value(Uint8List.sublistView(byteData)),
+      byteData.lengthInBytes,
+    );
+
+    final object = gcs.Object()
+      ..name = path
+      ..bucket = bucket;
+
+    await _storageApi.objects.insert(
+      object,
+      bucket,
+      uploadMedia: media,
+      predefinedAcl: public ? 'publicRead' : null,
+      ifGenerationMatch: options.preventOverwrite ? '0' : null,
+    );
+  }
+
+  @override
+  Future<String?> createDirectFileUploadDescriptionWithOptions({
+    required Session session,
+    required String path,
+    Duration expirationDuration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
+    required CloudStorageOptions options,
+  }) async {
+    if (options.contentLength != null && options.contentLength! > maxFileSize) {
       throw CloudStorageException(
-        'Content length ($contentLength bytes) exceeds maximum file size ($maxFileSize bytes).',
+        'Content length (${options.contentLength} bytes) exceeds maximum file size ($maxFileSize bytes).',
       );
     }
 
@@ -362,10 +426,10 @@ class NativeGoogleCloudStorage extends CloudStorage {
       'Content-Type': contentType,
       'x-goog-acl': acl,
     };
-    if (contentLength != null) {
-      headers['Content-Length'] = contentLength.toString();
+    if (options.contentLength != null) {
+      headers['Content-Length'] = options.contentLength.toString();
     }
-    if (preventOverwrite) {
+    if (options.preventOverwrite) {
       headers['x-goog-if-generation-match'] = '0';
     }
 

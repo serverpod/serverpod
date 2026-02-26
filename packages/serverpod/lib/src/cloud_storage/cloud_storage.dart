@@ -26,17 +26,12 @@ abstract class CloudStorage {
   /// path should be relative to the root directory of the storage (i.e. the
   /// string shouldn't start with a slash).
   /// This method should throw an IOException if the file upload fails.
-  ///
-  /// When [preventOverwrite] is true, the upload will fail if an object
-  /// already exists at the given [path]. Not all storage implementations
-  /// support this — those that don't will ignore the flag.
   Future<void> storeFile({
     required Session session,
     required String path,
     required ByteData byteData,
     DateTime? expiration,
     bool verified = true,
-    bool preventOverwrite = false,
   });
 
   /// Retrieves a file from the cloud storage or null if no such file exists.
@@ -71,19 +66,11 @@ abstract class CloudStorage {
   /// within the specified duration. After the file has been sent, the
   /// [verifyDirectFileUpload] method should be called. If the file upload
   /// hasn't been confirmed before the URL expires, the file will be deleted.
-  ///
-  /// When [preventOverwrite] is true, the upload will fail if an object
-  /// already exists at the given [path]. This can be used to prevent race
-  /// conditions where two clients upload to the same path simultaneously.
-  /// Not all storage implementations support this — those that don't will
-  /// ignore the flag.
   Future<String?> createDirectFileUploadDescription({
     required Session session,
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
-    int? contentLength,
-    bool preventOverwrite = false,
   });
 
   /// Call this method once a direct file upload is completed. Failure to call
@@ -91,6 +78,55 @@ abstract class CloudStorage {
   Future<bool> verifyDirectFileUpload({
     required Session session,
     required String path,
+  });
+}
+
+/// Options for cloud storage upload operations.
+///
+/// This class is `final` so that new fields can be added in minor versions
+/// without breaking existing code.
+final class CloudStorageOptions {
+  /// When set, the implementation may use this to enforce or optimize
+  /// the upload size.
+  final int? contentLength;
+
+  /// When true, the upload should fail if an object already exists at the
+  /// given path.
+  final bool preventOverwrite;
+
+  /// Creates a new [CloudStorageOptions].
+  const CloudStorageOptions({
+    this.contentLength,
+    this.preventOverwrite = false,
+  });
+}
+
+/// Mixin for [CloudStorage] implementations that support extended options.
+///
+/// Implementations that mix this in will have their extended methods called
+/// by [StorageAccess] when callers provide [CloudStorageOptions].
+///
+/// Storage implementations that don't mix this in will simply have the
+/// options ignored — the base [CloudStorage] methods are called instead.
+mixin CloudStorageWithOptions on CloudStorage {
+  /// Like [CloudStorage.storeFile] but with additional [options].
+  Future<void> storeFileWithOptions({
+    required Session session,
+    required String path,
+    required ByteData byteData,
+    DateTime? expiration,
+    bool verified = true,
+    required CloudStorageOptions options,
+  });
+
+  /// Like [CloudStorage.createDirectFileUploadDescription] but with
+  /// additional [options].
+  Future<String?> createDirectFileUploadDescriptionWithOptions({
+    required Session session,
+    required String path,
+    Duration expirationDuration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
+    required CloudStorageOptions options,
   });
 }
 

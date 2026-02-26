@@ -440,7 +440,7 @@ class FutureCallSession extends Session {
 }
 
 /// Collects methods for accessing cloud storage.
-class StorageAccess {
+final class StorageAccess {
   final Session _session;
 
   StorageAccess._(this._session);
@@ -449,24 +449,39 @@ class StorageAccess {
   /// 'private'. The public storage can be accessed through a public URL. The
   /// file is stored at the [path] relative to the cloud storage root directory,
   /// if a file already exists it will be replaced.
+  ///
+  /// If [options] is provided and the storage implementation supports
+  /// [CloudStorageWithOptions], the extended method will be called.
+  /// Otherwise, the base [CloudStorage.storeFile] method is used and
+  /// [options] is ignored.
   Future<void> storeFile({
     required String storageId,
     required String path,
     required ByteData byteData,
     DateTime? expiration,
-    bool preventOverwrite = false,
+    CloudStorageOptions? options,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    await storage.storeFile(
-      session: _session,
-      path: path,
-      byteData: byteData,
-      preventOverwrite: preventOverwrite,
-    );
+    if (options != null && storage is CloudStorageWithOptions) {
+      await storage.storeFileWithOptions(
+        session: _session,
+        path: path,
+        byteData: byteData,
+        expiration: expiration,
+        options: options,
+      );
+    } else {
+      await storage.storeFile(
+        session: _session,
+        path: path,
+        byteData: byteData,
+        expiration: expiration,
+      );
+    }
   }
 
   /// Retrieve a file from cloud storage.
@@ -537,27 +552,39 @@ class StorageAccess {
   /// [FileUploader]. After the file has been uploaded, the
   /// [verifyDirectFileUpload] method should be called, or the file may be
   /// deleted.
+  ///
+  /// If [options] is provided and the storage implementation supports
+  /// [CloudStorageWithOptions], the extended method will be called.
+  /// Otherwise, the base [CloudStorage.createDirectFileUploadDescription]
+  /// method is used and [options] is ignored.
   Future<String?> createDirectFileUploadDescription({
     required String storageId,
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
-    int? contentLength,
-    bool preventOverwrite = false,
+    CloudStorageOptions? options,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    return await storage.createDirectFileUploadDescription(
-      session: _session,
-      path: path,
-      expirationDuration: expirationDuration,
-      maxFileSize: maxFileSize,
-      contentLength: contentLength,
-      preventOverwrite: preventOverwrite,
-    );
+    if (options != null && storage is CloudStorageWithOptions) {
+      return await storage.createDirectFileUploadDescriptionWithOptions(
+        session: _session,
+        path: path,
+        expirationDuration: expirationDuration,
+        maxFileSize: maxFileSize,
+        options: options,
+      );
+    } else {
+      return await storage.createDirectFileUploadDescription(
+        session: _session,
+        path: path,
+        expirationDuration: expirationDuration,
+        maxFileSize: maxFileSize,
+      );
+    }
   }
 
   /// Call this method after a file has been uploaded. It will return true

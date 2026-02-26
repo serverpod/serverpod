@@ -214,11 +214,11 @@ void main() {
           ).thenAnswer((_) async => MockObject());
 
           final data = ByteData(5);
-          await storage.storeFile(
+          await storage.storeFileWithOptions(
             session: mockSession,
             path: 'upload/test.txt',
             byteData: data,
-            preventOverwrite: true,
+            options: CloudStorageOptions(preventOverwrite: true),
           );
 
           verify(
@@ -631,11 +631,12 @@ void main() {
 
     group('when creating direct upload description with contentLength', () {
       test('then it includes Content-Length in headers', () async {
-        final description = await storage.createDirectFileUploadDescription(
-          session: mockSession,
-          path: 'uploads/test-file.txt',
-          contentLength: 5000,
-        );
+        final description = await storage
+            .createDirectFileUploadDescriptionWithOptions(
+              session: mockSession,
+              path: 'uploads/test-file.txt',
+              options: CloudStorageOptions(contentLength: 5000),
+            );
 
         final data = jsonDecode(description!) as Map<String, dynamic>;
         expect(data['headers']['Content-Length'], '5000');
@@ -644,11 +645,12 @@ void main() {
       test(
         'then the signed URL includes content-length in signed headers',
         () async {
-          final description = await storage.createDirectFileUploadDescription(
-            session: mockSession,
-            path: 'uploads/test-file.txt',
-            contentLength: 5000,
-          );
+          final description = await storage
+              .createDirectFileUploadDescriptionWithOptions(
+                session: mockSession,
+                path: 'uploads/test-file.txt',
+                options: CloudStorageOptions(contentLength: 5000),
+              );
 
           final data = jsonDecode(description!) as Map<String, dynamic>;
           final url = data['url'] as String;
@@ -661,11 +663,11 @@ void main() {
         'then it throws when contentLength exceeds maxFileSize',
         () async {
           expect(
-            () => storage.createDirectFileUploadDescription(
+            () => storage.createDirectFileUploadDescriptionWithOptions(
               session: mockSession,
               path: 'uploads/test-file.txt',
               maxFileSize: 1024,
-              contentLength: 2048,
+              options: CloudStorageOptions(contentLength: 2048),
             ),
             throwsA(isA<CloudStorageException>()),
           );
@@ -675,12 +677,13 @@ void main() {
       test(
         'then it succeeds when contentLength equals maxFileSize',
         () async {
-          final description = await storage.createDirectFileUploadDescription(
-            session: mockSession,
-            path: 'uploads/test-file.txt',
-            maxFileSize: 5000,
-            contentLength: 5000,
-          );
+          final description = await storage
+              .createDirectFileUploadDescriptionWithOptions(
+                session: mockSession,
+                path: 'uploads/test-file.txt',
+                maxFileSize: 5000,
+                options: CloudStorageOptions(contentLength: 5000),
+              );
 
           expect(description, isNotNull);
           final data = jsonDecode(description!) as Map<String, dynamic>;
@@ -707,11 +710,12 @@ void main() {
       test(
         'then it includes x-goog-if-generation-match header set to 0',
         () async {
-          final description = await storage.createDirectFileUploadDescription(
-            session: mockSession,
-            path: 'uploads/test-file.txt',
-            preventOverwrite: true,
-          );
+          final description = await storage
+              .createDirectFileUploadDescriptionWithOptions(
+                session: mockSession,
+                path: 'uploads/test-file.txt',
+                options: CloudStorageOptions(preventOverwrite: true),
+              );
 
           final data = jsonDecode(description!) as Map<String, dynamic>;
           final headers = data['headers'] as Map<String, dynamic>;
@@ -723,11 +727,12 @@ void main() {
       test(
         'then the signed URL includes x-goog-if-generation-match in signed headers',
         () async {
-          final description = await storage.createDirectFileUploadDescription(
-            session: mockSession,
-            path: 'uploads/test-file.txt',
-            preventOverwrite: true,
-          );
+          final description = await storage
+              .createDirectFileUploadDescriptionWithOptions(
+                session: mockSession,
+                path: 'uploads/test-file.txt',
+                options: CloudStorageOptions(preventOverwrite: true),
+              );
 
           final data = jsonDecode(description!) as Map<String, dynamic>;
           final url = data['url'] as String;

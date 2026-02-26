@@ -359,13 +359,14 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          final description = await storage.createDirectFileUploadDescription(
-            session: session,
-            path: path,
-            expirationDuration: Duration(minutes: 5),
-            maxFileSize: 10 * 1024 * 1024,
-            contentLength: data.lengthInBytes,
-          );
+          final description = await storage
+              .createDirectFileUploadDescriptionWithOptions(
+                session: session,
+                path: path,
+                expirationDuration: Duration(minutes: 5),
+                maxFileSize: 10 * 1024 * 1024,
+                options: CloudStorageOptions(contentLength: data.lengthInBytes),
+              );
 
           expect(description, isNotNull);
 
@@ -467,7 +468,7 @@ void main() {
       );
     });
 
-    group('when using preventOverwrite with storeFile', () {
+    group('when using preventOverwrite with storeFileWithOptions', () {
       test(
         'then uploading to a new path succeeds',
         () async {
@@ -477,11 +478,11 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          await storage.storeFile(
+          await storage.storeFileWithOptions(
             session: session,
             path: path,
             byteData: data,
-            preventOverwrite: true,
+            options: CloudStorageOptions(preventOverwrite: true),
           );
 
           final retrieved = await storage.retrieveFile(
@@ -518,11 +519,11 @@ void main() {
           );
 
           expect(
-            () => storage.storeFile(
+            () => storage.storeFileWithOptions(
               session: session,
               path: path,
               byteData: duplicateData,
-              preventOverwrite: true,
+              options: CloudStorageOptions(preventOverwrite: true),
             ),
             throwsA(isA<Exception>()),
           );
@@ -552,13 +553,14 @@ void main() {
             Uint8List.fromList(content.codeUnits).buffer,
           );
 
-          final description = await storage.createDirectFileUploadDescription(
-            session: session,
-            path: path,
-            expirationDuration: Duration(minutes: 5),
-            maxFileSize: 10 * 1024 * 1024,
-            preventOverwrite: true,
-          );
+          final description = await storage
+              .createDirectFileUploadDescriptionWithOptions(
+                session: session,
+                path: path,
+                expirationDuration: Duration(minutes: 5),
+                maxFileSize: 10 * 1024 * 1024,
+                options: CloudStorageOptions(preventOverwrite: true),
+              );
 
           expect(description, isNotNull);
 
@@ -596,13 +598,14 @@ void main() {
           );
 
           // Create direct upload description with preventOverwrite
-          final description = await storage.createDirectFileUploadDescription(
-            session: session,
-            path: path,
-            expirationDuration: Duration(minutes: 5),
-            maxFileSize: 10 * 1024 * 1024,
-            preventOverwrite: true,
-          );
+          final description = await storage
+              .createDirectFileUploadDescriptionWithOptions(
+                session: session,
+                path: path,
+                expirationDuration: Duration(minutes: 5),
+                maxFileSize: 10 * 1024 * 1024,
+                options: CloudStorageOptions(preventOverwrite: true),
+              );
 
           expect(description, isNotNull);
 

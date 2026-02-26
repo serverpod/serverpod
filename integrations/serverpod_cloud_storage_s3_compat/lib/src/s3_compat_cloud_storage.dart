@@ -30,7 +30,7 @@ import 'upload/s3_upload_strategy.dart';
 ///       );
 /// }
 /// ```
-class S3CompatCloudStorage extends CloudStorage {
+class S3CompatCloudStorage extends CloudStorage with CloudStorageWithOptions {
   /// The access key for S3 authentication.
   final String accessKey;
 
@@ -102,7 +102,6 @@ class S3CompatCloudStorage extends CloudStorage {
     required ByteData byteData,
     DateTime? expiration,
     bool verified = true,
-    bool preventOverwrite = false,
   }) async {
     await uploadStrategy.uploadData(
       accessKey: accessKey,
@@ -113,7 +112,6 @@ class S3CompatCloudStorage extends CloudStorage {
       path: path,
       public: public,
       endpoints: endpoints,
-      preventOverwrite: preventOverwrite,
     );
   }
 
@@ -179,12 +177,53 @@ class S3CompatCloudStorage extends CloudStorage {
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
-    int? contentLength,
-    bool preventOverwrite = false,
   }) async {
-    if (contentLength != null && contentLength > maxFileSize) {
+    return uploadStrategy.createDirectUploadDescription(
+      accessKey: accessKey,
+      secretKey: secretKey,
+      bucket: bucket,
+      region: region,
+      path: path,
+      expiration: expirationDuration,
+      maxFileSize: maxFileSize,
+      public: public,
+      endpoints: endpoints,
+    );
+  }
+
+  @override
+  Future<void> storeFileWithOptions({
+    required Session session,
+    required String path,
+    required ByteData byteData,
+    DateTime? expiration,
+    bool verified = true,
+    required CloudStorageOptions options,
+  }) async {
+    await uploadStrategy.uploadData(
+      accessKey: accessKey,
+      secretKey: secretKey,
+      bucket: bucket,
+      region: region,
+      data: byteData,
+      path: path,
+      public: public,
+      endpoints: endpoints,
+      preventOverwrite: options.preventOverwrite,
+    );
+  }
+
+  @override
+  Future<String?> createDirectFileUploadDescriptionWithOptions({
+    required Session session,
+    required String path,
+    Duration expirationDuration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
+    required CloudStorageOptions options,
+  }) async {
+    if (options.contentLength != null && options.contentLength! > maxFileSize) {
       throw CloudStorageException(
-        'Content length ($contentLength bytes) exceeds maximum file size ($maxFileSize bytes).',
+        'Content length (${options.contentLength} bytes) exceeds maximum file size ($maxFileSize bytes).',
       );
     }
 
@@ -198,8 +237,8 @@ class S3CompatCloudStorage extends CloudStorage {
       maxFileSize: maxFileSize,
       public: public,
       endpoints: endpoints,
-      contentLength: contentLength,
-      preventOverwrite: preventOverwrite,
+      contentLength: options.contentLength,
+      preventOverwrite: options.preventOverwrite,
     );
   }
 

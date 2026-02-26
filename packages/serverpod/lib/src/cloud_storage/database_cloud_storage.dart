@@ -10,7 +10,7 @@ import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 /// binary files. It's the default [CloudStorage] interface of Serverpod, but
 /// you may want to replace it with a more robust service depending on your
 /// needs, especially in your production environment.
-class DatabaseCloudStorage extends CloudStorage {
+class DatabaseCloudStorage extends CloudStorage with CloudStorageWithOptions {
   /// Creates a new [DatabaseCloudStorage].
   DatabaseCloudStorage(super.storageId);
 
@@ -99,7 +99,6 @@ class DatabaseCloudStorage extends CloudStorage {
     required ByteData byteData,
     DateTime? expiration,
     bool verified = true,
-    bool preventOverwrite = false,
   }) async {
     var addedTime = DateTime.now().toUtc();
     var encoded = byteData.base64encodedString();
@@ -118,14 +117,7 @@ class DatabaseCloudStorage extends CloudStorage {
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
-    int? contentLength,
-    bool preventOverwrite = false,
   }) async {
-    if (contentLength != null && contentLength > maxFileSize) {
-      throw CloudStorageException(
-        'Content length ($contentLength bytes) exceeds maximum file size ($maxFileSize bytes).',
-      );
-    }
     var config = session.server.serverpod.config;
 
     var expiration = DateTime.now().add(expirationDuration);
@@ -159,6 +151,46 @@ class DatabaseCloudStorage extends CloudStorage {
     };
 
     return SerializationManager.encode(uploadDescriptionData);
+  }
+
+  @override
+  Future<void> storeFileWithOptions({
+    required Session session,
+    required String path,
+    required ByteData byteData,
+    DateTime? expiration,
+    bool verified = true,
+    required CloudStorageOptions options,
+  }) async {
+    // preventOverwrite is not supported for database storage.
+    await storeFile(
+      session: session,
+      path: path,
+      byteData: byteData,
+      expiration: expiration,
+      verified: verified,
+    );
+  }
+
+  @override
+  Future<String?> createDirectFileUploadDescriptionWithOptions({
+    required Session session,
+    required String path,
+    Duration expirationDuration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
+    required CloudStorageOptions options,
+  }) async {
+    if (options.contentLength != null && options.contentLength! > maxFileSize) {
+      throw CloudStorageException(
+        'Content length (${options.contentLength} bytes) exceeds maximum file size ($maxFileSize bytes).',
+      );
+    }
+    return createDirectFileUploadDescription(
+      session: session,
+      path: path,
+      expirationDuration: expirationDuration,
+      maxFileSize: maxFileSize,
+    );
   }
 
   /// Returns true if the specified file has been successfully uploaded to the
