@@ -450,29 +450,27 @@ final class StorageAccess {
   /// file is stored at the [path] relative to the cloud storage root directory,
   /// if a file already exists it will be replaced.
   ///
-  /// If [options] is provided and the storage implementation supports
-  /// [CloudStorageWithOptions], the extended method will be called.
-  /// Otherwise, the base [CloudStorage.storeFile] method is used and
-  /// [options] is ignored.
+  /// Set [preventOverwrite] to true to prevent overwriting existing files
+  /// (supported by some storage implementations).
   Future<void> storeFile({
     required String storageId,
     required String path,
     required ByteData byteData,
     DateTime? expiration,
-    CloudStorageOptions? options,
+    bool preventOverwrite = false,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    if (options != null && storage is CloudStorageWithOptions) {
+    if (preventOverwrite && storage is CloudStorageWithOptions) {
       await storage.storeFileWithOptions(
         session: _session,
         path: path,
         byteData: byteData,
         expiration: expiration,
-        options: options,
+        options: CloudStorageOptions(preventOverwrite: preventOverwrite),
       );
     } else {
       await storage.storeFile(
@@ -553,29 +551,33 @@ final class StorageAccess {
   /// [verifyDirectFileUpload] method should be called, or the file may be
   /// deleted.
   ///
-  /// If [options] is provided and the storage implementation supports
-  /// [CloudStorageWithOptions], the extended method will be called.
-  /// Otherwise, the base [CloudStorage.createDirectFileUploadDescription]
-  /// method is used and [options] is ignored.
+  /// [contentLength] hints the exact upload size to the storage provider.
+  /// [preventOverwrite] prevents overwriting existing files (supported by
+  /// some storage implementations).
   Future<String?> createDirectFileUploadDescription({
     required String storageId,
     required String path,
     Duration expirationDuration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
-    CloudStorageOptions? options,
+    int? contentLength,
+    bool preventOverwrite = false,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    if (options != null && storage is CloudStorageWithOptions) {
+    final hasOptions = contentLength != null || preventOverwrite;
+    if (hasOptions && storage is CloudStorageWithOptions) {
       return await storage.createDirectFileUploadDescriptionWithOptions(
         session: _session,
         path: path,
         expirationDuration: expirationDuration,
         maxFileSize: maxFileSize,
-        options: options,
+        options: CloudStorageOptions(
+          contentLength: contentLength,
+          preventOverwrite: preventOverwrite,
+        ),
       );
     } else {
       return await storage.createDirectFileUploadDescription(
