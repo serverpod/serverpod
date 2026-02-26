@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:math' as math;
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:cli_tools/execute.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/create/generate_files.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
@@ -161,12 +163,11 @@ Future<bool> performCreate(
     });
   }
 
-  success &= await log.progress('Running serverpod generator', () async {
-    return await GenerateFiles.generateFiles(
-      serverpodDirs.serverDir,
-      interactive: interactive,
-    );
-  });
+  success &= await _runGenerateInIsolate(
+    serverpodDirs.serverDir,
+    CommandLineExperimentalFeatures.instance.features,
+    interactive: interactive,
+  );
 
   if (template == ServerpodTemplateType.server ||
       template == ServerpodTemplateType.module) {
@@ -284,12 +285,11 @@ Future<bool> _performUpgrade(
     },
   );
 
-  success &= await log.progress('Running serverpod generator', () async {
-    return await GenerateFiles.generateFiles(
-      serverpodDir.serverDir,
-      interactive: interactive,
-    );
-  });
+  success &= await _runGenerateInIsolate(
+    serverpodDir.serverDir,
+    CommandLineExperimentalFeatures.instance.features,
+    interactive: interactive,
+  );
 
   success &= await log.progress('Creating default database migration.', () {
     return DatabaseSetup.createDefaultMigration(
@@ -1074,6 +1074,23 @@ void _copyModuleTemplates(
       '${name}_server',
     ],
   );
+}
+
+Future<bool> _runGenerateInIsolate(
+  Directory serverDir,
+  List<ExperimentalFeature> experimentalFeatures, {
+  required bool? interactive,
+}) {
+  final serverDirPath = serverDir.path;
+  return log.progress('Running serverpod generator', () async {
+    return await Isolate.run(() {
+      CommandLineExperimentalFeatures.initialize(experimentalFeatures);
+      return GenerateFiles.generateFiles(
+        Directory(serverDirPath),
+        interactive: interactive,
+      );
+    });
+  });
 }
 
 Script? _locateFlutterBuildScript(Directory serverDir) {
