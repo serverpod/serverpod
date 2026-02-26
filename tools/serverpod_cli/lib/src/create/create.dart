@@ -546,6 +546,7 @@ Future<void> _copyServerUpgrade(
   var awsName = name.replaceAll('_', '-');
   var randomAwsId = math.Random.secure().nextInt(10000000).toString();
 
+  var dbPassword = generateRandomString();
   var dbTestPassword = generateRandomString();
   var redisTestPassword = generateRandomString();
 
@@ -589,7 +590,7 @@ Future<void> _copyServerUpgrade(
       ),
       Replacement(
         slotName: 'DB_PASSWORD',
-        replacement: generateRandomString(),
+        replacement: dbPassword,
       ),
       Replacement(
         slotName: 'DB_TEST_PASSWORD',
@@ -732,6 +733,10 @@ Future<void> _copyServerUpgrade(
         Replacement(
           slotName: 'projectname',
           replacement: name,
+        ),
+        Replacement(
+          slotName: 'DB_PASSWORD',
+          replacement: dbPassword,
         ),
       ],
       fileNameReplacements: [],

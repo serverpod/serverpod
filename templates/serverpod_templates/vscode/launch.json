@@ -14,6 +14,9 @@
             "request": "launch",
             "type": "dart",
             "program": "bin/main.dart",
+            "env": {
+                "SERVERPOD_PASSWORD_database": "DB_PASSWORD"
+            },
             "args": [
                 "--apply-migrations"
             ]
