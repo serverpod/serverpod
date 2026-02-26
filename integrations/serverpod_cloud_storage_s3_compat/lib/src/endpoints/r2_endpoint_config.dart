@@ -7,7 +7,7 @@ import 's3_endpoint_config.dart';
 /// - Public URLs: `bucket.accountId.r2.dev` (or custom domain)
 ///
 /// R2 uses 'auto' as the region for all operations.
-class R2EndpointConfig implements S3EndpointConfig {
+class R2EndpointConfig extends S3EndpointConfig {
   /// The Cloudflare account ID.
   final String accountId;
 
@@ -43,6 +43,9 @@ class R2EndpointConfig implements S3EndpointConfig {
     }
     return Uri.https('$bucket.$accountId.r2.dev', '/$path');
   }
+
+  @override
+  bool get supportsObjectAcl => false;
 
   @override
   String get serviceName => 'Cloudflare R2';

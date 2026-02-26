@@ -46,6 +46,7 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
       filename: p.basename(path),
     );
 
+    final supportsAcl = endpoints.supportsObjectAcl;
     final policy = Policy.fromS3PresignedPost(
       path,
       bucket,
@@ -54,6 +55,7 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
       length,
       region: region,
       public: public,
+      includeAcl: supportsAcl,
     );
     final signingKey = SigV4.calculateSigningKey(
       secretKey,
@@ -65,7 +67,9 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
 
     req.files.add(multipartFile);
     req.fields['key'] = policy.key;
-    req.fields['acl'] = public ? 'public-read' : 'private';
+    if (supportsAcl) {
+      req.fields['acl'] = public ? 'public-read' : 'private';
+    }
     req.fields['X-Amz-Credential'] = policy.credential;
     req.fields['X-Amz-Algorithm'] = 'AWS4-HMAC-SHA256';
     req.fields['X-Amz-Date'] = policy.datetime;
@@ -101,6 +105,7 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
     bool preventOverwrite = false,
   }) async {
     final uploadUri = endpoints.buildBucketUri(bucket, region);
+    final supportsAcl = endpoints.supportsObjectAcl;
 
     final policy = Policy.fromS3PresignedPost(
       path,
@@ -110,6 +115,7 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
       maxFileSize,
       region: region,
       public: public,
+      includeAcl: supportsAcl,
     );
     final signingKey = SigV4.calculateSigningKey(
       secretKey,
@@ -119,20 +125,22 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
     );
     final signature = SigV4.calculateSignature(signingKey, policy.encode());
 
+    final requestFields = {
+      'key': policy.key,
+      if (supportsAcl) 'acl': public ? 'public-read' : 'private',
+      'X-Amz-Credential': policy.credential,
+      'X-Amz-Algorithm': 'AWS4-HMAC-SHA256',
+      'X-Amz-Date': policy.datetime,
+      'Policy': policy.encode(),
+      'X-Amz-Signature': signature,
+    };
+
     final uploadDescriptionData = {
       'url': uploadUri.toString(),
       'type': uploadType,
       'field': 'file',
       'file-name': p.basename(path),
-      'request-fields': {
-        'key': policy.key,
-        'acl': public ? 'public-read' : 'private',
-        'X-Amz-Credential': policy.credential,
-        'X-Amz-Algorithm': 'AWS4-HMAC-SHA256',
-        'X-Amz-Date': policy.datetime,
-        'Policy': policy.encode(),
-        'X-Amz-Signature': signature,
-      },
+      'request-fields': requestFields,
     };
 
     return jsonEncode(uploadDescriptionData);

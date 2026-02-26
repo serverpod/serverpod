@@ -4,7 +4,7 @@ import 's3_endpoint_config.dart';
 ///
 /// GCP provides an S3-compatible API using path-style URLs:
 /// `storage.googleapis.com/bucket`
-class GcpEndpointConfig implements S3EndpointConfig {
+class GcpEndpointConfig extends S3EndpointConfig {
   /// Optional custom public host for file URLs.
   ///
   /// If not provided, uses the default GCP Storage URL pattern.
@@ -31,6 +31,9 @@ class GcpEndpointConfig implements S3EndpointConfig {
     }
     return Uri.https('storage.googleapis.com', '/$bucket/$path');
   }
+
+  @override
+  bool get supportsObjectAcl => false;
 
   @override
   String get serviceName => 'Google Cloud Storage';

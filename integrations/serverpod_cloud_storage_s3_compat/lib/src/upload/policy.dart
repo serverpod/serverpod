@@ -31,6 +31,12 @@ class Policy {
   /// Whether the uploaded file should be publicly accessible.
   final bool public;
 
+  /// Whether to include an ACL condition in the policy.
+  ///
+  /// Set to `false` for providers that don't support per-object ACLs
+  /// (e.g. GCP with uniform bucket-level access, Cloudflare R2).
+  final bool includeAcl;
+
   /// Creates a new policy with the given parameters.
   Policy({
     required this.key,
@@ -41,6 +47,7 @@ class Policy {
     required this.maxFileSize,
     this.region = 'us-east-1',
     this.public = true,
+    this.includeAcl = true,
   });
 
   /// Creates a policy for S3 presigned POST uploads.
@@ -60,6 +67,7 @@ class Policy {
     int maxFileSize, {
     String region = 'us-east-1',
     bool public = true,
+    bool includeAcl = true,
   }) {
     final datetime = SigV4.generateDatetime();
     final exp = DateTime.now().add(Duration(minutes: expiryMinutes)).toUtc();
@@ -82,6 +90,7 @@ class Policy {
       maxFileSize: maxFileSize,
       region: region,
       public: public,
+      includeAcl: includeAcl,
     );
   }
 
@@ -93,16 +102,19 @@ class Policy {
 
   @override
   String toString() {
+    final conditions = [
+      '{"bucket": "$bucket"}',
+      '["starts-with", "\$key", "$key"]',
+      if (includeAcl) '{"acl": "${public ? 'public-read' : 'private'}"}',
+      '["content-length-range", 1, $maxFileSize]',
+      '{"x-amz-credential": "$credential"}',
+      '{"x-amz-algorithm": "AWS4-HMAC-SHA256"}',
+      '{"x-amz-date": "$datetime" }',
+    ];
     return '''
 { "expiration": "$expiration",
   "conditions": [
-    {"bucket": "$bucket"},
-    ["starts-with", "\$key", "$key"],
-    {"acl": "${public ? 'public-read' : 'private'}"},
-    ["content-length-range", 1, $maxFileSize],
-    {"x-amz-credential": "$credential"},
-    {"x-amz-algorithm": "AWS4-HMAC-SHA256"},
-    {"x-amz-date": "$datetime" }
+    ${conditions.join(',\n    ')}
   ]
 }
 ''';

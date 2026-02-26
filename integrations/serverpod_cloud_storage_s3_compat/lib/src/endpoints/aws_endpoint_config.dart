@@ -4,7 +4,7 @@ import 's3_endpoint_config.dart';
 ///
 /// AWS S3 uses virtual-hosted style URLs where the bucket name is part of
 /// the hostname: `bucket.s3.region.amazonaws.com`
-class AwsEndpointConfig implements S3EndpointConfig {
+class AwsEndpointConfig extends S3EndpointConfig {
   /// Optional custom public host for file URLs.
   ///
   /// If not provided, uses the default S3 URL pattern.

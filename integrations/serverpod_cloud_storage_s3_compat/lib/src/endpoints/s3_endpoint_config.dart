@@ -29,6 +29,9 @@ extension UriPathExtension on Uri {
 ///
 /// Implementations of this interface encapsulate these differences.
 abstract class S3EndpointConfig {
+  /// Creates an [S3EndpointConfig].
+  const S3EndpointConfig();
+
   /// URI for the bucket, used for both API operations and uploads.
   ///
   /// For API operations (GET, HEAD, DELETE), the object key is appended
@@ -51,6 +54,13 @@ abstract class S3EndpointConfig {
     String path, {
     Uri? publicHost,
   });
+
+  /// Whether the provider supports per-object ACLs (e.g. `public-read`).
+  ///
+  /// AWS S3 and LocalStack support this. GCP (with uniform bucket-level
+  /// access) and Cloudflare R2 do not — sending an ACL header or policy
+  /// condition causes the request to be rejected.
+  bool get supportsObjectAcl => true;
 
   /// Service name for error messages and logging.
   String get serviceName;

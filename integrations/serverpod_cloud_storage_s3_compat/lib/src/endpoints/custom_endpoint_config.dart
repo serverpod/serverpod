@@ -4,7 +4,7 @@ import 's3_endpoint_config.dart';
 ///
 /// Use this for self-hosted S3-compatible services like LocalStack
 /// or other providers not covered by the built-in configurations.
-class CustomEndpointConfig implements S3EndpointConfig {
+class CustomEndpointConfig extends S3EndpointConfig {
   /// Base URI for the S3-compatible service.
   ///
   /// Example: `Uri.http('localhost:4566', '/')` for LocalStack.

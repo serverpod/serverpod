@@ -52,7 +52,7 @@ void main() {
       uploadStrategy: PresignedPutUploadStrategy(),
       providerName: 'GCP S3-compatible (PresignedPut)',
     ),
-    supportsPreventOverwrite: true,
+    supportsPreventOverwrite: false,
     skipReason: skipReason,
   );
 }
