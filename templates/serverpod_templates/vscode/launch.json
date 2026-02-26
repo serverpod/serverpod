@@ -29,7 +29,10 @@
             "configurations": [
                 "projectname_server",
                 "projectname_flutter"
-            ]
+            ],
+            "presentation": {
+                "order": 1
+            }
         }
     ]
 }

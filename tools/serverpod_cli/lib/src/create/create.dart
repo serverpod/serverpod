@@ -181,7 +181,7 @@ Future<bool> performCreate(
 
   if (template == ServerpodTemplateType.server) {
     await log.progress(
-      'Building Flutter web app.',
+      'Building Flutter web app (press CTRL+C to skip).',
       () async {
         final Script? script;
         try {
@@ -318,6 +318,10 @@ void _logMiniStartInstructions(String name) {
     type: TextLogType.header,
   );
   log.info(
+    'If you are using VSCode or Cursor, just hit F5 to start the project!',
+    type: TextLogType.header,
+  );
+  log.info(
     'Start your Serverpod by running:',
     type: TextLogType.header,
   );
@@ -350,6 +354,10 @@ void _logMiniStartInstructions(String name) {
 void _logStartInstructions(String name) {
   log.info(
     'All setup. You are ready to rock! 🥳',
+    type: TextLogType.header,
+  );
+  log.info(
+    'If you are using VSCode or Cursor, just hit F5 to start the project!',
     type: TextLogType.header,
   );
   log.info(
