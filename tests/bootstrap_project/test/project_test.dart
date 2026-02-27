@@ -695,6 +695,75 @@ void main() async {
           },
         );
       });
+
+      group('then the .vscode directory', () {
+        test('has launch.json', () {
+          expect(
+            File(
+              path.join(
+                tempPath,
+                projectName,
+                '.vscode',
+                'launch.json',
+              ),
+            ).existsSync(),
+            isTrue,
+            reason: 'launch.json does not exist.',
+          );
+        });
+
+        test('has flutter configuration as first entry', () {
+          final launchJson = File(
+            path.join(
+              tempPath,
+              projectName,
+              '.vscode',
+              'launch.json',
+            ),
+          ).readAsStringSync();
+
+          expect(
+            launchJson.contains('"${projectName}_flutter"'),
+            isTrue,
+            reason: 'launch.json does not contain flutter configuration.',
+          );
+
+          // Verify flutter config appears before server config
+          final flutterIndex = launchJson.indexOf('"${projectName}_flutter"');
+          final serverIndex = launchJson.indexOf('"${projectName}_server"');
+
+          expect(
+            flutterIndex,
+            lessThan(serverIndex),
+            reason:
+                'Flutter configuration should appear before server configuration.',
+          );
+        });
+
+        test('has compound configuration for full stack', () {
+          final launchJson = File(
+            path.join(
+              tempPath,
+              projectName,
+              '.vscode',
+              'launch.json',
+            ),
+          ).readAsStringSync();
+
+          expect(
+            launchJson.contains('"compounds"'),
+            isTrue,
+            reason: 'launch.json does not contain compounds section.',
+          );
+
+          expect(
+            launchJson.contains('"${projectName} (full stack)"'),
+            isTrue,
+            reason:
+                'launch.json does not contain full stack compound configuration.',
+          );
+        });
+      });
     });
   });
 
