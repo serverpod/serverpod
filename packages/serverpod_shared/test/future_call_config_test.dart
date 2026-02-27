@@ -53,6 +53,8 @@ apiServer:
 futureCall:
   concurrencyLimit: 5
   scanInterval: 2000
+  scanBrokenFutureCalls: false
+  deleteBrokenFutureCalls: true
 ''';
 
       var config = ServerpodConfig.loadFromMap(
@@ -67,6 +69,8 @@ futureCall:
         config.futureCall.scanInterval,
         equals(const Duration(milliseconds: 2000)),
       );
+      expect(config.futureCall.scanBrokenFutureCalls, isFalse);
+      expect(config.futureCall.deleteBrokenFutureCalls, isTrue);
     },
   );
 
@@ -87,11 +91,15 @@ futureCall:
           'futureCall': {
             'concurrencyLimit': 5,
             'scanInterval': 2000,
+            'scanBrokenFutureCalls': false,
+            'deleteBrokenFutureCalls': false,
           },
         },
         environment: {
           'SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT': '10',
           'SERVERPOD_FUTURE_CALL_SCAN_INTERVAL': '3000',
+          'SERVERPOD_SCAN_BROKEN_FUTURE_CALLS': 'true',
+          'SERVERPOD_DELETE_BROKEN_FUTURE_CALLS': 'true',
         },
       );
 
@@ -100,6 +108,8 @@ futureCall:
         config.futureCall.scanInterval,
         equals(const Duration(milliseconds: 3000)),
       );
+      expect(config.futureCall.scanBrokenFutureCalls, isTrue);
+      expect(config.futureCall.deleteBrokenFutureCalls, isTrue);
     },
   );
 
@@ -153,10 +163,12 @@ futureCall:
           'futureCall': {
             'concurrencyLimit': 5,
             'scanInterval': 2000,
+            'deleteBrokenFutureCalls': true,
           },
         },
         environment: {
           'SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT': '10',
+          'SERVERPOD_SCAN_BROKEN_FUTURE_CALLS': 'false',
         },
       );
 
@@ -165,6 +177,8 @@ futureCall:
         config.futureCall.scanInterval,
         equals(const Duration(milliseconds: 2000)),
       );
+      expect(config.futureCall.scanBrokenFutureCalls, isFalse);
+      expect(config.futureCall.deleteBrokenFutureCalls, isTrue);
     },
   );
 
@@ -310,6 +324,32 @@ futureCall:
           ),
         ),
       );
+    },
+  );
+
+  test(
+    'Given a Serverpod config without scanBrokenFutureCalls and deleteBrokenFutureCalls configured '
+    'when loading from Map then they both use default values',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+futureCall:
+  scanInterval: 2000
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.futureCall.scanBrokenFutureCalls, isNull);
+      expect(config.futureCall.deleteBrokenFutureCalls, isFalse);
     },
   );
 }
