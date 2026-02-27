@@ -76,8 +76,10 @@ declare -a projectPaths=(
     "templates/serverpod_templates/modulename_client"
     "templates/serverpod_templates/modulename_server"
 
+    "integrations/serverpod_cloud_storage_s3_compat"
     "integrations/serverpod_cloud_storage_s3"
     "integrations/serverpod_cloud_storage_gcp"
+    "integrations/serverpod_cloud_storage_r2"
 
     "tools/serverpod_cli"
 )
