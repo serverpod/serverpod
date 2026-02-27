@@ -375,6 +375,8 @@ fields:
         'DROP TABLE "source"',
       ); // should not be dropped
       var dropTableTargetIndex = psql.indexOf('DROP TABLE "target"');
+      // With the fix, the constraint is NOT explicitly dropped because the column is being dropped
+      // Dropping the column automatically drops the constraint
       var dropSourceConstraint = psql.indexOf(
         'ALTER TABLE "source" DROP CONSTRAINT "source_fk_0"',
       );
@@ -385,13 +387,18 @@ fields:
 
       expect(dropTableSourceIndex, -1);
       expect(dropTableTargetIndex, greaterThanOrEqualTo(0));
-      expect(dropSourceConstraint, greaterThanOrEqualTo(0));
+      // The constraint should NOT be explicitly dropped
+      expect(
+        dropSourceConstraint,
+        -1,
+        reason:
+            'FK constraint should not be explicitly dropped when its column is dropped',
+      );
       expect(dropSourceColumnPointingTotarget, greaterThanOrEqualTo(0));
       expect(createNewTargetTable, greaterThanOrEqualTo(0));
 
-      expect(dropTableSourceIndex, lessThan(dropTableTargetIndex));
-      expect(dropTableTargetIndex, lessThan(dropSourceConstraint));
-      expect(dropSourceConstraint, lessThan(dropSourceColumnPointingTotarget));
+      // Verify the order: DROP target table, then DROP column, then CREATE new table
+      expect(dropTableTargetIndex, lessThan(dropSourceColumnPointingTotarget));
       expect(dropSourceColumnPointingTotarget, lessThan(createNewTargetTable));
     },
   );

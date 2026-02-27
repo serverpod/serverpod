@@ -135,26 +135,7 @@ void main() {
       );
 
       test(
-        'then the alter action for grant_allowance should drop the foreign key.',
-        () {
-          var alterAction = migration.actions.firstWhere(
-            (action) =>
-                action.type == DatabaseMigrationActionType.alterTable &&
-                action.alterTable?.name == 'grant_allowance',
-            orElse: () => DatabaseMigrationAction(
-              type: DatabaseMigrationActionType.createTable,
-            ),
-          );
-
-          expect(
-            alterAction.alterTable?.deleteForeignKeys,
-            contains('grant_bundle_allowances_fk'),
-          );
-        },
-      );
-
-      test(
-        'then the alter action for grant_allowance should drop the column.',
+        'then the alter action for grant_allowance should drop the column but not explicitly drop the FK.',
         () {
           var alterAction = migration.actions.firstWhere(
             (action) =>
@@ -168,6 +149,16 @@ void main() {
           expect(
             alterAction.alterTable?.deleteColumns,
             contains('grantBundleId'),
+            reason: 'Column should be dropped',
+          );
+
+          // The FK should NOT be explicitly dropped because dropping the column
+          // automatically drops the FK
+          expect(
+            alterAction.alterTable?.deleteForeignKeys,
+            isEmpty,
+            reason:
+                'FK should not be explicitly dropped when its column is dropped',
           );
         },
       );
@@ -438,7 +429,7 @@ void main() {
       );
 
       test(
-        'then the alter action for main_table should drop the foreign key to table_b and add a foreign key to table_c.',
+        'then the alter action for main_table should drop FK to table_b (fk_1) and add FK to table_c (renumbered to fk_0).',
         () {
           var alterAction = mainTableAlterActions.first;
           var alterTable = alterAction.alterTable;
@@ -449,11 +440,20 @@ void main() {
             reason: 'alterTable should delete the table_b_id column',
           );
 
+          // Should delete main_table_fk_1 (the FK for table_c in the source)
+          // Should NOT delete main_table_fk_0 (the FK for table_b) because its column is being dropped
           expect(
             alterTable?.deleteForeignKeys,
-            contains('main_table_fk_0'),
+            contains('main_table_fk_1'),
             reason:
-                'alterTable should delete the foreign key with constraintName main_table_fk_0 that referenced table_b',
+                'alterTable should delete the foreign key with constraintName main_table_fk_1 (will be renumbered)',
+          );
+
+          expect(
+            alterTable?.deleteForeignKeys,
+            isNot(contains('main_table_fk_0')),
+            reason:
+                'alterTable should NOT delete main_table_fk_0 because its column (table_b_id) is being dropped',
           );
 
           expect(

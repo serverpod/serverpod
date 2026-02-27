@@ -350,6 +350,19 @@ TableMigration? generateTableMigration(
     }
   }
 
+  // Filter out foreign key deletions where the column(s) are also being deleted.
+  // When a column is dropped in PostgreSQL, any constraints on that column
+  // (including foreign keys) are automatically dropped. Explicitly trying to
+  // drop the constraint first can fail if the constraint doesn't exist in the
+  // database (e.g., if a previous migration wasn't applied).
+  deleteForeignKeys.removeWhere((fkName) {
+    var srcKey = srcTable.findForeignKeyDefinitionNamed(fkName);
+    if (srcKey == null) return false;
+
+    // Check if all columns referenced by this FK are being deleted
+    return srcKey.columns.every((column) => deleteColumns.contains(column));
+  });
+
   // Check that all added columns can be created in a modification of the table
   for (var column in addColumns) {
     if (!column.canBeCreatedInTableMigration) {
