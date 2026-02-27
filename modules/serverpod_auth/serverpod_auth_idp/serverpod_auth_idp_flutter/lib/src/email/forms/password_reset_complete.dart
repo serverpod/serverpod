@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/sign_in_localization_provider.dart';
 import '../email_auth_controller.dart';
 import 'widgets/back_to_sign_in_button.dart';
 import 'widgets/set_password_form.dart';
@@ -20,11 +21,13 @@ class CompletePasswordResetForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.emailSignInTexts;
+
     return SetPasswordForm(
       controller: controller,
-      title: 'Set new password',
-      passwordLabelText: 'New Password',
-      actionButtonLabel: 'Reset password',
+      title: texts.setNewPasswordTitle,
+      passwordLabelText: texts.newPasswordLabel,
+      actionButtonLabel: texts.resetPassword,
       onActionPressed: controller.finishPasswordReset,
       bottomText: BackToSignInButton(controller: controller),
     );

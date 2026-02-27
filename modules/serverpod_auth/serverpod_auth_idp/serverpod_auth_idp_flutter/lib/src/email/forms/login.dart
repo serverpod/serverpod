@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../localization/sign_in_localization_provider.dart';
 import '../../common/widgets/buttons/action_button.dart';
 import '../../common/widgets/buttons/text_button.dart';
 import '../../common/widgets/gaps.dart';
@@ -21,8 +22,10 @@ class LoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.emailSignInTexts;
+
     return FormStandardLayout(
-      title: 'Sign In with email',
+      title: texts.title,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -38,7 +41,7 @@ class LoginForm extends StatelessWidget {
             child: HyperlinkTextButton(
               onPressed: () =>
                   controller.navigateTo(EmailFlowScreen.requestPasswordReset),
-              label: 'Forgot password?',
+              label: texts.forgotPassword,
             ),
           ),
         ],
@@ -50,17 +53,17 @@ class LoginForm extends StatelessWidget {
                 controller.state == EmailAuthState.idle
             ? controller.login
             : null,
-        label: 'Sign in',
+        label: texts.signIn,
         isLoading: controller.isLoading,
       ),
       bottomText: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("Don't have an account?"),
+          Text(texts.dontHaveAnAccount),
           HyperlinkTextButton(
             onPressed: () =>
                 controller.navigateTo(EmailFlowScreen.startRegistration),
-            label: 'Sign up',
+            label: texts.signUp,
           ),
         ],
       ),

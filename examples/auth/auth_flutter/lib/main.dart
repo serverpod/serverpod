@@ -106,19 +106,28 @@ class SignInScreen extends StatelessWidget {
       // Uncomment this to replace the default sign-in screen with Firebase.
       // See the `firebase.dart` file for more information.
       // body: FirebaseSignInScreen(client: client),
-      body: SignInWidget(
-        client: client,
-        // NOTE: No need to call navigation here if it gets done on the
-        // client.auth.authInfo listener.
-        onAuthenticated: () => onAuthenticated(context),
-        onError: (error) => onError(context, error),
-        // NOTE: To customize widgets, pass the desired widget here.
-        // googleSignInWidget: GoogleSignInWidget(
-        //   client: client,
-        //   onAuthenticated: () => onAuthenticated(context),
-        //   onError: (error) => onError(context, error),
-        //   scopes: const [],
-        // ),
+      body: SignInLocalizationProvider(
+        basic: BasicSignInTexts.defaults.copyWith(orContinueWith: 'or'),
+        apple: AppleSignInTexts.defaults.copyWith(signInButton: 'Use Apple account'),
+        google: GoogleSignInTexts.defaults.copyWith(signInButton: 'Use Google account'),
+        github: GitHubSignInTexts.defaults.copyWith(signInButton: 'Use GitHub account'),
+        anonymous: AnonymousSignInTexts.defaults.copyWith(
+          signInButton: 'Continue as guest',
+        ),
+        child: SignInWidget(
+          client: client,
+          // NOTE: No need to call navigation here if it gets done on the
+          // client.auth.authInfo listener.
+          onAuthenticated: () => onAuthenticated(context),
+          onError: (error) => onError(context, error),
+          // NOTE: To customize widgets, pass the desired widget here.
+          // googleSignInWidget: GoogleSignInWidget(
+          //   client: client,
+          //   onAuthenticated: () => onAuthenticated(context),
+          //   onError: (error) => onError(context, error),
+          //   scopes: const [],
+          // ),
+        ),
       ),
     );
   }
