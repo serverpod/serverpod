@@ -326,14 +326,20 @@ class ChildClassExplicitColumnRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<ChildClassExplicitColumn>> insert(
     _i2.Session session,
     List<ChildClassExplicitColumn> rows, {
     _i2.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<ChildClassExplicitColumn>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 
