@@ -162,7 +162,15 @@ class DatabaseCloudStorage extends CloudStorage with CloudStorageWithOptions {
     bool verified = true,
     required CloudStorageOptions options,
   }) async {
-    // preventOverwrite is not supported for database storage.
+    if (options.preventOverwrite) {
+      final exists = await fileExists(session: session, path: path);
+      if (exists) {
+        throw CloudStorageException(
+          'File already exists at path "$path" and preventOverwrite is enabled.',
+        );
+      }
+    }
+
     await storeFile(
       session: session,
       path: path,

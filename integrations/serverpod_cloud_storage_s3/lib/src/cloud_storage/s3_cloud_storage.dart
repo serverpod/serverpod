@@ -14,13 +14,15 @@ import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_com
 /// ## Example
 ///
 /// ```dart
-/// pod.addCloudStorage(S3CloudStorage(
-///   serverpod: pod,
-///   storageId: 'public',
-///   public: true,
-///   region: 'us-east-1',
-///   bucket: 'my-bucket',
-/// ));
+/// pod.addCloudStorage(
+///   S3CloudStorage(
+///     serverpod: pod,
+///     storageId: 'public',
+///     public: true,
+///     region: 'us-east-1',
+///     bucket: 'my-bucket',
+///   ),
+/// );
 /// ```
 class S3CloudStorage extends S3CompatCloudStorage {
   /// Creates a new AWS S3 cloud storage.
