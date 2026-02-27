@@ -67,8 +67,10 @@ declare -a DART_PACKAGES_PATHS=(
     "modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server"
     "modules/legacy/serverpod_chat/serverpod_chat_server"
     "modules/legacy/serverpod_chat/serverpod_chat_client"
+    "integrations/serverpod_cloud_storage_s3_compat"
     "integrations/serverpod_cloud_storage_s3"
     "integrations/serverpod_cloud_storage_gcp"
+    "integrations/serverpod_cloud_storage_r2"
     "tools/serverpod_cli"
 )
 

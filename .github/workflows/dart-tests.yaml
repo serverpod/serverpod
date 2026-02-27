@@ -472,6 +472,96 @@ jobs:
       - name: Run version change test
         run: util/run_tests_version_change
 
+  cloud_storage_check_secrets:
+    name: Check cloud storage secrets
+    runs-on: ubuntu-latest
+    outputs:
+      has_aws: ${{ steps.check.outputs.has_aws }}
+      has_r2: ${{ steps.check.outputs.has_r2 }}
+      has_gcp: ${{ steps.check.outputs.has_gcp }}
+      has_gcp_native: ${{ steps.check.outputs.has_gcp_native }}
+    steps:
+      - name: Check available credentials
+        id: check
+        run: |
+          echo "has_aws=${{ secrets.SERVERPOD_TEST_AWS_HMAC_ACCESS_KEY_ID != '' }}" >> $GITHUB_OUTPUT
+          echo "has_r2=${{ secrets.SERVERPOD_TEST_R2_HMAC_ACCESS_KEY_ID != '' }}" >> $GITHUB_OUTPUT
+          echo "has_gcp=${{ secrets.SERVERPOD_TEST_GCP_HMAC_ACCESS_KEY_ID != '' }}" >> $GITHUB_OUTPUT
+          echo "has_gcp_native=${{ secrets.SERVERPOD_TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON != '' }}" >> $GITHUB_OUTPUT
+
+  cloud_storage_integration_tests_aws:
+    name: Cloud Storage Integration Tests (AWS S3)
+    needs: cloud_storage_check_secrets
+    if: needs.cloud_storage_check_secrets.outputs.has_aws == 'true'
+    runs-on: ubuntu-latest
+    env:
+      SERVERPOD_TEST_AWS_HMAC_ACCESS_KEY_ID: ${{ secrets.SERVERPOD_TEST_AWS_HMAC_ACCESS_KEY_ID }}
+      SERVERPOD_TEST_AWS_HMAC_SECRET_KEY: ${{ secrets.SERVERPOD_TEST_AWS_HMAC_SECRET_KEY }}
+      SERVERPOD_TEST_AWS_BUCKET: ${{ secrets.SERVERPOD_TEST_AWS_BUCKET }}
+      SERVERPOD_TEST_AWS_REGION: ${{ secrets.SERVERPOD_TEST_AWS_REGION }}
+    defaults:
+      run:
+        working-directory: integrations/serverpod_cloud_storage_s3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - run: dart pub get
+      - run: dart test test/integration --reporter=failures-only
+
+  cloud_storage_integration_tests_r2:
+    name: Cloud Storage Integration Tests (Cloudflare R2)
+    needs: cloud_storage_check_secrets
+    if: needs.cloud_storage_check_secrets.outputs.has_r2 == 'true'
+    runs-on: ubuntu-latest
+    env:
+      SERVERPOD_TEST_R2_HMAC_ACCESS_KEY_ID: ${{ secrets.SERVERPOD_TEST_R2_HMAC_ACCESS_KEY_ID }}
+      SERVERPOD_TEST_R2_HMAC_SECRET_KEY: ${{ secrets.SERVERPOD_TEST_R2_HMAC_SECRET_KEY }}
+      SERVERPOD_TEST_R2_BUCKET: ${{ secrets.SERVERPOD_TEST_R2_BUCKET }}
+      SERVERPOD_TEST_R2_ACCOUNT_ID: ${{ secrets.SERVERPOD_TEST_R2_ACCOUNT_ID }}
+    defaults:
+      run:
+        working-directory: integrations/serverpod_cloud_storage_r2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - run: dart pub get
+      - run: dart test test/integration --reporter=failures-only
+
+  cloud_storage_integration_tests_gcp:
+    name: Cloud Storage Integration Tests (GCP)
+    needs: cloud_storage_check_secrets
+    if: needs.cloud_storage_check_secrets.outputs.has_gcp == 'true'
+    runs-on: ubuntu-latest
+    env:
+      SERVERPOD_TEST_GCP_HMAC_ACCESS_KEY_ID: ${{ secrets.SERVERPOD_TEST_GCP_HMAC_ACCESS_KEY_ID }}
+      SERVERPOD_TEST_GCP_HMAC_SECRET_KEY: ${{ secrets.SERVERPOD_TEST_GCP_HMAC_SECRET_KEY }}
+      SERVERPOD_TEST_GCP_BUCKET: ${{ secrets.SERVERPOD_TEST_GCP_BUCKET }}
+      SERVERPOD_TEST_GCP_REGION: ${{ secrets.SERVERPOD_TEST_GCP_REGION }}
+    defaults:
+      run:
+        working-directory: integrations/serverpod_cloud_storage_gcp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - run: dart pub get
+      - run: dart test test/integration/gcp_s3_compat_integration_test.dart --reporter=failures-only
+
+  cloud_storage_integration_tests_gcp_native:
+    name: Cloud Storage Integration Tests (GCP Native)
+    needs: cloud_storage_check_secrets
+    if: needs.cloud_storage_check_secrets.outputs.has_gcp_native == 'true'
+    runs-on: ubuntu-latest
+    env:
+      SERVERPOD_TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.SERVERPOD_TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON }}
+    defaults:
+      run:
+        working-directory: integrations/serverpod_cloud_storage_gcp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - run: dart pub get
+      - run: dart test test/integration/native_gcp_integration_test.dart --reporter=failures-only
+
   publish_check:
     name: Publish check
     runs-on: ubuntu-latest
