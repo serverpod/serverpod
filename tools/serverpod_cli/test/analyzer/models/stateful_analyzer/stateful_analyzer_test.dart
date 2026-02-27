@@ -424,4 +424,81 @@ and neither is this line
       );
     },
   );
+
+  group('Given models registered under /dir/subdir/', () {
+    late StatefulAnalyzer statefulAnalyzer;
+
+    setUp(() {
+      var yamlSource1 = ModelSourceBuilder()
+          .withFileName('example1')
+          .withYamlSourceUri(Uri(path: '/dir/subdir/example1.yaml'))
+          .withYaml('''
+class: Example1
+fields:
+  name: String
+''')
+          .build();
+
+      var yamlSource2 = ModelSourceBuilder()
+          .withFileName('example2')
+          .withYamlSourceUri(Uri(path: '/dir/subdir/example2.yaml'))
+          .withYaml('''
+class: Example2
+fields:
+  name: String
+''')
+          .build();
+
+      statefulAnalyzer = StatefulAnalyzer(config, [yamlSource1, yamlSource2]);
+    });
+
+    test(
+      'when removing models under /dir/subdir/ then returns true and removes both models.',
+      () {
+        var removed = statefulAnalyzer.removeYamlModelsUnderPath(
+          '/dir/subdir/',
+        );
+
+        expect(removed, isTrue);
+
+        var models = statefulAnalyzer.validateAll();
+        expect(models, isEmpty);
+      },
+    );
+
+    test(
+      'when removing models under /dir/ then returns true and removes all models under the directory.',
+      () {
+        var removed = statefulAnalyzer.removeYamlModelsUnderPath('/dir/');
+
+        expect(removed, isTrue);
+
+        var models = statefulAnalyzer.validateAll();
+        expect(models, isEmpty);
+      },
+    );
+
+    test(
+      'when removing models under a non-matching prefix then returns false and leaves models intact.',
+      () {
+        var removed = statefulAnalyzer.removeYamlModelsUnderPath('/other/');
+
+        expect(removed, isFalse);
+
+        var models = statefulAnalyzer.validateAll();
+        expect(models, hasLength(2));
+      },
+    );
+  });
+
+  test(
+    'Given an empty state when removing models under a path then returns false.',
+    () {
+      var statefulAnalyzer = StatefulAnalyzer(config, []);
+
+      var removed = statefulAnalyzer.removeYamlModelsUnderPath('/any/path/');
+
+      expect(removed, isFalse);
+    },
+  );
 }
