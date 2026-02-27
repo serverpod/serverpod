@@ -762,6 +762,14 @@ class Serverpod {
       logVerbose('All servers started.');
     }
 
+    if (_futureCallManager != null) {
+      logVerbose('Registering future calls.');
+      endpoints.futureCalls?.initialize(
+        _futureCallManager!,
+        serverId,
+      );
+    }
+
     // Start maintenance tasks. If we are running in maintenance mode, we
     // will only run the maintenance tasks once. If we are applying migrations
     // no other maintenance tasks will be run.
@@ -773,16 +781,46 @@ class Serverpod {
 
       // Start future calls
       _completedFutureCalls = _futureCallManager == null;
+
+      final shouldDeleteBrokenFutureCalls =
+          config.futureCall.deleteBrokenFutureCalls;
+
+      late final canPerformDefaultScanForBrokenFutureCalls = _futureCallManager
+          ?.canPerformDefaultScanForBrokenFutureCalls();
+
+      final canScanBrokenFutureCalls = !config.futureCallExecutionEnabled
+          ? false
+          : config.futureCall.scanBrokenFutureCalls ??
+                await canPerformDefaultScanForBrokenFutureCalls ??
+                false;
+
       if (!config.futureCallExecutionEnabled) {
         logVerbose('Future call execution is disabled.');
         _completedFutureCalls = true;
       } else if (config.role == ServerpodRole.maintenance) {
+        late final hasBrokenFutureCalls = _futureCallManager
+            ?.scanBrokenFutureCalls(
+              deleteBrokenCalls: shouldDeleteBrokenFutureCalls,
+            );
+
+        if (canScanBrokenFutureCalls && (await hasBrokenFutureCalls ?? false)) {
+          throw ExitException(_exitCode);
+        }
+
         unawaited(
           _futureCallManager?.runScheduledFutureCalls().whenComplete(
             _onCompletedFutureCalls,
           ),
         );
       } else {
+        if (canScanBrokenFutureCalls) {
+          unawaited(
+            _futureCallManager?.scanBrokenFutureCalls(
+              deleteBrokenCalls: shouldDeleteBrokenFutureCalls,
+            ),
+          );
+        }
+
         _futureCallManager?.start();
       }
 
@@ -796,14 +834,6 @@ class Serverpod {
     if (config.role == ServerpodRole.maintenance && appliedMigrations) {
       logVerbose('Finished applying database migrations.');
       throw ExitException(_exitCode);
-    }
-
-    if (_futureCallManager != null) {
-      logVerbose('Initializing future calls.');
-      endpoints.futureCalls?.initialize(
-        _futureCallManager!,
-        serverId,
-      );
     }
 
     if (Features.enableDatabase &&
