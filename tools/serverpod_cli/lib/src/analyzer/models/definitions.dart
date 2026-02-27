@@ -319,6 +319,9 @@ class SerializableModelFieldDefinition {
   /// Indexes that this field is part of.
   List<SerializableModelIndexDefinition> indexes = [];
 
+  /// Whether this field should have a unique index auto-generated for it.
+  final bool shouldCreateUniqueIndex;
+
   /// Create a new [SerializableModelFieldDefinition].
   SerializableModelFieldDefinition({
     required this.name,
@@ -332,6 +335,7 @@ class SerializableModelFieldDefinition {
     this.isRequired = false,
     String? columnNameOverride,
     String? jsonKeyOverride,
+    this.shouldCreateUniqueIndex = false,
   }) : _columnNameOverride = columnNameOverride,
        _jsonKeyOverride = jsonKeyOverride;
 
