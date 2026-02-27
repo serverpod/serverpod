@@ -116,6 +116,7 @@ class SelectQueryBuilder {
         listQueryAdditions,
         limit: _limit,
         offset: _offset,
+        orderBy: _orderBy,
       );
     }
 
@@ -127,6 +128,7 @@ class SelectQueryBuilder {
     _ListQueryAdditions listQueryAdditions, {
     required int? limit,
     required int? offset,
+    List<Order>? orderBy,
   }) {
     var wrappedBaseQueryAlias = '_base_query_sorting_and_ordering';
     var partitionedQueryAlias = '_partitioned_list_by_parent_id';
@@ -135,8 +137,13 @@ class SelectQueryBuilder {
 
     String query = 'WITH $wrappedBaseQueryAlias AS ($baseQuery)';
 
+    var windowOrderBy = _buildWindowOrderByClause(
+      orderBy,
+      wrappedBaseQueryAlias,
+    );
+
     query +=
-        ', $partitionedQueryAlias AS (SELECT *, row_number() OVER ( PARTITION BY $wrappedBaseQueryAlias."$relationalFieldName") FROM $wrappedBaseQueryAlias)';
+        ', $partitionedQueryAlias AS (SELECT *, row_number() OVER ( PARTITION BY $wrappedBaseQueryAlias."$relationalFieldName"$windowOrderBy) FROM $wrappedBaseQueryAlias)';
 
     var rowLimitClause = _buildMultiRowLimitClause(limit, offset);
 
@@ -144,6 +151,34 @@ class SelectQueryBuilder {
         ' SELECT * FROM $partitionedQueryAlias WHERE row_number $rowLimitClause';
 
     return query;
+  }
+
+  String _buildWindowOrderByClause(List<Order>? orderBy, String tableAlias) {
+    if (orderBy == null || orderBy.isEmpty) {
+      return '';
+    }
+
+    var orderClauses = orderBy
+        .where((order) => order.column is! ColumnCount)
+        .map((order) {
+          var column = order.column;
+          var alias = truncateIdentifier(
+            column.fieldQueryAlias,
+            DatabaseConstants.pgsqlMaxNameLimitation,
+          );
+          var clause = '$tableAlias."$alias"';
+          if (order.orderDescending) {
+            clause += ' DESC';
+          }
+          return clause;
+        })
+        .join(', ');
+
+    if (orderClauses.isEmpty) {
+      return '';
+    }
+
+    return ' ORDER BY $orderClauses';
   }
 
   String _buildMultiRowLimitClause(int? limit, int? offset) {
