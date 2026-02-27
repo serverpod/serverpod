@@ -828,4 +828,124 @@ void main() {
       );
     },
   );
+
+  withServerpod(
+    'Given an email account for updateEmail',
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      const email = 'test@serverpod.dev';
+      const newEmail = 'updated@serverpod.dev';
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture();
+
+        final authUser = await fixture.authUsers.create(session);
+
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when updateEmail is called with valid emails then email is updated',
+        () async {
+          await session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin.updateEmail(
+              session,
+              oldEmail: email,
+              newEmail: newEmail,
+              transaction: transaction,
+            ),
+          );
+
+          final oldResult = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin.findAccount(
+              session,
+              email: email,
+              transaction: transaction,
+            ),
+          );
+          expect(oldResult, isNull);
+
+          final newResult = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin.findAccount(
+              session,
+              email: newEmail,
+              transaction: transaction,
+            ),
+          );
+          expect(newResult, isNotNull);
+        },
+      );
+
+      test(
+        'when updateEmail is called with uppercase old email then email is updated',
+        () async {
+          await session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin.updateEmail(
+              session,
+              oldEmail: email.toUpperCase(),
+              newEmail: newEmail,
+              transaction: transaction,
+            ),
+          );
+
+          final result = await session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin.findAccount(
+              session,
+              email: newEmail,
+              transaction: transaction,
+            ),
+          );
+          expect(result, isNotNull);
+        },
+      );
+
+      test(
+        'when updateEmail is called with nonexistent old email then it throws EmailAccountNotFoundException',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin.updateEmail(
+              session,
+              oldEmail: 'nonexistent@serverpod.dev',
+              newEmail: newEmail,
+              transaction: transaction,
+            ),
+          );
+
+          await expectLater(
+            result,
+            throwsA(isA<EmailAccountNotFoundException>()),
+          );
+        },
+      );
+
+      test(
+        'when updateEmail is called with already registered new email then it throws EmailAuthenticationInvalidCredentialsException',
+        () async {
+          final result = session.db.transaction(
+            (final transaction) => fixture.emailIdp.admin.updateEmail(
+              session,
+              oldEmail: email,
+              newEmail: email,
+              transaction: transaction,
+            ),
+          );
+
+          await expectLater(
+            result,
+            throwsA(isA<EmailAuthenticationInvalidCredentialsException>()),
+          );
+        },
+      );
+    },
+  );
 }
