@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
 
-import 'endpoints/r2_endpoint_config.dart';
+import 'config/r2_endpoint_config.dart';
 
 /// Cloudflare R2 cloud storage implementation for Serverpod.
 ///

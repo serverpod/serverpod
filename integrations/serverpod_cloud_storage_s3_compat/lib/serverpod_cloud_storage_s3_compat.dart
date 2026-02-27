@@ -36,8 +36,8 @@ export 'src/client/exceptions.dart';
 export 'src/client/s3_client.dart';
 
 // Endpoint configurations
-export 'src/endpoints/custom_endpoint_config.dart';
-export 'src/endpoints/s3_endpoint_config.dart';
+export 'src/config/custom_endpoint_config.dart';
+export 'src/config/s3_endpoint_config.dart';
 
 // Upload strategies
 export 'src/upload/multipart_post_strategy.dart';

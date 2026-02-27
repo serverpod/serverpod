@@ -5,7 +5,7 @@ import 'package:serverpod/serverpod.dart';
 
 import 'client/exceptions.dart';
 import 'client/s3_client.dart';
-import 'endpoints/s3_endpoint_config.dart';
+import 'config/s3_endpoint_config.dart';
 import 'upload/s3_upload_strategy.dart';
 
 /// Base class for S3-compatible cloud storage implementations.

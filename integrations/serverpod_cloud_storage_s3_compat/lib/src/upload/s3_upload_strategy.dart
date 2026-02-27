@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import '../client/exceptions.dart';
-import '../endpoints/s3_endpoint_config.dart';
+import '../config/s3_endpoint_config.dart';
 
 /// Strategy for uploading files to S3-compatible storage.
 ///

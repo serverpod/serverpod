@@ -136,14 +136,11 @@ void runS3CompatIntegrationTests({
         test(
           'when deleting the file then it no longer exists',
           () async {
-            // Delete file
             await client.deleteObject(path);
 
-            // Verify file no longer exists
             final response = await client.headObject(path);
             expect(response.statusCode, 404);
 
-            // Remove from cleanup list since already deleted
             testFiles.remove(path);
           },
         );
@@ -200,7 +197,6 @@ void runS3CompatIntegrationTests({
         test(
           'when deleting the file then no error is returned',
           () async {
-            // Should complete without error
             await client.deleteObject(
               'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
             );
@@ -233,9 +229,11 @@ void runS3CompatIntegrationTests({
             expect(response.bodyBytes, bytes);
           },
         );
+      });
 
+      group('Given a large binary file to upload (1MB)', () {
         test(
-          'when uploading a larger file (1MB) then the upload succeeds',
+          'when uploading to the storage then the upload succeeds',
           () async {
             final path = testPath('large-file-test.bin');
             final bytes = Uint8List.fromList(
@@ -590,7 +588,6 @@ void runS3CompatIntegrationTests({
                 Uint8List.fromList('duplicate'.codeUnits).buffer,
               );
 
-              // Upload should fail (returns false or throws)
               final uploader = FileUploader(description!);
               final success = await uploader.uploadByteData(duplicateData);
 
@@ -605,10 +602,9 @@ void runS3CompatIntegrationTests({
         },
       );
 
-      group('Given a path with special characters', () {
+      group('Given a path with spaces', () {
         test(
-          'when uploading with spaces in the path '
-          'then the file is handled correctly',
+          'when uploading the file then it is handled correctly',
           () async {
             final path = testPath('path with spaces/file name.txt');
             final content = 'Content with spaces in path';
@@ -633,10 +629,11 @@ void runS3CompatIntegrationTests({
             expect(response.body, content);
           },
         );
+      });
 
+      group('Given a path with unicode characters', () {
         test(
-          'when uploading with unicode characters in the path '
-          'then the file is handled correctly',
+          'when uploading the file then it is handled correctly',
           () async {
             final path = testPath('unicode-test-file.txt');
             final content = 'Unicode content: Hello World';

@@ -1,7 +1,7 @@
 import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
 import 'package:http/http.dart' as http;
 
-import '../endpoints/s3_endpoint_config.dart';
+import '../config/s3_endpoint_config.dart';
 import 'exceptions.dart';
 
 /// Client for making signed requests to S3-compatible storage APIs.

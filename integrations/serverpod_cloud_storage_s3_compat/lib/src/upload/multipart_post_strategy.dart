@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 
 import '../client/exceptions.dart';
-import '../endpoints/s3_endpoint_config.dart';
+import '../config/s3_endpoint_config.dart';
 import 'policy.dart';
 import 's3_upload_strategy.dart';
 

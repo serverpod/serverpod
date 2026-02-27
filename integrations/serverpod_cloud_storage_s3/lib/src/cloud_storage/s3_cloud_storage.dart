@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
 
-import '../endpoints/aws_endpoint_config.dart';
+import '../config/aws_endpoint_config.dart';
 
 /// AWS S3 cloud storage implementation for Serverpod.
 ///
