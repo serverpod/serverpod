@@ -1,4 +1,4 @@
-import 's3_endpoint_config.dart';
+import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
 
 /// AWS S3 endpoint configuration using virtual-hosted style URLs.
 ///

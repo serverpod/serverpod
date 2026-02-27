@@ -10,4 +10,5 @@
 library;
 
 export 'src/cloud_storage/google_cloud_storage.dart';
+export 'src/endpoints/gcp_endpoint_config.dart';
 export 'src/native/native_google_cloud_storage.dart';

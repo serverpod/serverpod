@@ -11,10 +11,12 @@
 ///
 /// ### Endpoint Configuration
 /// - [S3EndpointConfig] - Abstract interface for endpoint URLs
-/// - [AwsEndpointConfig] - AWS S3 endpoint configuration
-/// - [GcpEndpointConfig] - GCP S3-compatible endpoint configuration
-/// - [R2EndpointConfig] - Cloudflare R2 endpoint configuration
 /// - [CustomEndpointConfig] - Custom S3-compatible endpoint configuration
+///
+/// Provider-specific endpoint configs are in their respective packages:
+/// - `AwsEndpointConfig` in `serverpod_cloud_storage_s3`
+/// - `GcpEndpointConfig` in `serverpod_cloud_storage_gcp`
+/// - `R2EndpointConfig` in `serverpod_cloud_storage_r2`
 ///
 /// ### Upload Strategy
 /// - [S3UploadStrategy] - Abstract interface for upload mechanisms
@@ -34,10 +36,7 @@ export 'src/client/exceptions.dart';
 export 'src/client/s3_client.dart';
 
 // Endpoint configurations
-export 'src/endpoints/aws_endpoint_config.dart';
 export 'src/endpoints/custom_endpoint_config.dart';
-export 'src/endpoints/gcp_endpoint_config.dart';
-export 'src/endpoints/r2_endpoint_config.dart';
 export 'src/endpoints/s3_endpoint_config.dart';
 
 // Upload strategies

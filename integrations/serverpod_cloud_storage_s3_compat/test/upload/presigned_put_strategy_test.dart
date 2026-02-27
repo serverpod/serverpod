@@ -15,13 +15,15 @@ void main() {
     },
   );
 
-  group('Given a PresignedPutUploadStrategy with R2 endpoints', () {
+  group('Given a PresignedPutUploadStrategy with custom endpoints', () {
     late PresignedPutUploadStrategy strategy;
-    late R2EndpointConfig endpoints;
+    late CustomEndpointConfig endpoints;
 
     setUp(() {
       strategy = PresignedPutUploadStrategy();
-      endpoints = R2EndpointConfig(accountId: 'abc123def456');
+      endpoints = CustomEndpointConfig(
+        baseUri: Uri.https('s3.us-east-1.amazonaws.com', '/'),
+      );
     });
 
     group('when creating direct upload description', () {
@@ -29,10 +31,10 @@ void main() {
 
       setUp(() async {
         description = await strategy.createDirectUploadDescription(
-          accessKey: 'r2accesskey',
-          secretKey: 'r2secretkey',
+          accessKey: 'testAccessKey',
+          secretKey: 'testSecretKey',
           bucket: 'my-bucket',
-          region: 'auto',
+          region: 'us-east-1',
           path: 'uploads/test-file.txt',
           expiration: Duration(minutes: 10),
           maxFileSize: 10 * 1024 * 1024,
@@ -71,7 +73,7 @@ void main() {
         final data = jsonDecode(description!) as Map<String, dynamic>;
         final url = data['url'] as String;
 
-        expect(url, contains('abc123def456.r2.cloudflarestorage.com'));
+        expect(url, contains('s3.us-east-1.amazonaws.com'));
         expect(url, contains('my-bucket'));
         expect(url, contains('uploads/test-file.txt'));
         expect(url, contains('X-Amz-Signature='));
@@ -91,10 +93,10 @@ void main() {
 
       setUp(() async {
         description = await strategy.createDirectUploadDescription(
-          accessKey: 'r2accesskey',
-          secretKey: 'r2secretkey',
+          accessKey: 'key',
+          secretKey: 'secret',
           bucket: 'my-bucket',
-          region: 'auto',
+          region: 'us-east-1',
           path: 'images/photo.jpg',
           expiration: Duration(minutes: 5),
           maxFileSize: 5 * 1024 * 1024,
@@ -119,7 +121,7 @@ void main() {
           accessKey: 'key',
           secretKey: 'secret',
           bucket: 'bucket',
-          region: 'auto',
+          region: 'us-east-1',
           path: 'images/logo.png',
           expiration: Duration(minutes: 10),
           maxFileSize: 1024 * 1024,
@@ -144,7 +146,7 @@ void main() {
           accessKey: 'key',
           secretKey: 'secret',
           bucket: 'bucket',
-          region: 'auto',
+          region: 'us-east-1',
           path: 'data/file.unknownext',
           expiration: Duration(minutes: 10),
           maxFileSize: 1024 * 1024,
@@ -163,14 +165,16 @@ void main() {
   });
 
   group(
-    'Given a PresignedPutUploadStrategy with R2 endpoints and contentLength',
+    'Given a PresignedPutUploadStrategy with custom endpoints and contentLength',
     () {
       late PresignedPutUploadStrategy strategy;
-      late R2EndpointConfig endpoints;
+      late CustomEndpointConfig endpoints;
 
       setUp(() {
         strategy = PresignedPutUploadStrategy();
-        endpoints = R2EndpointConfig(accountId: 'abc123def456');
+        endpoints = CustomEndpointConfig(
+          baseUri: Uri.https('s3.us-east-1.amazonaws.com', '/'),
+        );
       });
 
       group('when creating upload description with contentLength', () {
@@ -178,10 +182,10 @@ void main() {
 
         setUp(() async {
           description = await strategy.createDirectUploadDescription(
-            accessKey: 'r2accesskey',
-            secretKey: 'r2secretkey',
+            accessKey: 'testAccessKey',
+            secretKey: 'testSecretKey',
             bucket: 'my-bucket',
-            region: 'auto',
+            region: 'us-east-1',
             path: 'uploads/test-file.txt',
             expiration: Duration(minutes: 10),
             maxFileSize: 10 * 1024 * 1024,
@@ -211,10 +215,10 @@ void main() {
 
         setUp(() async {
           description = await strategy.createDirectUploadDescription(
-            accessKey: 'r2accesskey',
-            secretKey: 'r2secretkey',
+            accessKey: 'testAccessKey',
+            secretKey: 'testSecretKey',
             bucket: 'my-bucket',
-            region: 'auto',
+            region: 'us-east-1',
             path: 'uploads/test-file.txt',
             expiration: Duration(minutes: 10),
             maxFileSize: 10 * 1024 * 1024,
@@ -241,14 +245,16 @@ void main() {
   );
 
   group(
-    'Given a PresignedPutUploadStrategy with R2 endpoints and preventOverwrite',
+    'Given a PresignedPutUploadStrategy with custom endpoints and preventOverwrite',
     () {
       late PresignedPutUploadStrategy strategy;
-      late R2EndpointConfig endpoints;
+      late CustomEndpointConfig endpoints;
 
       setUp(() {
         strategy = PresignedPutUploadStrategy();
-        endpoints = R2EndpointConfig(accountId: 'abc123def456');
+        endpoints = CustomEndpointConfig(
+          baseUri: Uri.https('s3.us-east-1.amazonaws.com', '/'),
+        );
       });
 
       group('when creating upload description with preventOverwrite', () {
@@ -256,10 +262,10 @@ void main() {
 
         setUp(() async {
           description = await strategy.createDirectUploadDescription(
-            accessKey: 'r2accesskey',
-            secretKey: 'r2secretkey',
+            accessKey: 'testAccessKey',
+            secretKey: 'testSecretKey',
             bucket: 'my-bucket',
-            region: 'auto',
+            region: 'us-east-1',
             path: 'uploads/test-file.txt',
             expiration: Duration(minutes: 10),
             maxFileSize: 10 * 1024 * 1024,
@@ -289,10 +295,10 @@ void main() {
 
         setUp(() async {
           description = await strategy.createDirectUploadDescription(
-            accessKey: 'r2accesskey',
-            secretKey: 'r2secretkey',
+            accessKey: 'testAccessKey',
+            secretKey: 'testSecretKey',
             bucket: 'my-bucket',
-            region: 'auto',
+            region: 'us-east-1',
             path: 'uploads/test-file.txt',
             expiration: Duration(minutes: 10),
             maxFileSize: 10 * 1024 * 1024,
@@ -311,7 +317,7 @@ void main() {
     },
   );
 
-  group('Given a PresignedPutUploadStrategy with custom endpoints', () {
+  group('Given a PresignedPutUploadStrategy with HTTP custom endpoints', () {
     late PresignedPutUploadStrategy strategy;
     late CustomEndpointConfig endpoints;
 

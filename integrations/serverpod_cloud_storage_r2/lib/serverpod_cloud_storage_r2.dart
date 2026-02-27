@@ -33,4 +33,5 @@
 /// ```
 library;
 
+export 'src/endpoints/r2_endpoint_config.dart';
 export 'src/r2_cloud_storage.dart';

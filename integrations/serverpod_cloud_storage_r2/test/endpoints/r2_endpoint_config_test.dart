@@ -1,4 +1,4 @@
-import 'package:serverpod_cloud_storage_s3_compat/src/endpoints/r2_endpoint_config.dart';
+import 'package:serverpod_cloud_storage_r2/src/endpoints/r2_endpoint_config.dart';
 import 'package:test/test.dart';
 
 void main() {

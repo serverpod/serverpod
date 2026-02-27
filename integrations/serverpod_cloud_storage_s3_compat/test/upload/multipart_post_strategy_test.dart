@@ -15,13 +15,15 @@ void main() {
     },
   );
 
-  group('Given a MultipartPostUploadStrategy with AWS endpoints', () {
+  group('Given a MultipartPostUploadStrategy with custom endpoints', () {
     late MultipartPostUploadStrategy strategy;
-    late AwsEndpointConfig endpoints;
+    late CustomEndpointConfig endpoints;
 
     setUp(() {
       strategy = MultipartPostUploadStrategy();
-      endpoints = AwsEndpointConfig();
+      endpoints = CustomEndpointConfig(
+        baseUri: Uri.https('s3.us-east-1.amazonaws.com', '/'),
+      );
     });
 
     group('when creating direct upload description', () {
@@ -52,7 +54,10 @@ void main() {
       test('then it contains the correct upload URL', () {
         final data = jsonDecode(description!) as Map<String, dynamic>;
 
-        expect(data['url'], 'https://my-bucket.s3.us-east-1.amazonaws.com/');
+        expect(
+          data['url'],
+          'https://s3.us-east-1.amazonaws.com/my-bucket',
+        );
       });
 
       test('then it specifies multipart type', () {
@@ -113,47 +118,7 @@ void main() {
     });
   });
 
-  group('Given a MultipartPostUploadStrategy with GCP endpoints', () {
-    late MultipartPostUploadStrategy strategy;
-    late GcpEndpointConfig endpoints;
-
-    setUp(() {
-      strategy = MultipartPostUploadStrategy();
-      endpoints = GcpEndpointConfig();
-    });
-
-    group('when creating direct upload description', () {
-      late String? description;
-
-      setUp(() async {
-        description = await strategy.createDirectUploadDescription(
-          accessKey: 'GOOGTS7C7FUP3AIRVEXAMPLE',
-          secretKey: 'bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiEXAMPLEKEY',
-          bucket: 'my-gcp-bucket',
-          region: 'auto',
-          path: 'uploads/gcp-file.txt',
-          expiration: Duration(minutes: 10),
-          maxFileSize: 5 * 1024 * 1024,
-          public: true,
-          endpoints: endpoints,
-        );
-      });
-
-      test('then it contains the GCP upload URL', () {
-        final data = jsonDecode(description!) as Map<String, dynamic>;
-
-        expect(data['url'], 'https://storage.googleapis.com/my-gcp-bucket');
-      });
-
-      test('then it specifies multipart type', () {
-        final data = jsonDecode(description!) as Map<String, dynamic>;
-
-        expect(data['type'], 'multipart');
-      });
-    });
-  });
-
-  group('Given a MultipartPostUploadStrategy with custom endpoints', () {
+  group('Given a MultipartPostUploadStrategy with HTTP custom endpoints', () {
     late MultipartPostUploadStrategy strategy;
     late CustomEndpointConfig endpoints;
 

@@ -3,7 +3,7 @@ import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_com
 import 'package:test/test.dart';
 
 void main() {
-  group('Given an S3Client with AWS endpoints', () {
+  group('Given an S3Client with custom endpoints', () {
     late S3Client client;
 
     setUp(() {
@@ -12,7 +12,9 @@ void main() {
         secretKey: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
         bucket: 'my-bucket',
         region: 'us-east-1',
-        endpoints: AwsEndpointConfig(),
+        endpoints: CustomEndpointConfig(
+          baseUri: Uri.https('s3.us-east-1.amazonaws.com', '/'),
+        ),
       );
     });
 
@@ -27,12 +29,12 @@ void main() {
         expect(params.uri.scheme, 'https');
       });
 
-      test('then the URI has the correct host with bucket', () {
-        expect(params.uri.host, 'my-bucket.s3.us-east-1.amazonaws.com');
+      test('then the URI has the correct host', () {
+        expect(params.uri.host, 's3.us-east-1.amazonaws.com');
       });
 
       test('then the URI has the correct path', () {
-        expect(params.uri.path, '/test/file.txt');
+        expect(params.uri.path, '/my-bucket/test/file.txt');
       });
 
       test('then the headers contain Authorization', () {
@@ -62,7 +64,7 @@ void main() {
           method: 'HEAD',
         );
 
-        expect(params.uri.path, '/test.txt');
+        expect(params.uri.path, '/my-bucket/test.txt');
         expect(params.headers['Authorization'], contains('AWS4-HMAC-SHA256'));
       },
     );
@@ -76,7 +78,7 @@ void main() {
           method: 'DELETE',
         );
 
-        expect(params.uri.path, '/delete-me.txt');
+        expect(params.uri.path, '/my-bucket/delete-me.txt');
         expect(params.headers['Authorization'], contains('AWS4-HMAC-SHA256'));
       },
     );
@@ -96,41 +98,7 @@ void main() {
     );
   });
 
-  group('Given an S3Client with GCP endpoints', () {
-    late S3Client client;
-
-    setUp(() {
-      client = S3Client(
-        accessKey: 'GOOGTS7C7FUP3AIRVEXAMPLE',
-        secretKey: 'bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiEXAMPLEKEY',
-        bucket: 'my-gcp-bucket',
-        region: 'auto',
-        endpoints: GcpEndpointConfig(),
-      );
-    });
-
-    test(
-      'when building signed params '
-      'then the URI has the GCP host',
-      () {
-        final params = client.buildSignedParams(key: 'file.txt');
-
-        expect(params.uri.host, 'storage.googleapis.com');
-      },
-    );
-
-    test(
-      'when building signed params '
-      'then the URI path includes the bucket and file',
-      () {
-        final params = client.buildSignedParams(key: 'path/to/file.txt');
-
-        expect(params.uri.path, '/my-gcp-bucket/path/to/file.txt');
-      },
-    );
-  });
-
-  group('Given an S3Client with custom endpoints', () {
+  group('Given an S3Client with HTTP custom endpoints', () {
     late S3Client client;
 
     setUp(() {
@@ -167,7 +135,9 @@ void main() {
         secretKey: 'test',
         bucket: 'bucket',
         region: 'us-east-1',
-        endpoints: AwsEndpointConfig(),
+        endpoints: CustomEndpointConfig(
+          baseUri: Uri.https('s3.us-east-1.amazonaws.com', '/'),
+        ),
       );
     });
 

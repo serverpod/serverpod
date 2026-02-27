@@ -276,58 +276,6 @@ void main() {
   });
 
   test(
-    'Given a TestableS3CompatCloudStorage with AWS endpoints '
-    'when getting public URL '
-    'then it produces correct AWS URL format',
-    () async {
-      final mockClient = MockS3Client();
-      mockClient.headObjectResponse = http.Response('', 200);
-
-      final storage = TestableS3CompatCloudStorage(
-        mockClient: mockClient,
-        mockUploadStrategy: MockUploadStrategy(),
-        storageId: 'aws',
-        bucket: 'my-bucket',
-        region: 'eu-west-1',
-        endpoints: AwsEndpointConfig(),
-      );
-
-      final url = await storage.testGetPublicUrl('file.txt');
-
-      expect(
-        url.toString(),
-        'https://my-bucket.s3.eu-west-1.amazonaws.com/file.txt',
-      );
-    },
-  );
-
-  test(
-    'Given a TestableS3CompatCloudStorage with GCP endpoints '
-    'when getting public URL '
-    'then it produces correct GCP URL format',
-    () async {
-      final mockClient = MockS3Client();
-      mockClient.headObjectResponse = http.Response('', 200);
-
-      final storage = TestableS3CompatCloudStorage(
-        mockClient: mockClient,
-        mockUploadStrategy: MockUploadStrategy(),
-        storageId: 'gcp',
-        bucket: 'gcp-bucket',
-        region: 'auto',
-        endpoints: GcpEndpointConfig(),
-      );
-
-      final url = await storage.testGetPublicUrl('file.txt');
-
-      expect(
-        url.toString(),
-        'https://storage.googleapis.com/gcp-bucket/file.txt',
-      );
-    },
-  );
-
-  test(
     'Given a TestableS3CompatCloudStorage with custom endpoints '
     'when getting public URL '
     'then it produces correct custom URL format',
@@ -369,7 +317,9 @@ class MockS3Client extends S3Client {
         secretKey: 'test',
         bucket: 'test',
         region: 'us-east-1',
-        endpoints: AwsEndpointConfig(),
+        endpoints: CustomEndpointConfig(
+          baseUri: Uri.https('s3.us-east-1.amazonaws.com', '/'),
+        ),
       );
 
   @override
@@ -461,7 +411,11 @@ class TestableS3CompatCloudStorage extends S3CompatCloudStorage {
     super.public = true,
     S3EndpointConfig? endpoints,
   }) : super(
-         endpoints: endpoints ?? AwsEndpointConfig(),
+         endpoints:
+             endpoints ??
+             CustomEndpointConfig(
+               baseUri: Uri.https('s3.us-east-1.amazonaws.com', '/'),
+             ),
          uploadStrategy: mockUploadStrategy,
          client: mockClient,
        );

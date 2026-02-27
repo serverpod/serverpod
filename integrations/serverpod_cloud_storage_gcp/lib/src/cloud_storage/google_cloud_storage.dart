@@ -1,6 +1,8 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
 
+import '../endpoints/gcp_endpoint_config.dart';
+
 /// Google Cloud Storage implementation using S3-compatible API with HMAC credentials.
 ///
 /// This implementation uses GCP's S3-compatible API endpoint, which allows
