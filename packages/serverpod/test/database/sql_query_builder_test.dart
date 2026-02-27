@@ -163,7 +163,7 @@ void main() {
 
         expect(
           query,
-          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" ORDER BY "citizen"."id"',
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" ORDER BY "citizen"."id" ASC NULLS LAST',
         );
       },
     );
@@ -192,7 +192,7 @@ void main() {
 
         expect(
           query,
-          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" ORDER BY "citizen"."id", "citizen"."name" DESC, "citizen"."age"',
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" ORDER BY "citizen"."id" ASC NULLS LAST, "citizen"."name" DESC NULLS FIRST, "citizen"."age" ASC NULLS LAST',
         );
       },
     );
@@ -381,7 +381,7 @@ void main() {
 
       expect(
         query,
-        'WITH "order_by_citizen_companiesOwned_company_1" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_companiesOwned_company"."id") AS "count" FROM "citizen" LEFT JOIN "company" AS "citizen_companiesOwned_company" ON "citizen"."id" = "citizen_companiesOwned_company"."id" WHERE "citizen_companiesOwned_company"."id" = 5 GROUP BY "citizen"."id") SELECT "citizen"."id" AS "citizen.id", "citizen"."name" AS "citizen.name", "citizen"."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" LEFT JOIN "order_by_citizen_companiesOwned_company_1" ON "citizen"."id" = "order_by_citizen_companiesOwned_company_1"."citizen.id" WHERE "citizen_company_company"."name" = \'Serverpod\' ORDER BY "citizen"."id" DESC, "order_by_citizen_companiesOwned_company_1"."count" ASC NULLS FIRST LIMIT 10 OFFSET 5',
+        'WITH "order_by_citizen_companiesOwned_company_1" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_companiesOwned_company"."id") AS "count" FROM "citizen" LEFT JOIN "company" AS "citizen_companiesOwned_company" ON "citizen"."id" = "citizen_companiesOwned_company"."id" WHERE "citizen_companiesOwned_company"."id" = 5 GROUP BY "citizen"."id") SELECT "citizen"."id" AS "citizen.id", "citizen"."name" AS "citizen.name", "citizen"."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" LEFT JOIN "order_by_citizen_companiesOwned_company_1" ON "citizen"."id" = "order_by_citizen_companiesOwned_company_1"."citizen.id" WHERE "citizen_company_company"."name" = \'Serverpod\' ORDER BY "citizen"."id" DESC NULLS FIRST, "order_by_citizen_companiesOwned_company_1"."count" ASC NULLS FIRST LIMIT 10 OFFSET 5',
       );
     });
 
@@ -968,7 +968,7 @@ void main() {
 
       expect(
         query,
-        'WITH _base_query_sorting_and_ordering AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3)), _partitioned_list_by_parent_id AS (SELECT *, row_number() OVER ( PARTITION BY _base_query_sorting_and_ordering."citizen.id") FROM _base_query_sorting_and_ordering) SELECT * FROM _partitioned_list_by_parent_id WHERE row_number BETWEEN 1 AND 10',
+        'WITH _base_query_sorting_and_ordering AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3)), _partitioned_list_by_parent_id AS (SELECT *, row_number() OVER ( PARTITION BY _base_query_sorting_and_ordering."citizen.id") AS row_number FROM _base_query_sorting_and_ordering) SELECT * FROM _partitioned_list_by_parent_id WHERE row_number BETWEEN 1 AND 10',
       );
     },
   );
@@ -995,7 +995,7 @@ void main() {
 
       expect(
         query,
-        'WITH _base_query_sorting_and_ordering AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3)), _partitioned_list_by_parent_id AS (SELECT *, row_number() OVER ( PARTITION BY _base_query_sorting_and_ordering."citizen.id") FROM _base_query_sorting_and_ordering) SELECT * FROM _partitioned_list_by_parent_id WHERE row_number >= 11',
+        'WITH _base_query_sorting_and_ordering AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3)), _partitioned_list_by_parent_id AS (SELECT *, row_number() OVER ( PARTITION BY _base_query_sorting_and_ordering."citizen.id") AS row_number FROM _base_query_sorting_and_ordering) SELECT * FROM _partitioned_list_by_parent_id WHERE row_number >= 11',
       );
     },
   );
@@ -1023,7 +1023,7 @@ void main() {
 
       expect(
         query,
-        'WITH _base_query_sorting_and_ordering AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3)), _partitioned_list_by_parent_id AS (SELECT *, row_number() OVER ( PARTITION BY _base_query_sorting_and_ordering."citizen.id") FROM _base_query_sorting_and_ordering) SELECT * FROM _partitioned_list_by_parent_id WHERE row_number BETWEEN 11 AND 20',
+        'WITH _base_query_sorting_and_ordering AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3)), _partitioned_list_by_parent_id AS (SELECT *, row_number() OVER ( PARTITION BY _base_query_sorting_and_ordering."citizen.id") AS row_number FROM _base_query_sorting_and_ordering) SELECT * FROM _partitioned_list_by_parent_id WHERE row_number BETWEEN 11 AND 20',
       );
     },
   );
@@ -1145,7 +1145,7 @@ void main() {
 
         expect(
           query,
-          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" ORDER BY "citizen"."name" FOR UPDATE',
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" ORDER BY "citizen"."name" ASC NULLS LAST FOR UPDATE',
         );
       });
     });
@@ -1173,7 +1173,7 @@ void main() {
 
         expect(
           query,
-          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" ORDER BY "citizen"."name" FOR UPDATE NOWAIT LIMIT 10',
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" ORDER BY "citizen"."name" ASC NULLS LAST FOR UPDATE NOWAIT LIMIT 10',
         );
       });
     });
