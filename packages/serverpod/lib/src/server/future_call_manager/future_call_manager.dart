@@ -246,4 +246,84 @@ class FutureCallManager {
       await futureCallSession.close(error: error, stackTrace: stackTrace);
     }
   }
+
+  /// Returns `true` if the amount of future calls in the database
+  /// is less than [threshold].
+  Future<bool> canPerformDefaultScanForBrokenFutureCalls({
+    int threshold = 1000,
+  }) async {
+    final count = await FutureCallEntry.db.count(
+      _internalSession,
+      limit: threshold,
+    );
+
+    return count < threshold;
+  }
+
+  /// Scans the database for broken future calls.
+  /// Broken future calls include unregistered calls and
+  /// those with stored inputs that cannot be deserialized.
+  ///
+  /// If [deleteBrokenCalls] is true, the faulty future calls are deleted.
+  ///
+  /// Returns `true` if broken future calls are found.
+  /// Otherwise, returns `false`.
+  Future<bool> scanBrokenFutureCalls({required bool deleteBrokenCalls}) async {
+    List<FutureCallEntry> unregisteredCalls = [];
+    List<FutureCallEntry> brokenCalls = [];
+    final entries = await FutureCallEntry.db.find(_internalSession);
+
+    final buffer = StringBuffer();
+
+    for (final entry in entries) {
+      final futureCall = _futureCalls[entry.name];
+      if (futureCall == null) {
+        unregisteredCalls.add(entry);
+        buffer.writeln('Unregistered future call: $entry');
+      } else if (!_canDecodeFutureCallSerializedData(
+        futureCallEntry: entry,
+        futureCall: futureCall,
+      )) {
+        brokenCalls.add(entry);
+        buffer.writeln(
+          'Future call failed deserialization: $entry',
+        );
+      }
+    }
+
+    _internalSession.log(buffer.toString(), level: LogLevel.warning);
+
+    final allCalls = unregisteredCalls + brokenCalls;
+
+    if (deleteBrokenCalls && allCalls.isNotEmpty) {
+      final deletedEntries = await FutureCallEntry.db.delete(
+        _internalSession,
+        allCalls,
+      );
+      _internalSession.log(
+        'Deleted ${deletedEntries.length}/${allCalls.length} broken future calls.',
+      );
+    }
+
+    return unregisteredCalls.isNotEmpty || brokenCalls.isNotEmpty;
+  }
+
+  /// Returns `true` if [futureCallEntry]'s stored serializedObject
+  /// can be deserialized for [futureCall]'s data type.
+  bool _canDecodeFutureCallSerializedData({
+    required FutureCallEntry futureCallEntry,
+    required FutureCall<SerializableModel> futureCall,
+  }) {
+    try {
+      if (futureCallEntry.serializedObject != null) {
+        _serializationManager.decode(
+          futureCallEntry.serializedObject!,
+          futureCall.dataType,
+        );
+      }
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }

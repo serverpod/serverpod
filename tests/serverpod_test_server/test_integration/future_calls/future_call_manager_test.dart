@@ -783,4 +783,222 @@ void main() async {
       );
     },
   );
+
+  group(
+    'Given FutureCallManager with scheduled FutureCalls',
+    () {
+      late Serverpod server;
+      late Session session;
+      late FutureCallManager futureCallManager;
+      List<FutureCallEntry> futureCallEntries = [];
+      int futureCallsCount = 3;
+
+      setUp(() async {
+        server = IntegrationTestServer.create();
+        await server.start();
+
+        session = await server.createSession(enableLogging: false);
+        await LoggingUtil.clearAllLogs(session);
+
+        futureCallManager = FutureCallManagerBuilder(
+          sessionProvider: (futureCallName) => session,
+          internalSession: session,
+        ).build();
+
+        for (int i = 0; i < futureCallsCount; i++) {
+          final data = SimpleData(num: i);
+          final entry = FutureCallEntry(
+            id: i,
+            name: 'TestCall$i',
+            serializedObject: data.toString(),
+            time: DateTime.now().toUtc(),
+            serverId: 'default',
+          );
+
+          futureCallEntries.add(entry);
+          await FutureCallEntry.db.insertRow(session, entry);
+        }
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when there are fewer future calls in the database than the threshold'
+        'then canPerformDefaultScanForBrokenFutureCalls returns true',
+        () async {
+          expect(
+            futureCallManager.canPerformDefaultScanForBrokenFutureCalls(
+              threshold: futureCallsCount + 1,
+            ),
+            completion(true),
+          );
+        },
+      );
+
+      test(
+        'when there are fewer more calls in the database than the threshold'
+        'then canPerformDefaultScanForBrokenFutureCalls returns false',
+        () async {
+          expect(
+            futureCallManager.canPerformDefaultScanForBrokenFutureCalls(
+              threshold: futureCallsCount - 1,
+            ),
+            completion(false),
+          );
+        },
+      );
+
+      group('when scanning for broken future calls without deletion', () {
+        test('then unregistered future calls are logged', () async {
+          final settings = RuntimeSettingsBuilder().build();
+          await server.updateRuntimeSettings(settings);
+
+          final testSession = await server.createSession(enableLogging: true);
+
+          futureCallManager = FutureCallManagerBuilder(
+            sessionProvider: (futureCallName) => testSession,
+            internalSession: testSession,
+          ).build();
+
+          // only register one future call
+          futureCallManager.registerFutureCall(
+            CompleterTestCall(),
+            'TestCall1',
+          );
+
+          await futureCallManager.scanBrokenFutureCalls(
+            deleteBrokenCalls: false,
+          );
+          await testSession.close();
+
+          var logs = await LoggingUtil.findAllLogs(session);
+          var logEntry = logs.last.logs.first;
+
+          expect(logEntry.logLevel, LogLevel.warning);
+          expect(
+            logEntry.message,
+            matches(
+              r'Unregistered future call: \{.*\"name\":\s*\"TestCall0\".*\}\n'
+              r'Unregistered future call: \{.*\"name\":\s*\"TestCall2\".*\}\n',
+            ),
+          );
+        });
+
+        test('then broken future calls are logged', () async {
+          final settings = RuntimeSettingsBuilder().build();
+          await server.updateRuntimeSettings(settings);
+
+          final testSession = await server.createSession(enableLogging: true);
+
+          futureCallManager = FutureCallManagerBuilder(
+            sessionProvider: (futureCallName) => testSession,
+            internalSession: testSession,
+          ).build();
+
+          // register future calls
+          for (int i = 0; i < futureCallsCount; i++) {
+            futureCallManager.registerFutureCall(
+              CompleterTestCall(),
+              'TestCall$i',
+            );
+          }
+
+          // update stored future call data to fail deserialization
+          await FutureCallEntry.db.updateRow(
+            session,
+            FutureCallEntry(
+              id: 1,
+              name: 'TestCall1',
+              serializedObject: '{}',
+              time: DateTime.now().toUtc(),
+              serverId: 'default',
+            ),
+          );
+
+          await futureCallManager.scanBrokenFutureCalls(
+            deleteBrokenCalls: false,
+          );
+          await testSession.close();
+
+          var logs = await LoggingUtil.findAllLogs(session);
+          var logEntry = logs.last.logs.first;
+
+          expect(logEntry.logLevel, LogLevel.warning);
+          expect(
+            logEntry.message,
+            matches(
+              r'Future call failed deserialization: \{.*\"name\":\s*\"TestCall1\".*\}\n',
+            ),
+          );
+        });
+      });
+
+      group('when scanning for broken future calls with deletion', () {
+        setUp(() {
+          futureCallManager = FutureCallManagerBuilder(
+            sessionProvider: (futureCallName) => session,
+            internalSession: session,
+          ).build();
+        });
+
+        test(
+          'then unregistered future calls are deleted from the database',
+          () async {
+            // only register one future call
+            futureCallManager.registerFutureCall(
+              CompleterTestCall(),
+              'TestCall1',
+            );
+
+            await futureCallManager.scanBrokenFutureCalls(
+              deleteBrokenCalls: true,
+            );
+
+            final futureCallEntries = await FutureCallEntry.db.find(session);
+            expect(futureCallEntries, hasLength(1));
+            expect(futureCallEntries.firstOrNull?.name, 'TestCall1');
+          },
+        );
+
+        test(
+          'then broken future calls are deleted from the database',
+          () async {
+            // register future calls
+            for (int i = 0; i < futureCallsCount; i++) {
+              futureCallManager.registerFutureCall(
+                CompleterTestCall(),
+                'TestCall$i',
+              );
+            }
+
+            // update stored future call data to fail deserialization
+            await FutureCallEntry.db.updateRow(
+              session,
+              FutureCallEntry(
+                id: 1,
+                name: 'TestCall1',
+                serializedObject: '{}',
+                time: DateTime.now().toUtc(),
+                serverId: 'default',
+              ),
+            );
+
+            await futureCallManager.scanBrokenFutureCalls(
+              deleteBrokenCalls: true,
+            );
+
+            final futureCallEntries = await FutureCallEntry.db.find(session);
+
+            expect(futureCallEntries, hasLength(futureCallsCount - 1));
+            expect(futureCallEntries.firstOrNull?.name, 'TestCall0');
+            expect(futureCallEntries.lastOrNull?.name, 'TestCall2');
+          },
+        );
+      });
+    },
+  );
 }

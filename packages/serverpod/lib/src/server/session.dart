@@ -259,12 +259,6 @@ abstract class Session implements DatabaseSession {
     dynamic exception,
     StackTrace? stackTrace,
   }) {
-    if (_closed) {
-      throw StateError(
-        'Session is closed, and logging can no longer be performed.',
-      );
-    }
-
     _logManager?.logEntry(
       message: message,
       level: level ?? LogLevel.info,
