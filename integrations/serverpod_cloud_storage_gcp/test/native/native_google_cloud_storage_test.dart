@@ -111,8 +111,8 @@ void main() {
       },
     );
 
-    group('when checking if a file exists', () {
-      test('then it returns true when the object exists', () async {
+    group('Given an existing file', () {
+      setUp(() {
         when(
           () => mockObjects.get(
             'test-bucket',
@@ -120,23 +120,30 @@ void main() {
             downloadOptions: any(named: 'downloadOptions'),
           ),
         ).thenAnswer((_) async => MockObject());
-
-        final exists = await storage.fileExists(
-          session: mockSession,
-          path: 'existing/file.txt',
-        );
-
-        expect(exists, isTrue);
-        verify(
-          () => mockObjects.get(
-            'test-bucket',
-            'existing/file.txt',
-            downloadOptions: any(named: 'downloadOptions'),
-          ),
-        ).called(1);
       });
 
-      test('then it returns false when the object does not exist', () async {
+      test(
+        'when checking if it exists then it returns true',
+        () async {
+          final exists = await storage.fileExists(
+            session: mockSession,
+            path: 'existing/file.txt',
+          );
+
+          expect(exists, isTrue);
+          verify(
+            () => mockObjects.get(
+              'test-bucket',
+              'existing/file.txt',
+              downloadOptions: any(named: 'downloadOptions'),
+            ),
+          ).called(1);
+        },
+      );
+    });
+
+    group('Given a file that does not exist', () {
+      setUp(() {
         when(
           () => mockObjects.get(
             'test-bucket',
@@ -144,16 +151,23 @@ void main() {
             downloadOptions: any(named: 'downloadOptions'),
           ),
         ).thenThrow(gcs.DetailedApiRequestError(404, 'Not Found'));
-
-        final exists = await storage.fileExists(
-          session: mockSession,
-          path: 'missing/file.txt',
-        );
-
-        expect(exists, isFalse);
       });
 
-      test('then it rethrows non-404 errors', () async {
+      test(
+        'when checking if it exists then it returns false',
+        () async {
+          final exists = await storage.fileExists(
+            session: mockSession,
+            path: 'missing/file.txt',
+          );
+
+          expect(exists, isFalse);
+        },
+      );
+    });
+
+    group('Given a server error', () {
+      setUp(() {
         when(
           () => mockObjects.get(
             'test-bucket',
@@ -161,17 +175,25 @@ void main() {
             downloadOptions: any(named: 'downloadOptions'),
           ),
         ).thenThrow(gcs.DetailedApiRequestError(500, 'Server Error'));
-
-        expect(
-          () =>
-              storage.fileExists(session: mockSession, path: 'error/file.txt'),
-          throwsA(isA<gcs.DetailedApiRequestError>()),
-        );
       });
+
+      test(
+        'when checking if a file exists then it rethrows the error',
+        () async {
+          expect(
+            () => storage.fileExists(
+              session: mockSession,
+              path: 'error/file.txt',
+            ),
+            throwsA(isA<gcs.DetailedApiRequestError>()),
+          );
+        },
+      );
     });
 
-    group('when storing a file', () {
-      test('then it uploads with publicRead ACL', () async {
+    test(
+      'when storing a file then it uploads with publicRead ACL',
+      () async {
         when(
           () => mockObjects.insert(
             any(),
@@ -198,45 +220,47 @@ void main() {
             ifGenerationMatch: null,
           ),
         ).called(1);
-      });
+      },
+    );
 
-      test(
-        'then it passes ifGenerationMatch 0 when preventOverwrite is true',
-        () async {
-          when(
-            () => mockObjects.insert(
-              any(),
-              'test-bucket',
-              uploadMedia: any(named: 'uploadMedia'),
-              predefinedAcl: any(named: 'predefinedAcl'),
-              ifGenerationMatch: any(named: 'ifGenerationMatch'),
-            ),
-          ).thenAnswer((_) async => MockObject());
+    test(
+      'when storing a file with preventOverwrite '
+      'then it passes ifGenerationMatch 0',
+      () async {
+        when(
+          () => mockObjects.insert(
+            any(),
+            'test-bucket',
+            uploadMedia: any(named: 'uploadMedia'),
+            predefinedAcl: any(named: 'predefinedAcl'),
+            ifGenerationMatch: any(named: 'ifGenerationMatch'),
+          ),
+        ).thenAnswer((_) async => MockObject());
 
-          final data = ByteData(5);
-          await storage.storeFileWithOptions(
-            session: mockSession,
-            path: 'upload/test.txt',
-            byteData: data,
-            options: CloudStorageOptions(preventOverwrite: true),
-          );
+        final data = ByteData(5);
+        await storage.storeFileWithOptions(
+          session: mockSession,
+          path: 'upload/test.txt',
+          byteData: data,
+          options: CloudStorageOptions(preventOverwrite: true),
+        );
 
-          verify(
-            () => mockObjects.insert(
-              any(),
-              'test-bucket',
-              uploadMedia: any(named: 'uploadMedia'),
-              predefinedAcl: 'publicRead',
-              ifGenerationMatch: '0',
-            ),
-          ).called(1);
-        },
-      );
-    });
+        verify(
+          () => mockObjects.insert(
+            any(),
+            'test-bucket',
+            uploadMedia: any(named: 'uploadMedia'),
+            predefinedAcl: 'publicRead',
+            ifGenerationMatch: '0',
+          ),
+        ).called(1);
+      },
+    );
 
-    group('when retrieving a file', () {
-      test('then it returns the file data', () async {
-        final fileContent = [1, 2, 3, 4, 5];
+    group('Given an existing file with content', () {
+      final fileContent = [1, 2, 3, 4, 5];
+
+      setUp(() {
         final media = gcs.Media(
           Stream.value(fileContent),
           fileContent.length,
@@ -249,17 +273,24 @@ void main() {
             downloadOptions: any(named: 'downloadOptions'),
           ),
         ).thenAnswer((_) async => media);
-
-        final result = await storage.retrieveFile(
-          session: mockSession,
-          path: 'existing/file.txt',
-        );
-
-        expect(result, isNotNull);
-        expect(result!.buffer.asUint8List(), fileContent);
       });
 
-      test('then it returns null for missing files', () async {
+      test(
+        'when retrieving the file then it returns the file data',
+        () async {
+          final result = await storage.retrieveFile(
+            session: mockSession,
+            path: 'existing/file.txt',
+          );
+
+          expect(result, isNotNull);
+          expect(result!.buffer.asUint8List(), fileContent);
+        },
+      );
+    });
+
+    group('Given a missing file', () {
+      setUp(() {
         when(
           () => mockObjects.get(
             'test-bucket',
@@ -267,18 +298,23 @@ void main() {
             downloadOptions: any(named: 'downloadOptions'),
           ),
         ).thenThrow(gcs.DetailedApiRequestError(404, 'Not Found'));
-
-        final result = await storage.retrieveFile(
-          session: mockSession,
-          path: 'missing/file.txt',
-        );
-
-        expect(result, isNull);
       });
+
+      test(
+        'when retrieving the file then it returns null',
+        () async {
+          final result = await storage.retrieveFile(
+            session: mockSession,
+            path: 'missing/file.txt',
+          );
+
+          expect(result, isNull);
+        },
+      );
     });
 
-    group('when getting public URL', () {
-      test('then it returns the URL for existing files', () async {
+    group('Given an existing file in the bucket', () {
+      setUp(() {
         when(
           () => mockObjects.get(
             'test-bucket',
@@ -286,20 +322,27 @@ void main() {
             downloadOptions: any(named: 'downloadOptions'),
           ),
         ).thenAnswer((_) async => MockObject());
-
-        final url = await storage.getPublicUrl(
-          session: mockSession,
-          path: 'file.txt',
-        );
-
-        expect(url, isNotNull);
-        expect(
-          url.toString(),
-          'https://storage.googleapis.com/test-bucket/file.txt',
-        );
       });
 
-      test('then it returns null for missing files', () async {
+      test(
+        'when getting the public URL then it returns the URL',
+        () async {
+          final url = await storage.getPublicUrl(
+            session: mockSession,
+            path: 'file.txt',
+          );
+
+          expect(url, isNotNull);
+          expect(
+            url.toString(),
+            'https://storage.googleapis.com/test-bucket/file.txt',
+          );
+        },
+      );
+    });
+
+    group('Given a missing file in the bucket', () {
+      setUp(() {
         when(
           () => mockObjects.get(
             'test-bucket',
@@ -307,61 +350,85 @@ void main() {
             downloadOptions: any(named: 'downloadOptions'),
           ),
         ).thenThrow(gcs.DetailedApiRequestError(404, 'Not Found'));
-
-        final url = await storage.getPublicUrl(
-          session: mockSession,
-          path: 'missing.txt',
-        );
-
-        expect(url, isNull);
       });
+
+      test(
+        'when getting the public URL then it returns null',
+        () async {
+          final url = await storage.getPublicUrl(
+            session: mockSession,
+            path: 'missing.txt',
+          );
+
+          expect(url, isNull);
+        },
+      );
     });
 
-    group('when deleting a file', () {
-      test('then it calls delete on the objects resource', () async {
+    group('Given a file to delete', () {
+      setUp(() {
         when(
           () => mockObjects.delete('test-bucket', 'to-delete.txt'),
         ).thenAnswer((_) async {});
-
-        await storage.deleteFile(
-          session: mockSession,
-          path: 'to-delete.txt',
-        );
-
-        verify(
-          () => mockObjects.delete('test-bucket', 'to-delete.txt'),
-        ).called(1);
       });
 
-      test('then it silently ignores 404 errors', () async {
+      test(
+        'when deleting the file then it calls delete on the objects resource',
+        () async {
+          await storage.deleteFile(
+            session: mockSession,
+            path: 'to-delete.txt',
+          );
+
+          verify(
+            () => mockObjects.delete('test-bucket', 'to-delete.txt'),
+          ).called(1);
+        },
+      );
+    });
+
+    group('Given a file that has already been deleted', () {
+      setUp(() {
         when(
           () => mockObjects.delete('test-bucket', 'already-deleted.txt'),
         ).thenThrow(gcs.DetailedApiRequestError(404, 'Not Found'));
-
-        await expectLater(
-          storage.deleteFile(
-            session: mockSession,
-            path: 'already-deleted.txt',
-          ),
-          completes,
-        );
       });
 
-      test('then it rethrows non-404 errors', () async {
+      test(
+        'when deleting the file then it silently ignores the 404 error',
+        () async {
+          await expectLater(
+            storage.deleteFile(
+              session: mockSession,
+              path: 'already-deleted.txt',
+            ),
+            completes,
+          );
+        },
+      );
+    });
+
+    group('Given a server error on delete', () {
+      setUp(() {
         when(
           () => mockObjects.delete('test-bucket', 'error.txt'),
         ).thenThrow(gcs.DetailedApiRequestError(500, 'Server Error'));
-
-        expect(
-          () => storage.deleteFile(session: mockSession, path: 'error.txt'),
-          throwsA(isA<gcs.DetailedApiRequestError>()),
-        );
       });
+
+      test(
+        'when deleting a file then it rethrows the error',
+        () async {
+          expect(
+            () => storage.deleteFile(session: mockSession, path: 'error.txt'),
+            throwsA(isA<gcs.DetailedApiRequestError>()),
+          );
+        },
+      );
     });
 
-    group('when creating direct upload description', () {
+    group('Given no signing credentials', () {
       test(
-        'then it returns null when signing credentials are unavailable',
+        'when creating a direct upload description then it returns null',
         () async {
           final description = await storage.createDirectFileUploadDescription(
             session: mockSession,
@@ -373,8 +440,8 @@ void main() {
       );
     });
 
-    group('when verifying direct file upload', () {
-      test('then it returns true when file exists', () async {
+    group('Given an uploaded file', () {
+      setUp(() {
         when(
           () => mockObjects.get(
             'test-bucket',
@@ -382,16 +449,23 @@ void main() {
             downloadOptions: any(named: 'downloadOptions'),
           ),
         ).thenAnswer((_) async => MockObject());
-
-        final verified = await storage.verifyDirectFileUpload(
-          session: mockSession,
-          path: 'uploaded.txt',
-        );
-
-        expect(verified, isTrue);
       });
 
-      test('then it returns false when file does not exist', () async {
+      test(
+        'when verifying the direct file upload then it returns true',
+        () async {
+          final verified = await storage.verifyDirectFileUpload(
+            session: mockSession,
+            path: 'uploaded.txt',
+          );
+
+          expect(verified, isTrue);
+        },
+      );
+    });
+
+    group('Given a file that was not uploaded', () {
+      setUp(() {
         when(
           () => mockObjects.get(
             'test-bucket',
@@ -399,14 +473,19 @@ void main() {
             downloadOptions: any(named: 'downloadOptions'),
           ),
         ).thenThrow(gcs.DetailedApiRequestError(404, 'Not Found'));
-
-        final verified = await storage.verifyDirectFileUpload(
-          session: mockSession,
-          path: 'not-uploaded.txt',
-        );
-
-        expect(verified, isFalse);
       });
+
+      test(
+        'when verifying the direct file upload then it returns false',
+        () async {
+          final verified = await storage.verifyDirectFileUpload(
+            session: mockSession,
+            path: 'not-uploaded.txt',
+          );
+
+          expect(verified, isFalse);
+        },
+      );
     });
   });
 
@@ -428,8 +507,9 @@ void main() {
       );
     });
 
-    group('when storing a file', () {
-      test('then it uploads without publicRead ACL', () async {
+    test(
+      'when storing a file then it uploads without publicRead ACL',
+      () async {
         when(
           () => mockObjects.insert(
             any(),
@@ -456,19 +536,20 @@ void main() {
             ifGenerationMatch: null,
           ),
         ).called(1);
-      });
-    });
+      },
+    );
 
-    group('when getting public URL', () {
-      test('then it returns null for private buckets', () async {
+    test(
+      'when getting public URL then it returns null',
+      () async {
         final url = await storage.getPublicUrl(
           session: mockSession,
           path: 'file.txt',
         );
 
         expect(url, isNull);
-      });
-    });
+      },
+    );
   });
 
   group('Given a NativeGoogleCloudStorage with custom public host', () {
@@ -490,8 +571,8 @@ void main() {
       );
     });
 
-    group('when getting public URL', () {
-      test('then it uses the custom host', () async {
+    group('Given an existing file', () {
+      setUp(() {
         when(
           () => mockObjects.get(
             'my-bucket',
@@ -499,15 +580,20 @@ void main() {
             downloadOptions: any(named: 'downloadOptions'),
           ),
         ).thenAnswer((_) async => MockObject());
-
-        final url = await storage.getPublicUrl(
-          session: mockSession,
-          path: 'file.txt',
-        );
-
-        expect(url, isNotNull);
-        expect(url.toString(), 'https://cdn.example.com/file.txt');
       });
+
+      test(
+        'when getting the public URL then it uses the custom host',
+        () async {
+          final url = await storage.getPublicUrl(
+            session: mockSession,
+            path: 'file.txt',
+          );
+
+          expect(url, isNotNull);
+          expect(url.toString(), 'https://cdn.example.com/file.txt');
+        },
+      );
     });
   });
 
@@ -536,8 +622,10 @@ void main() {
       );
     });
 
-    group('when creating direct upload description', () {
-      test('then it returns a valid upload description', () async {
+    test(
+      'when creating a direct upload description '
+      'then it returns a valid upload description',
+      () async {
         final description = await storage.createDirectFileUploadDescription(
           session: mockSession,
           path: 'uploads/test-file.txt',
@@ -551,36 +639,41 @@ void main() {
         expect(data['file-name'], 'test-file.txt');
         expect(data['headers'], isA<Map>());
         expect(data['headers']['Content-Type'], 'text/plain');
-      });
+      },
+    );
 
-      test(
-        'then the URL contains required GCP signed URL parameters',
-        () async {
-          final description = await storage.createDirectFileUploadDescription(
-            session: mockSession,
-            path: 'uploads/image.png',
-            expirationDuration: Duration(minutes: 15),
-          );
+    test(
+      'when creating a direct upload description '
+      'then the URL contains required GCP signed URL parameters',
+      () async {
+        final description = await storage.createDirectFileUploadDescription(
+          session: mockSession,
+          path: 'uploads/image.png',
+          expirationDuration: Duration(minutes: 15),
+        );
 
-          final data = jsonDecode(description!) as Map<String, dynamic>;
-          final url = data['url'] as String;
+        final data = jsonDecode(description!) as Map<String, dynamic>;
+        final url = data['url'] as String;
 
-          expect(url, startsWith('https://storage.googleapis.com/'));
-          expect(url, contains('test-bucket'));
-          expect(url, contains('uploads/image.png'));
-          expect(url, contains('X-Goog-Algorithm=GOOG4-RSA-SHA256'));
-          expect(url, contains('X-Goog-Credential='));
-          expect(url, contains('X-Goog-Date='));
-          expect(url, contains('X-Goog-Expires=900')); // 15 minutes
-          expect(
-            url,
-            contains('X-Goog-SignedHeaders=content-type%3Bhost%3Bx-goog-acl'),
-          );
-          expect(url, contains('X-Goog-Signature='));
-        },
-      );
+        expect(url, startsWith('https://storage.googleapis.com/'));
+        expect(url, contains('test-bucket'));
+        expect(url, contains('uploads/image.png'));
+        expect(url, contains('X-Goog-Algorithm=GOOG4-RSA-SHA256'));
+        expect(url, contains('X-Goog-Credential='));
+        expect(url, contains('X-Goog-Date='));
+        expect(url, contains('X-Goog-Expires=900')); // 15 minutes
+        expect(
+          url,
+          contains('X-Goog-SignedHeaders=content-type%3Bhost%3Bx-goog-acl'),
+        );
+        expect(url, contains('X-Goog-Signature='));
+      },
+    );
 
-      test('then it detects MIME types correctly', () async {
+    test(
+      'when creating a direct upload description '
+      'then it detects MIME types correctly',
+      () async {
         final pngDescription = await storage.createDirectFileUploadDescription(
           session: mockSession,
           path: 'images/photo.png',
@@ -613,36 +706,42 @@ void main() {
           unknownData['headers']['Content-Type'],
           'application/octet-stream',
         );
-      });
+      },
+    );
 
-      test(
-        'then it includes public-read ACL header when public is true',
-        () async {
-          final description = await storage.createDirectFileUploadDescription(
-            session: mockSession,
-            path: 'uploads/test-file.txt',
-          );
-
-          final data = jsonDecode(description!) as Map<String, dynamic>;
-          expect(data['headers']['x-goog-acl'], 'public-read');
-        },
-      );
-    });
-
-    group('when creating direct upload description with contentLength', () {
-      test('then it includes Content-Length in headers', () async {
-        final description = await storage
-            .createDirectFileUploadDescriptionWithOptions(
-              session: mockSession,
-              path: 'uploads/test-file.txt',
-              options: CloudStorageOptions(contentLength: 5000),
-            );
+    test(
+      'when creating a direct upload description '
+      'then it includes public-read ACL header when public is true',
+      () async {
+        final description = await storage.createDirectFileUploadDescription(
+          session: mockSession,
+          path: 'uploads/test-file.txt',
+        );
 
         final data = jsonDecode(description!) as Map<String, dynamic>;
-        expect(data['headers']['Content-Length'], '5000');
-      });
+        expect(data['headers']['x-goog-acl'], 'public-read');
+      },
+    );
+
+    group('Given a contentLength option', () {
+      test(
+        'when creating a direct upload description '
+        'then it includes Content-Length in headers',
+        () async {
+          final description = await storage
+              .createDirectFileUploadDescriptionWithOptions(
+                session: mockSession,
+                path: 'uploads/test-file.txt',
+                options: CloudStorageOptions(contentLength: 5000),
+              );
+
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          expect(data['headers']['Content-Length'], '5000');
+        },
+      );
 
       test(
+        'when creating a direct upload description '
         'then the signed URL includes content-length in signed headers',
         () async {
           final description = await storage
@@ -658,9 +757,12 @@ void main() {
           expect(url, contains('content-length'));
         },
       );
+    });
 
+    group('Given a contentLength exceeding maxFileSize', () {
       test(
-        'then it throws when contentLength exceeds maxFileSize',
+        'when creating a direct upload description '
+        'then it throws',
         () async {
           expect(
             () => storage.createDirectFileUploadDescriptionWithOptions(
@@ -673,9 +775,12 @@ void main() {
           );
         },
       );
+    });
 
+    group('Given a contentLength equal to maxFileSize', () {
       test(
-        'then it succeeds when contentLength equals maxFileSize',
+        'when creating a direct upload description '
+        'then it succeeds',
         () async {
           final description = await storage
               .createDirectFileUploadDescriptionWithOptions(
@@ -692,22 +797,27 @@ void main() {
       );
     });
 
-    group('when creating direct upload description without contentLength', () {
-      test('then it does not include Content-Length in headers', () async {
-        final description = await storage.createDirectFileUploadDescription(
-          session: mockSession,
-          path: 'uploads/test-file.txt',
-        );
+    group('Given no contentLength option', () {
+      test(
+        'when creating a direct upload description '
+        'then it does not include Content-Length in headers',
+        () async {
+          final description = await storage.createDirectFileUploadDescription(
+            session: mockSession,
+            path: 'uploads/test-file.txt',
+          );
 
-        final data = jsonDecode(description!) as Map<String, dynamic>;
-        final headers = data['headers'] as Map<String, dynamic>;
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          final headers = data['headers'] as Map<String, dynamic>;
 
-        expect(headers.containsKey('Content-Length'), isFalse);
-      });
+          expect(headers.containsKey('Content-Length'), isFalse);
+        },
+      );
     });
 
-    group('when creating direct upload description with preventOverwrite', () {
+    group('Given a preventOverwrite option', () {
       test(
+        'when creating a direct upload description '
         'then it includes x-goog-if-generation-match header set to 0',
         () async {
           final description = await storage
@@ -725,6 +835,7 @@ void main() {
       );
 
       test(
+        'when creating a direct upload description '
         'then the signed URL includes x-goog-if-generation-match in signed headers',
         () async {
           final description = await storage
@@ -742,28 +853,26 @@ void main() {
       );
     });
 
-    group(
-      'when creating direct upload description without preventOverwrite',
-      () {
-        test(
-          'then it does not include x-goog-if-generation-match header',
-          () async {
-            final description = await storage.createDirectFileUploadDescription(
-              session: mockSession,
-              path: 'uploads/test-file.txt',
-            );
+    group('Given no preventOverwrite option', () {
+      test(
+        'when creating a direct upload description '
+        'then it does not include x-goog-if-generation-match header',
+        () async {
+          final description = await storage.createDirectFileUploadDescription(
+            session: mockSession,
+            path: 'uploads/test-file.txt',
+          );
 
-            final data = jsonDecode(description!) as Map<String, dynamic>;
-            final headers = data['headers'] as Map<String, dynamic>;
+          final data = jsonDecode(description!) as Map<String, dynamic>;
+          final headers = data['headers'] as Map<String, dynamic>;
 
-            expect(
-              headers.containsKey('x-goog-if-generation-match'),
-              isFalse,
-            );
-          },
-        );
-      },
-    );
+          expect(
+            headers.containsKey('x-goog-if-generation-match'),
+            isFalse,
+          );
+        },
+      );
+    });
   });
 
   group('Given a NativeGoogleCloudStorage with public set to false', () {
@@ -792,7 +901,8 @@ void main() {
     });
 
     test(
-      'when creating direct upload description then it includes private ACL header',
+      'when creating a direct upload description '
+      'then it includes private ACL header',
       () async {
         final description = await storage.createDirectFileUploadDescription(
           session: mockSession,
@@ -848,7 +958,7 @@ void main() {
     });
 
     test(
-      'when creating direct upload description '
+      'when creating a direct upload description '
       'then it calls IAM signBlob API',
       () async {
         final description = await storage.createDirectFileUploadDescription(
@@ -878,7 +988,7 @@ void main() {
     );
 
     test(
-      'when creating direct upload description '
+      'when creating a direct upload description '
       'then it returns a valid upload description with signed URL',
       () async {
         final description = await storage.createDirectFileUploadDescription(
@@ -907,7 +1017,7 @@ void main() {
     );
 
     test(
-      'when creating direct upload description '
+      'when creating a direct upload description '
       'then the signBlob request contains the payload',
       () async {
         await storage.createDirectFileUploadDescription(
@@ -933,10 +1043,8 @@ void main() {
       },
     );
 
-    test(
-      'when IAM signBlob returns an error '
-      'then createDirectFileUploadDescription throws',
-      () async {
+    group('Given a signBlob error response', () {
+      setUp(() {
         when(
           () => mockAuthClient.post(
             any(),
@@ -947,16 +1055,21 @@ void main() {
         ).thenAnswer((_) async {
           return http.Response('Permission denied', 403);
         });
+      });
 
-        expect(
-          () => storage.createDirectFileUploadDescription(
-            session: mockSession,
-            path: 'uploads/test-file.txt',
-          ),
-          throwsA(isA<StateError>()),
-        );
-      },
-    );
+      test(
+        'when creating a direct upload description then it throws',
+        () async {
+          expect(
+            () => storage.createDirectFileUploadDescription(
+              session: mockSession,
+              path: 'uploads/test-file.txt',
+            ),
+            throwsA(isA<StateError>()),
+          );
+        },
+      );
+    });
 
     test(
       'when storing a file '

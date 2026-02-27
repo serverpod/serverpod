@@ -45,7 +45,7 @@ void main() {
             'SERVERPOD_TEST_GCP_BUCKET to run these tests.'
       : null;
 
-  group('Given a real GCP Native bucket', skip: skipReason, () {
+  group('GCP Native', skip: skipReason, () {
     late NativeGoogleCloudStorage storage;
     late Session session;
     final testFiles = <String>[];
@@ -72,9 +72,9 @@ void main() {
       return path;
     }
 
-    group('when performing basic file operations', () {
+    group('Given no file in the storage', () {
       test(
-        'then uploading a file succeeds and the file can be retrieved',
+        'when uploading a file then the operation succeeds and it can be retrieved',
         () async {
           final path = testPath('upload-test.txt');
           final content = 'Hello, GCP Native! ${DateTime.now()}';
@@ -100,9 +100,11 @@ void main() {
           expect(retrievedContent, content);
         },
       );
+    });
 
+    group('Given a successfully uploaded file', () {
       test(
-        'then fileExists returns true for an uploaded file',
+        'when checking if it exists then it returns true',
         () async {
           final path = testPath('exists-test.txt');
           final data = ByteData.view(
@@ -125,20 +127,7 @@ void main() {
       );
 
       test(
-        'then fileExists returns false for a non-existent file',
-        () async {
-          final exists = await storage.fileExists(
-            session: session,
-            path:
-                'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
-          );
-
-          expect(exists, isFalse);
-        },
-      );
-
-      test(
-        'then deleting an uploaded file removes it from the bucket',
+        'when deleting it then it no longer exists',
         () async {
           final path = testPath('delete-test.txt');
           final data = ByteData.view(
@@ -172,11 +161,9 @@ void main() {
           testFiles.remove(path);
         },
       );
-    });
 
-    group('when overwriting an existing file', () {
       test(
-        'then the new content replaces the old content',
+        'when overwriting it then the new content replaces the old',
         () async {
           final path = testPath('overwrite-test.txt');
           final originalContent = 'Original content';
@@ -215,9 +202,22 @@ void main() {
       );
     });
 
-    group('when retrieving or deleting non-existent files', () {
+    group('Given a file path that does not exist', () {
       test(
-        'then retrieving a non-existent file returns null',
+        'when checking if it exists then it returns false',
+        () async {
+          final exists = await storage.fileExists(
+            session: session,
+            path:
+                'non-existent-file-${DateTime.now().millisecondsSinceEpoch}.txt',
+          );
+
+          expect(exists, isFalse);
+        },
+      );
+
+      test(
+        'when retrieving it then it returns null',
         () async {
           final retrieved = await storage.retrieveFile(
             session: session,
@@ -230,7 +230,7 @@ void main() {
       );
 
       test(
-        'then deleting a non-existent file does not throw',
+        'when deleting it then no error is thrown',
         () async {
           // Should complete without error
           await storage.deleteFile(
@@ -242,9 +242,9 @@ void main() {
       );
     });
 
-    group('when working with binary data', () {
+    group('Given binary data to upload', () {
       test(
-        'then uploading a binary file preserves the exact bytes',
+        'when uploading then the exact bytes are preserved',
         () async {
           final path = testPath('binary-test.bin');
           final bytes = Uint8List.fromList(List.generate(256, (i) => i));
@@ -267,7 +267,7 @@ void main() {
       );
 
       test(
-        'then uploading a larger file (1MB) succeeds',
+        'when uploading a larger file (1MB) then the operation succeeds',
         () async {
           final path = testPath('large-file-test.bin');
           final bytes = Uint8List.fromList(
@@ -291,9 +291,9 @@ void main() {
       );
     });
 
-    group('when creating direct upload descriptions', () {
+    group('Given a valid upload description', () {
       test(
-        'then a valid upload description is returned',
+        'when creating a direct file upload description then a non-empty string is returned',
         () async {
           final path = testPath('presigned-description-test.txt');
 
@@ -313,7 +313,7 @@ void main() {
       );
 
       test(
-        'then a file can be uploaded using the description via FileUploader',
+        'when uploading a file via FileUploader then it can be retrieved',
         () async {
           final path = testPath('direct-upload-test.txt');
           final content = 'Direct upload content ${DateTime.now()}';
@@ -351,7 +351,7 @@ void main() {
       );
 
       test(
-        'then a file can be uploaded with contentLength via FileUploader',
+        'when uploading a file with contentLength via FileUploader then it can be retrieved',
         () async {
           final path = testPath('direct-upload-content-length-test.txt');
           final content = 'Content with known length ${DateTime.now()}';
@@ -389,7 +389,7 @@ void main() {
       );
 
       test(
-        'then verifyDirectFileUpload returns true for an uploaded file',
+        'when verifying a successfully uploaded file then it returns true',
         () async {
           final path = testPath('verify-upload-test.txt');
           final content = 'Verify upload content ${DateTime.now()}';
@@ -420,7 +420,7 @@ void main() {
       );
 
       test(
-        'then verifyDirectFileUpload returns false for a non-existent file',
+        'when verifying a non-existent file then it returns false',
         () async {
           final verified = await storage.verifyDirectFileUpload(
             session: session,
@@ -433,7 +433,7 @@ void main() {
       );
 
       test(
-        'then a binary file can be uploaded using the description via FileUploader',
+        'when uploading a binary file via FileUploader then the exact bytes are preserved',
         () async {
           final path = testPath('direct-upload-binary-test.bin');
           final bytes = Uint8List.fromList(
@@ -468,9 +468,9 @@ void main() {
       );
     });
 
-    group('when using preventOverwrite with storeFileWithOptions', () {
+    group('Given a new file path with preventOverwrite enabled', () {
       test(
-        'then uploading to a new path succeeds',
+        'when uploading via storeFileWithOptions then the upload succeeds',
         () async {
           final path = testPath('prevent-overwrite-new.txt');
           final content = 'New file content';
@@ -499,7 +499,47 @@ void main() {
       );
 
       test(
-        'then uploading to an existing path throws',
+        'when uploading via direct upload then the upload succeeds',
+        () async {
+          final path = testPath('prevent-overwrite-direct-new.txt');
+          final content = 'New direct upload content';
+          final data = ByteData.view(
+            Uint8List.fromList(content.codeUnits).buffer,
+          );
+
+          final description = await storage
+              .createDirectFileUploadDescriptionWithOptions(
+                session: session,
+                path: path,
+                expirationDuration: Duration(minutes: 5),
+                maxFileSize: 10 * 1024 * 1024,
+                options: CloudStorageOptions(preventOverwrite: true),
+              );
+
+          expect(description, isNotNull);
+
+          final uploader = FileUploader(description!);
+          final success = await uploader.uploadByteData(data);
+
+          expect(success, isTrue);
+
+          final retrieved = await storage.retrieveFile(
+            session: session,
+            path: path,
+          );
+
+          expect(retrieved, isNotNull);
+          final retrievedContent = String.fromCharCodes(
+            retrieved!.buffer.asUint8List(),
+          );
+          expect(retrievedContent, content);
+        },
+      );
+    });
+
+    group('Given an existing file with preventOverwrite enabled', () {
+      test(
+        'when uploading via storeFileWithOptions then it throws',
         () async {
           final path = testPath('prevent-overwrite-existing.txt');
           final data = ByteData.view(
@@ -541,49 +581,9 @@ void main() {
           expect(retrievedContent, 'original');
         },
       );
-    });
-
-    group('when using preventOverwrite with direct uploads', () {
-      test(
-        'then a direct upload to a new path succeeds',
-        () async {
-          final path = testPath('prevent-overwrite-direct-new.txt');
-          final content = 'New direct upload content';
-          final data = ByteData.view(
-            Uint8List.fromList(content.codeUnits).buffer,
-          );
-
-          final description = await storage
-              .createDirectFileUploadDescriptionWithOptions(
-                session: session,
-                path: path,
-                expirationDuration: Duration(minutes: 5),
-                maxFileSize: 10 * 1024 * 1024,
-                options: CloudStorageOptions(preventOverwrite: true),
-              );
-
-          expect(description, isNotNull);
-
-          final uploader = FileUploader(description!);
-          final success = await uploader.uploadByteData(data);
-
-          expect(success, isTrue);
-
-          final retrieved = await storage.retrieveFile(
-            session: session,
-            path: path,
-          );
-
-          expect(retrieved, isNotNull);
-          final retrievedContent = String.fromCharCodes(
-            retrieved!.buffer.asUint8List(),
-          );
-          expect(retrievedContent, content);
-        },
-      );
 
       test(
-        'then a direct upload to an existing path fails',
+        'when uploading via direct upload then it fails',
         () async {
           final path = testPath('prevent-overwrite-direct-existing.txt');
           final originalData = ByteData.view(
@@ -634,9 +634,9 @@ void main() {
       );
     });
 
-    group('when working with paths containing special characters', () {
+    group('Given a file path with special characters', () {
       test(
-        'then paths with spaces are handled correctly',
+        'when the path contains spaces then the file is stored and retrieved correctly',
         () async {
           final path = testPath('path with spaces/file name.txt');
           final content = 'Content with spaces in path';
@@ -664,7 +664,7 @@ void main() {
       );
 
       test(
-        'then paths with unicode characters are handled correctly',
+        'when the path contains unicode characters then the file is stored correctly',
         () async {
           final path = testPath('unicode-test-file.txt');
           final content = 'Unicode content: Hello World';
