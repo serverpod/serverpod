@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -7,6 +8,27 @@ import 'package:serverpod_cli/src/commands/start/sdk_path.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
+
+final _vmServiceUriPattern = RegExp(
+  r'The Dart VM service is listening on (http\S+)',
+);
+
+/// An IOSink that captures all written output.
+class _CapturingIOSink extends _NullIOSink {
+  final StringBuffer buffer = StringBuffer();
+
+  @override
+  void write(Object? object) => buffer.write(object);
+
+  /// Extracts the VM service WebSocket URI from captured output.
+  String get vmServiceWsUri {
+    final match = _vmServiceUriPattern.firstMatch(buffer.toString());
+    if (match == null) throw StateError('VM service URI not found in output');
+    final httpUri = match.group(1)!;
+    final wsUri = httpUri.replaceFirst('http://', 'ws://');
+    return wsUri.endsWith('/') ? '${wsUri}ws' : '$wsUri/ws';
+  }
+}
 
 /// An IOSink that discards all output.
 class _NullIOSink implements IOSink {
@@ -249,6 +271,85 @@ void main() {
         final reloaded = await serverProcess.reload(dillPath);
         expect(reloaded, isTrue);
 
+        await serverProcess.stop();
+        await startFuture;
+      },
+      timeout: const Timeout(Duration(seconds: 30)),
+    );
+
+    test(
+      'when onReloadRequested is provided and connectToVmService is called, '
+      'then the custom reloadSources service is registered',
+      () async {
+        var callbackCalled = false;
+        final serverProcess = ServerProcess(
+          serverDir: tempDir.path,
+          serverArgs: [],
+          dartExecutable: dartExecutable,
+          enableVmService: true,
+          stdoutSink: _NullIOSink(),
+          stderrSink: _NullIOSink(),
+          onReloadRequested: () async {
+            callbackCalled = true;
+            return dillPath;
+          },
+        );
+
+        final startFuture = serverProcess.start(dillPath: dillPath);
+        await serverProcess.connectToVmService();
+
+        // The service is registered; verify the process is connected.
+        expect(serverProcess.isVmServiceConnected, isTrue);
+        expect(callbackCalled, isFalse);
+
+        await serverProcess.stop();
+        await startFuture;
+      },
+      timeout: const Timeout(Duration(seconds: 30)),
+    );
+
+    test(
+      'when onExternalReload is provided and an external reload occurs, '
+      'then the callback is invoked',
+      () async {
+        final externalReloadCompleter = Completer<void>();
+        final capturingSink = _CapturingIOSink();
+        final serverProcess = ServerProcess(
+          serverDir: tempDir.path,
+          serverArgs: [],
+          dartExecutable: dartExecutable,
+          enableVmService: true,
+          stdoutSink: capturingSink,
+          stderrSink: _NullIOSink(),
+          onExternalReload: () {
+            if (!externalReloadCompleter.isCompleted) {
+              externalReloadCompleter.complete();
+            }
+          },
+        );
+
+        final startFuture = serverProcess.start(dillPath: dillPath);
+        await serverProcess.connectToVmService();
+
+        // Connect a second VM service client and trigger a reload directly,
+        // bypassing our custom service. This simulates an IDE reload.
+        final wsUri = capturingSink.vmServiceWsUri;
+        final externalVmService = await vmServiceConnectUri(wsUri);
+        final vm = await externalVmService.getVM();
+        final isolateId = vm.isolates!.first.id!;
+        final dillUri = Uri.file(p.absolute(dillPath)).toString();
+        await externalVmService.reloadSources(
+          isolateId,
+          rootLibUri: dillUri,
+        );
+
+        // Wait for the external reload to be detected.
+        await externalReloadCompleter.future.timeout(
+          const Duration(seconds: 5),
+        );
+        expect(externalReloadCompleter.isCompleted, isTrue);
+
+        await externalVmService.dispose();
         await serverProcess.stop();
         await startFuture;
       },
