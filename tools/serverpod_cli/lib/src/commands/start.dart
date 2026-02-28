@@ -11,6 +11,7 @@ import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_cal
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
+import 'package:serverpod_cli/src/commands/start/sdk_path.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
@@ -176,6 +177,11 @@ class StartCommand extends ServerpodCommand<StartOption> {
   }) async {
     log.info('Starting server in watch mode...');
 
+    // Resolve the dart executable from the SDK to ensure we use the same
+    // version that compiled the kernel.
+    final sdkRoot = getSdkPath();
+    final dartExecutable = p.join(sdkRoot, 'bin', 'dart');
+
     final watchPaths = _watchPaths(config);
     final ignorePath =
         p.absolute(p.joinAll(config.generatedServeModelPackagePathParts));
@@ -216,6 +222,8 @@ class StartCommand extends ServerpodCommand<StartOption> {
     var serverProcess = ServerProcess(
       serverDir: serverDir,
       serverArgs: serverArgs,
+      dartExecutable: dartExecutable,
+      enableVmService: true,
     );
 
     // Start server from compiled kernel (don't await — it runs until stopped).
@@ -227,9 +235,12 @@ class StartCommand extends ServerpodCommand<StartOption> {
       }),
     );
 
-    // Listen for changes, recompile, and restart.
+    // Connect to the VM service for hot reload.
+    await serverProcess.connectToVmService();
+
+    // Listen for changes, recompile, and reload.
     final subscription = watcher.onFilesChanged.listen((event) async {
-      log.info('Files changed, restarting server...');
+      log.info('Files changed, reloading server...');
 
       // Re-generate code if model files changed.
       if (event.modelFiles.isNotEmpty) {
@@ -240,7 +251,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
           ),
         );
         if (!genSuccess) {
-          log.error('Code generation failed. Server not restarted.');
+          log.error('Code generation failed. Server not reloaded.');
           return;
         }
       }
@@ -279,7 +290,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
       }
 
       if (result == null) {
-        log.error('Compilation failed. Server not restarted.');
+        log.error('Compilation failed. Server not reloaded.');
         return;
       }
 
@@ -295,16 +306,31 @@ class StartCommand extends ServerpodCommand<StartOption> {
 
       compiler.accept();
 
-      // Stop the current server and start a new one from the compiled kernel.
+      // Hot reload if VM service is connected, otherwise fall back to restart.
       final reloadDill = result.dillOutput ?? initialDill;
+      if (serverProcess.isVmServiceConnected) {
+        log.debug('Sending reload with dill: $reloadDill');
+        final reloaded = await serverProcess.reload(reloadDill);
+        log.debug('Reload result: $reloaded');
+        if (reloaded) {
+          log.info('Server reloaded.');
+          return;
+        }
+        log.warning('Hot reload failed, falling back to restart.');
+      }
+
+      // Fall back to restart: stop and respawn.
       await serverProcess.stop();
 
       serverProcess = ServerProcess(
         serverDir: serverDir,
         serverArgs: serverArgs,
+        dartExecutable: dartExecutable,
+        enableVmService: true,
       );
 
       unawaited(serverProcess.start(dillPath: reloadDill));
+      await serverProcess.connectToVmService();
       log.info('Server restarted.');
     });
 
