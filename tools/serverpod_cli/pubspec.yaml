@@ -37,6 +37,7 @@ dependencies:
   serverpod_shared: 3.4.2
   source_span: ^1.10.0
   stream_channel: ^2.1.1
+  stream_transform: ^2.1.0
   super_string: ^1.0.3
   uuid: ^4.5.3
   watcher: ^1.0.2
