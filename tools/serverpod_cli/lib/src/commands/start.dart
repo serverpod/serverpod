@@ -18,6 +18,7 @@ import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 /// Options for the `start` command.
 enum StartOption<V> implements OptionDefinition<V> {
@@ -117,9 +118,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
       // Run initial code generation.
       final success = await log.progress(
         'Generating code',
-        () => Isolate.run(
-          () => _runGeneration(config: config),
-        ),
+        () => _generateInIsolate(config),
       );
 
       if (!success) {
@@ -240,100 +239,118 @@ class StartCommand extends ServerpodCommand<StartOption> {
     await serverProcess.connectToVmService();
 
     // Listen for changes, recompile, and reload.
-    final subscription = watcher.onFilesChanged.listen((event) async {
-      log.info('Files changed, reloading server...');
+    // asyncMapBuffer serializes processing: while a reload cycle is in
+    // progress, new events are buffered and delivered as a batch to the
+    // next invocation - no manual locking needed.
+    final subscription = watcher.onFilesChanged
+        .asyncMapBuffer((events) async {
+          final event = _mergeEvents(events);
 
-      // Re-generate code if model files changed.
-      if (event.modelFiles.isNotEmpty) {
-        final genSuccess = await log.progress(
-          'Generating code',
-          () => Isolate.run(
-            () => _runGeneration(config: config),
-          ),
-        );
-        if (!genSuccess) {
-          log.error('Code generation failed. Server not reloaded.');
-          return;
-        }
-      }
+          log.info('Files changed, reloading server...');
 
-      // Compile changes.
-      CompileResult? result;
-      if (event.packageConfigChanged) {
-        // FES reads package_config.json only at startup - must restart it.
-        await compiler.restart();
-        result = await _compileWithProgress(
-          'Compiling server',
-          () => compiler.compile(),
-          compiler: compiler,
-        );
-      } else if (event.modelFiles.isNotEmpty) {
-        // After code generation, we don't know which files changed -
-        // reset and do a full compile.
-        compiler.reset();
-        result = await _compileWithProgress(
-          'Compiling server',
-          () => compiler.compile(),
-          compiler: compiler,
-        );
-      } else {
-        // Incremental recompile with only the changed files.
-        final changedPaths = {...event.dartFiles, ...event.removedDartFiles};
-        log.debug('Invalidating ${changedPaths.length} files:');
-        for (final path in changedPaths) {
-          log.debug('  $path');
-        }
-        result = await _compileWithProgress(
-          'Compiling server',
-          () => compiler.recompile(changedPaths),
-          compiler: compiler,
-        );
-      }
+          // Determine if code generation is needed.
+          // Endpoint dispatch tables depend on Endpoint subclasses,
+          // so we must regenerate when endpoint files change. Deleted
+          // files always trigger code gen since we can't inspect them.
+          final needsCodeGen =
+              event.modelFiles.isNotEmpty ||
+              event.removedDartFiles.isNotEmpty ||
+              event.dartFiles.any(
+                (f) => EndpointsAnalyzer.isEndpointFile(File(f)),
+              );
 
-      if (result == null) {
-        log.error('Compilation failed. Server not reloaded.');
-        return;
-      }
+          if (needsCodeGen) {
+            final genSuccess = await log.progress(
+              'Generating code',
+              () => _generateInIsolate(config),
+            );
+            if (!genSuccess) {
+              log.error('Code generation failed. Server not reloaded.');
+              return;
+            }
+          }
 
-      log.debug(
-        'Compile result: errorCount=${result.errorCount}, '
-        'dill=${result.dillOutput}, '
-        'newSources=${result.newSources.length}, '
-        'outputLines=${result.compilerOutputLines.length}',
-      );
-      for (final line in result.compilerOutputLines) {
-        log.debug('  FES: $line');
-      }
+          // Compile changes.
+          CompileResult? result;
+          if (event.packageConfigChanged) {
+            // FES reads package_config.json only at startup - must restart it.
+            await compiler.restart();
+            result = await _compileWithProgress(
+              'Compiling server',
+              () => compiler.compile(),
+              compiler: compiler,
+            );
+          } else if (needsCodeGen) {
+            // Code generation may have changed generated files -
+            // reset and do a full compile.
+            compiler.reset();
+            result = await _compileWithProgress(
+              'Compiling server',
+              () => compiler.compile(),
+              compiler: compiler,
+            );
+          } else {
+            // Incremental recompile with only the changed files.
+            final changedPaths = {
+              ...event.dartFiles,
+              ...event.removedDartFiles,
+            };
+            log.debug('Invalidating ${changedPaths.length} files:');
+            for (final path in changedPaths) {
+              log.debug('  $path');
+            }
+            result = await _compileWithProgress(
+              'Compiling server',
+              () => compiler.recompile(changedPaths),
+              compiler: compiler,
+            );
+          }
 
-      compiler.accept();
+          if (result == null) {
+            log.error('Compilation failed. Server not reloaded.');
+            return;
+          }
 
-      // Hot reload if VM service is connected, otherwise fall back to restart.
-      final reloadDill = result.dillOutput ?? initialDill;
-      if (serverProcess.isVmServiceConnected) {
-        log.debug('Sending reload with dill: $reloadDill');
-        final reloaded = await serverProcess.reload(reloadDill);
-        log.debug('Reload result: $reloaded');
-        if (reloaded) {
-          log.info('Server reloaded.');
-          return;
-        }
-        log.warning('Hot reload failed, falling back to restart.');
-      }
+          log.debug(
+            'Compile result: errorCount=${result.errorCount}, '
+            'dill=${result.dillOutput}, '
+            'newSources=${result.newSources.length}, '
+            'outputLines=${result.compilerOutputLines.length}',
+          );
+          for (final line in result.compilerOutputLines) {
+            log.debug('  FES: $line');
+          }
 
-      // Fall back to restart: stop and respawn.
-      await serverProcess.stop();
+          compiler.accept();
 
-      serverProcess = ServerProcess(
-        serverDir: serverDir,
-        serverArgs: serverArgs,
-        dartExecutable: dartExecutable,
-        enableVmService: true,
-      );
+          // Hot reload if VM service is connected, otherwise fall back to restart.
+          final reloadDill = result.dillOutput ?? initialDill;
+          if (serverProcess.isVmServiceConnected) {
+            log.debug('Sending reload with dill: $reloadDill');
+            final reloaded = await serverProcess.reload(reloadDill);
+            log.debug('Reload result: $reloaded');
+            if (reloaded) {
+              log.info('Server reloaded.');
+              return;
+            }
+            log.warning('Hot reload failed, falling back to restart.');
+          }
 
-      unawaited(serverProcess.start(dillPath: reloadDill));
-      await serverProcess.connectToVmService();
-      log.info('Server restarted.');
-    });
+          // Fall back to restart: stop and respawn.
+          await serverProcess.stop();
+
+          serverProcess = ServerProcess(
+            serverDir: serverDir,
+            serverArgs: serverArgs,
+            dartExecutable: dartExecutable,
+            enableVmService: true,
+          );
+
+          unawaited(serverProcess.start(dillPath: reloadDill));
+          await serverProcess.connectToVmService();
+          log.info('Server restarted.');
+        })
+        .listen((_) {});
 
     // Wait for SIGINT/SIGTERM to stop watch mode.
     final exitCompleter = Completer<void>();
@@ -459,6 +476,15 @@ class StartCommand extends ServerpodCommand<StartOption> {
   }
 }
 
+/// Runs code generation in a fresh isolate.
+///
+/// Must be a top-level function so the closure passed to [Isolate.run]
+/// doesn't capture unsendable objects from the call site's scope
+/// (e.g. [KernelCompiler] which holds a [Process]).
+Future<bool> _generateInIsolate(GeneratorConfig config) {
+  return Isolate.run(() => _runGeneration(config: config));
+}
+
 Future<bool> _runGeneration({
   required GeneratorConfig config,
 }) async {
@@ -484,5 +510,32 @@ Future<bool> _runGeneration({
     endpointsAnalyzer: endpointsAnalyzer,
     modelAnalyzer: modelAnalyzer,
     futureCallsAnalyzer: futureCallsAnalyzer,
+  );
+}
+
+/// Merges multiple buffered [FileChangeEvent]s into a single event.
+FileChangeEvent _mergeEvents(List<FileChangeEvent> events) {
+  if (events.length == 1) return events.first;
+
+  final dartFiles = <String>{};
+  final removedDartFiles = <String>{};
+  final modelFiles = <String>{};
+  var packageConfigChanged = false;
+
+  for (final event in events) {
+    dartFiles.addAll(event.dartFiles);
+    removedDartFiles.addAll(event.removedDartFiles);
+    modelFiles.addAll(event.modelFiles);
+    packageConfigChanged |= event.packageConfigChanged;
+  }
+
+  // A file that was removed and then re-created is not removed.
+  removedDartFiles.removeAll(dartFiles);
+
+  return FileChangeEvent(
+    dartFiles: dartFiles,
+    removedDartFiles: removedDartFiles,
+    modelFiles: modelFiles,
+    packageConfigChanged: packageConfigChanged,
   );
 }
