@@ -12,6 +12,12 @@ final _vmServiceUriPattern = RegExp(
   r'The Dart VM service is listening on (http\S+)',
 );
 
+/// Callback for IDE-initiated reload requests.
+///
+/// Should compile changes and return the dill path on success, or `null`
+/// on compilation failure.
+typedef ReloadRequestedCallback = Future<String?> Function();
+
 /// Manages the server subprocess lifecycle.
 ///
 /// Handles spawning, signal forwarding, output streaming, graceful shutdown,
@@ -24,6 +30,13 @@ class ServerProcess {
   final IOSink _stdout;
   final IOSink _stderr;
 
+  /// Callback invoked when an IDE requests a reload via the VM service.
+  final ReloadRequestedCallback? _onReloadRequested;
+
+  /// Callback invoked when an external reload is detected (not initiated
+  /// by this process). Used to reset FES compiler state.
+  final void Function()? _onExternalReload;
+
   Process? _process;
   StreamSubscription? _sigtermSub;
   StreamSubscription? _stdoutSub;
@@ -32,6 +45,10 @@ class ServerProcess {
   VmService? _vmService;
   String? _mainIsolateId;
   Completer<String?>? _vmServiceUriCompleter;
+  StreamSubscription? _isolateEventSub;
+
+  int _initiatedReloads = 0;
+  int _observedReloads = 0;
 
   ServerProcess({
     required String serverDir,
@@ -40,12 +57,16 @@ class ServerProcess {
     bool enableVmService = false,
     IOSink? stdoutSink,
     IOSink? stderrSink,
+    ReloadRequestedCallback? onReloadRequested,
+    void Function()? onExternalReload,
   }) : _serverDir = serverDir,
        _serverArgs = serverArgs,
        _dartExecutable = dartExecutable ?? 'dart',
        _enableVmService = enableVmService,
        _stdout = stdoutSink ?? stdout,
-       _stderr = stderrSink ?? stderr;
+       _stderr = stderrSink ?? stderr,
+       _onReloadRequested = onReloadRequested,
+       _onExternalReload = onExternalReload;
 
   /// Whether the server process is currently running.
   bool get isRunning => _process != null;
@@ -171,8 +192,42 @@ class ServerProcess {
       }
     }
 
-    final vm = await _vmService!.getVM();
+    final vmService = _vmService!;
+    final vm = await vmService.getVM();
     _mainIsolateId = vm.isolates!.first.id!;
+
+    // Register custom reloadSources service so IDE reload requests
+    // go through the FES compilation pipeline.
+    if (_onReloadRequested != null) {
+      vmService.registerServiceCallback('reloadSources', (params) async {
+        final dillPath = await _onReloadRequested();
+        if (dillPath == null) {
+          return {'type': 'ReloadReport', 'success': false};
+        }
+        _initiatedReloads++;
+        final dillUri = Uri.file(p.absolute(dillPath)).toString();
+        final report = await vmService.reloadSources(
+          _mainIsolateId!,
+          rootLibUri: dillUri,
+        );
+        return report.json!;
+      });
+      await vmService.registerService('reloadSources', 'serverpod-cli');
+    }
+
+    // Listen for isolate reload events to detect external reloads
+    // (e.g., from an IDE that bypasses our custom service).
+    if (_onExternalReload != null) {
+      await vmService.streamListen(EventStreams.kIsolate);
+      _isolateEventSub = vmService.onIsolateEvent.listen((event) {
+        if (event.kind == EventKind.kIsolateReload) {
+          _observedReloads++;
+          if (_observedReloads > _initiatedReloads) {
+            _onExternalReload();
+          }
+        }
+      });
+    }
   }
 
   /// Hot reloads the server with a new kernel file.
@@ -185,6 +240,7 @@ class ServerProcess {
       return false;
     }
 
+    _initiatedReloads++;
     final dillUri = Uri.file(p.absolute(dillPath)).toString();
     final report = await vmService.reloadSources(
       isolateId,
@@ -231,10 +287,14 @@ class ServerProcess {
     // Guard: both start() and stop() may call _cleanup() concurrently.
     if (_process == null) return;
     _process = null;
+    await _isolateEventSub?.cancel();
+    _isolateEventSub = null;
     await _vmService?.dispose();
     _vmService = null;
     _mainIsolateId = null;
     _vmServiceUriCompleter = null;
+    _initiatedReloads = 0;
+    _observedReloads = 0;
     await _stdoutSub?.cancel();
     await _stderrSub?.cancel();
     await _sigtermSub?.cancel();

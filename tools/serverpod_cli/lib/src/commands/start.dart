@@ -219,12 +219,35 @@ class StartCommand extends ServerpodCommand<StartOption> {
 
     compiler.accept();
 
-    var serverProcess = ServerProcess(
+    // IDE reload callback: compile incrementally and return the dill path.
+    Future<String?> onReloadRequested() async {
+      compiler.reset();
+      final result = await _compileWithProgress(
+        'Compiling server (IDE reload)',
+        () => compiler.compile(),
+        compiler: compiler,
+      );
+      if (result == null) return null;
+      compiler.accept();
+      return result.dillOutput ?? initialDill;
+    }
+
+    // External reload callback: reset FES so next compile is full.
+    void onExternalReload() {
+      log.info('External reload detected, resetting compiler.');
+      compiler.reset();
+    }
+
+    ServerProcess createServerProcess() => ServerProcess(
       serverDir: serverDir,
       serverArgs: serverArgs,
       dartExecutable: dartExecutable,
       enableVmService: true,
+      onReloadRequested: onReloadRequested,
+      onExternalReload: onExternalReload,
     );
+
+    var serverProcess = createServerProcess();
 
     // Start server from compiled kernel (don't await - it runs until stopped).
     unawaited(
@@ -339,12 +362,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
           // Fall back to restart: stop and respawn.
           await serverProcess.stop();
 
-          serverProcess = ServerProcess(
-            serverDir: serverDir,
-            serverArgs: serverArgs,
-            dartExecutable: dartExecutable,
-            enableVmService: true,
-          );
+          serverProcess = createServerProcess();
 
           unawaited(serverProcess.start(dillPath: reloadDill));
           await serverProcess.connectToVmService();
