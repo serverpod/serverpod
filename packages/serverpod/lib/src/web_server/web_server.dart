@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/server/dev_auto_refresh_script.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';
@@ -24,6 +25,8 @@ class WebServer {
   int? _actualPort;
 
   late final _app = RelicApp(useHostWhenRouting: true)
+    ..get('*/__dev/version', _devVersion)
+    ..use('*/', _devHtmlInjection)
     ..inject(_ReportExceptionMiddleware(this))
     ..inject(_SessionMiddleware(serverpod.server));
 
@@ -50,9 +53,12 @@ class WebServer {
   }
 
   bool _running = false;
+  bool? _devModeOverride;
 
   /// Returns true if the webserver is currently running.
   bool get running => _running;
+
+  bool get _isDevMode => _devModeOverride ?? _app.developerTools.isDevMode;
 
   /// Adds [route] to the server at [path].
   ///
@@ -201,6 +207,33 @@ class WebServer {
     stdout.writeln('$now WebServer DEBUG: $msg');
   }
 
+  FutureOr<Result> _devVersion(Request _) {
+    if (!_isDevMode) return Response.notFound();
+    return Response.ok(
+      body: Body.fromString('${_app.developerTools.reloadCount}'),
+    );
+  }
+
+  Handler _devHtmlInjection(Handler next) {
+    return (req) async {
+      final result = await next(req);
+      if (!_isDevMode) return result;
+      if (result is! Response || result.statusCode != 200) return result;
+
+      final mimeType = result.body.bodyType?.mimeType;
+      if (mimeType != MimeType.html) return result;
+
+      final html = await result.readAsString();
+      final injected = html.replaceFirst(
+        '</body>',
+        '$devAutoRefreshScript</body>',
+      );
+      return result.copyWith(
+        body: Body.fromString(injected, mimeType: MimeType.html),
+      );
+    };
+  }
+
   /// Stops the webserver.
   Future<void> stop() async {
     final server = _server;
@@ -209,6 +242,14 @@ class WebServer {
       await server.close();
     }
     _running = false;
+  }
+
+  /// Enables or disables dev mode for testing purposes.
+  ///
+  /// When set, overrides the auto-detection of dev mode from the VM service.
+  /// Must be called before [WebServer.start].
+  void setDevModeForTesting(bool devMode) {
+    _devModeOverride = devMode;
   }
 }
 

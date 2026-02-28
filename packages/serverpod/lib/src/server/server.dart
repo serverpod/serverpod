@@ -173,6 +173,7 @@ class Server implements RouterInjectable {
     required AuthenticationHandler authenticationHandler,
   }) async {
     _authenticationHandler = authenticationHandler;
+
     try {
       final server = await _app.serve(
         address: io.InternetAddress.anyIPv6,
@@ -612,4 +613,5 @@ extension ServerInternalMethods on Server {
   ) {
     _authenticationHandler = authenticationHandler;
   }
+
 }
