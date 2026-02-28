@@ -9,6 +9,8 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
@@ -110,7 +112,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
     }
 
     try {
-      // Run code generation.
+      // Run initial code generation.
       final success = await log.progress(
         'Generating code',
         () => Isolate.run(
@@ -123,27 +125,126 @@ class StartCommand extends ServerpodCommand<StartOption> {
         throw ExitException.error();
       }
 
-      if (watch) {
-        // TODO: Implement watch mode (step 2).
-        log.warning(
-          'Watch mode is not yet implemented. Starting without watch.',
-        );
-      }
-
       // Extract passthrough args (everything after '--').
       final serverArgs = argResults?.rest ?? [];
 
-      log.info('Starting server...');
-
-      await _startServer(
-        serverDir: serverDir,
-        serverArgs: serverArgs,
-      );
+      if (watch) {
+        await _startWithWatch(
+          config: config,
+          serverDir: serverDir,
+          serverArgs: serverArgs,
+        );
+      } else {
+        await _startOnce(
+          serverDir: serverDir,
+          serverArgs: serverArgs,
+        );
+      }
     } finally {
       if (startedDocker) {
         await _stopDockerServices(serverDir);
       }
     }
+  }
+
+  /// Starts the server once and waits for it to exit.
+  Future<void> _startOnce({
+    required String serverDir,
+    required List<String> serverArgs,
+  }) async {
+    log.info('Starting server...');
+
+    final serverProcess = ServerProcess(
+      serverDir: serverDir,
+      serverArgs: serverArgs,
+    );
+
+    final exitCode = await serverProcess.start();
+
+    if (exitCode != 0) {
+      throw ExitException(exitCode);
+    }
+  }
+
+  /// Starts the server with file watching. On changes, re-generates code
+  /// if needed and restarts the server.
+  Future<void> _startWithWatch({
+    required GeneratorConfig config,
+    required String serverDir,
+    required List<String> serverArgs,
+  }) async {
+    log.info('Starting server in watch mode...');
+
+    final watchPaths = _watchPaths(config);
+    final ignorePath = p.joinAll(config.generatedServeModelPackagePathParts);
+
+    final watcher = FileWatcher(
+      watchPaths: watchPaths,
+      ignorePath: ignorePath,
+    );
+
+    var serverProcess = ServerProcess(
+      serverDir: serverDir,
+      serverArgs: serverArgs,
+    );
+
+    // Start initial server process (don't await — it runs until stopped).
+    unawaited(
+      serverProcess.start().then((exitCode) {
+        // If the process exits on its own (not during restart), exit the CLI.
+        if (serverProcess.isRunning) return;
+        log.info('Server exited with code $exitCode.');
+      }),
+    );
+
+    // Listen for changes and restart.
+    final subscription = watcher.onFilesChanged.listen((event) async {
+      log.info('Files changed, restarting server...');
+
+      // Re-generate code if model files changed.
+      if (event.modelFiles.isNotEmpty) {
+        final genSuccess = await log.progress(
+          'Generating code',
+          () => Isolate.run(
+            () => _runGeneration(config: config),
+          ),
+        );
+        if (!genSuccess) {
+          log.error('Code generation failed. Server not restarted.');
+          return;
+        }
+      }
+
+      // Stop the current server.
+      await serverProcess.stop();
+
+      // Start a new server process.
+      serverProcess = ServerProcess(
+        serverDir: serverDir,
+        serverArgs: serverArgs,
+      );
+
+      unawaited(serverProcess.start());
+      log.info('Server restarted.');
+    });
+
+    // Wait for SIGINT/SIGTERM to stop watch mode.
+    final exitCompleter = Completer<void>();
+
+    final sigintSub = ProcessSignal.sigint.watch().listen((_) {
+      if (!exitCompleter.isCompleted) exitCompleter.complete();
+    });
+    final sigtermSub = ProcessSignal.sigterm.watch().listen((_) {
+      if (!exitCompleter.isCompleted) exitCompleter.complete();
+    });
+
+    await exitCompleter.future;
+
+    // Clean up.
+    await subscription.cancel();
+    await serverProcess.stop();
+    await sigintSub.cancel();
+    await sigtermSub.cancel();
   }
 
   /// Ensures Docker Compose services are running.
@@ -199,38 +300,22 @@ class StartCommand extends ServerpodCommand<StartOption> {
     );
   }
 
-  Future<void> _startServer({
-    required String serverDir,
-    required List<String> serverArgs,
-  }) async {
-    final process = await Process.start(
-      'dart',
-      ['run', 'bin/main.dart', ...serverArgs],
-      workingDirectory: serverDir,
-    );
+  List<String> _watchPaths(GeneratorConfig config) {
+    final paths = <String>[];
 
-    final sigintSub = ProcessSignal.sigint.watch().listen(
-      (_) => process.kill(ProcessSignal.sigint),
-    );
-    final sigtermSub = ProcessSignal.sigterm.watch().listen(
-      (_) => process.kill(ProcessSignal.sigterm),
-    );
+    final libPath = p.joinAll(config.libSourcePathParts);
+    paths.add(libPath);
 
-    // Forward process output to terminal.
-    final stdoutDone = process.stdout.pipe(stdout);
-    final stderrDone = process.stderr.pipe(stderr);
-
-    final exitCode = await process.exitCode;
-
-    // Wait for output streams to flush.
-    await Future.wait([stdoutDone, stderrDone]);
-
-    await sigintSub.cancel();
-    await sigtermSub.cancel();
-
-    if (exitCode != 0) {
-      throw ExitException(exitCode);
+    for (final pathParts in config.sharedModelsSourcePathsParts.values) {
+      final sharedLibPath = p.joinAll([
+        ...config.serverPackageDirectoryPathParts,
+        ...pathParts,
+        'lib',
+      ]);
+      paths.add(sharedLibPath);
     }
+
+    return paths;
   }
 }
 
