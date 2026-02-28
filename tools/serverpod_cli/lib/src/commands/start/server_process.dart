@@ -34,16 +34,23 @@ class ServerProcess {
 
   /// Starts the server subprocess.
   ///
+  /// If [dillPath] is provided, the server is started from the compiled
+  /// kernel file. Otherwise, `dart run bin/main.dart` is used.
+  ///
   /// Returns a future that completes with the exit code when the
   /// process exits on its own (not via [stop]).
-  Future<int> start() async {
+  Future<int> start({String? dillPath}) async {
     if (_process != null) {
       throw StateError('Server process is already running.');
     }
 
+    final args = dillPath != null
+        ? [dillPath, ..._serverArgs]
+        : ['run', 'bin/main.dart', ..._serverArgs];
+
     final process = await Process.start(
       'dart',
-      ['run', 'bin/main.dart', ..._serverArgs],
+      args,
       workingDirectory: _serverDir,
     );
     _process = process;

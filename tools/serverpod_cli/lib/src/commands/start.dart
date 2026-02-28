@@ -10,6 +10,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
@@ -167,7 +168,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
   }
 
   /// Starts the server with file watching. On changes, re-generates code
-  /// if needed and restarts the server.
+  /// if needed, incrementally recompiles, and restarts the server.
   Future<void> _startWithWatch({
     required GeneratorConfig config,
     required String serverDir,
@@ -176,28 +177,58 @@ class StartCommand extends ServerpodCommand<StartOption> {
     log.info('Starting server in watch mode...');
 
     final watchPaths = _watchPaths(config);
-    final ignorePath = p.joinAll(config.generatedServeModelPackagePathParts);
+    final ignorePath = p.absolute(
+      p.joinAll(config.generatedServeModelPackagePathParts),
+    );
 
     final watcher = FileWatcher(
       watchPaths: watchPaths,
       ignorePath: ignorePath,
     );
 
+    // Set up incremental compiler.
+    final entryPoint = p.join(serverDir, 'bin', 'main.dart');
+    final initialDill = p.join(
+      serverDir,
+      '.dart_tool',
+      'serverpod',
+      'server.dill',
+    );
+    final compiler = KernelCompiler(
+      entryPoint: entryPoint,
+      outputDill: initialDill,
+    );
+
+    await compiler.start();
+
+    final initialResult = await _compileWithProgress(
+      'Compiling server',
+      () => compiler.compile(),
+    );
+
+    if (initialResult == null) {
+      await compiler.dispose();
+      log.error('Initial compilation failed.');
+      throw ExitException.error();
+    }
+
+    compiler.accept();
+
     var serverProcess = ServerProcess(
       serverDir: serverDir,
       serverArgs: serverArgs,
     );
 
-    // Start initial server process (don't await - it runs until stopped).
+    // Start server from compiled kernel (don't await - it runs until stopped).
     unawaited(
-      serverProcess.start().then((exitCode) {
+      serverProcess.start(dillPath: initialDill).then((exitCode) {
         // If the process exits on its own (not during restart), exit the CLI.
         if (serverProcess.isRunning) return;
         log.info('Server exited with code $exitCode.');
       }),
     );
 
-    // Listen for changes and restart.
+    // Listen for changes, recompile, and restart.
     final subscription = watcher.onFilesChanged.listen((event) async {
       log.info('Files changed, restarting server...');
 
@@ -215,16 +246,66 @@ class StartCommand extends ServerpodCommand<StartOption> {
         }
       }
 
-      // Stop the current server.
+      // Compile changes.
+      CompileResult? result;
+      if (event.packageConfigChanged) {
+        // FES reads package_config.json only at startup - must restart it.
+        await compiler.restart();
+        result = await _compileWithProgress(
+          'Compiling server',
+          () => compiler.compile(),
+          compiler: compiler,
+        );
+      } else if (event.modelFiles.isNotEmpty) {
+        // After code generation, we don't know which files changed -
+        // reset and do a full compile.
+        compiler.reset();
+        result = await _compileWithProgress(
+          'Compiling server',
+          () => compiler.compile(),
+          compiler: compiler,
+        );
+      } else {
+        // Incremental recompile with only the changed files.
+        final changedPaths = {...event.dartFiles, ...event.removedDartFiles};
+        log.debug('Invalidating ${changedPaths.length} files:');
+        for (final path in changedPaths) {
+          log.debug('  $path');
+        }
+        result = await _compileWithProgress(
+          'Compiling server',
+          () => compiler.recompile(changedPaths),
+          compiler: compiler,
+        );
+      }
+
+      if (result == null) {
+        log.error('Compilation failed. Server not restarted.');
+        return;
+      }
+
+      log.debug(
+        'Compile result: errorCount=${result.errorCount}, '
+        'dill=${result.dillOutput}, '
+        'newSources=${result.newSources.length}, '
+        'outputLines=${result.compilerOutputLines.length}',
+      );
+      for (final line in result.compilerOutputLines) {
+        log.debug('  FES: $line');
+      }
+
+      compiler.accept();
+
+      // Stop the current server and start a new one from the compiled kernel.
+      final reloadDill = result.dillOutput ?? initialDill;
       await serverProcess.stop();
 
-      // Start a new server process.
       serverProcess = ServerProcess(
         serverDir: serverDir,
         serverArgs: serverArgs,
       );
 
-      unawaited(serverProcess.start());
+      unawaited(serverProcess.start(dillPath: reloadDill));
       log.info('Server restarted.');
     });
 
@@ -243,6 +324,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
     // Clean up.
     await subscription.cancel();
     await serverProcess.stop();
+    await compiler.dispose();
     await sigintSub.cancel();
     await sigtermSub.cancel();
   }
@@ -300,18 +382,50 @@ class StartCommand extends ServerpodCommand<StartOption> {
     );
   }
 
+  /// Runs a compilation step with progress feedback.
+  ///
+  /// Returns the [CompileResult] on success, or `null` if compilation failed.
+  /// On failure, logs compiler output and rejects via [compiler].
+  Future<CompileResult?> _compileWithProgress(
+    String message,
+    Future<CompileResult> Function() compile, {
+    KernelCompiler? compiler,
+  }) async {
+    late CompileResult result;
+    final success = await log.progress(message, () async {
+      result = await compile();
+      return result.errorCount == 0;
+    });
+
+    if (!success) {
+      for (final line in result.compilerOutputLines) {
+        log.error(line);
+      }
+      if (compiler != null) {
+        await compiler.reject();
+      }
+      return null;
+    }
+
+    return result;
+  }
+
   List<String> _watchPaths(GeneratorConfig config) {
     final paths = <String>[];
 
-    final libPath = p.joinAll(config.libSourcePathParts);
+    // Use absolute paths so DirectoryWatcher reports absolute event paths.
+    // The Frontend Server needs absolute file:// URIs to match sources.
+    final libPath = p.absolute(p.joinAll(config.libSourcePathParts));
     paths.add(libPath);
 
     for (final pathParts in config.sharedModelsSourcePathsParts.values) {
-      final sharedLibPath = p.joinAll([
-        ...config.serverPackageDirectoryPathParts,
-        ...pathParts,
-        'lib',
-      ]);
+      final sharedLibPath = p.absolute(
+        p.joinAll([
+          ...config.serverPackageDirectoryPathParts,
+          ...pathParts,
+          'lib',
+        ]),
+      );
       paths.add(sharedLibPath);
     }
 
