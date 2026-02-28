@@ -18,6 +18,7 @@ import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 /// Options for the `start` command.
 enum StartOption<V> implements OptionDefinition<V> {
@@ -117,9 +118,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
       // Run initial code generation.
       final success = await log.progress(
         'Generating code',
-        () => Isolate.run(
-          () => _runGeneration(config: config),
-        ),
+        () => _generateInIsolate(config),
       );
 
       if (!success) {
@@ -239,16 +238,29 @@ class StartCommand extends ServerpodCommand<StartOption> {
     await serverProcess.connectToVmService();
 
     // Listen for changes, recompile, and reload.
-    final subscription = watcher.onFilesChanged.listen((event) async {
+    // asyncMapBuffer serializes processing: while a reload cycle is in
+    // progress, new events are buffered and delivered as a batch to the
+    // next invocation — no manual locking needed.
+    final subscription = watcher.onFilesChanged
+        .asyncMapBuffer((events) async {
+      final event = _mergeEvents(events);
+
       log.info('Files changed, reloading server...');
 
-      // Re-generate code if model files changed.
-      if (event.modelFiles.isNotEmpty) {
+      // Determine if code generation is needed.
+      // Endpoint dispatch tables depend on Endpoint subclasses,
+      // so we must regenerate when endpoint files change. Deleted
+      // files always trigger code gen since we can't inspect them.
+      final needsCodeGen = event.modelFiles.isNotEmpty ||
+          event.removedDartFiles.isNotEmpty ||
+          event.dartFiles.any(
+            (f) => EndpointsAnalyzer.isEndpointFile(File(f)),
+          );
+
+      if (needsCodeGen) {
         final genSuccess = await log.progress(
           'Generating code',
-          () => Isolate.run(
-            () => _runGeneration(config: config),
-          ),
+          () => _generateInIsolate(config),
         );
         if (!genSuccess) {
           log.error('Code generation failed. Server not reloaded.');
@@ -266,8 +278,8 @@ class StartCommand extends ServerpodCommand<StartOption> {
           () => compiler.compile(),
           compiler: compiler,
         );
-      } else if (event.modelFiles.isNotEmpty) {
-        // After code generation, we don't know which files changed —
+      } else if (needsCodeGen) {
+        // Code generation may have changed generated files —
         // reset and do a full compile.
         compiler.reset();
         result = await _compileWithProgress(
@@ -332,7 +344,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
       unawaited(serverProcess.start(dillPath: reloadDill));
       await serverProcess.connectToVmService();
       log.info('Server restarted.');
-    });
+    }).listen((_) {});
 
     // Wait for SIGINT/SIGTERM to stop watch mode.
     final exitCompleter = Completer<void>();
@@ -456,6 +468,15 @@ class StartCommand extends ServerpodCommand<StartOption> {
   }
 }
 
+/// Runs code generation in a fresh isolate.
+///
+/// Must be a top-level function so the closure passed to [Isolate.run]
+/// doesn't capture unsendable objects from the call site's scope
+/// (e.g. [KernelCompiler] which holds a [Process]).
+Future<bool> _generateInIsolate(GeneratorConfig config) {
+  return Isolate.run(() => _runGeneration(config: config));
+}
+
 Future<bool> _runGeneration({
   required GeneratorConfig config,
 }) async {
@@ -481,5 +502,32 @@ Future<bool> _runGeneration({
     endpointsAnalyzer: endpointsAnalyzer,
     modelAnalyzer: modelAnalyzer,
     futureCallsAnalyzer: futureCallsAnalyzer,
+  );
+}
+
+/// Merges multiple buffered [FileChangeEvent]s into a single event.
+FileChangeEvent _mergeEvents(List<FileChangeEvent> events) {
+  if (events.length == 1) return events.first;
+
+  final dartFiles = <String>{};
+  final removedDartFiles = <String>{};
+  final modelFiles = <String>{};
+  var packageConfigChanged = false;
+
+  for (final event in events) {
+    dartFiles.addAll(event.dartFiles);
+    removedDartFiles.addAll(event.removedDartFiles);
+    modelFiles.addAll(event.modelFiles);
+    packageConfigChanged |= event.packageConfigChanged;
+  }
+
+  // A file that was removed and then re-created is not removed.
+  removedDartFiles.removeAll(dartFiles);
+
+  return FileChangeEvent(
+    dartFiles: dartFiles,
+    removedDartFiles: removedDartFiles,
+    modelFiles: modelFiles,
+    packageConfigChanged: packageConfigChanged,
   );
 }
