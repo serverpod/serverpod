@@ -128,6 +128,14 @@ class Server implements RouterInjectable {
 
   @override
   void injectIn(RelicRouter router) {
+    // On hot reload, Relic replays all RouterInjectables. Re-initialize
+    // endpoints so new/changed endpoint classes and methods are picked up.
+    if (_running) {
+      endpoints.connectors.clear();
+      endpoints.modules.clear();
+      endpoints.initializeEndpoints(this);
+    }
+
     if (serverpod.config.loggingMode == ServerpodLoggingMode.verbose) {
       router.use('/', _verboseLogging);
     }
