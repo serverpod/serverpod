@@ -97,8 +97,8 @@ abstract class SessionLogEntry
   /// The method this session is associated with, if any.
   String? method;
 
-  /// The running time of this session. May be null if the session is still
-  /// active.
+  /// The running time of this session, in seconds. May be null if the session
+  /// is still active.
   double? duration;
 
   /// The number of queries performed during this session.
@@ -459,8 +459,8 @@ class SessionLogEntryTable extends _i1.Table<int?> {
   /// The method this session is associated with, if any.
   late final _i1.ColumnString method;
 
-  /// The running time of this session. May be null if the session is still
-  /// active.
+  /// The running time of this session, in seconds. May be null if the session
+  /// is still active.
   late final _i1.ColumnDouble duration;
 
   /// The number of queries performed during this session.
