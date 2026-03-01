@@ -1,0 +1,7 @@
+class: LegacyAuthenticationResponse
+fields:
+  success: bool
+  key: String?
+  keyId: int?
+  userInfo: LegacyUserInfo?
+  failReason: LegacyAuthenticationFailReason?

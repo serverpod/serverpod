@@ -1,0 +1,11 @@
+class: LegacyUserInfo
+fields:
+  id: int?
+  userIdentifier: String
+  userName: String?
+  fullName: String?
+  email: String?
+  created: DateTime
+  imageUrl: String?
+  scopeNames: List<String>
+  blocked: bool

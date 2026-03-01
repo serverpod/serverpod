@@ -1,0 +1,8 @@
+enum: LegacyAuthenticationFailReason
+serialized: byIndex
+values:
+  - invalidCredentials
+  - userCreationDenied
+  - internalError
+  - tooManyFailedAttempts
+  - blocked

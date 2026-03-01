@@ -1,2 +1,28 @@
+legacyAdmin:
+legacyApple:
+  - authenticate:
+legacyEmail:
+  - authenticate:
+  - createAccountRequest:
+  - createAccount:
+  - changePassword:
+  - initiatePasswordReset:
+  - resetPassword:
+legacyFirebase:
+  - authenticate:
+legacyGoogle:
+  - authenticateWithServerAuthCode:
+  - authenticateWithIdToken:
+legacyStatus:
+  - isSignedIn:
+  - signOutDevice:
+  - signOutAllDevices:
+  - getUserInfo:
+  - getUserSettingsConfig:
+legacyUser:
+  - removeUserImage:
+  - setUserImage:
+  - changeUserName:
+  - changeFullName:
 sessionMigration:
   - convertSession:
