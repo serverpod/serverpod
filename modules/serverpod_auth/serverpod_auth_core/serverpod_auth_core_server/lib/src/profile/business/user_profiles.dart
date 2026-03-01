@@ -6,7 +6,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../generated/protocol.dart';
-import '../util/user_profile_extension.dart';
 import 'exceptions.dart';
 import 'user_profile_config.dart';
 
@@ -498,7 +497,9 @@ class UserProfiles {
       throw ArgumentError.value(
         userProfile,
         'userProfile',
-        '`image.id` and `imageId` do not match. To update a profile in the database and get the fully hydrated object, both need to be set accordingly.',
+        '`image.id` and `imageId` do not match. To update a profile in the '
+            'database and get the fully hydrated object, both need to be set '
+            'accordingly.',
       );
     }
     if (userProfile.image != null &&
@@ -506,7 +507,8 @@ class UserProfiles {
       throw ArgumentError.value(
         userProfile,
         'userProfile',
-        'The given image belongs to user ${userProfile.image!.userProfileId} and thus can not be used on the profile of user ${userProfile.id}',
+        'The given image belongs to user ${userProfile.image!.userProfileId} '
+            'and thus can not be used on the profile of user ${userProfile.id}',
       );
     }
 
@@ -614,4 +616,28 @@ final class UserImageFromBytes extends UserImageSource {
 
   /// Creates a new [UserImageFromBytes] instance.
   UserImageFromBytes(this.bytes);
+}
+
+/// Extensions method to convert a [UserProfile] to its model, used in merging
+/// functions.
+extension on UserProfile {
+  /// Returns the model of the database entity.
+  UserProfileModel toModel() {
+    return UserProfileModel(
+      authUserId: authUserId,
+      userName: userName,
+      fullName: fullName,
+      email: email,
+      imageUrl: image?.url,
+    );
+  }
+
+  /// Returns the model of the database entity.
+  UserProfileData toProfileData() {
+    return UserProfileData(
+      userName: userName,
+      fullName: fullName,
+      email: email,
+    );
+  }
 }
