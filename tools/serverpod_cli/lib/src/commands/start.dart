@@ -269,6 +269,21 @@ class StartCommand extends ServerpodCommand<StartOption> {
         .asyncMapBuffer((events) async {
           final event = _mergeEvents(events);
 
+          // Static-only changes (HTML, JS, CSS): no compilation needed,
+          // just trigger a reload to bump reloadCount so the browser
+          // refreshes.
+          final hasDartChanges = event.dartFiles.isNotEmpty ||
+              event.removedDartFiles.isNotEmpty ||
+              event.modelFiles.isNotEmpty ||
+              event.packageConfigChanged;
+          if (!hasDartChanges) {
+            if (serverProcess.isVmServiceConnected) {
+              await serverProcess.reload(initialDill);
+              log.info('Browser refresh triggered.');
+            }
+            return;
+          }
+
           log.info('Files changed, reloading server...');
 
           // Determine if code generation is needed.
@@ -489,6 +504,14 @@ class StartCommand extends ServerpodCommand<StartOption> {
       paths.add(sharedLibPath);
     }
 
+    // Watch the web directory for static file changes (HTML, JS, CSS).
+    final webPath = p.absolute(
+      p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
+    );
+    if (Directory(webPath).existsSync()) {
+      paths.add(webPath);
+    }
+
     return paths;
   }
 }
@@ -538,12 +561,14 @@ FileChangeEvent _mergeEvents(List<FileChangeEvent> events) {
   final removedDartFiles = <String>{};
   final modelFiles = <String>{};
   var packageConfigChanged = false;
+  var staticFilesChanged = false;
 
   for (final event in events) {
     dartFiles.addAll(event.dartFiles);
     removedDartFiles.addAll(event.removedDartFiles);
     modelFiles.addAll(event.modelFiles);
     packageConfigChanged |= event.packageConfigChanged;
+    staticFilesChanged |= event.staticFilesChanged;
   }
 
   // A file that was removed and then re-created is not removed.
@@ -554,5 +579,6 @@ FileChangeEvent _mergeEvents(List<FileChangeEvent> events) {
     removedDartFiles: removedDartFiles,
     modelFiles: modelFiles,
     packageConfigChanged: packageConfigChanged,
+    staticFilesChanged: staticFilesChanged,
   );
 }

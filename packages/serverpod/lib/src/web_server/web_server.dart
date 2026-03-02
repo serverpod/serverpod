@@ -54,6 +54,7 @@ class WebServer {
 
   bool _running = false;
   bool? _devModeOverride;
+  int _lastReloadCount = 0;
 
   /// Returns true if the webserver is currently running.
   bool get running => _running;
@@ -214,8 +215,19 @@ class WebServer {
     );
   }
 
+  /// Reloads templates from disk if a hot reload has occurred.
+  Future<void> _reloadTemplatesIfNeeded() async {
+    final currentReloadCount = _app.developerTools.reloadCount;
+    if (currentReloadCount != _lastReloadCount) {
+      _lastReloadCount = currentReloadCount;
+      templates.clear();
+      await templates.loadAll(Directory(path.joinAll(['web', 'templates'])));
+    }
+  }
+
   Handler _devHtmlInjection(Handler next) {
     return (req) async {
+      await _reloadTemplatesIfNeeded();
       final result = await next(req);
       if (!_isDevMode) return result;
       if (result is! Response || result.statusCode != 200) return result;

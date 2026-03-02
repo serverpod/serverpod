@@ -21,11 +21,17 @@ class FileChangeEvent {
   /// Whether package_config.json was modified in this batch.
   final bool packageConfigChanged;
 
+  /// Whether non-dart, non-model files changed (e.g. HTML, JS, CSS).
+  ///
+  /// Used to trigger a browser refresh without recompilation.
+  final bool staticFilesChanged;
+
   FileChangeEvent({
     required this.dartFiles,
     this.removedDartFiles = const {},
     this.modelFiles = const {},
     this.packageConfigChanged = false,
+    this.staticFilesChanged = false,
   });
 }
 
@@ -67,6 +73,7 @@ class FileWatcher {
             ),
             modelFiles: Set<String>.from(message['modelFiles'] as List),
             packageConfigChanged: message['packageConfigChanged'] as bool,
+            staticFilesChanged: message['staticFilesChanged'] as bool,
           ),
         );
       }
@@ -135,18 +142,13 @@ void _watcherIsolateEntry(_WatcherConfig config) {
 
   mergedStream
       .where((e) => !e.path.contains(config.ignorePath))
-      .where(
-        (e) =>
-            p.extension(e.path) == '.dart' ||
-            _isModelFile(e.path) ||
-            p.basename(e.path) == 'package_config.json',
-      )
       .debounceBuffer(debounceDelay)
       .map((events) {
         final dartFiles = <String>[];
         final removedDartFiles = <String>[];
         final modelFiles = <String>[];
         var packageConfigChanged = false;
+        var staticFilesChanged = false;
         final seen = <String>{};
 
         for (final event in events) {
@@ -155,11 +157,15 @@ void _watcherIsolateEntry(_WatcherConfig config) {
             packageConfigChanged = true;
           } else if (_isModelFile(filePath)) {
             modelFiles.add(filePath);
-          } else if (event.type == ChangeType.REMOVE) {
-            removedDartFiles.add(filePath);
+          } else if (p.extension(filePath) == '.dart') {
+            if (event.type == ChangeType.REMOVE) {
+              removedDartFiles.add(filePath);
+            } else {
+              dartFiles.add(filePath);
+              seen.add(filePath);
+            }
           } else {
-            dartFiles.add(filePath);
-            seen.add(filePath);
+            staticFilesChanged = true;
           }
         }
 
@@ -170,6 +176,7 @@ void _watcherIsolateEntry(_WatcherConfig config) {
               .toList(),
           'modelFiles': modelFiles,
           'packageConfigChanged': packageConfigChanged,
+          'staticFilesChanged': staticFilesChanged,
         };
       })
       .where((e) {
@@ -177,10 +184,12 @@ void _watcherIsolateEntry(_WatcherConfig config) {
         final removedDartFiles = e['removedDartFiles']! as List<String>;
         final modelFiles = e['modelFiles']! as List<String>;
         final packageConfigChanged = e['packageConfigChanged']! as bool;
+        final staticFilesChanged = e['staticFilesChanged']! as bool;
         return dartFiles.isNotEmpty ||
             removedDartFiles.isNotEmpty ||
             modelFiles.isNotEmpty ||
-            packageConfigChanged;
+            packageConfigChanged ||
+            staticFilesChanged;
       })
       .listen((event) {
         config.sendPort.send(event);
