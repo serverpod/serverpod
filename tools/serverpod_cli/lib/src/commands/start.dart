@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:args/args.dart';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as p;
@@ -33,6 +34,14 @@ enum StartOption<V> implements OptionDefinition<V> {
       helpText:
           'The server directory (defaults to auto-detect from current directory).',
     ),
+  ),
+  docker(
+    FlagOption(
+      argName: 'docker',
+      defaultsTo: true,
+      helpText:
+          'Start Docker Compose services if a docker-compose.yaml exists.',
+    ),
   );
 
   const StartOption(this.option);
@@ -56,6 +65,16 @@ class StartCommand extends ServerpodCommand<StartOption> {
   String get invocation => 'serverpod start [-- <server-args>]';
 
   StartCommand() : super(options: StartOption.values);
+
+  @override
+  Configuration<StartOption> resolveConfiguration(ArgResults? argResults) {
+    return Configuration.resolveNoExcept(
+      options: options,
+      argResults: argResults,
+      env: envVariables,
+      ignoreUnexpectedPositionalArgs: true,
+    );
+  }
 
   @override
   Future<void> runWithConfig(
@@ -82,33 +101,101 @@ class StartCommand extends ServerpodCommand<StartOption> {
     }
 
     final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
+    final docker = commandConfig.value(StartOption.docker);
 
-    // Run code generation.
-    final success = await log.progress(
-      'Generating code',
-      () => Isolate.run(
-        () => _runGeneration(config: config),
-      ),
+    // Start Docker Compose services if needed.
+    var startedDocker = false;
+    if (docker) {
+      startedDocker = await _ensureDockerServices(serverDir);
+    }
+
+    try {
+      // Run code generation.
+      final success = await log.progress(
+        'Generating code',
+        () => Isolate.run(
+          () => _runGeneration(config: config),
+        ),
+      );
+
+      if (!success) {
+        log.error('Code generation failed.');
+        throw ExitException.error();
+      }
+
+      if (watch) {
+        // TODO: Implement watch mode (step 2).
+        log.warning(
+          'Watch mode is not yet implemented. Starting without watch.',
+        );
+      }
+
+      // Extract passthrough args (everything after '--').
+      final serverArgs = argResults?.rest ?? [];
+
+      log.info('Starting server...');
+
+      await _startServer(
+        serverDir: serverDir,
+        serverArgs: serverArgs,
+      );
+    } finally {
+      if (startedDocker) {
+        await _stopDockerServices(serverDir);
+      }
+    }
+  }
+
+  /// Ensures Docker Compose services are running.
+  ///
+  /// Returns `true` if this method started the containers (meaning we should
+  /// stop them on shutdown). Returns `false` if no action was taken.
+  Future<bool> _ensureDockerServices(String serverDir) async {
+    final composeFile = File(p.join(serverDir, 'docker-compose.yaml'));
+    if (!composeFile.existsSync()) return false;
+
+    // Check if containers are already running.
+    final ps = await Process.run(
+      'docker',
+      ['compose', 'ps', '--status', 'running', '-q'],
+      workingDirectory: serverDir,
     );
 
-    if (!success) {
-      log.error('Code generation failed.');
-      throw ExitException.error();
+    if (ps.exitCode != 0) {
+      log.warning(
+        'Docker does not appear to be running. '
+        'Start Docker or use --no-docker to skip.',
+      );
+      return false;
     }
 
-    if (watch) {
-      // TODO: Implement watch mode (step 2).
-      log.warning('Watch mode is not yet implemented. Starting without watch.');
+    final running = (ps.stdout as String).trim();
+    if (running.isNotEmpty) return false;
+
+    // Start containers.
+    log.info('Starting Docker Compose services...');
+    final up = await Process.run(
+      'docker',
+      ['compose', 'up', '-d'],
+      workingDirectory: serverDir,
+    );
+
+    if (up.exitCode != 0) {
+      final error = (up.stderr as String).trim();
+      log.warning('Failed to start Docker Compose services: $error');
+      return false;
     }
 
-    // Extract passthrough args (everything after '--').
-    final serverArgs = argResults?.rest ?? [];
+    log.info('Docker Compose services started.');
+    return true;
+  }
 
-    log.info('Starting server...');
-
-    await _startServer(
-      serverDir: serverDir,
-      serverArgs: serverArgs,
+  Future<void> _stopDockerServices(String serverDir) async {
+    log.info('Stopping Docker Compose services...');
+    await Process.run(
+      'docker',
+      ['compose', 'stop'],
+      workingDirectory: serverDir,
     );
   }
 
