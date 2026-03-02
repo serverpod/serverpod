@@ -8,6 +8,7 @@ import 'package:serverpod_auth_idp_server/providers/github.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'package:serverpod_auth_idp_server/providers/microsoft.dart';
 import 'package:serverpod_auth_idp_server/providers/passkey.dart';
+import 'package:serverpod_auth_idp_server/providers/twitch.dart';
 
 import 'src/generated/endpoints.dart';
 import 'src/generated/protocol.dart';
@@ -83,6 +84,13 @@ void run(List<String> args) async {
     hostname: 'localhost',
   );
 
+  final twitchIdpConfig = TwitchIdpConfig(
+    oauthCredentials: TwitchOAuthCredentials.fromJson({
+      'clientId': pod.getPassword('twitchClientId')!,
+      'clientSecret': pod.getPassword('twitchClientSecret')!,
+    }),
+  );
+
   final anonymousIdpConfig = AnonymousIdpConfig();
 
   pod.initializeAuthServices(
@@ -98,6 +106,7 @@ void run(List<String> args) async {
       facebookIdpConfig,
       githubIdpConfig,
       microsoftIdpConfig,
+      twitchIdpConfig,
       passkeyIdpConfig,
     ],
   );

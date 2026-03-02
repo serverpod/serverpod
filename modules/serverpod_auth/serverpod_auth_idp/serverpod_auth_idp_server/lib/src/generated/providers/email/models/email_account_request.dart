@@ -423,8 +423,6 @@ class EmailAccountRequestRepository {
     _i1.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
     EmailAccountRequestInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmailAccountRequest>(
       where: where?.call(EmailAccountRequest.t),
@@ -435,8 +433,6 @@ class EmailAccountRequestRepository {
       offset: offset,
       transaction: transaction,
       include: include,
-      lockMode: lockMode,
-      lockBehavior: lockBehavior,
     );
   }
 
@@ -466,8 +462,6 @@ class EmailAccountRequestRepository {
     _i1.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
     EmailAccountRequestInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmailAccountRequest>(
       where: where?.call(EmailAccountRequest.t),
@@ -477,8 +471,6 @@ class EmailAccountRequestRepository {
       offset: offset,
       transaction: transaction,
       include: include,
-      lockMode: lockMode,
-      lockBehavior: lockBehavior,
     );
   }
 
@@ -488,15 +480,11 @@ class EmailAccountRequestRepository {
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     EmailAccountRequestInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<EmailAccountRequest>(
       id,
       transaction: transaction,
       include: include,
-      lockMode: lockMode,
-      lockBehavior: lockBehavior,
     );
   }
 
@@ -656,22 +644,6 @@ class EmailAccountRequestRepository {
     return session.db.count<EmailAccountRequest>(
       where: where?.call(EmailAccountRequest.t),
       limit: limit,
-      transaction: transaction,
-    );
-  }
-
-  /// Acquires row-level locks on [EmailAccountRequest] rows matching the [where] expression.
-  Future<void> lockRows(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<EmailAccountRequestTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
-  }) async {
-    return session.db.lockRows<EmailAccountRequest>(
-      where: where(EmailAccountRequest.t),
-      lockMode: lockMode,
-      lockBehavior: lockBehavior,
       transaction: transaction,
     );
   }
