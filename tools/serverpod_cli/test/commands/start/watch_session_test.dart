@@ -111,9 +111,8 @@ void main() {
     late _FakeServer server;
     late _FakeServer factoryServer;
     late List<String> factoryCalls;
-    late List<String> generateCalls;
+    late List<Set<String>> generateCalls;
     late bool generateSuccess;
-    late Set<String> endpointFiles;
     late WatchSession session;
 
     setUp(() {
@@ -123,15 +122,13 @@ void main() {
       factoryCalls = [];
       generateCalls = [];
       generateSuccess = true;
-      endpointFiles = {};
 
       session = WatchSession(
         compiler: compiler,
-        generate: () async {
-          generateCalls.add('generate');
+        generate: (affectedPaths) async {
+          generateCalls.add(affectedPaths);
           return generateSuccess;
         },
-        isEndpointFile: (path) => endpointFiles.contains(path),
         createServer: (dillPath) async {
           factoryCalls.add('createServer:$dillPath');
           return factoryServer;
@@ -179,10 +176,10 @@ void main() {
       );
     });
 
-    group('Given dart file changes that are not endpoint files', () {
+    group('Given dart file changes', () {
       test(
         'when files compile successfully, '
-        'then it does incremental recompile and hot reload',
+        'then it runs codegen, does incremental recompile, and hot reload',
         () async {
           final event = FileChangeEvent(
             dartFiles: {'/lib/a.dart'},
@@ -190,12 +187,34 @@ void main() {
 
           await session.handleFileChange(event);
 
+          expect(generateCalls, [
+            {'/lib/a.dart'},
+          ]);
           expect(compiler.calls, [
             'recompile:[/lib/a.dart]',
             'accept',
           ]);
           expect(server.calls, ['reload:/out.dill']);
-          expect(generateCalls, isEmpty);
+        },
+      );
+
+      test(
+        'when codegen fails, '
+        'then it does not compile or reload',
+        () async {
+          generateSuccess = false;
+
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+          );
+
+          await session.handleFileChange(event);
+
+          expect(generateCalls, [
+            {'/lib/a.dart'},
+          ]);
+          expect(compiler.calls, isEmpty);
+          expect(server.calls, isEmpty);
         },
       );
 
@@ -241,44 +260,25 @@ void main() {
       );
     });
 
-    group('Given dart file changes that include an endpoint file', () {
+    group('Given multiple dart file changes', () {
       test(
         'when codegen succeeds and compilation succeeds, '
-        'then it runs codegen, does incremental recompile, and reloads',
+        'then it passes all paths to codegen and recompiles',
         () async {
-          endpointFiles.add('/lib/endpoint.dart');
-
           final event = FileChangeEvent(
             dartFiles: {'/lib/endpoint.dart', '/lib/other.dart'},
           );
 
           await session.handleFileChange(event);
 
-          expect(generateCalls, ['generate']);
+          expect(generateCalls, [
+            {'/lib/endpoint.dart', '/lib/other.dart'},
+          ]);
           expect(compiler.calls, [
             'recompile:[/lib/endpoint.dart, /lib/other.dart]',
             'accept',
           ]);
           expect(server.calls, ['reload:/out.dill']);
-        },
-      );
-
-      test(
-        'when codegen fails, '
-        'then it does not compile or reload',
-        () async {
-          endpointFiles.add('/lib/endpoint.dart');
-          generateSuccess = false;
-
-          final event = FileChangeEvent(
-            dartFiles: {'/lib/endpoint.dart'},
-          );
-
-          await session.handleFileChange(event);
-
-          expect(generateCalls, ['generate']);
-          expect(compiler.calls, isEmpty);
-          expect(server.calls, isEmpty);
         },
       );
     });
@@ -295,7 +295,9 @@ void main() {
 
           await session.handleFileChange(event);
 
-          expect(generateCalls, ['generate']);
+          expect(generateCalls, [
+            {'/models/user.spy.yaml'},
+          ]);
           // No dart files changed, so recompile is called with an empty set.
           // The FES picks up generated file changes from disk.
           expect(compiler.calls, ['recompile:[]', 'accept']);
@@ -316,7 +318,9 @@ void main() {
 
           await session.handleFileChange(event);
 
-          expect(generateCalls, ['generate']);
+          expect(generateCalls, [
+            {'/models/user.spy.yaml'},
+          ]);
           expect(compiler.calls, isEmpty);
           expect(server.calls, isEmpty);
         },
@@ -325,7 +329,7 @@ void main() {
 
     group('Given removed dart file changes', () {
       test(
-        'then it always runs codegen',
+        'then it runs codegen with the removed paths',
         () async {
           final event = FileChangeEvent(
             dartFiles: {},
@@ -334,7 +338,9 @@ void main() {
 
           await session.handleFileChange(event);
 
-          expect(generateCalls, ['generate']);
+          expect(generateCalls, [
+            {'/lib/removed.dart'},
+          ]);
           expect(compiler.calls, [
             'recompile:[]',
             'accept',
@@ -345,7 +351,7 @@ void main() {
 
     group('Given package_config.json changed', () {
       test(
-        'then it restarts the compiler and does a full compile',
+        'then it runs codegen, restarts compiler, and does a full compile',
         () async {
           final event = FileChangeEvent(
             dartFiles: {'/lib/a.dart'},
@@ -354,8 +360,10 @@ void main() {
 
           await session.handleFileChange(event);
 
+          expect(generateCalls, [
+            {'/lib/a.dart'},
+          ]);
           expect(compiler.calls, ['restart', 'compile', 'accept']);
-          expect(generateCalls, isEmpty);
         },
       );
 
@@ -371,7 +379,9 @@ void main() {
 
           await session.handleFileChange(event);
 
-          expect(generateCalls, ['generate']);
+          expect(generateCalls, [
+            {'/models/user.spy.yaml'},
+          ]);
           expect(compiler.calls, ['restart', 'compile', 'accept']);
         },
       );
@@ -390,6 +400,9 @@ void main() {
 
           await session.handleFileChange(event);
 
+          expect(generateCalls, [
+            {'/lib/a.dart'},
+          ]);
           expect(compiler.calls, [
             'recompile:[/lib/a.dart]',
             'accept',
@@ -444,6 +457,7 @@ void main() {
           server.calls.clear();
           factoryServer.calls.clear();
           compiler.calls.clear();
+          generateCalls.clear();
 
           final event2 = FileChangeEvent(
             dartFiles: {'/lib/b.dart'},
@@ -472,6 +486,9 @@ void main() {
 
           await session.handleFileChange(event);
 
+          expect(generateCalls, [
+            {'/lib/a.dart'},
+          ]);
           expect(compiler.calls, [
             'recompile:[/lib/a.dart]',
             'accept',

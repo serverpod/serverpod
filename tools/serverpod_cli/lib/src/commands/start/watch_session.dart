@@ -6,11 +6,11 @@ import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:stream_transform/stream_transform.dart';
 
-/// Runs code generation. Returns true on success.
-typedef GenerateAction = Future<bool> Function();
-
-/// Returns true if the given file path is an endpoint file.
-typedef EndpointFileCheck = bool Function(String filePath);
+/// Runs code generation for the given affected file paths.
+///
+/// The function should update analyzer contexts and generate code as needed.
+/// Returns true on success (including when no generation was needed).
+typedef GenerateAction = Future<bool> Function(Set<String> affectedPaths);
 
 /// Creates a new server process, starts it, connects VM service,
 /// and returns it ready for use.
@@ -24,7 +24,6 @@ typedef ServerProcessFactory = Future<ServerProcess> Function(String dillPath);
 class WatchSession {
   final KernelCompiler _compiler;
   final GenerateAction _generate;
-  final EndpointFileCheck _isEndpointFile;
   final ServerProcessFactory _createServer;
   final String _initialDill;
 
@@ -37,13 +36,11 @@ class WatchSession {
   WatchSession({
     required KernelCompiler compiler,
     required GenerateAction generate,
-    required EndpointFileCheck isEndpointFile,
     required ServerProcessFactory createServer,
     required ServerProcess initialServer,
     required String initialDill,
   }) : _compiler = compiler,
        _generate = generate,
-       _isEndpointFile = isEndpointFile,
        _createServer = createServer,
        _server = initialServer,
        _initialDill = initialDill {
@@ -88,24 +85,23 @@ class WatchSession {
 
     log.info('Files changed, reloading server...');
 
-    // Determine if code generation is needed.
-    // Endpoint dispatch tables depend on Endpoint subclasses,
-    // so we must regenerate when endpoint files change. Deleted
-    // files always trigger code gen since we can't inspect them.
-    final needsCodeGen =
-        event.modelFiles.isNotEmpty ||
-        event.removedDartFiles.isNotEmpty ||
-        event.dartFiles.any(_isEndpointFile);
+    // Pass all affected paths to the generator. It updates analyzer contexts
+    // for all changed files (keeping them fresh) and only runs the full
+    // generation pipeline when relevant files (endpoints, models, future
+    // calls) actually changed.
+    final affectedPaths = {
+      ...event.dartFiles,
+      ...event.removedDartFiles,
+      ...event.modelFiles,
+    };
 
-    if (needsCodeGen) {
-      final genSuccess = await log.progress(
-        'Generating code',
-        () => _generate(),
-      );
-      if (!genSuccess) {
-        log.error('Code generation failed. Server not reloaded.');
-        return;
-      }
+    final genSuccess = await log.progress(
+      'Generating code',
+      () => _generate(affectedPaths),
+    );
+    if (!genSuccess) {
+      log.error('Code generation failed. Server not reloaded.');
+      return;
     }
 
     // Compile changes.
