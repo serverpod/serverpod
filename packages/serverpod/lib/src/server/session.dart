@@ -440,7 +440,7 @@ class FutureCallSession extends Session {
 }
 
 /// Collects methods for accessing cloud storage.
-class StorageAccess {
+final class StorageAccess {
   final Session _session;
 
   StorageAccess._(this._session);
@@ -449,18 +449,37 @@ class StorageAccess {
   /// 'private'. The public storage can be accessed through a public URL. The
   /// file is stored at the [path] relative to the cloud storage root directory,
   /// if a file already exists it will be replaced.
+  ///
+  /// Set [preventOverwrite] to true to prevent overwriting existing files
+  /// (supported by some storage implementations).
   Future<void> storeFile({
     required String storageId,
     required String path,
     required ByteData byteData,
     DateTime? expiration,
+    bool preventOverwrite = false,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    await storage.storeFile(session: _session, path: path, byteData: byteData);
+    if (preventOverwrite && storage is CloudStorageWithOptions) {
+      await storage.storeFileWithOptions(
+        session: _session,
+        path: path,
+        byteData: byteData,
+        expiration: expiration,
+        options: CloudStorageOptions(preventOverwrite: preventOverwrite),
+      );
+    } else {
+      await storage.storeFile(
+        session: _session,
+        path: path,
+        byteData: byteData,
+        expiration: expiration,
+      );
+    }
   }
 
   /// Retrieve a file from cloud storage.
@@ -531,19 +550,43 @@ class StorageAccess {
   /// [FileUploader]. After the file has been uploaded, the
   /// [verifyDirectFileUpload] method should be called, or the file may be
   /// deleted.
+  ///
+  /// [contentLength] hints the exact upload size to the storage provider.
+  /// [preventOverwrite] prevents overwriting existing files (supported by
+  /// some storage implementations).
   Future<String?> createDirectFileUploadDescription({
     required String storageId,
     required String path,
+    Duration expirationDuration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
+    int? contentLength,
+    bool preventOverwrite = false,
   }) async {
     var storage = _session.server.serverpod.storage[storageId];
     if (storage == null) {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    return await storage.createDirectFileUploadDescription(
-      session: _session,
-      path: path,
-    );
+    final hasOptions = contentLength != null || preventOverwrite;
+    if (hasOptions && storage is CloudStorageWithOptions) {
+      return await storage.createDirectFileUploadDescriptionWithOptions(
+        session: _session,
+        path: path,
+        expirationDuration: expirationDuration,
+        maxFileSize: maxFileSize,
+        options: CloudStorageOptions(
+          contentLength: contentLength,
+          preventOverwrite: preventOverwrite,
+        ),
+      );
+    } else {
+      return await storage.createDirectFileUploadDescription(
+        session: _session,
+        path: path,
+        expirationDuration: expirationDuration,
+        maxFileSize: maxFileSize,
+      );
+    }
   }
 
   /// Call this method after a file has been uploaded. It will return true
