@@ -160,7 +160,8 @@ class StartCommand extends ServerpodCommand<StartOption> {
       serverArgs: serverArgs,
     );
 
-    final exitCode = await serverProcess.start();
+    await serverProcess.start();
+    final exitCode = await serverProcess.exitCode;
 
     if (exitCode != 0) {
       throw ExitException(exitCode);
@@ -249,19 +250,14 @@ class StartCommand extends ServerpodCommand<StartOption> {
 
     Future<ServerProcess> serverProcessFactory(String dillPath) async {
       final sp = createServerProcess();
-      unawaited(sp.start(dillPath: dillPath));
+      await sp.start(dillPath: dillPath);
       await sp.connectToVmService();
       return sp;
     }
 
     // Start the initial server process.
     final initialServerProcess = createServerProcess();
-    unawaited(
-      initialServerProcess.start(dillPath: initialDill).then((exitCode) {
-        if (initialServerProcess.isRunning) return;
-        log.info('Server exited with code $exitCode.');
-      }),
-    );
+    await initialServerProcess.start(dillPath: initialDill);
     await initialServerProcess.connectToVmService();
 
     final session = WatchSession(
@@ -275,22 +271,26 @@ class StartCommand extends ServerpodCommand<StartOption> {
 
     session.listen(watcher.onFilesChanged);
 
-    // Wait for SIGINT/SIGTERM to stop watch mode.
-    final exitCompleter = Completer<void>();
+    // Wait for SIGINT/SIGTERM or unexpected server exit.
+    final signalCompleter = Completer<int>();
 
     final sigintSub = ProcessSignal.sigint.watch().listen((_) {
-      if (!exitCompleter.isCompleted) exitCompleter.complete();
+      if (!signalCompleter.isCompleted) signalCompleter.complete(0);
     });
     final sigtermSub = ProcessSignal.sigterm.watch().listen((_) {
-      if (!exitCompleter.isCompleted) exitCompleter.complete();
+      if (!signalCompleter.isCompleted) signalCompleter.complete(0);
     });
 
-    await exitCompleter.future;
+    final exitCode = await Future.any([signalCompleter.future, session.done]);
 
     // Clean up.
     await session.dispose();
     await sigintSub.cancel();
     await sigtermSub.cancel();
+
+    if (exitCode != 0) {
+      throw ExitException(exitCode);
+    }
   }
 
   /// Ensures Docker Compose services are running.

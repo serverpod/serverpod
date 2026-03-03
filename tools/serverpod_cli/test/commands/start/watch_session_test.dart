@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
@@ -60,6 +62,7 @@ class _FakeCompiler extends Fake implements KernelCompiler {
 
 class _FakeServer extends Fake implements ServerProcess {
   final List<String> calls = [];
+  final Completer<int> _exitCodeCompleter = Completer<int>();
 
   bool _vmServiceConnected;
   bool reloadSuccess = true;
@@ -73,6 +76,12 @@ class _FakeServer extends Fake implements ServerProcess {
   set isVmServiceConnected(bool value) => _vmServiceConnected = value;
 
   @override
+  Future<int> get exitCode => _exitCodeCompleter.future;
+
+  /// Completes [exitCode] with the given code, simulating a crash.
+  void simulateExit(int code) => _exitCodeCompleter.complete(code);
+
+  @override
   Future<bool> reload(String dillPath) async {
     calls.add('reload:$dillPath');
     return reloadSuccess;
@@ -81,6 +90,9 @@ class _FakeServer extends Fake implements ServerProcess {
   @override
   Future<int> stop({Duration timeout = const Duration(seconds: 5)}) async {
     calls.add('stop');
+    if (!_exitCodeCompleter.isCompleted) {
+      _exitCodeCompleter.complete(0);
+    }
     return 0;
   }
 }
@@ -474,6 +486,44 @@ void main() {
       );
     });
 
+    group('Given the server exits unexpectedly', () {
+      test(
+        'then done completes with the exit code',
+        () async {
+          server.simulateExit(1);
+
+          await expectLater(session.done, completion(1));
+        },
+      );
+
+      test(
+        'when a restart replaces the server and the new server crashes, '
+        'then done completes with the new server exit code',
+        () async {
+          server.reloadSuccess = false;
+
+          final event = FileChangeEvent(
+            dartFiles: {'/lib/a.dart'},
+          );
+
+          // Restart: stop() completes server.exitCode internally.
+          await session.handleFileChange(event);
+
+          // The initial server was stopped intentionally - done should
+          // not have completed.
+          var doneCompleted = false;
+          unawaited(session.done.then((_) => doneCompleted = true));
+          await Future<void>.delayed(Duration.zero);
+          expect(doneCompleted, isFalse);
+
+          // New server crashes.
+          factoryServer.simulateExit(42);
+
+          await expectLater(session.done, completion(42));
+        },
+      );
+    });
+
     group('Given dispose is called', () {
       test(
         'then it stops the server and disposes the compiler',
@@ -482,6 +532,20 @@ void main() {
 
           expect(server.calls, ['stop']);
           expect(compiler.calls, ['dispose']);
+        },
+      );
+
+      test(
+        'then done does not complete from server exit',
+        () async {
+          // dispose() calls stop(), which completes initialExitCode.
+          await session.dispose();
+
+          var doneCompleted = false;
+          unawaited(session.done.then((_) => doneCompleted = true));
+          await Future<void>.delayed(Duration.zero);
+
+          expect(doneCompleted, isFalse);
         },
       );
     });
