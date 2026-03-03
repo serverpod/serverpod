@@ -32,6 +32,12 @@ class AppleIdpConfig extends IdentityProviderBuilder<AppleIdp> {
   /// clients.
   final String? androidPackageIdentifier;
 
+  /// The web app URL to redirect to after receiving Apple's web callback.
+  ///
+  /// Required for web Sign in with Apple to work when the server callback
+  /// route is used as Apple's redirect URI.
+  final String? webRedirectUri;
+
   /// Creates a new Sign in with Apple configuration.
   const AppleIdpConfig({
     required this.serviceIdentifier,
@@ -41,6 +47,7 @@ class AppleIdpConfig extends IdentityProviderBuilder<AppleIdp> {
     required this.keyId,
     required this.key,
     this.androidPackageIdentifier,
+    this.webRedirectUri,
   });
 
   @override
@@ -78,6 +85,7 @@ class AppleIdpConfigFromPasswords extends AppleIdpConfig {
         androidPackageIdentifier: Serverpod.instance.getPassword(
           'appleAndroidPackageIdentifier',
         ),
+        webRedirectUri: Serverpod.instance.getPassword('appleWebRedirectUri'),
       );
 }
 
