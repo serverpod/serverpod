@@ -9,27 +9,6 @@ import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
-final _vmServiceUriPattern = RegExp(
-  r'The Dart VM service is listening on (http\S+)',
-);
-
-/// An IOSink that captures all written output.
-class _CapturingIOSink extends _NullIOSink {
-  final StringBuffer buffer = StringBuffer();
-
-  @override
-  void write(Object? object) => buffer.write(object);
-
-  /// Extracts the VM service WebSocket URI from captured output.
-  String get vmServiceWsUri {
-    final match = _vmServiceUriPattern.firstMatch(buffer.toString());
-    if (match == null) throw StateError('VM service URI not found in output');
-    final httpUri = match.group(1)!;
-    final wsUri = httpUri.replaceFirst('http://', 'ws://');
-    return wsUri.endsWith('/') ? '${wsUri}ws' : '$wsUri/ws';
-  }
-}
-
 /// An IOSink that discards all output.
 class _NullIOSink implements IOSink {
   @override
@@ -184,6 +163,7 @@ void main() {
   group('Given a ServerProcess with VM service enabled', () {
     late Directory tempDir;
     late String dillPath;
+    late String vmServiceInfoFile;
     late String dartExecutable;
 
     setUp(() async {
@@ -204,6 +184,12 @@ void main() {
 
       // Compile the initial kernel using KernelCompiler.
       dillPath = p.join(tempDir.path, '.dart_tool', 'serverpod', 'server.dill');
+      vmServiceInfoFile = p.join(
+        tempDir.path,
+        '.dart_tool',
+        'serverpod',
+        'vm-service-info.json',
+      );
       final compiler = KernelCompiler(
         entryPoint: mainFile,
         outputDill: dillPath,
@@ -233,6 +219,7 @@ void main() {
           serverArgs: [],
           dartExecutable: dartExecutable,
           enableVmService: true,
+          vmServiceInfoFile: vmServiceInfoFile,
           stdoutSink: _NullIOSink(),
           stderrSink: _NullIOSink(),
         );
@@ -256,6 +243,7 @@ void main() {
           serverArgs: [],
           dartExecutable: dartExecutable,
           enableVmService: true,
+          vmServiceInfoFile: vmServiceInfoFile,
           stdoutSink: _NullIOSink(),
           stderrSink: _NullIOSink(),
         );
@@ -281,6 +269,7 @@ void main() {
           serverArgs: [],
           dartExecutable: dartExecutable,
           enableVmService: true,
+          vmServiceInfoFile: vmServiceInfoFile,
           stdoutSink: _NullIOSink(),
           stderrSink: _NullIOSink(),
           onReloadRequested: () async {
@@ -306,13 +295,13 @@ void main() {
       'then the callback is invoked',
       () async {
         final externalReloadCompleter = Completer<void>();
-        final capturingSink = _CapturingIOSink();
         final serverProcess = ServerProcess(
           serverDir: tempDir.path,
           serverArgs: [],
           dartExecutable: dartExecutable,
           enableVmService: true,
-          stdoutSink: capturingSink,
+          vmServiceInfoFile: vmServiceInfoFile,
+          stdoutSink: _NullIOSink(),
           stderrSink: _NullIOSink(),
           onExternalReload: () {
             if (!externalReloadCompleter.isCompleted) {
@@ -324,10 +313,22 @@ void main() {
         await serverProcess.start(dillPath: dillPath);
         await serverProcess.connectToVmService();
 
-        // Connect a second VM service client and trigger a reload directly,
-        // bypassing our custom service. This simulates an IDE reload.
-        final wsUri = capturingSink.vmServiceWsUri;
-        final externalVmService = await vmServiceConnectUri(wsUri);
+        // Read the VM service URI from the service info file and connect
+        // a second client to trigger a reload directly, bypassing our
+        // custom service. This simulates an IDE reload.
+        final infoJson =
+            jsonDecode(
+                  await File(vmServiceInfoFile).readAsString(),
+                )
+                as Map<String, dynamic>;
+        final httpUri = infoJson['uri'] as String;
+        final wsUri = httpUri
+            .replaceFirst('http://', 'ws://')
+            .replaceFirst('https://', 'wss://');
+        final wsUriWithSuffix = wsUri.endsWith('/')
+            ? '${wsUri}ws'
+            : '$wsUri/ws';
+        final externalVmService = await vmServiceConnectUri(wsUriWithSuffix);
         final vm = await externalVmService.getVM();
         final isolateId = vm.isolates!.first.id!;
         final dillUri = Uri.file(p.absolute(dillPath)).toString();
@@ -353,7 +354,7 @@ void main() {
 /// Creates a minimal Dart project structure.
 Future<void> _createMinimalDartProject(String dir) async {
   await Directory('$dir/bin').create(recursive: true);
-  await Directory('$dir/.dart_tool').create(recursive: true);
+  await Directory('$dir/.dart_tool/serverpod').create(recursive: true);
   await File('$dir/pubspec.yaml').writeAsString('''
 name: test_server
 environment:
