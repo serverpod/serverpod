@@ -253,6 +253,7 @@ abstract class Session implements DatabaseSession {
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written
   /// to the database when the session is closed.
+  @override
   void log(
     String message, {
     LogLevel? level,
