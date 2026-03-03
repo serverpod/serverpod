@@ -96,7 +96,8 @@ void main() {
             stderrSink: _NullIOSink(),
           );
 
-          final exitCode = await serverProcess.start();
+          await serverProcess.start();
+          final exitCode = await serverProcess.exitCode;
           expect(exitCode, 0);
           expect(serverProcess.isRunning, isFalse);
         } finally {
@@ -131,14 +132,11 @@ void main() {
             stderrSink: _NullIOSink(),
           );
 
-          final startFuture = serverProcess.start();
-          await Future.delayed(const Duration(seconds: 3));
+          await serverProcess.start();
           expect(serverProcess.isRunning, isTrue);
 
           await serverProcess.stop();
           expect(serverProcess.isRunning, isFalse);
-
-          await startFuture;
         } finally {
           await tempDir.delete(recursive: true);
         }
@@ -170,13 +168,11 @@ void main() {
             stderrSink: _NullIOSink(),
           );
 
-          final startFuture = serverProcess.start();
-          await Future.delayed(const Duration(seconds: 2));
+          await serverProcess.start();
 
           expect(() => serverProcess.start(), throwsStateError);
 
           await serverProcess.stop();
-          await startFuture;
         } finally {
           await tempDir.delete(recursive: true);
         }
@@ -241,13 +237,12 @@ void main() {
           stderrSink: _NullIOSink(),
         );
 
-        final startFuture = serverProcess.start(dillPath: dillPath);
+        await serverProcess.start(dillPath: dillPath);
         await serverProcess.connectToVmService();
 
         expect(serverProcess.isVmServiceConnected, isTrue);
 
         await serverProcess.stop();
-        await startFuture;
       },
       timeout: const Timeout(Duration(seconds: 30)),
     );
@@ -265,14 +260,13 @@ void main() {
           stderrSink: _NullIOSink(),
         );
 
-        final startFuture = serverProcess.start(dillPath: dillPath);
+        await serverProcess.start(dillPath: dillPath);
         await serverProcess.connectToVmService();
 
         final reloaded = await serverProcess.reload(dillPath);
         expect(reloaded, isTrue);
 
         await serverProcess.stop();
-        await startFuture;
       },
       timeout: const Timeout(Duration(seconds: 30)),
     );
@@ -295,7 +289,7 @@ void main() {
           },
         );
 
-        final startFuture = serverProcess.start(dillPath: dillPath);
+        await serverProcess.start(dillPath: dillPath);
         await serverProcess.connectToVmService();
 
         // The service is registered; verify the process is connected.
@@ -303,7 +297,6 @@ void main() {
         expect(callbackCalled, isFalse);
 
         await serverProcess.stop();
-        await startFuture;
       },
       timeout: const Timeout(Duration(seconds: 30)),
     );
@@ -328,7 +321,7 @@ void main() {
           },
         );
 
-        final startFuture = serverProcess.start(dillPath: dillPath);
+        await serverProcess.start(dillPath: dillPath);
         await serverProcess.connectToVmService();
 
         // Connect a second VM service client and trigger a reload directly,
@@ -351,7 +344,6 @@ void main() {
 
         await externalVmService.dispose();
         await serverProcess.stop();
-        await startFuture;
       },
       timeout: const Timeout(Duration(seconds: 30)),
     );

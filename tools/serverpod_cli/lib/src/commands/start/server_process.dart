@@ -47,6 +47,8 @@ class ServerProcess {
   Completer<String?>? _vmServiceUriCompleter;
   StreamSubscription? _isolateEventSub;
 
+  final Completer<int> _exitCodeCompleter = Completer<int>();
+
   int _initiatedReloads = 0;
   int _observedReloads = 0;
 
@@ -74,14 +76,16 @@ class ServerProcess {
   /// Whether the VM service is connected.
   bool get isVmServiceConnected => _vmService != null;
 
+  /// Completes with the process exit code when the server exits.
+  Future<int> get exitCode => _exitCodeCompleter.future;
+
   /// Starts the server subprocess.
   ///
   /// If [dillPath] is provided, the server is started from the compiled
   /// kernel file. Otherwise, `dart run bin/main.dart` is used.
   ///
-  /// Returns a future that completes with the exit code when the
-  /// process exits on its own (not via [stop]).
-  Future<int> start({String? dillPath}) async {
+  /// Use [exitCode] to wait for the process to exit.
+  Future<void> start({String? dillPath}) async {
     if (_process != null) {
       throw StateError('Server process is already running.');
     }
@@ -133,16 +137,20 @@ class ServerProcess {
       _stderrSub = process.stderr.listen(_stderr.add);
     }
 
-    final exitCode = await process.exitCode;
+    // Handle process exit asynchronously.
+    unawaited(
+      process.exitCode.then((code) async {
+        _exitCodeCompleter.complete(code);
 
-    // If VM service URI was never found, complete with null.
-    if (_vmServiceUriCompleter != null &&
-        !_vmServiceUriCompleter!.isCompleted) {
-      _vmServiceUriCompleter!.complete(null);
-    }
+        // If VM service URI was never found, complete with null.
+        if (_vmServiceUriCompleter != null &&
+            !_vmServiceUriCompleter!.isCompleted) {
+          _vmServiceUriCompleter!.complete(null);
+        }
 
-    await _cleanup();
-    return exitCode;
+        await _cleanup();
+      }),
+    );
   }
 
   void _tryExtractVmServiceUri(String chunk) {

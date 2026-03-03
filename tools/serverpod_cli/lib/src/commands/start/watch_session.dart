@@ -28,8 +28,11 @@ class WatchSession {
   final ServerProcessFactory _createServer;
   final String _initialDill;
 
+  final Completer<int> _done = Completer<int>();
+
   ServerProcess _server;
   StreamSubscription<void>? _subscription;
+  bool _restarting = false;
 
   WatchSession({
     required KernelCompiler compiler,
@@ -43,7 +46,12 @@ class WatchSession {
        _isEndpointFile = isEndpointFile,
        _createServer = createServer,
        _server = initialServer,
-       _initialDill = initialDill;
+       _initialDill = initialDill {
+    _monitorExit(initialServer);
+  }
+
+  /// Completes when the server exits unexpectedly (crash).
+  Future<int> get done => _done.future;
 
   /// Starts listening to file change events.
   ///
@@ -137,8 +145,11 @@ class WatchSession {
     }
     _compiler.accept();
 
+    _restarting = true;
     await _server.stop();
     _server = await _createServer(fullResult.dillOutput!);
+    _monitorExit(_server);
+    _restarting = false;
     log.info('Server restarted.');
   }
 
@@ -146,8 +157,19 @@ class WatchSession {
   /// disposes compiler.
   Future<void> dispose() async {
     await _subscription?.cancel();
+    _restarting = true;
     await _server.stop();
     await _compiler.dispose();
+  }
+
+  void _monitorExit(ServerProcess server) {
+    unawaited(
+      server.exitCode.then((code) {
+        if (!_restarting && !_done.isCompleted) {
+          _done.complete(code);
+        }
+      }),
+    );
   }
 
   Future<CompileResult?> _compile() async {
