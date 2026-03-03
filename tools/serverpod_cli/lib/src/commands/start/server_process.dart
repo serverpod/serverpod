@@ -7,11 +7,6 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
 
-/// Pattern matching the VM service listening line in process output.
-final _vmServiceUriPattern = RegExp(
-  r'The Dart VM service is listening on (http\S+)',
-);
-
 /// Callback for IDE-initiated reload requests.
 ///
 /// Should compile changes and return the dill path on success, or `null`
@@ -37,6 +32,12 @@ class ServerProcess {
   /// by this process). Used to reset FES compiler state.
   final void Function()? _onExternalReload;
 
+  /// Path to write the VM service info JSON file to. When set, the file
+  /// is passed to the child via `--write-service-info` and the URI is read
+  /// from the file instead of parsing stdout. IDEs can use this path in
+  /// their `vmServiceInfoFile` launch configuration to auto-attach.
+  final String? _vmServiceInfoFile;
+
   Process? _process;
   StreamSubscription? _sigtermSub;
   StreamSubscription? _stdoutSub;
@@ -44,7 +45,6 @@ class ServerProcess {
 
   VmService? _vmService;
   String? _mainIsolateId;
-  Completer<String?>? _vmServiceUriCompleter;
   StreamSubscription? _isolateEventSub;
 
   final Completer<int> _exitCodeCompleter = Completer<int>();
@@ -57,6 +57,7 @@ class ServerProcess {
     required List<String> serverArgs,
     String? dartExecutable,
     bool enableVmService = false,
+    String? vmServiceInfoFile,
     IOSink? stdoutSink,
     IOSink? stderrSink,
     ReloadRequestedCallback? onReloadRequested,
@@ -65,6 +66,7 @@ class ServerProcess {
        _serverArgs = serverArgs,
        _dartExecutable = dartExecutable ?? 'dart',
        _enableVmService = enableVmService,
+       _vmServiceInfoFile = vmServiceInfoFile,
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
        _onReloadRequested = onReloadRequested,
@@ -95,7 +97,9 @@ class ServerProcess {
     // Enable VM service for hot reload support.
     if (_enableVmService) {
       args.add('--enable-vm-service=0');
-      _vmServiceUriCompleter = Completer<String?>();
+      if (_vmServiceInfoFile != null) {
+        args.add('--write-service-info=$_vmServiceInfoFile');
+      }
     }
 
     if (dillPath != null) {
@@ -119,63 +123,34 @@ class ServerProcess {
       (_) => process.kill(ProcessSignal.sigterm),
     );
 
-    // For VM service mode, intercept both stdout and stderr to extract the
-    // service URI (Dart may print it on either stream depending on version).
-    if (_enableVmService) {
-      _stdoutSub = process.stdout.transform(utf8.decoder).listen((chunk) {
-        _tryExtractVmServiceUri(chunk);
-        _stdout.write(chunk);
-      });
-      _stderrSub = process.stderr.transform(utf8.decoder).listen((chunk) {
-        _tryExtractVmServiceUri(chunk);
-        _stderr.write(chunk);
-      });
-    } else {
-      // Forward process output without exclusively binding the sinks,
-      // so that the CLI logger can still write to stdout/stderr.
-      _stdoutSub = process.stdout.listen(_stdout.add);
-      _stderrSub = process.stderr.listen(_stderr.add);
-    }
+    // Forward process output without exclusively binding the sinks,
+    // so that the CLI logger can still write to stdout/stderr.
+    _stdoutSub = process.stdout.listen(_stdout.add);
+    _stderrSub = process.stderr.listen(_stderr.add);
 
     // Handle process exit asynchronously.
     unawaited(process.exitCode.then((code) async {
       _exitCodeCompleter.complete(code);
-
-      // If VM service URI was never found, complete with null.
-      if (_vmServiceUriCompleter != null &&
-          !_vmServiceUriCompleter!.isCompleted) {
-        _vmServiceUriCompleter!.complete(null);
-      }
-
       await _cleanup();
     }));
-  }
-
-  void _tryExtractVmServiceUri(String chunk) {
-    if (_vmServiceUriCompleter != null &&
-        !_vmServiceUriCompleter!.isCompleted) {
-      final match = _vmServiceUriPattern.firstMatch(chunk);
-      if (match != null) {
-        _vmServiceUriCompleter!.complete(match.group(1));
-      }
-    }
   }
 
   /// Connects to the server's VM service.
   ///
   /// Must be called after [start] and only when `enableVmService` is true.
-  /// Waits for the VM service URI to appear in the process output.
+  /// Reads the VM service URI from the service info file written by the
+  /// child process via `--write-service-info`.
   Future<void> connectToVmService() async {
-    final completer = _vmServiceUriCompleter;
-    if (completer == null) {
+    final infoPath = _vmServiceInfoFile;
+    if (infoPath == null) {
       throw StateError(
-        'Cannot connect to VM service: enableVmService was not set.',
+        'Cannot connect to VM service: vmServiceInfoFile was not set.',
       );
     }
 
-    final httpUri = await completer.future;
+    final httpUri = await _readVmServiceUri(infoPath);
     if (httpUri == null) {
-      log.warning('VM service URI not found in server output.');
+      log.warning('VM service URI not found in service info file.');
       return;
     }
 
@@ -197,6 +172,8 @@ class ServerProcess {
         await Future<void>.delayed(const Duration(milliseconds: 200));
       }
     }
+
+    log.info('The Dart VM service is listening on $httpUri');
 
     final vmService = _vmService!;
     final vm = await vmService.getVM();
@@ -289,6 +266,33 @@ class ServerProcess {
     return exitCode;
   }
 
+  /// Reads the VM service URI from the service info JSON file.
+  ///
+  /// The file is written by the child process via `--write-service-info`
+  /// and may not appear immediately. Polls with a short delay.
+  Future<String?> _readVmServiceUri(String path) async {
+    final file = File(path);
+    const maxAttempts = 50;
+    const delay = Duration(milliseconds: 100);
+
+    for (var i = 0; i < maxAttempts; i++) {
+      if (!isRunning) return null;
+      if (file.existsSync()) {
+        try {
+          final contents = file.readAsStringSync();
+          final json = jsonDecode(contents) as Map<String, dynamic>;
+          final uri = json['uri'] as String?;
+          if (uri != null) return uri;
+        } on FormatException {
+          // File may be partially written; retry.
+        }
+      }
+      await Future<void>.delayed(delay);
+    }
+
+    return null;
+  }
+
   Future<void> _cleanup() async {
     // Guard: both start() and stop() may call _cleanup() concurrently.
     if (_process == null) return;
@@ -298,7 +302,6 @@ class ServerProcess {
     await _vmService?.dispose();
     _vmService = null;
     _mainIsolateId = null;
-    _vmServiceUriCompleter = null;
     _initiatedReloads = 0;
     _observedReloads = 0;
     await _stdoutSub?.cancel();
@@ -307,5 +310,14 @@ class ServerProcess {
     _stdoutSub = null;
     _stderrSub = null;
     _sigtermSub = null;
+
+    // Clean up the service info file so stale URIs are not picked up.
+    if (_vmServiceInfoFile != null) {
+      try {
+        File(_vmServiceInfoFile).deleteSync();
+      } on FileSystemException {
+        // May already be deleted or never created.
+      }
+    }
   }
 }

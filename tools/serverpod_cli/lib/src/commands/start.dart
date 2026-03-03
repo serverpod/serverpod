@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
@@ -19,6 +20,7 @@ import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:vm_service/vm_service_io.dart';
 
 /// Options for the `start` command.
 enum StartOption<V> implements OptionDefinition<V> {
@@ -263,6 +265,16 @@ Future<int> _runWatchMode({
 }) async {
   log.info('Starting server in watch mode...');
 
+  // Check if a server is already running by verifying the service info file.
+  final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
+  final vmServiceInfoFile = p.join(serverpodToolDir, 'vm-service-info.json');
+  final existingUri = await _checkExistingServer(vmServiceInfoFile);
+  if (existingUri != null) {
+    log.info('The Dart VM service is listening on $existingUri');
+    log.info('Server running.');
+    return 0;
+  }
+
   // Create persistent analyzers for incremental generation.
   final libDirectory = Directory(p.joinAll(config.libSourcePathParts));
   final endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
@@ -310,12 +322,7 @@ Future<int> _runWatchMode({
 
   // Set up incremental compiler.
   final entryPoint = p.join(serverDir, 'bin', 'main.dart');
-  final initialDill = p.join(
-    serverDir,
-    '.dart_tool',
-    'serverpod',
-    'server.dill',
-  );
+  final initialDill = p.join(serverpodToolDir, 'server.dill');
   final compiler = KernelCompiler(
     entryPoint: entryPoint,
     outputDill: initialDill,
@@ -360,6 +367,7 @@ Future<int> _runWatchMode({
     serverArgs: serverArgs,
     dartExecutable: dartExecutable,
     enableVmService: true,
+    vmServiceInfoFile: vmServiceInfoFile,
     onReloadRequested: onReloadRequested,
     onExternalReload: onExternalReload,
   );
@@ -375,6 +383,7 @@ Future<int> _runWatchMode({
   final initialServerProcess = createServerProcess();
   await initialServerProcess.start(dillPath: initialDill);
   await initialServerProcess.connectToVmService();
+  log.info('Server running.');
 
   final session = WatchSession(
     compiler: compiler,
@@ -499,5 +508,39 @@ Future<CompileResult?> _compileWithProgress(
   }
 
   return result;
+}
+
+/// Checks if a server is already running by reading the VM service info file
+/// and attempting to connect. Returns the URI if reachable, `null` otherwise.
+/// Cleans up stale files.
+Future<String?> _checkExistingServer(String infoPath) async {
+  final file = File(infoPath);
+  if (!file.existsSync()) return null;
+
+  try {
+    final json = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
+    final uri = json['uri'] as String?;
+    if (uri == null) {
+      file.deleteSync();
+      return null;
+    }
+
+    final wsUri = uri.replaceFirst('http://', 'ws://').replaceFirst(
+      'https://',
+      'wss://',
+    );
+    final wsUriWithSuffix = wsUri.endsWith('/') ? '${wsUri}ws' : '$wsUri/ws';
+    final vmService = await vmServiceConnectUri(wsUriWithSuffix);
+    await vmService.dispose();
+    return uri;
+  } on Exception {
+    // Stale or unreachable - clean up and proceed with normal startup.
+    try {
+      file.deleteSync();
+    } on FileSystemException {
+      // Ignore.
+    }
+    return null;
+  }
 }
 
