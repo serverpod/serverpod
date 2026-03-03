@@ -22,7 +22,6 @@ import 'package:serverpod/src/generated/log_level.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../interface/database_session.dart';
-import '../../../server/session.dart';
 import '../../concepts/expressions.dart';
 import '../../concepts/table.dart';
 import '../../query_parameters.dart';
@@ -1012,17 +1011,14 @@ class PostgresDatabaseConnection
         .any((key) => !columnFieldNames.contains(key));
 
     if (hasNonPersisted && rows.length > 100) {
-      var s = session;
-      if (s is Session) {
-        s.log(
-          'WARNING: Inserting ${rows.length} rows with ignoreConflicts on '
-          'table "${table.tableName}" with non-persistent fields. This '
-          'requires individual inserts and may cause performance issues. '
-          'Consider removing non-persistent fields or inserting in smaller '
-          'batches.',
-          level: LogLevel.warning,
-        );
-      }
+      session.log(
+        'WARNING: Inserting ${rows.length} rows with ignoreConflicts on '
+        'table "${table.tableName}" with non-persistent fields. This '
+        'requires individual inserts and may cause performance issues. '
+        'Consider removing non-persistent fields or inserting in smaller '
+        'batches.',
+        level: LogLevel.warning,
+      );
     }
 
     return hasNonPersisted;

@@ -269,7 +269,7 @@ void main() async {
       );
 
       test(
-        'when all rows conflict with ignoreConflicts then an empty list is returned.',
+        'when inserting only conflicting rows with ignoreConflicts then an empty list is returned.',
         () async {
           var inserted = await UniqueDataWithNonPersist.db.insert(
             session,
@@ -330,6 +330,14 @@ void main() async {
 
           expect(logEntries, hasLength(1));
           expect(logEntries.first.logLevel, LogLevel.warning);
+          expect(
+            logEntries.first.message,
+            'WARNING: Inserting 101 rows with ignoreConflicts on '
+            'table "unique_data_with_non_persist" with non-persistent fields. '
+            'This requires individual inserts and may cause performance '
+            'issues. Consider removing non-persistent fields or inserting in '
+            'smaller batches.',
+          );
         },
       );
     },

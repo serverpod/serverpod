@@ -1,3 +1,4 @@
+import '../../generated/log_level.dart';
 import '../concepts/transaction.dart';
 import '../database.dart';
 
@@ -21,4 +22,12 @@ abstract interface class DatabaseSession {
 
   /// Optional function to log a query.
   LogQueryFunction? get logQuery;
+
+  /// Optional function to log a message as part of the session.
+  void log(
+    String message, {
+    LogLevel? level,
+    dynamic exception,
+    StackTrace? stackTrace,
+  });
 }
