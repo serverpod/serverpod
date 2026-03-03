@@ -206,6 +206,11 @@ class CompileResult {
   final Iterable<Uri> newSources;
 }
 
+@internal
+extension CompileResultInternal on CompileResult {
+  static const create = CompileResult._;
+}
+
 enum _ClientState {
   compiling,
   rejecting,
