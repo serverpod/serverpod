@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:serverpod/protocol.dart' show FutureCallEntry;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_test/serverpod_test.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/builders/runtime_settings_builder.dart';
 import 'package:serverpod_test_server/test_util/logging_utils.dart';
@@ -783,6 +782,5 @@ void main() async {
         },
       );
     },
-    tags: [defaultIntegrationTestTag],
   );
 }

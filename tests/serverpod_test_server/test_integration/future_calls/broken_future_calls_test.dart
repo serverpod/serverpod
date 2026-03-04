@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:serverpod/protocol.dart' show FutureCallEntry;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
-import 'package:serverpod_test/serverpod_test.dart';
 import 'package:serverpod_test_server/src/generated/simple_data.dart';
 import 'package:serverpod_test_server/test_util/builders/runtime_settings_builder.dart';
 import 'package:serverpod_test_server/test_util/custom_matcher.dart';
@@ -244,7 +243,6 @@ void main() {
         },
       );
     },
-    tags: [defaultIntegrationTestTag],
   );
 
   group(
@@ -466,7 +464,6 @@ void main() {
         },
       );
     },
-    tags: [defaultIntegrationTestTag],
   );
 
   withServerpod(
@@ -655,8 +652,6 @@ void main() {
         },
       );
     },
-
-    tags: [defaultIntegrationTestTag],
   );
 
   group(
@@ -760,7 +755,6 @@ void main() {
         },
       );
     },
-    tags: [defaultIntegrationTestTag],
   );
 
   group(
@@ -863,7 +857,6 @@ void main() {
         },
       );
     },
-    tags: [defaultIntegrationTestTag],
   );
 }
 
