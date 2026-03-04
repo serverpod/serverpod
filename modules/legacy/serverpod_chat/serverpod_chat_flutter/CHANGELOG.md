@@ -1,3 +1,40 @@
+## 3.4.0
+
+Serverpod 3.4 comes with two long-awaited features: shared models between server and client and allowing caching any type of object to the local/Redis cache. It also brings two new Identity Providers (Facebook and Microsoft), a complete revamp to the cloud storage system, ignore conflicts on inserts and row-level locking on the database, shell completion support to the CLI and more improvements to the developer experience.
+
+### Core
+
+- feat: Allows generating shared models between server and client on shared packages.
+- feat: Allows caching any type of object to the local/Redis cache.
+- feat: Allows ignoring conflicts on inserts through the `ignoreConflicts` parameter of the `insert` method. ([@FXschwartz](https://github.com/FXschwartz))
+- feat: Adds PostgreSQL row-level locking through `find*` and `lockRows` methods. ([@FXschwartz](https://github.com/FXschwartz))
+- feat: Adds support for FutureCall methods with only the `Session` parameter.
+- fix: Fixes the time unit display on session log duration. ([@Tokotuu](https://github.com/Tokotuu))
+- chore: Logs a warning when server tries to run unregistered future calls.
+
+### Authentication
+
+- feat: Adds support to Facebook Identity Provider. ([@vfiruz97](https://github.com/vfiruz97))
+- feat: Adds Microsoft Identity Provider. ([@vfiruz97](https://github.com/vfiruz97))
+- feat: Allows attaching custom metadata to SSS/JWT tokens.
+- feat: Adds `expired` filter and `limit` parameter to `ServerSideSessions.listSessions`.
+- fix: Allows handling Android and Web redirection for Apple Sign In. ([@jakubgiminski](https://github.com/jakubgiminski))
+- fix: Correctly binds `AuthUsersConfig` to `AnonymousIdp`. ([@craiglabenz](https://github.com/craiglabenz))
+
+## Cloud Storage
+
+- feat: Introduces a shared `serverpod_cloud_storage_s3_compat` base package for S3-compatible storage integrations.
+- feat: Adds a native Google Cloud Storage implementation on the `serverpod_cloud_storage_gcp` package with Application Default Credentials support.
+- feat: Adds a new `serverpod_cloud_storage_r2` package for Cloudflare R2.
+- feat: Adds new parameters `preventOverwrite`, `maxFileSize`, `contentLength`, and `expirationDuration` for finer upload control.
+- refactor: Refactors the existing S3 and GCP storage packages to reduce code duplication by using the `serverpod_cloud_storage_s3_compat` package.
+- fix: Fixes several issues on the storage packages like silent error swallowing, HTTP client leaks, and buffer aliasing bugs.
+
+### Developer tooling
+
+- feat: Generates `.vscode/launch.json` with a composite project as default for full-stack debugging.
+- feat: Adds shell completion support to Serverpod CLI. ([@FXschwartz](https://github.com/FXschwartz))
+
 ## 3.3.1
 
 - fix: Fixes text of GitHub IDP button not aligning correctly when using the left alignment. ([@vfiruz97](https://github.com/vfiruz97))
