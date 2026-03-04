@@ -355,18 +355,19 @@ Future<int> _runWatchMode({
   final session = WatchSession(
     compiler: compiler,
     generate: (affectedPaths) async {
-      final needsGenerate = await log.progress(
-        'Analyzing changes',
-        () => updateAnalyzers(
+      bool needsGenerate = false;
+      await log.progress('Analyzing changes', () async {
+        needsGenerate = await updateAnalyzers(
           config: config,
           endpointsAnalyzer: endpointsAnalyzer,
           modelAnalyzer: modelAnalyzer,
           futureCallsAnalyzer: futureCallsAnalyzer,
           affectedPaths: affectedPaths,
-        ),
-      );
+        );
+        return true;
+      });
       if (!needsGenerate) return true;
-      return log.progress(
+      return await log.progress(
         'Generating code',
         () => performGenerate(
           config: config,
