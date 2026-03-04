@@ -320,12 +320,8 @@ void main() {
           await File(vmServiceInfoFile).readAsString(),
         ) as Map<String, dynamic>;
         final httpUri = infoJson['uri'] as String;
-        final wsUri = httpUri
-            .replaceFirst('http://', 'ws://')
-            .replaceFirst('https://', 'wss://');
-        final wsUriWithSuffix =
-            wsUri.endsWith('/') ? '${wsUri}ws' : '$wsUri/ws';
-        final externalVmService = await vmServiceConnectUri(wsUriWithSuffix);
+        final externalVmService =
+            await vmServiceConnectUri(vmServiceWsUri(httpUri));
         final vm = await externalVmService.getVM();
         final isolateId = vm.isolates!.first.id!;
         final dillUri = Uri.file(p.absolute(dillPath)).toString();
