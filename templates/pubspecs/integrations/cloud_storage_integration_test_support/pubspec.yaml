@@ -1,5 +1,4 @@
-# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
-# Mode: development
+# TEMPLATE
 publish_to: none
 
 name: cloud_storage_integration_test_support
@@ -7,11 +6,11 @@ description: Shared integration test suite for S3-compatible cloud storage packa
 version: 0.0.1
 
 environment:
-  sdk: '^3.8.0'
+  sdk: DART_VERSION
 
 dependencies:
-  serverpod_client: 3.4.0
-  serverpod_cloud_storage_s3_compat: 3.4.0
+  serverpod_client: SERVERPOD_VERSION
+  serverpod_cloud_storage_s3_compat: SERVERPOD_VERSION
   test: ^1.25.5
 
 dependency_overrides:
