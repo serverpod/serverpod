@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:async/async.dart';
 import 'package:path/path.dart' as p;
@@ -31,11 +29,19 @@ class FileChangeEvent {
   });
 }
 
-/// Watches project directories for file changes on a background isolate.
+const _modelExtensions = {'.spy.yaml', '.spy', '.spy.yml'};
+
+bool _isModelFile(String filePath) {
+  for (final ext in _modelExtensions) {
+    if (filePath.endsWith(ext)) return true;
+  }
+  return false;
+}
+
+/// Watches project directories for file changes.
 ///
-/// The `watcher` package's `DirectoryWatcher` does a synchronous
-/// `listSync()` on construction which blocks the calling thread.
-/// Running it on a background isolate keeps the main thread free.
+/// Debounces raw file system events into batched [FileChangeEvent]s,
+/// categorized by file type.
 class FileWatcher {
   final List<String> _watchPaths;
   final String _ignorePath;
@@ -52,127 +58,56 @@ class FileWatcher {
   }) : _watchPaths = watchPaths,
        _ignorePath = ignorePath;
 
-  /// Stream of file change events from a background isolate.
+  /// Stream of debounced, categorized file change events.
   Stream<FileChangeEvent> get onFilesChanged {
-    final controller = StreamController<FileChangeEvent>();
-
-    final receivePort = ReceivePort();
-    Isolate? isolate;
-
-    receivePort.listen((message) {
-      if (message is Map) {
-        controller.add(
-          FileChangeEvent(
-            dartFiles: Set<String>.from(message['dartFiles'] as List),
-            modelFiles: Set<String>.from(message['modelFiles'] as List),
-            packageConfigChanged: message['packageConfigChanged'] as bool,
-            staticFilesChanged: message['staticFilesChanged'] as bool,
-          ),
-        );
+    final watchers = <DirectoryWatcher>[];
+    for (final watchPath in _watchPaths) {
+      if (Directory(watchPath).existsSync()) {
+        watchers.add(DirectoryWatcher(watchPath));
       }
-    });
-
-    controller.onCancel = () {
-      isolate?.kill(priority: Isolate.immediate);
-      receivePort.close();
-    };
-
-    Isolate.spawn(
-      _watcherIsolateEntry,
-      _WatcherConfig(
-        sendPort: receivePort.sendPort,
-        watchPaths: _watchPaths,
-        ignorePath: _ignorePath,
-        debounceMicroseconds: debounceDelay.inMicroseconds,
-      ),
-    ).then((i) {
-      isolate = i;
-    });
-
-    return controller.stream;
-  }
-}
-
-const _modelExtensions = {'.spy.yaml', '.spy', '.spy.yml'};
-
-bool _isModelFile(String filePath) {
-  for (final ext in _modelExtensions) {
-    if (filePath.endsWith(ext)) return true;
-  }
-  return false;
-}
-
-class _WatcherConfig {
-  final SendPort sendPort;
-  final List<String> watchPaths;
-  final String ignorePath;
-  final int debounceMicroseconds;
-
-  _WatcherConfig({
-    required this.sendPort,
-    required this.watchPaths,
-    required this.ignorePath,
-    required this.debounceMicroseconds,
-  });
-}
-
-/// Entry point for the background watcher isolate.
-void _watcherIsolateEntry(_WatcherConfig config) {
-  final debounceDelay = Duration(microseconds: config.debounceMicroseconds);
-
-  final watchers = <DirectoryWatcher>[];
-  for (final watchPath in config.watchPaths) {
-    if (Directory(watchPath).existsSync()) {
-      watchers.add(DirectoryWatcher(watchPath));
     }
-  }
 
-  if (watchers.isEmpty) return;
+    if (watchers.isEmpty) return const Stream.empty();
 
-  final mergedStream = watchers.length == 1
-      ? watchers.first.events
-      : StreamGroup.merge(watchers.map((w) => w.events));
+    final mergedStream = watchers.length == 1
+        ? watchers.first.events
+        : StreamGroup.merge(watchers.map((w) => w.events));
 
-  mergedStream
-      .where((e) => !e.path.contains(config.ignorePath))
-      .debounceBuffer(debounceDelay)
-      .map((events) {
-        final dartFiles = <String>{};
-        final modelFiles = <String>[];
-        var packageConfigChanged = false;
-        var staticFilesChanged = false;
+    return mergedStream
+        .where((e) => !e.path.contains(_ignorePath))
+        .debounceBuffer(debounceDelay)
+        .map((events) {
+          final dartFiles = <String>{};
+          final modelFiles = <String>{};
+          var packageConfigChanged = false;
+          var staticFilesChanged = false;
 
-        for (final event in events) {
-          final filePath = event.path;
-          if (p.basename(filePath) == 'package_config.json') {
-            packageConfigChanged = true;
-          } else if (_isModelFile(filePath)) {
-            modelFiles.add(filePath);
-          } else if (p.extension(filePath) == '.dart') {
-            dartFiles.add(filePath);
-          } else {
-            staticFilesChanged = true;
+          for (final event in events) {
+            final filePath = event.path;
+            if (p.basename(filePath) == 'package_config.json') {
+              packageConfigChanged = true;
+            } else if (_isModelFile(filePath)) {
+              modelFiles.add(filePath);
+            } else if (p.extension(filePath) == '.dart') {
+              dartFiles.add(filePath);
+            } else {
+              staticFilesChanged = true;
+            }
           }
-        }
 
-        return <String, Object>{
-          'dartFiles': dartFiles.toList(),
-          'modelFiles': modelFiles,
-          'packageConfigChanged': packageConfigChanged,
-          'staticFilesChanged': staticFilesChanged,
-        };
-      })
-      .where((e) {
-        final dartFiles = e['dartFiles']! as List;
-        final modelFiles = e['modelFiles']! as List;
-        final packageConfigChanged = e['packageConfigChanged']! as bool;
-        final staticFilesChanged = e['staticFilesChanged']! as bool;
-        return dartFiles.isNotEmpty ||
-            modelFiles.isNotEmpty ||
-            packageConfigChanged ||
-            staticFilesChanged;
-      })
-      .listen((event) {
-        config.sendPort.send(event);
-      });
+          return FileChangeEvent(
+            dartFiles: dartFiles,
+            modelFiles: modelFiles,
+            packageConfigChanged: packageConfigChanged,
+            staticFilesChanged: staticFilesChanged,
+          );
+        })
+        .where(
+          (e) =>
+              e.dartFiles.isNotEmpty ||
+              e.modelFiles.isNotEmpty ||
+              e.packageConfigChanged ||
+              e.staticFilesChanged,
+        );
+  }
 }
