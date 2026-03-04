@@ -2422,8 +2422,13 @@ class Restrictions {
     var referenceClasses = definitions.whereType<ClassDefinition>();
 
     if (referenceClasses.isNotEmpty) {
-      var moduleAlias = type.moduleAlias;
-      return referenceClasses.any((e) => e.type.moduleAlias == moduleAlias);
+      return referenceClasses.any(
+        (e) =>
+            e.type.moduleAlias == type.moduleAlias ||
+            // When no url specified (moduleAlias null), accept shared models
+            // since name is enforced to be unique between all models.
+            (type.moduleAlias == null && e.isSharedModel),
+      );
     }
 
     return true;
