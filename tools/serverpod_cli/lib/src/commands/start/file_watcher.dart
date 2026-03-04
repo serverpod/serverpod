@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:watcher/watcher.dart';
 
@@ -29,13 +30,8 @@ class FileChangeEvent {
   });
 }
 
-const _modelExtensions = {'.spy.yaml', '.spy', '.spy.yml'};
-
 bool _isModelFile(String filePath) {
-  for (final ext in _modelExtensions) {
-    if (filePath.endsWith(ext)) return true;
-  }
-  return false;
+  return spyModelFileExtensions.any((ext) => filePath.endsWith(ext));
 }
 
 /// Watches project directories for file changes.

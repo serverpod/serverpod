@@ -87,7 +87,7 @@ void main() {
         );
 
         // Incremental recompile.
-        final recompiled = await compiler.recompile({mainFile});
+        final recompiled = await compiler.compile(changedPaths: {mainFile});
         expect(recompiled.errorCount, 0);
         compiler.accept();
       },

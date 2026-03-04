@@ -33,14 +33,12 @@ class _FakeCompiler extends Fake implements KernelCompiler {
   CompileResult nextRecompileResult = _successResult();
 
   @override
-  Future<CompileResult> compile() async {
-    calls.add('compile');
-    return nextCompileResult;
-  }
-
-  @override
-  Future<CompileResult> recompile(Set<String> paths) async {
-    calls.add('recompile:${paths.toList()..sort()}');
+  Future<CompileResult> compile({Set<String> changedPaths = const {}}) async {
+    if (changedPaths.isEmpty) {
+      calls.add('compile');
+      return nextCompileResult;
+    }
+    calls.add('recompile:${changedPaths.toList()..sort()}');
     return nextRecompileResult;
   }
 

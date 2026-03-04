@@ -316,12 +316,15 @@ void main() {
         // Read the VM service URI from the service info file and connect
         // a second client to trigger a reload directly, bypassing our
         // custom service. This simulates an IDE reload.
-        final infoJson = jsonDecode(
-          await File(vmServiceInfoFile).readAsString(),
-        ) as Map<String, dynamic>;
+        final infoJson =
+            jsonDecode(
+                  await File(vmServiceInfoFile).readAsString(),
+                )
+                as Map<String, dynamic>;
         final httpUri = infoJson['uri'] as String;
-        final externalVmService =
-            await vmServiceConnectUri(vmServiceWsUri(httpUri));
+        final externalVmService = await vmServiceConnectUri(
+          vmServiceWsUri(httpUri),
+        );
         final vm = await externalVmService.getVM();
         final isolateId = vm.isolates!.first.id!;
         final dillUri = Uri.file(p.absolute(dillPath)).toString();
