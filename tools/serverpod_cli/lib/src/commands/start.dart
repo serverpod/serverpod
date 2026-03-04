@@ -269,6 +269,7 @@ Future<int> _runWatchMode({
   final vmServiceInfoFile = p.join(serverpodToolDir, 'vm-service-info.json');
   final existingUri = await _checkExistingServer(vmServiceInfoFile);
   if (existingUri != null) {
+    log.info('Existing server found.');
     log.info('The Dart VM service is listening on $existingUri');
     log.info('Server running.');
     return 0;

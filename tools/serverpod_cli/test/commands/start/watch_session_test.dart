@@ -286,7 +286,8 @@ void main() {
     group('Given model file changes', () {
       test(
         'when codegen succeeds, '
-        'then it does incremental recompile and reloads',
+        'then it runs codegen but skips recompile '
+        '(generated files will trigger a new cycle)',
         () async {
           final event = FileChangeEvent(
             dartFiles: {},
@@ -298,10 +299,10 @@ void main() {
           expect(generateCalls, [
             {'/models/user.spy.yaml'},
           ]);
-          // No dart files changed, so recompile is called with an empty set.
-          // The FES picks up generated file changes from disk.
-          expect(compiler.calls, ['recompile:[]', 'accept']);
-          expect(server.calls, ['reload:/out.dill']);
+          // No dart files changed or removed - skip recompile.
+          // The generated .dart files will be picked up by the file watcher.
+          expect(compiler.calls, isEmpty);
+          expect(server.calls, isEmpty);
         },
       );
 
@@ -329,7 +330,7 @@ void main() {
 
     group('Given removed dart file changes', () {
       test(
-        'then it runs codegen with the removed paths',
+        'then it runs codegen and recompiles with the removed paths',
         () async {
           final event = FileChangeEvent(
             dartFiles: {},
@@ -341,10 +342,12 @@ void main() {
           expect(generateCalls, [
             {'/lib/removed.dart'},
           ]);
+          // Removed paths are sent to FES so it prunes them from the kernel.
           expect(compiler.calls, [
-            'recompile:[]',
+            'recompile:[/lib/removed.dart]',
             'accept',
           ]);
+          expect(server.calls, ['reload:/out.dill']);
         },
       );
     });
