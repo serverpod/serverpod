@@ -1574,7 +1574,14 @@ class SerializableModelLibraryGenerator {
       return fieldExpression;
     }
 
-    var toJson = fieldType.isSerializedByExtension || fieldType.isEnumType
+    // Shared models implement SerializableModel but not ProtocolSerialization
+    // because they can not have `serverOnly` fields.
+    var isSharedClass =
+        fieldType.projectModelDefinition?.isSharedModel ?? false;
+    var toJson =
+        fieldType.isSerializedByExtension ||
+            fieldType.isEnumType ||
+            isSharedClass
         ? _toJsonMethodName
         : methodName;
 
