@@ -54,8 +54,7 @@ Future<bool> updateAnalyzers({
   var shouldGenerate = false;
 
   shouldGenerate |= await endpointsAnalyzer.updateFileContexts(affectedPaths);
-  shouldGenerate |=
-      await futureCallsAnalyzer.updateFileContexts(affectedPaths);
+  shouldGenerate |= await futureCallsAnalyzer.updateFileContexts(affectedPaths);
 
   for (final path in affectedPaths) {
     if (ModelHelper.isModelFile(path, loadConfig: config)) {

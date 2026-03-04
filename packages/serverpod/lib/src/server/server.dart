@@ -613,5 +613,4 @@ extension ServerInternalMethods on Server {
   ) {
     _authenticationHandler = authenticationHandler;
   }
-
 }

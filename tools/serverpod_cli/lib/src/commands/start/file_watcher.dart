@@ -98,10 +98,12 @@ class FileWatcher {
             staticFilesChanged: staticFilesChanged,
           );
         })
-        .where((e) =>
-            e.dartFiles.isNotEmpty ||
-            e.modelFiles.isNotEmpty ||
-            e.packageConfigChanged ||
-            e.staticFilesChanged);
+        .where(
+          (e) =>
+              e.dartFiles.isNotEmpty ||
+              e.modelFiles.isNotEmpty ||
+              e.packageConfigChanged ||
+              e.staticFilesChanged,
+        );
   }
 }

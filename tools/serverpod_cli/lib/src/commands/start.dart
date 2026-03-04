@@ -228,7 +228,6 @@ class StartCommand extends ServerpodCommand<StartOption> {
       workingDirectory: serverDir,
     );
   }
-
 }
 
 /// Runs the entire watch-mode loop in a single isolate.
@@ -331,12 +330,6 @@ Future<int> _runWatchMode({
     return result.dillOutput ?? initialDill;
   }
 
-  // External reload callback: reset FES so next compile is full.
-  void onExternalReload() {
-    log.info('External reload detected, resetting compiler.');
-    compiler.reset();
-  }
-
   ServerProcess createServerProcess() => ServerProcess(
     serverDir: serverDir,
     serverArgs: serverArgs,
@@ -344,7 +337,6 @@ Future<int> _runWatchMode({
     enableVmService: true,
     vmServiceInfoFile: vmServiceInfoFile,
     onReloadRequested: onReloadRequested,
-    onExternalReload: onExternalReload,
   );
 
   Future<ServerProcess> serverProcessFactory(String dillPath) async {
@@ -476,4 +468,3 @@ Future<String?> _checkExistingServer(String infoPath) async {
     return null;
   }
 }
-
