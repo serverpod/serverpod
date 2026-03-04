@@ -330,12 +330,6 @@ Future<int> _runWatchMode({
     return result.dillOutput ?? initialDill;
   }
 
-  // External reload callback: reset FES so next compile is full.
-  void onExternalReload() {
-    log.info('External reload detected, resetting compiler.');
-    compiler.reset();
-  }
-
   ServerProcess createServerProcess() => ServerProcess(
     serverDir: serverDir,
     serverArgs: serverArgs,
@@ -343,7 +337,6 @@ Future<int> _runWatchMode({
     enableVmService: true,
     vmServiceInfoFile: vmServiceInfoFile,
     onReloadRequested: onReloadRequested,
-    onExternalReload: onExternalReload,
   );
 
   Future<ServerProcess> serverProcessFactory(String dillPath) async {

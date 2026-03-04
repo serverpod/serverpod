@@ -36,10 +36,6 @@ class ServerProcess {
   /// Callback invoked when an IDE requests a reload via the VM service.
   final ReloadRequestedCallback? _onReloadRequested;
 
-  /// Callback invoked when an external reload is detected (not initiated
-  /// by this process). Used to reset FES compiler state.
-  final void Function()? _onExternalReload;
-
   /// Path to write the VM service info JSON file to. When set, the file
   /// is passed to the child via `--write-service-info` and the URI is read
   /// from the file instead of parsing stdout. IDEs can use this path in
@@ -53,12 +49,8 @@ class ServerProcess {
 
   VmService? _vmService;
   String? _mainIsolateId;
-  StreamSubscription? _isolateEventSub;
 
   final Completer<int> _exitCodeCompleter = Completer<int>();
-
-  int _initiatedReloads = 0;
-  int _observedReloads = 0;
 
   ServerProcess({
     required String serverDir,
@@ -69,7 +61,6 @@ class ServerProcess {
     IOSink? stdoutSink,
     IOSink? stderrSink,
     ReloadRequestedCallback? onReloadRequested,
-    void Function()? onExternalReload,
   }) : _serverDir = serverDir,
        _serverArgs = serverArgs,
        _dartExecutable = dartExecutable ?? 'dart',
@@ -77,8 +68,7 @@ class ServerProcess {
        _vmServiceInfoFile = vmServiceInfoFile,
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
-       _onReloadRequested = onReloadRequested,
-       _onExternalReload = onExternalReload;
+       _onReloadRequested = onReloadRequested;
 
   /// Whether the server process is currently running.
   bool get isRunning => _process != null;
@@ -192,7 +182,6 @@ class ServerProcess {
         if (dillPath == null) {
           return {'type': 'ReloadReport', 'success': false};
         }
-        _initiatedReloads++;
         final dillUri = Uri.file(p.absolute(dillPath)).toString();
         final report = await vmService.reloadSources(
           _mainIsolateId!,
@@ -201,20 +190,6 @@ class ServerProcess {
         return report.json!;
       });
       await vmService.registerService('reloadSources', 'serverpod-cli');
-    }
-
-    // Listen for isolate reload events to detect external reloads
-    // (e.g., from an IDE that bypasses our custom service).
-    if (_onExternalReload != null) {
-      await vmService.streamListen(EventStreams.kIsolate);
-      _isolateEventSub = vmService.onIsolateEvent.listen((event) {
-        if (event.kind == EventKind.kIsolateReload) {
-          _observedReloads++;
-          if (_observedReloads > _initiatedReloads) {
-            _onExternalReload();
-          }
-        }
-      });
     }
   }
 
@@ -232,7 +207,6 @@ class ServerProcess {
       return false;
     }
 
-    _initiatedReloads++;
     final dillUri = dillPath != null
         ? Uri.file(p.absolute(dillPath)).toString()
         : null;
@@ -308,13 +282,9 @@ class ServerProcess {
     // Guard: both start() and stop() may call _cleanup() concurrently.
     if (_process == null) return;
     _process = null;
-    await _isolateEventSub?.cancel();
-    _isolateEventSub = null;
     await _vmService?.dispose();
     _vmService = null;
     _mainIsolateId = null;
-    _initiatedReloads = 0;
-    _observedReloads = 0;
     await _stdoutSub?.cancel();
     await _stderrSub?.cancel();
     await _sigtermSub?.cancel();

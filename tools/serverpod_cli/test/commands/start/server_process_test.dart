@@ -289,61 +289,6 @@ void main() {
       },
       timeout: const Timeout(Duration(seconds: 30)),
     );
-
-    test(
-      'when onExternalReload is provided and an external reload occurs, '
-      'then the callback is invoked',
-      () async {
-        final externalReloadCompleter = Completer<void>();
-        final serverProcess = ServerProcess(
-          serverDir: tempDir.path,
-          serverArgs: [],
-          dartExecutable: dartExecutable,
-          enableVmService: true,
-          vmServiceInfoFile: vmServiceInfoFile,
-          stdoutSink: _NullIOSink(),
-          stderrSink: _NullIOSink(),
-          onExternalReload: () {
-            if (!externalReloadCompleter.isCompleted) {
-              externalReloadCompleter.complete();
-            }
-          },
-        );
-
-        await serverProcess.start(dillPath: dillPath);
-        await serverProcess.connectToVmService();
-
-        // Read the VM service URI from the service info file and connect
-        // a second client to trigger a reload directly, bypassing our
-        // custom service. This simulates an IDE reload.
-        final infoJson =
-            jsonDecode(
-                  await File(vmServiceInfoFile).readAsString(),
-                )
-                as Map<String, dynamic>;
-        final httpUri = infoJson['uri'] as String;
-        final externalVmService = await vmServiceConnectUri(
-          vmServiceWsUri(httpUri),
-        );
-        final vm = await externalVmService.getVM();
-        final isolateId = vm.isolates!.first.id!;
-        final dillUri = Uri.file(p.absolute(dillPath)).toString();
-        await externalVmService.reloadSources(
-          isolateId,
-          rootLibUri: dillUri,
-        );
-
-        // Wait for the external reload to be detected.
-        await externalReloadCompleter.future.timeout(
-          const Duration(seconds: 5),
-        );
-        expect(externalReloadCompleter.isCompleted, isTrue);
-
-        await externalVmService.dispose();
-        await serverProcess.stop();
-      },
-      timeout: const Timeout(Duration(seconds: 30)),
-    );
   });
 }
 
