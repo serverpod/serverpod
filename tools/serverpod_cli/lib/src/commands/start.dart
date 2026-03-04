@@ -532,7 +532,9 @@ Future<String?> _checkExistingServer(String infoPath) async {
           'wss://',
         );
     final wsUriWithSuffix = wsUri.endsWith('/') ? '${wsUri}ws' : '$wsUri/ws';
-    final vmService = await vmServiceConnectUri(wsUriWithSuffix);
+    final vmService = await vmServiceConnectUri(wsUriWithSuffix).timeout(
+      const Duration(seconds: 3),
+    );
     await vmService.dispose();
     return uri;
   } on Exception {
