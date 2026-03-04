@@ -695,8 +695,11 @@ class FutureCallConfig {
   /// How long to wait before checking the queue again.
   final Duration scanInterval;
 
-  /// If true, the server will scan for broken future calls on startup.
-  final bool? scanBrokenFutureCalls;
+  /// If true, the server will check for broken future calls on startup.
+  /// If null, the server will check for broken future calls if there are
+  /// less than 1000 future calls in the database. This is the default behavior.
+  /// If false, the server will not check for broken future calls.
+  final bool? checkBrokenFutureCalls;
 
   /// If true, the server will delete broken future calls on startup.
   final bool deleteBrokenFutureCalls;
@@ -707,7 +710,7 @@ class FutureCallConfig {
     this.scanInterval = const Duration(
       milliseconds: defaultFutureCallScanIntervalMs,
     ),
-    this.scanBrokenFutureCalls,
+    this.checkBrokenFutureCalls,
     this.deleteBrokenFutureCalls = false,
   });
 
@@ -737,8 +740,8 @@ class FutureCallConfig {
       concurrencyLimit = null;
     }
 
-    final scanBrokenFutureCalls =
-        futureCallConfigJson[ServerpodEnv.scanBrokenFutureCalls.configKey];
+    final checkBrokenFutureCalls =
+        futureCallConfigJson[ServerpodEnv.checkBrokenFutureCalls.configKey];
 
     final deleteBrokenFutureCalls =
         futureCallConfigJson[ServerpodEnv.deleteBrokenFutureCalls.configKey];
@@ -751,7 +754,7 @@ class FutureCallConfig {
       scanInterval: Duration(
         milliseconds: scanInterval ?? defaultFutureCallScanIntervalMs,
       ),
-      scanBrokenFutureCalls: scanBrokenFutureCalls,
+      checkBrokenFutureCalls: checkBrokenFutureCalls,
       deleteBrokenFutureCalls: deleteBrokenFutureCalls ?? false,
     );
   }
@@ -1013,7 +1016,7 @@ Map? _buildFutureCallConfigMap(Map configMap, Map<String, String> environment) {
   return _buildConfigMap(futureCallConfig, environment, [
     (ServerpodEnv.futureCallConcurrencyLimit, int.parse),
     (ServerpodEnv.futureCallScanInterval, int.parse),
-    (ServerpodEnv.scanBrokenFutureCalls, bool.parse),
+    (ServerpodEnv.checkBrokenFutureCalls, bool.parse),
     (ServerpodEnv.deleteBrokenFutureCalls, bool.parse),
   ]);
 }
