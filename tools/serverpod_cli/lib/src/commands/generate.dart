@@ -255,7 +255,6 @@ Future<bool> _performGenerateWatch({
   await for (final event in watcher.onFilesChanged) {
     final affectedPaths = {
       ...event.dartFiles,
-      ...event.removedDartFiles,
       ...event.modelFiles,
     };
 

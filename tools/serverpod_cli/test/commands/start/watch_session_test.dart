@@ -333,8 +333,7 @@ void main() {
         'then it runs codegen and recompiles with the removed paths',
         () async {
           final event = FileChangeEvent(
-            dartFiles: {},
-            removedDartFiles: {'/lib/removed.dart'},
+            dartFiles: {'/lib/removed.dart'},
           );
 
           await session.handleFileChange(event);
@@ -342,7 +341,6 @@ void main() {
           expect(generateCalls, [
             {'/lib/removed.dart'},
           ]);
-          // Removed paths are sent to FES so it prunes them from the kernel.
           expect(compiler.calls, [
             'recompile:[/lib/removed.dart]',
             'accept',
@@ -597,27 +595,24 @@ void main() {
           modelFiles: {'/models/m1.spy.yaml'},
         );
         final e2 = FileChangeEvent(
-          dartFiles: {'/lib/b.dart'},
-          removedDartFiles: {'/lib/c.dart'},
+          dartFiles: {'/lib/b.dart', '/lib/c.dart'},
           staticFilesChanged: true,
         );
 
         final result = mergeEvents([e1, e2]);
 
-        expect(result.dartFiles, {'/lib/a.dart', '/lib/b.dart'});
-        expect(result.removedDartFiles, {'/lib/c.dart'});
+        expect(result.dartFiles, {'/lib/a.dart', '/lib/b.dart', '/lib/c.dart'});
         expect(result.modelFiles, {'/models/m1.spy.yaml'});
         expect(result.staticFilesChanged, isTrue);
       },
     );
 
     test(
-      'when a file is removed then re-created, '
-      'then it is not in removedDartFiles',
+      'when multiple events have the same file, '
+      'then it appears only once',
       () {
         final e1 = FileChangeEvent(
-          dartFiles: {},
-          removedDartFiles: {'/lib/a.dart'},
+          dartFiles: {'/lib/a.dart'},
         );
         final e2 = FileChangeEvent(
           dartFiles: {'/lib/a.dart'},
@@ -626,7 +621,6 @@ void main() {
         final result = mergeEvents([e1, e2]);
 
         expect(result.dartFiles, {'/lib/a.dart'});
-        expect(result.removedDartFiles, isEmpty);
       },
     );
 
