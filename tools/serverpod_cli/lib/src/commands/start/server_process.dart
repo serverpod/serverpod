@@ -218,10 +218,14 @@ class ServerProcess {
     }
   }
 
-  /// Hot reloads the server with a new kernel file.
+  /// Hot reloads the server, optionally with a new kernel file.
+  ///
+  /// When [dillPath] is provided, the VM loads the new kernel.
+  /// When omitted, the VM just bumps its reload generation
+  /// (useful for triggering browser refresh without code changes).
   ///
   /// Returns `true` if the reload was successful.
-  Future<bool> reload(String dillPath) async {
+  Future<bool> reload([String? dillPath]) async {
     final vmService = _vmService;
     final isolateId = _mainIsolateId;
     if (vmService == null || isolateId == null) {
@@ -229,7 +233,9 @@ class ServerProcess {
     }
 
     _initiatedReloads++;
-    final dillUri = Uri.file(p.absolute(dillPath)).toString();
+    final dillUri = dillPath != null
+        ? Uri.file(p.absolute(dillPath)).toString()
+        : null;
     final report = await vmService.reloadSources(
       isolateId,
       rootLibUri: dillUri,

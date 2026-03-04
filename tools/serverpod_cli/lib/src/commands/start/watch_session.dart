@@ -25,7 +25,6 @@ class WatchSession {
   final KernelCompiler _compiler;
   final GenerateAction _generate;
   final ServerProcessFactory _createServer;
-  final String _initialDill;
 
   final Completer<int> _done = Completer<int>();
 
@@ -38,12 +37,10 @@ class WatchSession {
     required GenerateAction generate,
     required ServerProcessFactory createServer,
     required ServerProcess initialServer,
-    required String initialDill,
   }) : _compiler = compiler,
        _generate = generate,
        _createServer = createServer,
-       _server = initialServer,
-       _initialDill = initialDill {
+       _server = initialServer {
     _monitorExit(initialServer);
   }
 
@@ -77,7 +74,7 @@ class WatchSession {
     if (!hasDartChanges) {
       if (_server.isVmServiceConnected) {
         log.debug('Static files changed, triggering browser refresh.');
-        await _server.reload(_initialDill);
+        await _server.reload();
         log.info('Browser refresh triggered.');
       }
       return;

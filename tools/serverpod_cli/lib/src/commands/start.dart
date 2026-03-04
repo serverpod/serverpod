@@ -183,11 +183,13 @@ class StartCommand extends ServerpodCommand<StartOption> {
     required String serverDir,
     required List<String> serverArgs,
   }) async {
+    final logLevel = log.logLevel;
     final exitCode = await Isolate.run(
       () => _runWatchMode(
         config: config,
         serverDir: serverDir,
         serverArgs: serverArgs,
+        logLevel: logLevel,
       ),
     );
 
@@ -261,7 +263,9 @@ Future<int> _runWatchMode({
   required GeneratorConfig config,
   required String serverDir,
   required List<String> serverArgs,
+  required LogLevel logLevel,
 }) async {
+  log.logLevel = logLevel;
   log.info('Starting server in watch mode...');
 
   // Check if a server is already running by verifying the service info file.
@@ -396,7 +400,6 @@ Future<int> _runWatchMode({
     ),
     createServer: serverProcessFactory,
     initialServer: initialServerProcess,
-    initialDill: initialDill,
   );
 
   session.listen(watcher.onFilesChanged);
@@ -423,12 +426,15 @@ Future<int> _runWatchMode({
 
 /// Runs code generation in a fresh isolate (used for one-shot generation).
 Future<bool> _generateInIsolate(GeneratorConfig config) {
-  return Isolate.run(() => _runGeneration(config: config));
+  final logLevel = log.logLevel;
+  return Isolate.run(() => _runGeneration(config: config, logLevel: logLevel));
 }
 
 Future<bool> _runGeneration({
   required GeneratorConfig config,
+  required LogLevel logLevel,
 }) async {
+  log.logLevel = logLevel;
   var libDirectory = Directory(p.joinAll(config.libSourcePathParts));
   var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
 

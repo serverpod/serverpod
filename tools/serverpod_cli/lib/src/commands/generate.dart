@@ -142,18 +142,19 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
     }
 
     late final bool success;
+    final logLevel = log.logLevel;
     if (watch) {
       // Watch mode: the entire loop (generation + file watching) runs in one
       // long-lived isolate so analyzers persist and can be updated
       // incrementally on each file change.
       success = await Isolate.run(
-        () => _performGenerateWatch(config: config),
+        () => _performGenerateWatch(config: config, logLevel: logLevel),
       );
     } else {
       success = await log.progress(
         'Generating code',
         () => Isolate.run(
-          () => _performGenerate(config: config),
+          () => _performGenerate(config: config, logLevel: logLevel),
         ),
       );
     }
@@ -169,7 +170,9 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
 /// One-shot code generation.
 Future<bool> _performGenerate({
   required GeneratorConfig config,
+  required LogLevel logLevel,
 }) async {
+  log.logLevel = logLevel;
   var libDirectory = Directory(path.joinAll(config.libSourcePathParts));
   var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
 
@@ -196,7 +199,9 @@ Future<bool> _performGenerate({
 /// Watch-mode code generation with persistent analyzers and file watching.
 Future<bool> _performGenerateWatch({
   required GeneratorConfig config,
+  required LogLevel logLevel,
 }) async {
+  log.logLevel = logLevel;
   // Create persistent analyzers.
   var libDirectory = Directory(path.joinAll(config.libSourcePathParts));
   var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
