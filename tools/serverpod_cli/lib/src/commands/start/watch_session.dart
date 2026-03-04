@@ -105,14 +105,20 @@ class WatchSession {
     }
 
     // Compile changes.
+    final changedFiles = {...event.dartFiles, ...event.removedDartFiles};
     CompileResult? result;
     if (event.packageConfigChanged) {
       // FES reads package_config.json only at startup - must restart it.
       // After restart the FES is in initial state, so we do a full compile.
       await _compiler.restart();
       result = await _compile();
+    } else if (changedFiles.isNotEmpty) {
+      result = await _recompile(changedFiles);
     } else {
-      result = await _recompile(event.dartFiles);
+      // Model-only changes: codegen already ran above. The generated .dart
+      // files will be picked up by the file watcher, triggering a new cycle
+      // with dartFiles populated.
+      return;
     }
 
     if (result == null) {
