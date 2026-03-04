@@ -9,11 +9,8 @@ import 'package:watcher/watcher.dart';
 
 /// Result of a file change batch from the watcher.
 class FileChangeEvent {
-  /// Changed (created/modified) .dart file paths.
+  /// Changed (created/modified/removed) .dart file paths.
   final Set<String> dartFiles;
-
-  /// Removed .dart file paths.
-  final Set<String> removedDartFiles;
 
   /// Changed model file paths (.spy.yaml, .spy, .spy.yml).
   final Set<String> modelFiles;
@@ -28,7 +25,6 @@ class FileChangeEvent {
 
   FileChangeEvent({
     required this.dartFiles,
-    this.removedDartFiles = const {},
     this.modelFiles = const {},
     this.packageConfigChanged = false,
     this.staticFilesChanged = false,
@@ -68,9 +64,6 @@ class FileWatcher {
         controller.add(
           FileChangeEvent(
             dartFiles: Set<String>.from(message['dartFiles'] as List),
-            removedDartFiles: Set<String>.from(
-              message['removedDartFiles'] as List,
-            ),
             modelFiles: Set<String>.from(message['modelFiles'] as List),
             packageConfigChanged: message['packageConfigChanged'] as bool,
             staticFilesChanged: message['staticFilesChanged'] as bool,
@@ -144,12 +137,10 @@ void _watcherIsolateEntry(_WatcherConfig config) {
       .where((e) => !e.path.contains(config.ignorePath))
       .debounceBuffer(debounceDelay)
       .map((events) {
-        final dartFiles = <String>[];
-        final removedDartFiles = <String>[];
+        final dartFiles = <String>{};
         final modelFiles = <String>[];
         var packageConfigChanged = false;
         var staticFilesChanged = false;
-        final seen = <String>{};
 
         for (final event in events) {
           final filePath = event.path;
@@ -158,35 +149,25 @@ void _watcherIsolateEntry(_WatcherConfig config) {
           } else if (_isModelFile(filePath)) {
             modelFiles.add(filePath);
           } else if (p.extension(filePath) == '.dart') {
-            if (event.type == ChangeType.REMOVE) {
-              removedDartFiles.add(filePath);
-            } else {
-              dartFiles.add(filePath);
-              seen.add(filePath);
-            }
+            dartFiles.add(filePath);
           } else {
             staticFilesChanged = true;
           }
         }
 
         return <String, Object>{
-          'dartFiles': dartFiles,
-          'removedDartFiles': removedDartFiles
-              .where((f) => !seen.contains(f))
-              .toList(),
+          'dartFiles': dartFiles.toList(),
           'modelFiles': modelFiles,
           'packageConfigChanged': packageConfigChanged,
           'staticFilesChanged': staticFilesChanged,
         };
       })
       .where((e) {
-        final dartFiles = e['dartFiles']! as List<String>;
-        final removedDartFiles = e['removedDartFiles']! as List<String>;
-        final modelFiles = e['modelFiles']! as List<String>;
+        final dartFiles = e['dartFiles']! as List;
+        final modelFiles = e['modelFiles']! as List;
         final packageConfigChanged = e['packageConfigChanged']! as bool;
         final staticFilesChanged = e['staticFilesChanged']! as bool;
         return dartFiles.isNotEmpty ||
-            removedDartFiles.isNotEmpty ||
             modelFiles.isNotEmpty ||
             packageConfigChanged ||
             staticFilesChanged;

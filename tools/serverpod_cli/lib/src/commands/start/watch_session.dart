@@ -69,7 +69,6 @@ class WatchSession {
   Future<void> handleFileChange(FileChangeEvent event) async {
     final hasDartChanges =
         event.dartFiles.isNotEmpty ||
-        event.removedDartFiles.isNotEmpty ||
         event.modelFiles.isNotEmpty ||
         event.packageConfigChanged;
 
@@ -91,7 +90,6 @@ class WatchSession {
     // calls) actually changed.
     final affectedPaths = {
       ...event.dartFiles,
-      ...event.removedDartFiles,
       ...event.modelFiles,
     };
 
@@ -105,15 +103,14 @@ class WatchSession {
     }
 
     // Compile changes.
-    final changedFiles = {...event.dartFiles, ...event.removedDartFiles};
     CompileResult? result;
     if (event.packageConfigChanged) {
       // FES reads package_config.json only at startup - must restart it.
       // After restart the FES is in initial state, so we do a full compile.
       await _compiler.restart();
       result = await _compile();
-    } else if (changedFiles.isNotEmpty) {
-      result = await _recompile(changedFiles);
+    } else if (event.dartFiles.isNotEmpty) {
+      result = await _recompile(event.dartFiles);
     } else {
       // Model-only changes: codegen already ran above. The generated .dart
       // files will be picked up by the file watcher, triggering a new cycle
@@ -214,25 +211,19 @@ FileChangeEvent mergeEvents(List<FileChangeEvent> events) {
   if (events.length == 1) return events.first;
 
   final dartFiles = <String>{};
-  final removedDartFiles = <String>{};
   final modelFiles = <String>{};
   var packageConfigChanged = false;
   var staticFilesChanged = false;
 
   for (final event in events) {
     dartFiles.addAll(event.dartFiles);
-    removedDartFiles.addAll(event.removedDartFiles);
     modelFiles.addAll(event.modelFiles);
     packageConfigChanged |= event.packageConfigChanged;
     staticFilesChanged |= event.staticFilesChanged;
   }
 
-  // A file that was removed and then re-created is not removed.
-  removedDartFiles.removeAll(dartFiles);
-
   return FileChangeEvent(
     dartFiles: dartFiles,
-    removedDartFiles: removedDartFiles,
     modelFiles: modelFiles,
     packageConfigChanged: packageConfigChanged,
     staticFilesChanged: staticFilesChanged,
