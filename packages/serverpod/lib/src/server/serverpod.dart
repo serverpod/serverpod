@@ -39,6 +39,8 @@ class Serverpod {
 
   late Session _internalSession;
 
+  late Session _internalLoggingSession;
+
   DateTime? _startedTime;
 
   /// The time the [Serverpod] was started.
@@ -265,6 +267,11 @@ class Serverpod {
     _internalServicesShutdownTasks.addTask(
       'Internal Session',
       _internalSession.close,
+    );
+
+    _internalServicesShutdownTasks.addTask(
+      'Internal Logging Session',
+      _internalLoggingSession.close,
     );
 
     _internalServicesShutdownTasks.addTask(
@@ -590,6 +597,10 @@ class Serverpod {
     endpoints.initializeEndpoints(server);
 
     _internalSession = InternalSession(server: server, enableLogging: false);
+    _internalLoggingSession = InternalSession(
+      server: server,
+      enableLogging: true,
+    );
 
     _healthCheckService = HealthCheckService(this, _healthConfig);
 
@@ -599,6 +610,7 @@ class Serverpod {
         serializationManager,
         diagnosticsService: ServerpodFutureCallDiagnosticsService(server),
         internalSession: internalSession,
+        logSession: _internalLoggingSession,
         sessionProvider: (String futureCallName) => FutureCallSession(
           server: server,
           futureCallName: futureCallName,
@@ -792,47 +804,17 @@ class Serverpod {
 
       // Start future calls
       _completedFutureCalls = _futureCallManager == null;
-
-      final shouldDeleteBrokenFutureCalls =
-          config.futureCall.deleteBrokenFutureCalls;
-
-      late final canPerformDefaultScanForBrokenFutureCalls = _futureCallManager
-          ?.canPerformDefaultScanForBrokenFutureCalls();
-
-      final canScanBrokenFutureCalls = !config.futureCallExecutionEnabled
-          ? false
-          : config.futureCall.scanBrokenFutureCalls ??
-                await canPerformDefaultScanForBrokenFutureCalls ??
-                false;
-
       if (!config.futureCallExecutionEnabled) {
         _internalLogVerbose('Future call execution is disabled.');
         _completedFutureCalls = true;
       } else if (config.role == ServerpodRole.maintenance) {
-        late final hasBrokenFutureCalls = _futureCallManager
-            ?.scanBrokenFutureCalls(
-              deleteBrokenCalls: shouldDeleteBrokenFutureCalls,
-            );
-
-        if (canScanBrokenFutureCalls && (await hasBrokenFutureCalls ?? false)) {
-          throw ExitException(_exitCode);
-        }
-
         unawaited(
           _futureCallManager?.runScheduledFutureCalls().whenComplete(
             _onCompletedFutureCalls,
           ),
         );
       } else {
-        if (canScanBrokenFutureCalls) {
-          unawaited(
-            _futureCallManager?.scanBrokenFutureCalls(
-              deleteBrokenCalls: shouldDeleteBrokenFutureCalls,
-            ),
-          );
-        }
-
-        _futureCallManager?.start();
+        await _futureCallManager?.start();
       }
 
       // Start health check manager
@@ -1450,6 +1432,9 @@ extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the global internal session used by the Serverpod.
   /// Logging is turned off.
   Session get internalSession => _internalSession;
+
+  /// Retrieve the global internal session used by the Serverpod for logging.
+  Session get internalLoggingSession => _internalLoggingSession;
 
   /// Submits an event to registered event handlers.
   /// They will execute asynchronously.

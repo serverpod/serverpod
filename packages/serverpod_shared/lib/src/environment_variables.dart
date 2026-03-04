@@ -183,8 +183,8 @@ enum ServerpodEnv {
   /// The interval in seconds between websocket ping messages.
   websocketPingInterval,
 
-  /// If true, the server will scan for broken future calls on startup.
-  scanBrokenFutureCalls,
+  /// If true, the server will check for broken future calls on startup.
+  checkBrokenFutureCalls,
 
   /// If true, the server will delete broken future calls on startup.
   deleteBrokenFutureCalls;
@@ -239,7 +239,7 @@ enum ServerpodEnv {
       (ServerpodEnv.applyRepairMigration) => 'applyRepairMigration',
       (ServerpodEnv.validateHeaders) => 'validateHeaders',
       (ServerpodEnv.websocketPingInterval) => 'websocketPingInterval',
-      (ServerpodEnv.scanBrokenFutureCalls) => 'scanBrokenFutureCalls',
+      (ServerpodEnv.checkBrokenFutureCalls) => 'checkBrokenFutureCalls',
       (ServerpodEnv.deleteBrokenFutureCalls) => 'deleteBrokenFutureCalls',
     };
   }
@@ -306,8 +306,8 @@ enum ServerpodEnv {
       (ServerpodEnv.validateHeaders) => 'SERVERPOD_VALIDATE_HEADERS',
       (ServerpodEnv.websocketPingInterval) =>
         'SERVERPOD_WEBSOCKET_PING_INTERVAL',
-      (ServerpodEnv.scanBrokenFutureCalls) =>
-        'SERVERPOD_SCAN_BROKEN_FUTURE_CALLS',
+      (ServerpodEnv.checkBrokenFutureCalls) =>
+        'SERVERPOD_CHECK_BROKEN_FUTURE_CALLS',
       (ServerpodEnv.deleteBrokenFutureCalls) =>
         'SERVERPOD_DELETE_BROKEN_FUTURE_CALLS',
     };
