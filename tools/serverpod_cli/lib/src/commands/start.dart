@@ -525,14 +525,7 @@ Future<String?> _checkExistingServer(String infoPath) async {
       return null;
     }
 
-    final wsUri = uri
-        .replaceFirst('http://', 'ws://')
-        .replaceFirst(
-          'https://',
-          'wss://',
-        );
-    final wsUriWithSuffix = wsUri.endsWith('/') ? '${wsUri}ws' : '$wsUri/ws';
-    final vmService = await vmServiceConnectUri(wsUriWithSuffix).timeout(
+    final vmService = await vmServiceConnectUri(vmServiceWsUri(uri)).timeout(
       const Duration(seconds: 3),
     );
     await vmService.dispose();

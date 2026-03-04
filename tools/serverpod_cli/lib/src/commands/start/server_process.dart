@@ -7,6 +7,14 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
 
+/// Converts a VM service HTTP URI to a WebSocket URI.
+String vmServiceWsUri(String httpUri) {
+  final wsUri = httpUri
+      .replaceFirst('http://', 'ws://')
+      .replaceFirst('https://', 'wss://');
+  return wsUri.endsWith('/') ? '${wsUri}ws' : '$wsUri/ws';
+}
+
 /// Callback for IDE-initiated reload requests.
 ///
 /// Should compile changes and return the dill path on success, or `null`
@@ -156,18 +164,13 @@ class ServerProcess {
       return;
     }
 
-    // Convert HTTP URI to WebSocket URI.
-    final wsUri = httpUri
-        .replaceFirst('http://', 'ws://')
-        .replaceFirst('https://', 'wss://');
-    final wsUriWithSuffix = wsUri.endsWith('/') ? '${wsUri}ws' : '$wsUri/ws';
-
     // The VM service may not be fully ready immediately after printing
     // its URI. Retry a few times with a short delay.
+    final wsUri = vmServiceWsUri(httpUri);
     const maxRetries = 5;
     for (var attempt = 0; attempt < maxRetries; attempt++) {
       try {
-        _vmService = await vmServiceConnectUri(wsUriWithSuffix);
+        _vmService = await vmServiceConnectUri(wsUri);
         break;
       } on Exception {
         if (attempt == maxRetries - 1) rethrow;
