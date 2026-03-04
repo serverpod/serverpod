@@ -206,4 +206,69 @@ void main() {
       );
     },
   );
+  group(
+    'Given a server model with shared package class field where type has null url but projectModelDefinition is shared model',
+    () {
+      late ModelClassDefinition sharedModel;
+      late ModelClassDefinition containerModel;
+      late Map<String, String> codeMap;
+
+      setUpAll(() {
+        sharedModel = ModelClassDefinitionBuilder()
+            .withClassName(testClassName)
+            .withFileName(testClassFileName)
+            .withSimpleField('name', 'String')
+            .withSharedPackageName(sharedPackageName)
+            .build();
+
+        // NOTE: null url simulates type parsed from bare "SharedModel" in YAML
+        // before applyProtocolReferences sets url. The projectModelDefinition
+        // identifies it as a shared model, so reference() should still produce
+        // the correct package import.
+        var sharedModelType = TypeDefinitionBuilder()
+            .withClassName(testClassName)
+            .withNullable(false)
+            .withModelDefinition(sharedModel)
+            .build();
+
+        containerModel = ModelClassDefinitionBuilder()
+            .withClassName(testContainerClassName)
+            .withFileName(testContainerClassFileName)
+            .withField(
+              FieldDefinitionBuilder()
+                  .withName('sharedModelField')
+                  .withType(sharedModelType)
+                  .build(),
+            )
+            .build();
+
+        codeMap = generator.generateSerializableModelsCode(
+          models: [sharedModel, containerModel],
+          config: config,
+        );
+      });
+
+      test(
+        'then generated code imports shared package and uses SharedModel type',
+        () {
+          expect(codeMap.containsKey(testContainerExpectedFilePath), isTrue);
+
+          var code = codeMap[testContainerExpectedFilePath]!;
+
+          expect(
+            code.contains('package:$sharedPackageName/$sharedPackageName.dart'),
+            isTrue,
+            reason:
+                'When url is null but projectModelDefinition is shared model, '
+                'reference() must still produce the shared package import',
+          );
+          expect(
+            code.contains(testClassName),
+            isTrue,
+            reason: 'Generated code must reference the shared model class',
+          );
+        },
+      );
+    },
+  );
 }
