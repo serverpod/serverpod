@@ -8,8 +8,7 @@ import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
-import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/sdk_path.dart';
@@ -18,7 +17,6 @@ import 'package:serverpod_cli/src/commands/start/watch_session.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
-import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:vm_service/vm_service_io.dart';
 
@@ -124,11 +122,16 @@ class StartCommand extends ServerpodCommand<StartOption> {
         // Watch mode: the entire loop (generation, compilation, reload)
         // runs in one long-lived isolate so analyzers persist and can
         // be updated incrementally on each file change.
-        await _startWithWatch(
-          config: config,
-          serverDir: serverDir,
-          serverArgs: serverArgs,
+        final logLevel = log.logLevel;
+        final exitCode = await Isolate.run(
+          () => _runWatchMode(
+            config: config,
+            serverDir: serverDir,
+            serverArgs: serverArgs,
+            logLevel: logLevel,
+          ),
         );
+        if (exitCode != 0) throw ExitException(exitCode);
       } else {
         // One-shot: generate in an isolate, then run.
         final success = await log.progress(
@@ -167,31 +170,6 @@ class StartCommand extends ServerpodCommand<StartOption> {
 
     await serverProcess.start();
     final exitCode = await serverProcess.exitCode;
-
-    if (exitCode != 0) {
-      throw ExitException(exitCode);
-    }
-  }
-
-  /// Starts the server with file watching. On changes, re-generates code
-  /// if needed, incrementally recompiles, and hot reloads the server.
-  ///
-  /// The entire watch loop runs in a single long-lived isolate so that
-  /// analyzers persist and can be updated incrementally on each file change.
-  Future<void> _startWithWatch({
-    required GeneratorConfig config,
-    required String serverDir,
-    required List<String> serverArgs,
-  }) async {
-    final logLevel = log.logLevel;
-    final exitCode = await Isolate.run(
-      () => _runWatchMode(
-        config: config,
-        serverDir: serverDir,
-        serverArgs: serverArgs,
-        logLevel: logLevel,
-      ),
-    );
 
     if (exitCode != 0) {
       throw ExitException(exitCode);
@@ -280,18 +258,10 @@ Future<int> _runWatchMode({
   }
 
   // Create persistent analyzers for incremental generation.
-  final libDirectory = Directory(p.joinAll(config.libSourcePathParts));
-  final endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
-  final yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-  final modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
-    collector.printErrors();
-  });
-  final futureCallsAnalyzer = FutureCallsAnalyzer(
-    directory: libDirectory,
-    parameterValidator: FutureCallMethodParameterValidator(
-      modelAnalyzer: modelAnalyzer,
-    ),
-  );
+  final a = await createAnalyzers(config);
+  final endpointsAnalyzer = a.endpoints;
+  final modelAnalyzer = a.models;
+  final futureCallsAnalyzer = a.futureCalls;
 
   // Initial code generation.
   final genSuccess = await log.progress(
@@ -314,7 +284,7 @@ Future<int> _runWatchMode({
   final sdkRoot = getSdkPath();
   final dartExecutable = p.join(sdkRoot, 'bin', 'dart');
 
-  final watchPaths = _watchPaths(config);
+  final watchPaths = watchPathsFromConfig(config, includeWeb: true);
   final ignorePath = p.absolute(
     p.joinAll(config.generatedServeModelPackagePathParts),
   );
@@ -391,13 +361,28 @@ Future<int> _runWatchMode({
 
   final session = WatchSession(
     compiler: compiler,
-    generate: (affectedPaths) => performGenerate(
-      config: config,
-      endpointsAnalyzer: endpointsAnalyzer,
-      modelAnalyzer: modelAnalyzer,
-      futureCallsAnalyzer: futureCallsAnalyzer,
-      affectedPaths: affectedPaths,
-    ),
+    generate: (affectedPaths) async {
+      final needsGenerate = await log.progress(
+        'Analyzing changes',
+        () => updateAnalyzers(
+          config: config,
+          endpointsAnalyzer: endpointsAnalyzer,
+          modelAnalyzer: modelAnalyzer,
+          futureCallsAnalyzer: futureCallsAnalyzer,
+          affectedPaths: affectedPaths,
+        ),
+      );
+      if (!needsGenerate) return true;
+      return log.progress(
+        'Generating code',
+        () => performGenerate(
+          config: config,
+          endpointsAnalyzer: endpointsAnalyzer,
+          modelAnalyzer: modelAnalyzer,
+          futureCallsAnalyzer: futureCallsAnalyzer,
+        ),
+      );
+    },
     createServer: serverProcessFactory,
     initialServer: initialServerProcess,
   );
@@ -427,65 +412,9 @@ Future<int> _runWatchMode({
 /// Runs code generation in a fresh isolate (used for one-shot generation).
 Future<bool> _generateInIsolate(GeneratorConfig config) {
   final logLevel = log.logLevel;
-  return Isolate.run(() => _runGeneration(config: config, logLevel: logLevel));
-}
-
-Future<bool> _runGeneration({
-  required GeneratorConfig config,
-  required LogLevel logLevel,
-}) async {
-  log.logLevel = logLevel;
-  var libDirectory = Directory(p.joinAll(config.libSourcePathParts));
-  var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
-
-  var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-  var modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
-    collector.printErrors();
-  });
-
-  var futureCallsAnalyzer = FutureCallsAnalyzer(
-    directory: libDirectory,
-    parameterValidator: FutureCallMethodParameterValidator(
-      modelAnalyzer: modelAnalyzer,
-    ),
+  return Isolate.run(
+    () => performOneShotGenerate(config: config, logLevel: logLevel),
   );
-
-  return performGenerate(
-    config: config,
-    endpointsAnalyzer: endpointsAnalyzer,
-    modelAnalyzer: modelAnalyzer,
-    futureCallsAnalyzer: futureCallsAnalyzer,
-  );
-}
-
-List<String> _watchPaths(GeneratorConfig config) {
-  final paths = <String>[];
-
-  // Use absolute paths so DirectoryWatcher reports absolute event paths.
-  // The Frontend Server needs absolute file:// URIs to match sources.
-  final libPath = p.absolute(p.joinAll(config.libSourcePathParts));
-  paths.add(libPath);
-
-  for (final pathParts in config.sharedModelsSourcePathsParts.values) {
-    final sharedLibPath = p.absolute(
-      p.joinAll([
-        ...config.serverPackageDirectoryPathParts,
-        ...pathParts,
-        'lib',
-      ]),
-    );
-    paths.add(sharedLibPath);
-  }
-
-  // Watch the web directory for static file changes (HTML, JS, CSS).
-  final webPath = p.absolute(
-    p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
-  );
-  if (Directory(webPath).existsSync()) {
-    paths.add(webPath);
-  }
-
-  return paths;
 }
 
 /// Runs a compilation step with progress feedback.

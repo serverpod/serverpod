@@ -7,15 +7,12 @@ import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
-import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
-import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/pubspec_lock_parser.dart';
 import 'package:serverpod_cli/src/util/pubspec_plus.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -154,7 +151,7 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
       success = await log.progress(
         'Generating code',
         () => Isolate.run(
-          () => _performGenerate(config: config, logLevel: logLevel),
+          () => performOneShotGenerate(config: config, logLevel: logLevel),
         ),
       );
     }
@@ -167,32 +164,20 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
   }
 }
 
-/// One-shot code generation.
-Future<bool> _performGenerate({
+/// One-shot code generation in an isolate-friendly function.
+///
+/// Sets the log level (for isolate use) and creates fresh analyzers.
+Future<bool> performOneShotGenerate({
   required GeneratorConfig config,
   required LogLevel logLevel,
 }) async {
   log.logLevel = logLevel;
-  var libDirectory = Directory(path.joinAll(config.libSourcePathParts));
-  var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
-
-  var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-  var modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
-    collector.printErrors();
-  });
-
-  var futureCallsAnalyzer = FutureCallsAnalyzer(
-    directory: libDirectory,
-    parameterValidator: FutureCallMethodParameterValidator(
-      modelAnalyzer: modelAnalyzer,
-    ),
-  );
-
+  final a = await createAnalyzers(config);
   return performGenerate(
     config: config,
-    endpointsAnalyzer: endpointsAnalyzer,
-    modelAnalyzer: modelAnalyzer,
-    futureCallsAnalyzer: futureCallsAnalyzer,
+    endpointsAnalyzer: a.endpoints,
+    modelAnalyzer: a.models,
+    futureCallsAnalyzer: a.futureCalls,
   );
 }
 
@@ -202,21 +187,10 @@ Future<bool> _performGenerateWatch({
   required LogLevel logLevel,
 }) async {
   log.logLevel = logLevel;
-  // Create persistent analyzers.
-  var libDirectory = Directory(path.joinAll(config.libSourcePathParts));
-  var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
-
-  var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-  var modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
-    collector.printErrors();
-  });
-
-  var futureCallsAnalyzer = FutureCallsAnalyzer(
-    directory: libDirectory,
-    parameterValidator: FutureCallMethodParameterValidator(
-      modelAnalyzer: modelAnalyzer,
-    ),
-  );
+  final a = await createAnalyzers(config);
+  final endpointsAnalyzer = a.endpoints;
+  final modelAnalyzer = a.models;
+  final futureCallsAnalyzer = a.futureCalls;
 
   // Initial generation.
   var success = await log.progress(
@@ -236,17 +210,7 @@ Future<bool> _performGenerateWatch({
   );
 
   // Set up file watcher.
-  final watchPaths = <String>[
-    path.absolute(path.joinAll(config.libSourcePathParts)),
-    for (final pathParts in config.sharedModelsSourcePathsParts.values)
-      path.absolute(
-        path.joinAll([
-          ...config.serverPackageDirectoryPathParts,
-          ...pathParts,
-          'lib',
-        ]),
-      ),
-  ];
+  final watchPaths = watchPathsFromConfig(config);
   final ignorePath = path.absolute(
     path.joinAll(config.generatedServeModelPackagePathParts),
   );
@@ -266,9 +230,9 @@ Future<bool> _performGenerateWatch({
     if (affectedPaths.isEmpty) continue;
 
     try {
-      success = await log.progress(
-        'Generating code',
-        () => performGenerate(
+      final needsGenerate = await log.progress(
+        'Analyzing changes',
+        () => updateAnalyzers(
           config: config,
           endpointsAnalyzer: endpointsAnalyzer,
           modelAnalyzer: modelAnalyzer,
@@ -277,8 +241,20 @@ Future<bool> _performGenerateWatch({
         ),
       );
 
-      if (success) {
-        log.info('Incremental code generation complete.');
+      if (needsGenerate) {
+        success = await log.progress(
+          'Generating code',
+          () => performGenerate(
+            config: config,
+            endpointsAnalyzer: endpointsAnalyzer,
+            modelAnalyzer: modelAnalyzer,
+            futureCallsAnalyzer: futureCallsAnalyzer,
+          ),
+        );
+
+        if (success) {
+          log.info('Incremental code generation complete.');
+        }
       }
     } catch (e) {
       if (e is Error) {

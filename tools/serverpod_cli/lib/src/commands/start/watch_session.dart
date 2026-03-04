@@ -94,10 +94,7 @@ class WatchSession {
       ...event.modelFiles,
     };
 
-    final genSuccess = await log.progress(
-      'Generating code',
-      () => _generate(affectedPaths),
-    );
+    final genSuccess = await _generate(affectedPaths);
     if (!genSuccess) {
       log.error('Code generation failed. Server not reloaded.');
       return;
@@ -109,9 +106,11 @@ class WatchSession {
       // FES reads package_config.json only at startup - must restart it.
       // After restart the FES is in initial state, so we do a full compile.
       await _compiler.restart();
-      result = await _compile();
+      result = await _compileWithProgress(() => _compiler.compile());
     } else if (event.dartFiles.isNotEmpty) {
-      result = await _recompile(event.dartFiles);
+      result = await _compileWithProgress(
+        () => _compiler.compile(changedPaths: event.dartFiles),
+      );
     } else {
       // Model-only changes: codegen already ran above. The generated .dart
       // files will be picked up by the file watcher, triggering a new cycle
@@ -139,7 +138,7 @@ class WatchSession {
     // The incremental dill only contains deltas. Reset the compiler
     // so the next compile produces a complete kernel.
     _compiler.reset();
-    final fullResult = await _compile();
+    final fullResult = await _compileWithProgress(() => _compiler.compile());
     if (fullResult == null) {
       return;
     }
@@ -172,28 +171,12 @@ class WatchSession {
     );
   }
 
-  Future<CompileResult?> _compile() async {
+  Future<CompileResult?> _compileWithProgress(
+    Future<CompileResult> Function() action,
+  ) async {
     late CompileResult result;
     final success = await log.progress('Compiling server', () async {
-      result = await _compiler.compile();
-      return result.errorCount == 0;
-    });
-
-    if (!success) {
-      for (final line in result.compilerOutputLines) {
-        log.error(line);
-      }
-      await _compiler.reject();
-      return null;
-    }
-
-    return result;
-  }
-
-  Future<CompileResult?> _recompile(Set<String> paths) async {
-    late CompileResult result;
-    final success = await log.progress('Compiling server', () async {
-      result = await _compiler.recompile(paths);
+      result = await action();
       return result.errorCount == 0;
     });
 

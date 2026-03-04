@@ -7,6 +7,11 @@ export 'package:serverpod_cli/src/vendored/frontend_server_client.dart'
     show CompileResult;
 
 /// Manages incremental Dart compilation using the Frontend Server.
+///
+/// Tracks whether a full or incremental compile is needed internally.
+/// After [start], [reset], or [restart], the next [compile] will produce
+/// a complete kernel. Otherwise, [compile] performs an incremental build
+/// using the provided [changedPaths].
 class KernelCompiler {
   final String entryPoint;
   final String outputDill;
@@ -15,6 +20,8 @@ class KernelCompiler {
   FrontendServerClient? _clientOrNull;
   FrontendServerClient get _client =>
       _clientOrNull ?? (throw StateError('Compiler not started'));
+
+  bool _needsFullCompile = true;
 
   KernelCompiler({
     required this.entryPoint,
@@ -43,15 +50,18 @@ class KernelCompiler {
       target: 'vm',
       packagesJson: packagesPath,
     );
+    _needsFullCompile = true;
   }
 
-  /// Perform initial compilation.
-  Future<CompileResult> compile() => _client.compile();
-
-  /// Recompile with changed files.
-  Future<CompileResult> recompile(Set<String> changedPaths) async {
-    if (changedPaths.isEmpty) {
-      throw ArgumentError('No changed paths provided');
+  /// Compile the project.
+  ///
+  /// If a full compile is needed (after [start], [reset], or [restart]),
+  /// [changedPaths] is ignored and a complete kernel is produced.
+  /// Otherwise, performs an incremental recompile for [changedPaths].
+  Future<CompileResult> compile({Set<String> changedPaths = const {}}) {
+    if (_needsFullCompile) {
+      _needsFullCompile = false;
+      return _client.compile();
     }
 
     final invalidatedUris = changedPaths.map(Uri.file).toList();
@@ -68,7 +78,10 @@ class KernelCompiler {
   ///
   /// Use this when incremental state may be stale (e.g., an external reload
   /// happened without going through this compiler).
-  void reset() => _client.reset();
+  void reset() {
+    _client.reset();
+    _needsFullCompile = true;
+  }
 
   /// Restart the Frontend Server process.
   ///
