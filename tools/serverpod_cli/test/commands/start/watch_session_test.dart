@@ -82,8 +82,8 @@ class _FakeServer extends Fake implements ServerProcess {
   void simulateExit(int code) => _exitCodeCompleter.complete(code);
 
   @override
-  Future<bool> reload(String dillPath) async {
-    calls.add('reload:$dillPath');
+  Future<bool> reload([String? dillPath]) async {
+    calls.add(dillPath != null ? 'reload:$dillPath' : 'reload');
     return reloadSuccess;
   }
 
@@ -134,7 +134,6 @@ void main() {
           return factoryServer;
         },
         initialServer: server,
-        initialDill: '/initial.dill',
       );
     });
 
@@ -150,7 +149,7 @@ void main() {
 
           await session.handleFileChange(event);
 
-          expect(server.calls, ['reload:/initial.dill']);
+          expect(server.calls, ['reload']);
           expect(compiler.calls, isEmpty);
           expect(generateCalls, isEmpty);
         },
