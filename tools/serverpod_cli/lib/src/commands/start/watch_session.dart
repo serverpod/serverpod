@@ -76,6 +76,7 @@ class WatchSession {
     // just trigger a reload to bump reloadCount so the browser refreshes.
     if (!hasDartChanges) {
       if (_server.isVmServiceConnected) {
+        log.debug('Static files changed, triggering browser refresh.');
         await _server.reload(_initialDill);
         log.info('Browser refresh triggered.');
       }
@@ -83,6 +84,9 @@ class WatchSession {
     }
 
     log.info('Files changed, reloading server...');
+    if (event.dartFiles.isNotEmpty) log.debug('  .dart: ${event.dartFiles}');
+    if (event.modelFiles.isNotEmpty) log.debug('  .spy: ${event.modelFiles}');
+    if (event.packageConfigChanged) log.debug('  package_config.json changed');
 
     // Pass all affected paths to the generator. It updates analyzer contexts
     // for all changed files (keeping them fresh) and only runs the full
