@@ -18,6 +18,7 @@ import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:stream_transform/stream_transform.dart';
 import 'package:vm_service/vm_service_io.dart';
 
 /// Options for the `start` command.
@@ -46,6 +47,17 @@ enum StartOption<V> implements OptionDefinition<V> {
       defaultsTo: true,
       helpText:
           'Start Docker Compose services if a docker-compose.yaml exists.',
+    ),
+  ),
+  noFes(
+    FlagOption(
+      argName: 'no-fes',
+      defaultsTo: false,
+      negatable: false,
+      helpText:
+          'Skip the Frontend Server compilation pipeline. '
+          'The server is started with dart run and the VM service info file '
+          'is kept so an IDE debugger can attach and handle hot reload.',
     ),
   );
 
@@ -118,6 +130,8 @@ class StartCommand extends ServerpodCommand<StartOption> {
       // Extract passthrough args (everything after '--').
       final serverArgs = argResults?.rest ?? [];
 
+      final noFes = commandConfig.value(StartOption.noFes);
+
       if (watch) {
         // Watch mode: the entire loop (generation, compilation, reload)
         // runs in one long-lived isolate so analyzers persist and can
@@ -129,6 +143,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
             serverDir: serverDir,
             serverArgs: serverArgs,
             logLevel: logLevel,
+            noFes: noFes,
           ),
         );
         if (exitCode != 0) throw ExitException(exitCode);
@@ -242,19 +257,23 @@ Future<int> _runWatchMode({
   required String serverDir,
   required List<String> serverArgs,
   required LogLevel logLevel,
+  required bool noFes,
 }) async {
   log.logLevel = logLevel;
   log.info('Starting server in watch mode...');
 
-  // Check if a server is already running by verifying the service info file.
   final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
   final vmServiceInfoFile = p.join(serverpodToolDir, 'vm-service-info.json');
-  final existingUri = await _checkExistingServer(vmServiceInfoFile);
-  if (existingUri != null) {
-    log.info('Existing server found.');
-    log.info('The Dart VM service is listening on $existingUri');
-    log.info('Server running.');
-    return 0;
+
+  if (!noFes) {
+    // Check if a server is already running by verifying the service info file.
+    final existingUri = await _checkExistingServer(vmServiceInfoFile);
+    if (existingUri != null) {
+      log.info('Existing server found.');
+      log.info('The Dart VM service is listening on $existingUri');
+      log.info('Server running.');
+      return 0;
+    }
   }
 
   // Create persistent analyzers for incremental generation.
@@ -279,11 +298,6 @@ Future<int> _runWatchMode({
     return 1;
   }
 
-  // Resolve the dart executable from the SDK to ensure we use the same
-  // version that compiled the kernel.
-  final sdkRoot = getSdkPath();
-  final dartExecutable = p.join(sdkRoot, 'bin', 'dart');
-
   final watchPaths = watchPathsFromConfig(config, includeWeb: true);
   final ignorePath = p.absolute(
     p.joinAll(config.generatedServeModelPackagePathParts),
@@ -293,6 +307,129 @@ Future<int> _runWatchMode({
     watchPaths: watchPaths,
     ignorePath: ignorePath,
   );
+
+  // The generate callback is shared by both modes.
+  Future<bool> generate(Set<String> affectedPaths) async {
+    bool needsGenerate = false;
+    await log.progress('Analyzing changes', () async {
+      needsGenerate = await updateAnalyzers(
+        config: config,
+        endpointsAnalyzer: endpointsAnalyzer,
+        modelAnalyzer: modelAnalyzer,
+        futureCallsAnalyzer: futureCallsAnalyzer,
+        affectedPaths: affectedPaths,
+      );
+      return true;
+    });
+    if (!needsGenerate) return true;
+    return await log.progress(
+      'Generating code',
+      () => performGenerate(
+        config: config,
+        endpointsAnalyzer: endpointsAnalyzer,
+        modelAnalyzer: modelAnalyzer,
+        futureCallsAnalyzer: futureCallsAnalyzer,
+      ),
+    );
+  }
+
+  if (noFes) {
+    return _runWatchModeNoFes(
+      serverDir: serverDir,
+      serverArgs: serverArgs,
+      vmServiceInfoFile: vmServiceInfoFile,
+      watcher: watcher,
+      generate: generate,
+    );
+  }
+
+  return _runWatchModeWithFes(
+    serverDir: serverDir,
+    serverArgs: serverArgs,
+    serverpodToolDir: serverpodToolDir,
+    vmServiceInfoFile: vmServiceInfoFile,
+    watcher: watcher,
+    generate: generate,
+  );
+}
+
+/// Watch mode without FES: starts the server via `dart run` and lets
+/// the IDE handle compilation and hot reload. We only watch for file
+/// changes and regenerate code (endpoints, models, future calls).
+Future<int> _runWatchModeNoFes({
+  required String serverDir,
+  required List<String> serverArgs,
+  required String vmServiceInfoFile,
+  required FileWatcher watcher,
+  required GenerateAction generate,
+}) async {
+  // Start the server with dart run. The VM's kernel_service gets its
+  // own compiler, so IDE-initiated reloadSources calls work natively.
+  final serverProcess = ServerProcess(
+    serverDir: serverDir,
+    serverArgs: serverArgs,
+    enableVmService: true,
+    vmServiceInfoFile: vmServiceInfoFile,
+  );
+  await serverProcess.start();
+  log.info('Server running.');
+
+  // Watch for file changes and regenerate code as needed.
+  // The IDE handles compilation and hot reload.
+  final genSub = watcher.onFilesChanged
+      .asyncMapBuffer((events) async {
+        final merged = mergeEvents(events);
+        final affectedPaths = {
+          ...merged.dartFiles,
+          ...merged.modelFiles,
+        };
+        if (affectedPaths.isEmpty) return;
+
+        final success = await generate(affectedPaths);
+        if (!success) {
+          log.error('Code generation failed.');
+        }
+      })
+      .listen((_) {});
+
+  // Wait for SIGINT/SIGTERM or unexpected server exit.
+  final signalCompleter = Completer<int>();
+
+  final sigintSub = ProcessSignal.sigint.watch().listen((_) {
+    if (!signalCompleter.isCompleted) signalCompleter.complete(0);
+  });
+  final sigtermSub = ProcessSignal.sigterm.watch().listen((_) {
+    if (!signalCompleter.isCompleted) signalCompleter.complete(0);
+  });
+
+  final exitCode = await Future.any([
+    signalCompleter.future,
+    serverProcess.exitCode,
+  ]);
+
+  // Clean up.
+  await genSub.cancel();
+  await serverProcess.stop();
+  await sigintSub.cancel();
+  await sigtermSub.cancel();
+
+  return exitCode;
+}
+
+/// Watch mode with FES: manages the full compilation pipeline
+/// (incremental compilation, hot reload, server restart on failure).
+Future<int> _runWatchModeWithFes({
+  required String serverDir,
+  required List<String> serverArgs,
+  required String serverpodToolDir,
+  required String vmServiceInfoFile,
+  required FileWatcher watcher,
+  required GenerateAction generate,
+}) async {
+  // Resolve the dart executable from the SDK to ensure we use the same
+  // version that compiled the kernel.
+  final sdkRoot = getSdkPath();
+  final dartExecutable = p.join(sdkRoot, 'bin', 'dart');
 
   // Set up incremental compiler.
   final entryPoint = p.join(serverDir, 'bin', 'main.dart');
@@ -306,7 +443,7 @@ Future<int> _runWatchMode({
 
   final initialResult = await _compileWithProgress(
     'Compiling server',
-    () => compiler.compile(),
+    compiler,
   );
 
   if (initialResult == null) {
@@ -322,8 +459,8 @@ Future<int> _runWatchMode({
     compiler.reset();
     final result = await _compileWithProgress(
       'Compiling server (IDE reload)',
-      () => compiler.compile(),
-      compiler: compiler,
+      compiler,
+      rejectOnFailure: true,
     );
     if (result == null) return null;
     compiler.accept();
@@ -354,29 +491,7 @@ Future<int> _runWatchMode({
 
   final session = WatchSession(
     compiler: compiler,
-    generate: (affectedPaths) async {
-      bool needsGenerate = false;
-      await log.progress('Analyzing changes', () async {
-        needsGenerate = await updateAnalyzers(
-          config: config,
-          endpointsAnalyzer: endpointsAnalyzer,
-          modelAnalyzer: modelAnalyzer,
-          futureCallsAnalyzer: futureCallsAnalyzer,
-          affectedPaths: affectedPaths,
-        );
-        return true;
-      });
-      if (!needsGenerate) return true;
-      return await log.progress(
-        'Generating code',
-        () => performGenerate(
-          config: config,
-          endpointsAnalyzer: endpointsAnalyzer,
-          modelAnalyzer: modelAnalyzer,
-          futureCallsAnalyzer: futureCallsAnalyzer,
-        ),
-      );
-    },
+    generate: generate,
     createServer: serverProcessFactory,
     initialServer: initialServerProcess,
   );
@@ -417,12 +532,12 @@ Future<bool> _generateInIsolate(GeneratorConfig config) {
 /// On failure, logs compiler output and rejects via [compiler].
 Future<CompileResult?> _compileWithProgress(
   String message,
-  Future<CompileResult> Function() compile, {
-  KernelCompiler? compiler,
+  KernelCompiler compiler, {
+  bool rejectOnFailure = false,
 }) async {
   late CompileResult result;
   final success = await log.progress(message, () async {
-    result = await compile();
+    result = await compiler.compile();
     return result.errorCount == 0;
   });
 
@@ -430,7 +545,7 @@ Future<CompileResult?> _compileWithProgress(
     for (final line in result.compilerOutputLines) {
       log.error(line);
     }
-    if (compiler != null) {
+    if (rejectOnFailure) {
       await compiler.reject();
     }
     return null;
