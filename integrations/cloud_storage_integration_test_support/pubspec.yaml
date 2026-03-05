@@ -10,8 +10,8 @@ environment:
   sdk: '^3.8.0'
 
 dependencies:
-  serverpod_client: 3.4.0
-  serverpod_cloud_storage_s3_compat: 3.4.0
+  serverpod_client: 3.4.1
+  serverpod_cloud_storage_s3_compat: 3.4.1
   test: ^1.25.5
 
 dependency_overrides:

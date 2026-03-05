@@ -1,3 +1,8 @@
+## 3.4.1
+
+- fix: Fixes shared models using inexistent `toJsonForProtocol` method if referenced as fields on models with `!persist` or `serverOnly` fields.
+- fix: Fixes not being able to reference shared models without the module alias on fields of other models.
+
 ## 3.4.0
 
 Serverpod 3.4 comes with two long-awaited features: shared models between server and client and allowing caching any type of object to the local/Redis cache. It also brings two new Identity Providers (Facebook and Microsoft), a complete revamp to the cloud storage system, ignore conflicts on inserts and row-level locking on the database, shell completion support to the CLI and more improvements to the developer experience.

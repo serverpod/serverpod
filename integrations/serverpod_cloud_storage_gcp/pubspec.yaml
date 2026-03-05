@@ -3,7 +3,7 @@
 
 name: serverpod_cloud_storage_gcp
 description: Serverpod integration for Google Cloud Storage
-version: 3.4.0
+version: 3.4.1
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -19,15 +19,15 @@ dependencies:
   mime: ^2.0.0
   path: ^1.8.3
   pointycastle: ">=3.7.4 <5.0.0"
-  serverpod: 3.4.0
-  serverpod_cloud_storage_s3_compat: 3.4.0
+  serverpod: 3.4.1
+  serverpod_cloud_storage_s3_compat: 3.4.1
 
 dev_dependencies:
   cloud_storage_integration_test_support:
     path: ../cloud_storage_integration_test_support
   lints: ">=3.0.0 <7.0.0"
   mocktail: ^1.0.0
-  serverpod_client: 3.4.0
+  serverpod_client: 3.4.1
   test: ^1.25.5
 
 dependency_overrides:
