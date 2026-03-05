@@ -91,7 +91,14 @@ Claims may accumulate if:
 - Cleanup fails on startup
 - A server with claim to a future call crashes in a distributed environment
 
-A periodic maintenance job will be introduced delete claim entries that are older than 30 minutes.
+A periodic maintenance job will be introduced delete claim entries that are older than a configured TTL. Developers will also be able to configure how often this maintenance job runs.
+
+## Configurations
+
+Two new configurations will be introduced:
+
+- **futureCall.claimCleanupInterval**: Configures how often to run the future call claim cleanup job. Defaults to 30 minutes.
+- **futureCall.claimTTL**: Configures how long to keep future call claims before cleaning them up. Defaults to 30 minutes.
 
 ## Backwards Compatibility
 
