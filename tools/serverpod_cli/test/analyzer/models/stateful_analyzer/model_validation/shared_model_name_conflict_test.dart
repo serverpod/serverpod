@@ -92,15 +92,184 @@ fields:
         onErrorsCollector(collector),
       ).validateAll();
 
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Given a shared enum and a server enum with the same name '
+    'when analyzing models '
+    'then an error is collected that server enums cannot share names with shared package enums.',
+    () {
+      var models = <ModelSource>[
+        ModelSourceBuilder()
+            .withIsSharedModel(true)
+            .withModuleAlias('shared')
+            .withFileName('shared_enum')
+            .withYaml(
+              '''
+enum: SharedEnum
+values:
+  - value1
+  - value2
+''',
+            )
+            .build(),
+        ModelSourceBuilder().withFileName('shared_enum').withYaml(
+          '''
+enum: SharedEnum
+values:
+  - other1
+  - other2
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
       expect(
-        collector.errors.where(
-          (e) =>
-              e.message.contains('shared package') &&
-              e.message.contains('class name'),
-        ),
-        isEmpty,
-        reason: 'Expected no class name conflict error when names differ',
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error when server enum reuses shared enum name',
       );
+      expect(
+        collector.errors.first.message,
+        'The enum name "SharedEnum" is already used by a model in the shared '
+        'package "shared". Server and client models cannot have the same name '
+        'as shared package models.',
+      );
+    },
+  );
+
+  test(
+    'Given a shared enum and a server enum with different names '
+    'when analyzing models '
+    'then no error is collected for enum name conflict.',
+    () {
+      var models = <ModelSource>[
+        ModelSourceBuilder()
+            .withIsSharedModel(true)
+            .withModuleAlias('shared')
+            .withFileName('shared_enum')
+            .withYaml(
+              '''
+enum: SharedEnum
+values:
+  - value1
+  - value2
+''',
+            )
+            .build(),
+        ModelSourceBuilder().withFileName('server_enum').withYaml(
+          '''
+enum: ServerEnum
+values:
+  - other1
+  - other2
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Given a shared exception and a server exception with the same name '
+    'when analyzing models '
+    'then an error is collected that server exceptions cannot share names with shared package exceptions.',
+    () {
+      var models = <ModelSource>[
+        ModelSourceBuilder()
+            .withIsSharedModel(true)
+            .withModuleAlias('shared')
+            .withFileName('shared_exception')
+            .withYaml(
+              '''
+exception: SharedException
+fields:
+  message: String
+''',
+            )
+            .build(),
+        ModelSourceBuilder().withFileName('shared_exception').withYaml(
+          '''
+exception: SharedException
+fields:
+  other: String
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason:
+            'Expected an error when server exception reuses shared exception name',
+      );
+      expect(
+        collector.errors.first.message,
+        'The exception name "SharedException" is already used by a model in the '
+        'shared package "shared". Server and client models cannot have the same '
+        'name as shared package models.',
+      );
+    },
+  );
+
+  test(
+    'Given a shared exception and a server exception with different names '
+    'when analyzing models '
+    'then no error is collected for exception name conflict.',
+    () {
+      var models = <ModelSource>[
+        ModelSourceBuilder()
+            .withIsSharedModel(true)
+            .withModuleAlias('shared')
+            .withFileName('shared_exception')
+            .withYaml(
+              '''
+exception: SharedException
+fields:
+  message: String
+''',
+            )
+            .build(),
+        ModelSourceBuilder().withFileName('server_exception').withYaml(
+          '''
+exception: ServerException
+fields:
+  other: String
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
     },
   );
 }
