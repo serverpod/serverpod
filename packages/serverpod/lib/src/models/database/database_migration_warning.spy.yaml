@@ -4,4 +4,8 @@ fields:
   message: String
   table: String
   columns: List<String>
-  destrucive: bool
+  # The `destrucive` typo existed on the `DatabaseMigrationWarning` class,
+  # leading to all generated `migration.json` having the misspelled key. The
+  # field is fixed on the model, but backwards compatibility is required for
+  # reading/writing the JSON file until a fallback mechanism is implemented.
+  destructive: bool, jsonKey=destrucive
