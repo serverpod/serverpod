@@ -4,4 +4,4 @@ fields:
   message: String
   table: String
   columns: List<String>
-  destrucive: bool
+  destructive: bool, jsonKey=destrucive
