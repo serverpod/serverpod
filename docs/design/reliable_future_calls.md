@@ -34,6 +34,9 @@ fields:
 
     ### Timestamp of this claim entry
     time: DateTime
+
+    ### The id of the server where the claim was created.
+    serverId: String
 ```
 
 ### Execution Flow
@@ -73,7 +76,7 @@ await FutureCallEntry.db.delete(_internalSession, entries);
 
 #### 4. Crash recovery
 
-If a server crashes, the future call and claim both remain. A cleanup job removes all pending claims on start up so that an available server may reclaim execution.
+If a server crashes, the future call and claim both remain. A cleanup job removes all pending claims created by that server on start up so that the future call becomes eligible for execution again.
 
 ### Potential Issues
 
