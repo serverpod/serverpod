@@ -23,18 +23,16 @@ The future call record is only deleted after successful execution.
 
 ### Database Schema
 
-    ```yaml
-    ### Bindings to a future call claim entry in the database.
-    class: FutureCallClaimEntry
-    table: serverpod_future_call_claim
-    fields:
-
-    ### The id of the future call this claim entry is associated with
-    id: int, relation(parent=serverpod_future_call,onDelete=Cascade)
-
-    ### Timestamp of this claim entry
-    time: DateTime
-    ```
+```yaml
+### Bindings to a future call claim entry in the database.
+class: FutureCallClaimEntry
+table: serverpod_future_call_claim
+fields:
+### The id of the future call this claim entry is associated with
+id: int, relation(parent=serverpod_future_call,onDelete=Cascade)
+### Timestamp of this claim entry
+time: DateTime
+```
 
 ### Execution Flow
 
@@ -42,23 +40,23 @@ The future call record is only deleted after successful execution.
 
 Servers periodically query future calls that are due for execution without deletion.
 
-    ```dart
-    final entries = await FutureCallEntry.db.find(
-      _internalSession,
-      where: (row) => row.time <= now,
-    );
-    ```
+```dart
+final entries = await FutureCallEntry.db.find(
+  _internalSession,
+  where: (row) => row.time <= now,
+);
+```
 
 #### 2. Claim future call execution
 
 Each server attempts to write a claim for the future calls to `serverpod_future_call_claim` table.
 
-    ```dart
-    final insertedClaims = await FutureCallClaimEntry.db.insert(
-      _internalSession,
-      claims,
-    );
-    ```
+```dart
+final insertedClaims = await FutureCallClaimEntry.db.insert(
+  _internalSession,
+  claims,
+);
+```
 
 Once claimed, the server executes the future calls. The claim acts as a lease lock during execution.
 
@@ -66,10 +64,10 @@ Once claimed, the server executes the future calls. The claim acts as a lease lo
 
 The future calls are permanently deleted from `serverpod_future_call` and `serverpod_future_call_claim` tables.
 
-    ```dart
-    // deletion will cascade to the serverpod_future_call_claim table
-    await FutureCallEntry.db.delete(_internalSession, entries);
-    ```
+```dart
+// deletion will cascade to the serverpod_future_call_claim table
+await FutureCallEntry.db.delete(_internalSession, entries);
+```
 
 #### 4. Crash recovery
 
