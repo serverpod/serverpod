@@ -11,17 +11,8 @@ import 'package:test/test.dart';
 import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
-const pathToServerpodRoot = '../../../../../../../..';
-var testProjectDirectory = Directory(
-  path.joinAll([
-    'test',
-    'integration',
-    'analyzer',
-    'dart',
-    'future_call_validation',
-    const Uuid().v4(),
-  ]),
-);
+var pathToServerpodRoot = Directory('../..').absolute.path;
+var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
 
 void main() {
   setUpAll(() async {
@@ -224,7 +215,8 @@ class ExampleFutureCall extends FutureCall {
       });
 
       test('then no future call definition methods are created.', () {
-        expect(futureCallDefinitions.firstOrNull?.methods, isEmpty);
+        expect(futureCallDefinitions, hasLength(1));
+        expect(futureCallDefinitions.single.methods, isEmpty);
       });
     },
   );
@@ -270,7 +262,8 @@ class ExampleFutureCall extends FutureCall {
       });
 
       test('then no future call definition methods are created.', () {
-        expect(futureCallDefinitions.firstOrNull?.methods, isEmpty);
+        expect(futureCallDefinitions, hasLength(1));
+        expect(futureCallDefinitions.single.methods, isEmpty);
       });
     },
   );
