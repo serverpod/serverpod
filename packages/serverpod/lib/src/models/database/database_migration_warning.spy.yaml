@@ -4,4 +4,5 @@ fields:
   message: String
   table: String
   columns: List<String>
+  # jsonKey keeps backward compatibility with migration.json files that use the misspelled key.
   destructive: bool, jsonKey=destrucive
