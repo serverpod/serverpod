@@ -30,7 +30,7 @@ table: serverpod_future_call_claim
 
 fields:
     ### The id of the future call this claim entry is associated with
-    id: int, relation(parent=serverpod_future_call,onDelete=Cascade)
+    id: int?, relation(parent=serverpod_future_call,onDelete=Cascade)
 
     ### Timestamp of this claim entry
     time: DateTime
