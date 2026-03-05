@@ -211,7 +211,7 @@ class Restrictions {
       ];
     }
 
-    if (documentDefinition?.isSharedModel != true) {
+    if (!(documentDefinition?.isSharedModel ?? false)) {
       var sharedModelWithSameName = parsedModels.classNames[className]
           ?.where((model) => model.isSharedModel)
           .firstOrNull;

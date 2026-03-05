@@ -359,7 +359,7 @@ class TypeDefinition {
               '/${split[1]}';
         } else if (url == defaultModuleAlias ||
             config.sharedModelsSourcePathsParts.containsKey(url) ||
-            projectModelDefinition?.isSharedModel == true) {
+            (projectModelDefinition?.isSharedModel ?? false)) {
           // protocol or shared-package reference
           var localProjectModelDefinition = projectModelDefinition;
           if (localProjectModelDefinition?.isSharedModel == true) {
