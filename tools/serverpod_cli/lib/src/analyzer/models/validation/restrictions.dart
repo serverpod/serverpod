@@ -211,6 +211,23 @@ class Restrictions {
       ];
     }
 
+    if (documentDefinition?.isSharedModel != true) {
+      var sharedModelWithSameName = parsedModels.classNames[className]
+          ?.where((model) => model.isSharedModel)
+          .firstOrNull;
+
+      if (sharedModelWithSameName != null) {
+        return [
+          SourceSpanSeverityException(
+            'The $documentType name "$className" is already used by a model in '
+            'the shared package "${sharedModelWithSameName.sharedPackageName}". '
+            'Server and client models cannot have the same name as shared package models.',
+            span,
+          ),
+        ];
+      }
+    }
+
     return [];
   }
 
