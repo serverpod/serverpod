@@ -1,0 +1,200 @@
+{
+  "__className__": "serverpod.DatabaseMigration",
+  "actions": [
+    {
+      "__className__": "serverpod.DatabaseMigrationAction",
+      "type": "createTable",
+      "createTable": {
+        "__className__": "serverpod.TableDefinition",
+        "name": "shared_model_container",
+        "dartName": "SharedModelContainer",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "id",
+            "columnType": 6,
+            "isNullable": false,
+            "columnDefault": "nextval('shared_model_container_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedModel",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "SharedModel"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedModelWithModuleAlias",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "serverpod_test_shared:SharedModel"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedModelNullable",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "SharedModel?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "serverOnlySharedModel",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "SharedModel?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedSubclass",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "SharedSubclass"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedSubclassNullable",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "SharedSubclass?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedEnum",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "SharedEnum"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedEnumNullable",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "SharedEnum?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedSealedParent",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "SharedSealedParent"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedSealedParentNullable",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "SharedSealedParent?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedSealedChild",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "SharedSealedChild"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedSealedChildNullable",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "SharedSealedChild?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedModelSubclass",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "protocol:SharedModelSubclass"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedModelSubclassNullable",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "protocol:SharedModelSubclass?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedModelList",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "List<SharedModel>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedModelNullableList",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "List<SharedModel?>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedModelListNullable",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "List<SharedModel>?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedModelMap",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "Map<String,SharedModel>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedModelMapNullable",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Map<String,SharedModel>?"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedSubclassMap",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "Map<String,SharedSubclass>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedModelSet",
+            "columnType": 8,
+            "isNullable": false,
+            "dartType": "Set<SharedModel>"
+          },
+          {
+            "__className__": "serverpod.ColumnDefinition",
+            "name": "sharedModelSetNullable",
+            "columnType": 8,
+            "isNullable": true,
+            "dartType": "Set<SharedModel>?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "__className__": "serverpod.IndexDefinition",
+            "indexName": "shared_model_container_pkey",
+            "elements": [
+              {
+                "__className__": "serverpod.IndexElementDefinition",
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "migrationApiVersion": 1
+}
