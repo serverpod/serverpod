@@ -12,22 +12,25 @@ import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
 var pathToServerpodRoot = Directory('../..').absolute.path;
-var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+late Directory testProjectDirectory;
 
 void main() {
   setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
   });
 
   tearDownAll(() {
-    testProjectDirectory.deleteSync(recursive: true);
+    if (testProjectDirectory.existsSync()) {
+      testProjectDirectory.deleteSync(recursive: true);
+    }
   });
 
   group(
     'Given a future call file with incomplete future call class defined when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late final testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -79,7 +82,7 @@ class ExampleFutureCall extends FutureCall {
     'Given a future call file with incomplete future call method defined when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late final testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -131,7 +134,7 @@ class ExampleFutureCall extends FutureCall {
     'Given a future call method that returns a Future with multiple defined types',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late final testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -183,7 +186,7 @@ class ExampleFutureCall extends FutureCall {
 
   group('Given a valid and an invalid future call file when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+    late final testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -243,7 +246,7 @@ class ExampleFutureCallValid extends FutureCall {
 
   group('Given an invalid dart file without an future call definition', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+    late final testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -280,7 +283,7 @@ class InvalidClass {
     'Given an invalid dart file without an future call definition and a valid future call definition file',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late final testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 

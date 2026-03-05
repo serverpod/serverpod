@@ -12,20 +12,23 @@ import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
 var pathToServerpodRoot = Directory('../..').absolute.path;
-var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+late Directory testProjectDirectory;
 
 void main() {
   setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
   });
 
   tearDownAll(() {
-    testProjectDirectory.deleteSync(recursive: true);
+    if (testProjectDirectory.existsSync()) {
+      testProjectDirectory.deleteSync(recursive: true);
+    }
   });
 
   group('Given a valid future call class when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+    late final testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -104,7 +107,7 @@ class ExampleFutureCall extends FutureCall {
 
   group('Given a valid future call with documentation when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+    late final testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -157,7 +160,7 @@ class ExampleFutureCall extends FutureCall {
     'Given a future call class that has only the overriden invoke method',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late final testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -205,7 +208,7 @@ class ExampleFutureCall extends FutureCall {
     'Given a dart class that does not inherit from FutureCall when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late final testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -252,7 +255,7 @@ class ExampleFutureCall {
     'Given same future call class definition in multiple files when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late final testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 

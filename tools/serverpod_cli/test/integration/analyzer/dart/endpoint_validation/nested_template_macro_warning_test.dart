@@ -11,22 +11,25 @@ import 'package:uuid/uuid.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
 var pathToServerpodRoot = Directory('../..').absolute.path;
-var testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
+late Directory testProjectDirectory;
 
 void main() {
   setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
   });
 
   tearDownAll(() {
-    testProjectDirectory.deleteSync(recursive: true);
+    if (testProjectDirectory.existsSync()) {
+      testProjectDirectory.deleteSync(recursive: true);
+    }
   });
 
   group(
     'Given an endpoint with nested template in class documentation when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late final testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -90,7 +93,7 @@ class ExampleEndpoint extends Endpoint {
     'Given an endpoint with nested template in method documentation when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late final testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
@@ -149,7 +152,7 @@ class ExampleEndpoint extends Endpoint {
 
   group('Given an endpoint with nested macro in template when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
+    late final testDirectory = Directory(
       path.join(testProjectDirectory.path, const Uuid().v4()),
     );
 
@@ -204,7 +207,7 @@ class ExampleEndpoint extends Endpoint {
     'Given an endpoint with both nested template and nested macro when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
+      late final testDirectory = Directory(
         path.join(testProjectDirectory.path, const Uuid().v4()),
       );
 
