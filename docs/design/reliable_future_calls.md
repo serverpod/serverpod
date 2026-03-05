@@ -27,11 +27,13 @@ The future call record is only deleted after successful execution.
 ### Bindings to a future call claim entry in the database.
 class: FutureCallClaimEntry
 table: serverpod_future_call_claim
+
 fields:
-### The id of the future call this claim entry is associated with
-id: int, relation(parent=serverpod_future_call,onDelete=Cascade)
-### Timestamp of this claim entry
-time: DateTime
+    ### The id of the future call this claim entry is associated with
+    id: int, relation(parent=serverpod_future_call,onDelete=Cascade)
+
+    ### Timestamp of this claim entry
+    time: DateTime
 ```
 
 ### Execution Flow
