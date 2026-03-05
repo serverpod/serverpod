@@ -72,6 +72,19 @@ class DatabaseCloudStorage extends CloudStorage with CloudStorageWithOptions {
   }
 
   @override
+  Future<Uri?> getPresignedUrl({
+    required Session session,
+    required String path,
+    String method = 'GET',
+    Duration expiration = const Duration(minutes: 15),
+  }) {
+    throw UnsupportedError(
+      'DatabaseCloudStorage does not support presigned URLs. '
+      'Use an S3-compatible storage implementation instead.',
+    );
+  }
+
+  @override
   Future<ByteData?> retrieveFile({
     required Session session,
     required String path,
