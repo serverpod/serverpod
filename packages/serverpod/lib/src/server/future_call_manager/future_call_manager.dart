@@ -180,8 +180,8 @@ class FutureCallManager {
   /// Instead, the scanner will be started when the first future call is
   /// registered via [registerFutureCall].
   Future<void> start() async {
+    await _checkBrokenFutureCalls();
     if (_futureCalls.isNotEmpty) {
-      await _checkBrokenFutureCalls();
       _scanner.start();
     } else {
       _hasPendingStart = true;
@@ -252,8 +252,8 @@ class FutureCallManager {
     }
   }
 
-  /// Returns `true` if the server is configured to check for broken future calls
-  /// or if the server can perform a default check.
+  /// Returns `true` if the server is configured to check for broken
+  /// future calls or if the server can perform a default check.
   ///
   /// The server can perform a default check for broken future calls
   /// if the amount of future calls in the database
@@ -261,8 +261,8 @@ class FutureCallManager {
   Future<bool> _canCheckBrokenFutureCalls({
     int threshold = 1000,
   }) async {
-    if (_config.checkBrokenFutureCalls != null) {
-      return _config.checkBrokenFutureCalls!;
+    if (_config.checkBrokenCalls != null) {
+      return _config.checkBrokenCalls!;
     }
 
     final count = await FutureCallEntry.db.count(
@@ -277,11 +277,11 @@ class FutureCallManager {
   /// Broken future calls include unregistered calls and
   /// those with stored inputs that cannot be deserialized.
   ///
-  /// If [FutureCallConfig.deleteBrokenFutureCalls] is enabled,
+  /// If [FutureCallConfig.deleteBrokenCalls] is enabled,
   /// the broken future calls are deleted.
   ///
-  /// The check will not happen if [FutureCallConfig.checkBrokenFutureCalls]
-  /// is disabled.
+  /// The check will not happen if
+  /// [FutureCallConfig.checkBrokenCalls] is disabled.
   Future<void> _checkBrokenFutureCalls() async {
     if (!await _canCheckBrokenFutureCalls()) return;
 
@@ -314,7 +314,7 @@ class FutureCallManager {
 
     final allCalls = unregisteredCalls + brokenCalls;
 
-    if (_config.deleteBrokenFutureCalls && allCalls.isNotEmpty) {
+    if (_config.deleteBrokenCalls && allCalls.isNotEmpty) {
       final deletedEntries = await FutureCallEntry.db.delete(
         _internalSession,
         allCalls,

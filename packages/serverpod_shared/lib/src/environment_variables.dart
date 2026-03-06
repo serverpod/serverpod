@@ -138,6 +138,12 @@ enum ServerpodEnv {
   /// Toggle to disable future call execution.
   futureCallExecutionEnabled,
 
+  /// If true, the server will check for broken future calls on startup.
+  futureCallCheckBrokenCalls,
+
+  /// If true, the server will delete broken future calls on startup.
+  futureCallDeleteBrokenCalls,
+
   /// True if session persistent logging is enabled.
   sessionPersistentLogEnabled,
 
@@ -181,13 +187,7 @@ enum ServerpodEnv {
   validateHeaders,
 
   /// The interval in seconds between websocket ping messages.
-  websocketPingInterval,
-
-  /// If true, the server will check for broken future calls on startup.
-  checkBrokenFutureCalls,
-
-  /// If true, the server will delete broken future calls on startup.
-  deleteBrokenFutureCalls;
+  websocketPingInterval;
 
   /// The key used in the environment configuration file.
   String get configKey {
@@ -225,6 +225,8 @@ enum ServerpodEnv {
       (ServerpodEnv.futureCallScanInterval) =>
         ServerpodFutureCallConfigMap.scanInterval,
       (ServerpodEnv.futureCallExecutionEnabled) => 'futureCallExecutionEnabled',
+      (ServerpodEnv.futureCallCheckBrokenCalls) => 'checkBrokenCalls',
+      (ServerpodEnv.futureCallDeleteBrokenCalls) => 'deleteBrokenCalls',
       (ServerpodEnv.sessionPersistentLogEnabled) => 'persistentEnabled',
       (ServerpodEnv.sessionLogCleanupInterval) => 'cleanupInterval',
       (ServerpodEnv.sessionLogRetentionPeriod) => 'retentionPeriod',
@@ -239,8 +241,6 @@ enum ServerpodEnv {
       (ServerpodEnv.applyRepairMigration) => 'applyRepairMigration',
       (ServerpodEnv.validateHeaders) => 'validateHeaders',
       (ServerpodEnv.websocketPingInterval) => 'websocketPingInterval',
-      (ServerpodEnv.checkBrokenFutureCalls) => 'checkBrokenFutureCalls',
-      (ServerpodEnv.deleteBrokenFutureCalls) => 'deleteBrokenFutureCalls',
     };
   }
 
@@ -285,6 +285,10 @@ enum ServerpodEnv {
         'SERVERPOD_FUTURE_CALL_SCAN_INTERVAL',
       (ServerpodEnv.futureCallExecutionEnabled) =>
         'SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED',
+      (ServerpodEnv.futureCallCheckBrokenCalls) =>
+        'SERVERPOD_FUTURE_CALL_CHECK_BROKEN_CALLS',
+      (ServerpodEnv.futureCallDeleteBrokenCalls) =>
+        'SERVERPOD_FUTURE_CALL_DELETE_BROKEN_CALLS',
       (ServerpodEnv.sessionPersistentLogEnabled) =>
         'SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED',
       (ServerpodEnv.sessionLogCleanupInterval) =>
@@ -306,10 +310,6 @@ enum ServerpodEnv {
       (ServerpodEnv.validateHeaders) => 'SERVERPOD_VALIDATE_HEADERS',
       (ServerpodEnv.websocketPingInterval) =>
         'SERVERPOD_WEBSOCKET_PING_INTERVAL',
-      (ServerpodEnv.checkBrokenFutureCalls) =>
-        'SERVERPOD_CHECK_BROKEN_FUTURE_CALLS',
-      (ServerpodEnv.deleteBrokenFutureCalls) =>
-        'SERVERPOD_DELETE_BROKEN_FUTURE_CALLS',
     };
   }
 }
