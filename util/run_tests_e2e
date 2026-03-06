@@ -12,4 +12,8 @@ set -e
 cd tests/docker/tests_e2e
 
 export PLATFORM=$1
-docker compose up --abort-on-container-exit --exit-code-from tests --build --remove-orphans 
+docker compose --progress quiet up \
+ --abort-on-container-exit \
+ --exit-code-from tests \
+ --build \
+ --remove-orphans

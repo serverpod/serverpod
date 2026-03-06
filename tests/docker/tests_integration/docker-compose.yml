@@ -3,6 +3,8 @@ services:
     build:
       context: ../../..
       dockerfile: tests/docker/tests_integration/Dockerfile
+    environment:
+      SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: '1'
     depends_on:
       - 'postgres'
       - 'redis'
@@ -12,6 +14,8 @@ services:
     build:
       context: ../../..
       dockerfile: tests/docker/tests_integration/concurrent.Dockerfile
+    environment:
+      SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: '1'
     depends_on:
       - 'postgres'
       - 'redis'
