@@ -6,6 +6,8 @@ if [ ! -f util/.serverpod_util_root ]; then
     exit 1
 fi
 
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+
 # List of directories to exclude from the search (relative to repo root)
 EXCLUDE_DIRS=(
   "tests/bootstrap_project"

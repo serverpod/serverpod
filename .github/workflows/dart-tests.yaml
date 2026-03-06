@@ -18,6 +18,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
+env:
+  SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: "1"
+
 jobs:
   dart_format:
     name: dart format
