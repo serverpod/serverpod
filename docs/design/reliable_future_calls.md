@@ -98,7 +98,7 @@ A periodic maintenance job will be introduced delete claim entries that are olde
 Two new configurations will be introduced:
 
 - **futureCall.claimCleanupInterval**: Configures how often to run the future call claim cleanup job. Defaults to 30 minutes.
-- **futureCall.claimTTL**: Configures how long to keep future call claims before cleaning them up. Defaults to 30 minutes.
+- **futureCall.claimTTL**: Configures how long to keep future call claims before they become eligible for cleanup. Defaults to 10 minutes.
 
 ## Backwards Compatibility
 
