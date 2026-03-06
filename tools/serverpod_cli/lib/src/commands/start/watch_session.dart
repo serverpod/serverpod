@@ -56,12 +56,13 @@ class WatchSession {
         event.modelFiles.isNotEmpty ||
         event.packageConfigChanged;
 
-    // Static-only changes (HTML, JS, CSS): no compilation needed,
-    // just trigger a reload to bump reloadCount so the browser refreshes.
+    // Static-only changes (HTML, JS, CSS, templates): no compilation needed.
+    // Notify the server so it increments its static change counter, which
+    // triggers browser refresh and template reloading.
     if (!hasDartChanges) {
       if (_server.isVmServiceConnected) {
-        log.debug('Static files changed, triggering browser refresh.');
-        await _server.reload();
+        log.debug('Static files changed, notifying server.');
+        await _server.notifyStaticChange();
         log.info('Browser refresh triggered.');
       }
       return;

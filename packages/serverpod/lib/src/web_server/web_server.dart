@@ -211,15 +211,15 @@ class WebServer {
   FutureOr<Result> _devVersion(Request _) {
     if (!_isDevMode) return Response.notFound();
     return Response.ok(
-      body: Body.fromString('${_app.developerTools.reloadCount}'),
+      body: Body.fromString('${_app.developerTools.staticChangeCount}'),
     );
   }
 
-  /// Reloads templates from disk if a hot reload has occurred.
+  /// Reloads templates from disk if a static file change has been notified.
   Future<void> _reloadTemplatesIfNeeded() async {
-    final currentReloadCount = _app.developerTools.reloadCount;
-    if (currentReloadCount != _lastReloadCount) {
-      _lastReloadCount = currentReloadCount;
+    final currentChangeCount = _app.developerTools.staticChangeCount;
+    if (currentChangeCount != _lastReloadCount) {
+      _lastReloadCount = currentChangeCount;
       templates.clear();
       await templates.loadAll(Directory(path.joinAll(['web', 'templates'])));
     }

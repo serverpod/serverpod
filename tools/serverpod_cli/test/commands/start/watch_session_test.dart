@@ -80,9 +80,14 @@ class _FakeServer extends Fake implements ServerProcess {
   void simulateExit(int code) => _exitCodeCompleter.complete(code);
 
   @override
-  Future<bool> reload([String? dillPath]) async {
-    calls.add(dillPath != null ? 'reload:$dillPath' : 'reload');
+  Future<bool> reload(String dillPath) async {
+    calls.add('reload:$dillPath');
     return reloadSuccess;
+  }
+
+  @override
+  Future<void> notifyStaticChange() async {
+    calls.add('notifyStaticChange');
   }
 
   @override
@@ -138,7 +143,7 @@ void main() {
     group('Given static-only file changes', () {
       test(
         'when VM service is connected, '
-        'then it reloads for browser refresh without compiling',
+        'then it notifies static change without compiling',
         () async {
           final event = FileChangeEvent(
             dartFiles: {},
@@ -147,7 +152,7 @@ void main() {
 
           await session.handleFileChange(event);
 
-          expect(server.calls, ['reload']);
+          expect(server.calls, ['notifyStaticChange']);
           expect(compiler.calls, isEmpty);
           expect(generateCalls, isEmpty);
         },
