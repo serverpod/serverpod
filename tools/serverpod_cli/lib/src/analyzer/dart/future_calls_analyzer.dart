@@ -15,7 +15,7 @@ import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_cal
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/util/analysis_helper.dart';
+import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
 /// Analyzes dart files for [FutureCall]s.
@@ -34,7 +34,7 @@ class FutureCallsAnalyzer {
   }) : collection = AnalysisContextCollection(
          includedPaths: [directory.absolute.path],
          resourceProvider: PhysicalResourceProvider.INSTANCE,
-         sdkPath: findDartSdk(),
+         sdkPath: getSdkPath(),
        ),
        absoluteIncludedPaths = directory.absolute.path;
 

@@ -25,6 +25,21 @@ dev_dependencies:
   test: ^1.25.5
 
 dependency_overrides:
+  relic:
+    git:
+      url: https://github.com/serverpod/relic.git
+      ref: main
+      path: packages/relic
+  relic_core:
+    git:
+      url: https://github.com/serverpod/relic.git
+      ref: main
+      path: packages/relic_core
+  relic_io:
+    git:
+      url: https://github.com/serverpod/relic.git
+      ref: main
+      path: packages/relic_io
   serverpod_lints:
     path: ../serverpod_lints
   serverpod_serialization:

@@ -7,15 +7,12 @@ import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
-import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
-import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
-import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/pubspec_lock_parser.dart';
 import 'package:serverpod_cli/src/util/pubspec_plus.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -141,18 +138,22 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
       }
     }
 
-    final futureSuccess = Isolate.run(
-      () => _performGenerate(config: config, watch: watch),
-    );
-
     late final bool success;
-    if (!watch) {
-      success = await log.progress(
-        'Generating code',
-        () => futureSuccess,
+    final logLevel = log.logLevel;
+    if (watch) {
+      // Watch mode: the entire loop (generation + file watching) runs in one
+      // long-lived isolate so analyzers persist and can be updated
+      // incrementally on each file change.
+      success = await Isolate.run(
+        () => _performGenerateWatch(config: config, logLevel: logLevel),
       );
     } else {
-      success = await futureSuccess;
+      success = await log.progress(
+        'Generating code',
+        () => Isolate.run(
+          () => performOneShotGenerate(config: config, logLevel: logLevel),
+        ),
+      );
     }
 
     if (!success) {
@@ -163,40 +164,104 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
   }
 }
 
-Future<bool> _performGenerate({
+/// One-shot code generation in an isolate-friendly function.
+///
+/// Sets the log level (for isolate use) and creates fresh analyzers.
+Future<bool> performOneShotGenerate({
   required GeneratorConfig config,
-  required bool watch,
+  required LogLevel logLevel,
 }) async {
-  var libDirectory = Directory(path.joinAll(config.libSourcePathParts));
-  var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
-
-  var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-  var modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
-    collector.printErrors();
-  });
-
-  var parameterValidator = FutureCallMethodParameterValidator(
-    modelAnalyzer: modelAnalyzer,
+  log.logLevel = logLevel;
+  final a = await createAnalyzers(config);
+  return performGenerate(
+    config: config,
+    endpointsAnalyzer: a.endpoints,
+    modelAnalyzer: a.models,
+    futureCallsAnalyzer: a.futureCalls,
   );
+}
 
-  var futureCallsAnalyzer = FutureCallsAnalyzer(
-    directory: libDirectory,
-    parameterValidator: parameterValidator,
-  );
+/// Watch-mode code generation with persistent analyzers and file watching.
+Future<bool> _performGenerateWatch({
+  required GeneratorConfig config,
+  required LogLevel logLevel,
+}) async {
+  log.logLevel = logLevel;
+  final a = await createAnalyzers(config);
+  final endpointsAnalyzer = a.endpoints;
+  final modelAnalyzer = a.models;
+  final futureCallsAnalyzer = a.futureCalls;
 
-  if (watch) {
-    return await performGenerateContinuously(
+  // Initial generation.
+  final success = await log.progress(
+    'Generating code',
+    () => performGenerate(
       config: config,
       endpointsAnalyzer: endpointsAnalyzer,
       modelAnalyzer: modelAnalyzer,
       futureCallsAnalyzer: futureCallsAnalyzer,
-    );
+    ),
+  );
+
+  if (!success) return false;
+
+  log.info(
+    'Initial code generation complete. Listening for changes.',
+  );
+
+  // Set up file watcher.
+  final watchPaths = watchPathsFromConfig(config);
+  final ignorePath = path.absolute(
+    path.joinAll(config.generatedServeModelPackagePathParts),
+  );
+
+  final watcher = FileWatcher(
+    watchPaths: watchPaths,
+    ignorePath: ignorePath,
+  );
+
+  // Process file change events.
+  await for (final event in watcher.onFilesChanged) {
+    final affectedPaths = {
+      ...event.dartFiles,
+      ...event.modelFiles,
+    };
+
+    if (affectedPaths.isEmpty) continue;
+
+    try {
+      bool needsGenerate = false;
+      await log.progress('Analyzing changes', () async {
+        needsGenerate = await updateAnalyzers(
+          config: config,
+          endpointsAnalyzer: endpointsAnalyzer,
+          modelAnalyzer: modelAnalyzer,
+          futureCallsAnalyzer: futureCallsAnalyzer,
+          affectedPaths: affectedPaths,
+        );
+        return true;
+      });
+
+      if (needsGenerate) {
+        final genSuccess = await log.progress(
+          'Generating code',
+          () => performGenerate(
+            config: config,
+            endpointsAnalyzer: endpointsAnalyzer,
+            modelAnalyzer: modelAnalyzer,
+            futureCallsAnalyzer: futureCallsAnalyzer,
+          ),
+        );
+
+        if (genSuccess) {
+          log.info('Incremental code generation complete.');
+        }
+      }
+    } catch (e, stackTrace) {
+      log.error(e.toString(), stackTrace: stackTrace);
+    }
   }
 
-  return performGenerate(
-    config: config,
-    endpointsAnalyzer: endpointsAnalyzer,
-    modelAnalyzer: modelAnalyzer,
-    futureCallsAnalyzer: futureCallsAnalyzer,
-  );
+  // The await-for loop above runs indefinitely; this is unreachable.
+  return true;
 }

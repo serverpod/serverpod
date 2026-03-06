@@ -2,11 +2,22 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "docker_compose_up",
+            "label": "serverpod_start_watch",
             "type": "shell",
-            "command": "docker compose up -d",
+            "command": "serverpod start --watch --no-fes",
+            "isBackground": true,
             "options": {
                 "cwd": "${workspaceFolder}/projectname_server"
+            },
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^$"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "Starting server in watch mode",
+                    "endsPattern": "Server running"
+                }
             }
         }
     ]
