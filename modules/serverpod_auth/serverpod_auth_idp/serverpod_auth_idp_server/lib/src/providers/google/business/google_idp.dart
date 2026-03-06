@@ -143,6 +143,37 @@ class GoogleIdp {
   /// Determines whether the current session has an associated Google account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
+
+  /// Migrates the Google account from [userToRemove] into [userToKeep].
+  static Future<void> migrate(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    final existingAccount = await GoogleAccount.db.findFirstRow(
+      session,
+      where: (final t) => t.authUserId.equals(userToKeepId),
+      transaction: transaction,
+    );
+
+    if (existingAccount != null) {
+      await GoogleAccount.db.deleteWhere(
+        session,
+        where: (final t) => t.authUserId.equals(userToRemoveId),
+        transaction: transaction,
+      );
+    } else {
+      await GoogleAccount.db.updateWhere(
+        session,
+        where: (final t) => t.authUserId.equals(userToRemoveId),
+        columnValues: (final t) => [
+          t.authUserId(userToKeepId),
+        ],
+        transaction: transaction,
+      );
+    }
+  }
 }
 
 /// Extension to get the GoogleIdp instance from the AuthServices.
