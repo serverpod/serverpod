@@ -11,7 +11,7 @@ In distributed environments this risk increases due to:
 - autoscaling
 - node crashes
 
-This design introduces a **claim-based execution model** using a new database table. Servers claim future calls by inserting a record into this table. The database enforces exclusivity, ensuring that only one server executes a given call. If a server crashes, the claim is removed by a cleanup job and the task becomes eligible for execution again.
+This design introduces a **claim-based execution model** using a new database table. Servers claim future calls by inserting a record into this table. The database enforces exclusivity, ensuring that only one server executes a given call. If a server crashes, the claim is removed by a cleanup job and the call becomes eligible for execution again.
 
 ## Proposed Solution
 
@@ -30,7 +30,7 @@ table: serverpod_future_call_claim
 
 fields:
     ### The id of the future call this claim entry is associated with
-    id: int?, relation(parent=serverpod_future_call,onDelete=Cascade)
+    futureCallId: int?, relation(parent=serverpod_future_call,onDelete=Cascade)
 
     ### Timestamp of this claim entry
     time: DateTime
@@ -43,7 +43,7 @@ fields:
 
 #### 1. Scan for due future calls
 
-Servers periodically query future calls that are due for execution without deletion.
+The server periodically queries future calls that are due for execution without deletion.
 
 ```dart
 final entries = await FutureCallEntry.db.find(
@@ -54,29 +54,31 @@ final entries = await FutureCallEntry.db.find(
 
 #### 2. Claim future call execution
 
-Each server attempts to write a claim for the future calls to `serverpod_future_call_claim` table.
+The server attempts to claim execution of a future call by inserting a record into `serverpod_future_call_claim` table.
 
 ```dart
-final insertedClaims = await FutureCallClaimEntry.db.insert(
-  _internalSession,
-  claims,
+final claim = FutureCallClaimEntry(
+  futureCallId: futureCallEntry.id,
+  serverId: _serverId,
+  time: DateTime.now().toUtc(),
 );
+await FutureCallClaimEntry.db.insertRow(_internalSession, claim);
 ```
 
-Once claimed, the server executes the future calls. The claim acts as a lease lock during execution.
+The server executes the future calls if the insert is successful. The claim acts as a lease lock during execution. If the insert fails due to the unique constraint, another server has already claimed the call.
 
 #### 3. On successful execution
 
-The future calls are permanently deleted from `serverpod_future_call` and `serverpod_future_call_claim` tables.
+The future call is permanently deleted from `serverpod_future_call` and `serverpod_future_call_claim` tables.
 
 ```dart
 // deletion will cascade to the serverpod_future_call_claim table
-await FutureCallEntry.db.delete(_internalSession, entries);
+await FutureCallEntry.db.delete(_internalSession, futureCallEntry);
 ```
 
 #### 4. Crash recovery
 
-If a server crashes, the future call and claim both remain. A cleanup job removes all pending claims created by that server on start up so that the future call becomes eligible for execution again.
+If a server crashes, the future calls and claims remain. A cleanup job removes all pending claims created by that server on start up so that the claimed future calls become eligible for execution again.
 
 ### Potential Issues
 
@@ -89,7 +91,7 @@ Server crashes mid execution may allow multiple executions of a future call. Dev
 Claims may accumulate if:
 
 - Cleanup fails on startup
-- A server with claim to a future call crashes in a distributed environment
+- A server with claim to a future call becomes unavailable in a distributed environment
 
 A periodic maintenance job will be introduced delete claim entries that are older than a configured TTL. Developers will also be able to configure how often this maintenance job runs.
 
