@@ -88,13 +88,12 @@ class KernelCompiler {
   /// Required when package_config.json changes, since the FES reads it
   /// only at startup. Kills the existing process and starts a fresh one.
   Future<void> restart() async {
-    _clientOrNull?.kill();
-    _clientOrNull = null;
+    dispose();
     await start();
   }
 
   /// Stop the Frontend Server process.
-  Future<void> dispose() async {
+  void dispose() {
     _clientOrNull?.kill();
     _clientOrNull = null;
   }
