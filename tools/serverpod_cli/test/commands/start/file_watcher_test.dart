@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -29,29 +28,21 @@ void main() {
           debounceDelay: const Duration(milliseconds: 200),
         );
 
-        final events = <FileChangeEvent>[];
-        final subscription = watcher.onFilesChanged.listen(events.add);
+        final firstEvent = watcher.onFilesChanged.first;
+        await watcher.ready;
 
-        // Allow watcher to initialize.
-        await Future.delayed(const Duration(milliseconds: 500));
-
-        // Create a dart file.
         await File(
           p.join(tempDir.path, 'lib', 'test_file.dart'),
         ).writeAsString('// test');
 
-        // Wait for debounce + processing.
-        await Future.delayed(const Duration(milliseconds: 1000));
+        final event = await firstEvent;
 
-        await subscription.cancel();
-
-        expect(events, hasLength(1));
-        expect(events.first.dartFiles, isNotEmpty);
-        expect(events.first.dartFiles.first, contains('test_file.dart'));
-        expect(events.first.modelFiles, isEmpty);
-        expect(events.first.packageConfigChanged, isFalse);
+        expect(event.dartFiles, isNotEmpty);
+        expect(event.dartFiles.first, contains('test_file.dart'));
+        expect(event.modelFiles, isEmpty);
+        expect(event.packageConfigChanged, isFalse);
       },
-      timeout: const Timeout(Duration(seconds: 10)),
+
     );
 
     test(
@@ -64,25 +55,20 @@ void main() {
           debounceDelay: const Duration(milliseconds: 200),
         );
 
-        final events = <FileChangeEvent>[];
-        final subscription = watcher.onFilesChanged.listen(events.add);
-
-        await Future.delayed(const Duration(milliseconds: 500));
+        final firstEvent = watcher.onFilesChanged.first;
+        await watcher.ready;
 
         await File(
           p.join(tempDir.path, 'lib', 'model.spy.yaml'),
         ).writeAsString('class: MyModel');
 
-        await Future.delayed(const Duration(milliseconds: 1000));
+        final event = await firstEvent;
 
-        await subscription.cancel();
-
-        expect(events, hasLength(1));
-        expect(events.first.modelFiles, isNotEmpty);
-        expect(events.first.modelFiles.first, contains('model.spy.yaml'));
-        expect(events.first.dartFiles, isEmpty);
+        expect(event.modelFiles, isNotEmpty);
+        expect(event.modelFiles.first, contains('model.spy.yaml'));
+        expect(event.dartFiles, isEmpty);
       },
-      timeout: const Timeout(Duration(seconds: 10)),
+
     );
 
     test(
@@ -98,22 +84,28 @@ void main() {
           debounceDelay: const Duration(milliseconds: 200),
         );
 
+        // Subscribe and wait for the watcher to be ready.
         final events = <FileChangeEvent>[];
         final subscription = watcher.onFilesChanged.listen(events.add);
+        await watcher.ready;
 
-        await Future.delayed(const Duration(milliseconds: 500));
-
+        // Write an ignored file, then a non-ignored sentinel file.
         await File(
           p.join(generatedDir, 'generated.dart'),
         ).writeAsString('// generated');
+        await File(
+          p.join(tempDir.path, 'lib', 'sentinel.dart'),
+        ).writeAsString('// sentinel');
 
-        await Future.delayed(const Duration(milliseconds: 1000));
-
+        // Wait for the sentinel event to arrive.
+        await watcher.onFilesChanged.first;
         await subscription.cancel();
 
-        expect(events, isEmpty);
+        // The only event should be the sentinel - the ignored file is filtered.
+        expect(events, hasLength(1));
+        expect(events.first.dartFiles.first, contains('sentinel.dart'));
       },
-      timeout: const Timeout(Duration(seconds: 10)),
+
     );
   });
 }

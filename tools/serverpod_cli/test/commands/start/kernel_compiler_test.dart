@@ -53,7 +53,7 @@ void main() {
     );
 
     test(
-      'when recompile is called after a change, '
+      'when compile is called with changed paths, '
       'then it succeeds incrementally',
       () async {
         final outputDill = p.join(
@@ -86,7 +86,7 @@ void main() {
           'void main() { print("modified"); }',
         );
 
-        // Incremental recompile.
+        // Incremental compile.
         final recompiled = await compiler.compile(changedPaths: {mainFile});
         expect(recompiled.errorCount, 0);
         compiler.accept();

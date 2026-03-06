@@ -54,22 +54,26 @@ class FileWatcher {
   }) : _watchPaths = watchPaths,
        _ignorePath = ignorePath;
 
+  late final List<DirectoryWatcher> _watchers = [
+    for (final watchPath in _watchPaths)
+      if (Directory(watchPath).existsSync()) DirectoryWatcher(watchPath),
+  ];
+
+  /// Completes when all underlying directory watchers are initialized.
+  ///
+  /// Subscribers must be listening to [onFilesChanged] before awaiting this,
+  /// since watcher initialization only begins when the stream has subscribers.
+  Future<void> get ready => Future.wait(_watchers.map((w) => w.ready));
+
   /// Stream of debounced, categorized file change events.
   late final Stream<FileChangeEvent> onFilesChanged = _buildStream();
 
   Stream<FileChangeEvent> _buildStream() {
-    final watchers = <DirectoryWatcher>[];
-    for (final watchPath in _watchPaths) {
-      if (Directory(watchPath).existsSync()) {
-        watchers.add(DirectoryWatcher(watchPath));
-      }
-    }
+    if (_watchers.isEmpty) return const Stream.empty();
 
-    if (watchers.isEmpty) return const Stream.empty();
-
-    final mergedStream = watchers.length == 1
-        ? watchers.first.events
-        : StreamGroup.merge(watchers.map((w) => w.events));
+    final mergedStream = _watchers.length == 1
+        ? _watchers.first.events
+        : StreamGroup.merge(_watchers.map((w) => w.events));
 
     return mergedStream
         .where((e) => !e.path.contains(_ignorePath))
