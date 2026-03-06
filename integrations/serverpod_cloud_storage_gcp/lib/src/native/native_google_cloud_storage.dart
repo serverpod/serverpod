@@ -307,6 +307,34 @@ class NativeGoogleCloudStorage extends CloudStorage
   }
 
   @override
+  Future<Uri?> getPresignedUrl({
+    required Session session,
+    required String path,
+    String method = 'GET',
+    Duration expiration = const Duration(minutes: 15),
+  }) async {
+    final signingContext = _signingContext;
+    if (signingContext == null) {
+      throw CloudStorageException(
+        'Cannot create presigned URL without signing credentials. '
+        'Ensure the storage was created with service account credentials.',
+      );
+    }
+
+    if (!await fileExists(session: session, path: path)) return null;
+
+    final signedUrl = await _createSignedUrl(
+      signingContext: signingContext,
+      bucket: bucket,
+      path: path,
+      expiration: expiration,
+      method: method,
+    );
+
+    return Uri.parse(signedUrl);
+  }
+
+  @override
   Future<bool> fileExists({
     required Session session,
     required String path,
