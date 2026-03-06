@@ -322,7 +322,7 @@ Future<int> _runWatchMode({
       return true;
     });
     if (!needsGenerate) return true;
-    return await log.progress(
+    return log.progress(
       'Generating code',
       () => performGenerate(
         config: config,
@@ -393,25 +393,14 @@ Future<int> _runWatchModeNoFes({
       .listen((_) {});
 
   // Wait for SIGINT/SIGTERM or unexpected server exit.
-  final signalCompleter = Completer<int>();
+  final (signal, teardownSignal) = _onTerminationSignal();
 
-  final sigintSub = ProcessSignal.sigint.watch().listen((_) {
-    if (!signalCompleter.isCompleted) signalCompleter.complete(0);
-  });
-  final sigtermSub = ProcessSignal.sigterm.watch().listen((_) {
-    if (!signalCompleter.isCompleted) signalCompleter.complete(0);
-  });
-
-  final exitCode = await Future.any([
-    signalCompleter.future,
-    serverProcess.exitCode,
-  ]);
+  final exitCode = await Future.any([signal, serverProcess.exitCode]);
 
   // Clean up.
   await genSub.cancel();
   await serverProcess.stop();
-  await sigintSub.cancel();
-  await sigtermSub.cancel();
+  await teardownSignal();
 
   return exitCode;
 }
@@ -441,13 +430,13 @@ Future<int> _runWatchModeWithFes({
 
   await compiler.start();
 
-  final initialResult = await _compileWithProgress(
+  final initialResult = await compileWithProgress(
     'Compiling server',
     compiler,
   );
 
   if (initialResult == null) {
-    await compiler.dispose();
+    compiler.dispose();
     log.error('Initial compilation failed.');
     return 1;
   }
@@ -457,7 +446,7 @@ Future<int> _runWatchModeWithFes({
   // IDE reload callback: compile incrementally and return the dill path.
   Future<String?> onReloadRequested() async {
     compiler.reset();
-    final result = await _compileWithProgress(
+    final result = await compileWithProgress(
       'Compiling server (IDE reload)',
       compiler,
       rejectOnFailure: true,
@@ -467,26 +456,22 @@ Future<int> _runWatchModeWithFes({
     return result.dillOutput ?? initialDill;
   }
 
-  ServerProcess createServerProcess() => ServerProcess(
-    serverDir: serverDir,
-    serverArgs: serverArgs,
-    dartExecutable: dartExecutable,
-    enableVmService: true,
-    vmServiceInfoFile: vmServiceInfoFile,
-    onReloadRequested: onReloadRequested,
-  );
-
   Future<ServerProcess> serverProcessFactory(String dillPath) async {
-    final sp = createServerProcess();
+    final sp = ServerProcess(
+      serverDir: serverDir,
+      serverArgs: serverArgs,
+      dartExecutable: dartExecutable,
+      enableVmService: true,
+      vmServiceInfoFile: vmServiceInfoFile,
+      onReloadRequested: onReloadRequested,
+    );
     await sp.start(dillPath: dillPath);
     await sp.connectToVmService();
     return sp;
   }
 
   // Start the initial server process.
-  final initialServerProcess = createServerProcess();
-  await initialServerProcess.start(dillPath: initialDill);
-  await initialServerProcess.connectToVmService();
+  final initialServerProcess = await serverProcessFactory(initialDill);
   log.info('Server running.');
 
   final session = WatchSession(
@@ -499,21 +484,13 @@ Future<int> _runWatchModeWithFes({
   session.listen(watcher.onFilesChanged);
 
   // Wait for SIGINT/SIGTERM or unexpected server exit.
-  final signalCompleter = Completer<int>();
+  final (signal, teardownSignal) = _onTerminationSignal();
 
-  final sigintSub = ProcessSignal.sigint.watch().listen((_) {
-    if (!signalCompleter.isCompleted) signalCompleter.complete(0);
-  });
-  final sigtermSub = ProcessSignal.sigterm.watch().listen((_) {
-    if (!signalCompleter.isCompleted) signalCompleter.complete(0);
-  });
-
-  final exitCode = await Future.any([signalCompleter.future, session.done]);
+  final exitCode = await Future.any([signal, session.done]);
 
   // Clean up.
   await session.dispose();
-  await sigintSub.cancel();
-  await sigtermSub.cancel();
+  await teardownSignal();
 
   return exitCode;
 }
@@ -526,32 +503,23 @@ Future<bool> _generateInIsolate(GeneratorConfig config) {
   );
 }
 
-/// Runs a compilation step with progress feedback.
-///
-/// Returns the [CompileResult] on success, or `null` if compilation failed.
-/// On failure, logs compiler output and rejects via [compiler].
-Future<CompileResult?> _compileWithProgress(
-  String message,
-  KernelCompiler compiler, {
-  bool rejectOnFailure = false,
-}) async {
-  late CompileResult result;
-  final success = await log.progress(message, () async {
-    result = await compiler.compile();
-    return result.errorCount == 0;
+/// Returns a future that completes with 0 when SIGINT or SIGTERM is received,
+/// and a teardown function to cancel the signal subscriptions.
+(Future<int>, Future<void> Function()) _onTerminationSignal() {
+  final completer = Completer<int>();
+  final sigintSub = ProcessSignal.sigint.watch().listen((_) {
+    if (!completer.isCompleted) completer.complete(0);
   });
-
-  if (!success) {
-    for (final line in result.compilerOutputLines) {
-      log.error(line);
-    }
-    if (rejectOnFailure) {
-      await compiler.reject();
-    }
-    return null;
-  }
-
-  return result;
+  final sigtermSub = ProcessSignal.sigterm.watch().listen((_) {
+    if (!completer.isCompleted) completer.complete(0);
+  });
+  return (
+    completer.future,
+    () async {
+      await sigintSub.cancel();
+      await sigtermSub.cancel();
+    },
+  );
 }
 
 /// Checks if a server is already running by reading the VM service info file
