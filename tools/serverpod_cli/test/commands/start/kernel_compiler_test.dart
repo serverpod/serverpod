@@ -17,7 +17,7 @@ void main() {
     });
 
     tearDown(() async {
-      await compiler.dispose();
+      compiler.dispose();
       await tempDir.delete(recursive: true);
     });
 

@@ -203,7 +203,7 @@ void main() {
         );
       }
       compiler.accept();
-      await compiler.dispose();
+      compiler.dispose();
     });
 
     tearDown(() async {

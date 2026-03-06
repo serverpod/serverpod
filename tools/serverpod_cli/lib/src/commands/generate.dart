@@ -193,7 +193,7 @@ Future<bool> _performGenerateWatch({
   final futureCallsAnalyzer = a.futureCalls;
 
   // Initial generation.
-  var success = await log.progress(
+  final success = await log.progress(
     'Generating code',
     () => performGenerate(
       config: config,
@@ -242,7 +242,7 @@ Future<bool> _performGenerateWatch({
       );
 
       if (needsGenerate) {
-        success = await log.progress(
+        final genSuccess = await log.progress(
           'Generating code',
           () => performGenerate(
             config: config,
@@ -252,19 +252,15 @@ Future<bool> _performGenerateWatch({
           ),
         );
 
-        if (success) {
+        if (genSuccess) {
           log.info('Incremental code generation complete.');
         }
       }
-    } catch (e) {
-      if (e is Error) {
-        log.error(e.toString(), stackTrace: e.stackTrace);
-      } else {
-        log.error(e.toString());
-      }
-      success = false;
+    } catch (e, stackTrace) {
+      log.error(e.toString(), stackTrace: stackTrace);
     }
   }
 
-  return success;
+  // The await-for loop above runs indefinitely; this is unreachable.
+  return true;
 }

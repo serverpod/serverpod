@@ -1,4 +1,5 @@
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vendored/frontend_server_client.dart';
 
 import 'sdk_path.dart';
@@ -87,9 +88,9 @@ class KernelCompiler {
   ///
   /// Required when package_config.json changes, since the FES reads it
   /// only at startup. Kills the existing process and starts a fresh one.
-  Future<void> restart() async {
+  Future<void> restart() {
     dispose();
-    await start();
+    return start();
   }
 
   /// Stop the Frontend Server process.
@@ -97,4 +98,34 @@ class KernelCompiler {
     _clientOrNull?.kill();
     _clientOrNull = null;
   }
+}
+
+/// Runs a compilation step with progress feedback.
+///
+/// Returns the [CompileResult] on success, or `null` if compilation failed.
+/// On failure, logs compiler output. If [rejectOnFailure] is true, also
+/// rejects the compile result via [compiler].
+Future<CompileResult?> compileWithProgress(
+  String message,
+  KernelCompiler compiler, {
+  Set<String> changedPaths = const {},
+  bool rejectOnFailure = false,
+}) async {
+  late CompileResult result;
+  final success = await log.progress(message, () async {
+    result = await compiler.compile(changedPaths: changedPaths);
+    return result.errorCount == 0;
+  });
+
+  if (!success) {
+    for (final line in result.compilerOutputLines) {
+      log.error(line);
+    }
+    if (rejectOnFailure) {
+      await compiler.reject();
+    }
+    return null;
+  }
+
+  return result;
 }

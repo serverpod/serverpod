@@ -55,7 +55,7 @@ class _FakeCompiler extends Fake implements KernelCompiler {
   Future<void> restart() async => calls.add('restart');
 
   @override
-  Future<void> dispose() async => calls.add('dispose');
+  void dispose() => calls.add('dispose');
 }
 
 class _FakeServer extends Fake implements ServerProcess {

@@ -334,10 +334,7 @@ class _Deferred<T> {
   _Deferred(this._futureFactory);
 
   Future<T>? _cachedFuture;
-  Future<T> get future async {
-    _cachedFuture ??= _futureFactory();
-    return _cachedFuture!;
-  }
+  Future<T> get future => _cachedFuture ??= _futureFactory();
 
   bool get initiated => _cachedFuture != null;
 

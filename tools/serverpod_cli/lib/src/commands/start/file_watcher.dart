@@ -55,7 +55,9 @@ class FileWatcher {
        _ignorePath = ignorePath;
 
   /// Stream of debounced, categorized file change events.
-  Stream<FileChangeEvent> get onFilesChanged {
+  late final Stream<FileChangeEvent> onFilesChanged = _buildStream();
+
+  Stream<FileChangeEvent> _buildStream() {
     final watchers = <DirectoryWatcher>[];
     for (final watchPath in _watchPaths) {
       if (Directory(watchPath).existsSync()) {

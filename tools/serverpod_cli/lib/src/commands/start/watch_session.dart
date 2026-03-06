@@ -106,10 +106,17 @@ class WatchSession {
       // FES reads package_config.json only at startup - must restart it.
       // After restart the FES is in initial state, so we do a full compile.
       await _compiler.restart();
-      result = await _compileWithProgress(() => _compiler.compile());
+      result = await compileWithProgress(
+        'Compiling server',
+        _compiler,
+        rejectOnFailure: true,
+      );
     } else if (event.dartFiles.isNotEmpty) {
-      result = await _compileWithProgress(
-        () => _compiler.compile(changedPaths: event.dartFiles),
+      result = await compileWithProgress(
+        'Compiling server',
+        _compiler,
+        changedPaths: event.dartFiles,
+        rejectOnFailure: true,
       );
     } else {
       // Model-only changes: codegen already ran above. The generated .dart
@@ -138,7 +145,11 @@ class WatchSession {
     // The incremental dill only contains deltas. Reset the compiler
     // so the next compile produces a complete kernel.
     _compiler.reset();
-    final fullResult = await _compileWithProgress(() => _compiler.compile());
+    final fullResult = await compileWithProgress(
+      'Compiling server',
+      _compiler,
+      rejectOnFailure: true,
+    );
     if (fullResult == null) {
       return;
     }
@@ -158,7 +169,7 @@ class WatchSession {
     await _subscription?.cancel();
     _restarting = true;
     await _server.stop();
-    await _compiler.dispose();
+    _compiler.dispose();
   }
 
   void _monitorExit(ServerProcess server) {
@@ -169,26 +180,6 @@ class WatchSession {
         }
       }),
     );
-  }
-
-  Future<CompileResult?> _compileWithProgress(
-    Future<CompileResult> Function() action,
-  ) async {
-    late CompileResult result;
-    final success = await log.progress('Compiling server', () async {
-      result = await action();
-      return result.errorCount == 0;
-    });
-
-    if (!success) {
-      for (final line in result.compilerOutputLines) {
-        log.error(line);
-      }
-      await _compiler.reject();
-      return null;
-    }
-
-    return result;
   }
 }
 
