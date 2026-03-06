@@ -59,6 +59,7 @@ export 'database_migration_version.dart';
 export 'distributed_cache_entry.dart';
 export 'exceptions/access_denied.dart';
 export 'exceptions/file_not_found.dart';
+export 'future_call_claim_entry.dart';
 export 'future_call_entry.dart';
 export 'log_entry.dart';
 export 'log_level.dart';
@@ -316,6 +317,68 @@ class Protocol extends _i1.SerializationManagerServer {
           type: 'btree',
           isUnique: false,
           isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_future_call_claim',
+      dartName: 'FutureCallClaimEntry',
+      schema: 'public',
+      module: 'serverpod',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_future_call_claim_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'futureCallId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'time',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'serverId',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'serverpod_future_call_claim_fk_0',
+          columns: ['futureCallId'],
+          referenceTable: 'serverpod_future_call',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_future_call_claim_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
         ),
       ],
       managed: true,
@@ -1569,6 +1632,9 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (dataClassName == 'FileNotFoundException') {
       return deserialize<_i15.FileNotFoundException>(data['data']);
+    }
+    if (dataClassName == 'FutureCallClaimEntry') {
+      return deserialize<_i43.FutureCallClaimEntry>(data['data']);
     }
     if (dataClassName == 'FutureCallEntry') {
       return deserialize<_i16.FutureCallEntry>(data['data']);

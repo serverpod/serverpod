@@ -52,6 +52,7 @@ export 'database_migration_version.dart';
 export 'distributed_cache_entry.dart';
 export 'exceptions/access_denied.dart';
 export 'exceptions/file_not_found.dart';
+export 'future_call_claim_entry.dart';
 export 'future_call_entry.dart';
 export 'log_entry.dart';
 export 'log_level.dart';
@@ -510,6 +511,9 @@ class Protocol extends _i1.SerializationManager {
     }
     if (dataClassName == 'FileNotFoundException') {
       return deserialize<_i11.FileNotFoundException>(data['data']);
+    }
+    if (dataClassName == 'FutureCallClaimEntry') {
+      return deserialize<_i39.FutureCallClaimEntry>(data['data']);
     }
     if (dataClassName == 'FutureCallEntry') {
       return deserialize<_i12.FutureCallEntry>(data['data']);

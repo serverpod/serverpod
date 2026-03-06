@@ -34,16 +34,21 @@ class FutureCallManager {
   final Session _logSession;
   final FutureCallSessionBuilder _sessionBuilder;
   final InitializeFutureCall _initializeFutureCall;
-
   final FutureCallConfig _config;
-
   final SerializationManager _serializationManager;
+  final String _serverId;
 
   final _futureCalls = <String, FutureCall>{};
   final FutureCallDiagnosticsService _diagnosticsService;
 
   late final ServerpodTaskScheduler _scheduler;
   late final FutureCallScanner _scanner;
+
+  /// Timer used to schedule periodic maintenance tasks
+  /// to clean up orphaned future call claims.
+  /// This timer is initialized when the manager starts
+  /// and is cancelled when the manager stops.
+  Timer? _timer;
 
   /// Tracks whether start() was called but the scanner hasn't been started
   /// yet because there were no registered future calls at the time.
@@ -67,11 +72,13 @@ class FutureCallManager {
     required Session logSession,
     required FutureCallSessionBuilder sessionProvider,
     required InitializeFutureCall initializeFutureCall,
+    required String serverId,
   }) : _diagnosticsService = diagnosticsService,
        _internalSession = internalSession,
        _logSession = logSession,
        _sessionBuilder = sessionProvider,
-       _initializeFutureCall = initializeFutureCall {
+       _initializeFutureCall = initializeFutureCall,
+       _serverId = serverId {
     _scheduler = ServerpodTaskScheduler(
       concurrencyLimit: _config.concurrencyLimit,
     );
@@ -195,6 +202,7 @@ class FutureCallManager {
     await _scanner.stop();
     await _scheduler.drain();
     if (unregisterAll) _futureCalls.clear();
+    _timer?.cancel();
   }
 
   /// Internal method to dispatch a list of [FutureCallEntry] objects to
@@ -229,6 +237,7 @@ class FutureCallManager {
     required FutureCall<SerializableModel> futureCall,
   }) async {
     final futureCallSession = _sessionBuilder(futureCallEntry.name);
+    bool deleteFutureCallEntry = true;
 
     try {
       dynamic object;
@@ -237,6 +246,23 @@ class FutureCallManager {
           futureCallEntry.serializedObject!,
           futureCall.dataType,
         );
+      }
+
+      final claim = FutureCallClaimEntry(
+        futureCallId: futureCallEntry.id,
+        serverId: _serverId,
+        time: DateTime.now().toUtc(),
+      );
+
+      // If claim insertion fails, then another instance has claimed
+      // execution for this future call entry.
+      // We should also not delete the future call entry from the table.
+      // The instance with the claim will clean up after execution.
+      try {
+        await FutureCallClaimEntry.db.insertRow(_internalSession, claim);
+      } on DatabaseInsertRowException {
+        deleteFutureCallEntry = false;
+        rethrow;
       }
 
       await futureCall.invoke(futureCallSession, object);
@@ -249,6 +275,13 @@ class FutureCallManager {
       );
 
       await futureCallSession.close(error: error, stackTrace: stackTrace);
+    } finally {
+      if (deleteFutureCallEntry) {
+        await FutureCallEntry.db.deleteWhere(
+          _internalSession,
+          where: (t) => t.id.equals(futureCallEntry.id),
+        );
+      }
     }
   }
 

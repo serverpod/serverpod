@@ -1,0 +1,35 @@
+name: projectname_server
+description: Starting point for a Serverpod server.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '^3.8.0'
+
+#resolution: workspace #--UNCOMMENT_LINE--#
+
+dependencies:
+  serverpod: 3.4.0
+
+dev_dependencies:
+  lints: '>=3.0.0 <7.0.0'
+  serverpod_test: 3.4.0
+  test: ^1.25.5
+
+serverpod:
+  scripts:
+    # Starts the server and applies migrations
+    start: dart bin/main.dart --apply-migrations
+
+    # Build the Flutter web app and copy it to the server's web directory.
+    # Windows uses xcopy since flutter's --output flag doesn't work there.
+    # See: https://github.com/flutter/flutter/issues/157886
+    flutter_build:
+      windows: >-
+        (if exist web\app rmdir /S /Q web\app)
+        & cd /D ..\projectname_flutter
+        && flutter build web --base-href /app/ --wasm
+        && xcopy /E /I /Y build\web ..\projectname_server\web\app
+      posix: |
+        cd ../projectname_flutter
+        flutter build web --base-href /app/ --wasm --output ../projectname_server/web/app
