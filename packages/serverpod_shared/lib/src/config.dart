@@ -766,6 +766,8 @@ class FutureCallConfig {
     output.writeln(
       'future call scan interval: ${scanInterval.inMilliseconds}ms',
     );
+    output.writeln('check broken future calls: $checkBrokenFutureCalls');
+    output.writeln('delete broken future calls: $deleteBrokenFutureCalls');
     return output.toString();
   }
 }
