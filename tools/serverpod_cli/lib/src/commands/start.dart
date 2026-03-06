@@ -265,7 +265,7 @@ Future<int> _runWatchMode({
   final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
   final vmServiceInfoFile = p.join(serverpodToolDir, 'vm-service-info.json');
 
-  if (!noFes) {
+  if (noFes) {
     // Check if a server is already running by verifying the service info file.
     final existingUri = await _checkExistingServer(vmServiceInfoFile);
     if (existingUri != null) {

@@ -162,7 +162,6 @@ class WatchSession {
       }),
     );
   }
-
 }
 
 /// Merges multiple buffered [FileChangeEvent]s into a single event.

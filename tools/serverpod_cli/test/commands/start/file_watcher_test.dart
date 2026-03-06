@@ -42,7 +42,6 @@ void main() {
         expect(event.modelFiles, isEmpty);
         expect(event.packageConfigChanged, isFalse);
       },
-
     );
 
     test(
@@ -68,7 +67,6 @@ void main() {
         expect(event.modelFiles.first, contains('model.spy.yaml'));
         expect(event.dartFiles, isEmpty);
       },
-
     );
 
     test(
@@ -105,7 +103,6 @@ void main() {
         expect(events, hasLength(1));
         expect(events.first.dartFiles.first, contains('sentinel.dart'));
       },
-
     );
   });
 }
