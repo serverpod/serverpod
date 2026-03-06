@@ -37,19 +37,9 @@ if [ ${#projectPaths[@]} -eq 0 ]; then
   exit 0
 fi
 
-echo "==================== Included Dart-only Projects ===================="
-for dir in "${projectPaths[@]}"; do
-  echo "  $dir"
-done
-echo "==================================================================="
-echo ""
-
 exit_code=0
 
 BASE=`pwd`
-
-echo "Running unit tests in all project that contain a test directory"
-echo ""
 
 for i in "${projectPaths[@]}"
 do
