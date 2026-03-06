@@ -282,7 +282,7 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
       - name: Start containers
-        run: docker compose up --build -V -d
+        run: docker compose --progress quiet up --build -V -d
         working-directory: ${{ matrix.module }}
       - name: Wait for services to be ready
         run: |
@@ -318,7 +318,7 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
       - name: Start containers
-        run: docker compose up --build -V -d
+        run: docker compose --progress quiet up --build -V -d
         working-directory: ${{ matrix.module.server }}
       - name: Wait for services to be ready
         run: |
