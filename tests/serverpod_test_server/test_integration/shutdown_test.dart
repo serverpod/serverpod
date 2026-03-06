@@ -26,6 +26,9 @@ void main() {
         '--role',
         'maintenance',
       ],
+      environment: {
+        'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
+      },
       verbose: verbose,
     );
 
@@ -51,6 +54,9 @@ void main() {
       final processOutput = await startProcess(
         'dart',
         ['bin/main.dart', '--mode=test'],
+        environment: {
+          'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
+        },
         verbose: verbose,
       );
 
@@ -87,6 +93,9 @@ void main() {
         final processOutput = await startProcess(
           'dart',
           ['bin/main.dart', '--mode=test'],
+          environment: {
+            'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
+          },
           verbose: verbose,
         );
 
@@ -128,6 +137,7 @@ void main() {
         ['bin/main.dart', '--mode=test'],
         environment: {
           '_SERVERPOD_SHUTDOWN_TEST_AUDITOR': '2',
+          'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
         },
         verbose: verbose,
       );
@@ -174,6 +184,9 @@ void main() {
       final processOutput = await startProcess(
         'dart',
         ['bin/main.dart', '--mode=test'],
+        environment: {
+          'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
+        },
         verbose: verbose,
       );
 
