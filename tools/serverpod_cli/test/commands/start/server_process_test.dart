@@ -4,8 +4,8 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
-import 'package:serverpod_cli/src/commands/start/sdk_path.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
+import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 

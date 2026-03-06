@@ -13,13 +13,20 @@ bool get _isCompiled {
 /// The dart binary lives at `<sdk>/bin/dart`, so go up two levels.
 String _sdkFromExe(String dartExe) => p.dirname(p.dirname(dartExe));
 
+String? _cachedSdkPath;
+
 /// Get the Dart SDK path.
+///
+/// The result is cached since the SDK path cannot change during a process
+/// lifetime.
 ///
 /// Tries in order:
 /// 1. DART_SDK environment variable
 /// 2. Platform.resolvedExecutable (reliable when running via `dart`)
 /// 3. Shell out to `dart` to resolve its executable path (when AOT-compiled)
-String getSdkPath() {
+String getSdkPath() => _cachedSdkPath ??= _resolveSdkPath();
+
+String _resolveSdkPath() {
   final dartSdkEnv = Platform.environment['DART_SDK'];
   if (dartSdkEnv != null && dartSdkEnv.isNotEmpty) {
     return dartSdkEnv;
