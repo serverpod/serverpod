@@ -28,13 +28,14 @@ void main() {
 
   group('Given a valid future call with a method when analyzed', () {
     var collector = CodeGenerationCollector();
-    late final testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<FutureCallDefinition> futureCallDefinitions;
     late FutureCallsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var futureCallFile = File(
         path.join(testDirectory.path, 'future_call.dart'),
       );
@@ -98,14 +99,14 @@ class ExampleFutureCall extends FutureCall {
     'Given a valid future call method with a first positional nullable `Session` parameter when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -183,14 +184,14 @@ class ExampleFutureCall extends FutureCall {
     'of type `Session` when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -228,14 +229,14 @@ class ExampleFutureCall extends FutureCall {
     'Given a future call with a method that has a `Session` as required named parameter when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -275,14 +276,14 @@ class ExampleFutureCall extends FutureCall {
     'Given a future call method without a first positional `Session` parameter',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -332,14 +333,14 @@ class ExampleFutureCall extends FutureCall {
     'and the first parameter instead contains a named `Session` parameter when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -389,14 +390,14 @@ class ExampleFutureCall extends FutureCall {
     'and the first parameter instead contains an optional `Session` parameter when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -445,13 +446,13 @@ class ExampleFutureCall extends FutureCall {
     'Given a future call method that without a Future<void> return type when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -507,13 +508,13 @@ class ExampleFutureCall extends FutureCall {
     'Given a future call method that returns a Future with non void type when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -567,13 +568,14 @@ class ExampleFutureCall extends FutureCall {
 
   group('Given a valid future call with private method when analyzed', () {
     var collector = CodeGenerationCollector();
-    late final testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<FutureCallDefinition> futureCallDefinitions;
     late FutureCallsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var futureCallFile = File(
         path.join(testDirectory.path, 'future_call.dart'),
       );
@@ -618,13 +620,13 @@ class ExampleFutureCall extends FutureCall {
     'Given a valid future call with multiple methods defined when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -680,13 +682,13 @@ class ExampleFutureCall extends FutureCall {
     'Given a valid future call method with documentation when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -740,13 +742,13 @@ class ExampleFutureCall extends FutureCall {
     'Given a valid future call method with "@Deprecated(<string literal>)" annotation',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -800,13 +802,13 @@ class ExampleFutureCall extends FutureCall {
     'Given a valid future call method with "@Deprecated(<string const expr>)" annotation',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -860,13 +862,14 @@ class ExampleFutureCall extends FutureCall {
 
   group('Given a valid future call method with "@deprecated" annotation', () {
     var collector = CodeGenerationCollector();
-    late final testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<FutureCallDefinition> futureCallDefinitions;
     late FutureCallsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var futureCallFile = File(
         path.join(testDirectory.path, 'future_call.dart'),
       );
@@ -919,13 +922,13 @@ class ExampleFutureCall extends FutureCall {
     'Given a valid future call with a method that has serializable parameters after the first positional Session parameter',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -1005,13 +1008,13 @@ class ExampleFutureCall extends FutureCall {
     'Given a valid future call with a method that has a SerializableModel parameter after the Session parameter',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -1070,13 +1073,13 @@ class ExampleFutureCall extends FutureCall {
     'Given a valid future call with a method that has non serializable parameters after the first positional Session parameter',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -1132,14 +1135,14 @@ class ExampleFutureCall extends FutureCall {
     'Given a future call with a method that has a positional `Session` parameter only',
     () {
       var collector = CodeGenerationCollector();
-      late final testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
 
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
