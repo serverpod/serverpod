@@ -83,7 +83,6 @@ void main() {
           await tempDir.delete(recursive: true);
         }
       },
-      timeout: const Timeout(Duration(seconds: 30)),
     );
 
     test(
@@ -120,7 +119,6 @@ void main() {
           await tempDir.delete(recursive: true);
         }
       },
-      timeout: const Timeout(Duration(seconds: 30)),
     );
 
     test(
@@ -156,7 +154,6 @@ void main() {
           await tempDir.delete(recursive: true);
         }
       },
-      timeout: const Timeout(Duration(seconds: 30)),
     );
   });
 
@@ -231,7 +228,6 @@ void main() {
 
         await serverProcess.stop();
       },
-      timeout: const Timeout(Duration(seconds: 30)),
     );
 
     test(
@@ -256,12 +252,11 @@ void main() {
 
         await serverProcess.stop();
       },
-      timeout: const Timeout(Duration(seconds: 30)),
     );
 
     test(
       'when onReloadRequested is provided and connectToVmService is called, '
-      'then the custom reloadSources service is registered',
+      'then it connects successfully without invoking the callback',
       () async {
         var callbackCalled = false;
         final serverProcess = ServerProcess(
@@ -287,7 +282,6 @@ void main() {
 
         await serverProcess.stop();
       },
-      timeout: const Timeout(Duration(seconds: 30)),
     );
   });
 }

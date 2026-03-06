@@ -481,7 +481,11 @@ Future<int> _runWatchModeWithFes({
     initialServer: initialServerProcess,
   );
 
-  session.listen(watcher.onFilesChanged);
+  final fileChangeSub = watcher.onFilesChanged
+      .asyncMapBuffer(
+        (events) => session.handleFileChange(mergeEvents(events)),
+      )
+      .listen((_) {});
 
   // Wait for SIGINT/SIGTERM or unexpected server exit.
   final (signal, teardownSignal) = _onTerminationSignal();
@@ -489,6 +493,7 @@ Future<int> _runWatchModeWithFes({
   final exitCode = await Future.any([signal, session.done]);
 
   // Clean up.
+  await fileChangeSub.cancel();
   await session.dispose();
   await teardownSignal();
 

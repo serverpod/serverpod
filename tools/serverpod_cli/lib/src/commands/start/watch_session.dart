@@ -4,7 +4,6 @@ import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
-import 'package:stream_transform/stream_transform.dart';
 
 /// Runs code generation for the given affected file paths.
 ///
@@ -29,7 +28,6 @@ class WatchSession {
   final Completer<int> _done = Completer<int>();
 
   ServerProcess _server;
-  StreamSubscription<void>? _subscription;
   bool _restarting = false;
 
   WatchSession({
@@ -47,22 +45,7 @@ class WatchSession {
   /// Completes when the server exits unexpectedly (crash).
   Future<int> get done => _done.future;
 
-  /// Starts listening to file change events.
-  ///
-  /// Events are serialized via [asyncMapBuffer]: while a reload cycle
-  /// is in progress, new events are buffered and merged.
-  void listen(Stream<FileChangeEvent> fileChanges) {
-    _subscription = fileChanges
-        .asyncMapBuffer(
-          (events) => handleFileChange(mergeEvents(events)),
-        )
-        .listen((_) {});
-  }
-
   /// Processes a single (merged) file change event.
-  ///
-  /// This is the core orchestration logic. It is public so tests can
-  /// call it directly without stream plumbing.
   Future<void> handleFileChange(FileChangeEvent event) async {
     final hasDartChanges =
         event.dartFiles.isNotEmpty ||
@@ -163,10 +146,8 @@ class WatchSession {
     log.info('Server restarted.');
   }
 
-  /// Disposes the session: cancels subscription, stops server,
-  /// disposes compiler.
+  /// Disposes the session: stops server and disposes compiler.
   Future<void> dispose() async {
-    await _subscription?.cancel();
     _restarting = true;
     await _server.stop();
     _compiler.dispose();

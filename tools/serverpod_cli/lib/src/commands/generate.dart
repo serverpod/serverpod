@@ -230,16 +230,17 @@ Future<bool> _performGenerateWatch({
     if (affectedPaths.isEmpty) continue;
 
     try {
-      final needsGenerate = await log.progress(
-        'Analyzing changes',
-        () => updateAnalyzers(
+      bool needsGenerate = false;
+      await log.progress('Analyzing changes', () async {
+        needsGenerate = await updateAnalyzers(
           config: config,
           endpointsAnalyzer: endpointsAnalyzer,
           modelAnalyzer: modelAnalyzer,
           futureCallsAnalyzer: futureCallsAnalyzer,
           affectedPaths: affectedPaths,
-        ),
-      );
+        );
+        return true;
+      });
 
       if (needsGenerate) {
         final genSuccess = await log.progress(
