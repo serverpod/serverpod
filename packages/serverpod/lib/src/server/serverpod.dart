@@ -588,6 +588,7 @@ class Serverpod {
         serializationManager,
         diagnosticsService: ServerpodFutureCallDiagnosticsService(server),
         internalSession: internalSession,
+        serverId: serverId,
         sessionProvider: (String futureCallName) => FutureCallSession(
           server: server,
           futureCallName: futureCallName,
@@ -783,7 +784,7 @@ class Serverpod {
           ),
         );
       } else {
-        _futureCallManager?.start();
+        await _futureCallManager?.start();
       }
 
       // Start health check manager
