@@ -20,10 +20,14 @@ typedef ServerProcessFactory = Future<ServerProcess> Function(String dillPath);
 /// Handles file change events by determining whether code generation,
 /// compilation (incremental or full restart), and hot reload or server
 /// restart are needed.
+///
+/// When [compiler] is `null` (--no-fes mode), the session still runs code
+/// generation and triggers VM service reloads for static file changes, but
+/// leaves compilation and hot reload to the IDE.
 class WatchSession {
-  final KernelCompiler _compiler;
+  final KernelCompiler? _compiler;
   final GenerateAction _generate;
-  final ServerProcessFactory _createServer;
+  final ServerProcessFactory? _createServer;
 
   final Completer<int> _done = Completer<int>();
 
@@ -31,9 +35,9 @@ class WatchSession {
   bool _restarting = false;
 
   WatchSession({
-    required KernelCompiler compiler,
+    KernelCompiler? compiler,
     required GenerateAction generate,
-    required ServerProcessFactory createServer,
+    ServerProcessFactory? createServer,
     required ServerProcess initialServer,
   }) : _compiler = compiler,
        _generate = generate,
@@ -83,21 +87,25 @@ class WatchSession {
       return;
     }
 
+    // Without a compiler (--no-fes), the IDE handles compilation and reload.
+    final compiler = _compiler;
+    if (compiler == null) return;
+
     // Compile changes.
     CompileResult? result;
     if (event.packageConfigChanged) {
       // FES reads package_config.json only at startup - must restart it.
       // After restart the FES is in initial state, so we do a full compile.
-      await _compiler.restart();
+      await compiler.restart();
       result = await compileWithProgress(
         'Compiling server',
-        _compiler,
+        compiler,
         rejectOnFailure: true,
       );
     } else if (event.dartFiles.isNotEmpty) {
       result = await compileWithProgress(
         'Compiling server',
-        _compiler,
+        compiler,
         changedPaths: event.dartFiles,
         rejectOnFailure: true,
       );
@@ -112,7 +120,7 @@ class WatchSession {
       return;
     }
 
-    _compiler.accept();
+    compiler.accept();
 
     // Hot reload if VM service is connected, otherwise fall back to restart.
     if (_server.isVmServiceConnected) {
@@ -127,20 +135,20 @@ class WatchSession {
     // Fall back to restart: need a full dill to boot a new process.
     // The incremental dill only contains deltas. Reset the compiler
     // so the next compile produces a complete kernel.
-    _compiler.reset();
+    compiler.reset();
     final fullResult = await compileWithProgress(
       'Compiling server',
-      _compiler,
+      compiler,
       rejectOnFailure: true,
     );
     if (fullResult == null) {
       return;
     }
-    _compiler.accept();
+    compiler.accept();
 
     _restarting = true;
     await _server.stop();
-    _server = await _createServer(fullResult.dillOutput!);
+    _server = await _createServer!(fullResult.dillOutput!);
     _monitorExit(_server);
     _restarting = false;
     log.info('Server restarted.');
@@ -150,7 +158,7 @@ class WatchSession {
   Future<void> dispose() async {
     _restarting = true;
     await _server.stop();
-    _compiler.dispose();
+    _compiler?.dispose();
   }
 
   void _monitorExit(ServerProcess server) {
