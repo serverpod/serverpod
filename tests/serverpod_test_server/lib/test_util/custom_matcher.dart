@@ -11,3 +11,11 @@ Matcher containsCount(String substring, int expectedCount) {
     return count == expectedCount;
   }, 'contains $expectedCount occurrences of "$substring"');
 }
+
+/// Returns a matcher that checks if a value
+/// does not match the regular expression given by [regexp].
+Matcher notMatches(Pattern regexp) {
+  return predicate((value) {
+    return regexp.allMatches(value.toString()).isEmpty;
+  });
+}
