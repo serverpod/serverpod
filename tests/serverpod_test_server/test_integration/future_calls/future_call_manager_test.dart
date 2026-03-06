@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:serverpod/protocol.dart' show FutureCallEntry;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
-import 'package:serverpod_test_server/test_util/builders/runtime_settings_builder.dart';
 import 'package:serverpod_test_server/test_util/logging_utils.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
@@ -723,6 +722,7 @@ void main() async {
     () {
       late Serverpod server;
       late Session session;
+      late Session logSession;
       late FutureCallManager futureCallManager;
       final testCallName = 'Test-Future-Call';
 
@@ -731,11 +731,29 @@ void main() async {
         await server.start();
 
         session = await server.createSession(enableLogging: false);
+        logSession = await server.createSession();
         await LoggingUtil.clearAllLogs(session);
+
+        futureCallManager = FutureCallManagerBuilder(
+          sessionProvider: (futureCallName) => session,
+          internalSession: session,
+          logSession: logSession,
+        ).build();
+
+        futureCallManager.registerFutureCall(CompleterTestCall(), 'Test');
+
+        await futureCallManager.scheduleFutureCall(
+          testCallName,
+          SimpleData(num: 4),
+          DateTime.now().subtract(Duration(days: 42)),
+          '1',
+          'an-identifier',
+        );
       });
 
       tearDown(() async {
         await session.close();
+        await logSession.close();
         await server.shutdown(exitProcess: false);
       });
 
@@ -743,31 +761,11 @@ void main() async {
         'when executing all scheduled FutureCalls '
         'then a message is logged for the unregistered FutureCall with error level',
         () async {
-          final settings = RuntimeSettingsBuilder().build();
-          await server.updateRuntimeSettings(settings);
-
-          final testSession = await server.createSession(enableLogging: true);
-
-          futureCallManager = FutureCallManagerBuilder(
-            sessionProvider: (futureCallName) => testSession,
-            internalSession: testSession,
-          ).build();
-
-          futureCallManager.registerFutureCall(CompleterTestCall(), 'Test');
-
-          await futureCallManager.scheduleFutureCall(
-            testCallName,
-            SimpleData(num: 4),
-            DateTime.now().subtract(Duration(days: 42)),
-            '1',
-            'an-identifier',
-          );
-
           await futureCallManager.runScheduledFutureCalls();
-          await testSession.close();
+          await logSession.close();
 
-          var logs = await LoggingUtil.findAllLogs(session);
-          var logEntry = logs.last.logs.last;
+          final logs = await LoggingUtil.findAllLogs(session);
+          final logEntry = logs.last.logs.last;
 
           expect(logEntry.logLevel, LogLevel.error);
           expect(
