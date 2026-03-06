@@ -5,7 +5,6 @@ import 'package:serverpod/protocol.dart' show FutureCallEntry;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/future_call_manager/future_call_diagnostics_service.dart';
 import 'package:serverpod_test_server/src/generated/simple_data.dart';
-import 'package:serverpod_test_server/test_util/builders/runtime_settings_builder.dart';
 import 'package:serverpod_test_server/test_util/custom_matcher.dart';
 import 'package:serverpod_test_server/test_util/logging_utils.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
@@ -40,20 +39,112 @@ class SimpleFutureCall extends FutureCall<SimpleData> {
 
 void main() {
   group(
-    'Given a FutureCallManager with default config and scheduled FutureCalls',
+    'Given a FutureCallManager with checkBrokenCalls enabled and only valid future calls',
     () {
       late Serverpod server;
       late Session session;
+      late Session logSession;
       late FutureCallManager futureCallManager;
       List<FutureCallEntry> futureCallEntries = [];
-      int futureCallsCount = 3;
+      int futureCallsCount = 2;
 
       setUp(() async {
         server = IntegrationTestServer.create();
         await server.start();
 
         session = await server.createSession(enableLogging: false);
+        logSession = await server.createSession();
         await LoggingUtil.clearAllLogs(session);
+
+        futureCallManager =
+            FutureCallManagerBuilder(
+                  sessionProvider: (futureCallName) => session,
+                  internalSession: session,
+                  logSession: logSession,
+                )
+                .withConfig(FutureCallConfig(checkBrokenCalls: true))
+                .withDiagnosticsService(MockDiagnosticsService())
+                .build();
+
+        for (int i = 0; i < futureCallsCount; i++) {
+          final data = SimpleData(num: i);
+          final entry = FutureCallEntry(
+            id: i,
+            name: 'TestCall$i',
+            serializedObject: data.toString(),
+            time: DateTime.now().toUtc(),
+            serverId: 'default',
+          );
+
+          futureCallEntries.add(entry);
+          await FutureCallEntry.db.insertRow(session, entry);
+
+          futureCallManager.registerFutureCall(
+            SimpleFutureCall(),
+            'TestCall$i',
+          );
+        }
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test('when calling start then no errors are logged', () async {
+        await futureCallManager.start();
+        await logSession.close();
+
+        final logs = await LoggingUtil.findAllLogs(session);
+        final logEntry = logs.last.logs.first;
+
+        expect(
+          logEntry.message,
+          notMatches(
+            r'Unregistered future call: \{.*\"name\":\s*\"TestCall0\".*\}\n'
+            r'Unregistered future call: \{.*\"name\":\s*\"TestCall1\".*\}\n',
+          ),
+        );
+
+        expect(
+          logEntry.message,
+          notMatches(
+            r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall0\".*\}\n'
+            r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall1\".*\}\n',
+          ),
+        );
+      });
+    },
+  );
+
+  group(
+    'Given a FutureCallManager with checkBrokenCalls enabled and unregistered future calls',
+    () {
+      late Serverpod server;
+      late Session session;
+      late Session logSession;
+      late FutureCallManager futureCallManager;
+      List<FutureCallEntry> futureCallEntries = [];
+      int futureCallsCount = 2;
+
+      setUp(() async {
+        server = IntegrationTestServer.create();
+        await server.start();
+
+        session = await server.createSession(enableLogging: false);
+        logSession = await server.createSession();
+        await LoggingUtil.clearAllLogs(session);
+
+        futureCallManager =
+            FutureCallManagerBuilder(
+                  sessionProvider: (futureCallName) => session,
+                  internalSession: session,
+                  logSession: logSession,
+                )
+                .withConfig(FutureCallConfig(checkBrokenCalls: true))
+                .withDiagnosticsService(MockDiagnosticsService())
+                .build();
 
         for (int i = 0; i < futureCallsCount; i++) {
           final data = SimpleData(num: i);
@@ -73,409 +164,62 @@ void main() {
       tearDown(() async {
         await FutureCallEntry.db.delete(session, futureCallEntries);
         await session.close();
+        await logSession.close();
         await server.shutdown(exitProcess: false);
       });
 
       test(
         'when calling start then unregistered future calls are logged',
         () async {
-          final settings = RuntimeSettingsBuilder().build();
-          await server.updateRuntimeSettings(settings);
-
-          final testSession = await server.createSession(enableLogging: true);
-
-          futureCallManager = FutureCallManagerBuilder(
-            sessionProvider: (futureCallName) => testSession,
-            internalSession: testSession,
-          ).withDiagnosticsService(MockDiagnosticsService()).build();
-
-          // only register one future call
-          futureCallManager.registerFutureCall(
-            SimpleFutureCall(),
-            'TestCall1',
-          );
-
           await futureCallManager.start();
-          await testSession.close();
+          await logSession.close();
 
-          var logs = await LoggingUtil.findAllLogs(session);
-          var logEntry = logs.last.logs.first;
+          final logs = await LoggingUtil.findAllLogs(session);
+          final logEntry = logs.last.logs.first;
 
-          expect(logEntry.logLevel, LogLevel.warning);
           expect(
             logEntry.message,
             matches(
               r'Unregistered future call: \{.*\"name\":\s*\"TestCall0\".*\}\n'
-              r'Unregistered future call: \{.*\"name\":\s*\"TestCall2\".*\}\n',
+              r'Unregistered future call: \{.*\"name\":\s*\"TestCall1\".*\}\n',
             ),
           );
         },
       );
 
       test(
-        'when calling runScheduledFutureCalls then unregistered future calls are logged',
+        'when calling start then unregistered future calls are not deleted from the database',
         () async {
-          final settings = RuntimeSettingsBuilder().build();
-          await server.updateRuntimeSettings(settings);
-
-          final testSession = await server.createSession(enableLogging: true);
-
-          futureCallManager = FutureCallManagerBuilder(
-            sessionProvider: (futureCallName) => testSession,
-            internalSession: testSession,
-          ).withDiagnosticsService(MockDiagnosticsService()).build();
-
-          // only register one future call
-          futureCallManager.registerFutureCall(
-            SimpleFutureCall(),
-            'TestCall1',
-          );
-
-          await futureCallManager.runScheduledFutureCalls();
-          await testSession.close();
-
-          var logs = await LoggingUtil.findAllLogs(session);
-          var logEntry = logs.last.logs.first;
-
-          expect(logEntry.logLevel, LogLevel.warning);
-          expect(
-            logEntry.message,
-            matches(
-              r'Unregistered future call: \{.*\"name\":\s*\"TestCall0\".*\}\n'
-              r'Unregistered future call: \{.*\"name\":\s*\"TestCall2\".*\}\n',
-            ),
-          );
-        },
-      );
-
-      test('when calling start then broken future calls are logged', () async {
-        final settings = RuntimeSettingsBuilder().build();
-        await server.updateRuntimeSettings(settings);
-
-        final testSession = await server.createSession(enableLogging: true);
-
-        futureCallManager = FutureCallManagerBuilder(
-          sessionProvider: (futureCallName) => testSession,
-          internalSession: testSession,
-        ).withDiagnosticsService(MockDiagnosticsService()).build();
-
-        // register future calls
-        for (int i = 0; i < futureCallsCount; i++) {
-          futureCallManager.registerFutureCall(
-            SimpleFutureCall(),
-            'TestCall$i',
-          );
-        }
-
-        // update stored future call data to fail deserialization
-        await FutureCallEntry.db.updateRow(
-          session,
-          FutureCallEntry(
-            id: 1,
-            name: 'TestCall1',
-            serializedObject: '{}',
-            time: DateTime.now().toUtc(),
-            serverId: 'default',
-          ),
-        );
-
-        await futureCallManager.start();
-        await testSession.close();
-
-        var logs = await LoggingUtil.findAllLogs(session);
-        var logEntry = logs.last.logs.first;
-
-        expect(logEntry.logLevel, LogLevel.warning);
-        expect(
-          logEntry.message,
-          matches(
-            r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall1\".*\}\n',
-          ),
-        );
-      });
-
-      test(
-        'when calling runScheduledFutureCalls then broken future calls are logged',
-        () async {
-          final settings = RuntimeSettingsBuilder().build();
-          await server.updateRuntimeSettings(settings);
-
-          final testSession = await server.createSession(enableLogging: true);
-
-          futureCallManager = FutureCallManagerBuilder(
-            sessionProvider: (futureCallName) => testSession,
-            internalSession: testSession,
-          ).withDiagnosticsService(MockDiagnosticsService()).build();
-
-          // register future calls
-          for (int i = 0; i < futureCallsCount; i++) {
-            futureCallManager.registerFutureCall(
-              SimpleFutureCall(),
-              'TestCall$i',
-            );
-          }
-
-          // update stored future call data to fail deserialization
-          await FutureCallEntry.db.updateRow(
-            session,
-            FutureCallEntry(
-              id: 1,
-              name: 'TestCall1',
-              serializedObject: '{}',
-              time: DateTime.now().toUtc(),
-              serverId: 'default',
-            ),
-          );
-
-          await futureCallManager.runScheduledFutureCalls();
-          await testSession.close();
-
-          var logs = await LoggingUtil.findAllLogs(session);
-          var logEntry = logs.last.logs.first;
-
-          expect(logEntry.logLevel, LogLevel.warning);
-          expect(
-            logEntry.message,
-            matches(
-              r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall1\".*\}\n',
-            ),
-          );
-        },
-      );
-    },
-  );
-
-  group(
-    'Given a FutureCallManager with scheduled FutureCalls and checkBrokenFutureCalls is disabled in config',
-    () {
-      late Serverpod server;
-      late Session session;
-      late FutureCallManager futureCallManager;
-      List<FutureCallEntry> futureCallEntries = [];
-      int futureCallsCount = 3;
-
-      setUp(() async {
-        server = IntegrationTestServer.create();
-        await server.start();
-
-        session = await server.createSession(enableLogging: false);
-        await LoggingUtil.clearAllLogs(session);
-
-        for (int i = 0; i < futureCallsCount; i++) {
-          final data = SimpleData(num: i);
-          final entry = FutureCallEntry(
-            id: i,
-            name: 'TestCall$i',
-            serializedObject: data.toString(),
-            time: DateTime.now().toUtc(),
-            serverId: 'default',
-          );
-
-          futureCallEntries.add(entry);
-          await FutureCallEntry.db.insertRow(session, entry);
-        }
-      });
-
-      tearDown(() async {
-        await FutureCallEntry.db.delete(session, futureCallEntries);
-        await session.close();
-        await server.shutdown(exitProcess: false);
-      });
-
-      test(
-        'when calling start then unregistered future calls are not logged',
-        () async {
-          final settings = RuntimeSettingsBuilder().build();
-          await server.updateRuntimeSettings(settings);
-
-          final testSession = await server.createSession(enableLogging: true);
-
-          futureCallManager =
-              FutureCallManagerBuilder(
-                    sessionProvider: (futureCallName) => testSession,
-                    internalSession: testSession,
-                  )
-                  .withConfig(FutureCallConfig(checkBrokenFutureCalls: false))
-                  .withDiagnosticsService(MockDiagnosticsService())
-                  .build();
-
-          // only register one future call
-          futureCallManager.registerFutureCall(
-            SimpleFutureCall(),
-            'TestCall1',
-          );
-
           await futureCallManager.start();
-          await testSession.close();
 
-          final logs = await LoggingUtil.findAllLogs(session);
-          final logEntry = logs.last.logs.firstOrNull;
+          final entries = await FutureCallEntry.db.find(session);
+          final entryNames = entries.map((e) => e.name).toList();
 
-          expect(
-            logEntry?.message,
-            notMatches(
-              r'Unregistered future call: \{.*\"name\":\s*\"TestCall0\".*\}\n'
-              r'Unregistered future call: \{.*\"name\":\s*\"TestCall2\".*\}\n',
-            ),
-          );
-        },
-      );
-
-      test(
-        'when calling runScheduledFutureCalls then unregistered future calls are not logged',
-        () async {
-          final settings = RuntimeSettingsBuilder().build();
-          await server.updateRuntimeSettings(settings);
-
-          final testSession = await server.createSession(enableLogging: true);
-
-          futureCallManager =
-              FutureCallManagerBuilder(
-                    sessionProvider: (futureCallName) => testSession,
-                    internalSession: testSession,
-                  )
-                  .withConfig(FutureCallConfig(checkBrokenFutureCalls: false))
-                  .withDiagnosticsService(MockDiagnosticsService())
-                  .build();
-
-          // only register one future call
-          futureCallManager.registerFutureCall(
-            SimpleFutureCall(),
-            'TestCall1',
-          );
-
-          await futureCallManager.runScheduledFutureCalls();
-          await testSession.close();
-
-          final logs = await LoggingUtil.findAllLogs(session);
-          final logEntry = logs.last.logs.firstOrNull;
-
-          expect(
-            logEntry?.message,
-            notMatches(
-              r'Unregistered future call: \{.*\"name\":\s*\"TestCall0\".*\}\n'
-              r'Unregistered future call: \{.*\"name\":\s*\"TestCall2\".*\}\n',
-            ),
-          );
-        },
-      );
-
-      test(
-        'when calling start then broken future calls are not logged',
-        () async {
-          final settings = RuntimeSettingsBuilder().build();
-          await server.updateRuntimeSettings(settings);
-
-          final testSession = await server.createSession(enableLogging: true);
-
-          futureCallManager =
-              FutureCallManagerBuilder(
-                    sessionProvider: (futureCallName) => testSession,
-                    internalSession: testSession,
-                  )
-                  .withConfig(FutureCallConfig(checkBrokenFutureCalls: false))
-                  .withDiagnosticsService(MockDiagnosticsService())
-                  .build();
-
-          // register future calls
-          for (int i = 0; i < futureCallsCount; i++) {
-            futureCallManager.registerFutureCall(
-              SimpleFutureCall(),
-              'TestCall$i',
-            );
-          }
-
-          // update stored future call data to fail deserialization
-          await FutureCallEntry.db.updateRow(
-            session,
-            FutureCallEntry(
-              id: 1,
-              name: 'TestCall1',
-              serializedObject: '{}',
-              time: DateTime.now().toUtc(),
-              serverId: 'default',
-            ),
-          );
-
-          await futureCallManager.start();
-          await testSession.close();
-
-          final logs = await LoggingUtil.findAllLogs(session);
-          final logEntry = logs.last.logs.firstOrNull;
-
-          expect(
-            logEntry?.message,
-            notMatches(
-              r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall1\".*\}\n',
-            ),
-          );
-        },
-      );
-
-      test(
-        'when calling runScheduledFutureCalls then broken future calls are not logged',
-        () async {
-          final settings = RuntimeSettingsBuilder().build();
-          await server.updateRuntimeSettings(settings);
-
-          final testSession = await server.createSession(enableLogging: true);
-
-          futureCallManager =
-              FutureCallManagerBuilder(
-                    sessionProvider: (futureCallName) => testSession,
-                    internalSession: testSession,
-                  )
-                  .withConfig(FutureCallConfig(checkBrokenFutureCalls: false))
-                  .withDiagnosticsService(MockDiagnosticsService())
-                  .build();
-
-          // register future calls
-          for (int i = 0; i < futureCallsCount; i++) {
-            futureCallManager.registerFutureCall(
-              SimpleFutureCall(),
-              'TestCall$i',
-            );
-          }
-
-          // update stored future call data to fail deserialization
-          await FutureCallEntry.db.updateRow(
-            session,
-            FutureCallEntry(
-              id: 1,
-              name: 'TestCall1',
-              serializedObject: '{}',
-              time: DateTime.now().toUtc(),
-              serverId: 'default',
-            ),
-          );
-
-          await futureCallManager.runScheduledFutureCalls();
-          await testSession.close();
-
-          final logs = await LoggingUtil.findAllLogs(session);
-          final logEntry = logs.last.logs.firstOrNull;
-
-          expect(
-            logEntry?.message,
-            notMatches(
-              r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall1\".*\}\n',
-            ),
-          );
+          expect(entryNames, containsAll(['TestCall0', 'TestCall1']));
         },
       );
     },
   );
 
   withServerpod(
-    'Given a FutureCallManager with scheduled FutureCalls and deleteBrokenFutureCalls enabled in config',
+    'Given a FutureCallManager with deleteBrokenCalls enabled and unregistered future calls',
     (sessionBuilder, _) {
       late Session session;
       late FutureCallManager futureCallManager;
       List<FutureCallEntry> futureCallEntries = [];
-      int futureCallsCount = 3;
+      int futureCallsCount = 2;
 
       setUp(() async {
         session = sessionBuilder.build();
+
+        futureCallManager =
+            FutureCallManagerBuilder(
+                  sessionProvider: (futureCallName) => session,
+                  internalSession: session,
+                )
+                .withConfig(FutureCallConfig(deleteBrokenCalls: true))
+                .withDiagnosticsService(MockDiagnosticsService())
+                .build();
 
         for (int i = 0; i < futureCallsCount; i++) {
           final data = SimpleData(num: i);
@@ -489,12 +233,6 @@ void main() {
 
           futureCallEntries.add(entry);
           await FutureCallEntry.db.insertRow(session, entry);
-
-          futureCallManager =
-              FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
-                  .withConfig(FutureCallConfig(deleteBrokenFutureCalls: true))
-                  .withDiagnosticsService(MockDiagnosticsService())
-                  .build();
         }
       });
 
@@ -506,62 +244,158 @@ void main() {
       test(
         'when calling start then unregistered future calls are deleted from the database',
         () async {
-          // only register one future call
-          futureCallManager.registerFutureCall(
-            SimpleFutureCall(),
-            'TestCall1',
-          );
-
           await futureCallManager.start();
-
-          final futureCallEntries = await FutureCallEntry.db.find(session);
-          expect(futureCallEntries, hasLength(1));
-          expect(futureCallEntries.firstOrNull?.name, 'TestCall1');
-        },
-      );
-
-      test(
-        'when calling start then broken future calls are deleted from the database',
-        () async {
-          // register future calls
-          for (int i = 0; i < futureCallsCount; i++) {
-            futureCallManager.registerFutureCall(
-              SimpleFutureCall(),
-              'TestCall$i',
-            );
-          }
-
-          // update stored future call data to fail deserialization
-          await FutureCallEntry.db.updateRow(
-            session,
-            FutureCallEntry(
-              id: 1,
-              name: 'TestCall1',
-              serializedObject: '{}',
-              time: DateTime.now().toUtc(),
-              serverId: 'default',
-            ),
-          );
-
-          await futureCallManager.start();
-
-          final futureCallEntries = await FutureCallEntry.db.find(session);
-
-          expect(futureCallEntries, hasLength(futureCallsCount - 1));
-          expect(futureCallEntries.firstOrNull?.name, 'TestCall0');
-          expect(futureCallEntries.lastOrNull?.name, 'TestCall2');
+          final entries = await FutureCallEntry.db.find(session);
+          expect(entries, isEmpty);
         },
       );
     },
   );
 
   group(
-    'Given a Serverpod server instance with default config and less than 1000 future calls in the database',
+    'Given a FutureCallManager with checkBrokenCalls enabled and broken future calls',
+    () {
+      late Serverpod server;
+      late Session session;
+      late Session logSession;
+      late FutureCallManager futureCallManager;
+      List<FutureCallEntry> futureCallEntries = [];
+      int futureCallsCount = 2;
+
+      setUp(() async {
+        server = IntegrationTestServer.create();
+        await server.start();
+
+        session = await server.createSession(enableLogging: false);
+        logSession = await server.createSession();
+        await LoggingUtil.clearAllLogs(session);
+
+        futureCallManager =
+            FutureCallManagerBuilder(
+                  sessionProvider: (futureCallName) => session,
+                  internalSession: session,
+                  logSession: logSession,
+                )
+                .withConfig(FutureCallConfig(checkBrokenCalls: true))
+                .withDiagnosticsService(MockDiagnosticsService())
+                .build();
+
+        for (int i = 0; i < futureCallsCount; i++) {
+          final name = 'TestCall$i';
+          final entry = FutureCallEntry(
+            id: i,
+            name: name,
+            serializedObject: '{}',
+            time: DateTime.now().toUtc(),
+            serverId: 'default',
+          );
+
+          futureCallEntries.add(entry);
+          await FutureCallEntry.db.insertRow(session, entry);
+          futureCallManager.registerFutureCall(SimpleFutureCall(), name);
+        }
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await logSession.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when calling start then broken future calls are logged',
+        () async {
+          await futureCallManager.start();
+          await logSession.close();
+
+          final logs = await LoggingUtil.findAllLogs(session);
+          final logEntry = logs.last.logs.first;
+
+          expect(
+            logEntry.message,
+            matches(
+              r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall0\".*\}\n'
+              r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall1\".*\}\n',
+            ),
+          );
+        },
+      );
+
+      test(
+        'when calling start then broken future calls are not deleted from the database',
+        () async {
+          await futureCallManager.start();
+
+          final entries = await FutureCallEntry.db.find(session);
+          final entryNames = entries.map((e) => e.name).toList();
+
+          expect(entryNames, containsAll(['TestCall0', 'TestCall1']));
+        },
+      );
+    },
+  );
+
+  withServerpod(
+    'Given a FutureCallManager with deleteBrokenCalls enabled and broken future calls',
+    (sessionBuilder, _) {
+      late Session session;
+      late FutureCallManager futureCallManager;
+      List<FutureCallEntry> futureCallEntries = [];
+      int futureCallsCount = 2;
+
+      setUp(() async {
+        session = sessionBuilder.build();
+
+        futureCallManager =
+            FutureCallManagerBuilder(
+                  sessionProvider: (futureCallName) => session,
+                  internalSession: session,
+                )
+                .withConfig(FutureCallConfig(deleteBrokenCalls: true))
+                .withDiagnosticsService(MockDiagnosticsService())
+                .build();
+
+        for (int i = 0; i < futureCallsCount; i++) {
+          final name = 'TestCall$i';
+          final entry = FutureCallEntry(
+            id: i,
+            name: name,
+            serializedObject: '{}',
+            time: DateTime.now().toUtc(),
+            serverId: 'default',
+          );
+
+          futureCallEntries.add(entry);
+          await FutureCallEntry.db.insertRow(session, entry);
+          futureCallManager.registerFutureCall(SimpleFutureCall(), name);
+        }
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+      });
+
+      test(
+        'when calling start then broken future calls are deleted from the database',
+        () async {
+          await futureCallManager.start();
+          final entries = await FutureCallEntry.db.find(session);
+          expect(entries, isEmpty);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Serverpod server instance with default config'
+    'and valid registered future calls in the database',
     () {
       late Serverpod server;
       late Session session;
       List<FutureCallEntry> futureCallEntries = [];
-      int futureCallsCount = 3;
+      int futureCallsCount = 2;
 
       setUp(() async {
         server = IntegrationTestServer.create();
@@ -569,15 +403,18 @@ void main() {
         await LoggingUtil.clearAllLogs(session);
 
         for (int i = 0; i < futureCallsCount; i++) {
-          final data = SimpleData(num: i);
+          final name = 'TestCall$i';
+          final data = SimpleData(num: 1);
+
           final entry = FutureCallEntry(
             id: i,
-            name: 'TestCall$i',
+            name: name,
             serializedObject: data.toString(),
             time: DateTime.now().toUtc(),
             serverId: 'default',
           );
 
+          server.registerFutureCall(SimpleFutureCall(), name);
           futureCallEntries.add(entry);
           await FutureCallEntry.db.insertRow(session, entry);
         }
@@ -590,62 +427,26 @@ void main() {
       });
 
       test(
-        'when starting Serverpod, then unregistered future calls are logged',
+        'when starting Serverpod, then no errors are logged',
         () async {
-          server.registerFutureCall(SimpleFutureCall(), 'TestCall1');
           await server.start();
-
-          // close the session to flush the cached logs to database
           await server.internalLoggingSession.close();
 
-          var logs = await LoggingUtil.findAllLogs(session);
-          var logEntry = logs.last.logs.first;
+          final logs = await LoggingUtil.findAllLogs(session);
+          final logEntry = logs.lastOrNull?.logs.firstOrNull;
 
-          expect(logEntry.logLevel, LogLevel.warning);
           expect(
-            logEntry.message,
-            matches(
+            logEntry?.message,
+            notMatches(
               r'Unregistered future call: \{.*\"name\":\s*\"TestCall0\".*\}\n'
-              r'Unregistered future call: \{.*\"name\":\s*\"TestCall2\".*\}\n',
-            ),
-          );
-        },
-      );
-
-      test(
-        'when starting Serverpod, then broken future calls are logged',
-        () async {
-          // register future calls
-          for (int i = 0; i < futureCallsCount; i++) {
-            server.registerFutureCall(
-              SimpleFutureCall(),
-              'TestCall$i',
-            );
-          }
-
-          // update stored future call data to fail deserialization
-          await FutureCallEntry.db.updateRow(
-            session,
-            FutureCallEntry(
-              id: 1,
-              name: 'TestCall1',
-              serializedObject: '{}',
-              time: DateTime.now().toUtc(),
-              serverId: 'default',
+              r'Unregistered future call: \{.*\"name\":\s*\"TestCall1\".*\}\n',
             ),
           );
 
-          await server.start();
-          // close the session to flush the cached logs to database
-          await server.internalLoggingSession.close();
-
-          var logs = await LoggingUtil.findAllLogs(session);
-          var logEntry = logs.last.logs.first;
-
-          expect(logEntry.logLevel, LogLevel.warning);
           expect(
-            logEntry.message,
-            matches(
+            logEntry?.message,
+            notMatches(
+              r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall0\".*\}\n'
               r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall1\".*\}\n',
             ),
           );
@@ -655,136 +456,30 @@ void main() {
   );
 
   group(
-    'Given a Serverpod server instance with checkBrokenFutureCalls enabled in future call config',
+    'Given a Serverpod server instance with default config and at least 1000'
+    'future calls in the database with at least 1 unregistered future call',
     () {
       late Serverpod server;
       late Session session;
       List<FutureCallEntry> futureCallEntries = [];
-      int futureCallsCount = 3;
+      int futureCallsCount = 1000;
 
       setUp(() async {
-        server = IntegrationTestServer.create(
-          config: _ServerpodConfigExtension.loadConfig().copyWith(
-            futureCall: FutureCallConfig(checkBrokenFutureCalls: true),
-          ),
-        );
+        server = IntegrationTestServer.create();
         session = await server.createSession(enableLogging: false);
         await LoggingUtil.clearAllLogs(session);
 
         for (int i = 0; i < futureCallsCount; i++) {
-          final data = SimpleData(num: i);
+          final name = 'TestCall$i';
           final entry = FutureCallEntry(
             id: i,
-            name: 'TestCall$i',
-            serializedObject: data.toString(),
+            name: name,
+            serializedObject: '{}',
             time: DateTime.now().toUtc(),
             serverId: 'default',
           );
 
-          futureCallEntries.add(entry);
-          await FutureCallEntry.db.insertRow(session, entry);
-        }
-      });
-
-      tearDown(() async {
-        await FutureCallEntry.db.delete(session, futureCallEntries);
-        await session.close();
-        await server.shutdown(exitProcess: false);
-      });
-
-      test(
-        'when starting Serverpod, then unregistered future calls are logged',
-        () async {
-          server.registerFutureCall(SimpleFutureCall(), 'TestCall1');
-          await server.start();
-
-          // close the session to flush the cached logs to database
-          await server.internalLoggingSession.close();
-
-          var logs = await LoggingUtil.findAllLogs(session);
-          var logEntry = logs.last.logs.first;
-
-          expect(logEntry.logLevel, LogLevel.warning);
-          expect(
-            logEntry.message,
-            matches(
-              r'Unregistered future call: \{.*\"name\":\s*\"TestCall0\".*\}\n'
-              r'Unregistered future call: \{.*\"name\":\s*\"TestCall2\".*\}\n',
-            ),
-          );
-        },
-      );
-
-      test(
-        'when starting Serverpod, then broken future calls are logged',
-        () async {
-          // register future calls
-          for (int i = 0; i < futureCallsCount; i++) {
-            server.registerFutureCall(
-              SimpleFutureCall(),
-              'TestCall$i',
-            );
-          }
-
-          // update stored future call data to fail deserialization
-          await FutureCallEntry.db.updateRow(
-            session,
-            FutureCallEntry(
-              id: 1,
-              name: 'TestCall1',
-              serializedObject: '{}',
-              time: DateTime.now().toUtc(),
-              serverId: 'default',
-            ),
-          );
-
-          await server.start();
-          // close the session to flush the cached logs to database
-          await server.internalLoggingSession.close();
-
-          var logs = await LoggingUtil.findAllLogs(session);
-          var logEntry = logs.last.logs.first;
-
-          expect(logEntry.logLevel, LogLevel.warning);
-          expect(
-            logEntry.message,
-            matches(
-              r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall1\".*\}\n',
-            ),
-          );
-        },
-      );
-    },
-  );
-
-  group(
-    'Given a Serverpod server instance with checkBrokenFutureCalls disabled in future call config',
-    () {
-      late Serverpod server;
-      late Session session;
-      List<FutureCallEntry> futureCallEntries = [];
-      int futureCallsCount = 3;
-
-      setUp(() async {
-        server = IntegrationTestServer.create(
-          config: _ServerpodConfigExtension.loadConfig().copyWith(
-            futureCall: FutureCallConfig(checkBrokenFutureCalls: false),
-          ),
-        );
-
-        session = await server.createSession(enableLogging: false);
-        await LoggingUtil.clearAllLogs(session);
-
-        for (int i = 0; i < futureCallsCount; i++) {
-          final data = SimpleData(num: i);
-          final entry = FutureCallEntry(
-            id: i,
-            name: 'TestCall$i',
-            serializedObject: data.toString(),
-            time: DateTime.now().toUtc(),
-            serverId: 'default',
-          );
-
+          if (i != 0) server.registerFutureCall(SimpleFutureCall(), name);
           futureCallEntries.add(entry);
           await FutureCallEntry.db.insertRow(session, entry);
         }
@@ -799,60 +494,725 @@ void main() {
       test(
         'when starting Serverpod, then unregistered future calls are not logged',
         () async {
-          server.registerFutureCall(SimpleFutureCall(), 'TestCall1');
           await server.start();
-
-          // close the session to flush the cached logs to database
           await server.internalLoggingSession.close();
 
-          var logs = await LoggingUtil.findAllLogs(session);
-          var logEntry = logs.lastOrNull?.logs.firstOrNull;
+          final logs = await LoggingUtil.findAllLogs(session);
+          final logEntry = logs.lastOrNull?.logs.firstOrNull;
 
           expect(
             logEntry?.message,
             notMatches(
-              r'Unregistered future call: \{.*\"name\":\s*\"TestCall0\".*\}\n'
-              r'Unregistered future call: \{.*\"name\":\s*\"TestCall2\".*\}\n',
+              r'Unregistered future call: \{.*\"name\":\s*\"TestCall0\".*\}\n',
             ),
           );
         },
       );
 
       test(
-        'when starting Serverpod, then broken future calls are not logged',
+        'when starting Serverpod, then unregistered future calls are not deleted from the database',
         () async {
-          // register future calls
-          for (int i = 0; i < futureCallsCount; i++) {
-            server.registerFutureCall(
-              SimpleFutureCall(),
-              'TestCall$i',
-            );
-          }
+          await server.start();
+          final entries = await FutureCallEntry.db.find(session);
+          expect(entries, hasLength(futureCallsCount));
+        },
+      );
+    },
+  );
 
-          // update stored future call data to fail deserialization
-          await FutureCallEntry.db.updateRow(
-            session,
-            FutureCallEntry(
-              id: 1,
-              name: 'TestCall1',
-              serializedObject: '{}',
-              time: DateTime.now().toUtc(),
-              serverId: 'default',
-            ),
+  group(
+    'Given a Serverpod server instance with default config and less than 1000'
+    'future calls in the database with at least 1 unregistered future call',
+    () {
+      late Serverpod server;
+      late Session session;
+      List<FutureCallEntry> futureCallEntries = [];
+      int futureCallsCount = 999;
+
+      setUp(() async {
+        server = IntegrationTestServer.create();
+        session = await server.createSession(enableLogging: false);
+        await LoggingUtil.clearAllLogs(session);
+
+        for (int i = 0; i < futureCallsCount; i++) {
+          final name = 'TestCall$i';
+          final entry = FutureCallEntry(
+            id: i,
+            name: name,
+            serializedObject: '{}',
+            time: DateTime.now().toUtc(),
+            serverId: 'default',
           );
 
+          if (i != 0) server.registerFutureCall(SimpleFutureCall(), name);
+          futureCallEntries.add(entry);
+          await FutureCallEntry.db.insertRow(session, entry);
+        }
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when starting Serverpod, then unregistered future calls are logged',
+        () async {
           await server.start();
-          // close the session to flush the cached logs to database
           await server.internalLoggingSession.close();
 
-          var logs = await LoggingUtil.findAllLogs(session);
-          var logEntry = logs.lastOrNull?.logs.firstOrNull;
+          final logs = await LoggingUtil.findAllLogs(session);
+          final logEntry = logs.last.logs.first;
+
+          expect(
+            logEntry.message,
+            matches(
+              r'Unregistered future call: \{.*\"name\":\s*\"TestCall0\".*\}\n',
+            ),
+          );
+        },
+      );
+
+      test(
+        'when starting Serverpod, then unregistered future calls are not deleted from the database',
+        () async {
+          await server.start();
+          final entries = await FutureCallEntry.db.find(session);
+          expect(entries, hasLength(futureCallsCount));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Serverpod server instance with default config and at least 1000 registered'
+    'future calls in the database with at least 1 broken future call',
+    () {
+      late Serverpod server;
+      late Session session;
+      List<FutureCallEntry> futureCallEntries = [];
+      int futureCallsCount = 1000;
+
+      setUp(() async {
+        server = IntegrationTestServer.create();
+        session = await server.createSession(enableLogging: false);
+        await LoggingUtil.clearAllLogs(session);
+
+        for (int i = 0; i < futureCallsCount; i++) {
+          final name = 'TestCall$i';
+          final data = SimpleData(num: i);
+
+          final entry = FutureCallEntry(
+            id: i,
+            name: name,
+            serializedObject: i == 0 ? '{}' : data.toString(),
+            time: DateTime.now().toUtc(),
+            serverId: 'default',
+          );
+
+          server.registerFutureCall(SimpleFutureCall(), name);
+          futureCallEntries.add(entry);
+          await FutureCallEntry.db.insertRow(session, entry);
+        }
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when starting Serverpod, then broken future calls are not logged',
+        () async {
+          await server.start();
+          await server.internalLoggingSession.close();
+
+          final logs = await LoggingUtil.findAllLogs(session);
+          final logEntry = logs.lastOrNull?.logs.firstOrNull;
 
           expect(
             logEntry?.message,
             notMatches(
+              r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall0\".*\}\n',
+            ),
+          );
+        },
+      );
+
+      test(
+        'when starting Serverpod, then broken future calls are not deleted from the database',
+        () async {
+          await server.start();
+          final entries = await FutureCallEntry.db.find(session);
+          expect(entries, hasLength(futureCallsCount));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Serverpod server instance with default config and less than 1000'
+    'registered future calls in the database with at least 1 broken future call',
+    () {
+      late Serverpod server;
+      late Session session;
+      List<FutureCallEntry> futureCallEntries = [];
+      int futureCallsCount = 999;
+
+      setUp(() async {
+        server = IntegrationTestServer.create();
+        session = await server.createSession(enableLogging: false);
+        await LoggingUtil.clearAllLogs(session);
+
+        for (int i = 0; i < futureCallsCount; i++) {
+          final name = 'TestCall$i';
+          final data = SimpleData(num: i);
+
+          final entry = FutureCallEntry(
+            id: i,
+            name: name,
+            serializedObject: i == 0 ? '{}' : data.toString(),
+            time: DateTime.now().toUtc(),
+            serverId: 'default',
+          );
+
+          server.registerFutureCall(SimpleFutureCall(), name);
+          futureCallEntries.add(entry);
+          await FutureCallEntry.db.insertRow(session, entry);
+        }
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when starting Serverpod, then broken future calls are logged',
+        () async {
+          await server.start();
+          await server.internalLoggingSession.close();
+
+          final logs = await LoggingUtil.findAllLogs(session);
+          final logEntry = logs.last.logs.first;
+
+          expect(
+            logEntry.message,
+            matches(
+              r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall0\".*\}\n',
+            ),
+          );
+        },
+      );
+
+      test(
+        'when starting Serverpod, then broken future calls are not deleted from the database',
+        () async {
+          await server.start();
+          final entries = await FutureCallEntry.db.find(session);
+          expect(entries, hasLength(futureCallsCount));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Serverpod server instance with checkBrokenCalls enabled'
+    'in future call config and unregistered future calls',
+    () {
+      late Serverpod server;
+      late Session session;
+      List<FutureCallEntry> futureCallEntries = [];
+      int futureCallsCount = 3;
+
+      setUp(() async {
+        server = IntegrationTestServer.create(
+          config: _ServerpodConfigExtension.loadConfig().copyWith(
+            futureCall: FutureCallConfig(checkBrokenCalls: true),
+          ),
+        );
+        session = await server.createSession(enableLogging: false);
+        await LoggingUtil.clearAllLogs(session);
+
+        for (int i = 0; i < futureCallsCount; i++) {
+          final name = 'TestCall$i';
+          final data = SimpleData(num: i);
+
+          final entry = FutureCallEntry(
+            id: i,
+            name: name,
+            serializedObject: data.toString(),
+            time: DateTime.now().toUtc(),
+            serverId: 'default',
+          );
+
+          if (i == 2) server.registerFutureCall(SimpleFutureCall(), name);
+          futureCallEntries.add(entry);
+          await FutureCallEntry.db.insertRow(session, entry);
+        }
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when starting Serverpod, then unregistered future calls are logged',
+        () async {
+          await server.start();
+          await server.internalLoggingSession.close();
+
+          final logs = await LoggingUtil.findAllLogs(session);
+          final logEntry = logs.last.logs.first;
+
+          expect(logEntry.logLevel, LogLevel.warning);
+          expect(
+            logEntry.message,
+            matches(
+              r'Unregistered future call: \{.*\"name\":\s*\"TestCall0\".*\}\n'
+              r'Unregistered future call: \{.*\"name\":\s*\"TestCall1\".*\}\n',
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Serverpod server instance with checkBrokenCalls disabled'
+    'in future call config and unregistered future calls',
+    () {
+      late Serverpod server;
+      late Session session;
+      List<FutureCallEntry> futureCallEntries = [];
+      int futureCallsCount = 3;
+
+      setUp(() async {
+        server = IntegrationTestServer.create(
+          config: _ServerpodConfigExtension.loadConfig().copyWith(
+            futureCall: FutureCallConfig(checkBrokenCalls: false),
+          ),
+        );
+        session = await server.createSession(enableLogging: false);
+        await LoggingUtil.clearAllLogs(session);
+
+        for (int i = 0; i < futureCallsCount; i++) {
+          final name = 'TestCall$i';
+          final data = SimpleData(num: i);
+
+          final entry = FutureCallEntry(
+            id: i,
+            name: name,
+            serializedObject: data.toString(),
+            time: DateTime.now().toUtc(),
+            serverId: 'default',
+          );
+
+          if (i == 2) server.registerFutureCall(SimpleFutureCall(), name);
+          futureCallEntries.add(entry);
+          await FutureCallEntry.db.insertRow(session, entry);
+        }
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when starting Serverpod, then unregistered future calls are not logged',
+        () async {
+          await server.start();
+          await server.internalLoggingSession.close();
+
+          final logs = await LoggingUtil.findAllLogs(session);
+          final logEntry = logs.lastOrNull?.logs.firstOrNull;
+
+          expect(
+            logEntry?.message,
+            notMatches(
+              r'Unregistered future call: \{.*\"name\":\s*\"TestCall0\".*\}\n'
+              r'Unregistered future call: \{.*\"name\":\s*\"TestCall1\".*\}\n',
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Serverpod server instance with deleteBrokenCalls enabled'
+    'in future call config and unregistered future calls',
+    () {
+      late Serverpod server;
+      late Session session;
+      List<FutureCallEntry> futureCallEntries = [];
+      int futureCallsCount = 3;
+
+      setUp(() async {
+        server = IntegrationTestServer.create(
+          config: _ServerpodConfigExtension.loadConfig().copyWith(
+            futureCall: FutureCallConfig(deleteBrokenCalls: true),
+          ),
+        );
+        session = await server.createSession(enableLogging: false);
+        await LoggingUtil.clearAllLogs(session);
+
+        for (int i = 0; i < futureCallsCount; i++) {
+          final name = 'TestCall$i';
+          final data = SimpleData(num: i);
+
+          final entry = FutureCallEntry(
+            id: i,
+            name: name,
+            serializedObject: data.toString(),
+            time: DateTime.now().toUtc(),
+            serverId: 'default',
+          );
+
+          if (i == 2) server.registerFutureCall(SimpleFutureCall(), name);
+          futureCallEntries.add(entry);
+          await FutureCallEntry.db.insertRow(session, entry);
+        }
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when starting Serverpod, then unregistered future calls are deleted from the database',
+        () async {
+          var entries = await FutureCallEntry.db.find(session);
+          var entryNames = entries.map((e) => e.name).toList();
+
+          expect(
+            entryNames,
+            containsAll(['TestCall0', 'TestCall1', 'TestCall2']),
+          );
+
+          await server.start();
+
+          entries = await FutureCallEntry.db.find(session);
+          entryNames = entries.map((e) => e.name).toList();
+
+          expect(entryNames, containsAll(['TestCall2']));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Serverpod server instance with deleteBrokenCalls disabled'
+    'in future call config and unregistered future calls',
+    () {
+      late Serverpod server;
+      late Session session;
+      List<FutureCallEntry> futureCallEntries = [];
+      int futureCallsCount = 3;
+
+      setUp(() async {
+        server = IntegrationTestServer.create(
+          config: _ServerpodConfigExtension.loadConfig().copyWith(
+            futureCall: FutureCallConfig(deleteBrokenCalls: false),
+          ),
+        );
+        session = await server.createSession(enableLogging: false);
+        await LoggingUtil.clearAllLogs(session);
+
+        for (int i = 0; i < futureCallsCount; i++) {
+          final name = 'TestCall$i';
+          final data = SimpleData(num: i);
+
+          final entry = FutureCallEntry(
+            id: i,
+            name: name,
+            serializedObject: data.toString(),
+            time: DateTime.now().toUtc(),
+            serverId: 'default',
+          );
+
+          if (i == 2) server.registerFutureCall(SimpleFutureCall(), name);
+          futureCallEntries.add(entry);
+          await FutureCallEntry.db.insertRow(session, entry);
+        }
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when starting Serverpod, then unregistered future calls are not deleted from the database',
+        () async {
+          await server.start();
+
+          final entries = await FutureCallEntry.db.find(session);
+          final entryNames = entries.map((e) => e.name).toList();
+
+          expect(
+            entryNames,
+            containsAll(['TestCall0', 'TestCall1', 'TestCall2']),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Serverpod server instance with checkBrokenCalls enabled'
+    'in future call config and broken future calls',
+    () {
+      late Serverpod server;
+      late Session session;
+      List<FutureCallEntry> futureCallEntries = [];
+      int futureCallsCount = 3;
+
+      setUp(() async {
+        server = IntegrationTestServer.create(
+          config: _ServerpodConfigExtension.loadConfig().copyWith(
+            futureCall: FutureCallConfig(checkBrokenCalls: true),
+          ),
+        );
+        session = await server.createSession(enableLogging: false);
+        await LoggingUtil.clearAllLogs(session);
+
+        for (int i = 0; i < futureCallsCount; i++) {
+          final name = 'TestCall$i';
+          final data = SimpleData(num: i);
+
+          final entry = FutureCallEntry(
+            id: i,
+            name: name,
+            serializedObject: i == 2 ? data.toString() : '{}',
+            time: DateTime.now().toUtc(),
+            serverId: 'default',
+          );
+
+          server.registerFutureCall(SimpleFutureCall(), name);
+          futureCallEntries.add(entry);
+          await FutureCallEntry.db.insertRow(session, entry);
+        }
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when starting Serverpod, then broken future calls are logged',
+        () async {
+          await server.start();
+          await server.internalLoggingSession.close();
+
+          final logs = await LoggingUtil.findAllLogs(session);
+          final logEntry = logs.last.logs.first;
+
+          expect(logEntry.logLevel, LogLevel.warning);
+          expect(
+            logEntry.message,
+            matches(
+              r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall0\".*\}\n'
               r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall1\".*\}\n',
             ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Serverpod server instance with checkBrokenCalls disabled'
+    'in future call config and broken future calls',
+    () {
+      late Serverpod server;
+      late Session session;
+      List<FutureCallEntry> futureCallEntries = [];
+      int futureCallsCount = 3;
+
+      setUp(() async {
+        server = IntegrationTestServer.create(
+          config: _ServerpodConfigExtension.loadConfig().copyWith(
+            futureCall: FutureCallConfig(checkBrokenCalls: false),
+          ),
+        );
+        session = await server.createSession(enableLogging: false);
+        await LoggingUtil.clearAllLogs(session);
+
+        for (int i = 0; i < futureCallsCount; i++) {
+          final name = 'TestCall$i';
+          final data = SimpleData(num: i);
+
+          final entry = FutureCallEntry(
+            id: i,
+            name: name,
+            serializedObject: i == 2 ? data.toString() : '{}',
+            time: DateTime.now().toUtc(),
+            serverId: 'default',
+          );
+
+          server.registerFutureCall(SimpleFutureCall(), name);
+          futureCallEntries.add(entry);
+          await FutureCallEntry.db.insertRow(session, entry);
+        }
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when starting Serverpod, then broken future calls are not logged',
+        () async {
+          await server.start();
+          await server.internalLoggingSession.close();
+
+          final logs = await LoggingUtil.findAllLogs(session);
+          final logEntry = logs.lastOrNull?.logs.firstOrNull;
+
+          expect(
+            logEntry?.message,
+            notMatches(
+              r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall0\".*\}\n'
+              r'Future call failed deserialization. Error: .* Entry: \{.*\"name\":\s*\"TestCall1\".*\}\n',
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Serverpod server instance with deleteBrokenCalls enabled'
+    'in future call config and broken future calls',
+    () {
+      late Serverpod server;
+      late Session session;
+      List<FutureCallEntry> futureCallEntries = [];
+      int futureCallsCount = 3;
+
+      setUp(() async {
+        server = IntegrationTestServer.create(
+          config: _ServerpodConfigExtension.loadConfig().copyWith(
+            futureCall: FutureCallConfig(deleteBrokenCalls: true),
+          ),
+        );
+        session = await server.createSession(enableLogging: false);
+        await LoggingUtil.clearAllLogs(session);
+
+        for (int i = 0; i < futureCallsCount; i++) {
+          final name = 'TestCall$i';
+          final data = SimpleData(num: i);
+
+          final entry = FutureCallEntry(
+            id: i,
+            name: name,
+            serializedObject: i == 2 ? data.toString() : '{}',
+            time: DateTime.now().toUtc(),
+            serverId: 'default',
+          );
+
+          server.registerFutureCall(SimpleFutureCall(), name);
+          futureCallEntries.add(entry);
+          await FutureCallEntry.db.insertRow(session, entry);
+        }
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when starting Serverpod, then broken future calls are deleted from the database',
+        () async {
+          var entries = await FutureCallEntry.db.find(session);
+          var entryNames = entries.map((e) => e.name).toList();
+
+          expect(
+            entryNames,
+            containsAll(['TestCall0', 'TestCall1', 'TestCall2']),
+          );
+
+          await server.start();
+
+          entries = await FutureCallEntry.db.find(session);
+          entryNames = entries.map((e) => e.name).toList();
+
+          expect(entryNames, containsAll(['TestCall2']));
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a Serverpod server instance with deleteBrokenCalls disabled'
+    'in future call config and broken future calls',
+    () {
+      late Serverpod server;
+      late Session session;
+      List<FutureCallEntry> futureCallEntries = [];
+      int futureCallsCount = 3;
+
+      setUp(() async {
+        server = IntegrationTestServer.create(
+          config: _ServerpodConfigExtension.loadConfig().copyWith(
+            futureCall: FutureCallConfig(deleteBrokenCalls: false),
+          ),
+        );
+        session = await server.createSession(enableLogging: false);
+        await LoggingUtil.clearAllLogs(session);
+
+        for (int i = 0; i < futureCallsCount; i++) {
+          final name = 'TestCall$i';
+          final data = SimpleData(num: i);
+
+          final entry = FutureCallEntry(
+            id: i,
+            name: name,
+            serializedObject: i == 2 ? data.toString() : '{}',
+            time: DateTime.now().toUtc(),
+            serverId: 'default',
+          );
+
+          server.registerFutureCall(SimpleFutureCall(), name);
+          futureCallEntries.add(entry);
+          await FutureCallEntry.db.insertRow(session, entry);
+        }
+      });
+
+      tearDown(() async {
+        await FutureCallEntry.db.delete(session, futureCallEntries);
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when starting Serverpod, then broken future calls are not deleted from the database',
+        () async {
+          await server.start();
+
+          final entries = await FutureCallEntry.db.find(session);
+          final entryNames = entries.map((e) => e.name).toList();
+
+          expect(
+            entryNames,
+            containsAll(['TestCall0', 'TestCall1', 'TestCall2']),
           );
         },
       );
