@@ -33,16 +33,21 @@ class FutureCallManager {
   final Session _internalSession;
   final FutureCallSessionBuilder _sessionBuilder;
   final InitializeFutureCall _initializeFutureCall;
-
   final FutureCallConfig _config;
-
   final SerializationManager _serializationManager;
+  final String _serverId;
 
   final _futureCalls = <String, FutureCall>{};
   final FutureCallDiagnosticsService _diagnosticsService;
 
   late final ServerpodTaskScheduler _scheduler;
   late final FutureCallScanner _scanner;
+
+  /// Timer used to schedule periodic maintenance tasks
+  /// to clean up orphaned future call claims.
+  /// This timer is initialized when the manager starts
+  /// and is cancelled when the manager stops.
+  Timer? _timer;
 
   /// Tracks whether start() was called but the scanner hasn't been started
   /// yet because there were no registered future calls at the time.
@@ -65,10 +70,12 @@ class FutureCallManager {
     required Session internalSession,
     required FutureCallSessionBuilder sessionProvider,
     required InitializeFutureCall initializeFutureCall,
+    required String serverId,
   }) : _diagnosticsService = diagnosticsService,
        _internalSession = internalSession,
        _sessionBuilder = sessionProvider,
-       _initializeFutureCall = initializeFutureCall {
+       _initializeFutureCall = initializeFutureCall,
+       _serverId = serverId {
     _scheduler = ServerpodTaskScheduler(
       concurrencyLimit: _config.concurrencyLimit,
     );
@@ -175,7 +182,14 @@ class FutureCallManager {
   /// If no future calls are registered, the scanner will not start immediately.
   /// Instead, the scanner will be started when the first future call is
   /// registered via [registerFutureCall].
-  void start() {
+  Future<void> start() async {
+    await _runFutureCallClaimStartupCleanup();
+
+    _timer = Timer.periodic(
+      _config.claimCleanupInterval,
+      (timer) => _runFutureCallClaimMaintenanceCleanup(),
+    );
+
     if (_futureCalls.isNotEmpty) {
       _scanner.start();
     } else {
@@ -190,6 +204,7 @@ class FutureCallManager {
     await _scanner.stop();
     await _scheduler.drain();
     if (unregisterAll) _futureCalls.clear();
+    _timer?.cancel();
   }
 
   /// Internal method to dispatch a list of [FutureCallEntry] objects to
@@ -224,6 +239,7 @@ class FutureCallManager {
     required FutureCall<SerializableModel> futureCall,
   }) async {
     final futureCallSession = _sessionBuilder(futureCallEntry.name);
+    bool deleteFutureCallEntry = true;
 
     try {
       dynamic object;
@@ -232,6 +248,23 @@ class FutureCallManager {
           futureCallEntry.serializedObject!,
           futureCall.dataType,
         );
+      }
+
+      final claim = FutureCallClaimEntry(
+        futureCallId: futureCallEntry.id,
+        serverId: _serverId,
+        time: DateTime.now().toUtc(),
+      );
+
+      // If claim insertion fails, then another instance has claimed
+      // execution for this future call entry.
+      // We should also not delete the future call entry from the table.
+      // The instance with the claim will clean up after execution.
+      try {
+        await FutureCallClaimEntry.db.insertRow(_internalSession, claim);
+      } on DatabaseInsertRowException {
+        deleteFutureCallEntry = false;
+        rethrow;
       }
 
       await futureCall.invoke(futureCallSession, object);
@@ -244,6 +277,33 @@ class FutureCallManager {
       );
 
       await futureCallSession.close(error: error, stackTrace: stackTrace);
+    } finally {
+      if (deleteFutureCallEntry) {
+        await FutureCallEntry.db.deleteWhere(
+          _internalSession,
+          where: (t) => t.id.equals(futureCallEntry.id),
+        );
+      }
     }
+  }
+
+  /// Removes all future call claims that were inserted by the server.
+  /// This is typically called when the manager starts up to clean up any claims
+  /// that may have been left orphaned due to crashes or other issues.
+  Future<void> _runFutureCallClaimStartupCleanup() async {
+    await FutureCallClaimEntry.db.deleteWhere(
+      _internalSession,
+      where: (t) => t.serverId.equals(_serverId),
+    );
+  }
+
+  /// Removes all future call claims that are older than the configured TTL.
+  /// This is typically scheduled to run periodically when the manager starts up
+  /// to clean up claims that may have been left orphaned due to crashes or other issues.
+  Future<void> _runFutureCallClaimMaintenanceCleanup() async {
+    await FutureCallClaimEntry.db.deleteWhere(
+      _internalSession,
+      where: (t) => t.time < DateTime.now().toUtc().subtract(_config.claimTTL),
+    );
   }
 }
