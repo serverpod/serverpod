@@ -78,6 +78,19 @@ class StatefulAnalyzer {
     _modelStates.remove(modelUri.path);
   }
 
+  /// Removes all models whose URI paths start with [uriPathPrefix] and returns
+  /// whether any models were removed.
+  /// Use when a directory is deleted to prune all model files under it.
+  bool removeYamlModelsUnderPath(String uriPathPrefix) {
+    var keysToRemove = _modelStates.keys
+        .where((path) => path.startsWith(uriPathPrefix))
+        .toList();
+    for (var key in keysToRemove) {
+      _modelStates.remove(key);
+    }
+    return keysToRemove.isNotEmpty;
+  }
+
   /// Runs the validation on all models in the state. If no models are
   /// registered, this returns an empty list.
   /// Errors are reported through the [onErrorsChangedNotifier].

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:intl/intl.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
@@ -33,7 +34,7 @@ Future<bool> performGenerateContinuously({
   );
 
   Timer? debouncedGenerate;
-  await for (WatchEvent event in watchers) {
+  await for (WatchEvent event in expandDirectoryAddEvents(watchers)) {
     log.debug('File changed: $event');
 
     final shouldGenerateEndpoints = await endpointsAnalyzer.updateFileContexts({
@@ -64,6 +65,12 @@ Future<bool> performGenerateContinuously({
           );
         case ChangeType.REMOVE:
           modelAnalyzer.removeYamlModel(modelUri);
+      }
+    } else if (event.type == ChangeType.REMOVE) {
+      // Handle directory removal: prune all models under the deleted path.
+      var dirUriPath = '${Uri.file(p.absolute(event.path)).path}/';
+      if (modelAnalyzer.removeYamlModelsUnderPath(dirUriPath)) {
+        shouldGenerate = true;
       }
     }
 
@@ -126,6 +133,28 @@ Stream<WatchEvent> _setupAllWatchedDirectories(GeneratorConfig config) {
 bool _directoryPathExists(String path) {
   var directory = Directory(path);
   return directory.existsSync();
+}
+
+/// Expands directory ADD events into individual file ADD events by traversing
+/// the new directory's subtree. All other events are passed through unchanged.
+/// This handles the case where platforms emit a single directory-level ADD
+/// event instead of individual file events for each file in the new directory.
+@visibleForTesting
+Stream<WatchEvent> expandDirectoryAddEvents(Stream<WatchEvent> events) {
+  return events.asyncExpand((event) async* {
+    if (event.type == ChangeType.ADD) {
+      final dir = Directory(event.path);
+      if (dir.existsSync()) {
+        await for (final entity in dir.list(recursive: true)) {
+          if (entity is File) {
+            yield WatchEvent(ChangeType.ADD, entity.path);
+          }
+        }
+        return;
+      }
+    }
+    yield event;
+  });
 }
 
 Future<bool> _performSafeGenerate({
