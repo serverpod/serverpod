@@ -10,38 +10,32 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
-const pathToServerpodRoot = '../../../../../../../..';
-var testProjectDirectory = Directory(
-  path.joinAll([
-    'test',
-    'integration',
-    'analyzer',
-    'dart',
-    'endpoint_validation',
-    const Uuid().v4(),
-  ]),
-);
+var pathToServerpodRoot = Directory('../..').absolute.path;
+late Directory testProjectDirectory;
 
 void main() {
   setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
   });
 
   tearDownAll(() {
-    testProjectDirectory.deleteSync(recursive: true);
+    if (testProjectDirectory.existsSync()) {
+      testProjectDirectory.deleteSync(recursive: true);
+    }
   });
 
   group(
     'Given an endpoint with nested template in class documentation when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -99,13 +93,13 @@ class ExampleEndpoint extends Endpoint {
     'Given an endpoint with nested template in method documentation when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
@@ -158,13 +152,14 @@ class ExampleEndpoint extends Endpoint {
 
   group('Given an endpoint with nested macro in template when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
@@ -213,13 +208,13 @@ class ExampleEndpoint extends Endpoint {
     'Given an endpoint with both nested template and nested macro when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<EndpointDefinition> endpointDefinitions;
       late EndpointsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
         endpointFile.createSync(recursive: true);
         endpointFile.writeAsStringSync('''
