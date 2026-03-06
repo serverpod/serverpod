@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/util/file_ex.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
@@ -106,6 +107,12 @@ class ServerProcess {
       args.addAll(['run', 'bin/main.dart', ..._serverArgs]);
     }
 
+    // Delete any stale service info file from a previous run so that
+    // connectToVmService reads the freshly written URI, not an old one.
+    if (_vmServiceInfoFile != null) {
+      await File(_vmServiceInfoFile).deleteIfExists();
+    }
+
     final process = await Process.start(
       _dartExecutable,
       args,
@@ -193,28 +200,38 @@ class ServerProcess {
     }
   }
 
-  /// Hot reloads the server, optionally with a new kernel file.
-  ///
-  /// When [dillPath] is provided, the VM loads the new kernel.
-  /// When omitted, the VM just bumps its reload generation
-  /// (useful for triggering browser refresh without code changes).
+  /// Hot reloads the server with a new kernel file.
   ///
   /// Returns `true` if the reload was successful.
-  Future<bool> reload([String? dillPath]) async {
+  Future<bool> reload(String dillPath) async {
     final vmService = _vmService;
     final isolateId = _mainIsolateId;
     if (vmService == null || isolateId == null) {
       return false;
     }
 
-    final dillUri = dillPath != null
-        ? Uri.file(p.absolute(dillPath)).toString()
-        : null;
+    final dillUri = Uri.file(p.absolute(dillPath)).toString();
     final report = await vmService.reloadSources(
       isolateId,
       rootLibUri: dillUri,
     );
     return report.success == true;
+  }
+
+  /// Notifies the server that static files have changed.
+  ///
+  /// Calls the `ext.relic.notifyStaticChange` VM service extension, which
+  /// increments the static change counter. The browser polls this counter
+  /// and refreshes when it changes.
+  Future<void> notifyStaticChange() async {
+    final vmService = _vmService;
+    final isolateId = _mainIsolateId;
+    if (vmService == null || isolateId == null) return;
+
+    await vmService.callServiceExtension(
+      'ext.relic.notifyStaticChange',
+      isolateId: isolateId,
+    );
   }
 
   /// Stops the server process gracefully with SIGTERM.
@@ -294,11 +311,7 @@ class ServerProcess {
 
     // Clean up the service info file so stale URIs are not picked up.
     if (_vmServiceInfoFile != null) {
-      try {
-        File(_vmServiceInfoFile).deleteSync();
-      } on FileSystemException {
-        // May already be deleted or never created.
-      }
+      await File(_vmServiceInfoFile).deleteIfExists();
     }
   }
 }

@@ -16,6 +16,7 @@ import 'package:serverpod_cli/src/commands/start/watch_session.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
+import 'package:serverpod_cli/src/util/file_ex.dart';
 import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:stream_transform/stream_transform.dart';
@@ -502,7 +503,7 @@ Future<String?> _checkExistingServer(String infoPath) async {
     final json = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
     final uri = json['uri'] as String?;
     if (uri == null) {
-      file.deleteSync();
+      await file.deleteIfExists();
       return null;
     }
 
@@ -513,11 +514,7 @@ Future<String?> _checkExistingServer(String infoPath) async {
     return uri;
   } on Exception {
     // Stale or unreachable - clean up and proceed with normal startup.
-    try {
-      file.deleteSync();
-    } on FileSystemException {
-      // Ignore.
-    }
+    await file.deleteIfExists();
     return null;
   }
 }
