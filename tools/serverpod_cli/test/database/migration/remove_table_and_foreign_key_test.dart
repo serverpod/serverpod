@@ -14,9 +14,7 @@ void main() {
       var sourceDefinition = DatabaseDefinitionBuilder()
           .withDefaultModules()
           .withTable(
-            TableDefinitionBuilder()
-                .withName('child_entity')
-                .build(),
+            TableDefinitionBuilder().withName('child_entity').build(),
           )
           .withTable(
             TableDefinitionBuilder()
@@ -95,7 +93,9 @@ void main() {
       test(
         'then DROP TABLE CASCADE should appear before DROP COLUMN in the generated SQL.',
         () {
-          var dropTableIndex = psql.indexOf('DROP TABLE "child_entity" CASCADE');
+          var dropTableIndex = psql.indexOf(
+            'DROP TABLE "child_entity" CASCADE',
+          );
           var dropColumnIndex = psql.indexOf('DROP COLUMN "childEntityId"');
 
           expect(dropTableIndex, greaterThanOrEqualTo(0));

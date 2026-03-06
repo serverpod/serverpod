@@ -73,8 +73,12 @@ DatabaseMigration generateDatabaseMigration({
       );
     } else {
       // Table exists in src and dst
-      var diff = generateTableMigration(srcTable, dstTable, warnings,
-          deleteTables: deleteTables);
+      var diff = generateTableMigration(
+        srcTable,
+        dstTable,
+        warnings,
+        deleteTables: deleteTables,
+      );
       if (diff == null) {
         // Table was modified, but cannot be migrated. Recreate the table.
         actions.add(
