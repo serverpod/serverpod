@@ -333,145 +333,109 @@ Future<int> _runWatchMode({
     );
   }
 
-  if (noFes) {
-    return _runWatchModeNoFes(
-      serverDir: serverDir,
-      serverArgs: serverArgs,
-      vmServiceInfoFile: vmServiceInfoFile,
-      watcher: watcher,
-      generate: generate,
-    );
-  }
-
-  return _runWatchModeWithFes(
+  return _startWatchSession(
     serverDir: serverDir,
     serverArgs: serverArgs,
     serverpodToolDir: serverpodToolDir,
     vmServiceInfoFile: vmServiceInfoFile,
     watcher: watcher,
     generate: generate,
+    noFes: noFes,
   );
 }
 
-/// Watch mode without FES: starts the server via `dart run` and lets
-/// the IDE handle compilation and hot reload. We only watch for file
-/// changes and regenerate code (endpoints, models, future calls).
-Future<int> _runWatchModeNoFes({
-  required String serverDir,
-  required List<String> serverArgs,
-  required String vmServiceInfoFile,
-  required FileWatcher watcher,
-  required GenerateAction generate,
-}) async {
-  // Start the server with dart run. The VM's kernel_service gets its
-  // own compiler, so IDE-initiated reloadSources calls work natively.
-  final serverProcess = ServerProcess(
-    serverDir: serverDir,
-    serverArgs: serverArgs,
-    enableVmService: true,
-    vmServiceInfoFile: vmServiceInfoFile,
-  );
-  await serverProcess.start();
-  log.info('Server running.');
-
-  // Watch for file changes and regenerate code as needed.
-  // The IDE handles compilation and hot reload.
-  final genSub = watcher.onFilesChanged
-      .asyncMapBuffer((events) async {
-        final merged = mergeEvents(events);
-        final affectedPaths = {
-          ...merged.dartFiles,
-          ...merged.modelFiles,
-        };
-        if (affectedPaths.isEmpty) return;
-
-        final success = await generate(affectedPaths);
-        if (!success) {
-          log.error('Code generation failed.');
-        }
-      })
-      .listen((_) {});
-
-  // Wait for SIGINT/SIGTERM or unexpected server exit.
-  final (signal, teardownSignal) = _onTerminationSignal();
-
-  final exitCode = await Future.any([signal, serverProcess.exitCode]);
-
-  // Clean up.
-  await genSub.cancel();
-  await serverProcess.stop();
-  await teardownSignal();
-
-  return exitCode;
-}
-
-/// Watch mode with FES: manages the full compilation pipeline
-/// (incremental compilation, hot reload, server restart on failure).
-Future<int> _runWatchModeWithFes({
+/// Sets up the server process, creates a [WatchSession], and runs the
+/// file-change loop until the server exits or a termination signal arrives.
+///
+/// When [noFes] is true, the server is started with `dart run` and no
+/// compiler is created - the IDE handles compilation and hot reload.
+/// The session still runs code generation and triggers VM service reloads
+/// for static file changes.
+Future<int> _startWatchSession({
   required String serverDir,
   required List<String> serverArgs,
   required String serverpodToolDir,
   required String vmServiceInfoFile,
   required FileWatcher watcher,
   required GenerateAction generate,
+  required bool noFes,
 }) async {
-  // Resolve the dart executable from the SDK to ensure we use the same
-  // version that compiled the kernel.
-  final sdkRoot = getSdkPath();
-  final dartExecutable = p.join(sdkRoot, 'bin', 'dart');
+  KernelCompiler? compiler;
+  ServerProcessFactory? serverProcessFactory;
+  ServerProcess initialServerProcess;
 
-  // Set up incremental compiler.
-  final entryPoint = p.join(serverDir, 'bin', 'main.dart');
-  final initialDill = p.join(serverpodToolDir, 'server.dill');
-  final compiler = KernelCompiler(
-    entryPoint: entryPoint,
-    outputDill: initialDill,
-  );
-
-  await compiler.start();
-
-  final initialResult = await compileWithProgress(
-    'Compiling server',
-    compiler,
-  );
-
-  if (initialResult == null) {
-    compiler.dispose();
-    log.error('Initial compilation failed.');
-    return 1;
-  }
-
-  compiler.accept();
-
-  // IDE reload callback: compile incrementally and return the dill path.
-  Future<String?> onReloadRequested() async {
-    compiler.reset();
-    final result = await compileWithProgress(
-      'Compiling server (IDE reload)',
-      compiler,
-      rejectOnFailure: true,
-    );
-    if (result == null) return null;
-    compiler.accept();
-    return result.dillOutput ?? initialDill;
-  }
-
-  Future<ServerProcess> serverProcessFactory(String dillPath) async {
+  if (noFes) {
+    // No compiler - the IDE handles compilation and hot reload.
+    // Start the server with dart run; the VM's kernel_service gets its
+    // own compiler, so IDE-initiated reloadSources calls work natively.
     final sp = ServerProcess(
       serverDir: serverDir,
       serverArgs: serverArgs,
-      dartExecutable: dartExecutable,
       enableVmService: true,
       vmServiceInfoFile: vmServiceInfoFile,
-      onReloadRequested: onReloadRequested,
     );
-    await sp.start(dillPath: dillPath);
+    await sp.start();
     await sp.connectToVmService();
-    return sp;
+    initialServerProcess = sp;
+  } else {
+    // Resolve the dart executable from the SDK to ensure we use the same
+    // version that compiled the kernel.
+    final sdkRoot = getSdkPath();
+    final dartExecutable = p.join(sdkRoot, 'bin', 'dart');
+
+    // Set up incremental compiler.
+    final entryPoint = p.join(serverDir, 'bin', 'main.dart');
+    final initialDill = p.join(serverpodToolDir, 'server.dill');
+    compiler = KernelCompiler(
+      entryPoint: entryPoint,
+      outputDill: initialDill,
+    );
+
+    await compiler.start();
+
+    final initialResult = await compileWithProgress(
+      'Compiling server',
+      compiler,
+    );
+
+    if (initialResult == null) {
+      compiler.dispose();
+      log.error('Initial compilation failed.');
+      return 1;
+    }
+
+    compiler.accept();
+
+    // IDE reload callback: compile incrementally and return the dill path.
+    Future<String?> onReloadRequested() async {
+      compiler!.reset();
+      final result = await compileWithProgress(
+        'Compiling server (IDE reload)',
+        compiler,
+        rejectOnFailure: true,
+      );
+      if (result == null) return null;
+      compiler.accept();
+      return result.dillOutput ?? initialDill;
+    }
+
+    serverProcessFactory = (String dillPath) async {
+      final sp = ServerProcess(
+        serverDir: serverDir,
+        serverArgs: serverArgs,
+        dartExecutable: dartExecutable,
+        enableVmService: true,
+        vmServiceInfoFile: vmServiceInfoFile,
+        onReloadRequested: onReloadRequested,
+      );
+      await sp.start(dillPath: dillPath);
+      await sp.connectToVmService();
+      return sp;
+    };
+
+    initialServerProcess = await serverProcessFactory(initialDill);
   }
 
-  // Start the initial server process.
-  final initialServerProcess = await serverProcessFactory(initialDill);
   log.info('Server running.');
 
   final session = WatchSession(
