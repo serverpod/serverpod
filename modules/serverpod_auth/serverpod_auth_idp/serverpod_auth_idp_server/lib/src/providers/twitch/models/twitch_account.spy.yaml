@@ -1,0 +1,35 @@
+class: TwitchAccount
+serverOnly: true
+table: serverpod_auth_idp_twitch_account
+fields:
+    id: UuidValue?, defaultPersist=random_v7
+
+    ### The [AuthUser] this profile belongs to
+    authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+    ### The unique identifier for the user from Twitch
+    userIdentifier: String
+
+    login: String
+
+    displayName: String
+
+    ### The email of the user on Twitch
+    email: String?
+
+    ### Original access token exchanged by code
+    accessToken: String
+
+    ### Token expiry in timestamp format
+    expiresIn: int?
+
+    ### Saved refresh token after first authentication with code exchange
+    refreshToken: String?
+
+    ### The date and time when this authentication was created.
+    created: DateTime, defaultModel=now
+
+indexes:
+    serverpod_auth_idp_twitch_user_identifier:
+        fields: userIdentifier
+        unique: true

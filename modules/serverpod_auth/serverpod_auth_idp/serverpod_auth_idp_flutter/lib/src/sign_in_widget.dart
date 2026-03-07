@@ -16,6 +16,7 @@ import 'github/github_sign_in_widget.dart';
 import 'google/google_sign_in_widget.dart';
 import 'microsoft/microsoft_sign_in_widget.dart';
 import 'providers.dart';
+import 'twitch/twitch_sign_in_widget.dart';
 
 /// A widget that provides a complete authentication onboarding experience.
 ///
@@ -29,6 +30,7 @@ import 'providers.dart';
 /// - Apple Sign-In (via [EndpointAppleIdpBase])
 /// - GitHub Sign-In (via [EndpointGitHubIdpBase])
 /// - Microsoft Sign-In (via [EndpointMicrosoftIdpBase])
+/// - Twitch Sign-In (via [EndpointTwitchIdpBase])
 /// - External providers registered via [ExternalIdpRegistry]
 ///
 /// The widget separates email authentication from other providers with a
@@ -81,6 +83,9 @@ class SignInWidget extends StatefulWidget {
   /// Whether to disable the Facebook sign-in widget if it is available.
   final bool disableFacebookSignInWidget;
 
+  /// Whether to disable the Twitch sign-in widget if it is available.
+  final bool disableTwitchSignInWidget;
+
   /// Customized widget to use for anonymous sign-in.
   final AnonymousSignInWidget? anonymousSignInWidget;
 
@@ -99,6 +104,9 @@ class SignInWidget extends StatefulWidget {
   /// Customized widget to use for Microsoft sign-in.
   final MicrosoftSignInWidget? microsoftSignInWidget;
 
+  /// Customized widget to use for Twitch sign-in.
+  final TwitchSignInWidget? twitchSignInWidget;
+
   /// Creates an authentication onboarding widget.
   const SignInWidget({
     required this.client,
@@ -111,12 +119,14 @@ class SignInWidget extends StatefulWidget {
     this.disableGitHubSignInWidget = false,
     this.disableMicrosoftSignInWidget = false,
     this.disableFacebookSignInWidget = false,
+    this.disableTwitchSignInWidget = false,
     this.anonymousSignInWidget,
     this.emailSignInWidget,
     this.googleSignInWidget,
     this.appleSignInWidget,
     this.githubSignInWidget,
     this.microsoftSignInWidget,
+    this.twitchSignInWidget,
     super.key,
   });
 
@@ -137,6 +147,7 @@ class _SignInWidgetState extends State<SignInWidget> {
       auth.idp.hasMicrosoft && !widget.disableMicrosoftSignInWidget;
   bool get hasFacebook =>
       auth.idp.hasFacebook && !widget.disableFacebookSignInWidget;
+  bool get hasTwitch => auth.idp.hasTwitch && !widget.disableTwitchSignInWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -208,6 +219,17 @@ class _SignInWidgetState extends State<SignInWidget> {
       socialProviders.add(
         widget.microsoftSignInWidget ??
             MicrosoftSignInWidget(
+              client: widget.client,
+              onAuthenticated: widget.onAuthenticated,
+              onError: widget.onError,
+            ),
+      );
+    }
+
+    if (hasTwitch) {
+      socialProviders.add(
+        widget.twitchSignInWidget ??
+            TwitchSignInWidget(
               client: widget.client,
               onAuthenticated: widget.onAuthenticated,
               onError: widget.onError,

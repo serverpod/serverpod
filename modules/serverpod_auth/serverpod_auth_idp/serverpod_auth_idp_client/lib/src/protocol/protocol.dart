@@ -45,9 +45,11 @@ import 'providers/passkey/models/passkey_login_request.dart' as _i17;
 import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
     as _i18;
 import 'providers/passkey/models/passkey_registration_request.dart' as _i19;
-import 'dart:typed_data' as _i20;
+import 'providers/twitch/models/twitch_access_token_verification_exception.dart'
+    as _i20;
+import 'dart:typed_data' as _i21;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i21;
+    as _i22;
 export 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception.dart';
 export 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception_reason.dart';
 export 'providers/email/models/exceptions/email_account_login_exception.dart';
@@ -66,6 +68,7 @@ export 'providers/passkey/models/passkey_challenge_not_found_exception.dart';
 export 'providers/passkey/models/passkey_login_request.dart';
 export 'providers/passkey/models/passkey_public_key_not_found_exception.dart';
 export 'providers/passkey/models/passkey_registration_request.dart';
+export 'providers/twitch/models/twitch_access_token_verification_exception.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -157,6 +160,9 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == _i19.PasskeyRegistrationRequest) {
       return _i19.PasskeyRegistrationRequest.fromJson(data) as T;
+    }
+    if (t == _i20.TwitchAccessTokenVerificationException) {
+      return _i20.TwitchAccessTokenVerificationException.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.AnonymousAccountBlockedException?>()) {
       return (data != null
@@ -264,9 +270,15 @@ class Protocol extends _i1.SerializationManager {
               : null)
           as T;
     }
-    if (t == _i1.getType<({_i20.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _i1.getType<_i20.TwitchAccessTokenVerificationException?>()) {
+      return (data != null
+              ? _i20.TwitchAccessTokenVerificationException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<({_i21.ByteData challenge, _i1.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i20.ByteData>(
+            challenge: deserialize<_i21.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
             id: deserialize<_i1.UuidValue>(data['n']['id']),
@@ -274,7 +286,7 @@ class Protocol extends _i1.SerializationManager {
           as T;
     }
     try {
-      return _i21.Protocol().deserialize<T>(data, t);
+      return _i22.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -313,6 +325,8 @@ class Protocol extends _i1.SerializationManager {
       _i18.PasskeyPublicKeyNotFoundException =>
         'PasskeyPublicKeyNotFoundException',
       _i19.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
+      _i20.TwitchAccessTokenVerificationException =>
+        'TwitchAccessTokenVerificationException',
       _ => null,
     };
   }
@@ -366,8 +380,10 @@ class Protocol extends _i1.SerializationManager {
         return 'PasskeyPublicKeyNotFoundException';
       case _i19.PasskeyRegistrationRequest():
         return 'PasskeyRegistrationRequest';
+      case _i20.TwitchAccessTokenVerificationException():
+        return 'TwitchAccessTokenVerificationException';
     }
-    className = _i21.Protocol().getClassNameForObject(data);
+    className = _i22.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -446,9 +462,14 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'PasskeyRegistrationRequest') {
       return deserialize<_i19.PasskeyRegistrationRequest>(data['data']);
     }
+    if (dataClassName == 'TwitchAccessTokenVerificationException') {
+      return deserialize<_i20.TwitchAccessTokenVerificationException>(
+        data['data'],
+      );
+    }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i21.Protocol().deserializeByClassName(data);
+      return _i22.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -462,7 +483,7 @@ class Protocol extends _i1.SerializationManager {
     if (record == null) {
       return null;
     }
-    if (record is ({_i20.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_i21.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge,
@@ -471,7 +492,7 @@ class Protocol extends _i1.SerializationManager {
       };
     }
     try {
-      return _i21.Protocol().mapRecordToJson(record);
+      return _i22.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

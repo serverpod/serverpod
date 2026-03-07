@@ -42,6 +42,9 @@ class EndpointAuthEmail extends EndpointEmailIdpBase {
   }
 
   @override
+  Future<bool> hasAccount() async => _mockData.hasAccount;
+
+  @override
   Future<UuidValue> startRegistration({
     required String email,
   }) async {
@@ -127,9 +130,6 @@ class EndpointAuthEmail extends EndpointEmailIdpBase {
     _mockData.passwordResetToken = null;
     return _mockData.authSuccess;
   }
-
-  @override
-  Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
 class GoogleIdpEndpoint extends EndpointGoogleIdpBase {
@@ -168,10 +168,7 @@ class AppleIdpEndpoint extends EndpointAppleIdpBase {
     required bool isNativeApplePlatformSignIn,
     String? firstName,
     String? lastName,
-  }) async {
-    _mockData.hasAccount = true;
-    return _mockData.authSuccess;
-  }
+  }) => Future.value(_mockData.authSuccess);
 
   @override
   Future<bool> hasAccount() async => _mockData.hasAccount;
@@ -233,6 +230,24 @@ class MicrosoftIdpEndpoint extends EndpointMicrosoftIdpBase {
   Future<bool> hasAccount() async => _mockData.hasAccount;
 }
 
+class TwitchIdpEndpoint extends EndpointTwitchIdpBase {
+  TwitchIdpEndpoint(super.caller);
+
+  final _mockData = MockAuthData();
+
+  @override
+  String get name => 'twitchIdp';
+
+  @override
+  Future<AuthSuccess> login({
+    required String code,
+    required String redirectUri,
+  }) => Future.value(_mockData.authSuccess);
+
+  @override
+  Future<bool> hasAccount() async => _mockData.hasAccount;
+}
+
 class Modules {
   Modules(Client client) {
     auth = Caller(client);
@@ -253,9 +268,10 @@ class Client extends ServerpodClientShared {
     authEmail = EndpointAuthEmail(this);
     googleIdp = GoogleIdpEndpoint(this);
     appleIdp = AppleIdpEndpoint(this);
-    facebookIdp = FacebookIdpEndpoint(this);
     githubIdp = GitHubIdpEndpoint(this);
+    facebookIdp = FacebookIdpEndpoint(this);
     microsoftIdp = MicrosoftIdpEndpoint(this);
+    twitchIdp = TwitchIdpEndpoint(this);
     modules = Modules(this);
   }
 
@@ -273,6 +289,8 @@ class Client extends ServerpodClientShared {
 
   late final MicrosoftIdpEndpoint microsoftIdp;
 
+  late final TwitchIdpEndpoint twitchIdp;
+
   late final Modules modules;
 
   @override
@@ -284,6 +302,7 @@ class Client extends ServerpodClientShared {
     'facebookIdp': facebookIdp,
     'githubIdp': githubIdp,
     'microsoftIdp': microsoftIdp,
+    'twitchIdp': twitchIdp,
   };
 
   @override
