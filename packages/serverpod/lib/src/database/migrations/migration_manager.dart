@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
@@ -66,8 +65,7 @@ class MigrationManager {
   ///
   /// Returns the module name from the `definition.json` of the last available
   /// migration version, or null if not found or if parsing fails.
-  @visibleForTesting
-  String? loadLatestDefinitionModuleName() {
+  String? _loadLatestDefinitionModuleName() {
     if (availableVersions.isEmpty) return null;
 
     var latestVersion = availableVersions.last;
@@ -100,15 +98,15 @@ class MigrationManager {
 
       var moduleName = session.serverpod.serializationManager.getModuleName();
 
-      var definitionModuleName = loadLatestDefinitionModuleName();
+      var definitionModuleName = _loadLatestDefinitionModuleName();
       if (definitionModuleName != null && definitionModuleName != moduleName) {
         stderr.writeln(
           'WARNING: The module name in the migration definition '
           '("$definitionModuleName") does not match the module name of the '
           'serialization manager ("$moduleName"). This may indicate that the '
           'wrong Protocol class is being used in "server.dart". Make sure you '
-          'are using the Protocol class generated for your project and not one '
-          'from an external package.',
+          'are using the Protocol class generated under '
+          '"src/generated/protocol.dart" and not one from an external package.',
         );
       }
 
