@@ -86,10 +86,13 @@ void main() {
 
           expect(
             record.output,
-            contains(
+            equals(
               'WARNING: The module name in the migration definition '
               '("$wrongModuleName") does not match the module name of the '
-              'serialization manager ("serverpod_test")',
+              'serialization manager ("serverpod_test"). This may indicate that the '
+              'wrong Protocol class is being used in "server.dart". Make sure you '
+              'are using the Protocol class generated under '
+              '"src/generated/protocol.dart" and not one from an external package.\n',
             ),
           );
         },
