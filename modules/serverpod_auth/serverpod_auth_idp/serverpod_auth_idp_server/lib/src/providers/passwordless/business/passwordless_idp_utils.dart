@@ -10,16 +10,16 @@ import 'utils/passwordless_idp_login_util.dart';
 ///
 /// - [hashUtil] - Utilities for hashing verification codes
 /// - [login] - Utilities for logging in users
-class PasswordlessIdpUtils<TNonce> {
+class PasswordlessIdpUtils<THandle> {
   /// General hash util for the passwordless provider.
   final Argon2HashUtil hashUtil;
 
   /// {@macro passwordless_idp_login_util}
-  late final PasswordlessIdpLoginUtil<TNonce> login;
+  late final PasswordlessIdpLoginUtil<THandle> login;
 
   /// Creates a new instance of [PasswordlessIdpUtils].
   PasswordlessIdpUtils({
-    required final PasswordlessIdpConfig<TNonce> config,
+    required final PasswordlessIdpConfig<THandle> config,
   }) : hashUtil = Argon2HashUtil(
          hashPepper: config.secretHashPepper,
          fallbackHashPeppers: config.fallbackSecretHashPeppers,

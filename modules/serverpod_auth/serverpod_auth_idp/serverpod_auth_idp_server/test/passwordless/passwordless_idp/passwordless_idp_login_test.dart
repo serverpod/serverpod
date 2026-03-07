@@ -16,8 +16,8 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
-      late PasswordlessIdpTestFixture fixture;
-      late Map<String, UuidValue> nonceToUserId;
+      late PasswordlessIdpTestFixture<String> fixture;
+      late Map<String, UuidValue> handleToUserId;
 
       const handle = 'test-handle';
       late String verificationCode;
@@ -25,18 +25,22 @@ void main() {
       late String deliveredVerificationCode;
 
       Future<void> initializeFixture({
-        final PasswordlessLoginRequestStore<String>? requestStore,
+        final PasswordlessLoginRequestStore? requestStore,
+        final SerializeHandleFunction<String>? serializeHandle,
+        final DeserializeHandleFunction<String>? deserializeHandle,
         final Duration loginVerificationCodeLifetime = const Duration(
           minutes: 10,
         ),
       }) async {
-        nonceToUserId = {};
+        handleToUserId = {};
         verificationCode = const Uuid().v4().toString();
 
         fixture = PasswordlessIdpTestFixture(
           config: PasswordlessIdpConfig(
             secretHashPepper: 'pepper',
             loginRequestStore: requestStore ?? _defaultLoginRequestStore(),
+            serializeHandle: serializeHandle,
+            deserializeHandle: deserializeHandle,
             loginVerificationCodeLifetime: loginVerificationCodeLifetime,
             loginVerificationCodeGenerator: () => verificationCode,
             sendLoginVerificationCode:
@@ -53,10 +57,10 @@ void main() {
             resolveAuthUserId:
                 (
                   final Session session, {
-                  required final String nonce,
+                  required final String handle,
                   required final Transaction? transaction,
                 }) async {
-                  final authUserId = nonceToUserId[nonce];
+                  final authUserId = handleToUserId[handle];
                   if (authUserId == null) {
                     throw PasswordlessLoginNotFoundException();
                   }
@@ -66,7 +70,7 @@ void main() {
         );
 
         final authUser = await fixture.authUsers.create(session);
-        nonceToUserId[handle] = authUser.id;
+        handleToUserId[handle] = authUser.id;
       }
 
       group('Given a valid handle and configured passwordless provider', () {
@@ -271,7 +275,7 @@ void main() {
           session = sessionBuilder.build();
           await initializeFixture();
 
-          final authUserId = nonceToUserId[handle]!;
+          final authUserId = handleToUserId[handle]!;
           await fixture.authUsers.update(
             session,
             authUserId: authUserId,
@@ -313,7 +317,7 @@ void main() {
           session = sessionBuilder.build();
           await initializeFixture();
 
-          final authUserId = nonceToUserId[handle]!;
+          final authUserId = handleToUserId[handle]!;
           await fixture.authUsers.update(
             session,
             authUserId: authUserId,
@@ -423,7 +427,7 @@ void main() {
               verificationCode: deliveredVerificationCode,
             );
 
-            nonceToUserId.remove(handle);
+            handleToUserId.remove(handle);
           });
 
           tearDown(() async {
@@ -661,16 +665,11 @@ void main() {
         );
       });
 
-      group('Given a custom store with empty encoded nonce', () {
+      group('Given a custom serializer with empty serialized handle', () {
         setUp(() async {
           session = sessionBuilder.build();
           await initializeFixture(
-            requestStore: GenericPasswordlessLoginRequestStore<String>(
-              domain: 'passwordless',
-              source: 'login',
-              encodeNonce: (final nonce) => '',
-              decodeNonce: (final nonce) => nonce,
-            ),
+            serializeHandle: (final handle) => '',
           );
         });
 
@@ -700,25 +699,12 @@ void main() {
         );
       });
 
-      group('Given generic stores with shared nonce and different sources', () {
+      group('Given a generic DB-backed request store', () {
         late SecretChallenge challenge;
-        late GenericPasswordlessLoginRequestStore<String> sourceAStore;
-        late GenericPasswordlessLoginRequestStore<String> sourceBStore;
+        const store = GenericPasswordlessLoginRequestStore();
 
         setUp(() async {
           session = sessionBuilder.build();
-          sourceAStore = GenericPasswordlessLoginRequestStore<String>(
-            domain: 'passwordless',
-            source: 'source_a',
-            encodeNonce: (final nonce) => nonce,
-            decodeNonce: (final nonce) => nonce,
-          );
-          sourceBStore = GenericPasswordlessLoginRequestStore<String>(
-            domain: 'passwordless',
-            source: 'source_b',
-            encodeNonce: (final nonce) => nonce,
-            decodeNonce: (final nonce) => nonce,
-          );
           challenge = await SecretChallenge.db.insertRow(
             session,
             SecretChallenge(challengeCodeHash: 'hash'),
@@ -737,12 +723,86 @@ void main() {
         });
 
         test(
-          'when requests are created with the same nonce in different sources then they do not conflict',
+          'when request is created then serialized handle is stored as plain text',
+          () async {
+            final requestId = await session.db.transaction((final transaction) {
+              return store.createRequest(
+                session,
+                serializedHandle: handle,
+                challengeId: challenge.id!,
+                transaction: transaction,
+              );
+            });
+
+            final row = await GenericPasswordlessLoginRequest.db.findById(
+              session,
+              requestId,
+            );
+
+            expect(row, isNotNull);
+            expect(row!.nonce, equals(handle));
+          },
+        );
+
+        test(
+          'when request is loaded then it returns the serialized handle unchanged',
+          () async {
+            final requestId = await session.db.transaction((final transaction) {
+              return store.createRequest(
+                session,
+                serializedHandle: handle,
+                challengeId: challenge.id!,
+                transaction: transaction,
+              );
+            });
+
+            final request = await store.getRequestForVerification(
+              session,
+              requestId: requestId,
+              transaction: null,
+            );
+
+            expect(request, isNotNull);
+            expect(request!.serializedHandle, equals(handle));
+          },
+        );
+      });
+
+      group('Given generic DB-backed stores with different sources', () {
+        late SecretChallenge challenge;
+        const sourceAStore = GenericPasswordlessLoginRequestStore(
+          source: 'source_a',
+        );
+        const sourceBStore = GenericPasswordlessLoginRequestStore(
+          source: 'source_b',
+        );
+
+        setUp(() async {
+          session = sessionBuilder.build();
+          challenge = await SecretChallenge.db.insertRow(
+            session,
+            SecretChallenge(challengeCodeHash: 'hash'),
+          );
+        });
+
+        tearDown(() async {
+          await SecretChallenge.db.deleteWhere(
+            session,
+            where: (final _) => Constant.bool(true),
+          );
+          await GenericPasswordlessLoginRequest.db.deleteWhere(
+            session,
+            where: (final _) => Constant.bool(true),
+          );
+        });
+
+        test(
+          'when requests use different sources then they do not conflict',
           () async {
             final requestA = await session.db.transaction((final transaction) {
               return sourceAStore.createRequest(
                 session,
-                nonce: handle,
+                serializedHandle: handle,
                 challengeId: challenge.id!,
                 transaction: transaction,
               );
@@ -750,7 +810,7 @@ void main() {
             final requestB = await session.db.transaction((final transaction) {
               return sourceBStore.createRequest(
                 session,
-                nonce: handle,
+                serializedHandle: handle,
                 challengeId: challenge.id!,
                 transaction: transaction,
               );
@@ -767,131 +827,24 @@ void main() {
 
             expect(rowA, isNotNull);
             expect(rowB, isNotNull);
-            expect(rowA!.nonce, isNot(equals(rowB!.nonce)));
-            expect(rowA.nonce.startsWith('passwordless::source_a::'), isTrue);
-            expect(rowB.nonce.startsWith('passwordless::source_b::'), isTrue);
+            expect(rowA!.nonce, equals('source_a::$handle'));
+            expect(rowB!.nonce, equals('source_b::$handle'));
           },
         );
 
         test(
-          'when request is loaded from a namespaced nonce then it round-trips to original nonce',
-          () async {
-            final requestId = await session.db.transaction((final transaction) {
-              return sourceAStore.createRequest(
-                session,
-                nonce: handle,
-                challengeId: challenge.id!,
-                transaction: transaction,
-              );
-            });
-
-            final request = await sourceAStore.getRequestForVerification(
-              session,
-              requestId: requestId,
-              transaction: null,
-            );
-
-            expect(request, isNotNull);
-            expect(request!.nonce, equals(handle));
-          },
-        );
-
-        test(
-          'when stored nonce format is invalid then loading request throws PasswordlessLoginInvalidException',
-          () async {
-            final malformedRow = await GenericPasswordlessLoginRequest.db
-                .insertRow(
-                  session,
-                  GenericPasswordlessLoginRequest(
-                    nonce: 'invalid-format',
-                    challengeId: challenge.id!,
-                  ),
-                );
-
-            final result = sourceAStore.getRequestForVerification(
-              session,
-              requestId: malformedRow.id!,
-              transaction: null,
-            );
-
-            await expectLater(
-              result,
-              throwsA(isA<PasswordlessLoginInvalidException>()),
-            );
-          },
-        );
-
-        test(
-          'when stored nonce has invalid base64 payload then loading request throws PasswordlessLoginInvalidException',
-          () async {
-            final malformedRow = await GenericPasswordlessLoginRequest.db
-                .insertRow(
-                  session,
-                  GenericPasswordlessLoginRequest(
-                    nonce: 'passwordless::source_a::%invalid%',
-                    challengeId: challenge.id!,
-                  ),
-                );
-
-            final result = sourceAStore.getRequestForVerification(
-              session,
-              requestId: malformedRow.id!,
-              transaction: null,
-            );
-
-            await expectLater(
-              result,
-              throwsA(isA<PasswordlessLoginInvalidException>()),
-            );
-          },
-        );
-
-        test(
-          'when request source does not match store source then loading request throws PasswordlessLoginInvalidException',
+          'when a request is loaded through a store with a different source then it returns invalid reason',
           () async {
             final requestId = await session.db.transaction((final transaction) {
               return sourceBStore.createRequest(
                 session,
-                nonce: handle,
+                serializedHandle: handle,
                 challengeId: challenge.id!,
                 transaction: transaction,
               );
             });
 
             final result = sourceAStore.getRequestForVerification(
-              session,
-              requestId: requestId,
-              transaction: null,
-            );
-
-            await expectLater(
-              result,
-              throwsA(isA<PasswordlessLoginInvalidException>()),
-            );
-          },
-        );
-
-        test(
-          'when request domain does not match store domain then loading request throws PasswordlessLoginInvalidException',
-          () async {
-            final requestId = await session.db.transaction((final transaction) {
-              return sourceAStore.createRequest(
-                session,
-                nonce: handle,
-                challengeId: challenge.id!,
-                transaction: transaction,
-              );
-            });
-
-            final differentDomainStore =
-                GenericPasswordlessLoginRequestStore<String>(
-                  domain: 'another_domain',
-                  source: 'source_a',
-                  encodeNonce: (final nonce) => nonce,
-                  decodeNonce: (final nonce) => nonce,
-                );
-
-            final result = differentDomainStore.getRequestForVerification(
               session,
               requestId: requestId,
               transaction: null,
@@ -904,82 +857,283 @@ void main() {
           },
         );
       });
+
+      group('Given passwordless provider with default int handle support', () {
+        late PasswordlessIdpTestFixture<int> intFixture;
+        late Map<int, UuidValue> intHandleToUserId;
+        const intHandle = '42';
+        late String token;
+
+        setUp(() async {
+          session = sessionBuilder.build();
+          intHandleToUserId = {};
+          verificationCode = const Uuid().v4().toString();
+
+          intFixture = PasswordlessIdpTestFixture(
+            config: PasswordlessIdpConfig<int>(
+              secretHashPepper: 'pepper',
+              loginRequestStore: _defaultLoginRequestStore(),
+              loginVerificationCodeGenerator: () => verificationCode,
+              sendLoginVerificationCode:
+                  (
+                    final Session session, {
+                    required final String handle,
+                    required final UuidValue requestId,
+                    required final String verificationCode,
+                    required final Transaction? transaction,
+                  }) async {
+                    deliveredRequestId = requestId;
+                    deliveredVerificationCode = verificationCode;
+                  },
+              resolveAuthUserId:
+                  (
+                    final Session session, {
+                    required final int handle,
+                    required final Transaction? transaction,
+                  }) async {
+                    final authUserId = intHandleToUserId[handle];
+                    if (authUserId == null) {
+                      throw PasswordlessLoginNotFoundException();
+                    }
+                    return authUserId;
+                  },
+            ),
+          );
+
+          final authUser = await intFixture.authUsers.create(session);
+          intHandleToUserId[42] = authUser.id;
+
+          final requestId = await intFixture.passwordlessIdp.startLogin(
+            session,
+            handle: intHandle,
+          );
+          token = await intFixture.passwordlessIdp.verifyLoginCode(
+            session,
+            loginRequestId: requestId,
+            verificationCode: deliveredVerificationCode,
+          );
+        });
+
+        tearDown(() async {
+          await intFixture.tearDown(session);
+        });
+
+        test(
+          'when login completes then it resolves the int handle and stores its plain serialization',
+          () async {
+            final authSuccess = await intFixture.passwordlessIdp.finishLogin(
+              session,
+              loginToken: token,
+            );
+
+            expect(authSuccess, isA<AuthSuccess>());
+            final request = await GenericPasswordlessLoginRequest.db
+                .findFirstRow(
+                  session,
+                  where: (final t) => t.id.equals(deliveredRequestId),
+                );
+            expect(request, isNull);
+
+            final attempts = await RateLimitedRequestAttempt.db.find(
+              session,
+              where: (final t) =>
+                  t.domain.equals('passwordless') &
+                  t.source.equals('login_request'),
+            );
+            expect(attempts.single.nonce, equals(intHandle));
+          },
+        );
+      });
+
+      group(
+        'Given passwordless provider with default UuidValue handle support',
+        () {
+          late PasswordlessIdpTestFixture<UuidValue> uuidFixture;
+          late Map<UuidValue, UuidValue> handleToAuthUserId;
+          late String uuidHandle;
+          late String token;
+
+          setUp(() async {
+            session = sessionBuilder.build();
+            handleToAuthUserId = {};
+            verificationCode = const Uuid().v4().toString();
+            final typedHandle = UuidValue.withValidation(const Uuid().v4());
+            uuidHandle = typedHandle.uuid;
+
+            uuidFixture = PasswordlessIdpTestFixture(
+              config: PasswordlessIdpConfig<UuidValue>(
+                secretHashPepper: 'pepper',
+                loginRequestStore: _defaultLoginRequestStore(),
+                loginVerificationCodeGenerator: () => verificationCode,
+                sendLoginVerificationCode:
+                    (
+                      final Session session, {
+                      required final String handle,
+                      required final UuidValue requestId,
+                      required final String verificationCode,
+                      required final Transaction? transaction,
+                    }) async {
+                      deliveredRequestId = requestId;
+                      deliveredVerificationCode = verificationCode;
+                    },
+                resolveAuthUserId:
+                    (
+                      final Session session, {
+                      required final UuidValue handle,
+                      required final Transaction? transaction,
+                    }) async {
+                      final authUserId = handleToAuthUserId[handle];
+                      if (authUserId == null) {
+                        throw PasswordlessLoginNotFoundException();
+                      }
+                      return authUserId;
+                    },
+              ),
+            );
+
+            final authUser = await uuidFixture.authUsers.create(session);
+            handleToAuthUserId[typedHandle] = authUser.id;
+
+            final requestId = await uuidFixture.passwordlessIdp.startLogin(
+              session,
+              handle: uuidHandle,
+            );
+            token = await uuidFixture.passwordlessIdp.verifyLoginCode(
+              session,
+              loginRequestId: requestId,
+              verificationCode: deliveredVerificationCode,
+            );
+          });
+
+          tearDown(() async {
+            await uuidFixture.tearDown(session);
+          });
+
+          test(
+            'when login completes then it resolves the UuidValue handle using default callbacks',
+            () async {
+              final authSuccess = await uuidFixture.passwordlessIdp.finishLogin(
+                session,
+                loginToken: token,
+              );
+
+              expect(authSuccess, isA<AuthSuccess>());
+              final attempts = await RateLimitedRequestAttempt.db.find(
+                session,
+                where: (final t) =>
+                    t.domain.equals('passwordless') &
+                    t.source.equals('login_request'),
+              );
+              expect(attempts.single.nonce, equals(uuidHandle));
+            },
+          );
+        },
+      );
+
+      group('Given passwordless provider with custom handle serialization', () {
+        late PasswordlessIdpTestFixture<_TestHandle> customFixture;
+        late Map<String, UuidValue> serializedHandleToUserId;
+        late String token;
+
+        setUp(() async {
+          session = sessionBuilder.build();
+          serializedHandleToUserId = {};
+          verificationCode = const Uuid().v4().toString();
+
+          customFixture = PasswordlessIdpTestFixture(
+            config: PasswordlessIdpConfig<_TestHandle>(
+              secretHashPepper: 'pepper',
+              loginRequestStore: _defaultLoginRequestStore(),
+              normalizeHandle: (final handle) => handle.trim().toLowerCase(),
+              deserializeHandle: (final handle) => _TestHandle(
+                handle.startsWith('custom:')
+                    ? handle.substring('custom:'.length)
+                    : handle,
+              ),
+              serializeHandle: (final handle) => 'custom:${handle.value}',
+              loginVerificationCodeGenerator: () => verificationCode,
+              sendLoginVerificationCode:
+                  (
+                    final Session session, {
+                    required final String handle,
+                    required final UuidValue requestId,
+                    required final String verificationCode,
+                    required final Transaction? transaction,
+                  }) async {
+                    deliveredRequestId = requestId;
+                    deliveredVerificationCode = verificationCode;
+                  },
+              resolveAuthUserId:
+                  (
+                    final Session session, {
+                    required final _TestHandle handle,
+                    required final Transaction? transaction,
+                  }) async {
+                    final authUserId =
+                        serializedHandleToUserId['custom:${handle.value}'];
+                    if (authUserId == null) {
+                      throw PasswordlessLoginNotFoundException();
+                    }
+                    return authUserId;
+                  },
+            ),
+          );
+
+          final authUser = await customFixture.authUsers.create(session);
+          serializedHandleToUserId['custom:test-handle'] = authUser.id;
+
+          final requestId = await customFixture.passwordlessIdp.startLogin(
+            session,
+            handle: '  test-handle  ',
+          );
+          token = await customFixture.passwordlessIdp.verifyLoginCode(
+            session,
+            loginRequestId: requestId,
+            verificationCode: deliveredVerificationCode,
+          );
+        });
+
+        tearDown(() async {
+          await customFixture.tearDown(session);
+        });
+
+        test(
+          'when login completes then rate limit, persistence, and auth resolution use the same serialized handle',
+          () async {
+            final request = await GenericPasswordlessLoginRequest.db.findById(
+              session,
+              deliveredRequestId,
+            );
+            final authSuccess = await customFixture.passwordlessIdp.finishLogin(
+              session,
+              loginToken: token,
+            );
+
+            expect(authSuccess, isA<AuthSuccess>());
+            expect(request, isNotNull);
+            expect(request!.nonce, equals('custom:test-handle'));
+
+            final attempts = await RateLimitedRequestAttempt.db.find(
+              session,
+              where: (final t) =>
+                  t.domain.equals('passwordless') &
+                  t.source.equals('login_request'),
+            );
+            expect(attempts.single.nonce, equals('custom:test-handle'));
+          },
+        );
+      });
     },
   );
 
   group('Passwordless configuration validation', () {
     test(
-      'when TNonce is non-string and buildNonce is not provided then PasswordlessIdpConfig throws ArgumentError',
+      'when THandle is not a supported basic type and custom callbacks are not provided then PasswordlessIdpConfig throws ArgumentError',
       () {
         expect(
-          () => PasswordlessIdpConfig<int>(
+          () => PasswordlessIdpConfig<_UnsupportedHandle>(
             secretHashPepper: 'pepper',
-            loginRequestStore: GenericPasswordlessLoginRequestStore<int>(
-              domain: 'passwordless',
-              source: 'login',
-              encodeNonce: (final nonce) => nonce.toString(),
-              decodeNonce: int.parse,
-            ),
-          ),
-          throwsA(isA<ArgumentError>()),
-        );
-      },
-    );
-
-    test(
-      'when GenericPasswordlessLoginRequestStore domain is empty then it throws ArgumentError',
-      () {
-        expect(
-          () => GenericPasswordlessLoginRequestStore<String>(
-            domain: '  ',
-            source: 'login',
-            encodeNonce: (final nonce) => nonce,
-            decodeNonce: (final nonce) => nonce,
-          ),
-          throwsA(isA<ArgumentError>()),
-        );
-      },
-    );
-
-    test(
-      'when GenericPasswordlessLoginRequestStore domain contains namespace separator then it throws ArgumentError',
-      () {
-        expect(
-          () => GenericPasswordlessLoginRequestStore<String>(
-            domain: 'domain::invalid',
-            source: 'login',
-            encodeNonce: (final nonce) => nonce,
-            decodeNonce: (final nonce) => nonce,
-          ),
-          throwsA(isA<ArgumentError>()),
-        );
-      },
-    );
-
-    test(
-      'when GenericPasswordlessLoginRequestStore source is empty then it throws ArgumentError',
-      () {
-        expect(
-          () => GenericPasswordlessLoginRequestStore<String>(
-            domain: 'passwordless',
-            source: '  ',
-            encodeNonce: (final nonce) => nonce,
-            decodeNonce: (final nonce) => nonce,
-          ),
-          throwsA(isA<ArgumentError>()),
-        );
-      },
-    );
-
-    test(
-      'when GenericPasswordlessLoginRequestStore source contains namespace separator then it throws ArgumentError',
-      () {
-        expect(
-          () => GenericPasswordlessLoginRequestStore<String>(
-            domain: 'passwordless',
-            source: 'source::invalid',
-            encodeNonce: (final nonce) => nonce,
-            decodeNonce: (final nonce) => nonce,
+            loginRequestStore: _defaultLoginRequestStore(),
           ),
           throwsA(isA<ArgumentError>()),
         );
@@ -989,9 +1143,9 @@ void main() {
 }
 
 final class _InMemoryPasswordlessLoginRequestStore
-    implements PasswordlessLoginRequestStore<String> {
+    implements PasswordlessLoginRequestStore {
   final Map<UuidValue, _InMemoryPasswordlessLoginRequest> _byId = {};
-  final Map<String, UuidValue> _idByNonce = {};
+  final Map<String, UuidValue> _idBySerializedHandle = {};
 
   final FutureOr<bool> Function(
     Session session, {
@@ -1030,12 +1184,12 @@ final class _InMemoryPasswordlessLoginRequestStore
   }
 
   @override
-  Future<void> deleteByNonce(
+  Future<void> deleteByHandle(
     final Session session, {
-    required final String nonce,
+    required final String serializedHandle,
     required final Transaction transaction,
   }) async {
-    final requestId = _idByNonce.remove(nonce);
+    final requestId = _idBySerializedHandle.remove(serializedHandle);
     if (requestId == null) return;
     _byId.remove(requestId);
   }
@@ -1043,7 +1197,7 @@ final class _InMemoryPasswordlessLoginRequestStore
   @override
   Future<UuidValue> createRequest(
     final Session session, {
-    required final String nonce,
+    required final String serializedHandle,
     required final UuidValue challengeId,
     required final Transaction transaction,
   }) async {
@@ -1051,16 +1205,16 @@ final class _InMemoryPasswordlessLoginRequestStore
     final request = _InMemoryPasswordlessLoginRequest(
       id: requestId,
       createdAt: DateTime.now(),
-      nonce: nonce,
+      serializedHandle: serializedHandle,
       challengeId: challengeId,
     );
-    _idByNonce[nonce] = requestId;
+    _idBySerializedHandle[serializedHandle] = requestId;
     _byId[requestId] = request;
     return requestId;
   }
 
   @override
-  Future<PasswordlessLoginRequestData<String>?> getRequestForVerification(
+  Future<PasswordlessLoginRequestData?> getRequestForVerification(
     final Session session, {
     required final UuidValue requestId,
     required final Transaction? transaction,
@@ -1091,7 +1245,7 @@ final class _InMemoryPasswordlessLoginRequestStore
     return PasswordlessLoginRequestData(
       id: request.id,
       createdAt: request.createdAt,
-      nonce: request.nonce,
+      serializedHandle: request.serializedHandle,
       challenge: challenge,
       loginChallengeId: request.loginChallengeId,
       loginChallenge: loginChallenge,
@@ -1099,7 +1253,7 @@ final class _InMemoryPasswordlessLoginRequestStore
   }
 
   @override
-  Future<PasswordlessLoginRequestData<String>?> getRequestForCompletion(
+  Future<PasswordlessLoginRequestData?> getRequestForCompletion(
     final Session session, {
     required final UuidValue requestId,
     required final Transaction? transaction,
@@ -1118,7 +1272,7 @@ final class _InMemoryPasswordlessLoginRequestStore
     return PasswordlessLoginRequestData(
       id: request.id,
       createdAt: request.createdAt,
-      nonce: request.nonce,
+      serializedHandle: request.serializedHandle,
       challenge: null,
       loginChallengeId: request.loginChallengeId,
       loginChallenge: loginChallenge,
@@ -1167,33 +1321,35 @@ final class _InMemoryPasswordlessLoginRequestStore
 
     final request = _byId.remove(requestId);
     if (request == null) return false;
-    _idByNonce.remove(request.nonce);
+    _idBySerializedHandle.remove(request.serializedHandle);
     return true;
   }
 }
 
-PasswordlessLoginRequestStore<String> _defaultLoginRequestStore({
-  final String source = 'login',
-}) {
-  return GenericPasswordlessLoginRequestStore<String>(
-    domain: 'passwordless',
-    source: source,
-    encodeNonce: (final nonce) => nonce,
-    decodeNonce: (final nonce) => nonce,
-  );
-}
+PasswordlessLoginRequestStore _defaultLoginRequestStore() =>
+    const GenericPasswordlessLoginRequestStore();
 
 final class _InMemoryPasswordlessLoginRequest {
   final UuidValue id;
   DateTime createdAt;
-  final String nonce;
+  final String serializedHandle;
   final UuidValue challengeId;
   UuidValue? loginChallengeId;
 
   _InMemoryPasswordlessLoginRequest({
     required this.id,
     required this.createdAt,
-    required this.nonce,
+    required this.serializedHandle,
     required this.challengeId,
   });
+}
+
+final class _TestHandle {
+  final String value;
+
+  const _TestHandle(this.value);
+}
+
+final class _UnsupportedHandle {
+  const _UnsupportedHandle();
 }

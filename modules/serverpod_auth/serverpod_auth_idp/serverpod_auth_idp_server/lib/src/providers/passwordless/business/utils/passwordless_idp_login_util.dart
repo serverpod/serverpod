@@ -9,19 +9,18 @@ import 'passwordless_login_request_store.dart';
 /// {@template passwordless_idp_login_util}
 /// Utility functions for passwordless login.
 /// {@endtemplate}
-class PasswordlessIdpLoginUtil<TNonce> {
-  final PasswordlessIdpConfig<TNonce> _config;
+class PasswordlessIdpLoginUtil<THandle> {
+  final PasswordlessIdpConfig<THandle> _config;
   final Argon2HashUtil _hashUtil;
-  final PasswordlessLoginRequestStore<TNonce> _requestStore;
-  late final SecretChallengeUtil<PasswordlessLoginRequestData<TNonce>>
-  _challengeUtil;
-  late final DatabaseRateLimitedRequestAttemptUtil<TNonce> _requestRateLimiter;
+  final PasswordlessLoginRequestStore _requestStore;
+  late final SecretChallengeUtil<PasswordlessLoginRequestData> _challengeUtil;
+  late final DatabaseRateLimitedRequestAttemptUtil<String> _requestRateLimiter;
 
   /// Creates a new [PasswordlessIdpLoginUtil] instance.
   PasswordlessIdpLoginUtil({
-    required final PasswordlessIdpConfig<TNonce> config,
+    required final PasswordlessIdpConfig<THandle> config,
     required final Argon2HashUtil hashUtil,
-    required final PasswordlessLoginRequestStore<TNonce> requestStore,
+    required final PasswordlessLoginRequestStore requestStore,
   }) : _config = config,
        _hashUtil = hashUtil,
        _requestStore = requestStore {
@@ -31,7 +30,7 @@ class PasswordlessIdpLoginUtil<TNonce> {
       completionConfig: _buildCompletionConfig(),
     );
     _requestRateLimiter = DatabaseRateLimitedRequestAttemptUtil(
-      RateLimitedRequestAttemptConfig<TNonce>(
+      RateLimitedRequestAttemptConfig<String>(
         domain: 'passwordless',
         source: 'login_request',
         maxAttempts: _config.loginRequestRateLimit.maxAttempts,
@@ -51,18 +50,22 @@ class PasswordlessIdpLoginUtil<TNonce> {
       throw PasswordlessLoginInvalidException();
     }
 
-    final nonce = _config.buildNonce(normalizedHandle);
-    if (nonce is String && nonce.isEmpty) {
+    final typedHandle = _deserializeHandle(normalizedHandle);
+    final serializedHandle = _serializeHandle(typedHandle);
+    if (serializedHandle.isEmpty) {
       throw PasswordlessLoginInvalidException();
     }
 
-    if (await _requestRateLimiter.hasTooManyAttempts(session, nonce: nonce)) {
+    if (await _requestRateLimiter.hasTooManyAttempts(
+      session,
+      nonce: serializedHandle,
+    )) {
       throw PasswordlessLoginTooManyAttemptsException();
     }
 
-    await _requestStore.deleteByNonce(
+    await _requestStore.deleteByHandle(
       session,
-      nonce: nonce,
+      serializedHandle: serializedHandle,
       transaction: transaction,
     );
 
@@ -75,7 +78,7 @@ class PasswordlessIdpLoginUtil<TNonce> {
 
     final requestId = await _requestStore.createRequest(
       session,
-      nonce: nonce,
+      serializedHandle: serializedHandle,
       challengeId: challenge.id!,
       transaction: transaction,
     );
@@ -109,7 +112,7 @@ class PasswordlessIdpLoginUtil<TNonce> {
   }
 
   /// Completes the login process and returns the login request data.
-  Future<PasswordlessLoginRequestData<TNonce>> completeLogin(
+  Future<PasswordlessLoginRequestData> completeLogin(
     final Session session, {
     required final String loginToken,
     required final Transaction transaction,
@@ -136,7 +139,7 @@ class PasswordlessIdpLoginUtil<TNonce> {
     );
   }
 
-  SecretChallengeVerificationConfig<PasswordlessLoginRequestData<TNonce>>
+  SecretChallengeVerificationConfig<PasswordlessLoginRequestData>
   _buildVerificationConfig() {
     final limiter = DatabaseRateLimitedRequestAttemptUtil<UuidValue>(
       RateLimitedRequestAttemptConfig(
@@ -199,7 +202,7 @@ class PasswordlessIdpLoginUtil<TNonce> {
     );
   }
 
-  SecretChallengeCompletionConfig<PasswordlessLoginRequestData<TNonce>>
+  SecretChallengeCompletionConfig<PasswordlessLoginRequestData>
   _buildCompletionConfig() {
     final limiter = DatabaseRateLimitedRequestAttemptUtil<UuidValue>(
       RateLimitedRequestAttemptConfig(
@@ -235,5 +238,21 @@ class PasswordlessIdpLoginUtil<TNonce> {
       },
       rateLimiter: limiter,
     );
+  }
+
+  String _serializeHandle(final THandle handle) {
+    try {
+      return _config.serializeHandle(handle);
+    } catch (_) {
+      throw PasswordlessLoginInvalidException();
+    }
+  }
+
+  THandle _deserializeHandle(final String handle) {
+    try {
+      return _config.deserializeHandle(handle);
+    } catch (_) {
+      throw PasswordlessLoginInvalidException();
+    }
   }
 }

@@ -4,7 +4,7 @@ import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
 import '../../../utils/get_passwords_extension.dart';
-import '../util/default_code_generators.dart';
+import '../../utils/default_code_generators.dart';
 import 'passwordless_idp.dart';
 import 'utils/passwordless_login_request_store.dart';
 
@@ -23,16 +23,17 @@ typedef SendPasswordlessVerificationCodeFunction =
 /// Function for normalizing a login handle before using it.
 typedef NormalizeHandleFunction = String Function(String handle);
 
-/// Function for creating an opaque nonce for a login handle.
-///
-/// The nonce is stored on the server and later used to resolve an auth user.
-typedef BuildNonceFunction<TNonce> = TNonce Function(String normalizedHandle);
+/// Function for converting a handle to a stable serialized string.
+typedef SerializeHandleFunction<THandle> = String Function(THandle handle);
 
-/// Function for resolving an auth user id from a nonce.
-typedef ResolveAuthUserIdFunction<TNonce> =
+/// Function for reading a handle from its serialized representation.
+typedef DeserializeHandleFunction<THandle> = THandle Function(String handle);
+
+/// Function for resolving an auth user id from a handle.
+typedef ResolveAuthUserIdFunction<THandle> =
     FutureOr<UuidValue> Function(
       Session session, {
-      required TNonce nonce,
+      required THandle handle,
       required Transaction? transaction,
     });
 
@@ -54,8 +55,8 @@ class PasswordlessRateLimit {
 /// {@template passwordless_idp_config}
 /// Configuration options for the passwordless identity provider.
 /// {@endtemplate}
-class PasswordlessIdpConfig<TNonce>
-    extends IdentityProviderBuilder<PasswordlessIdp<TNonce>> {
+class PasswordlessIdpConfig<THandle>
+    extends IdentityProviderBuilder<PasswordlessIdp<THandle>> {
   /// The pepper used for hashing verification codes.
   ///
   /// To rotate peppers without invalidating existing codes, use
@@ -69,18 +70,16 @@ class PasswordlessIdpConfig<TNonce>
   /// The length of the random salt in bytes for hashing verification codes.
   final int secretHashSaltLength;
 
-  /// Whether passwordless login is enabled.
-  final bool enableLogin;
-
   /// Function for normalizing a login handle before using it.
   ///
   /// Defaults to trimming whitespace.
   final NormalizeHandleFunction normalizeHandle;
 
-  /// Function for creating an opaque nonce for a login handle.
-  ///
-  /// Defaults to returning the normalized handle as is.
-  final BuildNonceFunction<TNonce> buildNonce;
+  /// Function for converting a handle to a serialized string for persistence.
+  final SerializeHandleFunction<THandle> serializeHandle;
+
+  /// Function for reading a handle from a serialized string.
+  final DeserializeHandleFunction<THandle> deserializeHandle;
 
   /// The lifetime of login verification codes.
   final Duration loginVerificationCodeLifetime;
@@ -103,23 +102,23 @@ class PasswordlessIdpConfig<TNonce>
   /// request has been verified.
   ///
   /// If `null`, calling [PasswordlessIdp.finishLogin] will throw.
-  final ResolveAuthUserIdFunction<TNonce>? resolveAuthUserId;
+  final ResolveAuthUserIdFunction<THandle>? resolveAuthUserId;
 
   /// Custom request store for passwordless login requests.
-  final PasswordlessLoginRequestStore<TNonce> loginRequestStore;
+  final PasswordlessLoginRequestStore loginRequestStore;
 
   /// Creates a new passwordless identity provider configuration.
   PasswordlessIdpConfig({
     required this.secretHashPepper,
     this.fallbackSecretHashPeppers = const [],
     this.secretHashSaltLength = 16,
-    this.enableLogin = true,
     this.normalizeHandle = _defaultNormalizeHandle,
-    final BuildNonceFunction<TNonce>? buildNonce,
+    final SerializeHandleFunction<THandle>? serializeHandle,
+    final DeserializeHandleFunction<THandle>? deserializeHandle,
     this.loginVerificationCodeLifetime = const Duration(minutes: 10),
     this.loginVerificationCodeAllowedAttempts = 3,
     this.loginVerificationCodeGenerator =
-        defaultPasswordlessVerificationCodeGenerator,
+        defaultNumericVerificationCodeGenerator,
     this.loginRequestRateLimit = const PasswordlessRateLimit(
       maxAttempts: 5,
       timeframe: Duration(minutes: 10),
@@ -127,24 +126,58 @@ class PasswordlessIdpConfig<TNonce>
     this.sendLoginVerificationCode,
     this.resolveAuthUserId,
     required this.loginRequestStore,
-  }) : buildNonce = _resolveBuildNonce(buildNonce);
+  }) : serializeHandle = _resolveSerializeHandle(serializeHandle),
+       deserializeHandle = _resolveDeserializeHandle(deserializeHandle);
 
   static String _defaultNormalizeHandle(final String handle) => handle.trim();
 
-  static BuildNonceFunction<TNonce> _resolveBuildNonce<TNonce>(
-    final BuildNonceFunction<TNonce>? buildNonce,
+  static SerializeHandleFunction<THandle> _resolveSerializeHandle<THandle>(
+    final SerializeHandleFunction<THandle>? serializeHandle,
   ) {
-    if (buildNonce != null) return buildNonce;
-    if (TNonce == String) {
-      return (final normalizedHandle) => normalizedHandle as TNonce;
-    }
+    if (serializeHandle != null) return serializeHandle;
+    _ensureDefaultHandleTypeIsSupported<THandle>();
+    return (final handle) => _serializeDefaultHandle<THandle>(handle);
+  }
+
+  static DeserializeHandleFunction<THandle> _resolveDeserializeHandle<THandle>(
+    final DeserializeHandleFunction<THandle>? deserializeHandle,
+  ) {
+    if (deserializeHandle != null) return deserializeHandle;
+    _ensureDefaultHandleTypeIsSupported<THandle>();
+    return (final handle) => _deserializeDefaultHandle<THandle>(handle);
+  }
+
+  static void _ensureDefaultHandleTypeIsSupported<THandle>() {
+    if (THandle == String || THandle == int || THandle == UuidValue) return;
     throw ArgumentError(
-      'buildNonce must be provided when TNonce is not String.',
+      'serializeHandle and deserializeHandle must be provided when THandle '
+      'is not one of the supported basic types: String, int, UuidValue.',
     );
   }
 
+  static String _serializeDefaultHandle<THandle>(final THandle handle) =>
+      switch (handle) {
+        String() => handle,
+        int() => handle.toString(),
+        UuidValue() => handle.uuid,
+        _ => throw UnimplementedError(),
+      };
+
+  static THandle _deserializeDefaultHandle<THandle>(final String handle) {
+    if (THandle == String) {
+      return handle as THandle;
+    }
+    if (THandle == int) {
+      return int.parse(handle) as THandle;
+    }
+    if (THandle == UuidValue) {
+      return UuidValue.withValidation(handle) as THandle;
+    }
+    throw UnimplementedError();
+  }
+
   @override
-  PasswordlessIdp<TNonce> build({
+  PasswordlessIdp<THandle> build({
     required final TokenManager tokenManager,
     required final AuthUsers authUsers,
     required final UserProfiles userProfiles,
@@ -162,15 +195,15 @@ class PasswordlessIdpConfig<TNonce>
 ///
 /// This constructor requires that a [Serverpod] instance has already been
 /// initialized.
-class PasswordlessIdpConfigFromPasswords<TNonce>
-    extends PasswordlessIdpConfig<TNonce> {
+class PasswordlessIdpConfigFromPasswords<THandle>
+    extends PasswordlessIdpConfig<THandle> {
   /// Creates a new [PasswordlessIdpConfigFromPasswords] instance.
   PasswordlessIdpConfigFromPasswords({
     super.fallbackSecretHashPeppers,
     super.secretHashSaltLength,
-    super.enableLogin,
     super.normalizeHandle,
-    super.buildNonce,
+    super.serializeHandle,
+    super.deserializeHandle,
     super.loginVerificationCodeLifetime,
     super.loginVerificationCodeAllowedAttempts,
     super.loginVerificationCodeGenerator,

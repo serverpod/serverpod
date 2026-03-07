@@ -11,15 +11,15 @@ import 'passwordless_idp_utils.dart';
 ///
 /// The `utils` property provides access to [PasswordlessIdpUtils], which contains
 /// utility methods for working with passwordless login requests.
-class PasswordlessIdp<TNonce> {
+class PasswordlessIdp<THandle> {
   /// The method used when authenticating with the passwordless identity provider.
   static const String method = 'passwordless';
 
   /// The configuration for the passwordless identity provider.
-  final PasswordlessIdpConfig<TNonce> config;
+  final PasswordlessIdpConfig<THandle> config;
 
   /// Utility functions for the passwordless identity provider.
-  final PasswordlessIdpUtils<TNonce> utils;
+  final PasswordlessIdpUtils<THandle> utils;
 
   final TokenManager _tokenManager;
   final AuthUsers _authUsers;
@@ -33,11 +33,11 @@ class PasswordlessIdp<TNonce> {
 
   /// Creates a new instance of [PasswordlessIdp].
   factory PasswordlessIdp(
-    final PasswordlessIdpConfig<TNonce> config, {
+    final PasswordlessIdpConfig<THandle> config, {
     required final TokenManager tokenManager,
     required final AuthUsers authUsers,
   }) {
-    final utils = PasswordlessIdpUtils<TNonce>(config: config);
+    final utils = PasswordlessIdpUtils<THandle>(config: config);
     return PasswordlessIdp._(config, utils, tokenManager, authUsers);
   }
 
@@ -49,11 +49,6 @@ class PasswordlessIdp<TNonce> {
     required final String handle,
     final Transaction? transaction,
   }) async {
-    if (!config.enableLogin) {
-      throw PasswordlessLoginException(
-        reason: PasswordlessLoginExceptionReason.invalid,
-      );
-    }
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
@@ -100,12 +95,6 @@ class PasswordlessIdp<TNonce> {
     required final String loginToken,
     final Transaction? transaction,
   }) async {
-    if (!config.enableLogin) {
-      throw PasswordlessLoginException(
-        reason: PasswordlessLoginExceptionReason.invalid,
-      );
-    }
-
     final resolveAuthUserId = config.resolveAuthUserId;
     if (resolveAuthUserId == null) {
       throw StateError(
@@ -124,10 +113,11 @@ class PasswordlessIdp<TNonce> {
                 loginToken: loginToken,
                 transaction: transaction,
               );
+              final handle = _deserializeHandle(request.serializedHandle);
 
               final authUserId = await resolveAuthUserId(
                 session,
-                nonce: request.nonce,
+                handle: handle,
                 transaction: transaction,
               );
 
@@ -156,6 +146,14 @@ class PasswordlessIdp<TNonce> {
             },
           ),
     );
+  }
+
+  THandle _deserializeHandle(final String serializedHandle) {
+    try {
+      return config.deserializeHandle(serializedHandle);
+    } catch (_) {
+      throw PasswordlessLoginInvalidException();
+    }
   }
 }
 
