@@ -1,0 +1,26 @@
+# TEMPLATE
+publish_to: none
+
+name: cloud_storage_integration_test_support
+description: Shared integration test suite for S3-compatible cloud storage packages.
+version: 0.0.1
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  serverpod_client: SERVERPOD_VERSION
+  serverpod_cloud_storage_s3_compat: SERVERPOD_VERSION
+  test: ^1.25.5
+
+dependency_overrides:
+  serverpod:
+    path: ../../packages/serverpod
+  serverpod_client:
+    path: ../../packages/serverpod_client
+  serverpod_cloud_storage_s3_compat:
+    path: ../serverpod_cloud_storage_s3_compat
+  serverpod_serialization:
+    path: ../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../packages/serverpod_shared

@@ -45,7 +45,7 @@ abstract class ServerHealthMetric
       timestamp: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['timestamp'],
       ),
-      isHealthy: jsonSerialization['isHealthy'] as bool,
+      isHealthy: _i1.BoolJsonExtension.fromJson(jsonSerialization['isHealthy']),
       value: (jsonSerialization['value'] as num).toDouble(),
       granularity: jsonSerialization['granularity'] as int,
     );
@@ -437,14 +437,20 @@ class ServerHealthMetricRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<ServerHealthMetric>> insert(
     _i1.Session session,
     List<ServerHealthMetric> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<ServerHealthMetric>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 

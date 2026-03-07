@@ -58,7 +58,9 @@ abstract class TableDefinition implements _i1.SerializableModel {
       indexes: _i5.Protocol().deserialize<List<_i4.IndexDefinition>>(
         jsonSerialization['indexes'],
       ),
-      managed: jsonSerialization['managed'] as bool?,
+      managed: jsonSerialization['managed'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['managed']),
     );
   }
 

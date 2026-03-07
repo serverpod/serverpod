@@ -246,4 +246,61 @@ void main() {
       );
     },
   );
+
+  withServerpod(
+    'Given login request with onAfterAuthUserCreated and '
+    'onBeforeAuthUserCreated callbacks configured',
+    rollbackDatabase: RollbackDatabase.disabled,
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late AnonymousIdpTestFixture fixture;
+
+      late bool onAfterAuthUserCreatedCalled;
+      late bool onBeforeAuthUserCreatedCalled;
+
+      setUp(() {
+        onAfterAuthUserCreatedCalled = false;
+        onBeforeAuthUserCreatedCalled = false;
+
+        session = sessionBuilder.build();
+        fixture = AnonymousIdpTestFixture(
+          authUsersConfig: AuthUsersConfig(
+            onAfterAuthUserCreated:
+                (
+                  final Session session,
+                  final AuthUserModel authUser, {
+                  required final Transaction transaction,
+                }) {
+                  onAfterAuthUserCreatedCalled = true;
+                },
+            onBeforeAuthUserCreated:
+                (
+                  final Session session,
+                  final Set<Scope> scopes,
+                  final bool blocked, {
+                  required final Transaction transaction,
+                }) {
+                  onBeforeAuthUserCreatedCalled = true;
+                  return (scopes: scopes, blocked: blocked);
+                },
+          ),
+        );
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when logging in, then the functions are called',
+        () async {
+          final result = await fixture.anonymousIdp.login(session);
+          expect(result, isA<AuthSuccess>());
+          expect(onAfterAuthUserCreatedCalled, isTrue);
+          expect(onBeforeAuthUserCreatedCalled, isTrue);
+        },
+      );
+    },
+  );
 }

@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:serverpod/protocol.dart' show FutureCallEntry;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
+import 'package:serverpod_test_server/test_util/builders/runtime_settings_builder.dart';
+import 'package:serverpod_test_server/test_util/logging_utils.dart';
+import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
@@ -712,6 +715,72 @@ void main() async {
           },
         );
       });
+    },
+  );
+
+  group(
+    'Given FutureCallManager with registered FutureCalls and a scheduled but unregistered FutureCall',
+    () {
+      late Serverpod server;
+      late Session session;
+      late FutureCallManager futureCallManager;
+      final testCallName = 'Test-Future-Call';
+
+      setUp(() async {
+        server = IntegrationTestServer.create();
+        await server.start();
+
+        session = await server.createSession(enableLogging: false);
+        await LoggingUtil.clearAllLogs(session);
+      });
+
+      tearDown(() async {
+        await session.close();
+        await server.shutdown(exitProcess: false);
+      });
+
+      test(
+        'when executing all scheduled FutureCalls '
+        'then a message is logged for the unregistered FutureCall with error level',
+        () async {
+          final settings = RuntimeSettingsBuilder().build();
+          await server.updateRuntimeSettings(settings);
+
+          final testSession = await server.createSession(enableLogging: true);
+
+          futureCallManager = FutureCallManagerBuilder(
+            sessionProvider: (futureCallName) => testSession,
+            internalSession: testSession,
+          ).build();
+
+          futureCallManager.registerFutureCall(CompleterTestCall(), 'Test');
+
+          await futureCallManager.scheduleFutureCall(
+            testCallName,
+            SimpleData(num: 4),
+            DateTime.now().subtract(Duration(days: 42)),
+            '1',
+            'an-identifier',
+          );
+
+          await futureCallManager.runScheduledFutureCalls();
+          await testSession.close();
+
+          var logs = await LoggingUtil.findAllLogs(session);
+          var logEntry = logs.last.logs.first;
+
+          expect(logEntry.logLevel, LogLevel.error);
+          expect(
+            logEntry.message,
+            matches(
+              'Attempted to run a FutureCall that was not registered. This is likely due '
+              'to changing a FutureCall method after it was scheduled, leading to an '
+              'entry that no longer has a matching method. For legacy future calls, '
+              r'make sure they are registered in the server start. Entry: \{.*\"name\":\s*\"Test-Future-Call\".*\}',
+            ),
+          );
+        },
+      );
     },
   );
 }

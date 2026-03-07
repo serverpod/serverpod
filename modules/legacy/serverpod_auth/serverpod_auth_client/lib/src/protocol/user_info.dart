@@ -55,7 +55,7 @@ abstract class UserInfo implements _i1.SerializableModel {
       scopeNames: _i2.Protocol().deserialize<List<String>>(
         jsonSerialization['scopeNames'],
       ),
-      blocked: jsonSerialization['blocked'] as bool,
+      blocked: _i1.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
     );
   }
 

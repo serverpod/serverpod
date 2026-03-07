@@ -1,8 +1,12 @@
 import 'dart:io';
 import 'package:serverpod/src/database/migrations/migration_manager.dart';
+import 'package:serverpod/src/database/adapters/postgres/value_encoder.dart';
+import 'package:serverpod/src/database/interface/value_encoder.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given MigrationManager with available versions', () {
     late MigrationManager migrationManager;
     late Directory tempDir;

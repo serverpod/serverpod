@@ -45,14 +45,27 @@ abstract class LogSettings
   factory LogSettings.fromJson(Map<String, dynamic> jsonSerialization) {
     return LogSettings(
       logLevel: _i2.LogLevel.fromJson((jsonSerialization['logLevel'] as int)),
-      logAllSessions: jsonSerialization['logAllSessions'] as bool,
-      logAllQueries: jsonSerialization['logAllQueries'] as bool,
-      logSlowSessions: jsonSerialization['logSlowSessions'] as bool,
-      logStreamingSessionsContinuously:
-          jsonSerialization['logStreamingSessionsContinuously'] as bool,
-      logSlowQueries: jsonSerialization['logSlowQueries'] as bool,
-      logFailedSessions: jsonSerialization['logFailedSessions'] as bool,
-      logFailedQueries: jsonSerialization['logFailedQueries'] as bool,
+      logAllSessions: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['logAllSessions'],
+      ),
+      logAllQueries: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['logAllQueries'],
+      ),
+      logSlowSessions: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['logSlowSessions'],
+      ),
+      logStreamingSessionsContinuously: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['logStreamingSessionsContinuously'],
+      ),
+      logSlowQueries: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['logSlowQueries'],
+      ),
+      logFailedSessions: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['logFailedSessions'],
+      ),
+      logFailedQueries: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['logFailedQueries'],
+      ),
       slowSessionDuration: (jsonSerialization['slowSessionDuration'] as num)
           .toDouble(),
       slowQueryDuration: (jsonSerialization['slowQueryDuration'] as num)

@@ -49,7 +49,7 @@ abstract class CloudStorageEntry implements _i1.SerializableModel {
       byteData: _i1.ByteDataJsonExtension.fromJson(
         jsonSerialization['byteData'],
       ),
-      verified: jsonSerialization['verified'] as bool,
+      verified: _i1.BoolJsonExtension.fromJson(jsonSerialization['verified']),
     );
   }
 

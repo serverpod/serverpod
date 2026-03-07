@@ -1,4 +1,4 @@
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/database.dart';
 
 /// Many relation field between two tables.
 class ManyRelation<T extends Table> {

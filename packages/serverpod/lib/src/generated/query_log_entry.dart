@@ -54,7 +54,7 @@ abstract class QueryLogEntry
       numRows: jsonSerialization['numRows'] as int?,
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
-      slow: jsonSerialization['slow'] as bool,
+      slow: _i1.BoolJsonExtension.fromJson(jsonSerialization['slow']),
       order: jsonSerialization['order'] as int,
     );
   }
@@ -537,14 +537,20 @@ class QueryLogEntryRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<QueryLogEntry>> insert(
     _i1.Session session,
     List<QueryLogEntry> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<QueryLogEntry>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 

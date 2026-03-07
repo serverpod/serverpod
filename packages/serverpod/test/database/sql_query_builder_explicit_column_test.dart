@@ -1,5 +1,5 @@
 import 'package:serverpod/database.dart';
-import 'package:serverpod/src/database/sql_query_builder.dart';
+import 'package:serverpod/src/database/adapters/postgres/sql_query_builder.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:test/test.dart';
 
@@ -17,6 +17,8 @@ class TableWithColumnOverride extends Table<int?> {
 }
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given model with an explicit column field name', () {
     test(
       'when building the select query then the explicit column name '

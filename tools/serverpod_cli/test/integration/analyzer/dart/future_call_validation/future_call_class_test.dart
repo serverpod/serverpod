@@ -11,36 +11,31 @@ import 'package:test/test.dart';
 import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
-const pathToServerpodRoot = '../../../../../../../..';
-var testProjectDirectory = Directory(
-  path.joinAll([
-    'test',
-    'integration',
-    'analyzer',
-    'dart',
-    'future_call_validation',
-    const Uuid().v4(),
-  ]),
-);
+var pathToServerpodRoot = Directory('../..').absolute.path;
+late Directory testProjectDirectory;
 
 void main() {
   setUpAll(() async {
+    testProjectDirectory = Directory.systemTemp.createTempSync('cli_test_');
     await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
   });
 
   tearDownAll(() {
-    testProjectDirectory.deleteSync(recursive: true);
+    if (testProjectDirectory.existsSync()) {
+      testProjectDirectory.deleteSync(recursive: true);
+    }
   });
 
   group('Given a valid future call class when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<FutureCallDefinition> futureCallDefinitions;
     late FutureCallsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var futureCallFile = File(
         path.join(testDirectory.path, 'future_call.dart'),
       );
@@ -113,13 +108,14 @@ class ExampleFutureCall extends FutureCall {
 
   group('Given a valid future call with documentation when analyzed', () {
     var collector = CodeGenerationCollector();
-    var testDirectory = Directory(
-      path.join(testProjectDirectory.path, const Uuid().v4()),
-    );
+    late Directory testDirectory;
 
     late List<FutureCallDefinition> futureCallDefinitions;
     late FutureCallsAnalyzer analyzer;
     setUpAll(() async {
+      testDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
       var futureCallFile = File(
         path.join(testDirectory.path, 'future_call.dart'),
       );
@@ -166,13 +162,13 @@ class ExampleFutureCall extends FutureCall {
     'Given a future call class that has only the overriden invoke method',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -214,13 +210,13 @@ class ExampleFutureCall extends FutureCall {
     'Given a dart class that does not inherit from FutureCall when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var futureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );
@@ -261,13 +257,13 @@ class ExampleFutureCall {
     'Given same future call class definition in multiple files when analyzed',
     () {
       var collector = CodeGenerationCollector();
-      var testDirectory = Directory(
-        path.join(testProjectDirectory.path, const Uuid().v4()),
-      );
-
+      late Directory testDirectory;
       late List<FutureCallDefinition> futureCallDefinitions;
       late FutureCallsAnalyzer analyzer;
       setUpAll(() async {
+        testDirectory = Directory(
+          path.join(testProjectDirectory.path, const Uuid().v4()),
+        );
         var firstFutureCallFile = File(
           path.join(testDirectory.path, 'future_call.dart'),
         );

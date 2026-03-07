@@ -30,9 +30,17 @@ abstract class BoolDefaultPersist
     return BoolDefaultPersist(
       id: jsonSerialization['id'] as int?,
       boolDefaultPersistTrue:
-          jsonSerialization['boolDefaultPersistTrue'] as bool?,
+          jsonSerialization['boolDefaultPersistTrue'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultPersistTrue'],
+            ),
       boolDefaultPersistFalse:
-          jsonSerialization['boolDefaultPersistFalse'] as bool?,
+          jsonSerialization['boolDefaultPersistFalse'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultPersistFalse'],
+            ),
     );
   }
 
@@ -335,14 +343,20 @@ class BoolDefaultPersistRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<BoolDefaultPersist>> insert(
     _i1.Session session,
     List<BoolDefaultPersist> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<BoolDefaultPersist>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 

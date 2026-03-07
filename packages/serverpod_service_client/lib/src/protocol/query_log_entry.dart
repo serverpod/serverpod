@@ -53,7 +53,7 @@ abstract class QueryLogEntry implements _i1.SerializableModel {
       numRows: jsonSerialization['numRows'] as int?,
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
-      slow: jsonSerialization['slow'] as bool,
+      slow: _i1.BoolJsonExtension.fromJson(jsonSerialization['slow']),
       order: jsonSerialization['order'] as int,
     );
   }

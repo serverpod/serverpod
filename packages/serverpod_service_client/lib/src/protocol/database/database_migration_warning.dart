@@ -20,7 +20,7 @@ abstract class DatabaseMigrationWarning implements _i1.SerializableModel {
     required this.message,
     required this.table,
     required this.columns,
-    required this.destrucive,
+    required this.destructive,
   });
 
   factory DatabaseMigrationWarning({
@@ -28,7 +28,7 @@ abstract class DatabaseMigrationWarning implements _i1.SerializableModel {
     required String message,
     required String table,
     required List<String> columns,
-    required bool destrucive,
+    required bool destructive,
   }) = _DatabaseMigrationWarningImpl;
 
   factory DatabaseMigrationWarning.fromJson(
@@ -43,7 +43,9 @@ abstract class DatabaseMigrationWarning implements _i1.SerializableModel {
       columns: _i3.Protocol().deserialize<List<String>>(
         jsonSerialization['columns'],
       ),
-      destrucive: jsonSerialization['destrucive'] as bool,
+      destructive: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['destrucive'],
+      ),
     );
   }
 
@@ -55,7 +57,7 @@ abstract class DatabaseMigrationWarning implements _i1.SerializableModel {
 
   List<String> columns;
 
-  bool destrucive;
+  bool destructive;
 
   /// Returns a shallow copy of this [DatabaseMigrationWarning]
   /// with some or all fields replaced by the given arguments.
@@ -65,7 +67,7 @@ abstract class DatabaseMigrationWarning implements _i1.SerializableModel {
     String? message,
     String? table,
     List<String>? columns,
-    bool? destrucive,
+    bool? destructive,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -75,7 +77,7 @@ abstract class DatabaseMigrationWarning implements _i1.SerializableModel {
       'message': message,
       'table': table,
       'columns': columns.toJson(),
-      'destrucive': destrucive,
+      'destrucive': destructive,
     };
   }
 
@@ -91,13 +93,13 @@ class _DatabaseMigrationWarningImpl extends DatabaseMigrationWarning {
     required String message,
     required String table,
     required List<String> columns,
-    required bool destrucive,
+    required bool destructive,
   }) : super._(
          type: type,
          message: message,
          table: table,
          columns: columns,
-         destrucive: destrucive,
+         destructive: destructive,
        );
 
   /// Returns a shallow copy of this [DatabaseMigrationWarning]
@@ -109,14 +111,14 @@ class _DatabaseMigrationWarningImpl extends DatabaseMigrationWarning {
     String? message,
     String? table,
     List<String>? columns,
-    bool? destrucive,
+    bool? destructive,
   }) {
     return DatabaseMigrationWarning(
       type: type ?? this.type,
       message: message ?? this.message,
       table: table ?? this.table,
       columns: columns ?? this.columns.map((e0) => e0).toList(),
-      destrucive: destrucive ?? this.destrucive,
+      destructive: destructive ?? this.destructive,
     );
   }
 }

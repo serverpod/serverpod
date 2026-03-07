@@ -69,7 +69,9 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     return Types(
       id: jsonSerialization['id'] as int?,
       anInt: jsonSerialization['anInt'] as int?,
-      aBool: jsonSerialization['aBool'] as bool?,
+      aBool: jsonSerialization['aBool'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['aBool']),
       aDouble: (jsonSerialization['aDouble'] as num?)?.toDouble(),
       aDateTime: jsonSerialization['aDateTime'] == null
           ? null
@@ -844,14 +846,20 @@ class TypesRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<Types>> insert(
     _i1.Session session,
     List<Types> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<Types>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 

@@ -34,11 +34,23 @@ abstract class BoolDefaultMix implements _i1.SerializableModel {
     return BoolDefaultMix(
       id: jsonSerialization['id'] as int?,
       boolDefaultAndDefaultModel:
-          jsonSerialization['boolDefaultAndDefaultModel'] as bool?,
+          jsonSerialization['boolDefaultAndDefaultModel'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultAndDefaultModel'],
+            ),
       boolDefaultAndDefaultPersist:
-          jsonSerialization['boolDefaultAndDefaultPersist'] as bool?,
+          jsonSerialization['boolDefaultAndDefaultPersist'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultAndDefaultPersist'],
+            ),
       boolDefaultModelAndDefaultPersist:
-          jsonSerialization['boolDefaultModelAndDefaultPersist'] as bool?,
+          jsonSerialization['boolDefaultModelAndDefaultPersist'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultModelAndDefaultPersist'],
+            ),
     );
   }
 

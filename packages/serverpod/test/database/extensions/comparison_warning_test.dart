@@ -1,7 +1,11 @@
 import 'package:serverpod/src/database/migrations/table_comparison_warning.dart';
+import 'package:serverpod/src/database/adapters/postgres/value_encoder.dart';
+import 'package:serverpod/src/database/interface/value_encoder.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('ComparisonWarning toString output', () {
     test(
       'Given a column with no subs when toString is called then the correct output is returned',
@@ -37,7 +41,7 @@ void main() {
         expect(
           warning.toString(),
           equals(
-            '''Column "firstname" mismatch: 
+            '''Column "firstname" mismatch:
    - expected firstname "integer", found "text".''',
           ),
         );
@@ -66,7 +70,7 @@ void main() {
         expect(
           warning.toString(),
           equals(
-            '''Column "firstname" mismatch: 
+            '''Column "firstname" mismatch:
    - expected firstname "integer", found "text".
    - expected nullability "false", found "true".''',
           ),
@@ -108,7 +112,7 @@ void main() {
         expect(
           warning.toString(),
           equals(
-            '''Foreign key "fk_user" mismatch: 
+            '''Foreign key "fk_user" mismatch:
    - expected onUpdate "noAction", found "cascade".''',
           ),
         );
@@ -137,7 +141,7 @@ void main() {
         expect(
           warning.toString(),
           equals(
-            '''Foreign key "fk_user" mismatch: 
+            '''Foreign key "fk_user" mismatch:
    - expected onUpdate "noAction", found "cascade".
    - expected onDelete "noAction", found "restrict".''',
           ),

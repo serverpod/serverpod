@@ -23,6 +23,16 @@ class TestDatabaseProxy implements Database {
   );
 
   @override
+  DatabaseAnalyzer get analyzer => _db.analyzer;
+
+  @override
+  DatabaseDialect get dialect => _db.dialect;
+
+  @override
+  SerializationManagerServer get serializationManager =>
+      _db.serializationManager;
+
+  @override
   Future<int> count<T extends TableRow>({
     Expression? where,
     int? limit,
@@ -182,11 +192,13 @@ class TestDatabaseProxy implements Database {
   Future<List<T>> insert<T extends TableRow>(
     List<T> rows, {
     Transaction? transaction,
+    bool ignoreConflicts = false,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.insert<T>(
         rows,
         transaction: transaction,
+        ignoreConflicts: ignoreConflicts,
       ),
       isPartOfUserTransaction: transaction != null,
     );

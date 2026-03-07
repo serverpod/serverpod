@@ -71,6 +71,7 @@ void main() {
             runMode:
                 CreateRepairMigrationOption.runModes.first /* development */,
             force: false,
+            dialect: DatabaseDialect.postgres,
           ),
           throwsA(
             isA<MigrationVersionLoadException>()

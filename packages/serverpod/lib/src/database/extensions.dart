@@ -1,7 +1,7 @@
 import 'package:serverpod/protocol.dart';
-import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:collection/collection.dart';
 import 'package:serverpod/src/database/migrations/table_comparison_warning.dart';
+import 'package:serverpod/src/database/interface/value_encoder.dart';
 
 /// Comparison methods for [DatabaseDefinition].
 extension DatabaseComparisons on DatabaseDefinition {
@@ -523,14 +523,14 @@ extension FilterConstraintGenerator on FilterConstraint {
         columnType == ColumnType.boolean) {
       formattedValue = value;
     } else if (columnType == ColumnType.text) {
-      formattedValue = DatabasePoolManager.encoder.convert(value);
+      formattedValue = ValueEncoder.instance.convert(value);
     } else if (columnType == ColumnType.timestampWithoutTimeZone) {
       if (type == FilterConstraintType.inThePast) {
         formattedValue = _microsecondsToInterval(int.parse(value));
       } else {
         var dateTime = DateTime.tryParse(value);
         if (dateTime != null) {
-          formattedValue = DatabasePoolManager.encoder.convert(dateTime);
+          formattedValue = ValueEncoder.instance.convert(dateTime);
         } else {
           formattedValue = 'NULL';
         }

@@ -17,7 +17,7 @@ dev_dependencies:
   serverpod_cli: SERVERPOD_VERSION
   serverpod_lints: SERVERPOD_VERSION
   test_descriptor: ^2.0.2
-  uuid: ^4.1.0
+  uuid: ^4.5.3
 
 dependency_overrides:
   serverpod_cli:

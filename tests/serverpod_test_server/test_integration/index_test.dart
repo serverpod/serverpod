@@ -2,7 +2,6 @@ import 'package:serverpod/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
-import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/serverpod.dart';
 
 void main() async {
@@ -12,7 +11,7 @@ void main() async {
     late List<IndexDefinition> indexes;
 
     setUpAll(() async {
-      var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
+      var databaseDefinition = await session.db.analyzer.analyze();
 
       var vectorTable = databaseDefinition.tables.firstWhere(
         (table) => table.name == 'object_with_vector',
@@ -105,7 +104,7 @@ void main() async {
     late List<IndexDefinition> indexes;
 
     setUpAll(() async {
-      var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
+      var databaseDefinition = await session.db.analyzer.analyze();
 
       var halfVectorTable = databaseDefinition.tables.firstWhere(
         (table) => table.name == 'object_with_half_vector',
@@ -200,7 +199,7 @@ void main() async {
       late List<IndexDefinition> indexes;
 
       setUpAll(() async {
-        var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
+        var databaseDefinition = await session.db.analyzer.analyze();
 
         var sparseVectorTable = databaseDefinition.tables.firstWhere(
           (table) => table.name == 'object_with_sparse_vector',
@@ -261,7 +260,7 @@ void main() async {
     late List<IndexDefinition> indexes;
 
     setUpAll(() async {
-      var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
+      var databaseDefinition = await session.db.analyzer.analyze();
 
       var bitTable = databaseDefinition.tables.firstWhere(
         (table) => table.name == 'object_with_bit',

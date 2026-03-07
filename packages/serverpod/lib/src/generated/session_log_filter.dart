@@ -40,9 +40,9 @@ abstract class SessionLogFilter
       endpoint: jsonSerialization['endpoint'] as String?,
       method: jsonSerialization['method'] as String?,
       futureCall: jsonSerialization['futureCall'] as String?,
-      slow: jsonSerialization['slow'] as bool,
-      error: jsonSerialization['error'] as bool,
-      open: jsonSerialization['open'] as bool,
+      slow: _i1.BoolJsonExtension.fromJson(jsonSerialization['slow']),
+      error: _i1.BoolJsonExtension.fromJson(jsonSerialization['error']),
+      open: _i1.BoolJsonExtension.fromJson(jsonSerialization['open']),
       lastSessionLogId: jsonSerialization['lastSessionLogId'] as int?,
     );
   }

@@ -33,9 +33,21 @@ abstract class BoolDefault
   factory BoolDefault.fromJson(Map<String, dynamic> jsonSerialization) {
     return BoolDefault(
       id: jsonSerialization['id'] as int?,
-      boolDefaultTrue: jsonSerialization['boolDefaultTrue'] as bool?,
-      boolDefaultFalse: jsonSerialization['boolDefaultFalse'] as bool?,
-      boolDefaultNullFalse: jsonSerialization['boolDefaultNullFalse'] as bool?,
+      boolDefaultTrue: jsonSerialization['boolDefaultTrue'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultTrue'],
+            ),
+      boolDefaultFalse: jsonSerialization['boolDefaultFalse'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultFalse'],
+            ),
+      boolDefaultNullFalse: jsonSerialization['boolDefaultNullFalse'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultNullFalse'],
+            ),
     );
   }
 
@@ -353,14 +365,20 @@ class BoolDefaultRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<BoolDefault>> insert(
     _i1.Session session,
     List<BoolDefault> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<BoolDefault>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 

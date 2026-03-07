@@ -2,6 +2,7 @@ import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 const _defaultName = 'example';
 const _defaultType = PackageType.server;
@@ -18,6 +19,7 @@ class GeneratorConfigBuilder {
   List<ModuleConfig> _modules;
   List<TypeDefinition> _extraClasses;
   List<ServerpodFeature> _enabledFeatures;
+  DatabaseDialect _databaseDialect;
   List<ExperimentalFeature> _enabledExperimentalFeatures;
   List<String>? _relativeServerTestToolsPathParts;
 
@@ -48,6 +50,7 @@ class GeneratorConfigBuilder {
       ],
       _extraClasses = [],
       _enabledFeatures = [ServerpodFeature.database],
+      _databaseDialect = DatabaseDialect.postgres,
       _enabledExperimentalFeatures = [];
 
   GeneratorConfigBuilder withName(String name) {
@@ -129,6 +132,11 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withDatabaseDialect(DatabaseDialect databaseDialect) {
+    _databaseDialect = databaseDialect;
+    return this;
+  }
+
   GeneratorConfigBuilder withEnabledExperimentalFeatures(
     List<ExperimentalFeature> features,
   ) {
@@ -156,6 +164,7 @@ class GeneratorConfigBuilder {
       modules: _modules,
       extraClasses: _extraClasses,
       enabledFeatures: _enabledFeatures,
+      databaseDialect: _databaseDialect,
       experimentalFeatures: _enabledExperimentalFeatures,
       relativeServerTestToolsPathParts: _relativeServerTestToolsPathParts,
     );

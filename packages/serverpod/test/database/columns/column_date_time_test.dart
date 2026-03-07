@@ -2,6 +2,8 @@ import 'package:serverpod/database.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given a ColumnDateTime', () {
     var columnName = 'age';
     var column = ColumnDateTime(columnName, Table<int?>(tableName: 'test'));

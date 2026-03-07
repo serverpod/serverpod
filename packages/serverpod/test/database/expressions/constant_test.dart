@@ -2,6 +2,8 @@ import 'package:serverpod/database.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given a Constant expression', () {
     test('when null static is retrieved then output is NULL.', () {
       var expression = Constant.nullValue;

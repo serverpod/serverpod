@@ -4,6 +4,8 @@ import 'package:serverpod/database.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given a ColumnByteData', () {
     var columnName = 'configuration';
     var column = ColumnByteData(columnName, Table<int?>(tableName: 'test'));

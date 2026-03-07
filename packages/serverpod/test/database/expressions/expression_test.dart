@@ -1,9 +1,13 @@
+import 'package:serverpod/src/database/adapters/postgres/value_encoder.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/expressions.dart';
 import 'package:serverpod/src/database/concepts/table.dart';
+import 'package:serverpod/src/database/interface/value_encoder.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   var testTable = Table<int?>(tableName: 'test');
   group('Given one expression', () {
     var expressionString = 'true = true';

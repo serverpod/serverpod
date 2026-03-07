@@ -12,6 +12,7 @@ import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/yaml_util.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
@@ -84,6 +85,7 @@ class GeneratorConfig implements ModelLoadConfig {
     required List<ModuleConfig> modules,
     required this.extraClasses,
     required this.enabledFeatures,
+    required this.databaseDialect,
     this.experimentalFeatures = const [],
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
@@ -246,6 +248,9 @@ class GeneratorConfig implements ModelLoadConfig {
 
   /// All the features that are enabled in the serverpod project.
   final List<ServerpodFeature> enabledFeatures;
+
+  /// The dialect of the database, if enabled. Default is [DatabaseDialect.postgres].
+  final DatabaseDialect databaseDialect;
 
   bool isFeatureEnabled(ServerpodFeature feature) =>
       enabledFeatures.contains(feature);
@@ -441,6 +446,19 @@ class GeneratorConfig implements ModelLoadConfig {
       ...CommandLineExperimentalFeatures.instance.features,
     ];
 
+    var databaseDialect = DatabaseDialect.postgres;
+    final maybeDatabaseDialect = generatorConfig['databaseDialect'];
+    if (maybeDatabaseDialect != null) {
+      if (maybeDatabaseDialect is! String ||
+          !DatabaseDialect.values.any((d) => d.name == maybeDatabaseDialect)) {
+        throw SourceSpanFormatException(
+          'Invalid database dialect: "$maybeDatabaseDialect".',
+          maybeDatabaseDialect is YamlNode ? maybeDatabaseDialect.span : null,
+        );
+      }
+      databaseDialect = DatabaseDialect.values.byName(maybeDatabaseDialect);
+    }
+
     return GeneratorConfig(
       name: name,
       type: type,
@@ -454,6 +472,7 @@ class GeneratorConfig implements ModelLoadConfig {
       modules: modules,
       extraClasses: extraClasses,
       enabledFeatures: enabledFeatures,
+      databaseDialect: databaseDialect,
       experimentalFeatures: enabledExperimentalFeatures,
     );
   }

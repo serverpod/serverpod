@@ -53,7 +53,7 @@ abstract class MessageLogEntry implements _i1.SerializableModel {
       duration: (jsonSerialization['duration'] as num).toDouble(),
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
-      slow: jsonSerialization['slow'] as bool,
+      slow: _i1.BoolJsonExtension.fromJson(jsonSerialization['slow']),
       order: jsonSerialization['order'] as int,
     );
   }

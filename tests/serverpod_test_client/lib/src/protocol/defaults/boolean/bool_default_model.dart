@@ -32,11 +32,22 @@ abstract class BoolDefaultModel implements _i1.SerializableModel {
   factory BoolDefaultModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return BoolDefaultModel(
       id: jsonSerialization['id'] as int?,
-      boolDefaultModelTrue: jsonSerialization['boolDefaultModelTrue'] as bool?,
-      boolDefaultModelFalse:
-          jsonSerialization['boolDefaultModelFalse'] as bool?,
+      boolDefaultModelTrue: jsonSerialization['boolDefaultModelTrue'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultModelTrue'],
+            ),
+      boolDefaultModelFalse: jsonSerialization['boolDefaultModelFalse'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultModelFalse'],
+            ),
       boolDefaultModelNullFalse:
-          jsonSerialization['boolDefaultModelNullFalse'] as bool?,
+          jsonSerialization['boolDefaultModelNullFalse'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultModelNullFalse'],
+            ),
     );
   }
 

@@ -2,6 +2,8 @@ import 'package:serverpod/database.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given a ColumnSerializable containing a String', () {
     var columnName = 'configuration';
     var column = ColumnSerializable<String>(

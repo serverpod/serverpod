@@ -2,6 +2,8 @@ import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given a ColumnHalfVector', () {
     var columnName = 'embedding';
     var dimension = 3;

@@ -40,7 +40,9 @@ abstract class ColumnDefinition
       columnType: _i2.ColumnType.fromJson(
         (jsonSerialization['columnType'] as int),
       ),
-      isNullable: jsonSerialization['isNullable'] as bool,
+      isNullable: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['isNullable'],
+      ),
       columnDefault: jsonSerialization['columnDefault'] as String?,
       dartType: jsonSerialization['dartType'] as String?,
       vectorDimension: jsonSerialization['vectorDimension'] as int?,

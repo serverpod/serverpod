@@ -5,8 +5,8 @@ import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/caches.dart';
+import 'package:serverpod/src/database/interface/database_pool_manager.dart';
 import 'package:serverpod/src/database/database.dart';
-import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/serverpod.dart';

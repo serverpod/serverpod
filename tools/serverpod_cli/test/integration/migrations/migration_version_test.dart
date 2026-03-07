@@ -42,7 +42,11 @@ void main() {
           .build();
 
       expect(
-        () => migrationVersion.write(installedModules: [], removedModules: []),
+        () => migrationVersion.write(
+          installedModules: [],
+          removedModules: [],
+          dialect: DatabaseDialect.postgres,
+        ),
         throwsA(isA<MigrationVersionAlreadyExistsException>()),
       );
     },

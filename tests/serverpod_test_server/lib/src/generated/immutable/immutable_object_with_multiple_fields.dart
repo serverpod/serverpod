@@ -36,7 +36,9 @@ abstract class ImmutableObjectWithMultipleFields
   ) {
     return ImmutableObjectWithMultipleFields(
       anInt: jsonSerialization['anInt'] as int?,
-      aBool: jsonSerialization['aBool'] as bool?,
+      aBool: jsonSerialization['aBool'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['aBool']),
       aDouble: (jsonSerialization['aDouble'] as num?)?.toDouble(),
       aDateTime: jsonSerialization['aDateTime'] == null
           ? null

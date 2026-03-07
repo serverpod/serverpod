@@ -1,0 +1,50 @@
+name: Validate CLI Completion Specs
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - stable-*
+    paths:
+      - "tools/serverpod_cli/lib/src/commands/**"
+      - "tools/serverpod_cli/lib/src/runner/**"
+      - "tools/serverpod_cli/bin/**"
+  pull_request:
+    branches:
+      - main
+      - dev
+      - stable-*
+    paths:
+      - "tools/serverpod_cli/lib/src/commands/**"
+      - "tools/serverpod_cli/lib/src/runner/**"
+      - "tools/serverpod_cli/bin/**"
+
+jobs:
+  validate-completion:
+    name: Validate completion specs
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ["3.32.0", "3.38.4"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+
+      - name: Install melos
+        run: dart pub global activate melos
+
+      - name: Bootstrap
+        run: melos bootstrap
+
+      - name: Generate completion specs
+        run: util/generate_completion
+
+      - name: Verify no changes
+        run: |
+          echo "### If this fails, run util/generate_completion and commit the result"
+          util/ensure_no_changes

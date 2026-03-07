@@ -34,7 +34,9 @@ abstract class ChatMessageChunk implements _i1.SerializableModel {
       messages: _i3.Protocol().deserialize<List<_i2.ChatMessage>>(
         jsonSerialization['messages'],
       ),
-      hasOlderMessages: jsonSerialization['hasOlderMessages'] as bool,
+      hasOlderMessages: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['hasOlderMessages'],
+      ),
     );
   }
 

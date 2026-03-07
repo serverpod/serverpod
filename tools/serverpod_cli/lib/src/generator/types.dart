@@ -358,7 +358,8 @@ class TypeDefinition {
               '${serverCode ? config.serverPackage : config.dartClientPackage}'
               '/${split[1]}';
         } else if (url == defaultModuleAlias ||
-            config.sharedModelsSourcePathsParts.containsKey(url)) {
+            config.sharedModelsSourcePathsParts.containsKey(url) ||
+            (projectModelDefinition?.isSharedModel ?? false)) {
           // protocol or shared-package reference
           var localProjectModelDefinition = projectModelDefinition;
           if (localProjectModelDefinition?.isSharedModel == true) {

@@ -1,5 +1,5 @@
 import 'package:serverpod/database.dart';
-import 'package:serverpod/src/database/sql_query_builder.dart';
+import 'package:serverpod/src/database/adapters/postgres/sql_query_builder.dart';
 import 'package:test/test.dart';
 
 class TableWithMaxFieldName extends Table<int?> {
@@ -21,6 +21,8 @@ class TableWithMaxFieldName extends Table<int?> {
 }
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   // Field name is 61 characters long causing field alias to be over 63 characters
   // which is the maximum length for identifiers in Postgres.
   var table = TableWithMaxFieldName('table');

@@ -2,10 +2,12 @@ import 'dart:typed_data';
 
 // ignore: implementation_imports
 import 'package:postgres/src/types/text_codec.dart';
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+
+import '../../interface/value_encoder.dart';
 
 /// Overrides the [PostgresTextEncoder] to add support for [ByteData].
-class ValueEncoder extends PostgresTextEncoder {
+class PostgresValueEncoder extends PostgresTextEncoder implements ValueEncoder {
   @override
   String convert(
     dynamic input, {

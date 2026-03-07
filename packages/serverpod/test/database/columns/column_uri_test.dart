@@ -2,6 +2,8 @@ import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given a ColumnUri', () {
     var columnName = 'uri';
     var column = ColumnUri(columnName, Table<int?>(tableName: 'test'));

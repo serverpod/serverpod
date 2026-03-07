@@ -58,11 +58,15 @@ abstract class SessionLogEntry implements _i1.SerializableModel {
       method: jsonSerialization['method'] as String?,
       duration: (jsonSerialization['duration'] as num?)?.toDouble(),
       numQueries: jsonSerialization['numQueries'] as int?,
-      slow: jsonSerialization['slow'] as bool?,
+      slow: jsonSerialization['slow'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['slow']),
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
       userId: jsonSerialization['userId'] as String?,
-      isOpen: jsonSerialization['isOpen'] as bool?,
+      isOpen: jsonSerialization['isOpen'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['isOpen']),
       touched: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['touched']),
     );
   }
@@ -87,8 +91,8 @@ abstract class SessionLogEntry implements _i1.SerializableModel {
   /// The method this session is associated with, if any.
   String? method;
 
-  /// The running time of this session. May be null if the session is still
-  /// active.
+  /// The running time of this session, in seconds. May be null if the session
+  /// is still active.
   double? duration;
 
   /// The number of queries performed during this session.

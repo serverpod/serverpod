@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/util/date_time_extension.dart';
@@ -187,7 +186,7 @@ class HealthCheckManager {
     var session = _pod.internalSession;
 
     try {
-      var encoder = DatabasePoolManager.encoder;
+      var encoder = ValueEncoder.instance;
 
       var now = encoder.convert(DateTime.now().toUtc());
       var threeMinutesAgo = encoder.convert(

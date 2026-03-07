@@ -100,14 +100,14 @@ abstract class ComparisonWarning<T extends ComparisonWarning<T>> {
     } else if (isMismatch) {
       // If this is the top-level mismatch, provide context about the mismatch.
       if (parent == null) {
-        buffer.write('$type "$name" mismatch: ');
+        buffer.write('$type "$name" mismatch:');
       }
       buffer.write('expected $name "$expected", found "$found".');
     } else if (isAdded) {
       buffer.write('New $type "$name" added.');
     } else {
       // Fallback for cases where both expected and found are null.
-      buffer.write('$type "$name" mismatch: ');
+      buffer.write('$type "$name" mismatch:');
     }
     return buffer.toString();
   }

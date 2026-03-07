@@ -1,6 +1,6 @@
+import 'package:serverpod/src/database/adapters/postgres/sql_query_builder.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
-import '../../../../../packages/serverpod/lib/src/database/sql_query_builder.dart';
 
 void main() {
   group('Given nested relations when building shallow include sql query', () {

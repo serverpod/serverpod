@@ -35,11 +35,23 @@ abstract class BoolDefaultMix
     return BoolDefaultMix(
       id: jsonSerialization['id'] as int?,
       boolDefaultAndDefaultModel:
-          jsonSerialization['boolDefaultAndDefaultModel'] as bool?,
+          jsonSerialization['boolDefaultAndDefaultModel'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultAndDefaultModel'],
+            ),
       boolDefaultAndDefaultPersist:
-          jsonSerialization['boolDefaultAndDefaultPersist'] as bool?,
+          jsonSerialization['boolDefaultAndDefaultPersist'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultAndDefaultPersist'],
+            ),
       boolDefaultModelAndDefaultPersist:
-          jsonSerialization['boolDefaultModelAndDefaultPersist'] as bool?,
+          jsonSerialization['boolDefaultModelAndDefaultPersist'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(
+              jsonSerialization['boolDefaultModelAndDefaultPersist'],
+            ),
     );
   }
 
@@ -360,14 +372,20 @@ class BoolDefaultMixRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<BoolDefaultMix>> insert(
     _i1.Session session,
     List<BoolDefaultMix> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<BoolDefaultMix>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 

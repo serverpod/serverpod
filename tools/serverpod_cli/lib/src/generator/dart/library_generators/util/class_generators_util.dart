@@ -125,7 +125,6 @@ Expression _buildFromJson(
   ValueType valueType = type.valueType;
   switch (valueType) {
     case ValueType.string:
-    case ValueType.bool:
     case ValueType.int:
       return _buildPrimitiveTypeFromJson(
         type,
@@ -138,6 +137,7 @@ Expression _buildFromJson(
         valueExpression,
         field,
       );
+    case ValueType.bool:
     case ValueType.dateTime:
     case ValueType.duration:
     case ValueType.byteData:
@@ -243,18 +243,22 @@ Expression _buildComplexTypeFromJson(
   bool serverCode,
   SerializableModelFieldDefinition? field,
 ) {
+  var className = type.className;
+  var extensionName =
+      '${className[0].toUpperCase()}${className.substring(1)}JsonExtension';
+
   if (_shouldHandleMissingKeyForDefault(type, field)) {
     return _wrapWithNullCheckForDefault(
       valueExpression,
       refer(
-        '${type.className}JsonExtension',
+        extensionName,
         serverpodUrl(serverCode),
       ).property('fromJson').call([valueExpression]),
     );
   }
 
   return CodeExpression(
-    refer('${type.className}JsonExtension', serverpodUrl(serverCode))
+    refer(extensionName, serverpodUrl(serverCode))
         .property('fromJson')
         .call([valueExpression])
         .checkIfNull(type, valueExpression: valueExpression)

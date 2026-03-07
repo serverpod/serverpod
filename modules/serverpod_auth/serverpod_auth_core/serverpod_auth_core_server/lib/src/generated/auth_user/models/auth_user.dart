@@ -45,7 +45,9 @@ abstract class AuthUser
       scopeNames: _i2.Protocol().deserialize<Set<String>>(
         jsonSerialization['scopeNames'],
       ),
-      blocked: jsonSerialization['blocked'] as bool?,
+      blocked: jsonSerialization['blocked'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
     );
   }
 
@@ -364,14 +366,20 @@ class AuthUserRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<AuthUser>> insert(
     _i1.Session session,
     List<AuthUser> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<AuthUser>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 

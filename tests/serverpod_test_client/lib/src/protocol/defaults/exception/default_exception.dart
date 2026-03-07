@@ -58,7 +58,9 @@ abstract class DefaultException
 
   factory DefaultException.fromJson(Map<String, dynamic> jsonSerialization) {
     return DefaultException(
-      defaultBoolean: jsonSerialization['defaultBoolean'] as bool?,
+      defaultBoolean: jsonSerialization['defaultBoolean'] == null
+          ? null
+          : _i1.BoolJsonExtension.fromJson(jsonSerialization['defaultBoolean']),
       defaultDateTime: jsonSerialization['defaultDateTime'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(

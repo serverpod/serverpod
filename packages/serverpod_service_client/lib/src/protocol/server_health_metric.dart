@@ -44,7 +44,7 @@ abstract class ServerHealthMetric implements _i1.SerializableModel {
       timestamp: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['timestamp'],
       ),
-      isHealthy: jsonSerialization['isHealthy'] as bool,
+      isHealthy: _i1.BoolJsonExtension.fromJson(jsonSerialization['isHealthy']),
       value: (jsonSerialization['value'] as num).toDouble(),
       granularity: jsonSerialization['granularity'] as int,
     );

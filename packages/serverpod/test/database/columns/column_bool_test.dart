@@ -2,6 +2,8 @@ import 'package:serverpod/database.dart';
 import 'package:test/test.dart';
 
 void main() {
+  ValueEncoder.set(PostgresValueEncoder());
+
   group('Given a ColumnBool', () {
     var columnName = 'production';
     var column = ColumnBool(columnName, Table<int?>(tableName: 'test'));

@@ -30,7 +30,9 @@ abstract class SessionAuthInfo implements _i1.SerializableModel {
 
   factory SessionAuthInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionAuthInfo(
-      isAuthenticated: jsonSerialization['isAuthenticated'] as bool,
+      isAuthenticated: _i1.BoolJsonExtension.fromJson(
+        jsonSerialization['isAuthenticated'],
+      ),
       userId: jsonSerialization['userId'] as String?,
       scopes: _i2.Protocol().deserialize<List<String>>(
         jsonSerialization['scopes'],

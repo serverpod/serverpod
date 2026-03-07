@@ -211,6 +211,23 @@ class Restrictions {
       ];
     }
 
+    if (!(documentDefinition?.isSharedModel ?? false)) {
+      var sharedModelWithSameName = parsedModels.classNames[className]
+          ?.where((model) => model.isSharedModel)
+          .firstOrNull;
+
+      if (sharedModelWithSameName != null) {
+        return [
+          SourceSpanSeverityException(
+            'The $documentType name "$className" is already used by a model in '
+            'the shared package "${sharedModelWithSameName.sharedPackageName}". '
+            'Server and client models cannot have the same name as shared package models.',
+            span,
+          ),
+        ];
+      }
+    }
+
     return [];
   }
 
@@ -2422,8 +2439,13 @@ class Restrictions {
     var referenceClasses = definitions.whereType<ClassDefinition>();
 
     if (referenceClasses.isNotEmpty) {
-      var moduleAlias = type.moduleAlias;
-      return referenceClasses.any((e) => e.type.moduleAlias == moduleAlias);
+      return referenceClasses.any(
+        (e) =>
+            e.type.moduleAlias == type.moduleAlias ||
+            // When no url specified (moduleAlias null), accept shared models
+            // since name is enforced to be unique between all models.
+            (type.moduleAlias == null && e.isSharedModel),
+      );
     }
 
     return true;
