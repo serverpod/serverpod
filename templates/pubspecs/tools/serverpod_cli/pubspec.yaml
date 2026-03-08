@@ -51,6 +51,8 @@ dev_dependencies:
 dependency_overrides:
   serverpod_client:
     path: ../../packages/serverpod_client
+  serverpod_database:
+    path: ../../packages/serverpod_database
   serverpod_lints:
     path: ../../packages/serverpod_lints
   serverpod_serialization:

@@ -1,3 +1,5 @@
+export 'package:serverpod_database/serverpod_database.dart' hide Protocol;
+
 export 'src/database/adapters/postgres/postgres_error_codes.dart';
 export 'src/database/adapters/postgres/value_encoder.dart';
 export 'src/database/concepts/columns.dart';
@@ -20,4 +22,3 @@ export 'src/database/interface/serialization_manager.dart';
 export 'src/database/interface/value_encoder.dart';
 export 'src/database/database.dart' show Database;
 export 'src/database/util/database_util.dart';
-export 'src/generated/database/enum_serialization.dart';
