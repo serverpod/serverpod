@@ -9,7 +9,7 @@ fields:
   live: List<TableDefinition>
 
   ### The migrations that are installed in the database.
-  installedMigrations: List<DatabaseMigrationVersion>
+  installedMigrations: List<DatabaseMigrationVersionModel>
 
   ### The latest available migrations that can be applied.
-  latestAvailableMigrations: List<DatabaseMigrationVersion>
+  latestAvailableMigrations: List<DatabaseMigrationVersionModel>
