@@ -26,7 +26,8 @@ void main() {
       // the test server's Protocol returns 'serverpod_test'.
       const wrongModuleName = 'serverpod';
 
-      final migrationSQL = '''
+      final migrationSQL =
+          '''
       BEGIN;
 
       --
@@ -91,8 +92,8 @@ void main() {
               '("$wrongModuleName") does not match the module name of the '
               'serialization manager ("serverpod_test"). This may indicate that the '
               'wrong Protocol class is being used in "server.dart". Make sure you '
-              'are using the Protocol class generated under '
-              '"src/generated/protocol.dart" and not one from an external package.\n',
+              'are using the Protocol class generated under "src/generated/protocol.dart" '
+              'and not one from an external package.\n',
             ),
           );
         },
