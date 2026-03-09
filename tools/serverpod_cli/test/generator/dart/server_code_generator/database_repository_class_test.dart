@@ -438,6 +438,13 @@ void main() {
             contains('Transaction? transaction'),
           );
         });
+
+        test('that takes the ignoreConflicts bool as an optional param', () {
+          expect(
+            insertMethod?.parameters?.toSource(),
+            contains('bool ignoreConflicts = false'),
+          );
+        });
       });
 
       group('has an insert row method', () {
@@ -485,6 +492,13 @@ void main() {
           expect(
             insertRowMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
+          );
+        });
+
+        test('that does not have the ignoreConflicts param', () {
+          expect(
+            insertRowMethod?.parameters?.toSource(),
+            isNot(contains('ignoreConflicts')),
           );
         });
       });

@@ -50,7 +50,7 @@ void main() {
             migration.warnings.first.type,
             DatabaseMigrationWarningType.columnDropped,
           );
-          expect(migration.warnings.first.destrucive, isTrue);
+          expect(migration.warnings.first.destructive, isTrue);
         },
       );
 
@@ -114,7 +114,7 @@ void main() {
             migration.warnings.first.type,
             DatabaseMigrationWarningType.columnDropped,
           );
-          expect(migration.warnings.first.destrucive, isTrue);
+          expect(migration.warnings.first.destructive, isTrue);
         },
       );
     },

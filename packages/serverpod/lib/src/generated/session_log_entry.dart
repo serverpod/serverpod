@@ -97,8 +97,8 @@ abstract class SessionLogEntry
   /// The method this session is associated with, if any.
   String? method;
 
-  /// The running time of this session. May be null if the session is still
-  /// active.
+  /// The running time of this session, in seconds. May be null if the session
+  /// is still active.
   double? duration;
 
   /// The number of queries performed during this session.
@@ -459,8 +459,8 @@ class SessionLogEntryTable extends _i1.Table<int?> {
   /// The method this session is associated with, if any.
   late final _i1.ColumnString method;
 
-  /// The running time of this session. May be null if the session is still
-  /// active.
+  /// The running time of this session, in seconds. May be null if the session
+  /// is still active.
   late final _i1.ColumnDouble duration;
 
   /// The number of queries performed during this session.
@@ -652,14 +652,20 @@ class SessionLogEntryRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
   Future<List<SessionLogEntry>> insert(
     _i1.Session session,
     List<SessionLogEntry> rows, {
     _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
   }) async {
     return session.db.insert<SessionLogEntry>(
       rows,
       transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
     );
   }
 

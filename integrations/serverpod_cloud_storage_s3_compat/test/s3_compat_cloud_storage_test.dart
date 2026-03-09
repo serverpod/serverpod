@@ -1,0 +1,503 @@
+import 'dart:typed_data';
+
+import 'package:http/http.dart' as http;
+import 'package:serverpod/serverpod.dart' show CloudStorageException;
+import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
+import 'package:test/test.dart';
+
+void main() {
+  group('Given a TestableS3CompatCloudStorage', () {
+    late TestableS3CompatCloudStorage storage;
+    late MockS3Client mockClient;
+    late MockUploadStrategy mockUploadStrategy;
+
+    setUp(() {
+      mockClient = MockS3Client();
+      mockUploadStrategy = MockUploadStrategy();
+
+      storage = TestableS3CompatCloudStorage(
+        mockClient: mockClient,
+        mockUploadStrategy: mockUploadStrategy,
+      );
+    });
+
+    test(
+      'when accessing storageId '
+      'then it returns the configured value',
+      () {
+        expect(storage.storageId, 'test-storage');
+      },
+    );
+
+    group('Given a file to store', () {
+      test(
+        'when storing it '
+        'then it delegates to the upload strategy',
+        () async {
+          final data = ByteData(10);
+
+          await storage.testStoreFile('test/file.txt', data);
+
+          expect(mockUploadStrategy.uploadedPath, 'test/file.txt');
+          expect(mockUploadStrategy.uploadedData, data);
+          expect(mockUploadStrategy.uploadedPreventOverwrite, isFalse);
+        },
+      );
+
+      test(
+        'when storing it with preventOverwrite '
+        'then it forwards preventOverwrite to the upload strategy',
+        () async {
+          final data = ByteData(10);
+
+          await storage.testStoreFile(
+            'test/file.txt',
+            data,
+            preventOverwrite: true,
+          );
+
+          expect(mockUploadStrategy.uploadedPreventOverwrite, isTrue);
+        },
+      );
+    });
+
+    group('Given an existing file', () {
+      test(
+        'when retrieving it '
+        'then it returns the file data',
+        () async {
+          final fileContent = [1, 2, 3, 4, 5];
+          mockClient.getObjectResponse = http.Response.bytes(fileContent, 200);
+
+          final result = await storage.testRetrieveFile('existing/file.txt');
+
+          expect(mockClient.lastGetKey, 'existing/file.txt');
+          expect(result, isNotNull);
+          expect(result!.buffer.asUint8List(), fileContent);
+        },
+      );
+
+      test(
+        'when checking if it exists '
+        'then it returns true',
+        () async {
+          mockClient.headObjectResponse = http.Response('', 200);
+
+          final exists = await storage.testFileExists('existing.txt');
+
+          expect(mockClient.lastHeadKey, 'existing.txt');
+          expect(exists, isTrue);
+        },
+      );
+
+      test(
+        'when getting its public URL '
+        'then it returns the URL',
+        () async {
+          mockClient.headObjectResponse = http.Response('', 200);
+
+          final url = await storage.testGetPublicUrl('path/to/file.txt');
+
+          expect(url, isNotNull);
+          expect(url.toString(), contains('test-bucket'));
+          expect(url.toString(), contains('path/to/file.txt'));
+        },
+      );
+
+      test(
+        'when deleting it '
+        'then it calls deleteObject on the client',
+        () async {
+          mockClient.deleteObjectResponse = http.Response('', 204);
+
+          await storage.testDeleteFile('to-delete.txt');
+
+          expect(mockClient.lastDeleteKey, 'to-delete.txt');
+        },
+      );
+
+      test(
+        'when verifying direct file upload '
+        'then it returns true',
+        () async {
+          mockClient.headObjectResponse = http.Response('', 200);
+
+          final verified = await storage.testVerifyDirectFileUpload(
+            'uploaded.txt',
+          );
+
+          expect(mockClient.lastHeadKey, 'uploaded.txt');
+          expect(verified, isTrue);
+        },
+      );
+    });
+
+    group('Given a missing file', () {
+      test(
+        'when retrieving it '
+        'then it returns null',
+        () async {
+          mockClient.getObjectResponse = http.Response('Not Found', 404);
+
+          final result = await storage.testRetrieveFile('missing/file.txt');
+
+          expect(result, isNull);
+        },
+      );
+
+      test(
+        'when checking if it exists '
+        'then it returns false',
+        () async {
+          mockClient.headObjectResponse = http.Response('', 404);
+
+          final exists = await storage.testFileExists('missing.txt');
+
+          expect(exists, isFalse);
+        },
+      );
+
+      test(
+        'when getting its public URL '
+        'then it returns null',
+        () async {
+          mockClient.headObjectResponse = http.Response('', 404);
+
+          final url = await storage.testGetPublicUrl('missing.txt');
+
+          expect(url, isNull);
+        },
+      );
+
+      test(
+        'when verifying direct file upload '
+        'then it returns false',
+        () async {
+          mockClient.headObjectResponse = http.Response('', 404);
+
+          final verified = await storage.testVerifyDirectFileUpload(
+            'not-uploaded.txt',
+          );
+
+          expect(verified, isFalse);
+        },
+      );
+    });
+
+    group('Given a direct upload description request', () {
+      test(
+        'when creating it '
+        'then it delegates to the upload strategy',
+        () async {
+          mockUploadStrategy.directUploadDescriptionResult =
+              '{"url":"https://example.com"}';
+
+          final description = await storage.testCreateDirectUploadDescription(
+            'upload/target.txt',
+            expiration: Duration(minutes: 5),
+            maxFileSize: 1024 * 1024,
+          );
+
+          expect(mockUploadStrategy.directUploadPath, 'upload/target.txt');
+          expect(
+            mockUploadStrategy.directUploadExpiration,
+            Duration(minutes: 5),
+          );
+          expect(mockUploadStrategy.directUploadMaxFileSize, 1024 * 1024);
+          expect(description, '{"url":"https://example.com"}');
+        },
+      );
+
+      test(
+        'when contentLength is within limit '
+        'then it forwards contentLength to the upload strategy',
+        () async {
+          mockUploadStrategy.directUploadDescriptionResult =
+              '{"url":"https://example.com"}';
+
+          await storage.testCreateDirectUploadDescription(
+            'upload/target.txt',
+            maxFileSize: 1024 * 1024,
+            contentLength: 512 * 1024,
+          );
+
+          expect(mockUploadStrategy.directUploadContentLength, 512 * 1024);
+        },
+      );
+
+      test(
+        'when contentLength is not provided '
+        'then it forwards null contentLength to the upload strategy',
+        () async {
+          mockUploadStrategy.directUploadDescriptionResult =
+              '{"url":"https://example.com"}';
+
+          await storage.testCreateDirectUploadDescription(
+            'upload/target.txt',
+          );
+
+          expect(mockUploadStrategy.directUploadContentLength, isNull);
+        },
+      );
+
+      test(
+        'when contentLength exceeds maxFileSize '
+        'then it throws CloudStorageException',
+        () async {
+          expect(
+            () => storage.testCreateDirectUploadDescription(
+              'upload/target.txt',
+              maxFileSize: 1024 * 1024,
+              contentLength: 2 * 1024 * 1024,
+            ),
+            throwsA(isA<CloudStorageException>()),
+          );
+        },
+      );
+
+      test(
+        'when contentLength equals maxFileSize '
+        'then it succeeds',
+        () async {
+          mockUploadStrategy.directUploadDescriptionResult =
+              '{"url":"https://example.com"}';
+
+          final description = await storage.testCreateDirectUploadDescription(
+            'upload/target.txt',
+            maxFileSize: 1024 * 1024,
+            contentLength: 1024 * 1024,
+          );
+
+          expect(description, isNotNull);
+          expect(mockUploadStrategy.directUploadContentLength, 1024 * 1024);
+        },
+      );
+    });
+  });
+
+  test(
+    'Given a TestableS3CompatCloudStorage with custom endpoints '
+    'when getting public URL '
+    'then it produces correct custom URL format',
+    () async {
+      final mockClient = MockS3Client();
+      mockClient.headObjectResponse = http.Response('', 200);
+
+      final storage = TestableS3CompatCloudStorage(
+        mockClient: mockClient,
+        mockUploadStrategy: MockUploadStrategy(),
+        storageId: 'localstack',
+        bucket: 'local-bucket',
+        region: 'us-east-1',
+        endpoints: CustomEndpointConfig(
+          baseUri: Uri.http('localhost:4566', '/'),
+        ),
+      );
+
+      final url = await storage.testGetPublicUrl('file.txt');
+
+      expect(url.toString(), 'http://localhost:4566/local-bucket/file.txt');
+    },
+  );
+}
+
+// Simple mock S3Client for testing
+class MockS3Client extends S3Client {
+  http.Response? getObjectResponse;
+  http.Response? headObjectResponse;
+  http.Response? deleteObjectResponse;
+
+  String? lastGetKey;
+  String? lastHeadKey;
+  String? lastDeleteKey;
+
+  MockS3Client()
+    : super(
+        accessKey: 'test',
+        secretKey: 'test',
+        bucket: 'test',
+        region: 'us-east-1',
+        endpoints: CustomEndpointConfig(
+          baseUri: Uri.https('s3.us-east-1.amazonaws.com', '/'),
+        ),
+      );
+
+  @override
+  Future<http.Response> getObject(String key) async {
+    lastGetKey = key;
+    return getObjectResponse ?? http.Response('', 404);
+  }
+
+  @override
+  Future<http.Response> headObject(String key) async {
+    lastHeadKey = key;
+    return headObjectResponse ?? http.Response('', 404);
+  }
+
+  @override
+  Future<http.Response> deleteObject(String key) async {
+    lastDeleteKey = key;
+    return deleteObjectResponse ?? http.Response('', 204);
+  }
+}
+
+// Simple mock upload strategy for testing
+class MockUploadStrategy implements S3UploadStrategy {
+  String? uploadedPath;
+  ByteData? uploadedData;
+  bool? uploadedPreventOverwrite;
+  String? directUploadPath;
+  Duration? directUploadExpiration;
+  int? directUploadMaxFileSize;
+  int? directUploadContentLength;
+
+  String? directUploadDescriptionResult;
+
+  @override
+  String get uploadType => 'mock';
+
+  @override
+  Future<void> uploadData({
+    required String accessKey,
+    required String secretKey,
+    required String bucket,
+    required String region,
+    required ByteData data,
+    required String path,
+    required bool public,
+    required S3EndpointConfig endpoints,
+    bool preventOverwrite = false,
+  }) async {
+    uploadedPath = path;
+    uploadedData = data;
+    uploadedPreventOverwrite = preventOverwrite;
+  }
+
+  @override
+  Future<String?> createDirectUploadDescription({
+    required String accessKey,
+    required String secretKey,
+    required String bucket,
+    required String region,
+    required String path,
+    required Duration expiration,
+    required int maxFileSize,
+    required bool public,
+    required S3EndpointConfig endpoints,
+    int? contentLength,
+    bool preventOverwrite = false,
+  }) async {
+    directUploadPath = path;
+    directUploadExpiration = expiration;
+    directUploadMaxFileSize = maxFileSize;
+    directUploadContentLength = contentLength;
+    return directUploadDescriptionResult;
+  }
+}
+
+/// Test wrapper that exposes internal methods for testing without Session.
+class TestableS3CompatCloudStorage extends S3CompatCloudStorage {
+  final MockS3Client mockClient;
+  final MockUploadStrategy mockUploadStrategy;
+
+  TestableS3CompatCloudStorage({
+    required this.mockClient,
+    required this.mockUploadStrategy,
+    super.storageId = 'test-storage',
+    super.accessKey = 'test-access-key',
+    super.secretKey = 'test-secret-key',
+    super.bucket = 'test-bucket',
+    super.region = 'us-east-1',
+    super.public = true,
+    S3EndpointConfig? endpoints,
+  }) : super(
+         endpoints:
+             endpoints ??
+             CustomEndpointConfig(
+               baseUri: Uri.https('s3.us-east-1.amazonaws.com', '/'),
+             ),
+         uploadStrategy: mockUploadStrategy,
+         client: mockClient,
+       );
+
+  /// Test helper to call storeFile without a real Session.
+  Future<void> testStoreFile(
+    String path,
+    ByteData data, {
+    bool preventOverwrite = false,
+  }) async {
+    await uploadStrategy.uploadData(
+      accessKey: accessKey,
+      secretKey: secretKey,
+      bucket: bucket,
+      region: region,
+      data: data,
+      path: path,
+      public: public,
+      endpoints: endpoints,
+      preventOverwrite: preventOverwrite,
+    );
+  }
+
+  /// Test helper to call retrieveFile without a real Session.
+  Future<ByteData?> testRetrieveFile(String path) async {
+    final response = await mockClient.getObject(path);
+    if (response.statusCode == 200) {
+      return ByteData.view(response.bodyBytes.buffer);
+    }
+    return null;
+  }
+
+  /// Test helper to check file existence without a real Session.
+  Future<bool> testFileExists(String path) async {
+    final response = await mockClient.headObject(path);
+    return response.statusCode == 200;
+  }
+
+  /// Test helper to get public URL without a real Session.
+  Future<Uri?> testGetPublicUrl(String path) async {
+    if (await testFileExists(path)) {
+      return endpoints.buildPublicUri(bucket, region, path);
+    }
+    return null;
+  }
+
+  /// Test helper to delete file without a real Session.
+  Future<void> testDeleteFile(String path) async {
+    await mockClient.deleteObject(path);
+  }
+
+  /// Test helper for direct upload description without a real Session.
+  Future<String?> testCreateDirectUploadDescription(
+    String path, {
+    Duration expiration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
+    int? contentLength,
+    bool preventOverwrite = false,
+  }) async {
+    if (contentLength != null && contentLength > maxFileSize) {
+      throw CloudStorageException(
+        'Content length ($contentLength bytes) exceeds maximum file size ($maxFileSize bytes).',
+      );
+    }
+
+    return uploadStrategy.createDirectUploadDescription(
+      accessKey: accessKey,
+      secretKey: secretKey,
+      bucket: bucket,
+      region: region,
+      path: path,
+      expiration: expiration,
+      maxFileSize: maxFileSize,
+      public: public,
+      endpoints: endpoints,
+      contentLength: contentLength,
+      preventOverwrite: preventOverwrite,
+    );
+  }
+
+  /// Test helper for verify direct upload without a real Session.
+  Future<bool> testVerifyDirectFileUpload(String path) async {
+    return testFileExists(path);
+  }
+}

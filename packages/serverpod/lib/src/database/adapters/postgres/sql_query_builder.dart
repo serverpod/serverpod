@@ -136,7 +136,7 @@ class SelectQueryBuilder {
     String query = 'WITH $wrappedBaseQueryAlias AS ($baseQuery)';
 
     query +=
-        ', $partitionedQueryAlias AS (SELECT *, row_number() OVER ( PARTITION BY $wrappedBaseQueryAlias."$relationalFieldName") FROM $wrappedBaseQueryAlias)';
+        ', $partitionedQueryAlias AS (SELECT *, row_number() OVER ( PARTITION BY $wrappedBaseQueryAlias."$relationalFieldName") AS row_number FROM $wrappedBaseQueryAlias)';
 
     var rowLimitClause = _buildMultiRowLimitClause(limit, offset);
 
@@ -339,13 +339,16 @@ class _ListQueryAdditions {
 /// This is typically only used internally by the serverpod framework.
 class InsertQueryBuilder {
   final Table _table;
+  final bool _ignoreConflicts;
   late final List<TableRow> _rows;
 
   /// Creates a new [InsertQueryBuilder].
   InsertQueryBuilder({
     required Table table,
     required List<TableRow> rows,
-  }) : _table = table {
+    bool ignoreConflicts = false,
+  }) : _table = table,
+       _ignoreConflicts = ignoreConflicts {
     if (rows.isEmpty) {
       throw ArgumentError.value(
         rows,
@@ -390,10 +393,11 @@ class InsertQueryBuilder {
         .join(', ');
 
     var returning = buildReturningClause(_table);
+    var onConflict = _ignoreConflicts ? ' ON CONFLICT DO NOTHING' : '';
 
     return columnNames.isEmpty
-        ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES RETURNING $returning'
-        : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values RETURNING $returning';
+        ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES$onConflict RETURNING $returning'
+        : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values$onConflict RETURNING $returning';
   }
 
   /// Builds the insert SQL query.
@@ -1094,7 +1098,7 @@ String? _buildOrderByQuery({List<Order>? orderBy, _SubQueries? subQueries}) {
           str = _formatOrderByCount(index, subQueries, orderDescending);
         } else {
           str = '$column';
-          if (orderDescending) str += ' DESC';
+          str += orderDescending ? ' DESC NULLS FIRST' : ' ASC NULLS LAST';
         }
 
         return str;
