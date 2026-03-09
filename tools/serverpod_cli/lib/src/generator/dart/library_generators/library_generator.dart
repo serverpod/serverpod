@@ -116,9 +116,7 @@ class LibraryGenerator {
             ..type = TypeReference(
               (t) => t
                 ..symbol = 'List'
-                ..types.add(
-                  refer('TableDefinition', serverpodProtocolUrl(serverCode)),
-                ),
+                ..types.add(_tableDefinitionReference),
             )
             ..assignment =
                 createDatabaseDefinitionFromModels(
@@ -510,9 +508,7 @@ class LibraryGenerator {
             ..returns = TypeReference(
               (t) => t
                 ..symbol = 'List'
-                ..types.add(
-                  refer('TableDefinition', serverpodProtocolUrl(serverCode)),
-                ),
+                ..types.add(_tableDefinitionReference),
             )
             ..body = refer('targetTableDefinitions').code,
         ),
@@ -2075,7 +2071,7 @@ extension on DatabaseDefinition {
   }) {
     return literalList([
       for (var table in tables)
-        refer('TableDefinition', serverpodProtocolUrl(serverCode)).call([], {
+        _tableDefinitionReference.call([], {
           'name': literalString(table.name),
           if (table.dartName != null)
             'dartName': literalString(table.dartName!),
@@ -2221,6 +2217,11 @@ extension on List<SerializableModelDefinition> {
     return sorted;
   }
 }
+
+final _tableDefinitionReference = refer(
+  'TableDefinition',
+  'package:serverpod_database/serverpod_database.dart',
+);
 
 /// Builds inheritance-related annotations for endpoint methods.
 ///
