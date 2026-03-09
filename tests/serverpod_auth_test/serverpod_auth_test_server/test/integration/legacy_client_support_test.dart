@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_bridge_client/serverpod_auth_bridge_client.dart'
+    as bridge_auth;
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
-import 'package:serverpod_auth_client/serverpod_auth_client.dart'
-    as legacy_auth;
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
@@ -66,7 +66,8 @@ void main() {
         'when authenticating with correct credentials then returns success with session key.',
         () async {
           final client = _createClient(sessionBuilder);
-          final result = await client.modules.auth.email.authenticate(
+          final result = await _legacyAuthenticate(
+            client,
             email,
             password,
           );
@@ -84,7 +85,8 @@ void main() {
         'when authenticating with wrong password then returns invalidCredentials.',
         () async {
           final client = _createClient(sessionBuilder);
-          final result = await client.modules.auth.email.authenticate(
+          final result = await _legacyAuthenticate(
+            client,
             email,
             'wrong-password',
           );
@@ -92,7 +94,9 @@ void main() {
           expect(result.success, isFalse);
           expect(
             result.failReason,
-            equals(legacy_auth.AuthenticationFailReason.invalidCredentials),
+            equals(
+              bridge_auth.LegacyAuthenticationFailReason.invalidCredentials,
+            ),
           );
         },
       );
@@ -101,7 +105,8 @@ void main() {
         'when authenticating with non-existent email then returns invalidCredentials.',
         () async {
           final client = _createClient(sessionBuilder);
-          final result = await client.modules.auth.email.authenticate(
+          final result = await _legacyAuthenticate(
+            client,
             'nobody@serverpod.dev',
             password,
           );
@@ -109,7 +114,9 @@ void main() {
           expect(result.success, isFalse);
           expect(
             result.failReason,
-            equals(legacy_auth.AuthenticationFailReason.invalidCredentials),
+            equals(
+              bridge_auth.LegacyAuthenticationFailReason.invalidCredentials,
+            ),
           );
         },
       );
@@ -169,7 +176,8 @@ void main() {
             sessionBuilder,
             authKeyProvider: authKeyProvider,
           );
-          final authResult = await client.modules.auth.email.authenticate(
+          final authResult = await _legacyAuthenticate(
+            client,
             email,
             password,
           );
@@ -189,13 +197,14 @@ void main() {
             sessionBuilder,
             authKeyProvider: authKeyProvider,
           );
-          final authResult = await client.modules.auth.email.authenticate(
+          final authResult = await _legacyAuthenticate(
+            client,
             email,
             password,
           );
           authKeyProvider.setToken('${authResult.keyId}:${authResult.key}');
 
-          final userInfo = await client.modules.auth.status.getUserInfo();
+          final userInfo = await _legacyGetUserInfo(client);
 
           expect(userInfo?.userIdentifier, equals(authUserId.toString()));
         },
@@ -209,7 +218,8 @@ void main() {
             sessionBuilder,
             authKeyProvider: authKeyProvider,
           );
-          final authResult = await client.modules.auth.email.authenticate(
+          final authResult = await _legacyAuthenticate(
+            client,
             email,
             password,
           );
@@ -274,13 +284,15 @@ void main() {
           authKeyProvider: authKeyProvider2,
         );
 
-        final result1 = await client1.modules.auth.email.authenticate(
+        final result1 = await _legacyAuthenticate(
+          client1,
           email,
           password,
         );
         authKeyProvider1.setToken('${result1.keyId}:${result1.key}');
 
-        final result2 = await client2.modules.auth.email.authenticate(
+        final result2 = await _legacyAuthenticate(
+          client2,
           email,
           password,
         );
@@ -366,7 +378,8 @@ void main() {
         'when authenticating via legacy endpoint then returns internalError.',
         () async {
           final client = _createClient(sessionBuilder);
-          final result = await client.modules.auth.email.authenticate(
+          final result = await _legacyAuthenticate(
+            client,
             email,
             password,
           );
@@ -374,7 +387,7 @@ void main() {
           expect(result.success, isFalse);
           expect(
             result.failReason,
-            equals(legacy_auth.AuthenticationFailReason.internalError),
+            equals(bridge_auth.LegacyAuthenticationFailReason.internalError),
           );
         },
       );
@@ -389,44 +402,41 @@ void main() {
       _configurePublicLegacySupport(sessionBuilder);
 
       test(
-        'when calling createAccountRequest then returns not found.',
+        'when calling createAccountRequest then returns false.',
         () async {
           final client = _createClient(sessionBuilder);
-          await expectLater(
-            client.modules.auth.email.createAccountRequest(
-              'test',
-              'test@test.com',
-              'pass',
-            ),
-            throwsA(isA<ServerpodClientNotFound>()),
+          final result = await client.modules.auth.email.createAccountRequest(
+            'test',
+            'test@test.com',
+            'pass',
           );
+
+          expect(result, isFalse);
         },
       );
 
       test(
-        'when calling changePassword then returns not found.',
+        'when calling changePassword then returns false.',
         () async {
           final client = _createClient(sessionBuilder);
-          await expectLater(
-            client.modules.auth.email.changePassword(
-              'old',
-              'new',
-            ),
-            throwsA(isA<ServerpodClientNotFound>()),
+          final result = await client.modules.auth.email.changePassword(
+            'old',
+            'new',
           );
+
+          expect(result, isFalse);
         },
       );
 
       test(
-        'when calling initiatePasswordReset then returns not found.',
+        'when calling initiatePasswordReset then returns false.',
         () async {
           final client = _createClient(sessionBuilder);
-          await expectLater(
-            client.modules.auth.email.initiatePasswordReset(
-              'test@test.com',
-            ),
-            throwsA(isA<ServerpodClientNotFound>()),
+          final result = await client.modules.auth.email.initiatePasswordReset(
+            'test@test.com',
           );
+
+          expect(result, isFalse);
         },
       );
     },
@@ -440,27 +450,35 @@ void main() {
       _configurePublicLegacySupport(sessionBuilder);
 
       test(
-        'when calling Google authenticate then returns not found.',
+        'when calling Google authenticate then returns internalError.',
         () async {
           final client = _createClient(sessionBuilder);
-          await expectLater(
-            client.modules.auth.google.authenticateWithIdToken(
-              'fake-token',
-            ),
-            throwsA(isA<ServerpodClientNotFound>()),
+          final result = await _legacyGoogleAuthenticateWithIdToken(
+            client,
+            'fake-token',
+          );
+
+          expect(result.success, isFalse);
+          expect(
+            result.failReason,
+            equals(bridge_auth.LegacyAuthenticationFailReason.internalError),
           );
         },
       );
 
       test(
-        'when calling Firebase authenticate then returns not found.',
+        'when calling Firebase authenticate then returns internalError.',
         () async {
           final client = _createClient(sessionBuilder);
-          await expectLater(
-            client.modules.auth.firebase.authenticate(
-              'fake-token',
-            ),
-            throwsA(isA<ServerpodClientNotFound>()),
+          final result = await _legacyFirebaseAuthenticate(
+            client,
+            'fake-token',
+          );
+
+          expect(result.success, isFalse);
+          expect(
+            result.failReason,
+            equals(bridge_auth.LegacyAuthenticationFailReason.internalError),
           );
         },
       );
@@ -475,6 +493,52 @@ Client _createClient(
   final session = sessionBuilder.build();
   final baseUrl = 'http://localhost:${session.server.port}/';
   return Client(baseUrl)..authKeyProvider = authKeyProvider;
+}
+
+Future<bridge_auth.LegacyAuthenticationResponse> _legacyAuthenticate(
+  final Client client,
+  final String email,
+  final String password,
+) {
+  return client.callServerEndpoint<bridge_auth.LegacyAuthenticationResponse>(
+    'serverpod_auth.email',
+    'authenticate',
+    {
+      'email': email,
+      'password': password,
+    },
+  );
+}
+
+Future<bridge_auth.LegacyUserInfo?> _legacyGetUserInfo(final Client client) {
+  return client.callServerEndpoint<bridge_auth.LegacyUserInfo?>(
+    'serverpod_auth.status',
+    'getUserInfo',
+    {},
+  );
+}
+
+Future<bridge_auth.LegacyAuthenticationResponse>
+_legacyGoogleAuthenticateWithIdToken(
+  final Client client,
+  final String idToken,
+) {
+  return client.callServerEndpoint<bridge_auth.LegacyAuthenticationResponse>(
+    'serverpod_auth.google',
+    'authenticateWithIdToken',
+    {'idToken': idToken},
+  );
+}
+
+Future<bridge_auth.LegacyAuthenticationResponse> _legacyFirebaseAuthenticate(
+  final Client client,
+  final String idToken,
+) {
+  return client.callServerEndpoint<bridge_auth.LegacyAuthenticationResponse>(
+    'serverpod_auth.firebase',
+    'authenticate',
+    {'idToken': idToken},
+  );
 }
 
 void _configurePublicLegacySupport(final TestSessionBuilder sessionBuilder) {
