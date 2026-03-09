@@ -174,6 +174,12 @@ class GeneratorConfig implements ModelLoadConfig {
     'future_calls.dart',
   ];
 
+  /// The path parts of the generated custom caches class file.
+  List<String> get generatedServerCachesFilePathParts => [
+    ...generatedServeModelPathParts,
+    'custom_caches.dart',
+  ];
+
   /// The path parts of the generated protocol file.
   List<String> get generatedServerProtocolFilePathParts => [
     ...generatedServeModelPathParts,

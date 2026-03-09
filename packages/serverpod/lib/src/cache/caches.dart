@@ -11,6 +11,9 @@ import 'local_cache.dart';
 class Caches {
   final SerializationManager _serializationManager;
 
+  /// The [SerializationManager] used by the caches.
+  SerializationManager get serializationManager => _serializationManager;
+
   /// Creates a collection of caches. Typically, this is created automatically
   /// by the [Server].
   Caches(

@@ -8,7 +8,6 @@ import 'package:serverpod/src/util/path_util.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../serverpod.dart';
-import '../cache/cache.dart';
 import '../generated/protocol.dart';
 
 /// The [InsightsEndpoint] provides a way to access real time information from

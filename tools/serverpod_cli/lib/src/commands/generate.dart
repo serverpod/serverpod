@@ -184,12 +184,17 @@ Future<bool> _performGenerate({
     parameterValidator: parameterValidator,
   );
 
+  var cacheAnalyzer = CacheAnalyzer(
+    directory: libDirectory,
+  );
+
   if (watch) {
     return await performGenerateContinuously(
       config: config,
       endpointsAnalyzer: endpointsAnalyzer,
       modelAnalyzer: modelAnalyzer,
       futureCallsAnalyzer: futureCallsAnalyzer,
+      cacheAnalyzer: cacheAnalyzer,
     );
   }
 
@@ -198,5 +203,6 @@ Future<bool> _performGenerate({
     endpointsAnalyzer: endpointsAnalyzer,
     modelAnalyzer: modelAnalyzer,
     futureCallsAnalyzer: futureCallsAnalyzer,
+    cacheAnalyzer: cacheAnalyzer,
   );
 }

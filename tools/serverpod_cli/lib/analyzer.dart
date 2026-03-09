@@ -5,6 +5,7 @@ export 'package:source_span/source_span.dart'
     show SourceSpanException; // The collector uses them.
 
 export 'src/analyzer/code_analysis_collector.dart' show CodeAnalysisCollector;
+export 'src/analyzer/dart/cache_analyzer.dart' show CacheAnalyzer;
 export 'src/analyzer/dart/endpoints_analyzer.dart' show EndpointsAnalyzer;
 export 'src/analyzer/dart/future_calls_analyzer.dart' show FutureCallsAnalyzer;
 export 'src/analyzer/models/definitions.dart'

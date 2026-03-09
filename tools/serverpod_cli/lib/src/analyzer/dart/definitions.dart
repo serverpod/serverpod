@@ -3,6 +3,25 @@ import 'package:recase/recase.dart';
 import '../../generator/types.dart';
 import '../models/definitions.dart';
 
+/// Describes a single custom cache class.
+class CacheDefinition {
+  /// Create a new [CacheDefinition].
+  const CacheDefinition({
+    required this.name,
+    required this.className,
+    required this.filePath,
+  });
+
+  /// The variable name of the cache (camelCase).
+  final String name;
+
+  /// The class name of the cache.
+  final String className;
+
+  /// The file path where the cache is defined.
+  final String filePath;
+}
+
 /// Describes a single future call.
 class FutureCallDefinition {
   /// Create a new [FutureCallDefinition].
