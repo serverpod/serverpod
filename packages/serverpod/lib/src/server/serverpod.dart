@@ -6,7 +6,7 @@ import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/database/interface/database_pool_manager.dart';
 import 'package:serverpod/src/database/interface/provider.dart';
-import 'package:serverpod/src/database/migrations/migration_manager.dart';
+import 'package:serverpod/src/database/migrations/server_migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
@@ -832,7 +832,7 @@ class Serverpod {
 
     try {
       _internalLogVerbose('Initializing migration manager.');
-      var migrationManager = MigrationManager(Directory.current);
+      var migrationManager = ServerMigrationManager(Directory.current);
 
       if (applyRepairMigration) {
         _internalLogVerbose('Applying database repair migration');
@@ -866,7 +866,7 @@ class Serverpod {
       }
 
       _internalLogVerbose('Verifying database integrity.');
-      verified = await MigrationManager.verifyDatabaseIntegrity(
+      verified = await ServerMigrationManager.verifyDatabaseIntegrity(
         internalSession,
       );
     } catch (e, stackTrace) {

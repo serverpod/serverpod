@@ -1,91 +1,98 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:collection/collection.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/interface/database_session.dart';
-import 'package:serverpod/src/database/migrations/migrations.dart';
-import 'package:serverpod/src/database/migrations/repair_migrations.dart';
+import 'package:serverpod/src/database/migrations/migration_artifacts.dart';
 import 'package:serverpod/src/database/migrations/table_comparison_warning.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../extensions.dart';
 import '../interface/provider.dart';
 
-/// The migration manager handles migrations of the database.
-class MigrationManager {
-  final Directory _projectDirectory;
+/// A function that writes a warning message.
+typedef MigrationWarningWriter = void Function(String message);
 
-  /// List of installed migration versions. Available after [initialize] has
-  /// been called.
+/// The migration manager handles migrations of the database.
+abstract class MigrationManager {
+  final MigrationArtifactStore _artifactStore;
+  final MigrationWarningWriter _writeWarning;
+
+  /// List of installed migration versions. Available after starting a migration
+  /// or repair migration.
   final List<DatabaseMigrationVersion> installedVersions = [];
 
   /// List of available migration versions as loaded from the migrations
-  /// directory. Available after [initialize] has been called.
+  /// directory. Available after starting a migration or repair migration.
   final List<String> availableVersions = [];
 
   /// Creates a new migration manager.
+  MigrationManager(
+    this._artifactStore, {
+    MigrationWarningWriter? writeWarning,
+  }) : _writeWarning = writeWarning ?? _defaultWriteWarning;
+
+  /// Loads the installed versions of the migrations from the database.
   ///
-  /// The [projectDirectory] is the directory where the project is located.
-  MigrationManager(this._projectDirectory);
+  /// This method depends on the table model that will be available only in the
+  /// server/client package.
+  Future<List<DatabaseMigrationVersion>> loadInstalledVersions(
+    DatabaseSession session, {
+    Transaction? transaction,
+  });
+
+  /// Loads the installed repair migration from the database.
+  ///
+  /// This method depends on the table model that will be available only in the
+  /// server/client package.
+  Future<DatabaseMigrationVersion?> loadInstalledRepairMigration(
+    DatabaseSession session, {
+    Transaction? transaction,
+  });
+
+  /// Lists all available migration versions.
+  Future<List<String>> listAvailableVersions() async {
+    return await _artifactStore.listVersions();
+  }
 
   /// Applies the repair migration to the database.
   Future<String?> applyRepairMigration(DatabaseSession session) async {
-    var repairMigration = RepairMigration.load(_projectDirectory);
+    var repairMigration = await _artifactStore.readRepairMigration();
     if (repairMigration == null) {
       return null;
     }
 
-    String? appliedVersionName = repairMigration.versionName;
+    String? appliedVersion = repairMigration.version;
     await _withMigrationLock(session, (transaction) async {
-      var appliedRepairMigration = await session.db
-          .findFirstRow<DatabaseMigrationVersion>(
-            where: DatabaseMigrationVersion.t.module.equals(
-              MigrationConstants.repairMigrationModuleName,
-            ),
-            transaction: transaction,
-          );
+      var appliedRepairMigration = await loadInstalledRepairMigration(
+        session,
+        transaction: transaction,
+      );
 
       if (appliedRepairMigration != null &&
-          appliedRepairMigration.version == repairMigration.versionName) {
-        appliedVersionName = null;
+          appliedRepairMigration.version == repairMigration.version) {
+        appliedVersion = null;
         return;
       }
 
       await session.db.unsafeSimpleExecute(
-        repairMigration.sqlMigration,
+        repairMigration.migrationSql,
         transaction: transaction,
       );
 
       await _updateState(session, transaction);
     });
 
-    return appliedVersionName;
+    return appliedVersion;
   }
 
   /// Loads the module name from the latest available migration definition.
   ///
   /// Returns the module name from the `definition.json` of the last available
   /// migration version, or null if not found or if parsing fails.
-  String? _loadLatestDefinitionModuleName() {
+  Future<String?> _loadLatestDefinitionModuleName() async {
     if (availableVersions.isEmpty) return null;
 
     var latestVersion = availableVersions.last;
-    var definitionJsonFile = MigrationConstants.databaseDefinitionJSONPath(
-      _projectDirectory,
-      latestVersion,
-    );
-
-    if (!definitionJsonFile.existsSync()) return null;
-
-    try {
-      var jsonContent = definitionJsonFile.readAsStringSync();
-      var json = jsonDecode(jsonContent) as Map<String, dynamic>;
-      return json['moduleName'] as String?;
-    } catch (_) {
-      return null;
-    }
+    return (await _artifactStore.readVersion(latestVersion))?.moduleName;
   }
 
   /// Migrates all modules to the latest version.
@@ -101,9 +108,9 @@ class MigrationManager {
 
       var moduleName = session.db.serializationManager.getModuleName();
 
-      var definitionModuleName = _loadLatestDefinitionModuleName();
+      var definitionModuleName = await _loadLatestDefinitionModuleName();
       if (definitionModuleName != null && definitionModuleName != moduleName) {
-        stderr.writeln(
+        _writeWarning(
           'WARNING: The module name in the migration definition '
           '("$definitionModuleName") does not match the module name of the '
           'serialization manager ("$moduleName"). This may indicate that the '
@@ -183,22 +190,28 @@ class MigrationManager {
     var sqlToExecute = <({String version, String sql})>[];
 
     if (fromVersion == null) {
-      var definitionSqlFile = MigrationConstants.databaseDefinitionSQLPath(
-        _projectDirectory,
+      var latestArtifacts = await _artifactStore.readVersion(
         latestVersion,
       );
-      var sqlDefinition = await definitionSqlFile.readAsString();
+      var sqlDefinition = latestArtifacts?.definitionSql;
+      if (sqlDefinition == null) {
+        throw Exception(
+          'Definition for migration version $latestVersion could not be loaded.',
+        );
+      }
 
       sqlToExecute.add((version: latestVersion, sql: sqlDefinition));
     } else {
       var newerVersions = _getVersionsToApply(fromVersion);
 
       for (var version in newerVersions) {
-        var migrationSqlFile = MigrationConstants.databaseMigrationSQLPath(
-          _projectDirectory,
-          version,
-        );
-        var sqlMigration = await migrationSqlFile.readAsString();
+        var versionArtifacts = await _artifactStore.readVersion(version);
+        var sqlMigration = versionArtifacts?.migrationSql;
+        if (sqlMigration == null) {
+          throw Exception(
+            'Migration for version $version could not be loaded.',
+          );
+        }
 
         sqlToExecute.add((version: version, sql: sqlMigration));
       }
@@ -227,8 +240,8 @@ class MigrationManager {
         );
         migrationsApplied.add(code.version);
       } catch (e) {
-        stderr.writeln('Failed to apply migration ${code.version}.');
-        stderr.writeln('$e');
+        _writeWarning('Failed to apply migration ${code.version}.');
+        _writeWarning('$e');
         rethrow;
       }
     }
@@ -245,9 +258,7 @@ class MigrationManager {
     installedVersions.clear();
     try {
       installedVersions.addAll(
-        await session.db.find<DatabaseMigrationVersion>(
-          transaction: transaction,
-        ),
+        await loadInstalledVersions(session, transaction: transaction),
       );
     } catch (e) {
       // Table might not exist and we therefore ignore and assume no versions.
@@ -257,9 +268,7 @@ class MigrationManager {
     var warnings = <String>[];
     try {
       availableVersions.addAll(
-        MigrationVersions.listVersions(
-          projectDirectory: _projectDirectory,
-        ),
+        await _artifactStore.listVersions(),
       );
     } catch (e) {
       warnings.add(
@@ -268,12 +277,12 @@ class MigrationManager {
     }
 
     if (warnings.isNotEmpty) {
-      stderr.writeln(
+      _writeWarning(
         'WARNING: The following module migration registries could not be '
         'loaded:',
       );
       for (var warning in warnings) {
-        stderr.writeln(' - $warning');
+        _writeWarning(' - $warning');
       }
     }
   }
@@ -288,8 +297,12 @@ class MigrationManager {
   }
 
   /// Returns true if the database structure is up to date. If not, it will
-  /// print a warning to stderr.
-  static Future<bool> verifyDatabaseIntegrity(DatabaseSession session) async {
+  /// print a warning using [writeWarning].
+  static Future<bool> verifyDatabaseIntegrity(
+    DatabaseSession session, {
+    MigrationWarningWriter? writeWarning,
+  }) async {
+    var writeWarningMessage = writeWarning ?? _defaultWriteWarning;
     var warnings = <String>[];
 
     var liveDatabase = await session.db.analyzer.analyze();
@@ -312,17 +325,22 @@ class MigrationManager {
       }
     }
     if (warnings.isNotEmpty) {
-      stderr.writeln(
+      writeWarningMessage(
         'WARNING: The database does not match the target database:',
       );
       for (var warning in warnings) {
-        stderr.writeln(' - $warning');
+        writeWarningMessage(' - $warning');
       }
-      stderr.writeln(
+      writeWarningMessage(
         'Hint: Did you forget to run `serverpod generate`, apply the migrations (--apply-migrations), or run a repair migration (--apply-repair-migration)?',
       );
     }
 
     return warnings.isEmpty;
+  }
+
+  static void _defaultWriteWarning(String message) {
+    // ignore: avoid_print
+    print(message);
   }
 }
