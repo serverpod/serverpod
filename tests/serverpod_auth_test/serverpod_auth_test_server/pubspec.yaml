@@ -20,6 +20,7 @@ dependencies:
 dev_dependencies:
   clock: ^1.1.1
   lints: '>=3.0.0 <7.0.0'
+  serverpod_auth_bridge_client: 3.3.1
   serverpod_auth_client: 3.3.1
   serverpod_auth_test_client:
     path: ../serverpod_auth_test_client
@@ -29,6 +30,8 @@ dev_dependencies:
 dependency_overrides:
   serverpod:
     path: ../../../packages/serverpod
+  serverpod_auth_bridge_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_client
   serverpod_auth_bridge_server:
     path: ../../../modules/serverpod_auth/serverpod_auth_bridge/serverpod_auth_bridge_server
   serverpod_auth_core_server:
