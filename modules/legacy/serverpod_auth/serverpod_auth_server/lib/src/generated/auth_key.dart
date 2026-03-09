@@ -309,7 +309,7 @@ class AuthKeyRepository {
   /// );
   /// ```
   Future<List<AuthKey>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? limit,
     int? offset,
@@ -351,7 +351,7 @@ class AuthKeyRepository {
   /// );
   /// ```
   Future<AuthKey?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? offset,
     _i1.OrderByBuilder<AuthKeyTable>? orderBy,
@@ -375,7 +375,7 @@ class AuthKeyRepository {
 
   /// Finds a single [AuthKey] by its [id] or null if no such row exists.
   Future<AuthKey?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -400,7 +400,7 @@ class AuthKeyRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<AuthKey>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<AuthKey> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -416,7 +416,7 @@ class AuthKeyRepository {
   ///
   /// The returned [AuthKey] will have its `id` field set.
   Future<AuthKey> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     AuthKey row, {
     _i1.Transaction? transaction,
   }) async {
@@ -432,7 +432,7 @@ class AuthKeyRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<AuthKey>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<AuthKey> rows, {
     _i1.ColumnSelections<AuthKeyTable>? columns,
     _i1.Transaction? transaction,
@@ -448,7 +448,7 @@ class AuthKeyRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<AuthKey> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     AuthKey row, {
     _i1.ColumnSelections<AuthKeyTable>? columns,
     _i1.Transaction? transaction,
@@ -463,7 +463,7 @@ class AuthKeyRepository {
   /// Updates a single [AuthKey] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<AuthKey?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<AuthKeyUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -478,7 +478,7 @@ class AuthKeyRepository {
   /// Updates all [AuthKey]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<AuthKey>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<AuthKeyUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<AuthKeyTable> where,
     int? limit,
@@ -504,7 +504,7 @@ class AuthKeyRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<AuthKey>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<AuthKey> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -516,7 +516,7 @@ class AuthKeyRepository {
 
   /// Deletes a single [AuthKey].
   Future<AuthKey> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     AuthKey row, {
     _i1.Transaction? transaction,
   }) async {
@@ -528,7 +528,7 @@ class AuthKeyRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<AuthKey>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<AuthKeyTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -541,7 +541,7 @@ class AuthKeyRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -555,7 +555,7 @@ class AuthKeyRepository {
 
   /// Acquires row-level locks on [AuthKey] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<AuthKeyTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

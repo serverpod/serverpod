@@ -372,7 +372,7 @@ class ObjectWithEnumEnhancedRepository {
   /// );
   /// ```
   Future<List<ObjectWithEnumEnhanced>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
     int? limit,
     int? offset,
@@ -414,7 +414,7 @@ class ObjectWithEnumEnhancedRepository {
   /// );
   /// ```
   Future<ObjectWithEnumEnhanced?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
@@ -438,7 +438,7 @@ class ObjectWithEnumEnhancedRepository {
 
   /// Finds a single [ObjectWithEnumEnhanced] by its [id] or null if no such row exists.
   Future<ObjectWithEnumEnhanced?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -463,7 +463,7 @@ class ObjectWithEnumEnhancedRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<ObjectWithEnumEnhanced>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ObjectWithEnumEnhanced> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -479,7 +479,7 @@ class ObjectWithEnumEnhancedRepository {
   ///
   /// The returned [ObjectWithEnumEnhanced] will have its `id` field set.
   Future<ObjectWithEnumEnhanced> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ObjectWithEnumEnhanced row, {
     _i1.Transaction? transaction,
   }) async {
@@ -495,7 +495,7 @@ class ObjectWithEnumEnhancedRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<ObjectWithEnumEnhanced>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ObjectWithEnumEnhanced> rows, {
     _i1.ColumnSelections<ObjectWithEnumEnhancedTable>? columns,
     _i1.Transaction? transaction,
@@ -511,7 +511,7 @@ class ObjectWithEnumEnhancedRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectWithEnumEnhanced> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ObjectWithEnumEnhanced row, {
     _i1.ColumnSelections<ObjectWithEnumEnhancedTable>? columns,
     _i1.Transaction? transaction,
@@ -526,7 +526,7 @@ class ObjectWithEnumEnhancedRepository {
   /// Updates a single [ObjectWithEnumEnhanced] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithEnumEnhanced?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectWithEnumEnhancedUpdateTable>
     columnValues,
@@ -542,7 +542,7 @@ class ObjectWithEnumEnhancedRepository {
   /// Updates all [ObjectWithEnumEnhanced]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ObjectWithEnumEnhanced>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ObjectWithEnumEnhancedUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable> where,
@@ -569,7 +569,7 @@ class ObjectWithEnumEnhancedRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ObjectWithEnumEnhanced>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ObjectWithEnumEnhanced> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -581,7 +581,7 @@ class ObjectWithEnumEnhancedRepository {
 
   /// Deletes a single [ObjectWithEnumEnhanced].
   Future<ObjectWithEnumEnhanced> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ObjectWithEnumEnhanced row, {
     _i1.Transaction? transaction,
   }) async {
@@ -593,7 +593,7 @@ class ObjectWithEnumEnhancedRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<ObjectWithEnumEnhanced>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -606,7 +606,7 @@ class ObjectWithEnumEnhancedRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -620,7 +620,7 @@ class ObjectWithEnumEnhancedRepository {
 
   /// Acquires row-level locks on [ObjectWithEnumEnhanced] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

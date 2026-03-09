@@ -224,7 +224,7 @@ class DurationDefaultPersistRepository {
   /// );
   /// ```
   Future<List<DurationDefaultPersist>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? where,
     int? limit,
     int? offset,
@@ -266,7 +266,7 @@ class DurationDefaultPersistRepository {
   /// );
   /// ```
   Future<DurationDefaultPersist?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<DurationDefaultPersistTable>? orderBy,
@@ -290,7 +290,7 @@ class DurationDefaultPersistRepository {
 
   /// Finds a single [DurationDefaultPersist] by its [id] or null if no such row exists.
   Future<DurationDefaultPersist?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -315,7 +315,7 @@ class DurationDefaultPersistRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<DurationDefaultPersist>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<DurationDefaultPersist> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -331,7 +331,7 @@ class DurationDefaultPersistRepository {
   ///
   /// The returned [DurationDefaultPersist] will have its `id` field set.
   Future<DurationDefaultPersist> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     DurationDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
@@ -347,7 +347,7 @@ class DurationDefaultPersistRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<DurationDefaultPersist>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<DurationDefaultPersist> rows, {
     _i1.ColumnSelections<DurationDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
@@ -363,7 +363,7 @@ class DurationDefaultPersistRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<DurationDefaultPersist> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     DurationDefaultPersist row, {
     _i1.ColumnSelections<DurationDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
@@ -378,7 +378,7 @@ class DurationDefaultPersistRepository {
   /// Updates a single [DurationDefaultPersist] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<DurationDefaultPersist?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<DurationDefaultPersistUpdateTable>
     columnValues,
@@ -394,7 +394,7 @@ class DurationDefaultPersistRepository {
   /// Updates all [DurationDefaultPersist]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<DurationDefaultPersist>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<DurationDefaultPersistUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<DurationDefaultPersistTable> where,
@@ -421,7 +421,7 @@ class DurationDefaultPersistRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<DurationDefaultPersist>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<DurationDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -433,7 +433,7 @@ class DurationDefaultPersistRepository {
 
   /// Deletes a single [DurationDefaultPersist].
   Future<DurationDefaultPersist> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     DurationDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
@@ -445,7 +445,7 @@ class DurationDefaultPersistRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<DurationDefaultPersist>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DurationDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -458,7 +458,7 @@ class DurationDefaultPersistRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<DurationDefaultPersistTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -472,7 +472,7 @@ class DurationDefaultPersistRepository {
 
   /// Acquires row-level locks on [DurationDefaultPersist] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DurationDefaultPersistTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
