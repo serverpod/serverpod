@@ -934,9 +934,6 @@ void main() async {
           ),
         ),
       );
-
-      print(city?.citizens?.map((e) => e.name));
-
       expect(city?.citizens, hasLength(2));
       expect(city?.citizens?.map((e) => e.id), [person3.id, person2.id]);
     },

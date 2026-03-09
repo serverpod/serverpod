@@ -3,6 +3,8 @@ services:
     build:
       context: ../../..
       dockerfile: tests/docker/tests_e2e/Dockerfile-server
+    environment:
+      SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: '1'
     depends_on:
       - 'postgres'
       - 'redis'

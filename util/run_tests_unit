@@ -6,6 +6,8 @@ if [ ! -f util/.serverpod_util_root ]; then
     exit 1
 fi
 
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+
 # List of directories to exclude from the search (relative to repo root)
 EXCLUDE_DIRS=(
   "tests/bootstrap_project"
@@ -35,19 +37,9 @@ if [ ${#projectPaths[@]} -eq 0 ]; then
   exit 0
 fi
 
-echo "==================== Included Dart-only Projects ===================="
-for dir in "${projectPaths[@]}"; do
-  echo "  $dir"
-done
-echo "==================================================================="
-echo ""
-
 exit_code=0
 
 BASE=`pwd`
-
-echo "Running unit tests in all project that contain a test directory"
-echo ""
 
 for i in "${projectPaths[@]}"
 do

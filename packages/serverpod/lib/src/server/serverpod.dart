@@ -53,6 +53,15 @@ class Serverpod {
   /// Note: This remains `true` even after [shutdown] is called.
   bool get isStartupComplete => _startedTime != null;
 
+  static final _shouldPrintLifecycleMessages =
+      Platform.environment['SERVERPOD_SILENCE_LIFECYCLE_MESSAGES'] != '1';
+
+  void _writeLifecycleMessage(String message) {
+    if (_shouldPrintLifecycleMessages) {
+      stdout.writeln(message);
+    }
+  }
+
   /// The last created [Serverpod]. In most cases the [Serverpod] is a singleton
   /// object, although it may be possible to run multiple instances in the same
   /// program it's not recommended.
@@ -427,7 +436,7 @@ class Serverpod {
     List<String> args, {
     ServerpodConfig? config,
   }) {
-    stdout.writeln(
+    _writeLifecycleMessage(
       'SERVERPOD version: $serverpodVersion, dart: ${Platform.version}, time: ${DateTime.now().toUtc()}',
     );
 
@@ -485,9 +494,9 @@ class Serverpod {
     // use the same id (e.g. from --server-id) instead of staying 'default'.
     this.serverId = this.config.serverId;
 
-    stdout.writeln(_getCommandLineArgsString());
+    _writeLifecycleMessage(_getCommandLineArgsString());
 
-    logVerbose(this.config.toString());
+    _internalLogVerbose(this.config.toString());
 
     try {
       _innerInitializeServerpod();
@@ -503,7 +512,9 @@ class Serverpod {
     // Initializes shutdown task manager
     _initializeShutdownTaskManagers();
 
-    stdout.writeln('SERVERPOD initialized, time: ${DateTime.now().toUtc()}');
+    _writeLifecycleMessage(
+      'SERVERPOD initialized, time: ${DateTime.now().toUtc()}',
+    );
   }
 
   void _innerInitializeServerpod() {
@@ -713,10 +724,10 @@ class Serverpod {
 
     // Connect to Redis
     if (Features.enableRedis) {
-      logVerbose('Connecting to Redis.');
+      _internalLogVerbose('Connecting to Redis.');
       await redisController?.start();
     } else {
-      logVerbose('Redis is disabled, skipping.');
+      _internalLogVerbose('Redis is disabled, skipping.');
     }
 
     // Start servers.
@@ -746,10 +757,10 @@ class Serverpod {
 
       /// Web server.
       if (Features.enableWebServer(_webServer)) {
-        logVerbose('Starting web server.');
+        _internalLogVerbose('Starting web server.');
         serversStarted &= await webServer.start();
       } else {
-        logVerbose('Web server not configured, skipping.');
+        _internalLogVerbose('Web server not configured, skipping.');
       }
 
       if (!serversStarted) {
@@ -759,7 +770,7 @@ class Serverpod {
         );
       }
 
-      logVerbose('All servers started.');
+      _internalLogVerbose('All servers started.');
     }
 
     // Start maintenance tasks. If we are running in maintenance mode, we
@@ -769,12 +780,12 @@ class Serverpod {
         (config.applyMigrations || config.applyRepairMigration);
     if (config.role == ServerpodRole.monolith ||
         (config.role == ServerpodRole.maintenance && !appliedMigrations)) {
-      logVerbose('Starting maintenance tasks.');
+      _internalLogVerbose('Starting maintenance tasks.');
 
       // Start future calls
       _completedFutureCalls = _futureCallManager == null;
       if (!config.futureCallExecutionEnabled) {
-        logVerbose('Future call execution is disabled.');
+        _internalLogVerbose('Future call execution is disabled.');
         _completedFutureCalls = true;
       } else if (config.role == ServerpodRole.maintenance) {
         unawaited(
@@ -791,15 +802,15 @@ class Serverpod {
       await _healthCheckManager?.start();
     }
 
-    logVerbose('Serverpod start complete.');
+    _internalLogVerbose('Serverpod start complete.');
 
     if (config.role == ServerpodRole.maintenance && appliedMigrations) {
-      logVerbose('Finished applying database migrations.');
+      _internalLogVerbose('Finished applying database migrations.');
       throw ExitException(_exitCode);
     }
 
     if (_futureCallManager != null) {
-      logVerbose('Initializing future calls.');
+      _internalLogVerbose('Initializing future calls.');
       endpoints.futureCalls?.initialize(
         _futureCallManager!,
         serverId,
@@ -820,41 +831,41 @@ class Serverpod {
     bool verified;
 
     try {
-      logVerbose('Initializing migration manager.');
+      _internalLogVerbose('Initializing migration manager.');
       var migrationManager = MigrationManager(Directory.current);
 
       if (applyRepairMigration) {
-        logVerbose('Applying database repair migration');
+        _internalLogVerbose('Applying database repair migration');
         var appliedRepairMigration = await migrationManager
             .applyRepairMigration(internalSession);
         if (appliedRepairMigration == null) {
           stderr.writeln('Failed to apply database repair migration.');
         } else {
-          stdout.writeln(
+          _writeLifecycleMessage(
             'Database repair migration "$appliedRepairMigration" applied.',
           );
         }
       }
 
       if (applyMigrations) {
-        logVerbose('Applying database migrations.');
+        _internalLogVerbose('Applying database migrations.');
         var migrationsApplied = await migrationManager.migrateToLatest(
           internalSession,
         );
 
         if (migrationsApplied == null) {
-          stdout.writeln('Latest database migration already applied.');
+          _writeLifecycleMessage('Latest database migration already applied.');
         } else {
-          stdout.writeln(
+          _writeLifecycleMessage(
             'Applied database migration${migrationsApplied.length > 1 ? 's' : ''}:',
           );
           for (var migration in migrationsApplied) {
-            stdout.writeln(' - $migration');
+            _writeLifecycleMessage(' - $migration');
           }
         }
       }
 
-      logVerbose('Verifying database integrity.');
+      _internalLogVerbose('Verifying database integrity.');
       verified = await MigrationManager.verifyDatabaseIntegrity(
         internalSession,
       );
@@ -866,7 +877,7 @@ class Serverpod {
     }
 
     if (!verified) {
-      logVerbose('Database integrity verification failed.');
+      _internalLogVerbose('Database integrity verification failed.');
       if (config.runMode == ServerpodRunMode.development) {
         throw ExitException(1);
       }
@@ -874,7 +885,7 @@ class Serverpod {
   }
 
   Future<void> _loadRuntimeSettings() async {
-    logVerbose('Loading runtime settings.');
+    _internalLogVerbose('Loading runtime settings.');
 
     internal.RuntimeSettings? runtimeSettings;
     try {
@@ -888,7 +899,9 @@ class Serverpod {
     }
 
     if (runtimeSettings == null) {
-      logVerbose('Runtime settings not found, creating default settings.');
+      _internalLogVerbose(
+        'Runtime settings not found, creating default settings.',
+      );
       try {
         runtimeSettings = await internal.RuntimeSettings.db.insertRow(
           internalSession,
@@ -902,7 +915,7 @@ class Serverpod {
       }
     } else {
       _runtimeSettings = runtimeSettings;
-      logVerbose('Runtime settings loaded.');
+      _internalLogVerbose('Runtime settings loaded.');
     }
   }
 
@@ -945,27 +958,27 @@ class Serverpod {
   bool _completedFutureCalls = false;
 
   void _onCompletedHealthChecks() {
-    logVerbose('Health checks completed.');
+    _internalLogVerbose('Health checks completed.');
     _completedHealthChecks = true;
     _checkMaintenanceTasksCompletion();
   }
 
   void _onCompletedFutureCalls() {
-    logVerbose('Future calls completed.');
+    _internalLogVerbose('Future calls completed.');
     _completedFutureCalls = true;
     _checkMaintenanceTasksCompletion();
   }
 
   void _checkMaintenanceTasksCompletion() {
     if (_completedFutureCalls && _completedHealthChecks) {
-      stdout.writeln('All maintenance tasks completed. Exiting.');
+      _writeLifecycleMessage('All maintenance tasks completed. Exiting.');
       // This will exit the process in maintenance mode (and only that mode) after future calls and health checks are done.
       throw ExitException(_exitCode);
     }
   }
 
   void _onShutdownSignal(ProcessSignal signal) {
-    stdout.writeln(
+    _writeLifecycleMessage(
       '${signal.name} (${signal.signalNumber}) received'
       ', time: ${DateTime.now().toUtc()}',
     );
@@ -975,13 +988,13 @@ class Serverpod {
   bool _interruptSignalSent = false;
 
   void _onInterruptSignal(ProcessSignal signal) {
-    stdout.writeln(
+    _writeLifecycleMessage(
       '${signal.name} (${signal.signalNumber}) received'
       ', time: ${DateTime.now().toUtc()}',
     );
 
     if (_interruptSignalSent) {
-      stdout.writeln(
+      _writeLifecycleMessage(
         'SERVERPOD immediate exit, time: ${DateTime.now().toUtc()}',
       );
       exit(128 + signal.signalNumber);
@@ -1131,7 +1144,7 @@ class Serverpod {
     bool exitProcess = true,
     int? signalNumber,
   }) async {
-    stdout.writeln(
+    _writeLifecycleMessage(
       'SERVERPOD initiating shutdown, time: ${DateTime.now().toUtc()}',
     );
 
@@ -1178,7 +1191,7 @@ class Serverpod {
       );
     }
 
-    stdout.writeln(
+    _writeLifecycleMessage(
       'SERVERPOD shutdown completed, time: ${DateTime.now().toUtc()}',
     );
 
@@ -1203,6 +1216,14 @@ class Serverpod {
   void logVerbose(String message) {
     if (config.loggingMode == ServerpodLoggingMode.verbose) {
       stdout.writeln(message);
+    }
+  }
+
+  /// Logs a message to the console if the logging command line argument is set
+  /// to verbose and lifecycle messages are enabled.
+  void _internalLogVerbose(String message) {
+    if (config.loggingMode == ServerpodLoggingMode.verbose) {
+      _writeLifecycleMessage(message);
     }
   }
 
