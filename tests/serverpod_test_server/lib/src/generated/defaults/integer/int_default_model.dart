@@ -235,7 +235,7 @@ class IntDefaultModelRepository {
   /// );
   /// ```
   Future<List<IntDefaultModel>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<IntDefaultModelTable>? where,
     int? limit,
     int? offset,
@@ -277,7 +277,7 @@ class IntDefaultModelRepository {
   /// );
   /// ```
   Future<IntDefaultModel?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<IntDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<IntDefaultModelTable>? orderBy,
@@ -301,7 +301,7 @@ class IntDefaultModelRepository {
 
   /// Finds a single [IntDefaultModel] by its [id] or null if no such row exists.
   Future<IntDefaultModel?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -326,7 +326,7 @@ class IntDefaultModelRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<IntDefaultModel>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<IntDefaultModel> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -342,7 +342,7 @@ class IntDefaultModelRepository {
   ///
   /// The returned [IntDefaultModel] will have its `id` field set.
   Future<IntDefaultModel> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     IntDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -358,7 +358,7 @@ class IntDefaultModelRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<IntDefaultModel>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<IntDefaultModel> rows, {
     _i1.ColumnSelections<IntDefaultModelTable>? columns,
     _i1.Transaction? transaction,
@@ -374,7 +374,7 @@ class IntDefaultModelRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<IntDefaultModel> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     IntDefaultModel row, {
     _i1.ColumnSelections<IntDefaultModelTable>? columns,
     _i1.Transaction? transaction,
@@ -389,7 +389,7 @@ class IntDefaultModelRepository {
   /// Updates a single [IntDefaultModel] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<IntDefaultModel?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<IntDefaultModelUpdateTable>
     columnValues,
@@ -405,7 +405,7 @@ class IntDefaultModelRepository {
   /// Updates all [IntDefaultModel]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<IntDefaultModel>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<IntDefaultModelUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<IntDefaultModelTable> where,
@@ -432,7 +432,7 @@ class IntDefaultModelRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<IntDefaultModel>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<IntDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -444,7 +444,7 @@ class IntDefaultModelRepository {
 
   /// Deletes a single [IntDefaultModel].
   Future<IntDefaultModel> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     IntDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -456,7 +456,7 @@ class IntDefaultModelRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<IntDefaultModel>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<IntDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -469,7 +469,7 @@ class IntDefaultModelRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<IntDefaultModelTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -483,7 +483,7 @@ class IntDefaultModelRepository {
 
   /// Acquires row-level locks on [IntDefaultModel] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<IntDefaultModelTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

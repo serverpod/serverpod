@@ -315,7 +315,7 @@ class ObjectWithSparseVectorRepository {
   /// );
   /// ```
   Future<List<ObjectWithSparseVector>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable>? where,
     int? limit,
     int? offset,
@@ -357,7 +357,7 @@ class ObjectWithSparseVectorRepository {
   /// );
   /// ```
   Future<ObjectWithSparseVector?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable>? where,
     int? offset,
     _i1.OrderByBuilder<ObjectWithSparseVectorTable>? orderBy,
@@ -381,7 +381,7 @@ class ObjectWithSparseVectorRepository {
 
   /// Finds a single [ObjectWithSparseVector] by its [id] or null if no such row exists.
   Future<ObjectWithSparseVector?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -406,7 +406,7 @@ class ObjectWithSparseVectorRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<ObjectWithSparseVector>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ObjectWithSparseVector> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -422,7 +422,7 @@ class ObjectWithSparseVectorRepository {
   ///
   /// The returned [ObjectWithSparseVector] will have its `id` field set.
   Future<ObjectWithSparseVector> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ObjectWithSparseVector row, {
     _i1.Transaction? transaction,
   }) async {
@@ -438,7 +438,7 @@ class ObjectWithSparseVectorRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<ObjectWithSparseVector>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ObjectWithSparseVector> rows, {
     _i1.ColumnSelections<ObjectWithSparseVectorTable>? columns,
     _i1.Transaction? transaction,
@@ -454,7 +454,7 @@ class ObjectWithSparseVectorRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectWithSparseVector> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ObjectWithSparseVector row, {
     _i1.ColumnSelections<ObjectWithSparseVectorTable>? columns,
     _i1.Transaction? transaction,
@@ -469,7 +469,7 @@ class ObjectWithSparseVectorRepository {
   /// Updates a single [ObjectWithSparseVector] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithSparseVector?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<ObjectWithSparseVectorUpdateTable>
     columnValues,
@@ -485,7 +485,7 @@ class ObjectWithSparseVectorRepository {
   /// Updates all [ObjectWithSparseVector]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ObjectWithSparseVector>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ObjectWithSparseVectorUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable> where,
@@ -512,7 +512,7 @@ class ObjectWithSparseVectorRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ObjectWithSparseVector>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ObjectWithSparseVector> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -524,7 +524,7 @@ class ObjectWithSparseVectorRepository {
 
   /// Deletes a single [ObjectWithSparseVector].
   Future<ObjectWithSparseVector> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ObjectWithSparseVector row, {
     _i1.Transaction? transaction,
   }) async {
@@ -536,7 +536,7 @@ class ObjectWithSparseVectorRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<ObjectWithSparseVector>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -549,7 +549,7 @@ class ObjectWithSparseVectorRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -563,7 +563,7 @@ class ObjectWithSparseVectorRepository {
 
   /// Acquires row-level locks on [ObjectWithSparseVector] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

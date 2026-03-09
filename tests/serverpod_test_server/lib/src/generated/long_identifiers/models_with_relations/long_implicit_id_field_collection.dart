@@ -341,7 +341,7 @@ class LongImplicitIdFieldCollectionRepository {
   /// );
   /// ```
   Future<List<LongImplicitIdFieldCollection>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>? where,
     int? limit,
     int? offset,
@@ -385,7 +385,7 @@ class LongImplicitIdFieldCollectionRepository {
   /// );
   /// ```
   Future<LongImplicitIdFieldCollection?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>? where,
     int? offset,
     _i1.OrderByBuilder<LongImplicitIdFieldCollectionTable>? orderBy,
@@ -411,7 +411,7 @@ class LongImplicitIdFieldCollectionRepository {
 
   /// Finds a single [LongImplicitIdFieldCollection] by its [id] or null if no such row exists.
   Future<LongImplicitIdFieldCollection?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     LongImplicitIdFieldCollectionInclude? include,
@@ -438,7 +438,7 @@ class LongImplicitIdFieldCollectionRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<LongImplicitIdFieldCollection>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<LongImplicitIdFieldCollection> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -454,7 +454,7 @@ class LongImplicitIdFieldCollectionRepository {
   ///
   /// The returned [LongImplicitIdFieldCollection] will have its `id` field set.
   Future<LongImplicitIdFieldCollection> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     LongImplicitIdFieldCollection row, {
     _i1.Transaction? transaction,
   }) async {
@@ -470,7 +470,7 @@ class LongImplicitIdFieldCollectionRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<LongImplicitIdFieldCollection>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<LongImplicitIdFieldCollection> rows, {
     _i1.ColumnSelections<LongImplicitIdFieldCollectionTable>? columns,
     _i1.Transaction? transaction,
@@ -486,7 +486,7 @@ class LongImplicitIdFieldCollectionRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<LongImplicitIdFieldCollection> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     LongImplicitIdFieldCollection row, {
     _i1.ColumnSelections<LongImplicitIdFieldCollectionTable>? columns,
     _i1.Transaction? transaction,
@@ -501,7 +501,7 @@ class LongImplicitIdFieldCollectionRepository {
   /// Updates a single [LongImplicitIdFieldCollection] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<LongImplicitIdFieldCollection?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<
       LongImplicitIdFieldCollectionUpdateTable
@@ -519,7 +519,7 @@ class LongImplicitIdFieldCollectionRepository {
   /// Updates all [LongImplicitIdFieldCollection]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<LongImplicitIdFieldCollection>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<
       LongImplicitIdFieldCollectionUpdateTable
     >
@@ -549,7 +549,7 @@ class LongImplicitIdFieldCollectionRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<LongImplicitIdFieldCollection>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<LongImplicitIdFieldCollection> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -561,7 +561,7 @@ class LongImplicitIdFieldCollectionRepository {
 
   /// Deletes a single [LongImplicitIdFieldCollection].
   Future<LongImplicitIdFieldCollection> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     LongImplicitIdFieldCollection row, {
     _i1.Transaction? transaction,
   }) async {
@@ -573,7 +573,7 @@ class LongImplicitIdFieldCollectionRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<LongImplicitIdFieldCollection>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>
     where,
     _i1.Transaction? transaction,
@@ -587,7 +587,7 @@ class LongImplicitIdFieldCollectionRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -601,7 +601,7 @@ class LongImplicitIdFieldCollectionRepository {
 
   /// Acquires row-level locks on [LongImplicitIdFieldCollection] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>
     where,
     required _i1.LockMode lockMode,
@@ -623,7 +623,7 @@ class LongImplicitIdFieldCollectionAttachRepository {
   /// Creates a relation between this [LongImplicitIdFieldCollection] and the given [LongImplicitIdField]s
   /// by setting each [LongImplicitIdField]'s foreign key `_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id` to refer to this [LongImplicitIdFieldCollection].
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     LongImplicitIdFieldCollection longImplicitIdFieldCollection,
     List<_i2.LongImplicitIdField> longImplicitIdField, {
     _i1.Transaction? transaction,
@@ -663,7 +663,7 @@ class LongImplicitIdFieldCollectionAttachRowRepository {
   /// Creates a relation between this [LongImplicitIdFieldCollection] and the given [LongImplicitIdField]
   /// by setting the [LongImplicitIdField]'s foreign key `_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id` to refer to this [LongImplicitIdFieldCollection].
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     LongImplicitIdFieldCollection longImplicitIdFieldCollection,
     _i2.LongImplicitIdField longImplicitIdField, {
     _i1.Transaction? transaction,
@@ -702,7 +702,7 @@ class LongImplicitIdFieldCollectionDetachRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<_i2.LongImplicitIdField> longImplicitIdField, {
     _i1.Transaction? transaction,
   }) async {
@@ -741,7 +741,7 @@ class LongImplicitIdFieldCollectionDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i2.LongImplicitIdField longImplicitIdField, {
     _i1.Transaction? transaction,
   }) async {

@@ -257,7 +257,7 @@ class BoolDefaultPersistRepository {
   /// );
   /// ```
   Future<List<BoolDefaultPersist>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<BoolDefaultPersistTable>? where,
     int? limit,
     int? offset,
@@ -299,7 +299,7 @@ class BoolDefaultPersistRepository {
   /// );
   /// ```
   Future<BoolDefaultPersist?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<BoolDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<BoolDefaultPersistTable>? orderBy,
@@ -323,7 +323,7 @@ class BoolDefaultPersistRepository {
 
   /// Finds a single [BoolDefaultPersist] by its [id] or null if no such row exists.
   Future<BoolDefaultPersist?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -348,7 +348,7 @@ class BoolDefaultPersistRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<BoolDefaultPersist>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<BoolDefaultPersist> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -364,7 +364,7 @@ class BoolDefaultPersistRepository {
   ///
   /// The returned [BoolDefaultPersist] will have its `id` field set.
   Future<BoolDefaultPersist> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     BoolDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
@@ -380,7 +380,7 @@ class BoolDefaultPersistRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<BoolDefaultPersist>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<BoolDefaultPersist> rows, {
     _i1.ColumnSelections<BoolDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
@@ -396,7 +396,7 @@ class BoolDefaultPersistRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<BoolDefaultPersist> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     BoolDefaultPersist row, {
     _i1.ColumnSelections<BoolDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
@@ -411,7 +411,7 @@ class BoolDefaultPersistRepository {
   /// Updates a single [BoolDefaultPersist] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<BoolDefaultPersist?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<BoolDefaultPersistUpdateTable>
     columnValues,
@@ -427,7 +427,7 @@ class BoolDefaultPersistRepository {
   /// Updates all [BoolDefaultPersist]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<BoolDefaultPersist>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<BoolDefaultPersistUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<BoolDefaultPersistTable> where,
@@ -454,7 +454,7 @@ class BoolDefaultPersistRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<BoolDefaultPersist>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<BoolDefaultPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -466,7 +466,7 @@ class BoolDefaultPersistRepository {
 
   /// Deletes a single [BoolDefaultPersist].
   Future<BoolDefaultPersist> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     BoolDefaultPersist row, {
     _i1.Transaction? transaction,
   }) async {
@@ -478,7 +478,7 @@ class BoolDefaultPersistRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<BoolDefaultPersist>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BoolDefaultPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -491,7 +491,7 @@ class BoolDefaultPersistRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<BoolDefaultPersistTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -505,7 +505,7 @@ class BoolDefaultPersistRepository {
 
   /// Acquires row-level locks on [BoolDefaultPersist] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BoolDefaultPersistTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

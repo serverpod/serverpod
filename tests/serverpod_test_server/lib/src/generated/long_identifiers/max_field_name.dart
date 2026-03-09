@@ -223,7 +223,7 @@ class MaxFieldNameRepository {
   /// );
   /// ```
   Future<List<MaxFieldName>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MaxFieldNameTable>? where,
     int? limit,
     int? offset,
@@ -265,7 +265,7 @@ class MaxFieldNameRepository {
   /// );
   /// ```
   Future<MaxFieldName?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MaxFieldNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<MaxFieldNameTable>? orderBy,
@@ -289,7 +289,7 @@ class MaxFieldNameRepository {
 
   /// Finds a single [MaxFieldName] by its [id] or null if no such row exists.
   Future<MaxFieldName?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -314,7 +314,7 @@ class MaxFieldNameRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<MaxFieldName>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MaxFieldName> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -330,7 +330,7 @@ class MaxFieldNameRepository {
   ///
   /// The returned [MaxFieldName] will have its `id` field set.
   Future<MaxFieldName> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MaxFieldName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -346,7 +346,7 @@ class MaxFieldNameRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<MaxFieldName>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MaxFieldName> rows, {
     _i1.ColumnSelections<MaxFieldNameTable>? columns,
     _i1.Transaction? transaction,
@@ -362,7 +362,7 @@ class MaxFieldNameRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<MaxFieldName> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MaxFieldName row, {
     _i1.ColumnSelections<MaxFieldNameTable>? columns,
     _i1.Transaction? transaction,
@@ -377,7 +377,7 @@ class MaxFieldNameRepository {
   /// Updates a single [MaxFieldName] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<MaxFieldName?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<MaxFieldNameUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -392,7 +392,7 @@ class MaxFieldNameRepository {
   /// Updates all [MaxFieldName]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<MaxFieldName>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<MaxFieldNameUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<MaxFieldNameTable> where,
     int? limit,
@@ -418,7 +418,7 @@ class MaxFieldNameRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<MaxFieldName>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MaxFieldName> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -430,7 +430,7 @@ class MaxFieldNameRepository {
 
   /// Deletes a single [MaxFieldName].
   Future<MaxFieldName> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MaxFieldName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -442,7 +442,7 @@ class MaxFieldNameRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<MaxFieldName>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MaxFieldNameTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -455,7 +455,7 @@ class MaxFieldNameRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MaxFieldNameTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -469,7 +469,7 @@ class MaxFieldNameRepository {
 
   /// Acquires row-level locks on [MaxFieldName] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MaxFieldNameTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

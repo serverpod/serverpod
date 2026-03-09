@@ -449,7 +449,7 @@ class LogEntryRepository {
   /// );
   /// ```
   Future<List<LogEntry>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<LogEntryTable>? where,
     int? limit,
     int? offset,
@@ -491,7 +491,7 @@ class LogEntryRepository {
   /// );
   /// ```
   Future<LogEntry?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<LogEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<LogEntryTable>? orderBy,
@@ -515,7 +515,7 @@ class LogEntryRepository {
 
   /// Finds a single [LogEntry] by its [id] or null if no such row exists.
   Future<LogEntry?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -540,7 +540,7 @@ class LogEntryRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<LogEntry>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<LogEntry> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -556,7 +556,7 @@ class LogEntryRepository {
   ///
   /// The returned [LogEntry] will have its `id` field set.
   Future<LogEntry> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     LogEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -572,7 +572,7 @@ class LogEntryRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<LogEntry>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<LogEntry> rows, {
     _i1.ColumnSelections<LogEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -588,7 +588,7 @@ class LogEntryRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<LogEntry> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     LogEntry row, {
     _i1.ColumnSelections<LogEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -603,7 +603,7 @@ class LogEntryRepository {
   /// Updates a single [LogEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<LogEntry?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<LogEntryUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -618,7 +618,7 @@ class LogEntryRepository {
   /// Updates all [LogEntry]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<LogEntry>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<LogEntryUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<LogEntryTable> where,
     int? limit,
@@ -644,7 +644,7 @@ class LogEntryRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<LogEntry>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<LogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -656,7 +656,7 @@ class LogEntryRepository {
 
   /// Deletes a single [LogEntry].
   Future<LogEntry> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     LogEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -668,7 +668,7 @@ class LogEntryRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<LogEntry>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<LogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -681,7 +681,7 @@ class LogEntryRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<LogEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -695,7 +695,7 @@ class LogEntryRepository {
 
   /// Acquires row-level locks on [LogEntry] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<LogEntryTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
