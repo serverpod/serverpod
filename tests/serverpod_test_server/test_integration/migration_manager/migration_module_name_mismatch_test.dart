@@ -1,7 +1,6 @@
 import 'dart:io';
 
-import 'package:serverpod/src/database/migrations/migration_manager.dart';
-import 'package:serverpod/src/database/migrations/migrations.dart';
+import 'package:serverpod/src/database/migrations/server_migration_manager.dart';
 import 'package:serverpod_cli/src/migrations/generator.dart';
 import 'package:serverpod_test_server/test_util/mock_stdout.dart';
 import 'package:serverpod_test_server/test_util/test_tags.dart';
@@ -11,16 +10,13 @@ import 'package:test_descriptor/test_descriptor.dart' as d;
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
-  final existingMigrations = MigrationVersions.listVersions(
-    projectDirectory: Directory.current,
-  );
-
   withServerpod(
     rollbackDatabase: RollbackDatabase.disabled,
     testGroupTagsOverride: [TestTags.concurrencyOneTestTag],
     'Given migration definition.json with wrong module name',
     (sessionBuilder, _) async {
       final migrationName = MigrationGenerator.createVersionName(null);
+      late List<String> existingMigrations;
 
       // Use 'serverpod' (the package module name) as the wrong module —
       // the test server's Protocol returns 'serverpod_test'.
@@ -42,13 +38,33 @@ void main() {
     ''';
 
       setUp(() async {
+        existingMigrations = await ServerMigrationManager(
+          Directory.current,
+        ).listAvailableVersions();
+
+        final minimalDefinition =
+            '''
+{
+  "moduleName": "$wrongModuleName",
+  "tables": [],
+  "installedModules": [],
+  "migrationApiVersion": 1
+}
+''';
+        final minimalMigration = '''
+{
+  "actions": [],
+  "warnings": [],
+  "migrationApiVersion": 1
+}
+''';
+
         await d.dir('migrations', [
           for (var version in existingMigrations) d.dir(version, []),
           d.dir(migrationName, [
-            d.file(
-              'definition.json',
-              '{"moduleName": "$wrongModuleName"}',
-            ),
+            d.file('definition.json', minimalDefinition),
+            d.file('definition_project.json', minimalDefinition),
+            d.file('migration.json', minimalMigration),
             d.file('migration.sql', migrationSQL),
             d.file('definition.sql', migrationSQL),
           ]),
@@ -75,11 +91,13 @@ void main() {
       test(
         'when migrateToLatest is called then prints warning about module name mismatch to stderr.',
         () async {
-          var migrationManager = MigrationManager(Directory(d.sandbox));
           var record = MockStdout();
 
           await IOOverrides.runZoned(
             () async {
+              var migrationManager = ServerMigrationManager(
+                Directory(d.sandbox),
+              );
               await migrationManager.migrateToLatest(sessionBuilder.build());
             },
             stderr: () => record,
