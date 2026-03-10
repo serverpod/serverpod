@@ -68,9 +68,14 @@ Future<bool> performGenerate({
 
   log.debug('Analyzing the custom caches.');
 
+  var cacheAnalyzerCollector = CodeGenerationCollector();
   var customCaches = await cacheAnalyzer.analyze(
+    collector: cacheAnalyzerCollector,
     changedFiles: generatedModelFiles.toSet(),
   );
+
+  success &= !cacheAnalyzerCollector.hasSevereErrors;
+  cacheAnalyzerCollector.printErrors();
 
   log.debug('Generating the protocol.');
 

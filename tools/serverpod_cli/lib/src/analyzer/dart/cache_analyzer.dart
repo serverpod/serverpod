@@ -5,6 +5,7 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/cache_analyzers/cache_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/util/analysis_helper.dart';
@@ -51,6 +52,7 @@ class CacheAnalyzer {
   /// [changedFiles] is an optional list of files that should have their context
   /// refreshed before analysis.
   Future<List<CacheDefinition>> analyze({
+    CodeAnalysisCollector? collector,
     Set<String>? changedFiles,
   }) async {
     await _refreshContextForFiles(changedFiles);
@@ -66,6 +68,7 @@ class CacheAnalyzer {
           classElement,
           filePath,
           cacheDefs,
+          collector: collector,
         );
       }
     }
