@@ -35,8 +35,13 @@ class CacheClassAnalyzer {
 
     var constructor = constructors.first;
     var parameters = constructor.formalParameters;
+    var firstParameterTypeElement = parameters.isEmpty
+        ? null
+        : parameters.first.type.element;
     if (parameters.length != 1 ||
-        parameters.first.type.element?.name != 'Caches') {
+        firstParameterTypeElement?.name != 'Caches' ||
+        firstParameterTypeElement?.library?.identifier !=
+            'package:serverpod/src/cache/caches.dart') {
       collector?.addError(
         SourceSpanSeverityException(
           'Custom cache constructors must accept exactly one parameter of type Caches.'
