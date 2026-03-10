@@ -1,4 +1,4 @@
-import 'package:serverpod/protocol.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:collection/collection.dart';
 import 'package:serverpod/src/database/migrations/table_comparison_warning.dart';
 import 'package:serverpod/src/database/interface/value_encoder.dart';

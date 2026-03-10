@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:serverpod/protocol.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod/src/database/migrations/migration_artifacts.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
