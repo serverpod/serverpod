@@ -93,6 +93,7 @@ import 'package:serverpod_test_server/src/generated/module_datatype.dart'
     as _i70;
 import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i71;
 export 'future_calls.dart' show ServerpodFutureCallsGetter;
+export 'custom_caches.dart';
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
