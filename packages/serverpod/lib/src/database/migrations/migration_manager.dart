@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:meta/meta.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/interface/database_session.dart';
@@ -18,10 +19,11 @@ abstract class MigrationManager {
 
   /// List of installed migration versions. Available after starting a migration
   /// or repair migration.
-  final List<DatabaseMigrationVersion> installedVersions = [];
+  final List<DatabaseMigrationVersion> _installedVersions = [];
 
   /// List of available migration versions as loaded from the migrations
   /// directory. Available after starting a migration or repair migration.
+  @visibleForTesting
   final List<String> availableVersions = [];
 
   /// Creates a new migration manager.
@@ -142,7 +144,7 @@ abstract class MigrationManager {
   /// Returns the installed version of the given module, or null if no version
   /// is installed.
   String? _getInstalledVersion(String module) {
-    var installed = installedVersions.firstWhereOrNull(
+    var installed = _installedVersions.firstWhereOrNull(
       (element) => element.module == module,
     );
     if (installed == null) {
@@ -174,7 +176,7 @@ abstract class MigrationManager {
 
   /// Returns true if the latest version of a module is installed.
   bool _isVersionInstalled(String module, String version) {
-    var installed = installedVersions.firstWhereOrNull(
+    var installed = _installedVersions.firstWhereOrNull(
       (element) => element.module == module,
     );
     if (installed == null) {
@@ -255,9 +257,9 @@ abstract class MigrationManager {
     DatabaseSession session,
     Transaction? transaction,
   ) async {
-    installedVersions.clear();
+    _installedVersions.clear();
     try {
-      installedVersions.addAll(
+      _installedVersions.addAll(
         await loadInstalledVersions(session, transaction: transaction),
       );
     } catch (e) {
