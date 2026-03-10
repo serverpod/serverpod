@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
-import 'package:serverpod/protocol.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/interface/database_session.dart';
 import 'package:serverpod/src/database/migrations/migration_artifacts.dart';
@@ -19,7 +19,7 @@ abstract class MigrationManager {
 
   /// List of installed migration versions. Available after starting a migration
   /// or repair migration.
-  final List<DatabaseMigrationVersion> _installedVersions = [];
+  final List<DatabaseMigrationVersionModel> _installedVersions = [];
 
   /// List of available migration versions as loaded from the migrations
   /// directory. Available after starting a migration or repair migration.
@@ -36,7 +36,7 @@ abstract class MigrationManager {
   ///
   /// This method depends on the table model that will be available only in the
   /// server/client package.
-  Future<List<DatabaseMigrationVersion>> loadInstalledVersions(
+  Future<List<DatabaseMigrationVersionModel>> loadInstalledVersions(
     DatabaseSession session, {
     Transaction? transaction,
   });
@@ -45,7 +45,7 @@ abstract class MigrationManager {
   ///
   /// This method depends on the table model that will be available only in the
   /// server/client package.
-  Future<DatabaseMigrationVersion?> loadInstalledRepairMigration(
+  Future<DatabaseMigrationVersionModel?> loadInstalledRepairMigration(
     DatabaseSession session, {
     Transaction? transaction,
   });
