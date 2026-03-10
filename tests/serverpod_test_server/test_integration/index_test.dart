@@ -2,6 +2,7 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 
 void main() async {
   Session session = await IntegrationTestServer().session();
