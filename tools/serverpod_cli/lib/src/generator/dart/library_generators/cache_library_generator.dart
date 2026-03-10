@@ -25,7 +25,7 @@ extension CacheLibraryGenerator on LibraryGenerator {
   $cacheType get ${cacheDef.name} {
     var cache = _${cacheDef.name}Expando[this];
     if (cache == null) {
-      cache = $cacheType(serializationManager);
+      cache = $cacheType(this);
       _${cacheDef.name}Expando[this] = cache;
     }
     return cache;

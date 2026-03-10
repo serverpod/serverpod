@@ -27,6 +27,25 @@ class CacheAnalyzer {
        ),
        absoluteIncludedPaths = directory.absolute.path;
 
+  List<CacheDefinition> _cacheDefinitions = [];
+
+  /// Inform the analyzer that the provided [filePaths] have been updated.
+  ///
+  /// This will trigger a re-analysis of the files and return true if the
+  /// updated files should trigger a code generation.
+  Future<bool> updateFileContexts(Set<String> filePaths) async {
+    await _refreshContextForFiles(filePaths);
+
+    var oldDefinitionsLength = _cacheDefinitions.length;
+    await analyze();
+
+    if (_cacheDefinitions.length != oldDefinitionsLength) {
+      return true;
+    }
+
+    return filePaths.any((e) => _isCacheFile(File(e)));
+  }
+
   /// Analyze all files in the [AnalysisContextCollection].
   ///
   /// [changedFiles] is an optional list of files that should have their context
@@ -54,6 +73,8 @@ class CacheAnalyzer {
     // Remove caches not part of this package (just in case)
     cacheDefs.removeWhere((e) => e.filePath.startsWith('package:'));
 
+    _cacheDefinitions = cacheDefs;
+
     return cacheDefs;
   }
 
@@ -69,13 +90,35 @@ class CacheAnalyzer {
     }
   }
 
+  bool _isCacheFile(File file) {
+    if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
+    if (!file.path.endsWith('.dart')) return false;
+    if (!file.existsSync()) return false;
+
+    var contents = file.readAsStringSync();
+    if (!contents.contains('extends Cache') &&
+        !contents.contains('extends LocalCache') &&
+        !contents.contains('extends DistributedCache')) {
+      return false;
+    }
+
+    return true;
+  }
+
   Stream<(ResolvedLibraryResult, String)> get _libraries async* {
     for (var context in collection.contexts) {
       var analyzedFiles = context.contextRoot.analyzedFiles().toList();
       analyzedFiles.sort();
-      var analyzedDartFiles = analyzedFiles
-          .where((path) => path.endsWith('.dart'))
-          .where((path) => !path.endsWith('_test.dart'));
+      var analyzedDartFiles = analyzedFiles.where((path) {
+        if (!path.endsWith('.dart')) return false;
+        if (path.endsWith('_test.dart')) return false;
+        if (p.basename(path).startsWith('test_')) return false;
+
+        var pathParts = p.split(path);
+        if (pathParts.contains('test')) return false;
+
+        return true;
+      });
       for (var filePath in analyzedDartFiles) {
         var library = await context.currentSession.getResolvedLibrary(filePath);
         if (library is ResolvedLibraryResult) {

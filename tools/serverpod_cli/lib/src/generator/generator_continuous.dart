@@ -45,7 +45,13 @@ Future<bool> performGenerateContinuously({
     final shouldGenerateFutureCalls = await futureCallsAnalyzer
         .updateFileContexts({event.path});
 
-    var shouldGenerate = shouldGenerateEndpoints || shouldGenerateFutureCalls;
+    final shouldGenerateCaches = await cacheAnalyzer.updateFileContexts({
+      event.path,
+    });
+
+    var shouldGenerate = shouldGenerateEndpoints ||
+        shouldGenerateFutureCalls ||
+        shouldGenerateCaches;
 
     if (ModelHelper.isModelFile(
       event.path,

@@ -72,6 +72,8 @@ class LibraryGenerator {
         if (classInfo.shouldExport)
           Directive.export(TypeDefinition.getRef(classInfo)),
       if (!serverCode && !sharedPackage) Directive.export('client.dart'),
+      if (serverCode && protocolDefinition.customCaches.isNotEmpty)
+        Directive.export('custom_caches.dart'),
     ]);
 
     var protocol = ClassBuilder();
@@ -613,6 +615,12 @@ class LibraryGenerator {
           'future_calls.dart',
           show: const ['ServerpodFutureCallsGetter'],
         ),
+      );
+    }
+
+    if (protocolDefinition.customCaches.isNotEmpty) {
+      library.directives.add(
+        Directive.export('custom_caches.dart'),
       );
     }
 

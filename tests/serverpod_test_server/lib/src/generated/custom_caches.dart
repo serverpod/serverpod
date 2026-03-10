@@ -19,7 +19,7 @@ extension CustomCaches on _i2.Caches {
   _i1.MyCustomCache get myCustomCache {
     var cache = _myCustomCacheExpando[this];
     if (cache == null) {
-      cache = _i1.MyCustomCache(serializationManager);
+      cache = _i1.MyCustomCache(this);
       _myCustomCacheExpando[this] = cache;
     }
     return cache;
