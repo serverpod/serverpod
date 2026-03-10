@@ -10,6 +10,7 @@ Future<bool> performGenerate({
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
   required FutureCallsAnalyzer futureCallsAnalyzer,
+  required CacheAnalyzer cacheAnalyzer,
   required StatefulAnalyzer modelAnalyzer,
 }) async {
   bool success = true;
@@ -65,12 +66,24 @@ Future<bool> performGenerate({
   success &= !futureCallsAnalyzerCollector.hasSevereErrors;
   futureCallsAnalyzerCollector.printErrors();
 
+  log.debug('Analyzing the custom caches.');
+
+  var cacheAnalyzerCollector = CodeGenerationCollector();
+  var customCaches = await cacheAnalyzer.analyze(
+    collector: cacheAnalyzerCollector,
+    changedFiles: generatedModelFiles.toSet(),
+  );
+
+  success &= !cacheAnalyzerCollector.hasSevereErrors;
+  cacheAnalyzerCollector.printErrors();
+
   log.debug('Generating the protocol.');
 
   var protocolDefinition = ProtocolDefinition(
     endpoints: endpoints,
     models: allModels,
     futureCalls: futureCalls,
+    customCaches: customCaches,
   );
 
   var generatedProtocolFiles =

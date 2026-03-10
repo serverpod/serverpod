@@ -13,10 +13,14 @@ class ProtocolDefinition {
   /// The future calls that are a part of this protocol.
   final List<FutureCallDefinition> futureCalls;
 
+  /// The custom caches that are a part of this protocol.
+  final List<CacheDefinition> customCaches;
+
   /// Create a new [ProtocolDefinition].
   const ProtocolDefinition({
     required this.endpoints,
     required this.models,
     required this.futureCalls,
+    this.customCaches = const [],
   });
 }

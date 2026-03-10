@@ -20,6 +20,11 @@ export 'package:relic/relic.dart' hide QueryParameters;
 // Database
 export 'package:serverpod/database.dart';
 
+// Cache
+export 'package:serverpod/src/cache/cache.dart';
+export 'package:serverpod/src/cache/caches.dart';
+export 'package:serverpod/src/cache/cache_miss_handler.dart';
+
 // Serialization and logging
 export 'package:serverpod_serialization/serverpod_serialization.dart';
 export 'package:serverpod/src/util/request_extension.dart';
@@ -29,9 +34,6 @@ export 'package:serverpod/src/util/migrate_session_logs.dart';
 // Cloud storage
 export 'package:serverpod/src/cloud_storage/cloud_storage.dart';
 export 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
-
-// Cache
-export 'package:serverpod/src/cache/cache_miss_handler.dart';
 
 // Experimental features
 export 'src/server/experimental_features.dart';

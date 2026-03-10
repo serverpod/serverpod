@@ -18,6 +18,7 @@ Future<bool> performGenerateContinuously({
   required EndpointsAnalyzer endpointsAnalyzer,
   required StatefulAnalyzer modelAnalyzer,
   required FutureCallsAnalyzer futureCallsAnalyzer,
+  required CacheAnalyzer cacheAnalyzer,
 }) async {
   log.debug('Starting up continuous generator');
 
@@ -28,6 +29,7 @@ Future<bool> performGenerateContinuously({
     endpointsAnalyzer: endpointsAnalyzer,
     modelAnalyzer: modelAnalyzer,
     futureCallsAnalyzer: futureCallsAnalyzer,
+    cacheAnalyzer: cacheAnalyzer,
     completionMessage:
         'Initial code generation complete. Listening for changes.',
   );
@@ -43,7 +45,14 @@ Future<bool> performGenerateContinuously({
     final shouldGenerateFutureCalls = await futureCallsAnalyzer
         .updateFileContexts({event.path});
 
-    var shouldGenerate = shouldGenerateEndpoints || shouldGenerateFutureCalls;
+    final shouldGenerateCaches = await cacheAnalyzer.updateFileContexts({
+      event.path,
+    });
+
+    var shouldGenerate =
+        shouldGenerateEndpoints ||
+        shouldGenerateFutureCalls ||
+        shouldGenerateCaches;
 
     if (ModelHelper.isModelFile(
       event.path,
@@ -82,6 +91,7 @@ Future<bool> performGenerateContinuously({
         endpointsAnalyzer: endpointsAnalyzer,
         modelAnalyzer: modelAnalyzer,
         futureCallsAnalyzer: futureCallsAnalyzer,
+        cacheAnalyzer: cacheAnalyzer,
         completionMessage: 'Incremental code generation complete.',
       );
     });
@@ -134,6 +144,7 @@ Future<bool> _performSafeGenerate({
   required StatefulAnalyzer modelAnalyzer,
   required String completionMessage,
   required FutureCallsAnalyzer futureCallsAnalyzer,
+  required CacheAnalyzer cacheAnalyzer,
 }) async {
   var success = false;
   try {
@@ -144,6 +155,7 @@ Future<bool> _performSafeGenerate({
         endpointsAnalyzer: endpointsAnalyzer,
         modelAnalyzer: modelAnalyzer,
         futureCallsAnalyzer: futureCallsAnalyzer,
+        cacheAnalyzer: cacheAnalyzer,
       ),
     );
     log.info(completionMessage);

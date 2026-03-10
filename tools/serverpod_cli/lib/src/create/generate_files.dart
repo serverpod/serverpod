@@ -49,6 +49,10 @@ class GenerateFiles {
       parameterValidator: parameterValidator,
     );
 
+    var cacheAnalyzer = CacheAnalyzer(
+      directory: libDirectory,
+    );
+
     if (hasErrors) {
       log.error(
         'There were errors parsing the models. Please fix them and try again.',
@@ -61,6 +65,7 @@ class GenerateFiles {
       endpointsAnalyzer: endpointsAnalyzer,
       modelAnalyzer: modelAnalyzer,
       futureCallsAnalyzer: futureCallsAnalyzer,
+      cacheAnalyzer: cacheAnalyzer,
     );
   }
 }

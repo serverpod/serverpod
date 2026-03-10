@@ -1,0 +1,112 @@
+import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
+import 'package:recase/recase.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+
+/// Analyzes dart classes to see if they extend [Cache].
+class CacheClassAnalyzer {
+  /// Parses a [ClassElement] into a [CacheDefinition].
+  static void parse(
+    ClassElement classElement,
+    String filePath,
+    List<CacheDefinition> customCaches, {
+    CodeAnalysisCollector? collector,
+  }) {
+    if (!isCacheClass(classElement)) {
+      return;
+    }
+
+    var className = classElement.name;
+    if (className == null) return;
+
+    var constructors = classElement.constructors;
+    if (constructors.length != 1) {
+      collector?.addError(
+        SourceSpanSeverityException(
+          'Custom cache classes must have exactly one constructor.'
+          '\nFile: $filePath',
+          null,
+          severity: SourceSpanSeverity.error,
+        ),
+      );
+      return;
+    }
+
+    var constructor = constructors.first;
+    var parameters = constructor.formalParameters;
+    var firstParameterTypeElement = parameters.isEmpty
+        ? null
+        : parameters.first.type.element;
+    if (parameters.length != 1 ||
+        firstParameterTypeElement?.name != 'Caches' ||
+        firstParameterTypeElement?.library?.identifier !=
+            'package:serverpod/src/cache/caches.dart') {
+      collector?.addError(
+        SourceSpanSeverityException(
+          'Custom cache constructors must accept exactly one parameter of type Caches.'
+          '\nFile: $filePath',
+          null,
+          severity: SourceSpanSeverity.error,
+        ),
+      );
+      return;
+    }
+
+    var name = className.camelCase;
+
+    customCaches.add(
+      CacheDefinition(
+        name: name,
+        className: className,
+        filePath: filePath,
+      ),
+    );
+  }
+
+  /// Returns true if the [ClassElement] is a class that extends [Cache].
+  static bool isCacheClass(ClassElement classElement) {
+    if (classElement.isAbstract) {
+      return false;
+    }
+
+    // Skip built-in caches.
+    if (classElement.name == 'Cache' ||
+        classElement.name == 'LocalCache' ||
+        classElement.name == 'DistributedCache' ||
+        classElement.name == 'RedisCache' ||
+        classElement.name == 'GlobalCache') {
+      return false;
+    }
+
+    return _implementsCacheType(classElement.thisType);
+  }
+
+  static bool _implementsCacheType(InterfaceType type) {
+    if (type.element.name == 'Cache' &&
+        type.element.library.identifier ==
+            'package:serverpod/src/cache/cache.dart') {
+      return true;
+    }
+    if (type.element.name == 'DistributedCache' ||
+        type.element.name == 'LocalCache') {
+      if (type.element.library.identifier.startsWith('package:serverpod/')) {
+        return true;
+      }
+    }
+
+    for (var interface in type.interfaces) {
+      if (_implementsCacheType(interface)) {
+        return true;
+      }
+    }
+
+    if (type.superclass != null) {
+      if (_implementsCacheType(type.superclass!)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+}

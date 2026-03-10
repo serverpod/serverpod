@@ -450,6 +450,7 @@ export 'types_set.dart';
 export 'types_set_required.dart';
 export 'unique_data.dart';
 export 'unique_data_with_non_persist.dart';
+export 'custom_caches.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
