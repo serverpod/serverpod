@@ -339,7 +339,7 @@ class EnrollmentIntRepository {
   /// );
   /// ```
   Future<List<EnrollmentInt>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<EnrollmentIntTable>? where,
     int? limit,
     int? offset,
@@ -383,7 +383,7 @@ class EnrollmentIntRepository {
   /// );
   /// ```
   Future<EnrollmentInt?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<EnrollmentIntTable>? where,
     int? offset,
     _i1.OrderByBuilder<EnrollmentIntTable>? orderBy,
@@ -409,7 +409,7 @@ class EnrollmentIntRepository {
 
   /// Finds a single [EnrollmentInt] by its [id] or null if no such row exists.
   Future<EnrollmentInt?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     EnrollmentIntInclude? include,
@@ -436,7 +436,7 @@ class EnrollmentIntRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<EnrollmentInt>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<EnrollmentInt> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -452,7 +452,7 @@ class EnrollmentIntRepository {
   ///
   /// The returned [EnrollmentInt] will have its `id` field set.
   Future<EnrollmentInt> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EnrollmentInt row, {
     _i1.Transaction? transaction,
   }) async {
@@ -468,7 +468,7 @@ class EnrollmentIntRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<EnrollmentInt>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<EnrollmentInt> rows, {
     _i1.ColumnSelections<EnrollmentIntTable>? columns,
     _i1.Transaction? transaction,
@@ -484,7 +484,7 @@ class EnrollmentIntRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EnrollmentInt> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EnrollmentInt row, {
     _i1.ColumnSelections<EnrollmentIntTable>? columns,
     _i1.Transaction? transaction,
@@ -499,7 +499,7 @@ class EnrollmentIntRepository {
   /// Updates a single [EnrollmentInt] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EnrollmentInt?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<EnrollmentIntUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -514,7 +514,7 @@ class EnrollmentIntRepository {
   /// Updates all [EnrollmentInt]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<EnrollmentInt>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<EnrollmentIntUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<EnrollmentIntTable> where,
     int? limit,
@@ -540,7 +540,7 @@ class EnrollmentIntRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<EnrollmentInt>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<EnrollmentInt> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -552,7 +552,7 @@ class EnrollmentIntRepository {
 
   /// Deletes a single [EnrollmentInt].
   Future<EnrollmentInt> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EnrollmentInt row, {
     _i1.Transaction? transaction,
   }) async {
@@ -564,7 +564,7 @@ class EnrollmentIntRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<EnrollmentInt>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EnrollmentIntTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -577,7 +577,7 @@ class EnrollmentIntRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<EnrollmentIntTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -591,7 +591,7 @@ class EnrollmentIntRepository {
 
   /// Acquires row-level locks on [EnrollmentInt] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EnrollmentIntTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -612,7 +612,7 @@ class EnrollmentIntAttachRowRepository {
   /// Creates a relation between the given [EnrollmentInt] and [StudentUuid]
   /// by setting the [EnrollmentInt]'s foreign key `studentId` to refer to the [StudentUuid].
   Future<void> student(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EnrollmentInt enrollmentInt,
     _i2.StudentUuid student, {
     _i1.Transaction? transaction,
@@ -635,7 +635,7 @@ class EnrollmentIntAttachRowRepository {
   /// Creates a relation between the given [EnrollmentInt] and [CourseUuid]
   /// by setting the [EnrollmentInt]'s foreign key `courseId` to refer to the [CourseUuid].
   Future<void> course(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EnrollmentInt enrollmentInt,
     _i3.CourseUuid course, {
     _i1.Transaction? transaction,

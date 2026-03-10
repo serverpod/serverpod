@@ -253,7 +253,7 @@ class BigIntDefaultRepository {
   /// );
   /// ```
   Future<List<BigIntDefault>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<BigIntDefaultTable>? where,
     int? limit,
     int? offset,
@@ -295,7 +295,7 @@ class BigIntDefaultRepository {
   /// );
   /// ```
   Future<BigIntDefault?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<BigIntDefaultTable>? where,
     int? offset,
     _i1.OrderByBuilder<BigIntDefaultTable>? orderBy,
@@ -319,7 +319,7 @@ class BigIntDefaultRepository {
 
   /// Finds a single [BigIntDefault] by its [id] or null if no such row exists.
   Future<BigIntDefault?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -344,7 +344,7 @@ class BigIntDefaultRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<BigIntDefault>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<BigIntDefault> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -360,7 +360,7 @@ class BigIntDefaultRepository {
   ///
   /// The returned [BigIntDefault] will have its `id` field set.
   Future<BigIntDefault> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     BigIntDefault row, {
     _i1.Transaction? transaction,
   }) async {
@@ -376,7 +376,7 @@ class BigIntDefaultRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<BigIntDefault>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<BigIntDefault> rows, {
     _i1.ColumnSelections<BigIntDefaultTable>? columns,
     _i1.Transaction? transaction,
@@ -392,7 +392,7 @@ class BigIntDefaultRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<BigIntDefault> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     BigIntDefault row, {
     _i1.ColumnSelections<BigIntDefaultTable>? columns,
     _i1.Transaction? transaction,
@@ -407,7 +407,7 @@ class BigIntDefaultRepository {
   /// Updates a single [BigIntDefault] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<BigIntDefault?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<BigIntDefaultUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -422,7 +422,7 @@ class BigIntDefaultRepository {
   /// Updates all [BigIntDefault]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<BigIntDefault>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<BigIntDefaultUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<BigIntDefaultTable> where,
     int? limit,
@@ -448,7 +448,7 @@ class BigIntDefaultRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<BigIntDefault>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<BigIntDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -460,7 +460,7 @@ class BigIntDefaultRepository {
 
   /// Deletes a single [BigIntDefault].
   Future<BigIntDefault> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     BigIntDefault row, {
     _i1.Transaction? transaction,
   }) async {
@@ -472,7 +472,7 @@ class BigIntDefaultRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<BigIntDefault>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BigIntDefaultTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -485,7 +485,7 @@ class BigIntDefaultRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<BigIntDefaultTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -499,7 +499,7 @@ class BigIntDefaultRepository {
 
   /// Acquires row-level locks on [BigIntDefault] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BigIntDefaultTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

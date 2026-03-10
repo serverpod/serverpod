@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
@@ -63,6 +64,30 @@ class MigrationManager {
     return appliedVersionName;
   }
 
+  /// Loads the module name from the latest available migration definition.
+  ///
+  /// Returns the module name from the `definition.json` of the last available
+  /// migration version, or null if not found or if parsing fails.
+  String? _loadLatestDefinitionModuleName() {
+    if (availableVersions.isEmpty) return null;
+
+    var latestVersion = availableVersions.last;
+    var definitionJsonFile = MigrationConstants.databaseDefinitionJSONPath(
+      _projectDirectory,
+      latestVersion,
+    );
+
+    if (!definitionJsonFile.existsSync()) return null;
+
+    try {
+      var jsonContent = definitionJsonFile.readAsStringSync();
+      var json = jsonDecode(jsonContent) as Map<String, dynamic>;
+      return json['moduleName'] as String?;
+    } catch (_) {
+      return null;
+    }
+  }
+
   /// Migrates all modules to the latest version.
   ///
   /// Returns the migrations applied.
@@ -75,6 +100,18 @@ class MigrationManager {
       var latestVersion = _getLatestVersion();
 
       var moduleName = session.db.serializationManager.getModuleName();
+
+      var definitionModuleName = _loadLatestDefinitionModuleName();
+      if (definitionModuleName != null && definitionModuleName != moduleName) {
+        stderr.writeln(
+          'WARNING: The module name in the migration definition '
+          '("$definitionModuleName") does not match the module name of the '
+          'serialization manager ("$moduleName"). This may indicate that the '
+          'wrong Protocol class is being used in "server.dart". Make sure you '
+          'are using the Protocol class generated under '
+          '"src/generated/protocol.dart" and not one from an external package.',
+        );
+      }
 
       if (_isVersionInstalled(moduleName, latestVersion)) {
         migrationsApplied = null;

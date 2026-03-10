@@ -99,7 +99,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             findMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -198,7 +198,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             findRowMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -297,7 +297,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             findByIdMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -356,7 +356,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             lockRowsMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -421,7 +421,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             insertMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -477,7 +477,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             insertRowMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -528,7 +528,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             updateMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -577,7 +577,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             updateRowMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -621,7 +621,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             deleteMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -670,7 +670,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             deleteRowMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -719,7 +719,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             deleteWhereMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -769,7 +769,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             countMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -829,7 +829,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             updateByIdMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 
@@ -888,7 +888,7 @@ void main() {
         test('that takes the session as a required param', () {
           expect(
             updateWhereMethod?.parameters?.toSource(),
-            contains('Session session'),
+            contains('DatabaseSession session'),
           );
         });
 

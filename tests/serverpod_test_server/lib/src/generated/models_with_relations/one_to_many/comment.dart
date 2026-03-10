@@ -279,7 +279,7 @@ class CommentRepository {
   /// );
   /// ```
   Future<List<Comment>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CommentTable>? where,
     int? limit,
     int? offset,
@@ -323,7 +323,7 @@ class CommentRepository {
   /// );
   /// ```
   Future<Comment?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CommentTable>? where,
     int? offset,
     _i1.OrderByBuilder<CommentTable>? orderBy,
@@ -349,7 +349,7 @@ class CommentRepository {
 
   /// Finds a single [Comment] by its [id] or null if no such row exists.
   Future<Comment?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     CommentInclude? include,
@@ -376,7 +376,7 @@ class CommentRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<Comment>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Comment> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -392,7 +392,7 @@ class CommentRepository {
   ///
   /// The returned [Comment] will have its `id` field set.
   Future<Comment> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Comment row, {
     _i1.Transaction? transaction,
   }) async {
@@ -408,7 +408,7 @@ class CommentRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<Comment>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Comment> rows, {
     _i1.ColumnSelections<CommentTable>? columns,
     _i1.Transaction? transaction,
@@ -424,7 +424,7 @@ class CommentRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Comment> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Comment row, {
     _i1.ColumnSelections<CommentTable>? columns,
     _i1.Transaction? transaction,
@@ -439,7 +439,7 @@ class CommentRepository {
   /// Updates a single [Comment] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Comment?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<CommentUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -454,7 +454,7 @@ class CommentRepository {
   /// Updates all [Comment]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Comment>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CommentUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CommentTable> where,
     int? limit,
@@ -480,7 +480,7 @@ class CommentRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<Comment>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Comment> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -492,7 +492,7 @@ class CommentRepository {
 
   /// Deletes a single [Comment].
   Future<Comment> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Comment row, {
     _i1.Transaction? transaction,
   }) async {
@@ -504,7 +504,7 @@ class CommentRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<Comment>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CommentTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -517,7 +517,7 @@ class CommentRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CommentTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -531,7 +531,7 @@ class CommentRepository {
 
   /// Acquires row-level locks on [Comment] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CommentTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -552,7 +552,7 @@ class CommentAttachRowRepository {
   /// Creates a relation between the given [Comment] and [Order]
   /// by setting the [Comment]'s foreign key `orderId` to refer to the [Order].
   Future<void> order(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Comment comment,
     _i2.Order order, {
     _i1.Transaction? transaction,

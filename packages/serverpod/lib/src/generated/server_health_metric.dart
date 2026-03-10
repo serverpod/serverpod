@@ -351,7 +351,7 @@ class ServerHealthMetricRepository {
   /// );
   /// ```
   Future<List<ServerHealthMetric>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     int? offset,
@@ -393,7 +393,7 @@ class ServerHealthMetricRepository {
   /// );
   /// ```
   Future<ServerHealthMetric?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? offset,
     _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
@@ -417,7 +417,7 @@ class ServerHealthMetricRepository {
 
   /// Finds a single [ServerHealthMetric] by its [id] or null if no such row exists.
   Future<ServerHealthMetric?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -442,7 +442,7 @@ class ServerHealthMetricRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<ServerHealthMetric>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ServerHealthMetric> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -458,7 +458,7 @@ class ServerHealthMetricRepository {
   ///
   /// The returned [ServerHealthMetric] will have its `id` field set.
   Future<ServerHealthMetric> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ServerHealthMetric row, {
     _i1.Transaction? transaction,
   }) async {
@@ -474,7 +474,7 @@ class ServerHealthMetricRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<ServerHealthMetric>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ServerHealthMetric> rows, {
     _i1.ColumnSelections<ServerHealthMetricTable>? columns,
     _i1.Transaction? transaction,
@@ -490,7 +490,7 @@ class ServerHealthMetricRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ServerHealthMetric> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ServerHealthMetric row, {
     _i1.ColumnSelections<ServerHealthMetricTable>? columns,
     _i1.Transaction? transaction,
@@ -505,7 +505,7 @@ class ServerHealthMetricRepository {
   /// Updates a single [ServerHealthMetric] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ServerHealthMetric?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<ServerHealthMetricUpdateTable>
     columnValues,
@@ -521,7 +521,7 @@ class ServerHealthMetricRepository {
   /// Updates all [ServerHealthMetric]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ServerHealthMetric>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ServerHealthMetricUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
@@ -548,7 +548,7 @@ class ServerHealthMetricRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ServerHealthMetric>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ServerHealthMetric> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -560,7 +560,7 @@ class ServerHealthMetricRepository {
 
   /// Deletes a single [ServerHealthMetric].
   Future<ServerHealthMetric> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ServerHealthMetric row, {
     _i1.Transaction? transaction,
   }) async {
@@ -572,7 +572,7 @@ class ServerHealthMetricRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<ServerHealthMetric>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -585,7 +585,7 @@ class ServerHealthMetricRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -599,7 +599,7 @@ class ServerHealthMetricRepository {
 
   /// Acquires row-level locks on [ServerHealthMetric] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

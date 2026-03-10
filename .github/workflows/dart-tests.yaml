@@ -18,6 +18,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
+env:
+  SERVERPOD_SILENCE_LIFECYCLE_MESSAGES: "1"
+
 jobs:
   dart_format:
     name: dart format
@@ -279,7 +282,7 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
       - name: Start containers
-        run: docker compose up --build -V -d
+        run: docker compose --progress quiet up --build -V -d
         working-directory: ${{ matrix.module }}
       - name: Wait for services to be ready
         run: |
@@ -315,7 +318,7 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true
       - name: Start containers
-        run: docker compose up --build -V -d
+        run: docker compose --progress quiet up --build -V -d
         working-directory: ${{ matrix.module.server }}
       - name: Wait for services to be ready
         run: |

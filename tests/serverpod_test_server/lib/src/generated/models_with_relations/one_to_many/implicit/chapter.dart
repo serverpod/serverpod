@@ -259,7 +259,7 @@ class ChapterRepository {
   /// );
   /// ```
   Future<List<Chapter>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ChapterTable>? where,
     int? limit,
     int? offset,
@@ -301,7 +301,7 @@ class ChapterRepository {
   /// );
   /// ```
   Future<Chapter?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ChapterTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChapterTable>? orderBy,
@@ -325,7 +325,7 @@ class ChapterRepository {
 
   /// Finds a single [Chapter] by its [id] or null if no such row exists.
   Future<Chapter?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -350,7 +350,7 @@ class ChapterRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<Chapter>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Chapter> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -366,7 +366,7 @@ class ChapterRepository {
   ///
   /// The returned [Chapter] will have its `id` field set.
   Future<Chapter> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Chapter row, {
     _i1.Transaction? transaction,
   }) async {
@@ -382,7 +382,7 @@ class ChapterRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<Chapter>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Chapter> rows, {
     _i1.ColumnSelections<ChapterTable>? columns,
     _i1.Transaction? transaction,
@@ -398,7 +398,7 @@ class ChapterRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Chapter> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Chapter row, {
     _i1.ColumnSelections<ChapterTable>? columns,
     _i1.Transaction? transaction,
@@ -413,7 +413,7 @@ class ChapterRepository {
   /// Updates a single [Chapter] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Chapter?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<ChapterUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -428,7 +428,7 @@ class ChapterRepository {
   /// Updates all [Chapter]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Chapter>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ChapterUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<ChapterTable> where,
     int? limit,
@@ -454,7 +454,7 @@ class ChapterRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<Chapter>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Chapter> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -466,7 +466,7 @@ class ChapterRepository {
 
   /// Deletes a single [Chapter].
   Future<Chapter> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Chapter row, {
     _i1.Transaction? transaction,
   }) async {
@@ -478,7 +478,7 @@ class ChapterRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<Chapter>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChapterTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -491,7 +491,7 @@ class ChapterRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ChapterTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -505,7 +505,7 @@ class ChapterRepository {
 
   /// Acquires row-level locks on [Chapter] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChapterTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

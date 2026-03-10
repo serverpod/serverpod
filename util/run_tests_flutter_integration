@@ -11,4 +11,8 @@ set -e
 
 cd tests/docker/tests_flutter
 
-docker compose up --abort-on-container-exit --exit-code-from tests --build --remove-orphans
+docker compose --progress quiet up \
+  --abort-on-container-exit \
+  --exit-code-from tests \
+  --build \
+  --remove-orphans

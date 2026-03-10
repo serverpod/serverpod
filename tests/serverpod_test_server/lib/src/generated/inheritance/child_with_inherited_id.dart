@@ -293,7 +293,7 @@ class ChildWithInheritedIdRepository {
   /// );
   /// ```
   Future<List<ChildWithInheritedId>> find(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     _i2.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
     int? limit,
     int? offset,
@@ -337,7 +337,7 @@ class ChildWithInheritedIdRepository {
   /// );
   /// ```
   Future<ChildWithInheritedId?> findFirstRow(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     _i2.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
     int? offset,
     _i2.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
@@ -363,7 +363,7 @@ class ChildWithInheritedIdRepository {
 
   /// Finds a single [ChildWithInheritedId] by its [id] or null if no such row exists.
   Future<ChildWithInheritedId?> findById(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     _i2.UuidValue id, {
     _i2.Transaction? transaction,
     ChildWithInheritedIdInclude? include,
@@ -390,7 +390,7 @@ class ChildWithInheritedIdRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<ChildWithInheritedId>> insert(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     List<ChildWithInheritedId> rows, {
     _i2.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -406,7 +406,7 @@ class ChildWithInheritedIdRepository {
   ///
   /// The returned [ChildWithInheritedId] will have its `id` field set.
   Future<ChildWithInheritedId> insertRow(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     ChildWithInheritedId row, {
     _i2.Transaction? transaction,
   }) async {
@@ -422,7 +422,7 @@ class ChildWithInheritedIdRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<ChildWithInheritedId>> update(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     List<ChildWithInheritedId> rows, {
     _i2.ColumnSelections<ChildWithInheritedIdTable>? columns,
     _i2.Transaction? transaction,
@@ -438,7 +438,7 @@ class ChildWithInheritedIdRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ChildWithInheritedId> updateRow(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     ChildWithInheritedId row, {
     _i2.ColumnSelections<ChildWithInheritedIdTable>? columns,
     _i2.Transaction? transaction,
@@ -453,7 +453,7 @@ class ChildWithInheritedIdRepository {
   /// Updates a single [ChildWithInheritedId] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ChildWithInheritedId?> updateById(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     _i2.UuidValue id, {
     required _i2.ColumnValueListBuilder<ChildWithInheritedIdUpdateTable>
     columnValues,
@@ -469,7 +469,7 @@ class ChildWithInheritedIdRepository {
   /// Updates all [ChildWithInheritedId]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ChildWithInheritedId>> updateWhere(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     required _i2.ColumnValueListBuilder<ChildWithInheritedIdUpdateTable>
     columnValues,
     required _i2.WhereExpressionBuilder<ChildWithInheritedIdTable> where,
@@ -496,7 +496,7 @@ class ChildWithInheritedIdRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ChildWithInheritedId>> delete(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     List<ChildWithInheritedId> rows, {
     _i2.Transaction? transaction,
   }) async {
@@ -508,7 +508,7 @@ class ChildWithInheritedIdRepository {
 
   /// Deletes a single [ChildWithInheritedId].
   Future<ChildWithInheritedId> deleteRow(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     ChildWithInheritedId row, {
     _i2.Transaction? transaction,
   }) async {
@@ -520,7 +520,7 @@ class ChildWithInheritedIdRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<ChildWithInheritedId>> deleteWhere(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ChildWithInheritedIdTable> where,
     _i2.Transaction? transaction,
   }) async {
@@ -533,7 +533,7 @@ class ChildWithInheritedIdRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     _i2.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
     int? limit,
     _i2.Transaction? transaction,
@@ -547,7 +547,7 @@ class ChildWithInheritedIdRepository {
 
   /// Acquires row-level locks on [ChildWithInheritedId] rows matching the [where] expression.
   Future<void> lockRows(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ChildWithInheritedIdTable> where,
     required _i2.LockMode lockMode,
     required _i2.Transaction transaction,
@@ -568,7 +568,7 @@ class ChildWithInheritedIdAttachRowRepository {
   /// Creates a relation between the given [ChildWithInheritedId] and [ChildWithInheritedId]
   /// by setting the [ChildWithInheritedId]'s foreign key `parentId` to refer to the [ChildWithInheritedId].
   Future<void> parent(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     ChildWithInheritedId childWithInheritedId,
     _i3.ChildWithInheritedId parent, {
     _i2.Transaction? transaction,
@@ -600,7 +600,7 @@ class ChildWithInheritedIdDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> parent(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     ChildWithInheritedId childWithInheritedId, {
     _i2.Transaction? transaction,
   }) async {

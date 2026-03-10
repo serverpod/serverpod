@@ -215,7 +215,7 @@ class ReadWriteTestEntryRepository {
   /// );
   /// ```
   Future<List<ReadWriteTestEntry>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? limit,
     int? offset,
@@ -257,7 +257,7 @@ class ReadWriteTestEntryRepository {
   /// );
   /// ```
   Future<ReadWriteTestEntry?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
@@ -281,7 +281,7 @@ class ReadWriteTestEntryRepository {
 
   /// Finds a single [ReadWriteTestEntry] by its [id] or null if no such row exists.
   Future<ReadWriteTestEntry?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -306,7 +306,7 @@ class ReadWriteTestEntryRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<ReadWriteTestEntry>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ReadWriteTestEntry> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -322,7 +322,7 @@ class ReadWriteTestEntryRepository {
   ///
   /// The returned [ReadWriteTestEntry] will have its `id` field set.
   Future<ReadWriteTestEntry> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ReadWriteTestEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -338,7 +338,7 @@ class ReadWriteTestEntryRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<ReadWriteTestEntry>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ReadWriteTestEntry> rows, {
     _i1.ColumnSelections<ReadWriteTestEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -354,7 +354,7 @@ class ReadWriteTestEntryRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ReadWriteTestEntry> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ReadWriteTestEntry row, {
     _i1.ColumnSelections<ReadWriteTestEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -369,7 +369,7 @@ class ReadWriteTestEntryRepository {
   /// Updates a single [ReadWriteTestEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ReadWriteTestEntry?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<ReadWriteTestEntryUpdateTable>
     columnValues,
@@ -385,7 +385,7 @@ class ReadWriteTestEntryRepository {
   /// Updates all [ReadWriteTestEntry]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ReadWriteTestEntry>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ReadWriteTestEntryUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
@@ -412,7 +412,7 @@ class ReadWriteTestEntryRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ReadWriteTestEntry>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ReadWriteTestEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -424,7 +424,7 @@ class ReadWriteTestEntryRepository {
 
   /// Deletes a single [ReadWriteTestEntry].
   Future<ReadWriteTestEntry> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ReadWriteTestEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -436,7 +436,7 @@ class ReadWriteTestEntryRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<ReadWriteTestEntry>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -449,7 +449,7 @@ class ReadWriteTestEntryRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -463,7 +463,7 @@ class ReadWriteTestEntryRepository {
 
   /// Acquires row-level locks on [ReadWriteTestEntry] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
