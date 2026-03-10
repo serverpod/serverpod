@@ -1,4 +1,3 @@
-import '../../generated/log_level.dart';
 import '../concepts/transaction.dart';
 import '../database.dart';
 
@@ -12,6 +11,12 @@ typedef LogQueryFunction =
       required StackTrace stackTrace,
     });
 
+/// Function type for logging a warning during the execution of a query.
+typedef LogWarningFunction =
+    Future<void> Function(
+      String message,
+    );
+
 /// Interface for accessing the database.
 abstract interface class DatabaseSession {
   /// The database to access.
@@ -23,11 +28,6 @@ abstract interface class DatabaseSession {
   /// Optional function to log a query.
   LogQueryFunction? get logQuery;
 
-  /// Optional function to log a message as part of the session.
-  void log(
-    String message, {
-    LogLevel? level,
-    dynamic exception,
-    StackTrace? stackTrace,
-  });
+  /// Optional function to log a warning during the execution of a query.
+  LogWarningFunction? get logWarning;
 }
