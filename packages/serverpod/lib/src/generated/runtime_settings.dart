@@ -314,7 +314,7 @@ class RuntimeSettingsRepository {
   /// );
   /// ```
   Future<List<RuntimeSettings>> find(
-    _i1.DatabaseSession session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? limit,
     int? offset,
@@ -356,7 +356,7 @@ class RuntimeSettingsRepository {
   /// );
   /// ```
   Future<RuntimeSettings?> findFirstRow(
-    _i1.DatabaseSession session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? offset,
     _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
@@ -380,7 +380,7 @@ class RuntimeSettingsRepository {
 
   /// Finds a single [RuntimeSettings] by its [id] or null if no such row exists.
   Future<RuntimeSettings?> findById(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -405,7 +405,7 @@ class RuntimeSettingsRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<RuntimeSettings>> insert(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     List<RuntimeSettings> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -421,7 +421,7 @@ class RuntimeSettingsRepository {
   ///
   /// The returned [RuntimeSettings] will have its `id` field set.
   Future<RuntimeSettings> insertRow(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     RuntimeSettings row, {
     _i1.Transaction? transaction,
   }) async {
@@ -437,7 +437,7 @@ class RuntimeSettingsRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<RuntimeSettings>> update(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     List<RuntimeSettings> rows, {
     _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
@@ -453,7 +453,7 @@ class RuntimeSettingsRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<RuntimeSettings> updateRow(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     RuntimeSettings row, {
     _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
@@ -468,7 +468,7 @@ class RuntimeSettingsRepository {
   /// Updates a single [RuntimeSettings] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<RuntimeSettings?> updateById(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<RuntimeSettingsUpdateTable>
     columnValues,
@@ -484,7 +484,7 @@ class RuntimeSettingsRepository {
   /// Updates all [RuntimeSettings]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<RuntimeSettings>> updateWhere(
-    _i1.DatabaseSession session, {
+    _i1.Session session, {
     required _i1.ColumnValueListBuilder<RuntimeSettingsUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
@@ -511,7 +511,7 @@ class RuntimeSettingsRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<RuntimeSettings>> delete(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     List<RuntimeSettings> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -523,7 +523,7 @@ class RuntimeSettingsRepository {
 
   /// Deletes a single [RuntimeSettings].
   Future<RuntimeSettings> deleteRow(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     RuntimeSettings row, {
     _i1.Transaction? transaction,
   }) async {
@@ -535,7 +535,7 @@ class RuntimeSettingsRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<RuntimeSettings>> deleteWhere(
-    _i1.DatabaseSession session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -548,7 +548,7 @@ class RuntimeSettingsRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -562,7 +562,7 @@ class RuntimeSettingsRepository {
 
   /// Acquires row-level locks on [RuntimeSettings] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

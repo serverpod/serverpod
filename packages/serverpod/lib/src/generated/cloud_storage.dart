@@ -354,7 +354,7 @@ class CloudStorageEntryRepository {
   /// );
   /// ```
   Future<List<CloudStorageEntry>> find(
-    _i1.DatabaseSession session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? limit,
     int? offset,
@@ -396,7 +396,7 @@ class CloudStorageEntryRepository {
   /// );
   /// ```
   Future<CloudStorageEntry?> findFirstRow(
-    _i1.DatabaseSession session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
@@ -420,7 +420,7 @@ class CloudStorageEntryRepository {
 
   /// Finds a single [CloudStorageEntry] by its [id] or null if no such row exists.
   Future<CloudStorageEntry?> findById(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -445,7 +445,7 @@ class CloudStorageEntryRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<CloudStorageEntry>> insert(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     List<CloudStorageEntry> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -461,7 +461,7 @@ class CloudStorageEntryRepository {
   ///
   /// The returned [CloudStorageEntry] will have its `id` field set.
   Future<CloudStorageEntry> insertRow(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     CloudStorageEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -477,7 +477,7 @@ class CloudStorageEntryRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<CloudStorageEntry>> update(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     List<CloudStorageEntry> rows, {
     _i1.ColumnSelections<CloudStorageEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -493,7 +493,7 @@ class CloudStorageEntryRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<CloudStorageEntry> updateRow(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     CloudStorageEntry row, {
     _i1.ColumnSelections<CloudStorageEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -508,7 +508,7 @@ class CloudStorageEntryRepository {
   /// Updates a single [CloudStorageEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<CloudStorageEntry?> updateById(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     int id, {
     required _i1.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
     columnValues,
@@ -524,7 +524,7 @@ class CloudStorageEntryRepository {
   /// Updates all [CloudStorageEntry]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<CloudStorageEntry>> updateWhere(
-    _i1.DatabaseSession session, {
+    _i1.Session session, {
     required _i1.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
@@ -551,7 +551,7 @@ class CloudStorageEntryRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<CloudStorageEntry>> delete(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     List<CloudStorageEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -563,7 +563,7 @@ class CloudStorageEntryRepository {
 
   /// Deletes a single [CloudStorageEntry].
   Future<CloudStorageEntry> deleteRow(
-    _i1.DatabaseSession session,
+    _i1.Session session,
     CloudStorageEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -575,7 +575,7 @@ class CloudStorageEntryRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<CloudStorageEntry>> deleteWhere(
-    _i1.DatabaseSession session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -588,7 +588,7 @@ class CloudStorageEntryRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
+    _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -602,7 +602,7 @@ class CloudStorageEntryRepository {
 
   /// Acquires row-level locks on [CloudStorageEntry] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
+    _i1.Session session, {
     required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
