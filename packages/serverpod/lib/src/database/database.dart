@@ -10,13 +10,13 @@ import 'package:serverpod/src/database/concepts/row_lock.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/interface/database_connection.dart';
 import 'package:serverpod/src/database/interface/database_pool_manager.dart';
+import 'package:serverpod/src/database/interface/database_session.dart';
 import 'package:serverpod/src/database/interface/provider.dart';
 import 'package:serverpod/src/database/interface/serialization_manager.dart';
 import 'package:serverpod/src/database/interface/value_encoder.dart';
 import 'package:serverpod/src/database/query_parameters.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import '../server/session.dart';
 import 'concepts/expressions.dart';
 import 'concepts/table.dart';
 
@@ -25,7 +25,7 @@ import 'concepts/table.dart';
 extension DatabaseConstructor on Database {
   /// Creates a new [Database] object.
   static Database create({
-    required Session session,
+    required DatabaseSession session,
     required DatabasePoolManager poolManager,
   }) {
     return Database._(
@@ -35,16 +35,16 @@ extension DatabaseConstructor on Database {
   }
 }
 
-/// Provides easy access to the database in relation to the current [Session].
+/// Provides easy access to the database in relation to the current [DatabaseSession].
 class Database {
-  final Session _session;
+  final DatabaseSession _session;
 
   final DatabaseConnection _databaseConnection;
 
   /// Creates a new [Database] object. Typically, this is done automatically
-  /// when a [Session] is created.
+  /// when a [DatabaseSession] is created.
   Database._({
-    required Session session,
+    required DatabaseSession session,
     required DatabasePoolManager poolManager,
   }) : _session = session,
        _databaseConnection = DatabaseProvider.forDialect(
