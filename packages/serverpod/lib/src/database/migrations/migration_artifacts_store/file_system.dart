@@ -36,8 +36,7 @@ class FileSystemMigrationArtifactStore implements MigrationArtifactStore {
 
     return await migrationsDirectory
           .list()
-          .where((entity) => entity is Directory)
-          .cast<Directory>()
+          .whereType<Directory>()
           .map((directory) => path.basename(directory.path))
           .toList()
       ..sort();
@@ -225,4 +224,8 @@ class FileSystemMigrationArtifactStore implements MigrationArtifactStore {
   static String _encodeProtocolObject<T>(T value) {
     return SerializationManager.encode(value, formatted: true);
   }
+}
+
+extension<T> on Stream<T> {
+  Stream<U> whereType<U>() => where((t) => t is U).cast<U>();
 }
