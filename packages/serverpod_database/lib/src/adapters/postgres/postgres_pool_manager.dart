@@ -1,0 +1,115 @@
+import 'package:meta/meta.dart';
+import 'package:postgres/postgres.dart' as pg;
+import 'package:serverpod_database/src/concepts/runtime_parameters.dart';
+import 'package:serverpod_database/src/interface/database_pool_manager.dart';
+import 'package:serverpod_database/src/interface/serialization_manager.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
+
+import 'pgvector_encoder.dart';
+import 'value_encoder.dart';
+
+/// Configuration for connecting to the Postgresql database.
+@internal
+class PostgresPoolManager implements DatabasePoolManager {
+  @override
+  DatabaseDialect get dialect => DatabaseDialect.postgres;
+
+  @override
+  DateTime? lastDatabaseOperationTime;
+
+  /// Database configuration.
+  final DatabaseConfig config;
+
+  late SerializationManagerServer _serializationManager;
+
+  @override
+  SerializationManagerServer get serializationManager => _serializationManager;
+
+  pg.Pool? _pgPool;
+
+  final pg.PoolSettings _poolSettings;
+
+  /// Postgresql connection pool created from configuration.
+  ///
+  /// Throws a [StateError] if the pool has not been started.
+  pg.Pool get pool {
+    var pgPool = _pgPool;
+    if (pgPool == null) {
+      throw StateError('Database pool not started.');
+    }
+
+    return pgPool;
+  }
+
+  @override
+  PostgresValueEncoder get encoder => PostgresValueEncoder();
+
+  /// Creates a new [PostgresPoolManager]. Typically, this is done automatically
+  /// when starting the [Server].
+  PostgresPoolManager(
+    SerializationManagerServer serializationManager,
+    RuntimeParametersListBuilder? runtimeParametersBuilder,
+    this.config,
+  ) : _poolSettings = pg.PoolSettings(
+        maxConnectionCount: config.maxConnectionCount,
+        queryTimeout: const Duration(minutes: 1),
+        sslMode: config.requireSsl ? pg.SslMode.require : pg.SslMode.disable,
+        typeRegistry: pg.TypeRegistry(encoders: [pgvectorEncoder]),
+        onOpen: (connection) async {
+          var parameters =
+              runtimeParametersBuilder?.call(RuntimeParametersBuilder()) ?? [];
+
+          if (!parameters.any((p) => p is SearchPathsConfig) &&
+              config.searchPaths != null &&
+              config.searchPaths!.isNotEmpty) {
+            parameters.add(
+              SearchPathsConfig(searchPaths: config.searchPaths),
+            );
+          }
+
+          var setParametersStatements = parameters
+              .map((p) => p.buildStatements(isLocal: false))
+              .expand((e) => e);
+          if (setParametersStatements.isNotEmpty) {
+            for (var statement in setParametersStatements) {
+              await connection.execute(statement);
+            }
+          }
+        },
+      ) {
+    _serializationManager = serializationManager;
+  }
+
+  @override
+  void start() {
+    // Setup database connection pool
+    _pgPool ??= pg.Pool.withEndpoints(
+      [
+        pg.Endpoint(
+          host: config.host,
+          port: config.port,
+          database: config.name,
+          username: config.user,
+          password: config.password,
+          isUnixSocket: config.isUnixSocket,
+        ),
+      ],
+      settings: _poolSettings,
+    );
+  }
+
+  @override
+  Future<void> stop() async {
+    await _pgPool?.close();
+    _pgPool = null;
+  }
+
+  @override
+  Future<bool> testConnection() async {
+    await pool.execute(
+      'SELECT 1;',
+      timeout: const Duration(seconds: 2),
+    );
+    return true;
+  }
+}

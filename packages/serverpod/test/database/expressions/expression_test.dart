@@ -1,8 +1,8 @@
-import 'package:serverpod/src/database/adapters/postgres/value_encoder.dart';
-import 'package:serverpod/src/database/concepts/columns.dart';
-import 'package:serverpod/src/database/concepts/expressions.dart';
-import 'package:serverpod/src/database/concepts/table.dart';
-import 'package:serverpod/src/database/interface/value_encoder.dart';
+import 'package:serverpod_database/src/adapters/postgres/value_encoder.dart';
+import 'package:serverpod_database/src/concepts/columns.dart';
+import 'package:serverpod_database/src/concepts/expressions.dart';
+import 'package:serverpod_database/src/concepts/table.dart';
+import 'package:serverpod_database/src/interface/value_encoder.dart';
 import 'package:test/test.dart';
 
 void main() {

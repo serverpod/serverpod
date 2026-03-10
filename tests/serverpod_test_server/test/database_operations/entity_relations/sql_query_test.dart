@@ -1,4 +1,4 @@
-import 'package:serverpod/src/database/adapters/postgres/sql_query_builder.dart';
+import 'package:serverpod_database/src/adapters/postgres/sql_query_builder.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
@@ -16,19 +16,16 @@ void main() {
 
       expect(
         query,
-        '''
-SELECT
- "citizen"."id" AS "citizen.id",
- "citizen"."name" AS "citizen.name",
- "citizen"."companyId" AS "citizen.companyId",
- "citizen"."oldCompanyId" AS "citizen.oldCompanyId",
- "citizen_company_company"."id" AS "citizen_company_company.id",
- "citizen_company_company"."name" AS "citizen_company_company.name",
- "citizen_company_company"."townId" AS "citizen_company_company.townId" 
-FROM "citizen" 
-LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id"
-'''
-            .replaceAll("\n", ""),
+        'SELECT'
+        ' "citizen"."id" AS "citizen.id",'
+        ' "citizen"."name" AS "citizen.name",'
+        ' "citizen"."companyId" AS "citizen.companyId",'
+        ' "citizen"."oldCompanyId" AS "citizen.oldCompanyId",'
+        ' "citizen_company_company"."id" AS "citizen_company_company.id",'
+        ' "citizen_company_company"."name" AS "citizen_company_company.name",'
+        ' "citizen_company_company"."townId" AS "citizen_company_company.townId" '
+        'FROM "citizen" '
+        'LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id"',
       );
     });
   });

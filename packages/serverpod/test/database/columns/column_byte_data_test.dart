@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:serverpod/database.dart';
+import 'package:serverpod_database/src/adapters/postgres/value_encoder.dart';
 import 'package:test/test.dart';
 
 void main() {

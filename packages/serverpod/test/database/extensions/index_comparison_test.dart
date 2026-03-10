@@ -1,10 +1,8 @@
-import 'package:serverpod/src/database/adapters/postgres/value_encoder.dart';
-import 'package:serverpod/src/database/extensions.dart';
-import 'package:serverpod/src/database/interface/value_encoder.dart';
-import 'package:serverpod/src/database/migrations/table_comparison_warning.dart';
+import 'package:serverpod_database/serverpod_database.dart';
+import 'package:serverpod_database/src/adapters/postgres/value_encoder.dart';
+import 'package:serverpod_database/src/extensions.dart';
+import 'package:serverpod_database/src/migrations/table_comparison_warning.dart';
 import 'package:test/test.dart';
-
-import 'package:serverpod/protocol.dart';
 
 void main() {
   ValueEncoder.set(PostgresValueEncoder());

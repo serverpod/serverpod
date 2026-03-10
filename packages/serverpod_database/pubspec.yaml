@@ -12,6 +12,10 @@ environment:
   sdk: '^3.8.0'
 
 dependencies:
+  collection: ^1.18.0
+  meta: ^1.15.0
+  path: ^1.8.3
+  postgres: ^3.4.0
   serverpod_serialization: 3.4.3
   serverpod_shared: 3.4.3
 

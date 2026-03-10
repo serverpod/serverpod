@@ -1,5 +1,5 @@
 import 'package:serverpod/database.dart';
-import 'package:serverpod/src/database/concepts/table_relation.dart';
+import 'package:serverpod_database/src/adapters/postgres/value_encoder.dart';
 import 'package:test/test.dart';
 
 void main() {

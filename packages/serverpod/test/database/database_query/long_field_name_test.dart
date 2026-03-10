@@ -1,5 +1,6 @@
 import 'package:serverpod/database.dart';
-import 'package:serverpod/src/database/adapters/postgres/sql_query_builder.dart';
+import 'package:serverpod_database/src/adapters/postgres/sql_query_builder.dart';
+import 'package:serverpod_database/src/adapters/postgres/value_encoder.dart';
 import 'package:test/test.dart';
 
 class TableWithMaxFieldName extends Table<int?> {
