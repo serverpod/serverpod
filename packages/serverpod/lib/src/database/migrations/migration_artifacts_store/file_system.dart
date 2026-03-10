@@ -203,18 +203,12 @@ class FileSystemMigrationArtifactStore implements MigrationArtifactStore {
     }
   }
 
-  static Future<String?> _readFileIfExists(File file) async {
-    if (!await file.exists()) {
-      return null;
-    }
-
-    return file.readAsString();
-  }
-
   static Future<String> _readRequiredFile(File file) async {
-    var contents = await _readFileIfExists(file);
-    if (contents == null) {
-      throw Exception('Required migration artifact is missing: ${file.path}');
+    var contents = (await file.exists()) ? await file.readAsString() : null;
+    if (contents == null || contents.isEmpty) {
+      throw FileNotFoundException(
+        message: 'Required migration artifact is missing: ${file.path}',
+      );
     }
     return contents;
   }
