@@ -228,7 +228,7 @@ extension ColumnTypeComparison on ColumnType {
 
 extension DatabaseDefinitionSqlGeneration on DatabaseDefinition {
   String toSql({
-    required List<DatabaseMigrationVersion> installedModules,
+    required List<DatabaseMigrationVersionModel> installedModules,
     required DatabaseDialect dialect,
   }) {
     return SqlGenerator.forDialect(dialect).generateDatabaseDefinitionSql(
@@ -240,8 +240,8 @@ extension DatabaseDefinitionSqlGeneration on DatabaseDefinition {
 
 extension DatabaseMigrationSqlGeneration on DatabaseMigration {
   String toSql({
-    required List<DatabaseMigrationVersion> installedModules,
-    required List<DatabaseMigrationVersion> removedModules,
+    required List<DatabaseMigrationVersionModel> installedModules,
+    required List<DatabaseMigrationVersionModel> removedModules,
     required DatabaseDialect dialect,
   }) {
     return SqlGenerator.forDialect(dialect).generateDatabaseMigrationSql(

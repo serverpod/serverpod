@@ -236,7 +236,7 @@ class InsightsEndpoint extends Endpoint {
       Directory.current,
     ).listAvailableVersions();
 
-    var latestAvailableMigrations = <DatabaseMigrationVersion>[];
+    var latestAvailableMigrations = <DatabaseMigrationVersionModel>[];
     if (versions.isNotEmpty) {
       var version = versions.last;
       var file = MigrationConstants.databaseDefinitionJSONPath(

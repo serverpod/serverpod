@@ -87,7 +87,7 @@ class MigrationGenerator {
     );
 
     var versionName = createVersionName(tag);
-    var nextMigrationVersion = DatabaseMigrationVersion(
+    var nextMigrationVersion = DatabaseMigrationVersionModel(
       module: projectName,
       version: versionName,
     );
@@ -219,13 +219,13 @@ class MigrationGenerator {
 
     var installedModules = [
       ...dstDatabase.installedModules,
-      DatabaseMigrationVersion(
+      DatabaseMigrationVersionModel(
         module: MigrationConstants.repairMigrationModuleName,
         version: repairMigrationName,
       ),
     ];
 
-    List<DatabaseMigrationVersion> removedModules = _removedModulesDiff(
+    List<DatabaseMigrationVersionModel> removedModules = _removedModulesDiff(
       liveDatabase.installedModules,
       installedModules,
     );
@@ -253,9 +253,9 @@ class MigrationGenerator {
     }
   }
 
-  List<DatabaseMigrationVersion> _removedModulesDiff(
-    List<DatabaseMigrationVersion> preInstalledModules,
-    List<DatabaseMigrationVersion> postInstalledModules,
+  List<DatabaseMigrationVersionModel> _removedModulesDiff(
+    List<DatabaseMigrationVersionModel> preInstalledModules,
+    List<DatabaseMigrationVersionModel> postInstalledModules,
   ) {
     var removedModules = preInstalledModules
         .where(
@@ -356,7 +356,7 @@ class MigrationGenerator {
   DatabaseDefinition _mergeDatabaseDefinitions(
     DatabaseDefinition databaseDefinitionProject,
     Iterable<DatabaseDefinition> databaseDefinitions,
-    DatabaseMigrationVersion nextProjectMigrationVersion,
+    DatabaseMigrationVersionModel nextProjectMigrationVersion,
   ) {
     var tables = [
       ...databaseDefinitionProject.tables,
@@ -396,8 +396,8 @@ class MigrationGenerator {
   File _writeRepairMigration(
     String repairMigrationName,
     DatabaseMigration migration,
-    List<DatabaseMigrationVersion> installedModules,
-    List<DatabaseMigrationVersion> removedModules,
+    List<DatabaseMigrationVersionModel> installedModules,
+    List<DatabaseMigrationVersionModel> removedModules,
     DatabaseDialect dialect,
   ) {
     var repairMigrationSql = migration.toSql(
@@ -522,8 +522,8 @@ class MigrationVersion {
   }
 
   Future<void> write({
-    required List<DatabaseMigrationVersion> installedModules,
-    required List<DatabaseMigrationVersion> removedModules,
+    required List<DatabaseMigrationVersionModel> installedModules,
+    required List<DatabaseMigrationVersionModel> removedModules,
     required DatabaseDialect dialect,
   }) async {
     var migrationDirectory = MigrationConstants.migrationVersionDirectory(

@@ -1,4 +1,3 @@
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 

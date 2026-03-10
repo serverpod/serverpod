@@ -1,4 +1,3 @@
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 

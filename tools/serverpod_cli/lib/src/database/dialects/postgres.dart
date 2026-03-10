@@ -12,7 +12,7 @@ class PostgresSqlGenerator implements SqlGenerator {
   @override
   String generateDatabaseDefinitionSql(
     DatabaseDefinition databaseDefinition, {
-    required List<DatabaseMigrationVersion> installedModules,
+    required List<DatabaseMigrationVersionModel> installedModules,
   }) {
     return databaseDefinition.toPgSql(
       installedModules: installedModules,
@@ -22,8 +22,8 @@ class PostgresSqlGenerator implements SqlGenerator {
   @override
   String generateDatabaseMigrationSql(
     DatabaseMigration databaseMigration, {
-    required List<DatabaseMigrationVersion> installedModules,
-    required List<DatabaseMigrationVersion> removedModules,
+    required List<DatabaseMigrationVersionModel> installedModules,
+    required List<DatabaseMigrationVersionModel> removedModules,
   }) {
     return databaseMigration.toPgSql(
       installedModules: installedModules,
@@ -48,7 +48,9 @@ class PostgresSqlGenerator implements SqlGenerator {
 // SQL generation
 //
 extension PostgresDatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
-  String toPgSql({required List<DatabaseMigrationVersion> installedModules}) {
+  String toPgSql({
+    required List<DatabaseMigrationVersionModel> installedModules,
+  }) {
     String out = '';
 
     var tableCreation = '';
@@ -333,8 +335,8 @@ extension on ForeignKeyAction {
 
 extension PostgresDatabaseMigrationPgSqlGenerator on DatabaseMigration {
   String toPgSql({
-    required List<DatabaseMigrationVersion> installedModules,
-    required List<DatabaseMigrationVersion> removedModules,
+    required List<DatabaseMigrationVersionModel> installedModules,
+    required List<DatabaseMigrationVersionModel> removedModules,
   }) {
     var out = '';
 
@@ -561,7 +563,7 @@ String _sqlStoreMigrationVersion({
   return out;
 }
 
-String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersion> modules) {
+String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersionModel> modules) {
   var moduleNames = modules.map((e) => "'${e.module}'").toList().join(', ');
   String out = '';
   out += '--\n';

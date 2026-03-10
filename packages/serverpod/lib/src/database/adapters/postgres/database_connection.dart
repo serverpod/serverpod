@@ -17,7 +17,7 @@ import 'package:serverpod/src/database/concepts/row_lock.dart';
 import 'package:serverpod/src/database/concepts/runtime_parameters.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
-import 'package:serverpod/src/generated/database/enum_serialization.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod/src/generated/log_level.dart';
 import 'package:uuid/uuid.dart';
 

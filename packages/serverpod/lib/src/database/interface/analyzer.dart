@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:serverpod_database/serverpod_database.dart' hide Protocol;
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../generated/protocol.dart';

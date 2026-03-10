@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:serverpod/protocol.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/extensions.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
