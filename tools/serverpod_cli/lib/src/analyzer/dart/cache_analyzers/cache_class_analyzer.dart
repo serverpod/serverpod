@@ -35,7 +35,8 @@ class CacheClassAnalyzer {
 
     var constructor = constructors.first;
     var parameters = constructor.formalParameters;
-    if (parameters.length != 1 || parameters.first.type.element?.name != 'Caches') {
+    if (parameters.length != 1 ||
+        parameters.first.type.element?.name != 'Caches') {
       collector?.addError(
         SourceSpanSeverityException(
           'Custom cache constructors must accept exactly one parameter of type Caches.'

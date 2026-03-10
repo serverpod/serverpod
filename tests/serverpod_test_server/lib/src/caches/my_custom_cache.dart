@@ -1,8 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 
 class MyCustomCache extends Cache {
-  MyCustomCache(Caches caches)
-    : super(10000, caches.serializationManager);
+  MyCustomCache(Caches caches) : super(10000, caches.serializationManager);
 
   @override
   Future<void> clear() async {}

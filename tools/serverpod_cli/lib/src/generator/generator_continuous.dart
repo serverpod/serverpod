@@ -49,7 +49,8 @@ Future<bool> performGenerateContinuously({
       event.path,
     });
 
-    var shouldGenerate = shouldGenerateEndpoints ||
+    var shouldGenerate =
+        shouldGenerateEndpoints ||
         shouldGenerateFutureCalls ||
         shouldGenerateCaches;
 
