@@ -25,7 +25,7 @@ class WebServer {
   int? _actualPort;
 
   late final _app = RelicApp(useHostWhenRouting: true)
-    ..get('*/__dev/version', _devVersion)
+    ..get('*/__dev/version', _devStaticChangeCount)
     ..use('*/', _devHtmlInjection)
     ..inject(_ReportExceptionMiddleware(this))
     ..inject(_SessionMiddleware(serverpod.server));
@@ -54,7 +54,7 @@ class WebServer {
 
   bool _running = false;
   bool? _devModeOverride;
-  int _lastReloadCount = 0;
+  int _lastStaticChangeCount = 0;
 
   /// Returns true if the webserver is currently running.
   bool get running => _running;
@@ -208,18 +208,18 @@ class WebServer {
     stdout.writeln('$now WebServer DEBUG: $msg');
   }
 
-  FutureOr<Result> _devVersion(Request _) {
+  FutureOr<Result> _devStaticChangeCount(Request _) {
     if (!_isDevMode) return Response.notFound();
     return Response.ok(
       body: Body.fromString('${_app.developerTools.staticChangeCount}'),
     );
   }
 
-  /// Reloads templates from disk if a static file change has been notified.
+  /// Reloads templates from disk if static files have changed.
   Future<void> _reloadTemplatesIfNeeded() async {
     final currentChangeCount = _app.developerTools.staticChangeCount;
-    if (currentChangeCount != _lastReloadCount) {
-      _lastReloadCount = currentChangeCount;
+    if (currentChangeCount != _lastStaticChangeCount) {
+      _lastStaticChangeCount = currentChangeCount;
       templates.clear();
       await templates.loadAll(Directory(path.joinAll(['web', 'templates'])));
     }

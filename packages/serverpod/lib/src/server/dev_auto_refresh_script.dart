@@ -1,7 +1,8 @@
 /// JavaScript snippet injected into HTML responses in dev mode.
 ///
-/// Polls the `/__dev/version` endpoint and reloads the page when the
-/// version changes (indicating a hot reload has occurred).
+/// Polls the `/__dev/version` endpoint and refreshes the page when the
+/// static change counter changes (indicating static files like HTML, CSS,
+/// or JS were modified).
 const devAutoRefreshScript = '''
 <script>
 (function() {

@@ -44,7 +44,7 @@ void main() {
 
     test(
       'when GET /__dev/version is called, '
-      'then it returns the reload count as text',
+      'then it returns the static change count as text',
       () async {
         final response = await http.get(
           Uri.parse('http://localhost:$port/__dev/version'),
