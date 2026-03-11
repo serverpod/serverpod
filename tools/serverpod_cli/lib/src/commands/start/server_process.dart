@@ -124,9 +124,15 @@ class ServerProcess {
     // signals (SIGINT) are delivered to both processes by the OS. Forwarding
     // SIGINT would cause double-delivery, which triggers Serverpod's force-exit.
     // Only forward SIGTERM, which is sent to a specific process (e.g. by kill).
-    _sigtermSub = ProcessSignal.sigterm.watch().listen(
-      (_) => process.kill(ProcessSignal.sigterm),
-    );
+    // SIGTERM is not supported on Windows, so skip signal forwarding there.
+    // TODO: On Windows the child process is not terminated when the parent
+    // exits. Consider using a Job Object (via FFI) to tie child lifetime
+    // to the parent.
+    if (!Platform.isWindows) {
+      _sigtermSub = ProcessSignal.sigterm.watch().listen(
+        (_) => process.kill(ProcessSignal.sigterm),
+      );
+    }
 
     // Forward process output without exclusively binding the sinks,
     // so that the CLI logger can still write to stdout/stderr.
