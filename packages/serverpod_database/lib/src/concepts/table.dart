@@ -1,6 +1,7 @@
-import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod_database/src/concepts/table_relation.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+
+import '../../serverpod_database.dart';
+import 'table_relation.dart';
 
 /// Holds data corresponding to a row in the database. Concrete classes are
 /// typically generated. Instances of [TableRow] can also be serialized and

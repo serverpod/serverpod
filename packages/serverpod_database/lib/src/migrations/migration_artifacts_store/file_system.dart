@@ -1,9 +1,10 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+
+import '../../../serverpod_database.dart';
 
 /// Stores migration artifacts using the current file-system based format.
 class FileSystemMigrationArtifactStore implements MigrationArtifactStore {

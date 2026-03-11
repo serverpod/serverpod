@@ -1,5 +1,4 @@
-import 'package:serverpod_database/src/concepts/column_value.dart';
-import 'package:serverpod_database/src/concepts/table.dart';
+import '../../serverpod_database.dart';
 
 /// Base class for database table update operations.
 ///

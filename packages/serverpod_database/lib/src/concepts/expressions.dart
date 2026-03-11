@@ -1,4 +1,4 @@
-import 'package:serverpod_database/serverpod_database.dart';
+import '../../serverpod_database.dart';
 
 /// A function that returns an [Expression] for a [Table] to be used with where
 /// clauses.

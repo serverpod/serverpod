@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod_database/src/extensions.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+
+import '../serverpod_database.dart';
 
 /// Provides a way to export raw data from the database. The data is serialized
 /// using JSON. Primarily used for Serverpod Insights.

@@ -1,5 +1,5 @@
-import '../database.dart';
 import '../concepts/transaction.dart';
+import '../database.dart';
 
 /// Provides utility functions for working with the [Database].
 abstract class DatabaseUtil {

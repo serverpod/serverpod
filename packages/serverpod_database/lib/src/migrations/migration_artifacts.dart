@@ -1,5 +1,6 @@
-import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+
+import '../../serverpod_database.dart';
 
 /// A semantic representation of a migration version and its persisted artifacts.
 class MigrationVersionArtifacts {

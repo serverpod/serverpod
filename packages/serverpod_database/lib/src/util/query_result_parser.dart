@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
-import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+
+import '../../serverpod_database.dart';
 
 /// Prepares a query result for serverpod serialization.
 /// This is typically only used internally by the serverpod framework.

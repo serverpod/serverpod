@@ -1,9 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
-import 'package:serverpod_database/serverpod_database.dart';
 
+import '../../serverpod_database.dart';
 import '../migrations/table_comparison_warning.dart';
-import '../extensions.dart';
 
 /// A function that writes a warning message.
 typedef MigrationWarningWriter = void Function(String message);

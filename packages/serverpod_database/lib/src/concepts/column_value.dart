@@ -1,5 +1,5 @@
-import 'package:serverpod_database/src/concepts/columns.dart';
-import 'package:serverpod_database/src/concepts/update_table.dart';
+import 'columns.dart';
+import 'update_table.dart';
 
 /// A function that returns a list of [ColumnValue]s for a [UpdateTable].
 typedef ColumnValueListBuilder<T extends UpdateTable> =

@@ -1,8 +1,8 @@
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../adapters/postgres/database_provider.dart';
-import '../database.dart';
 import '../concepts/runtime_parameters.dart';
+import '../database.dart';
 import 'analyzer.dart';
 import 'database_connection.dart';
 import 'database_pool_manager.dart';

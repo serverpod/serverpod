@@ -1,5 +1,4 @@
-import 'package:serverpod_database/src/concepts/columns.dart';
-import 'package:serverpod_database/src/concepts/table.dart';
+import '../../serverpod_database.dart';
 
 /// A function that returns a Column for a Table to be used with order by
 typedef OrderByBuilder<T extends Table> = Column Function(T);

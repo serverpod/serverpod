@@ -1,7 +1,4 @@
-import 'package:serverpod_database/src/concepts/columns.dart';
-import 'package:serverpod_database/src/concepts/expressions.dart';
-import 'package:serverpod_database/src/concepts/order.dart';
-import 'package:serverpod_database/src/concepts/table.dart';
+import '../../serverpod_database.dart';
 
 /// The base include class, should not be used directly.
 abstract class Include {

@@ -1,4 +1,4 @@
-import 'package:serverpod_database/serverpod_database.dart';
+import '../../serverpod_database.dart';
 
 /// Base class for runtime parameters group to apply to the database.
 abstract class RuntimeParameters {

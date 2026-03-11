@@ -1,7 +1,8 @@
 import 'dart:io';
 
-import 'package:serverpod_database/serverpod_database.dart' hide Protocol;
 import 'package:serverpod_shared/serverpod_shared.dart';
+
+import '../../serverpod_database.dart' hide Protocol;
 
 /// Analyzes the structure of [Database]s.
 abstract class DatabaseAnalyzer {

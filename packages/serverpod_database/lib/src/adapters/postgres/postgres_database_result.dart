@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
-import 'package:serverpod_database/src/concepts/database_result.dart';
 import 'package:postgres/postgres.dart' as pg;
+
+import '../../concepts/database_result.dart';
 
 class _PostgresDatabaseResultSchemaColumn
     implements DatabaseResultSchemaColumn {

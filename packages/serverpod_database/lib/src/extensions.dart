@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
-import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod_database/src/migrations/table_comparison_warning.dart';
+
+import '../serverpod_database.dart';
+import 'migrations/table_comparison_warning.dart';
 
 /// Comparison methods for [DatabaseDefinition].
 extension DatabaseComparisons on DatabaseDefinition {

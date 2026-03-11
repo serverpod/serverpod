@@ -2,14 +2,15 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
-import 'package:serverpod_database/src/adapters/postgres/postgres_database_result.dart';
-import 'package:serverpod_database/src/adapters/postgres/postgres_pool_manager.dart';
-import 'package:serverpod_database/src/util/query_result_parser.dart';
-import 'package:serverpod_database/src/adapters/postgres/sql_query_builder.dart';
-import 'package:serverpod_database/src/interface/database_connection.dart';
-import 'package:serverpod_database/src/concepts/table_relation.dart';
-import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+
+import '../../../serverpod_database.dart';
+import '../../concepts/table_relation.dart';
+import '../../interface/database_connection.dart';
+import '../../util/query_result_parser.dart';
+import 'postgres_database_result.dart';
+import 'postgres_pool_manager.dart';
+import 'sql_query_builder.dart';
 
 part 'postgres_exceptions.dart';
 

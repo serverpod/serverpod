@@ -1,6 +1,5 @@
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_database/src/adapters/postgres/value_encoder.dart';
-import 'package:serverpod_database/src/extensions.dart';
 import 'package:serverpod_database/src/migrations/table_comparison_warning.dart';
 import 'package:test/test.dart';
 

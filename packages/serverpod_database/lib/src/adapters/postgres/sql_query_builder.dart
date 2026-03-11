@@ -2,9 +2,10 @@ import 'dart:collection';
 
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
-import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod_database/src/concepts/table_relation.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+
+import '../../../serverpod_database.dart';
+import '../../concepts/table_relation.dart';
 
 /// Builds a SQL query for a select statement.
 /// This is typically only used internally by the serverpod framework.

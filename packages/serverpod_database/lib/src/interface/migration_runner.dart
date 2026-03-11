@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
-import 'package:serverpod_database/serverpod_database.dart';
+
+import '../../serverpod_database.dart';
 
 @internal
 abstract interface class MigrationRunner {

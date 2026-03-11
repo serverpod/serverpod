@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod_database/src/interface/database_connection.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
+
+import '../serverpod_database.dart';
+import 'interface/database_connection.dart';
 
 /// Extension to only expose the [Database] constructor
 /// internally within the package.

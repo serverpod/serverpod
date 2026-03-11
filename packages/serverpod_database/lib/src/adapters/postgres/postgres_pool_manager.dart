@@ -1,10 +1,10 @@
 import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
-import 'package:serverpod_database/src/concepts/runtime_parameters.dart';
-import 'package:serverpod_database/src/interface/database_pool_manager.dart';
-import 'package:serverpod_database/src/interface/serialization_manager.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
+import '../../concepts/runtime_parameters.dart';
+import '../../interface/database_pool_manager.dart';
+import '../../interface/serialization_manager.dart';
 import 'pgvector_encoder.dart';
 import 'value_encoder.dart';
 
