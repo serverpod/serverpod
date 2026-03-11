@@ -24,13 +24,13 @@ class WebServer {
 
   int? _actualPort;
 
-  late final _app = RelicApp(useHostWhenRouting: true)
+  RelicApp? _appOrNull;
+
+  RelicApp get _app => _appOrNull ??= RelicApp(useHostWhenRouting: true)
     ..get('*/__dev/version', _devStaticChangeCount)
     ..use('*/', _devHtmlInjection)
     ..inject(_ReportExceptionMiddleware(this))
     ..inject(_SessionMiddleware(serverpod.server));
-
-  RelicServer? _server;
 
   /// Security context if the web server is running over https.
   final SecurityContext? _securityContext;
@@ -59,7 +59,8 @@ class WebServer {
   /// Returns true if the webserver is currently running.
   bool get running => _running;
 
-  bool get _isDevMode => _devModeOverride ?? _app.developerTools.isDevMode;
+  bool get _isDevMode =>
+      _devModeOverride ?? (_appOrNull?.developerTools.isDevMode ?? false);
 
   /// Adds [route] to the server at [path].
   ///
@@ -121,10 +122,13 @@ class WebServer {
       );
 
   /// Get access to the full [RelicRouter] for advanced use-cases.
-  RelicRouter get router => _app;
+  RelicRouter get router => _appOrNull!;
 
-  /// Returns true if the webserver has any routes registered.
-  bool get hasRoutes => !_app.isEmpty;
+  /// Whether the [RelicApp] has been created.
+  ///
+  /// The app is created lazily on first route or middleware registration.
+  /// When `true`, [start] will serve the app and [stop] will close it.
+  bool get hasApp => _appOrNull != null;
 
   /// Starts the webserver.
   /// Returns true if the webserver was started successfully.
@@ -143,7 +147,6 @@ class WebServer {
         port: _config.port,
         securityContext: _securityContext,
       );
-      _server = server;
       _actualPort = server.port;
       _running = true;
 
@@ -250,11 +253,7 @@ class WebServer {
 
   /// Stops the webserver.
   Future<void> stop() async {
-    final server = _server;
-    if (server != null) {
-      _server = null;
-      await server.close();
-    }
+    await _appOrNull?.close();
     _running = false;
   }
 

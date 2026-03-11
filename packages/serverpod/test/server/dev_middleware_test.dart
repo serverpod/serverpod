@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/protocol.dart' as internal;
@@ -7,6 +9,13 @@ import 'package:test/test.dart';
 class _EmptyEndpoints extends EndpointDispatch {
   @override
   void initializeEndpoints(Server server) {}
+}
+
+class _DummyRoute extends Route {
+  @override
+  FutureOr<Result> handleCall(Session session, Request request) {
+    return Response.ok();
+  }
 }
 
 void main() {
@@ -32,6 +41,7 @@ void main() {
         ),
       );
 
+      pod.webServer.addRoute(_DummyRoute(), '/dummy');
       pod.webServer.setDevModeForTesting(true);
 
       await pod.start();
@@ -71,6 +81,7 @@ void main() {
         ),
       );
 
+      pod.webServer.addRoute(_DummyRoute(), '/dummy');
       pod.webServer.setDevModeForTesting(false);
 
       await pod.start();
