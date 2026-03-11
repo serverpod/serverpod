@@ -7,7 +7,7 @@ import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/util/path_util.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import '../../serverpod.dart';
+import '../../serverpod.dart' hide Cache;
 import '../cache/cache.dart';
 import '../generated/protocol.dart';
 
