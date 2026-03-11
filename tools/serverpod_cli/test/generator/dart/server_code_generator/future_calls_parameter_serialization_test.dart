@@ -1,10 +1,12 @@
 import 'package:path/path.dart' as path;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/model_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
+import '../../../test_util/builders/enum_definition_builder.dart';
 import '../../../test_util/builders/future_call_definition_builder.dart';
 import '../../../test_util/builders/future_call_method_definition_builder.dart';
 import '../../../test_util/builders/future_call_parameter_definition_builder.dart';
@@ -149,6 +151,100 @@ void main() {
           ),
         );
       });
+    },
+  );
+
+  group(
+    'Given a future call serializable model with an enum field parameter',
+    () {
+      var modelWithEnumName = 'example_with_enum_model';
+      var expectedEnumModelFileName = path.join(
+        'lib',
+        'src',
+        'generated',
+        'future_calls_generated_models',
+        '$modelWithEnumName.dart',
+      );
+
+      late Map<String, String> modelCodeMap;
+      late String? modelFile;
+
+      setUpAll(() {
+        final enumDefinition = EnumDefinitionBuilder()
+            .withClassName('MyTriggerType')
+            .withFileName('my_trigger_type')
+            .build();
+
+        // Simulate the state produced by TypeDefinition.fromDartType():
+        // the enum field type has no enumDefinition set yet.
+        final parameters = [
+          ParameterDefinitionBuilder()
+              .withName('triggerType')
+              .withType(
+                TypeDefinitionBuilder()
+                    .withClassName('MyTriggerType')
+                    // NOTE: enumDefinition intentionally not set here,
+                    // simulating what FutureCallsAnalyzer.analyzeModels() produces.
+                    .build(),
+              )
+              .build(),
+        ];
+
+        final futureCallParameter = FutureCallParameterDefinitionBuilder()
+            .withName(modelWithEnumName.pascalCase)
+            .withType(
+              TypeDefinitionBuilder()
+                  .withClassName(modelWithEnumName.pascalCase)
+                  .build(),
+            )
+            .withParameters(parameters)
+            .build();
+
+        final futureCallModel = futureCallParameter.toSerializableModel();
+
+        // Merge models as generator.dart does, then resolve dependencies.
+        // This simulates the fix: calling resolveModelDependencies after
+        // merging regular models with futureCallModels.
+        final allModels = [enumDefinition, futureCallModel];
+        SerializableModelAnalyzer.resolveModelDependencies(allModels);
+
+        modelCodeMap = generator.generateSerializableModelsCode(
+          models: [futureCallModel],
+          config: GeneratorConfigBuilder().build(),
+        );
+
+        modelFile = modelCodeMap[expectedEnumModelFileName];
+      });
+
+      test('when generating code then the serializable model file is generated', () {
+        expect(modelCodeMap, contains(expectedEnumModelFileName));
+      });
+
+      test(
+        'when generating code then the generated copyWith does not call copyWith on the enum field',
+        () {
+          expect(modelFile, isNotNull);
+          expect(
+            modelFile,
+            isNot(contains('triggerType.copyWith()')),
+            reason:
+                'Enum fields must not have copyWith() called on them in the generated model',
+          );
+        },
+      );
+
+      test(
+        'when generating code then the generated copyWith uses the enum field directly',
+        () {
+          expect(modelFile, isNotNull);
+          expect(
+            modelFile,
+            contains('triggerType: triggerType ?? this.triggerType'),
+            reason:
+                'Enum fields should be assigned directly in the generated copyWith',
+          );
+        },
+      );
     },
   );
 }

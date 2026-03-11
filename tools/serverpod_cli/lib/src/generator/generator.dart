@@ -37,6 +37,8 @@ Future<bool> performGenerate({
     ...futureCallModels,
   ];
 
+  SerializableModelAnalyzer.resolveModelDependencies(allModels);
+
   final generatedModelFiles =
       await ServerpodCodeGenerator.generateSerializableModels(
         models: allModels,
