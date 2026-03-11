@@ -61,6 +61,10 @@ import 'package:serverpod_test_server/src/generated/future_calls_generated_model
 import 'package:serverpod_test_server/src/generated/future_calls.dart' as _i32;
 import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_bye_model.dart'
     as _i33;
+import 'package:serverpod_test_server/src/generated/my_trigger_type.dart'
+    as _i34;
+import 'package:serverpod_test_server/src/generated/future_calls_generated_models/test_generated_call_execute_with_trigger_model.dart'
+    as _i35;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -15628,6 +15632,27 @@ class _TestGeneratedCallFutureCall {
       await _i32.TestGeneratedCallDoTaskFutureCall().invoke(
         _localUniqueSession,
         null,
+      );
+    } finally {
+      await _localUniqueSession.close();
+    }
+  }
+
+  Future<void> executeWithTrigger(
+    _i1.TestSessionBuilder sessionBuilder,
+    String entityId, {
+    required _i34.MyTriggerType triggerType,
+  }) async {
+    var object = _i35.TestGeneratedCallExecuteWithTriggerModel(
+      entityId: entityId,
+      triggerType: triggerType,
+    );
+    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
+        .internalBuild();
+    try {
+      await _i32.TestGeneratedCallExecuteWithTriggerFutureCall().invoke(
+        _localUniqueSession,
+        object,
       );
     } finally {
       await _localUniqueSession.close();
