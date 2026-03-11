@@ -2001,7 +2001,13 @@ extension on TypeDefinition {
               'mapContainerToJson($name.${namedField.recordFieldName!})',
             )
           else
-            Code('$name.${namedField.recordFieldName!}'),
+            Code(
+              namedField.isSerializedValue
+                  ? '$name.${namedField.recordFieldName!}'
+                  : namedField.nullable
+                  ? '$name.${namedField.recordFieldName!}?.toJson()'
+                  : '$name.${namedField.recordFieldName!}.toJson()',
+            ),
           const Code(','),
         ],
         const Code('},'),
