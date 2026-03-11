@@ -10,10 +10,10 @@ import 'package:vm_service/vm_service_io.dart';
 
 /// Converts a VM service HTTP URI to a WebSocket URI.
 String vmServiceWsUri(String httpUri) {
-  final wsUri = httpUri
-      .replaceFirst('http://', 'ws://')
-      .replaceFirst('https://', 'wss://');
-  return wsUri.endsWith('/') ? '${wsUri}ws' : '$wsUri/ws';
+  final uri = Uri.parse(httpUri);
+  final wsScheme = uri.isScheme('https') ? 'wss' : 'ws';
+  final base = uri.replace(scheme: wsScheme).toString();
+  return base.endsWith('/') ? '${base}ws' : '$base/ws';
 }
 
 /// Callback for IDE-initiated reload requests.
@@ -295,23 +295,35 @@ class ServerProcess {
     return null;
   }
 
-  Future<void> _cleanup() async {
-    // Guard: both start() and stop() may call _cleanup() concurrently.
-    if (_process == null) return;
-    _process = null;
-    await _vmService?.dispose();
-    _vmService = null;
-    _mainIsolateId = null;
-    await _stdoutSub?.cancel();
-    await _stderrSub?.cancel();
-    await _sigtermSub?.cancel();
-    _stdoutSub = null;
-    _stderrSub = null;
-    _sigtermSub = null;
+  Completer<void>? _cleanupCompleter;
 
-    // Clean up the service info file so stale URIs are not picked up.
-    if (_vmServiceInfoFile != null) {
-      await File(_vmServiceInfoFile).deleteIfExists();
+  Future<void> _cleanup() async {
+    // Guard: both start()'s exit listener and stop() may call _cleanup().
+    // Use a completer so the second caller awaits the first cleanup.
+    if (_cleanupCompleter != null) return _cleanupCompleter!.future;
+    if (_process == null) return;
+
+    final completer = Completer<void>();
+    _cleanupCompleter = completer;
+
+    try {
+      _process = null;
+      await _vmService?.dispose();
+      _vmService = null;
+      _mainIsolateId = null;
+      await _stdoutSub?.cancel();
+      await _stderrSub?.cancel();
+      await _sigtermSub?.cancel();
+      _stdoutSub = null;
+      _stderrSub = null;
+      _sigtermSub = null;
+
+      // Clean up the service info file so stale URIs are not picked up.
+      if (_vmServiceInfoFile != null) {
+        await File(_vmServiceInfoFile).deleteIfExists();
+      }
+    } finally {
+      completer.complete();
     }
   }
 }

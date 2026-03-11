@@ -227,9 +227,11 @@ class WebServer {
 
   Handler _devHtmlInjection(Handler next) {
     return (req) async {
+      if (!_isDevMode) return next(req);
+
+      // Reload templates before serving so changes are picked up immediately.
       await _reloadTemplatesIfNeeded();
       final result = await next(req);
-      if (!_isDevMode) return result;
       if (result is! Response || result.statusCode != 200) return result;
 
       final mimeType = result.body.bodyType?.mimeType;

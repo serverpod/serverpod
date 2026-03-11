@@ -43,6 +43,10 @@ class WatchSession {
        _generate = generate,
        _createServer = createServer,
        _server = initialServer {
+    assert(
+      (compiler == null) == (createServer == null),
+      'compiler and createServer must both be provided or both be null.',
+    );
     _monitorExit(initialServer);
   }
 
