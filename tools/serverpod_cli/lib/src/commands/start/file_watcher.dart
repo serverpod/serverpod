@@ -76,7 +76,7 @@ class FileWatcher {
         : StreamGroup.merge(_watchers.map((w) => w.events));
 
     return mergedStream
-        .where((e) => !e.path.contains(_ignorePath))
+        .where((e) => !p.isWithin(_ignorePath, e.path))
         .debounceBuffer(debounceDelay)
         .map((events) {
           final dartFiles = <String>{};

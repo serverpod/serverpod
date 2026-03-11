@@ -58,10 +58,11 @@ class KernelCompiler {
   /// If a full compile is needed (after [start], [reset], or [restart]),
   /// [changedPaths] is ignored and a complete kernel is produced.
   /// Otherwise, performs an incremental recompile for [changedPaths].
-  Future<CompileResult> compile({Set<String> changedPaths = const {}}) {
+  Future<CompileResult> compile({Set<String> changedPaths = const {}}) async {
     if (_needsFullCompile) {
+      final result = await _client.compile();
       _needsFullCompile = false;
-      return _client.compile();
+      return result;
     }
 
     final invalidatedUris = changedPaths.map(Uri.file).toList();

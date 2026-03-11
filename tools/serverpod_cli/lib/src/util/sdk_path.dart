@@ -41,9 +41,8 @@ String _resolveSdkPath() {
   // AOT-compiled: Platform.resolvedExecutable is our own binary, not dart.
   // Shell out to `dart` running a tiny script that prints its own resolved
   // executable path. This works through wrapper scripts, shims, etc.
-  final script = File(
-    p.join(Directory.systemTemp.path, '_serverpod_sdk_probe.dart'),
-  );
+  final tempDir = Directory.systemTemp.createTempSync('serverpod_sdk_probe_');
+  final script = File(p.join(tempDir.path, 'probe.dart'));
   try {
     script.writeAsStringSync(
       'import "dart:io"; void main() => print(Platform.resolvedExecutable);',
@@ -53,7 +52,9 @@ String _resolveSdkPath() {
       return _sdkFromExe((result.stdout as String).trim());
     }
   } finally {
-    if (script.existsSync()) script.deleteSync();
+    try {
+      tempDir.deleteSync(recursive: true);
+    } on FileSystemException catch (_) {}
   }
 
   throw StateError(

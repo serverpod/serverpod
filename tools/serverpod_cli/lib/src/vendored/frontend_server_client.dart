@@ -144,6 +144,20 @@ class FrontendServerClient {
         }
       }
 
+      // If the loop exited before reaching the 'done' state, the FES
+      // process likely crashed. Report this as a compile failure.
+      if (state != _CompileState.done) {
+        return CompileResult._(
+          dillOutput: null,
+          errorCount: 1,
+          compilerOutputLines: [
+            ...compilerOutputLines,
+            'Frontend server exited unexpectedly during compilation.',
+          ],
+          newSources: const {},
+        );
+      }
+
       return CompileResult._(
         dillOutput: outputDillPath,
         errorCount: errorCount,
