@@ -31,6 +31,7 @@ dependencies:
   pub_semver: ^2.1.4
   pubspec_parse: ^1.4.0
   recase: ^4.1.0
+  serverpod_database: SERVERPOD_VERSION
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_service_client: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION

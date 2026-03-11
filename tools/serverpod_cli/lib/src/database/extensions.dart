@@ -1,9 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/database/migration.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
-
-import 'sql_generator.dart';
 
 // Export underlying dialect implementations.
 export 'dialects/postgres.dart';
@@ -226,28 +223,9 @@ extension ColumnTypeComparison on ColumnType {
   }
 }
 
-extension DatabaseDefinitionSqlGeneration on DatabaseDefinition {
-  String toSql({
-    required List<DatabaseMigrationVersionModel> installedModules,
-    required DatabaseDialect dialect,
-  }) {
-    return SqlGenerator.forDialect(dialect).generateDatabaseDefinitionSql(
-      this,
-      installedModules: installedModules,
-    );
-  }
-}
-
-extension DatabaseMigrationSqlGeneration on DatabaseMigration {
-  String toSql({
-    required List<DatabaseMigrationVersionModel> installedModules,
-    required List<DatabaseMigrationVersionModel> removedModules,
-    required DatabaseDialect dialect,
-  }) {
-    return SqlGenerator.forDialect(dialect).generateDatabaseMigrationSql(
-      this,
-      installedModules: installedModules,
-      removedModules: removedModules,
-    );
-  }
+/// Returns the last element of the list, or null if the list is empty.
+///
+/// Used to get the latest migration version from the list of migration versions.
+extension LastOrNullOnListString on List<String> {
+  String? get lastOrNull => isEmpty ? null : last;
 }

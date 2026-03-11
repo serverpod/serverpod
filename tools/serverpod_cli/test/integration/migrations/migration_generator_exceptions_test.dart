@@ -56,7 +56,7 @@ void main() {
                 .having(
                   (e) => e.exception,
                   'Matching exception',
-                  startsWith('PathNotFoundException: Cannot open file'),
+                  contains('Required migration artifact is missing'),
                 ),
           ),
         );
@@ -88,7 +88,7 @@ void main() {
                 .having(
                   (e) => e.exception,
                   'Matching exception',
-                  startsWith('PathNotFoundException: Cannot open file'),
+                  contains('Required migration artifact is missing'),
                 ),
           ),
         );
