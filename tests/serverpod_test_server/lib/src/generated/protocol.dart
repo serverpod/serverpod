@@ -15116,7 +15116,7 @@ class Protocol extends _i1.SerializationManagerServer {
     if (record is ({_i215.SimpleData data, int number})) {
       return {
         "n": {
-          "data": record.data,
+          "data": record.data.toJson(),
           "number": record.number,
         },
       };
@@ -15124,7 +15124,7 @@ class Protocol extends _i1.SerializationManagerServer {
     if (record is ({_i215.SimpleData? data, int? number})) {
       return {
         "n": {
-          "data": record.data,
+          "data": record.data?.toJson(),
           "number": record.number,
         },
       };
@@ -15163,7 +15163,7 @@ class Protocol extends _i1.SerializationManagerServer {
           record.$1,
         ],
         "n": {
-          "data": record.data,
+          "data": record.data.toJson(),
         },
       };
     }
@@ -15252,7 +15252,7 @@ class Protocol extends _i1.SerializationManagerServer {
         ],
         "n": {
           "flag": record.flag,
-          "simpleData": record.simpleData,
+          "simpleData": record.simpleData.toJson(),
         },
       };
     }
@@ -15295,21 +15295,21 @@ class Protocol extends _i1.SerializationManagerServer {
     if (record is ({_i204.TestEnumStringified value})) {
       return {
         "n": {
-          "value": record.value,
+          "value": record.value.toJson(),
         },
       };
     }
     if (record is ({_i4.ModuleClass value})) {
       return {
         "n": {
-          "value": record.value,
+          "value": record.value.toJson(),
         },
       };
     }
     if (record is ({_i154.Nullability value})) {
       return {
         "n": {
-          "value": record.value,
+          "value": record.value.toJson(),
         },
       };
     }
@@ -15319,7 +15319,7 @@ class Protocol extends _i1.SerializationManagerServer {
           record.$1,
         ],
         "n": {
-          "optionalUri": record.optionalUri,
+          "optionalUri": record.optionalUri?.toJson(),
         },
       };
     }
@@ -15417,7 +15417,7 @@ class Protocol extends _i1.SerializationManagerServer {
     if (record is ({_i194.SimpleData namedModel})) {
       return {
         "n": {
-          "namedModel": record.namedModel,
+          "namedModel": record.namedModel.toJson(),
         },
       };
     }
@@ -15427,7 +15427,7 @@ class Protocol extends _i1.SerializationManagerServer {
           record.$1.toJson(),
         ],
         "n": {
-          "namedModel": record.namedModel,
+          "namedModel": record.namedModel.toJson(),
         },
       };
     }
