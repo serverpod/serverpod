@@ -312,7 +312,7 @@ void main() {
           .withClassName('Event')
           .withFileName('event')
           .withSimpleField('description', 'String', nullable: true)
-          .withIsSealed(true) // <= sealed
+          .withIsSealed(true)
           .build();
 
       var child = ModelClassDefinitionBuilder()
