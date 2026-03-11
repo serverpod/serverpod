@@ -4,7 +4,6 @@ import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/annotation.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
@@ -23,7 +22,6 @@ abstract class FutureCallClassAnalyzer {
     String filePath,
     List<FutureCallDefinition> futureCallDefinitions, {
     required DartDocTemplateRegistry templateRegistry,
-    required FutureCallMethodParameterValidator parameterValidator,
   }) {
     var className = element.displayName;
     var futureCallName = _formatFutureCallName(className);
@@ -52,7 +50,6 @@ abstract class FutureCallClassAnalyzer {
         parentFilePath,
         futureCallDefinitions,
         templateRegistry: templateRegistry,
-        parameterValidator: parameterValidator,
       );
     }
 
@@ -69,7 +66,6 @@ abstract class FutureCallClassAnalyzer {
           validationErrors,
           filePath,
           templateRegistry: templateRegistry,
-          parameterValidator: parameterValidator,
         ),
         filePath: filePath,
         annotations: annotations,
@@ -83,7 +79,6 @@ abstract class FutureCallClassAnalyzer {
     Map<String, List<SourceSpanSeverityException>> validationErrors,
     String filePath, {
     required DartDocTemplateRegistry templateRegistry,
-    required FutureCallMethodParameterValidator parameterValidator,
   }) {
     var futureCallMethods = classElement.collectFutureCallMethods(
       validationErrors: validationErrors,

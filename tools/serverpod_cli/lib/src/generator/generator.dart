@@ -25,6 +25,7 @@ Future<bool> performGenerate({
 
   final futureCallModels = await futureCallsAnalyzer.analyzeModels(
     futureCallsModelsAnalyzerCollector,
+    models,
   );
 
   success &= !futureCallsModelsAnalyzerCollector.hasSevereErrors;
@@ -62,6 +63,7 @@ Future<bool> performGenerate({
   var futureCalls = await futureCallsAnalyzer.analyze(
     collector: futureCallsAnalyzerCollector,
     changedFiles: generatedModelFiles.toSet(),
+    analyzedModels: allModels,
   );
 
   success &= !futureCallsAnalyzerCollector.hasSevereErrors;
