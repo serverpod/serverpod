@@ -97,8 +97,8 @@ void main() {
           await File('${tempDir.path}/bin/main.dart').writeAsString('''
 import 'dart:io';
 void main() {
-  ProcessSignal.sigterm.watch().listen((_) => exit(0));
-  // Keep alive.
+  // SIGTERM is not supported on Windows; process.kill() uses TerminateProcess.
+  if (!Platform.isWindows) ProcessSignal.sigterm.watch().listen((_) => exit(0));
   Future.delayed(Duration(hours: 1));
 }
 ''');
@@ -133,7 +133,8 @@ void main() {
           await File('${tempDir.path}/bin/main.dart').writeAsString('''
 import 'dart:io';
 void main() {
-  ProcessSignal.sigterm.watch().listen((_) => exit(0));
+  // SIGTERM is not supported on Windows; process.kill() uses TerminateProcess.
+  if (!Platform.isWindows) ProcessSignal.sigterm.watch().listen((_) => exit(0));
   Future.delayed(Duration(hours: 1));
 }
 ''');
@@ -174,7 +175,8 @@ void main() {
       await File(mainFile).writeAsString('''
 import 'dart:io';
 void main() {
-  ProcessSignal.sigterm.watch().listen((_) => exit(0));
+  // SIGTERM is not supported on Windows; process.kill() uses TerminateProcess.
+  if (!Platform.isWindows) ProcessSignal.sigterm.watch().listen((_) => exit(0));
   Future.delayed(Duration(hours: 1));
 }
 ''');
@@ -204,7 +206,16 @@ void main() {
     });
 
     tearDown(() async {
-      await tempDir.delete(recursive: true);
+      // On Windows, TerminateProcess may not release file handles immediately.
+      for (var i = 0; ; i++) {
+        try {
+          await tempDir.delete(recursive: true);
+          break;
+        } on FileSystemException {
+          if (i >= 4) rethrow;
+          await Future.delayed(const Duration(milliseconds: 500));
+        }
+      }
     });
 
     test(
