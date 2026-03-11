@@ -1,0 +1,4 @@
+class: SealedChildOnlyRequired
+extends: SealedParentNullableField
+fields:
+  requiredField: String
