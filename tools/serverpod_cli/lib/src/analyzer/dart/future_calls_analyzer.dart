@@ -13,6 +13,7 @@ import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_cal
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/model_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/analysis_helper.dart';
@@ -91,6 +92,11 @@ class FutureCallsAnalyzer {
         }
       }
     }
+
+    SerializableModelAnalyzer.resolveModelDependencies([
+      ...analyzedModels,
+      ...models,
+    ]);
 
     return models;
   }
