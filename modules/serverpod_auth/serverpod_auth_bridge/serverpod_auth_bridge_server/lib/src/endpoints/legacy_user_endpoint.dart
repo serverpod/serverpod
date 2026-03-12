@@ -11,10 +11,18 @@ class LegacyUserEndpoint extends Endpoint {
   /// Removes the user's profile image.
   Future<bool> removeUserImage(final Session session) async {
     try {
-      final uuid = UuidValue.fromString(session.authenticated!.userIdentifier);
-      await AuthServices.instance.userProfiles.removeUserImage(session, uuid);
+      await AuthServices.instance.userProfiles.removeUserImage(
+        session,
+        session._authenticatedUserId,
+      );
       return true;
-    } catch (_) {
+    } catch (e, stackTrace) {
+      session.log(
+        'Failed to remove legacy user image.',
+        exception: e,
+        stackTrace: stackTrace,
+        level: LogLevel.error,
+      );
       return false;
     }
   }
@@ -25,14 +33,19 @@ class LegacyUserEndpoint extends Endpoint {
     final ByteData image,
   ) async {
     try {
-      final uuid = UuidValue.fromString(session.authenticated!.userIdentifier);
       await AuthServices.instance.userProfiles.setUserImageFromBytes(
         session,
-        uuid,
+        session._authenticatedUserId,
         image.buffer.asUint8List(),
       );
       return true;
-    } catch (_) {
+    } catch (e, stackTrace) {
+      session.log(
+        'Failed to set legacy user image.',
+        exception: e,
+        stackTrace: stackTrace,
+        level: LogLevel.error,
+      );
       return false;
     }
   }
@@ -43,14 +56,19 @@ class LegacyUserEndpoint extends Endpoint {
     final String userName,
   ) async {
     try {
-      final uuid = UuidValue.fromString(session.authenticated!.userIdentifier);
       await AuthServices.instance.userProfiles.changeUserName(
         session,
-        uuid,
+        session._authenticatedUserId,
         userName,
       );
       return true;
-    } catch (_) {
+    } catch (e, stackTrace) {
+      session.log(
+        'Failed to change legacy user name.',
+        exception: e,
+        stackTrace: stackTrace,
+        level: LogLevel.error,
+      );
       return false;
     }
   }
@@ -61,15 +79,25 @@ class LegacyUserEndpoint extends Endpoint {
     final String fullName,
   ) async {
     try {
-      final uuid = UuidValue.fromString(session.authenticated!.userIdentifier);
       await AuthServices.instance.userProfiles.changeFullName(
         session,
-        uuid,
+        session._authenticatedUserId,
         fullName,
       );
       return true;
-    } catch (_) {
+    } catch (e, stackTrace) {
+      session.log(
+        'Failed to change legacy full name.',
+        exception: e,
+        stackTrace: stackTrace,
+        level: LogLevel.error,
+      );
       return false;
     }
   }
+}
+
+extension on Session {
+  UuidValue get _authenticatedUserId =>
+      UuidValue.withValidation(authenticated!.userIdentifier);
 }

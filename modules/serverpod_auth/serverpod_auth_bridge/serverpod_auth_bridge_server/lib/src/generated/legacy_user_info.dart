@@ -14,6 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart'
     as _i2;
 
+/// Legacy-compatible user profile returned to older clients.
 abstract class LegacyUserInfo
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
   LegacyUserInfo._({
@@ -56,22 +57,31 @@ abstract class LegacyUserInfo
     );
   }
 
+  /// Legacy integer user id.
   int? id;
 
+  /// Unique identifier of the auth user.
   String userIdentifier;
 
+  /// Public user name.
   String? userName;
 
+  /// Display full name.
   String? fullName;
 
+  /// Email address.
   String? email;
 
+  /// Timestamp when the account was created.
   DateTime created;
 
+  /// URL of the profile image.
   String? imageUrl;
 
+  /// List of granted scope names.
   List<String> scopeNames;
 
+  /// True if the account is currently blocked.
   bool blocked;
 
   /// Returns a shallow copy of this [LegacyUserInfo]

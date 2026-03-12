@@ -1,7 +1,13 @@
+### Feature flags describing legacy user-settings capabilities.
 class: LegacyUserSettingsConfig
 fields:
+  ### True if users can see their user name.
   canSeeUserName: bool
+  ### True if users can see their full name.
   canSeeFullName: bool
+  ### True if users can edit their user name.
   canEditUserName: bool
+  ### True if users can edit their full name.
   canEditFullName: bool
+  ### True if users can edit their profile image.
   canEditUserImage: bool

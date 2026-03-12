@@ -12,9 +12,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
-import 'package:serverpod_auth_bridge_client/src/protocol/legacy_authentication_response.dart'
-    as _i3;
 import 'package:serverpod_auth_bridge_client/src/protocol/legacy_user_info.dart'
+    as _i3;
+import 'package:serverpod_auth_bridge_client/src/protocol/legacy_authentication_response.dart'
     as _i4;
 import 'package:serverpod_auth_bridge_client/src/protocol/legacy_user_settings_config.dart'
     as _i5;
@@ -22,31 +22,34 @@ import 'dart:typed_data' as _i6;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i7;
 
-/// Stub endpoint for legacy admin operations. Requires admin scope.
+/// Endpoint for legacy admin operations. Requires admin scope.
 /// {@category Endpoint}
 class EndpointLegacyAdmin extends _i1.EndpointRef {
   EndpointLegacyAdmin(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth_bridge.legacyAdmin';
-}
 
-/// Stub endpoint for legacy Apple authentication. Always returns an error
-/// because social auth is not supported via the bridge.
-/// {@category Endpoint}
-class EndpointLegacyApple extends _i1.EndpointRef {
-  EndpointLegacyApple(_i1.EndpointCaller caller) : super(caller);
+  /// Finds a user by legacy user id.
+  _i2.Future<_i3.LegacyUserInfo?> getUserInfo(int userId) =>
+      caller.callServerEndpoint<_i3.LegacyUserInfo?>(
+        'serverpod_auth_bridge.legacyAdmin',
+        'getUserInfo',
+        {'userId': userId},
+      );
 
-  @override
-  String get name => 'serverpod_auth_bridge.legacyApple';
+  /// Marks a user as blocked and revokes all tokens.
+  _i2.Future<void> blockUser(int userId) => caller.callServerEndpoint<void>(
+    'serverpod_auth_bridge.legacyAdmin',
+    'blockUser',
+    {'userId': userId},
+  );
 
-  /// Stub — Apple authentication is not supported.
-  _i2.Future<_i3.LegacyAuthenticationResponse> authenticate(
-    Map<String, dynamic> authInfo,
-  ) => caller.callServerEndpoint<_i3.LegacyAuthenticationResponse>(
-    'serverpod_auth_bridge.legacyApple',
-    'authenticate',
-    {'authInfo': authInfo},
+  /// Unblocks a user so that they can log in again.
+  _i2.Future<void> unblockUser(int userId) => caller.callServerEndpoint<void>(
+    'serverpod_auth_bridge.legacyAdmin',
+    'unblockUser',
+    {'userId': userId},
   );
 }
 
@@ -61,10 +64,10 @@ class EndpointLegacyEmail extends _i1.EndpointRef {
 
   /// Authenticates a user with email and password, returning a legacy-format
   /// response with session key and user info.
-  _i2.Future<_i3.LegacyAuthenticationResponse> authenticate(
+  _i2.Future<_i4.LegacyAuthenticationResponse> authenticate(
     String email,
     String password,
-  ) => caller.callServerEndpoint<_i3.LegacyAuthenticationResponse>(
+  ) => caller.callServerEndpoint<_i4.LegacyAuthenticationResponse>(
     'serverpod_auth_bridge.legacyEmail',
     'authenticate',
     {
@@ -89,10 +92,10 @@ class EndpointLegacyEmail extends _i1.EndpointRef {
   );
 
   /// Stub — account creation is not supported via legacy endpoints.
-  _i2.Future<_i4.LegacyUserInfo?> createAccount(
+  _i2.Future<_i3.LegacyUserInfo?> createAccount(
     String email,
     String verificationCode,
-  ) => caller.callServerEndpoint<_i4.LegacyUserInfo?>(
+  ) => caller.callServerEndpoint<_i3.LegacyUserInfo?>(
     'serverpod_auth_bridge.legacyEmail',
     'createAccount',
     {
@@ -136,56 +139,6 @@ class EndpointLegacyEmail extends _i1.EndpointRef {
   );
 }
 
-/// Stub endpoint for legacy Firebase authentication. Always returns an error
-/// because social auth is not supported via the bridge.
-/// {@category Endpoint}
-class EndpointLegacyFirebase extends _i1.EndpointRef {
-  EndpointLegacyFirebase(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'serverpod_auth_bridge.legacyFirebase';
-
-  /// Stub — Firebase authentication is not supported.
-  _i2.Future<_i3.LegacyAuthenticationResponse> authenticate(String idToken) =>
-      caller.callServerEndpoint<_i3.LegacyAuthenticationResponse>(
-        'serverpod_auth_bridge.legacyFirebase',
-        'authenticate',
-        {'idToken': idToken},
-      );
-}
-
-/// Stub endpoint for legacy Google authentication. Always returns an error
-/// because social auth is not supported via the bridge.
-/// {@category Endpoint}
-class EndpointLegacyGoogle extends _i1.EndpointRef {
-  EndpointLegacyGoogle(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'serverpod_auth_bridge.legacyGoogle';
-
-  /// Stub — Google server auth code authentication is not supported.
-  _i2.Future<_i3.LegacyAuthenticationResponse> authenticateWithServerAuthCode(
-    String authenticationCode,
-    String? redirectUri,
-  ) => caller.callServerEndpoint<_i3.LegacyAuthenticationResponse>(
-    'serverpod_auth_bridge.legacyGoogle',
-    'authenticateWithServerAuthCode',
-    {
-      'authenticationCode': authenticationCode,
-      'redirectUri': redirectUri,
-    },
-  );
-
-  /// Stub — Google ID token authentication is not supported.
-  _i2.Future<_i3.LegacyAuthenticationResponse> authenticateWithIdToken(
-    String idToken,
-  ) => caller.callServerEndpoint<_i3.LegacyAuthenticationResponse>(
-    'serverpod_auth_bridge.legacyGoogle',
-    'authenticateWithIdToken',
-    {'idToken': idToken},
-  );
-}
-
 /// Proxy endpoint for legacy session status operations (sign-in check,
 /// sign-out, user info retrieval).
 /// {@category Endpoint}
@@ -217,8 +170,8 @@ class EndpointLegacyStatus extends _i1.EndpointRef {
   );
 
   /// Returns legacy-format user info for the authenticated user.
-  _i2.Future<_i4.LegacyUserInfo?> getUserInfo() =>
-      caller.callServerEndpoint<_i4.LegacyUserInfo?>(
+  _i2.Future<_i3.LegacyUserInfo?> getUserInfo() =>
+      caller.callServerEndpoint<_i3.LegacyUserInfo?>(
         'serverpod_auth_bridge.legacyStatus',
         'getUserInfo',
         {},
@@ -296,10 +249,7 @@ class EndpointSessionMigration extends _i1.EndpointRef {
 class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
     legacyAdmin = EndpointLegacyAdmin(this);
-    legacyApple = EndpointLegacyApple(this);
     legacyEmail = EndpointLegacyEmail(this);
-    legacyFirebase = EndpointLegacyFirebase(this);
-    legacyGoogle = EndpointLegacyGoogle(this);
     legacyStatus = EndpointLegacyStatus(this);
     legacyUser = EndpointLegacyUser(this);
     sessionMigration = EndpointSessionMigration(this);
@@ -307,13 +257,7 @@ class Caller extends _i1.ModuleEndpointCaller {
 
   late final EndpointLegacyAdmin legacyAdmin;
 
-  late final EndpointLegacyApple legacyApple;
-
   late final EndpointLegacyEmail legacyEmail;
-
-  late final EndpointLegacyFirebase legacyFirebase;
-
-  late final EndpointLegacyGoogle legacyGoogle;
 
   late final EndpointLegacyStatus legacyStatus;
 
@@ -324,10 +268,7 @@ class Caller extends _i1.ModuleEndpointCaller {
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
     'serverpod_auth_bridge.legacyAdmin': legacyAdmin,
-    'serverpod_auth_bridge.legacyApple': legacyApple,
     'serverpod_auth_bridge.legacyEmail': legacyEmail,
-    'serverpod_auth_bridge.legacyFirebase': legacyFirebase,
-    'serverpod_auth_bridge.legacyGoogle': legacyGoogle,
     'serverpod_auth_bridge.legacyStatus': legacyStatus,
     'serverpod_auth_bridge.legacyUser': legacyUser,
     'serverpod_auth_bridge.sessionMigration': sessionMigration,

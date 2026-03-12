@@ -5,7 +5,16 @@ import 'package:serverpod_auth_idp_server/core.dart';
 
 /// Token manager that validates and manages legacy session tokens created by
 /// the bridge's proxy endpoints.
-class LegacySessionTokenManager implements TokenManager {
+class LegacySessionTokenManager
+    implements TokenManager, TokenManagerBuilder<LegacySessionTokenManager> {
+  /// Creates a new [LegacySessionTokenManager].
+  const LegacySessionTokenManager();
+
+  @override
+  LegacySessionTokenManager build({required final AuthUsers authUsers}) {
+    return const LegacySessionTokenManager();
+  }
+
   @override
   Future<AuthenticationInfo?> validateToken(
     final Session session,

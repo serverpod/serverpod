@@ -9,7 +9,6 @@ export 'src/business/auth_backwards_compatibility.dart';
 export 'src/business/config.dart';
 export 'src/business/enable_legacy_client_support.dart';
 export 'src/business/legacy_session_token_manager.dart';
-export 'src/business/legacy_session_token_manager_builder.dart';
 export 'src/generated/endpoints.dart';
 export 'src/generated/protocol.dart'
     show

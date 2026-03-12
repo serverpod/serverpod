@@ -12,11 +12,21 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Defines reasons for a failed legacy authentication attempt.
 enum LegacyAuthenticationFailReason implements _i1.SerializableModel {
+  /// Credentials did not match any account.
   invalidCredentials,
+
+  /// User creation was denied by server-side policy.
   userCreationDenied,
+
+  /// An unexpected server error occurred.
   internalError,
+
+  /// Too many failed attempts were made in a short period.
   tooManyFailedAttempts,
+
+  /// The account exists but is blocked.
   blocked;
 
   static LegacyAuthenticationFailReason fromJson(int index) {

@@ -14,9 +14,9 @@
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
-import 'package:serverpod_auth_bridge_server/src/generated/legacy_authentication_response.dart'
-    as _i4;
 import 'package:serverpod_auth_bridge_server/src/generated/legacy_user_info.dart'
+    as _i4;
+import 'package:serverpod_auth_bridge_server/src/generated/legacy_authentication_response.dart'
     as _i5;
 import 'package:serverpod_auth_bridge_server/src/generated/legacy_user_settings_config.dart'
     as _i6;
@@ -132,13 +132,7 @@ void withServerpod(
 class TestEndpoints {
   late final _LegacyAdminEndpoint legacyAdmin;
 
-  late final _LegacyAppleEndpoint legacyApple;
-
   late final _LegacyEmailEndpoint legacyEmail;
-
-  late final _LegacyFirebaseEndpoint legacyFirebase;
-
-  late final _LegacyGoogleEndpoint legacyGoogle;
 
   late final _LegacyStatusEndpoint legacyStatus;
 
@@ -158,19 +152,7 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
-    legacyApple = _LegacyAppleEndpoint(
-      endpoints,
-      serializationManager,
-    );
     legacyEmail = _LegacyEmailEndpoint(
-      endpoints,
-      serializationManager,
-    );
-    legacyFirebase = _LegacyFirebaseEndpoint(
-      endpoints,
-      serializationManager,
-    );
-    legacyGoogle = _LegacyGoogleEndpoint(
       endpoints,
       serializationManager,
     );
@@ -191,13 +173,6 @@ class _InternalTestEndpoints extends TestEndpoints
 
 class _LegacyAdminEndpoint {
   _LegacyAdminEndpoint(
-    _endpointDispatch,
-    _serializationManager,
-  );
-}
-
-class _LegacyAppleEndpoint {
-  _LegacyAppleEndpoint(
     this._endpointDispatch,
     this._serializationManager,
   );
@@ -206,22 +181,22 @@ class _LegacyAppleEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i4.LegacyAuthenticationResponse> authenticate(
+  _i3.Future<_i4.LegacyUserInfo?> getUserInfo(
     _i1.TestSessionBuilder sessionBuilder,
-    Map<String, dynamic> authInfo,
+    int userId,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'legacyApple',
-            method: 'authenticate',
+            endpoint: 'legacyAdmin',
+            method: 'getUserInfo',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'legacyApple',
-          methodName: 'authenticate',
-          parameters: _i1.testObjectToJson({'authInfo': authInfo}),
+          endpointPath: 'legacyAdmin',
+          methodName: 'getUserInfo',
+          parameters: _i1.testObjectToJson({'userId': userId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -229,7 +204,69 @@ class _LegacyAppleEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i4.LegacyAuthenticationResponse>);
+                as _i3.Future<_i4.LegacyUserInfo?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> blockUser(
+    _i1.TestSessionBuilder sessionBuilder,
+    int userId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'legacyAdmin',
+            method: 'blockUser',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'legacyAdmin',
+          methodName: 'blockUser',
+          parameters: _i1.testObjectToJson({'userId': userId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> unblockUser(
+    _i1.TestSessionBuilder sessionBuilder,
+    int userId,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'legacyAdmin',
+            method: 'unblockUser',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'legacyAdmin',
+          methodName: 'unblockUser',
+          parameters: _i1.testObjectToJson({'userId': userId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -248,7 +285,7 @@ class _LegacyEmailEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i4.LegacyAuthenticationResponse> authenticate(
+  _i3.Future<_i5.LegacyAuthenticationResponse> authenticate(
     _i1.TestSessionBuilder sessionBuilder,
     String email,
     String password,
@@ -275,7 +312,7 @@ class _LegacyEmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i4.LegacyAuthenticationResponse>);
+                as _i3.Future<_i5.LegacyAuthenticationResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -320,7 +357,7 @@ class _LegacyEmailEndpoint {
     });
   }
 
-  _i3.Future<_i5.LegacyUserInfo?> createAccount(
+  _i3.Future<_i4.LegacyUserInfo?> createAccount(
     _i1.TestSessionBuilder sessionBuilder,
     String email,
     String verificationCode,
@@ -347,7 +384,7 @@ class _LegacyEmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i5.LegacyUserInfo?>);
+                as _i3.Future<_i4.LegacyUserInfo?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -457,125 +494,6 @@ class _LegacyEmailEndpoint {
   }
 }
 
-class _LegacyFirebaseEndpoint {
-  _LegacyFirebaseEndpoint(
-    this._endpointDispatch,
-    this._serializationManager,
-  );
-
-  final _i2.EndpointDispatch _endpointDispatch;
-
-  final _i2.SerializationManager _serializationManager;
-
-  _i3.Future<_i4.LegacyAuthenticationResponse> authenticate(
-    _i1.TestSessionBuilder sessionBuilder,
-    String idToken,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'legacyFirebase',
-            method: 'authenticate',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'legacyFirebase',
-          methodName: 'authenticate',
-          parameters: _i1.testObjectToJson({'idToken': idToken}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i3.Future<_i4.LegacyAuthenticationResponse>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-}
-
-class _LegacyGoogleEndpoint {
-  _LegacyGoogleEndpoint(
-    this._endpointDispatch,
-    this._serializationManager,
-  );
-
-  final _i2.EndpointDispatch _endpointDispatch;
-
-  final _i2.SerializationManager _serializationManager;
-
-  _i3.Future<_i4.LegacyAuthenticationResponse> authenticateWithServerAuthCode(
-    _i1.TestSessionBuilder sessionBuilder,
-    String authenticationCode,
-    String? redirectUri,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'legacyGoogle',
-            method: 'authenticateWithServerAuthCode',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'legacyGoogle',
-          methodName: 'authenticateWithServerAuthCode',
-          parameters: _i1.testObjectToJson({
-            'authenticationCode': authenticationCode,
-            'redirectUri': redirectUri,
-          }),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i3.Future<_i4.LegacyAuthenticationResponse>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-
-  _i3.Future<_i4.LegacyAuthenticationResponse> authenticateWithIdToken(
-    _i1.TestSessionBuilder sessionBuilder,
-    String idToken,
-  ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
-      var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'legacyGoogle',
-            method: 'authenticateWithIdToken',
-          );
-      try {
-        var _localCallContext = await _endpointDispatch.getMethodCallContext(
-          createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'legacyGoogle',
-          methodName: 'authenticateWithIdToken',
-          parameters: _i1.testObjectToJson({'idToken': idToken}),
-          serializationManager: _serializationManager,
-        );
-        var _localReturnValue =
-            await (_localCallContext.method.call(
-                  _localUniqueSession,
-                  _localCallContext.arguments,
-                )
-                as _i3.Future<_i4.LegacyAuthenticationResponse>);
-        return _localReturnValue;
-      } finally {
-        await _localUniqueSession.close();
-      }
-    });
-  }
-}
-
 class _LegacyStatusEndpoint {
   _LegacyStatusEndpoint(
     this._endpointDispatch,
@@ -672,7 +590,7 @@ class _LegacyStatusEndpoint {
     });
   }
 
-  _i3.Future<_i5.LegacyUserInfo?> getUserInfo(
+  _i3.Future<_i4.LegacyUserInfo?> getUserInfo(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -694,7 +612,7 @@ class _LegacyStatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i5.LegacyUserInfo?>);
+                as _i3.Future<_i4.LegacyUserInfo?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

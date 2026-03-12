@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_bridge_client/serverpod_auth_bridge_client.dart'
-    as bridge_auth;
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart'
+    as legacy_auth;
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
@@ -27,8 +27,8 @@ void main() {
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
-      // Must run before withServerpod starts the server; doing this in setUp
-      // is too late for the server auth handler wiring used by legacy routes.
+      // Must run before withServerpod boots the server so legacy middleware is
+      // active for all requests in this group.
       _configurePublicLegacySupport(sessionBuilder);
 
       const email = 'legacy-client-test@serverpod.dev';
@@ -40,7 +40,7 @@ void main() {
           identityProviderBuilders: [config],
           tokenManagerBuilders: [
             tokenManagerConfig,
-            LegacySessionTokenManagerBuilder(),
+            const LegacySessionTokenManager(),
           ],
         );
 
@@ -65,12 +65,14 @@ void main() {
       test(
         'when authenticating with correct credentials then returns success with session key.',
         () async {
-          final client = _createClient(sessionBuilder);
-          final result = await _legacyAuthenticate(
-            client,
-            email,
-            password,
-          );
+          final legacyClient = _createLegacyClient(sessionBuilder);
+          final result =
+              await legacy_auth.Caller(
+                legacyClient,
+              ).email.authenticate(
+                email,
+                password,
+              );
 
           expect(result.success, isTrue);
           expect(result.key, isNotNull);
@@ -84,18 +86,20 @@ void main() {
       test(
         'when authenticating with wrong password then returns invalidCredentials.',
         () async {
-          final client = _createClient(sessionBuilder);
-          final result = await _legacyAuthenticate(
-            client,
-            email,
-            'wrong-password',
-          );
+          final legacyClient = _createLegacyClient(sessionBuilder);
+          final result =
+              await legacy_auth.Caller(
+                legacyClient,
+              ).email.authenticate(
+                email,
+                'wrong-password',
+              );
 
           expect(result.success, isFalse);
           expect(
             result.failReason,
             equals(
-              bridge_auth.LegacyAuthenticationFailReason.invalidCredentials,
+              legacy_auth.AuthenticationFailReason.invalidCredentials,
             ),
           );
         },
@@ -104,18 +108,20 @@ void main() {
       test(
         'when authenticating with non-existent email then returns invalidCredentials.',
         () async {
-          final client = _createClient(sessionBuilder);
-          final result = await _legacyAuthenticate(
-            client,
-            'nobody@serverpod.dev',
-            password,
-          );
+          final legacyClient = _createLegacyClient(sessionBuilder);
+          final result =
+              await legacy_auth.Caller(
+                legacyClient,
+              ).email.authenticate(
+                'nobody@serverpod.dev',
+                password,
+              );
 
           expect(result.success, isFalse);
           expect(
             result.failReason,
             equals(
-              bridge_auth.LegacyAuthenticationFailReason.invalidCredentials,
+              legacy_auth.AuthenticationFailReason.invalidCredentials,
             ),
           );
         },
@@ -141,7 +147,7 @@ void main() {
           identityProviderBuilders: [config],
           tokenManagerBuilders: [
             tokenManagerConfig,
-            LegacySessionTokenManagerBuilder(),
+            const LegacySessionTokenManager(),
           ],
         );
 
@@ -172,18 +178,20 @@ void main() {
         'when validating the legacy session token then it is valid.',
         () async {
           final authKeyProvider = MutableAuthKeyProvider();
-          final client = _createClient(
+          final legacyClient = _createLegacyClient(
             sessionBuilder,
             authKeyProvider: authKeyProvider,
           );
-          final authResult = await _legacyAuthenticate(
-            client,
-            email,
-            password,
-          );
+          final authResult = await legacy_auth.Caller(legacyClient).email
+              .authenticate(
+                email,
+                password,
+              );
           authKeyProvider.setToken('${authResult.keyId}:${authResult.key}');
 
-          final isValid = await client.modules.auth.status.isSignedIn();
+          final isValid = await legacy_auth.Caller(
+            legacyClient,
+          ).status.isSignedIn();
 
           expect(isValid, isTrue);
         },
@@ -193,20 +201,49 @@ void main() {
         'when validating the token then the user identifier matches.',
         () async {
           final authKeyProvider = MutableAuthKeyProvider();
-          final client = _createClient(
+          final legacyClient = _createLegacyClient(
             sessionBuilder,
             authKeyProvider: authKeyProvider,
           );
-          final authResult = await _legacyAuthenticate(
-            client,
-            email,
-            password,
-          );
+          final authResult = await legacy_auth.Caller(legacyClient).email
+              .authenticate(
+                email,
+                password,
+              );
           authKeyProvider.setToken('${authResult.keyId}:${authResult.key}');
 
-          final userInfo = await _legacyGetUserInfo(client);
+          final userInfo = await legacy_auth.Caller(
+            legacyClient,
+          ).status.getUserInfo();
 
           expect(userInfo?.userIdentifier, equals(authUserId.toString()));
+        },
+      );
+
+      test(
+        'when changing full name via legacy user endpoint then it is updated.',
+        () async {
+          final authKeyProvider = MutableAuthKeyProvider();
+          final legacyClient = _createLegacyClient(
+            sessionBuilder,
+            authKeyProvider: authKeyProvider,
+          );
+          final authResult = await legacy_auth.Caller(legacyClient).email
+              .authenticate(
+                email,
+                password,
+              );
+          authKeyProvider.setToken('${authResult.keyId}:${authResult.key}');
+
+          final changed = await legacy_auth.Caller(
+            legacyClient,
+          ).user.changeFullName('Legacy Full Name');
+          final updatedUserInfo = await legacy_auth.Caller(
+            legacyClient,
+          ).status.getUserInfo();
+
+          expect(changed, isTrue);
+          expect(updatedUserInfo?.fullName, equals('Legacy Full Name'));
         },
       );
 
@@ -214,20 +251,22 @@ void main() {
         'when revoking the token then it becomes invalid.',
         () async {
           final authKeyProvider = MutableAuthKeyProvider();
-          final client = _createClient(
+          final legacyClient = _createLegacyClient(
             sessionBuilder,
             authKeyProvider: authKeyProvider,
           );
-          final authResult = await _legacyAuthenticate(
-            client,
-            email,
-            password,
-          );
+          final authResult = await legacy_auth.Caller(legacyClient).email
+              .authenticate(
+                email,
+                password,
+              );
           authKeyProvider.setToken('${authResult.keyId}:${authResult.key}');
 
-          await client.modules.auth.status.signOutDevice();
+          await legacy_auth.Caller(legacyClient).status.signOutDevice();
 
-          final isValid = await client.modules.auth.status.isSignedIn();
+          final isValid = await legacy_auth.Caller(
+            legacyClient,
+          ).status.isSignedIn();
 
           expect(isValid, isFalse);
         },
@@ -247,8 +286,8 @@ void main() {
 
       late MutableAuthKeyProvider authKeyProvider1;
       late MutableAuthKeyProvider authKeyProvider2;
-      late Client client1;
-      late Client client2;
+      late _LegacyClient legacyClient1;
+      late _LegacyClient legacyClient2;
 
       setUp(() async {
         const config = EmailIdpConfig(secretHashPepper: 'test');
@@ -256,7 +295,7 @@ void main() {
           identityProviderBuilders: [config],
           tokenManagerBuilders: [
             tokenManagerConfig,
-            LegacySessionTokenManagerBuilder(),
+            const LegacySessionTokenManager(),
           ],
         );
 
@@ -275,27 +314,31 @@ void main() {
 
         authKeyProvider1 = MutableAuthKeyProvider();
         authKeyProvider2 = MutableAuthKeyProvider();
-        client1 = _createClient(
+        legacyClient1 = _createLegacyClient(
           sessionBuilder,
           authKeyProvider: authKeyProvider1,
         );
-        client2 = _createClient(
+        legacyClient2 = _createLegacyClient(
           sessionBuilder,
           authKeyProvider: authKeyProvider2,
         );
 
-        final result1 = await _legacyAuthenticate(
-          client1,
-          email,
-          password,
-        );
+        final result1 =
+            await legacy_auth.Caller(
+              legacyClient1,
+            ).email.authenticate(
+              email,
+              password,
+            );
         authKeyProvider1.setToken('${result1.keyId}:${result1.key}');
 
-        final result2 = await _legacyAuthenticate(
-          client2,
-          email,
-          password,
-        );
+        final result2 =
+            await legacy_auth.Caller(
+              legacyClient2,
+            ).email.authenticate(
+              email,
+              password,
+            );
         authKeyProvider2.setToken('${result2.keyId}:${result2.key}');
       });
 
@@ -306,10 +349,14 @@ void main() {
       test(
         'when revoking all tokens then all become invalid.',
         () async {
-          await client1.modules.auth.status.signOutAllDevices();
+          await legacy_auth.Caller(legacyClient1).status.signOutAllDevices();
 
-          final isValid1 = await client1.modules.auth.status.isSignedIn();
-          final isValid2 = await client2.modules.auth.status.isSignedIn();
+          final isValid1 = await legacy_auth.Caller(
+            legacyClient1,
+          ).status.isSignedIn();
+          final isValid2 = await legacy_auth.Caller(
+            legacyClient2,
+          ).status.isSignedIn();
 
           expect(isValid1, isFalse);
           expect(isValid2, isFalse);
@@ -347,7 +394,7 @@ void main() {
           identityProviderBuilders: [config],
           tokenManagerBuilders: [
             tokenManagerConfig,
-            LegacySessionTokenManagerBuilder(),
+            const LegacySessionTokenManager(),
           ],
         );
 
@@ -377,17 +424,19 @@ void main() {
       test(
         'when authenticating via legacy endpoint then returns internalError.',
         () async {
-          final client = _createClient(sessionBuilder);
-          final result = await _legacyAuthenticate(
-            client,
-            email,
-            password,
-          );
+          final legacyClient = _createLegacyClient(sessionBuilder);
+          final result =
+              await legacy_auth.Caller(
+                legacyClient,
+              ).email.authenticate(
+                email,
+                password,
+              );
 
           expect(result.success, isFalse);
           expect(
             result.failReason,
-            equals(bridge_auth.LegacyAuthenticationFailReason.internalError),
+            equals(legacy_auth.AuthenticationFailReason.internalError),
           );
         },
       );
@@ -404,12 +453,13 @@ void main() {
       test(
         'when calling createAccountRequest then returns false.',
         () async {
-          final client = _createClient(sessionBuilder);
-          final result = await client.modules.auth.email.createAccountRequest(
-            'test',
-            'test@test.com',
-            'pass',
-          );
+          final legacyClient = _createLegacyClient(sessionBuilder);
+          final result = await legacy_auth.Caller(legacyClient).email
+              .createAccountRequest(
+                'test',
+                'test@test.com',
+                'pass',
+              );
 
           expect(result, isFalse);
         },
@@ -418,11 +468,10 @@ void main() {
       test(
         'when calling changePassword then returns false.',
         () async {
-          final client = _createClient(sessionBuilder);
-          final result = await client.modules.auth.email.changePassword(
-            'old',
-            'new',
-          );
+          final legacyClient = _createLegacyClient(sessionBuilder);
+          final result = await legacy_auth.Caller(
+            legacyClient,
+          ).email.changePassword('old', 'new');
 
           expect(result, isFalse);
         },
@@ -431,10 +480,11 @@ void main() {
       test(
         'when calling initiatePasswordReset then returns false.',
         () async {
-          final client = _createClient(sessionBuilder);
-          final result = await client.modules.auth.email.initiatePasswordReset(
-            'test@test.com',
-          );
+          final legacyClient = _createLegacyClient(sessionBuilder);
+          final result = await legacy_auth.Caller(legacyClient).email
+              .initiatePasswordReset(
+                'test@test.com',
+              );
 
           expect(result, isFalse);
         },
@@ -443,47 +493,236 @@ void main() {
   );
 
   withServerpod(
-    'Given unsupported legacy social auth endpoints,',
+    'Given legacy endpoints outside the forwarding allowlist,',
     testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       _configurePublicLegacySupport(sessionBuilder);
 
       test(
-        'when calling Google authenticate then returns internalError.',
+        'when calling Google authenticate then it is handled by non-legacy endpoint.',
         () async {
-          final client = _createClient(sessionBuilder);
-          final result = await _legacyGoogleAuthenticateWithIdToken(
-            client,
-            'fake-token',
-          );
-
-          expect(result.success, isFalse);
-          expect(
-            result.failReason,
-            equals(bridge_auth.LegacyAuthenticationFailReason.internalError),
+          final legacyClient = _createLegacyClient(sessionBuilder);
+          await expectLater(
+            legacy_auth.Caller(legacyClient).google.authenticateWithIdToken(
+              'fake-token',
+            ),
+            throwsA(isA<legacy_auth.ServerpodClientInternalServerError>()),
           );
         },
       );
 
       test(
-        'when calling Firebase authenticate then returns internalError.',
+        'when calling Firebase authenticate then it is handled by non-legacy endpoint.',
         () async {
-          final client = _createClient(sessionBuilder);
-          final result = await _legacyFirebaseAuthenticate(
-            client,
-            'fake-token',
-          );
+          final legacyClient = _createLegacyClient(sessionBuilder);
+          final result = await legacy_auth.Caller(
+            legacyClient,
+          ).firebase.authenticate('fake-token');
 
           expect(result.success, isFalse);
           expect(
             result.failReason,
-            equals(bridge_auth.LegacyAuthenticationFailReason.internalError),
+            equals(legacy_auth.AuthenticationFailReason.internalError),
+          );
+        },
+      );
+
+      test(
+        'when calling Admin getUserInfo then it is handled by non-legacy endpoint.',
+        () async {
+          final legacyClient = _createLegacyClient(sessionBuilder);
+          await expectLater(
+            legacy_auth.Caller(legacyClient).admin.getUserInfo(1),
+            throwsA(isA<legacy_auth.ServerpodClientUnauthorized>()),
           );
         },
       );
     },
   );
+
+  withServerpod(
+    'Given migrated legacy users and an authenticated admin session,',
+    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      _configurePublicLegacySupport(sessionBuilder);
+
+      const adminEmail = 'legacy-admin@serverpod.dev';
+      const targetEmail = 'legacy-user@serverpod.dev';
+      const password = 'LegacyPass123!';
+
+      late int targetLegacyUserId;
+      late MutableAuthKeyProvider adminAuthKeyProvider;
+      late Client adminClient;
+      late _LegacyClient adminLegacyClient;
+
+      setUp(() async {
+        const config = EmailIdpConfig(secretHashPepper: 'test');
+        AuthServices.set(
+          identityProviderBuilders: [config],
+          tokenManagerBuilders: [
+            tokenManagerConfig,
+            const LegacySessionTokenManager(),
+          ],
+        );
+
+        final adminLegacyUserId = await endpoints
+            .emailAccountBackwardsCompatibilityTest
+            .createLegacyUser(
+              sessionBuilder,
+              email: adminEmail,
+              password: password,
+            );
+        targetLegacyUserId = await endpoints
+            .emailAccountBackwardsCompatibilityTest
+            .createLegacyUser(
+              sessionBuilder,
+              email: targetEmail,
+              password: password,
+            );
+
+        await endpoints.emailAccountBackwardsCompatibilityTest.migrateUser(
+          sessionBuilder,
+          legacyUserId: adminLegacyUserId,
+        );
+        await endpoints.emailAccountBackwardsCompatibilityTest.migrateUser(
+          sessionBuilder,
+          legacyUserId: targetLegacyUserId,
+        );
+
+        final adminAuthUserId = await endpoints
+            .emailAccountBackwardsCompatibilityTest
+            .getNewAuthUserId(sessionBuilder, userId: adminLegacyUserId);
+
+        final session = sessionBuilder.build();
+        final adminAuthUser = await AuthServices.instance.authUsers.get(
+          session,
+          authUserId: adminAuthUserId!,
+        );
+        await AuthServices.instance.authUsers.update(
+          session,
+          authUserId: adminAuthUserId,
+          scopes: {...adminAuthUser.scopes, Scope.admin},
+        );
+
+        adminAuthKeyProvider = MutableAuthKeyProvider();
+        adminClient = _createClient(
+          sessionBuilder,
+          authKeyProvider: adminAuthKeyProvider,
+        );
+        adminLegacyClient = _createLegacyClient(
+          sessionBuilder,
+          authKeyProvider: adminAuthKeyProvider,
+        );
+        final adminAuthResult = await legacy_auth.Caller(
+          adminLegacyClient,
+        ).email.authenticate(adminEmail, password);
+        adminAuthKeyProvider.setToken(
+          '${adminAuthResult.keyId}:${adminAuthResult.key}',
+        );
+      });
+
+      tearDown(() async {
+        await _cleanUpDatabase(sessionBuilder.build());
+      });
+
+      test(
+        'when calling getUserInfo then it returns mapped user data.',
+        () async {
+          final userInfo = await adminClient
+              .modules
+              .serverpod_auth_bridge
+              .legacyAdmin
+              .getUserInfo(targetLegacyUserId);
+
+          expect(userInfo, isNotNull);
+          expect(userInfo!.id, equals(targetLegacyUserId));
+          expect(userInfo.email, equals(targetEmail));
+          expect(userInfo.blocked, isFalse);
+        },
+      );
+
+      test(
+        'when blocking a user then authentication fails with blocked.',
+        () async {
+          await adminClient.modules.serverpod_auth_bridge.legacyAdmin.blockUser(
+            targetLegacyUserId,
+          );
+
+          final blockedInfo = await adminClient
+              .modules
+              .serverpod_auth_bridge
+              .legacyAdmin
+              .getUserInfo(targetLegacyUserId);
+          expect(blockedInfo!.blocked, isTrue);
+
+          final targetLegacyClient = _createLegacyClient(sessionBuilder);
+          final authResult = await legacy_auth.Caller(
+            targetLegacyClient,
+          ).email.authenticate(targetEmail, password);
+
+          expect(authResult.success, isFalse);
+          expect(
+            authResult.failReason,
+            equals(legacy_auth.AuthenticationFailReason.blocked),
+          );
+        },
+      );
+
+      test(
+        'when unblocking a user then authentication succeeds again.',
+        () async {
+          await adminClient.modules.serverpod_auth_bridge.legacyAdmin.blockUser(
+            targetLegacyUserId,
+          );
+          await adminClient.modules.serverpod_auth_bridge.legacyAdmin
+              .unblockUser(
+                targetLegacyUserId,
+              );
+
+          final unblockedInfo = await adminClient
+              .modules
+              .serverpod_auth_bridge
+              .legacyAdmin
+              .getUserInfo(targetLegacyUserId);
+          expect(unblockedInfo!.blocked, isFalse);
+
+          final targetLegacyClient = _createLegacyClient(sessionBuilder);
+          final authResult = await legacy_auth.Caller(
+            targetLegacyClient,
+          ).email.authenticate(targetEmail, password);
+
+          expect(authResult.success, isTrue);
+        },
+      );
+    },
+  );
+}
+
+_LegacyClient _createLegacyClient(
+  final TestSessionBuilder sessionBuilder, {
+  final ClientAuthKeyProvider? authKeyProvider,
+}) {
+  final session = sessionBuilder.build();
+  final baseUrl = 'http://localhost:${session.server.port}/';
+  return _LegacyClient(baseUrl)..authKeyProvider = authKeyProvider;
+}
+
+class _LegacyClient extends legacy_auth.ServerpodClientShared {
+  _LegacyClient(final String host)
+    : super(
+        host,
+        legacy_auth.Protocol(),
+        streamingConnectionTimeout: null,
+        connectionTimeout: null,
+      );
+
+  @override
+  Map<String, legacy_auth.EndpointRef> get endpointRefLookup => const {};
+
+  @override
+  Map<String, legacy_auth.ModuleEndpointCaller> get moduleLookup => const {};
 }
 
 Client _createClient(
@@ -495,57 +734,11 @@ Client _createClient(
   return Client(baseUrl)..authKeyProvider = authKeyProvider;
 }
 
-Future<bridge_auth.LegacyAuthenticationResponse> _legacyAuthenticate(
-  final Client client,
-  final String email,
-  final String password,
-) {
-  return client.callServerEndpoint<bridge_auth.LegacyAuthenticationResponse>(
-    'serverpod_auth.email',
-    'authenticate',
-    {
-      'email': email,
-      'password': password,
-    },
-  );
-}
-
-Future<bridge_auth.LegacyUserInfo?> _legacyGetUserInfo(final Client client) {
-  return client.callServerEndpoint<bridge_auth.LegacyUserInfo?>(
-    'serverpod_auth.status',
-    'getUserInfo',
-    {},
-  );
-}
-
-Future<bridge_auth.LegacyAuthenticationResponse>
-_legacyGoogleAuthenticateWithIdToken(
-  final Client client,
-  final String idToken,
-) {
-  return client.callServerEndpoint<bridge_auth.LegacyAuthenticationResponse>(
-    'serverpod_auth.google',
-    'authenticateWithIdToken',
-    {'idToken': idToken},
-  );
-}
-
-Future<bridge_auth.LegacyAuthenticationResponse> _legacyFirebaseAuthenticate(
-  final Client client,
-  final String idToken,
-) {
-  return client.callServerEndpoint<bridge_auth.LegacyAuthenticationResponse>(
-    'serverpod_auth.firebase',
-    'authenticate',
-    {'idToken': idToken},
-  );
-}
-
 void _configurePublicLegacySupport(final TestSessionBuilder sessionBuilder) {
   final pod = sessionBuilder.build().server.serverpod;
   pod.authenticationHandler = (final session, final authKey) =>
       AuthServices.instance.authenticationHandler(session, authKey);
-  enableLegacyClientSupport(pod);
+  pod.enableLegacyClientSupport();
 }
 
 class MutableAuthKeyProvider implements ClientAuthKeyProvider {

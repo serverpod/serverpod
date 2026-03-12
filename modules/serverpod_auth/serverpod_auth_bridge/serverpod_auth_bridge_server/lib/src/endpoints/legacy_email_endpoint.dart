@@ -78,6 +78,9 @@ class LegacyEmailEndpoint extends Endpoint {
     final profile = await AuthServices.instance.userProfiles
         .maybeFindUserProfileByUserId(session, authUserId);
 
+    // NOTE: This endpoint must create a legacy-compatible session key directly
+    // instead of issuing a token via the token manager. Legacy clients expect
+    // an integer `keyId` plus plain secret, matching old `serverpod_auth`.
     final secret = generateRandomString();
     final salt = session.passwords['authKeySalt'] ?? 'salty';
     final hash = sha256.convert(utf8.encode(salt + secret)).toString();

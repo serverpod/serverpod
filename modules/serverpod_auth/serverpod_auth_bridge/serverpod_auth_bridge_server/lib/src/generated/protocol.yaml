@@ -1,6 +1,7 @@
 legacyAdmin:
-legacyApple:
-  - authenticate:
+  - getUserInfo:
+  - blockUser:
+  - unblockUser:
 legacyEmail:
   - authenticate:
   - createAccountRequest:
@@ -8,11 +9,6 @@ legacyEmail:
   - changePassword:
   - initiatePasswordReset:
   - resetPassword:
-legacyFirebase:
-  - authenticate:
-legacyGoogle:
-  - authenticateWithServerAuthCode:
-  - authenticateWithIdToken:
 legacyStatus:
   - isSignedIn:
   - signOutDevice:

@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
+/// Feature flags describing legacy user-settings capabilities.
 abstract class LegacyUserSettingsConfig implements _i1.SerializableModel {
   LegacyUserSettingsConfig._({
     required this.canSeeUserName,
@@ -51,14 +52,19 @@ abstract class LegacyUserSettingsConfig implements _i1.SerializableModel {
     );
   }
 
+  /// True if users can see their user name.
   bool canSeeUserName;
 
+  /// True if users can see their full name.
   bool canSeeFullName;
 
+  /// True if users can edit their user name.
   bool canEditUserName;
 
+  /// True if users can edit their full name.
   bool canEditFullName;
 
+  /// True if users can edit their profile image.
   bool canEditUserImage;
 
   /// Returns a shallow copy of this [LegacyUserSettingsConfig]
