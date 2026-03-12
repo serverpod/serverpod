@@ -78,6 +78,9 @@ class MicrosoftSignInService {
   /// - `consumers`: Personal Microsoft accounts only
   /// - Specific tenant ID: Accounts from a specific organization
   ///
+  /// The [authorityHost] is the authority host for the Microsoft identity
+  /// provider. If not provided, defaults to `login.microsoftonline.com`.
+  ///
   /// The [callbackUrlScheme] is the URL scheme for the OAuth callback. If not
   /// provided, defaults to the scheme from [redirectUri].
   ///
@@ -88,6 +91,7 @@ class MicrosoftSignInService {
     required String clientId,
     required String redirectUri,
     String tenant = 'common',
+    String authorityHost = 'login.microsoftonline.com',
     String? callbackUrlScheme,
     bool? useWebview,
   }) async {
@@ -95,7 +99,7 @@ class MicrosoftSignInService {
 
     _config = OAuth2PkceProviderClientConfig(
       authorizationEndpoint: Uri.https(
-        'login.microsoftonline.com',
+        authorityHost,
         '/$tenant/oauth2/v2.0/authorize',
       ),
       clientId: clientId,
