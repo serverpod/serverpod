@@ -11,7 +11,7 @@ import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod_shared/src/password_manager.dart';
 
-class SimpleFutureCall extends FutureCall<SimpleData> {
+class _SimpleFutureCall extends FutureCall<SimpleData> {
   @override
   Future<void> invoke(Session session, SimpleData? object) async {}
 }
@@ -43,7 +43,7 @@ void main() {
             serverId: 'default',
           );
 
-          server.registerFutureCall(SimpleFutureCall(), name);
+          server.registerFutureCall(_SimpleFutureCall(), name);
           futureCallEntries.add(entry);
           await FutureCallEntry.db.insertRow(session, entry);
         }
@@ -100,7 +100,7 @@ void main() {
             serverId: 'default',
           );
 
-          if (i != 0) server.registerFutureCall(SimpleFutureCall(), name);
+          if (i != 0) server.registerFutureCall(_SimpleFutureCall(), name);
           futureCallEntries.add(entry);
           await FutureCallEntry.db.insertRow(session, entry);
         }
@@ -137,6 +137,26 @@ void main() {
           expect(entries, hasLength(futureCallsCount));
         },
       );
+
+      test(
+        'when starting Serverpod, then a warning is logged about skipping the check for broken future calls',
+        () async {
+          await server.start();
+          await server.internalLoggingSession.close();
+
+          final logs = await LoggingUtil.findAllLogs(session);
+          final logEntry = logs.last.logs.first;
+
+          expect(
+            logEntry.message,
+            matches(
+              'Skipping check for broken future calls. '
+              'Enable FutureCallConfig.checkBrokenCalls to perform the check. '
+              'Optionally enable FutureCallConfig.deleteBrokenCalls to automatically delete broken future calls.',
+            ),
+          );
+        },
+      );
     },
   );
 
@@ -166,7 +186,7 @@ void main() {
             serverId: 'default',
           );
 
-          if (i != 0) server.registerFutureCall(SimpleFutureCall(), name);
+          if (i != 0) server.registerFutureCall(_SimpleFutureCall(), name);
           futureCallEntries.add(entry);
           await FutureCallEntry.db.insertRow(session, entry);
         }
@@ -255,7 +275,7 @@ void main() {
             serverId: 'default',
           );
 
-          if (i >= 2) server.registerFutureCall(SimpleFutureCall(), name);
+          if (i >= 2) server.registerFutureCall(_SimpleFutureCall(), name);
           futureCallEntries.add(entry);
           await FutureCallEntry.db.insertRow(session, entry);
         }
@@ -339,7 +359,7 @@ void main() {
             serverId: 'default',
           );
 
-          if (i >= 2) server.registerFutureCall(SimpleFutureCall(), name);
+          if (i >= 2) server.registerFutureCall(_SimpleFutureCall(), name);
           futureCallEntries.add(entry);
           await FutureCallEntry.db.insertRow(session, entry);
         }
@@ -400,7 +420,7 @@ void main() {
             serverId: 'default',
           );
 
-          if (i >= 2) server.registerFutureCall(SimpleFutureCall(), name);
+          if (i >= 2) server.registerFutureCall(_SimpleFutureCall(), name);
           futureCallEntries.add(entry);
           await FutureCallEntry.db.insertRow(session, entry);
         }
@@ -453,7 +473,7 @@ void main() {
             serverId: 'default',
           );
 
-          if (i == 2) server.registerFutureCall(SimpleFutureCall(), name);
+          if (i == 2) server.registerFutureCall(_SimpleFutureCall(), name);
           futureCallEntries.add(entry);
           await FutureCallEntry.db.insertRow(session, entry);
         }
@@ -517,7 +537,7 @@ void main() {
             serverId: 'default',
           );
 
-          server.registerFutureCall(SimpleFutureCall(), name);
+          server.registerFutureCall(_SimpleFutureCall(), name);
           futureCallEntries.add(entry);
           await FutureCallEntry.db.insertRow(session, entry);
         }

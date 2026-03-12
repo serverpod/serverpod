@@ -270,6 +270,15 @@ class FutureCallManager {
       limit: threshold,
     );
 
+    if (count >= threshold) {
+      _logSession.log(
+        'Skipping check for broken future calls. '
+        'Enable FutureCallConfig.checkBrokenCalls to perform the check. '
+        'Optionally enable FutureCallConfig.deleteBrokenCalls to automatically delete broken future calls.',
+        level: LogLevel.warning,
+      );
+    }
+
     return count < threshold;
   }
 
