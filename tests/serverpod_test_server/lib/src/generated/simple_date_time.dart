@@ -333,6 +333,47 @@ class SimpleDateTimeRepository {
     );
   }
 
+  /// Upserts all [SimpleDateTime]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [SimpleDateTime]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<SimpleDateTime>> upsert(
+    _i1.DatabaseSession session,
+    List<SimpleDateTime> rows, {
+    required _i1.ColumnSelections<SimpleDateTimeTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<SimpleDateTime>(
+      rows,
+      uniqueColumns: uniqueColumns(SimpleDateTime.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [SimpleDateTime] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [SimpleDateTime] will have its `id` field set.
+  Future<SimpleDateTime> upsertRow(
+    _i1.DatabaseSession session,
+    SimpleDateTime row, {
+    required _i1.ColumnSelections<SimpleDateTimeTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<SimpleDateTime>(
+      row,
+      uniqueColumns: uniqueColumns(SimpleDateTime.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [SimpleDateTime]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

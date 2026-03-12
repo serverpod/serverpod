@@ -485,6 +485,47 @@ class OrderUuidRepository {
     );
   }
 
+  /// Upserts all [OrderUuid]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [OrderUuid]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<OrderUuid>> upsert(
+    _i1.DatabaseSession session,
+    List<OrderUuid> rows, {
+    required _i1.ColumnSelections<OrderUuidTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<OrderUuid>(
+      rows,
+      uniqueColumns: uniqueColumns(OrderUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [OrderUuid] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [OrderUuid] will have its `id` field set.
+  Future<OrderUuid> upsertRow(
+    _i1.DatabaseSession session,
+    OrderUuid row, {
+    required _i1.ColumnSelections<OrderUuidTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<OrderUuid>(
+      row,
+      uniqueColumns: uniqueColumns(OrderUuid.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [OrderUuid]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

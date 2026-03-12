@@ -211,6 +211,69 @@ class PostgresDatabaseConnection
   }
 
   @override
+  Future<List<T>> upsert<T extends TableRow>(
+    DatabaseSession session,
+    List<T> rows, {
+    required List<Column> uniqueColumns,
+    Transaction? transaction,
+  }) async {
+    if (rows.isEmpty) return [];
+
+    // When the model has non-persisted fields, fall back to single-row upserts
+    // so we can safely merge non-persisted fields with each result row.
+    if (rows.length > 1 && _hasNonPersistedFields(session, rows)) {
+      return [
+        for (var row in rows)
+          ...await upsert<T>(
+            session,
+            [row],
+            uniqueColumns: uniqueColumns,
+            transaction: transaction,
+          ),
+      ];
+    }
+
+    var table = rows.first.table;
+
+    var query = UpsertQueryBuilder(
+      table: table,
+      rows: rows,
+      uniqueColumns: uniqueColumns,
+    ).build();
+
+    return (await _mappedResultsQuery(
+          session,
+          query,
+          transaction: transaction,
+        ).then((_mergeResultsWithNonPersistedFields(rows))))
+        .map(poolManager.serializationManager.deserialize<T>)
+        .toList();
+  }
+
+  @override
+  Future<T> upsertRow<T extends TableRow>(
+    DatabaseSession session,
+    T row, {
+    required List<Column> uniqueColumns,
+    Transaction? transaction,
+  }) async {
+    var result = await upsert<T>(
+      session,
+      [row],
+      uniqueColumns: uniqueColumns,
+      transaction: transaction,
+    );
+
+    if (result.length != 1) {
+      throw _PgDatabaseUpsertRowException(
+        'Failed to upsert row, updated number of rows is ${result.length} != 1',
+      );
+    }
+
+    return result.first;
+  }
+
+  @override
   Future<List<T>> update<T extends TableRow>(
     DatabaseSession session,
     List<T> rows, {

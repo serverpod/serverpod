@@ -92,6 +92,22 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   });
 
   /// For most cases use the corresponding method in [Database] instead.
+  Future<List<T>> upsert<T extends TableRow>(
+    DatabaseSession session,
+    List<T> rows, {
+    required List<Column> uniqueColumns,
+    Transaction? transaction,
+  });
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<T> upsertRow<T extends TableRow>(
+    DatabaseSession session,
+    T row, {
+    required List<Column> uniqueColumns,
+    Transaction? transaction,
+  });
+
+  /// For most cases use the corresponding method in [Database] instead.
   Future<List<T>> update<T extends TableRow>(
     DatabaseSession session,
     List<T> rows, {

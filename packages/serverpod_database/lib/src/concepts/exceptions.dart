@@ -63,3 +63,9 @@ abstract base class DatabaseDeleteRowException implements DatabaseException {
   @override
   String toString() => 'DatabaseDeleteRowException: $message';
 }
+
+/// Exception thrown when an upsert row operation fails.
+abstract base class DatabaseUpsertRowException implements DatabaseException {
+  @override
+  String toString() => 'DatabaseUpsertRowException: $message';
+}
