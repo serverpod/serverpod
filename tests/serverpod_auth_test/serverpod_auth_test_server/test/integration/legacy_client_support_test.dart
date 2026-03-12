@@ -4,6 +4,7 @@ import 'package:serverpod_auth_client/serverpod_auth_client.dart'
     as legacy_auth;
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
+import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
 import 'package:test/test.dart';
 
@@ -499,15 +500,37 @@ void main() {
     (final sessionBuilder, final endpoints) {
       _configurePublicLegacySupport(sessionBuilder);
 
+      setUp(() {
+        AuthServices.set(
+          tokenManagerBuilders: [tokenManagerConfig],
+          identityProviderBuilders: [
+            GoogleIdpConfig(
+              clientSecret: GoogleClientSecret.fromJson({
+                'web': {
+                  'client_id': 'id',
+                  'client_secret': 'secret',
+                  'redirect_uris': ['uri'],
+                },
+              }),
+            ),
+          ],
+        );
+      });
+
       test(
-        'when calling Google authenticate then it is handled by non-legacy endpoint.',
+        'when calling Google authenticate then returns invalidCredentials.',
         () async {
           final legacyClient = _createLegacyClient(sessionBuilder);
-          await expectLater(
-            legacy_auth.Caller(legacyClient).google.authenticateWithIdToken(
-              'fake-token',
-            ),
-            throwsA(isA<legacy_auth.ServerpodClientInternalServerError>()),
+          final result = await legacy_auth.Caller(
+            legacyClient,
+          ).google.authenticateWithIdToken(
+            'fake-token',
+          );
+
+          expect(result.success, isFalse);
+          expect(
+            result.failReason,
+            equals(legacy_auth.AuthenticationFailReason.invalidCredentials),
           );
         },
       );
