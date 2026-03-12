@@ -683,6 +683,47 @@ class SessionLogEntryRepository {
     );
   }
 
+  /// Upserts all [SessionLogEntry]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [SessionLogEntry]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<SessionLogEntry>> upsert(
+    _i1.DatabaseSession session,
+    List<SessionLogEntry> rows, {
+    required _i1.ColumnSelections<SessionLogEntryTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<SessionLogEntry>(
+      rows,
+      uniqueColumns: uniqueColumns(SessionLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [SessionLogEntry] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [SessionLogEntry] will have its `id` field set.
+  Future<SessionLogEntry> upsertRow(
+    _i1.DatabaseSession session,
+    SessionLogEntry row, {
+    required _i1.ColumnSelections<SessionLogEntryTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<SessionLogEntry>(
+      row,
+      uniqueColumns: uniqueColumns(SessionLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [SessionLogEntry]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

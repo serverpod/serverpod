@@ -474,6 +474,47 @@ class EmailAccountRepository {
     );
   }
 
+  /// Upserts all [EmailAccount]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [EmailAccount]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<EmailAccount>> upsert(
+    _i1.DatabaseSession session,
+    List<EmailAccount> rows, {
+    required _i1.ColumnSelections<EmailAccountTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<EmailAccount>(
+      rows,
+      uniqueColumns: uniqueColumns(EmailAccount.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [EmailAccount] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [EmailAccount] will have its `id` field set.
+  Future<EmailAccount> upsertRow(
+    _i1.DatabaseSession session,
+    EmailAccount row, {
+    required _i1.ColumnSelections<EmailAccountTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<EmailAccount>(
+      row,
+      uniqueColumns: uniqueColumns(EmailAccount.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [EmailAccount]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

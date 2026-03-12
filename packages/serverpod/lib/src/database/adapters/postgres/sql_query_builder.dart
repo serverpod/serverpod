@@ -513,11 +513,11 @@ class UpsertQueryBuilder {
         .join(', ');
 
     // Build the DO UPDATE SET clause: update all non-unique, non-id columns
-    var uniqueColumnNameSet = _uniqueColumns
-        .map((c) => c.columnName)
-        .toSet();
-    var updateColumns = selectedColumns
-        .where((c) => c.columnName != 'id' && !uniqueColumnNameSet.contains(c.columnName));
+    var uniqueColumnNameSet = _uniqueColumns.map((c) => c.columnName).toSet();
+    var updateColumns = selectedColumns.where(
+      (c) =>
+          c.columnName != 'id' && !uniqueColumnNameSet.contains(c.columnName),
+    );
     var setClause = updateColumns
         .map((c) => '"${c.columnName}" = EXCLUDED."${c.columnName}"')
         .join(', ');
