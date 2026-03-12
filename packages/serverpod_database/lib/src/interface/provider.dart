@@ -1,12 +1,12 @@
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import '../adapters/postgres/database_provider.dart';
 import '../concepts/runtime_parameters.dart';
 import '../database.dart';
 import 'analyzer.dart';
 import 'database_connection.dart';
 import 'database_pool_manager.dart';
 import 'migration_runner.dart';
+import 'provider/io.dart' if (dart.library.html) 'provider/web.dart';
 import 'serialization_manager.dart';
 
 /// Abstract interface for database providers.
@@ -14,9 +14,7 @@ import 'serialization_manager.dart';
 abstract interface class DatabaseProvider {
   /// Creates a new [DatabaseProvider] for the given [dialect].
   factory DatabaseProvider.forDialect(DatabaseDialect dialect) =>
-      switch (dialect) {
-        DatabaseDialect.postgres => PostgresDatabaseProvider(),
-      };
+      createDatabaseProviderForDialect(dialect);
 
   /// Creates a new [DatabasePoolManager] for the given parameters.
   DatabasePoolManager createPoolManager(

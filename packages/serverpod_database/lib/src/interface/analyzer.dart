@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../serverpod_database.dart' hide Protocol;
+import '../util/stderr_util.dart';
 
 /// Analyzes the structure of [Database]s.
 abstract class DatabaseAnalyzer {
@@ -66,7 +65,7 @@ abstract class DatabaseAnalyzer {
       ];
     } catch (e) {
       // Ignore if the table does not exist.
-      stderr.writeln('Failed to get installed migrations: $e');
+      writeError('Failed to get installed migrations: $e');
       return [];
     }
   }
