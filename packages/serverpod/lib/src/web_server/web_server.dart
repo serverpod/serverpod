@@ -252,9 +252,13 @@ class WebServer {
   }
 
   /// Stops the webserver.
+  ///
+  /// Safe to call even if the server failed to start or was never started.
   Future<void> stop() async {
-    await _appOrNull?.close();
-    _running = false;
+    if (_running) {
+      await _app.close();
+      _running = false;
+    }
   }
 
   /// Enables or disables dev mode for testing purposes.
