@@ -116,7 +116,7 @@ class LibraryGenerator {
             ..type = TypeReference(
               (t) => t
                 ..symbol = 'List'
-                ..types.add(_tableDefinitionReference),
+                ..types.add(_tableDefinitionReference(serverCode)),
             )
             ..assignment =
                 createDatabaseDefinitionFromModels(
@@ -288,7 +288,7 @@ class LibraryGenerator {
               for (var packageName in config.sharedModelsSourcePathsParts.keys)
                 Code.scope(
                   (a) =>
-                      'try{return ${a(refer('Protocol', 'package:$packageName/$packageName.dart'))}().deserialize<T>(data,t);}'
+                      'try{return ${a(refer('Protocol', packageName == 'serverpod_database' && config.name != 'serverpod' ? serverpodDatabaseUrl(serverCode) : 'package:$packageName/$packageName.dart'))}().deserialize<T>(data,t);}'
                       'on ${a(refer('DeserializationTypeNotFoundException', serverpodUrl(serverCode)))} catch(_){}',
                 ),
             if (config.name != 'serverpod' &&
@@ -508,7 +508,7 @@ class LibraryGenerator {
             ..returns = TypeReference(
               (t) => t
                 ..symbol = 'List'
-                ..types.add(_tableDefinitionReference),
+                ..types.add(_tableDefinitionReference(serverCode)),
             )
             ..body = refer('targetTableDefinitions').code,
         ),
@@ -2071,7 +2071,7 @@ extension on DatabaseDefinition {
   }) {
     return literalList([
       for (var table in tables)
-        _tableDefinitionReference.call([], {
+        _tableDefinitionReference(serverCode).call([], {
           'name': literalString(table.name),
           if (table.dartName != null)
             'dartName': literalString(table.dartName!),
@@ -2218,10 +2218,8 @@ extension on List<SerializableModelDefinition> {
   }
 }
 
-final _tableDefinitionReference = refer(
-  'TableDefinition',
-  'package:serverpod_database/serverpod_database.dart',
-);
+Reference _tableDefinitionReference(bool serverCode) =>
+    refer('TableDefinition', serverpodDatabaseUrl(serverCode));
 
 /// Builds inheritance-related annotations for endpoint methods.
 ///
