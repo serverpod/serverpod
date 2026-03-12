@@ -31,6 +31,11 @@ class WatchSession {
 
   final Completer<int> _done = Completer<int>();
 
+  /// Dart file paths from prior compile cycles that were rejected.
+  /// These must be re-invalidated on the next compile attempt since the FES
+  /// rolled back to its last accepted state and no longer knows about them.
+  final Set<String> _pendingPaths = {};
+
   ServerProcess _server;
   bool _restarting = false;
 
@@ -96,22 +101,26 @@ class WatchSession {
     final compiler = _compiler;
     if (compiler == null) return;
 
-    // Compile changes.
+    // Compile changes. Merge any paths carried over from prior rejected
+    // compiles so the FES re-invalidates them (reject rolls back its state).
+    final changedPaths = {..._pendingPaths, ...event.dartFiles};
+
     CompileResult? result;
     if (event.packageConfigChanged) {
       // FES reads package_config.json only at startup - must restart it.
       // After restart the FES is in initial state, so we do a full compile.
+      _pendingPaths.clear();
       await compiler.restart();
       result = await compileWithProgress(
         'Compiling server',
         compiler,
         rejectOnFailure: true,
       );
-    } else if (event.dartFiles.isNotEmpty) {
+    } else if (changedPaths.isNotEmpty) {
       result = await compileWithProgress(
         'Compiling server',
         compiler,
-        changedPaths: event.dartFiles,
+        changedPaths: changedPaths,
         rejectOnFailure: true,
       );
     } else {
@@ -122,9 +131,12 @@ class WatchSession {
     }
 
     if (result == null) {
+      // Compilation failed - remember which paths need re-invalidation.
+      _pendingPaths.addAll(changedPaths);
       return;
     }
 
+    _pendingPaths.clear();
     compiler.accept();
 
     // Hot reload if VM service is connected, otherwise fall back to restart.
