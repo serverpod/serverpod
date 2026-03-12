@@ -1,3 +1,11 @@
+## 3.4.3
+
+- refactor: Changes the `session` parameter type on repository methods to `DatabaseSession`.
+- fix: Fixes serialization of model objects in named record fields when mapping to JSON.
+- fix: Fixes CLI showing warnings duplicated on projects with generated future calls.
+- fix: Fixes missing generated `_Undefined` class when parent sealed classes have nullable fields and children have only non-nullable fields.
+- fix: Fixes conflict on the `Cache` class import after `relic` upgrade to version `1.2.0`.
+
 ## 3.4.2
 
 - fix: Fixes wrong import URL to `serverpod_service_client` of shared models referenced as fields in other shared models.

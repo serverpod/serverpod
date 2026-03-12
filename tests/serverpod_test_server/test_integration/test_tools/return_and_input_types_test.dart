@@ -597,4 +597,40 @@ void main() {
       );
     },
   );
+
+  withServerpod(
+    'Given RecordParametersEndpoint',
+    (sessionBuilder, endpoints) {
+      test(
+        'when calling returnRecordOfNamedIntAndObject then should return the named record with deserialized object',
+        () async {
+          final data = SimpleData(num: 42);
+          var result = await endpoints.recordParameters
+              .returnRecordOfNamedIntAndObject(
+                sessionBuilder,
+                (number: 123, data: data),
+              );
+          expect(result.number, 123);
+          expect(result.data, isA<SimpleData>());
+          expect(result.data.num, 42);
+        },
+      );
+
+      test(
+        'when calling returnNullableRecordOfNamedIntAndObject with a non-null record then should return the named record with deserialized object',
+        () async {
+          final data = SimpleData(num: 7);
+          var result = await endpoints.recordParameters
+              .returnNullableRecordOfNamedIntAndObject(
+                sessionBuilder,
+                (number: 99, data: data),
+              );
+          expect(result, isNotNull);
+          expect(result!.number, 99);
+          expect(result.data, isA<SimpleData>());
+          expect(result.data.num, 7);
+        },
+      );
+    },
+  );
 }

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
@@ -26,9 +25,6 @@ Future<Analyzers> createAnalyzers(GeneratorConfig config) async {
   });
   final futureCallsAnalyzer = FutureCallsAnalyzer(
     directory: libDirectory,
-    parameterValidator: FutureCallMethodParameterValidator(
-      modelAnalyzer: modelAnalyzer,
-    ),
   );
   return (
     endpoints: endpointsAnalyzer,
@@ -102,6 +98,7 @@ Future<bool> performGenerate({
 
   final futureCallModels = await futureCallsAnalyzer.analyzeModels(
     futureCallsModelsAnalyzerCollector,
+    models,
   );
 
   success &= !futureCallsModelsAnalyzerCollector.hasSevereErrors;
@@ -137,6 +134,7 @@ Future<bool> performGenerate({
   var futureCalls = await futureCallsAnalyzer.analyze(
     collector: futureCallsAnalyzerCollector,
     changedFiles: generatedModelFiles.toSet(),
+    analyzedModels: allModels,
   );
 
   success &= !futureCallsAnalyzerCollector.hasSevereErrors;

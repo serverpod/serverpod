@@ -560,7 +560,7 @@ class SerializableModelLibraryGenerator {
     var descendants = classDefinition.descendantClasses;
 
     for (var descendant in descendants) {
-      descendantFields.addAll(descendant.fields);
+      descendantFields.addAll(descendant.fieldsIncludingInherited);
     }
 
     return descendantFields

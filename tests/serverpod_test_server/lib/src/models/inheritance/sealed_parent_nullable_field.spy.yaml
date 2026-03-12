@@ -1,0 +1,4 @@
+class: SealedParentNullableField
+sealed: true
+fields:
+  nullableField: String?

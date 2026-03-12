@@ -11,26 +11,30 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/model_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
 /// Analyzes dart files for [FutureCall]s.
+///
+/// The caller is responsible for calling [StatefulAnalyzer.validateAll] and
+/// passing the validated models to [analyze] or [analyzeModels].
 class FutureCallsAnalyzer {
   final AnalysisContextCollection collection;
 
   final String absoluteIncludedPaths;
-  final FutureCallMethodParameterValidator parameterValidator;
+
+  final List<SerializableModelDefinition> _cachedAnalyzedModels = [];
 
   /// Create a new [FutureCallsAnalyzer], containing a
   /// [AnalysisContextCollection] that analyzes all dart files in the
   /// provided [directory].
   FutureCallsAnalyzer({
     required Directory directory,
-    required this.parameterValidator,
   }) : collection = AnalysisContextCollection(
          includedPaths: [directory.absolute.path],
          resourceProvider: PhysicalResourceProvider.INSTANCE,
@@ -48,7 +52,10 @@ class FutureCallsAnalyzer {
     await _refreshContextForFiles(filePaths);
 
     var oldDefinitionsLength = _futureCallDefinitions.length;
-    await analyze(collector: CodeGenerationCollector());
+    await analyze(
+      collector: CodeGenerationCollector(),
+      analyzedModels: _cachedAnalyzedModels,
+    );
 
     if (_futureCallDefinitions.length != oldDefinitionsLength) {
       return true;
@@ -60,10 +67,20 @@ class FutureCallsAnalyzer {
   /// Analyze all files in the [AnalysisContextCollection] for
   /// [FutureCallParameterDefinition] which need to be converted
   /// into [SerializableModelDefinition] for model generation.
+  ///
+  /// [analyzedModels] are the validated models from [StatefulAnalyzer.validateAll].
   Future<List<SerializableModelDefinition>> analyzeModels(
     CodeAnalysisCollector collector,
+    List<SerializableModelDefinition> analyzedModels,
   ) async {
-    final futureCalls = await analyze(collector: collector);
+    _cachedAnalyzedModels
+      ..clear()
+      ..addAll(analyzedModels);
+
+    final futureCalls = await analyze(
+      collector: collector,
+      analyzedModels: analyzedModels,
+    );
     final models = <SerializableModelDefinition>[];
 
     for (final futureCall in futureCalls) {
@@ -76,18 +93,32 @@ class FutureCallsAnalyzer {
       }
     }
 
+    SerializableModelAnalyzer.resolveModelDependencies([
+      ...analyzedModels,
+      ...models,
+    ]);
+
     return models;
   }
 
   /// Analyze all files in the [AnalysisContextCollection].
+  ///
+  /// [analyzedModels] are the validated models from [StatefulAnalyzer.validateAll].
+  /// When provided, they are used for parameter validation and cached for
+  /// subsequent calls (e.g. [updateFileContexts]). When not provided, the
+  /// cached models from a previous call are used.
   ///
   /// [changedFiles] is an optional list of files that should have their context
   /// refreshed before analysis. This is useful when only a subset of files have
   /// changed since [updateFileContexts] was last called.
   Future<List<FutureCallDefinition>> analyze({
     required CodeAnalysisCollector collector,
+    required List<SerializableModelDefinition> analyzedModels,
     Set<String>? changedFiles,
   }) async {
+    _cachedAnalyzedModels
+      ..clear()
+      ..addAll(analyzedModels);
     await _refreshContextForFiles(changedFiles);
 
     var futureCallDefs = <FutureCallDefinition>[];
@@ -138,6 +169,7 @@ class FutureCallsAnalyzer {
         library,
         filePath,
         duplicateFutureCallClasses,
+        analyzedModels,
       );
       collector.addErrors(severityExceptions.values.expand((e) => e).toList());
 
@@ -201,7 +233,6 @@ class FutureCallsAnalyzer {
         filePath,
         futureCallDefinitions,
         templateRegistry: templateRegistry,
-        parameterValidator: parameterValidator,
       );
     }
 
@@ -235,6 +266,7 @@ class FutureCallsAnalyzer {
     ResolvedLibraryResult library,
     String filePath,
     Set<String> duplicatedClasses,
+    List<SerializableModelDefinition> analyzedModels,
   ) {
     var futureCallClasses = _getFutureCallClasses(library);
 
@@ -262,7 +294,7 @@ class FutureCallsAnalyzer {
         errors.addAll(
           FutureCallParameterAnalyzer.validate(
             method.formalParameters,
-            parameterValidator,
+            analyzedModels,
           ),
         );
 
