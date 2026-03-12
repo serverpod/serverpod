@@ -10,7 +10,6 @@ class ServerMigrationManager extends MigrationManager {
   ServerMigrationManager(Directory projectDirectory)
     : super(
         FileSystemMigrationArtifactStore(projectDirectory: projectDirectory),
-        writeWarning: stderr.writeln,
       );
 
   @override
@@ -41,9 +40,6 @@ class ServerMigrationManager extends MigrationManager {
   ///
   /// Returns true if the database is intact, false otherwise.
   static Future<bool> verifyDatabaseIntegrity(DatabaseSession session) async {
-    return await MigrationManager.verifyDatabaseIntegrity(
-      session,
-      writeWarning: stderr.writeln,
-    );
+    return await MigrationManager.verifyDatabaseIntegrity(session);
   }
 }

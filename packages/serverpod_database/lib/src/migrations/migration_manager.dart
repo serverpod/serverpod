@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 
 import '../../serverpod_database.dart';
 import '../migrations/table_comparison_warning.dart';
+import '../util/stderr_util.dart';
 
 /// A function that writes a warning message.
 typedef MigrationWarningWriter = void Function(String message);
@@ -10,7 +11,6 @@ typedef MigrationWarningWriter = void Function(String message);
 /// The migration manager handles migrations of the database.
 abstract class MigrationManager {
   final MigrationArtifactStore _artifactStore;
-  final MigrationWarningWriter _writeWarning;
 
   /// List of installed migration versions. Available after starting a migration
   /// or repair migration.
@@ -22,10 +22,7 @@ abstract class MigrationManager {
   final List<String> availableVersions = [];
 
   /// Creates a new migration manager.
-  MigrationManager(
-    this._artifactStore, {
-    MigrationWarningWriter? writeWarning,
-  }) : _writeWarning = writeWarning ?? _defaultWriteWarning;
+  MigrationManager(this._artifactStore);
 
   /// Loads the installed versions of the migrations from the database.
   ///
@@ -107,7 +104,7 @@ abstract class MigrationManager {
 
       var definitionModuleName = await _loadLatestDefinitionModuleName();
       if (definitionModuleName != null && definitionModuleName != moduleName) {
-        _writeWarning(
+        writeError(
           'WARNING: The module name in the migration definition '
           '("$definitionModuleName") does not match the module name of the '
           'serialization manager ("$moduleName"). This may indicate that the '
@@ -237,8 +234,8 @@ abstract class MigrationManager {
         );
         migrationsApplied.add(code.version);
       } catch (e) {
-        _writeWarning('Failed to apply migration ${code.version}.');
-        _writeWarning('$e');
+        writeError('Failed to apply migration ${code.version}.');
+        writeError('$e');
         rethrow;
       }
     }
@@ -274,12 +271,12 @@ abstract class MigrationManager {
     }
 
     if (warnings.isNotEmpty) {
-      _writeWarning(
+      writeError(
         'WARNING: The following module migration registries could not be '
         'loaded:',
       );
       for (var warning in warnings) {
-        _writeWarning(' - $warning');
+        writeError(' - $warning');
       }
     }
   }
@@ -295,11 +292,7 @@ abstract class MigrationManager {
 
   /// Returns true if the database structure is up to date. If not, it will
   /// print a warning using [writeWarning].
-  static Future<bool> verifyDatabaseIntegrity(
-    DatabaseSession session, {
-    MigrationWarningWriter? writeWarning,
-  }) async {
-    var writeWarningMessage = writeWarning ?? _defaultWriteWarning;
+  static Future<bool> verifyDatabaseIntegrity(DatabaseSession session) async {
     var warnings = <String>[];
 
     var liveDatabase = await session.db.analyzer.analyze();
@@ -316,28 +309,23 @@ abstract class MigrationManager {
 
       if (mismatches.isNotEmpty) {
         warnings.add(
-          'Table "${table.name}" is not like the target database:\n - ${mismatches.join('\n - ')}',
+          'Table "${table.name}" is not like the target database:\n'
+          ' - ${mismatches.join('\n - ')}',
         );
         continue;
       }
     }
     if (warnings.isNotEmpty) {
-      writeWarningMessage(
-        'WARNING: The database does not match the target database:',
-      );
+      writeError('WARNING: The database does not match the target database:');
       for (var warning in warnings) {
-        writeWarningMessage(' - $warning');
+        writeError(' - $warning');
       }
-      writeWarningMessage(
-        'Hint: Did you forget to run `serverpod generate`, apply the migrations (--apply-migrations), or run a repair migration (--apply-repair-migration)?',
+      writeError(
+        'Hint: Did you forget to run `serverpod generate`, apply the migrations '
+        '(--apply-migrations), or run a repair migration (--apply-repair-migration)?',
       );
     }
 
     return warnings.isEmpty;
-  }
-
-  static void _defaultWriteWarning(String message) {
-    // ignore: avoid_print
-    print(message);
   }
 }
