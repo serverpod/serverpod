@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:serverpod/src/database/bulk_data.dart';
-import 'package:serverpod/src/database/migrations/migrations.dart';
+import 'package:serverpod/src/database/migrations/server_migration_manager.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/util/path_util.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import '../../serverpod.dart';
+import '../../serverpod.dart' hide Cache;
 import '../cache/cache.dart';
 import '../generated/protocol.dart';
 
@@ -232,9 +232,9 @@ class InsightsEndpoint extends Endpoint {
     var live = await getLiveDatabaseDefinition(session);
     var installedMigrations = await _getInstalledMigrationVersions(session);
 
-    var versions = MigrationVersions.listVersions(
-      projectDirectory: Directory.current,
-    );
+    var versions = await ServerMigrationManager(
+      Directory.current,
+    ).listAvailableVersions();
 
     var latestAvailableMigrations = <DatabaseMigrationVersion>[];
     if (versions.isNotEmpty) {

@@ -188,7 +188,7 @@ void main() {
               expect(
                 companyMethod?.parameters?.toSource(),
                 matches(
-                  r'\(_i\d\.Session session, Example example, Company company, \{_i\d\.Transaction\? transaction\}\)',
+                  r'\(_i\d\.DatabaseSession session, Example example, Company company, \{_i\d\.Transaction\? transaction\}\)',
                 ),
               );
             },
@@ -210,7 +210,7 @@ void main() {
               expect(
                 addressMethod?.parameters?.toSource(),
                 matches(
-                  r'\(_i\d\.Session session, Example example, Address address, \{_i\d\.Transaction\? transaction\}\)',
+                  r'\(_i\d\.DatabaseSession session, Example example, Address address, \{_i\d\.Transaction\? transaction\}\)',
                 ),
               );
             },
@@ -301,7 +301,7 @@ void main() {
               expect(
                 companyMethod?.parameters?.toSource(),
                 matches(
-                  r'\(_i\d\.Session session, Example example, \{_i\d\.Transaction\? transaction\}\)',
+                  r'\(_i\d\.DatabaseSession session, Example example, \{_i\d\.Transaction\? transaction\}\)',
                 ),
               );
             },
@@ -492,7 +492,7 @@ void main() {
           expect(
             method?.parameters?.toSource(),
             matches(
-              r'(_i\d.Session session, Example example, Example nestedExample)',
+              r'(_i\d.DatabaseSession session, Example example, Example nestedExample)',
             ),
           );
         });
@@ -563,7 +563,7 @@ void main() {
           expect(
             method?.parameters?.toSource(),
             matches(
-              r'\(_i\d\.Session session, CitizenInt citizenInt, AddressUuid address, \{_i\d\.Transaction\? transaction\}\)',
+              r'\(_i\d\.DatabaseSession session, CitizenInt citizenInt, AddressUuid address, \{_i\d\.Transaction\? transaction\}\)',
             ),
             reason:
                 'The parameter name should be "citizenInt" (proper camelCase), not "citizenint" (all lowercase).',
@@ -581,7 +581,7 @@ void main() {
           expect(
             method?.parameters?.toSource(),
             matches(
-              r'\(_i\d\.Session session, CitizenInt citizenInt, \{_i\d\.Transaction\? transaction\}\)',
+              r'\(_i\d\.DatabaseSession session, CitizenInt citizenInt, \{_i\d\.Transaction\? transaction\}\)',
             ),
             reason:
                 'The parameter name should be "citizenInt" (proper camelCase), not "citizenint" (all lowercase).',

@@ -294,7 +294,7 @@ class CourseUuidRepository {
   /// );
   /// ```
   Future<List<CourseUuid>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CourseUuidTable>? where,
     int? limit,
     int? offset,
@@ -338,7 +338,7 @@ class CourseUuidRepository {
   /// );
   /// ```
   Future<CourseUuid?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CourseUuidTable>? where,
     int? offset,
     _i1.OrderByBuilder<CourseUuidTable>? orderBy,
@@ -364,7 +364,7 @@ class CourseUuidRepository {
 
   /// Finds a single [CourseUuid] by its [id] or null if no such row exists.
   Future<CourseUuid?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     CourseUuidInclude? include,
@@ -391,7 +391,7 @@ class CourseUuidRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<CourseUuid>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<CourseUuid> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -407,7 +407,7 @@ class CourseUuidRepository {
   ///
   /// The returned [CourseUuid] will have its `id` field set.
   Future<CourseUuid> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CourseUuid row, {
     _i1.Transaction? transaction,
   }) async {
@@ -423,7 +423,7 @@ class CourseUuidRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<CourseUuid>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<CourseUuid> rows, {
     _i1.ColumnSelections<CourseUuidTable>? columns,
     _i1.Transaction? transaction,
@@ -439,7 +439,7 @@ class CourseUuidRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<CourseUuid> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CourseUuid row, {
     _i1.ColumnSelections<CourseUuidTable>? columns,
     _i1.Transaction? transaction,
@@ -454,7 +454,7 @@ class CourseUuidRepository {
   /// Updates a single [CourseUuid] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<CourseUuid?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<CourseUuidUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -469,7 +469,7 @@ class CourseUuidRepository {
   /// Updates all [CourseUuid]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<CourseUuid>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CourseUuidUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CourseUuidTable> where,
     int? limit,
@@ -495,7 +495,7 @@ class CourseUuidRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<CourseUuid>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<CourseUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -507,7 +507,7 @@ class CourseUuidRepository {
 
   /// Deletes a single [CourseUuid].
   Future<CourseUuid> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CourseUuid row, {
     _i1.Transaction? transaction,
   }) async {
@@ -519,7 +519,7 @@ class CourseUuidRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<CourseUuid>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CourseUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -532,7 +532,7 @@ class CourseUuidRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CourseUuidTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -546,7 +546,7 @@ class CourseUuidRepository {
 
   /// Acquires row-level locks on [CourseUuid] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CourseUuidTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -567,7 +567,7 @@ class CourseUuidAttachRepository {
   /// Creates a relation between this [CourseUuid] and the given [EnrollmentInt]s
   /// by setting each [EnrollmentInt]'s foreign key `courseId` to refer to this [CourseUuid].
   Future<void> enrollments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CourseUuid courseUuid,
     List<_i2.EnrollmentInt> enrollmentInt, {
     _i1.Transaction? transaction,
@@ -596,7 +596,7 @@ class CourseUuidAttachRowRepository {
   /// Creates a relation between this [CourseUuid] and the given [EnrollmentInt]
   /// by setting the [EnrollmentInt]'s foreign key `courseId` to refer to this [CourseUuid].
   Future<void> enrollments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     CourseUuid courseUuid,
     _i2.EnrollmentInt enrollmentInt, {
     _i1.Transaction? transaction,
@@ -626,7 +626,7 @@ class CourseUuidDetachRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> enrollments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<_i2.EnrollmentInt> enrollmentInt, {
     _i1.Transaction? transaction,
   }) async {
@@ -654,7 +654,7 @@ class CourseUuidDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> enrollments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i2.EnrollmentInt enrollmentInt, {
     _i1.Transaction? transaction,
   }) async {

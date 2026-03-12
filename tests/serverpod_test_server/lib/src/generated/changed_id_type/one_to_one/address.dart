@@ -287,7 +287,7 @@ class AddressUuidRepository {
   /// );
   /// ```
   Future<List<AddressUuid>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<AddressUuidTable>? where,
     int? limit,
     int? offset,
@@ -331,7 +331,7 @@ class AddressUuidRepository {
   /// );
   /// ```
   Future<AddressUuid?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<AddressUuidTable>? where,
     int? offset,
     _i1.OrderByBuilder<AddressUuidTable>? orderBy,
@@ -357,7 +357,7 @@ class AddressUuidRepository {
 
   /// Finds a single [AddressUuid] by its [id] or null if no such row exists.
   Future<AddressUuid?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     AddressUuidInclude? include,
@@ -384,7 +384,7 @@ class AddressUuidRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<AddressUuid>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<AddressUuid> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -400,7 +400,7 @@ class AddressUuidRepository {
   ///
   /// The returned [AddressUuid] will have its `id` field set.
   Future<AddressUuid> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     AddressUuid row, {
     _i1.Transaction? transaction,
   }) async {
@@ -416,7 +416,7 @@ class AddressUuidRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<AddressUuid>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<AddressUuid> rows, {
     _i1.ColumnSelections<AddressUuidTable>? columns,
     _i1.Transaction? transaction,
@@ -432,7 +432,7 @@ class AddressUuidRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<AddressUuid> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     AddressUuid row, {
     _i1.ColumnSelections<AddressUuidTable>? columns,
     _i1.Transaction? transaction,
@@ -447,7 +447,7 @@ class AddressUuidRepository {
   /// Updates a single [AddressUuid] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<AddressUuid?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<AddressUuidUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -462,7 +462,7 @@ class AddressUuidRepository {
   /// Updates all [AddressUuid]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<AddressUuid>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<AddressUuidUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<AddressUuidTable> where,
     int? limit,
@@ -488,7 +488,7 @@ class AddressUuidRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<AddressUuid>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<AddressUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -500,7 +500,7 @@ class AddressUuidRepository {
 
   /// Deletes a single [AddressUuid].
   Future<AddressUuid> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     AddressUuid row, {
     _i1.Transaction? transaction,
   }) async {
@@ -512,7 +512,7 @@ class AddressUuidRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<AddressUuid>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<AddressUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -525,7 +525,7 @@ class AddressUuidRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<AddressUuidTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -539,7 +539,7 @@ class AddressUuidRepository {
 
   /// Acquires row-level locks on [AddressUuid] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<AddressUuidTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -560,7 +560,7 @@ class AddressUuidAttachRowRepository {
   /// Creates a relation between the given [AddressUuid] and [CitizenInt]
   /// by setting the [AddressUuid]'s foreign key `inhabitantId` to refer to the [CitizenInt].
   Future<void> inhabitant(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     AddressUuid addressUuid,
     _i2.CitizenInt inhabitant, {
     _i1.Transaction? transaction,
@@ -590,7 +590,7 @@ class AddressUuidDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> inhabitant(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     AddressUuid addressUuid, {
     _i1.Transaction? transaction,
   }) async {

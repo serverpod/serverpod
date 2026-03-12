@@ -267,7 +267,7 @@ class EmailFailedSignInRepository {
   /// );
   /// ```
   Future<List<EmailFailedSignIn>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? limit,
     int? offset,
@@ -309,7 +309,7 @@ class EmailFailedSignInRepository {
   /// );
   /// ```
   Future<EmailFailedSignIn?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
@@ -333,7 +333,7 @@ class EmailFailedSignInRepository {
 
   /// Finds a single [EmailFailedSignIn] by its [id] or null if no such row exists.
   Future<EmailFailedSignIn?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -358,7 +358,7 @@ class EmailFailedSignInRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<EmailFailedSignIn>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<EmailFailedSignIn> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -374,7 +374,7 @@ class EmailFailedSignInRepository {
   ///
   /// The returned [EmailFailedSignIn] will have its `id` field set.
   Future<EmailFailedSignIn> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EmailFailedSignIn row, {
     _i1.Transaction? transaction,
   }) async {
@@ -390,7 +390,7 @@ class EmailFailedSignInRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<EmailFailedSignIn>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<EmailFailedSignIn> rows, {
     _i1.ColumnSelections<EmailFailedSignInTable>? columns,
     _i1.Transaction? transaction,
@@ -406,7 +406,7 @@ class EmailFailedSignInRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EmailFailedSignIn> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EmailFailedSignIn row, {
     _i1.ColumnSelections<EmailFailedSignInTable>? columns,
     _i1.Transaction? transaction,
@@ -421,7 +421,7 @@ class EmailFailedSignInRepository {
   /// Updates a single [EmailFailedSignIn] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EmailFailedSignIn?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<EmailFailedSignInUpdateTable>
     columnValues,
@@ -437,7 +437,7 @@ class EmailFailedSignInRepository {
   /// Updates all [EmailFailedSignIn]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<EmailFailedSignIn>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<EmailFailedSignInUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
@@ -464,7 +464,7 @@ class EmailFailedSignInRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<EmailFailedSignIn>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<EmailFailedSignIn> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -476,7 +476,7 @@ class EmailFailedSignInRepository {
 
   /// Deletes a single [EmailFailedSignIn].
   Future<EmailFailedSignIn> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EmailFailedSignIn row, {
     _i1.Transaction? transaction,
   }) async {
@@ -488,7 +488,7 @@ class EmailFailedSignInRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<EmailFailedSignIn>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -501,7 +501,7 @@ class EmailFailedSignInRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -515,7 +515,7 @@ class EmailFailedSignInRepository {
 
   /// Acquires row-level locks on [EmailFailedSignIn] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

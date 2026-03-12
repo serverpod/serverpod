@@ -365,7 +365,7 @@ class TeamIntRepository {
   /// );
   /// ```
   Future<List<TeamInt>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<TeamIntTable>? where,
     int? limit,
     int? offset,
@@ -409,7 +409,7 @@ class TeamIntRepository {
   /// );
   /// ```
   Future<TeamInt?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<TeamIntTable>? where,
     int? offset,
     _i1.OrderByBuilder<TeamIntTable>? orderBy,
@@ -435,7 +435,7 @@ class TeamIntRepository {
 
   /// Finds a single [TeamInt] by its [id] or null if no such row exists.
   Future<TeamInt?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     TeamIntInclude? include,
@@ -462,7 +462,7 @@ class TeamIntRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<TeamInt>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<TeamInt> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -478,7 +478,7 @@ class TeamIntRepository {
   ///
   /// The returned [TeamInt] will have its `id` field set.
   Future<TeamInt> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     TeamInt row, {
     _i1.Transaction? transaction,
   }) async {
@@ -494,7 +494,7 @@ class TeamIntRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<TeamInt>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<TeamInt> rows, {
     _i1.ColumnSelections<TeamIntTable>? columns,
     _i1.Transaction? transaction,
@@ -510,7 +510,7 @@ class TeamIntRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<TeamInt> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     TeamInt row, {
     _i1.ColumnSelections<TeamIntTable>? columns,
     _i1.Transaction? transaction,
@@ -525,7 +525,7 @@ class TeamIntRepository {
   /// Updates a single [TeamInt] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<TeamInt?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<TeamIntUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -540,7 +540,7 @@ class TeamIntRepository {
   /// Updates all [TeamInt]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<TeamInt>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<TeamIntUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<TeamIntTable> where,
     int? limit,
@@ -566,7 +566,7 @@ class TeamIntRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<TeamInt>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<TeamInt> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -578,7 +578,7 @@ class TeamIntRepository {
 
   /// Deletes a single [TeamInt].
   Future<TeamInt> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     TeamInt row, {
     _i1.Transaction? transaction,
   }) async {
@@ -590,7 +590,7 @@ class TeamIntRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<TeamInt>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<TeamIntTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -603,7 +603,7 @@ class TeamIntRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<TeamIntTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -617,7 +617,7 @@ class TeamIntRepository {
 
   /// Acquires row-level locks on [TeamInt] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<TeamIntTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -638,7 +638,7 @@ class TeamIntAttachRepository {
   /// Creates a relation between this [TeamInt] and the given [PlayerUuid]s
   /// by setting each [PlayerUuid]'s foreign key `teamId` to refer to this [TeamInt].
   Future<void> players(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     TeamInt teamInt,
     List<_i3.PlayerUuid> playerUuid, {
     _i1.Transaction? transaction,
@@ -667,7 +667,7 @@ class TeamIntAttachRowRepository {
   /// Creates a relation between the given [TeamInt] and [ArenaUuid]
   /// by setting the [TeamInt]'s foreign key `arenaId` to refer to the [ArenaUuid].
   Future<void> arena(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     TeamInt teamInt,
     _i2.ArenaUuid arena, {
     _i1.Transaction? transaction,
@@ -690,7 +690,7 @@ class TeamIntAttachRowRepository {
   /// Creates a relation between this [TeamInt] and the given [PlayerUuid]
   /// by setting the [PlayerUuid]'s foreign key `teamId` to refer to this [TeamInt].
   Future<void> players(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     TeamInt teamInt,
     _i3.PlayerUuid playerUuid, {
     _i1.Transaction? transaction,
@@ -720,7 +720,7 @@ class TeamIntDetachRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> players(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<_i3.PlayerUuid> playerUuid, {
     _i1.Transaction? transaction,
   }) async {
@@ -746,7 +746,7 @@ class TeamIntDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> arena(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     TeamInt teamInt, {
     _i1.Transaction? transaction,
   }) async {
@@ -768,7 +768,7 @@ class TeamIntDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> players(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i3.PlayerUuid playerUuid, {
     _i1.Transaction? transaction,
   }) async {

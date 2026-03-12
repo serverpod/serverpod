@@ -305,7 +305,7 @@ class EnumDefaultMixRepository {
   /// );
   /// ```
   Future<List<EnumDefaultMix>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     int? limit,
     int? offset,
@@ -347,7 +347,7 @@ class EnumDefaultMixRepository {
   /// );
   /// ```
   Future<EnumDefaultMix?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     int? offset,
     _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
@@ -371,7 +371,7 @@ class EnumDefaultMixRepository {
 
   /// Finds a single [EnumDefaultMix] by its [id] or null if no such row exists.
   Future<EnumDefaultMix?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -396,7 +396,7 @@ class EnumDefaultMixRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<EnumDefaultMix>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<EnumDefaultMix> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -412,7 +412,7 @@ class EnumDefaultMixRepository {
   ///
   /// The returned [EnumDefaultMix] will have its `id` field set.
   Future<EnumDefaultMix> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EnumDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
@@ -428,7 +428,7 @@ class EnumDefaultMixRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<EnumDefaultMix>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<EnumDefaultMix> rows, {
     _i1.ColumnSelections<EnumDefaultMixTable>? columns,
     _i1.Transaction? transaction,
@@ -444,7 +444,7 @@ class EnumDefaultMixRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EnumDefaultMix> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EnumDefaultMix row, {
     _i1.ColumnSelections<EnumDefaultMixTable>? columns,
     _i1.Transaction? transaction,
@@ -459,7 +459,7 @@ class EnumDefaultMixRepository {
   /// Updates a single [EnumDefaultMix] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EnumDefaultMix?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<EnumDefaultMixUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -474,7 +474,7 @@ class EnumDefaultMixRepository {
   /// Updates all [EnumDefaultMix]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<EnumDefaultMix>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<EnumDefaultMixUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
     int? limit,
@@ -500,7 +500,7 @@ class EnumDefaultMixRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<EnumDefaultMix>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<EnumDefaultMix> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -512,7 +512,7 @@ class EnumDefaultMixRepository {
 
   /// Deletes a single [EnumDefaultMix].
   Future<EnumDefaultMix> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EnumDefaultMix row, {
     _i1.Transaction? transaction,
   }) async {
@@ -524,7 +524,7 @@ class EnumDefaultMixRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<EnumDefaultMix>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -537,7 +537,7 @@ class EnumDefaultMixRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -551,7 +551,7 @@ class EnumDefaultMixRepository {
 
   /// Acquires row-level locks on [EnumDefaultMix] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

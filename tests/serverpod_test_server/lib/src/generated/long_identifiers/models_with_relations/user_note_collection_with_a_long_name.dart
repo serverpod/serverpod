@@ -305,7 +305,7 @@ class UserNoteCollectionWithALongNameRepository {
   /// );
   /// ```
   Future<List<UserNoteCollectionWithALongName>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
     int? limit,
     int? offset,
@@ -349,7 +349,7 @@ class UserNoteCollectionWithALongNameRepository {
   /// );
   /// ```
   Future<UserNoteCollectionWithALongName?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserNoteCollectionWithALongNameTable>? orderBy,
@@ -375,7 +375,7 @@ class UserNoteCollectionWithALongNameRepository {
 
   /// Finds a single [UserNoteCollectionWithALongName] by its [id] or null if no such row exists.
   Future<UserNoteCollectionWithALongName?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     UserNoteCollectionWithALongNameInclude? include,
@@ -402,7 +402,7 @@ class UserNoteCollectionWithALongNameRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<UserNoteCollectionWithALongName>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<UserNoteCollectionWithALongName> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -418,7 +418,7 @@ class UserNoteCollectionWithALongNameRepository {
   ///
   /// The returned [UserNoteCollectionWithALongName] will have its `id` field set.
   Future<UserNoteCollectionWithALongName> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UserNoteCollectionWithALongName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -434,7 +434,7 @@ class UserNoteCollectionWithALongNameRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<UserNoteCollectionWithALongName>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<UserNoteCollectionWithALongName> rows, {
     _i1.ColumnSelections<UserNoteCollectionWithALongNameTable>? columns,
     _i1.Transaction? transaction,
@@ -450,7 +450,7 @@ class UserNoteCollectionWithALongNameRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<UserNoteCollectionWithALongName> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UserNoteCollectionWithALongName row, {
     _i1.ColumnSelections<UserNoteCollectionWithALongNameTable>? columns,
     _i1.Transaction? transaction,
@@ -465,7 +465,7 @@ class UserNoteCollectionWithALongNameRepository {
   /// Updates a single [UserNoteCollectionWithALongName] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UserNoteCollectionWithALongName?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<
       UserNoteCollectionWithALongNameUpdateTable
@@ -483,7 +483,7 @@ class UserNoteCollectionWithALongNameRepository {
   /// Updates all [UserNoteCollectionWithALongName]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<UserNoteCollectionWithALongName>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<
       UserNoteCollectionWithALongNameUpdateTable
     >
@@ -513,7 +513,7 @@ class UserNoteCollectionWithALongNameRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<UserNoteCollectionWithALongName>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<UserNoteCollectionWithALongName> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -525,7 +525,7 @@ class UserNoteCollectionWithALongNameRepository {
 
   /// Deletes a single [UserNoteCollectionWithALongName].
   Future<UserNoteCollectionWithALongName> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UserNoteCollectionWithALongName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -537,7 +537,7 @@ class UserNoteCollectionWithALongNameRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<UserNoteCollectionWithALongName>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>
     where,
     _i1.Transaction? transaction,
@@ -551,7 +551,7 @@ class UserNoteCollectionWithALongNameRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -565,7 +565,7 @@ class UserNoteCollectionWithALongNameRepository {
 
   /// Acquires row-level locks on [UserNoteCollectionWithALongName] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>
     where,
     required _i1.LockMode lockMode,
@@ -587,7 +587,7 @@ class UserNoteCollectionWithALongNameAttachRepository {
   /// Creates a relation between this [UserNoteCollectionWithALongName] and the given [UserNoteWithALongName]s
   /// by setting each [UserNoteWithALongName]'s foreign key `_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId` to refer to this [UserNoteCollectionWithALongName].
   Future<void> notes(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UserNoteCollectionWithALongName userNoteCollectionWithALongName,
     List<_i2.UserNoteWithALongName> userNoteWithALongName, {
     _i1.Transaction? transaction,
@@ -627,7 +627,7 @@ class UserNoteCollectionWithALongNameAttachRowRepository {
   /// Creates a relation between this [UserNoteCollectionWithALongName] and the given [UserNoteWithALongName]
   /// by setting the [UserNoteWithALongName]'s foreign key `_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId` to refer to this [UserNoteCollectionWithALongName].
   Future<void> notes(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UserNoteCollectionWithALongName userNoteCollectionWithALongName,
     _i2.UserNoteWithALongName userNoteWithALongName, {
     _i1.Transaction? transaction,
@@ -666,7 +666,7 @@ class UserNoteCollectionWithALongNameDetachRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> notes(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<_i2.UserNoteWithALongName> userNoteWithALongName, {
     _i1.Transaction? transaction,
   }) async {
@@ -705,7 +705,7 @@ class UserNoteCollectionWithALongNameDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> notes(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i2.UserNoteWithALongName userNoteWithALongName, {
     _i1.Transaction? transaction,
   }) async {

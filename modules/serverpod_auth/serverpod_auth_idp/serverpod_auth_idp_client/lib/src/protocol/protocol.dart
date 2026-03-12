@@ -465,8 +465,8 @@ class Protocol extends _i1.SerializationManager {
     if (record is ({_i20.ByteData challenge, _i1.UuidValue id})) {
       return {
         "n": {
-          "challenge": record.challenge,
-          "id": record.id,
+          "challenge": record.challenge.toJson(),
+          "id": record.id.toJson(),
         },
       };
     }

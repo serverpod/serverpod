@@ -437,7 +437,7 @@ class FacebookAccountRepository {
   /// );
   /// ```
   Future<List<FacebookAccount>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<FacebookAccountTable>? where,
     int? limit,
     int? offset,
@@ -481,7 +481,7 @@ class FacebookAccountRepository {
   /// );
   /// ```
   Future<FacebookAccount?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<FacebookAccountTable>? where,
     int? offset,
     _i1.OrderByBuilder<FacebookAccountTable>? orderBy,
@@ -507,7 +507,7 @@ class FacebookAccountRepository {
 
   /// Finds a single [FacebookAccount] by its [id] or null if no such row exists.
   Future<FacebookAccount?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     FacebookAccountInclude? include,
@@ -534,7 +534,7 @@ class FacebookAccountRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<FacebookAccount>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<FacebookAccount> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -550,7 +550,7 @@ class FacebookAccountRepository {
   ///
   /// The returned [FacebookAccount] will have its `id` field set.
   Future<FacebookAccount> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     FacebookAccount row, {
     _i1.Transaction? transaction,
   }) async {
@@ -566,7 +566,7 @@ class FacebookAccountRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<FacebookAccount>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<FacebookAccount> rows, {
     _i1.ColumnSelections<FacebookAccountTable>? columns,
     _i1.Transaction? transaction,
@@ -582,7 +582,7 @@ class FacebookAccountRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<FacebookAccount> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     FacebookAccount row, {
     _i1.ColumnSelections<FacebookAccountTable>? columns,
     _i1.Transaction? transaction,
@@ -597,7 +597,7 @@ class FacebookAccountRepository {
   /// Updates a single [FacebookAccount] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<FacebookAccount?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<FacebookAccountUpdateTable>
     columnValues,
@@ -613,7 +613,7 @@ class FacebookAccountRepository {
   /// Updates all [FacebookAccount]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<FacebookAccount>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<FacebookAccountUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<FacebookAccountTable> where,
@@ -640,7 +640,7 @@ class FacebookAccountRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<FacebookAccount>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<FacebookAccount> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -652,7 +652,7 @@ class FacebookAccountRepository {
 
   /// Deletes a single [FacebookAccount].
   Future<FacebookAccount> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     FacebookAccount row, {
     _i1.Transaction? transaction,
   }) async {
@@ -664,7 +664,7 @@ class FacebookAccountRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<FacebookAccount>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<FacebookAccountTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -677,7 +677,7 @@ class FacebookAccountRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<FacebookAccountTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -691,7 +691,7 @@ class FacebookAccountRepository {
 
   /// Acquires row-level locks on [FacebookAccount] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<FacebookAccountTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -712,7 +712,7 @@ class FacebookAccountAttachRowRepository {
   /// Creates a relation between the given [FacebookAccount] and [AuthUser]
   /// by setting the [FacebookAccount]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     FacebookAccount facebookAccount,
     _i2.AuthUser authUser, {
     _i1.Transaction? transaction,

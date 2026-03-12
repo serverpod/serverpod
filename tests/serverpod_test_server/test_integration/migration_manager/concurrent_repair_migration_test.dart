@@ -6,7 +6,7 @@ import 'package:uuid/uuid.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
-import 'package:serverpod/src/database/migrations/migration_manager.dart';
+import 'package:serverpod/src/database/migrations/server_migration_manager.dart';
 import 'package:serverpod_cli/src/migrations/generator.dart';
 
 void main() {
@@ -52,7 +52,7 @@ void main() {
       tearDown(() async {
         var session = sessionBuilder.build();
         await session.db.unsafeExecute('''
-        BEGIN; 
+        BEGIN;
 
         DROP TABLE IF EXISTS ${testTableName};
 
@@ -70,7 +70,7 @@ void main() {
       test(
         'when triggering multiple concurrent repair migrations then migration is successfully applied once',
         () async {
-          var migrationManager = MigrationManager(
+          var migrationManager = ServerMigrationManager(
             Directory(d.sandbox),
           );
 

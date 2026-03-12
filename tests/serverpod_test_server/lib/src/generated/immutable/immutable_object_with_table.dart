@@ -243,7 +243,7 @@ class ImmutableObjectWithTableRepository {
   /// );
   /// ```
   Future<List<ImmutableObjectWithTable>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable>? where,
     int? limit,
     int? offset,
@@ -285,7 +285,7 @@ class ImmutableObjectWithTableRepository {
   /// );
   /// ```
   Future<ImmutableObjectWithTable?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable>? where,
     int? offset,
     _i1.OrderByBuilder<ImmutableObjectWithTableTable>? orderBy,
@@ -309,7 +309,7 @@ class ImmutableObjectWithTableRepository {
 
   /// Finds a single [ImmutableObjectWithTable] by its [id] or null if no such row exists.
   Future<ImmutableObjectWithTable?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -334,7 +334,7 @@ class ImmutableObjectWithTableRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<ImmutableObjectWithTable>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ImmutableObjectWithTable> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -350,7 +350,7 @@ class ImmutableObjectWithTableRepository {
   ///
   /// The returned [ImmutableObjectWithTable] will have its `id` field set.
   Future<ImmutableObjectWithTable> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ImmutableObjectWithTable row, {
     _i1.Transaction? transaction,
   }) async {
@@ -366,7 +366,7 @@ class ImmutableObjectWithTableRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<ImmutableObjectWithTable>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ImmutableObjectWithTable> rows, {
     _i1.ColumnSelections<ImmutableObjectWithTableTable>? columns,
     _i1.Transaction? transaction,
@@ -382,7 +382,7 @@ class ImmutableObjectWithTableRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ImmutableObjectWithTable> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ImmutableObjectWithTable row, {
     _i1.ColumnSelections<ImmutableObjectWithTableTable>? columns,
     _i1.Transaction? transaction,
@@ -397,7 +397,7 @@ class ImmutableObjectWithTableRepository {
   /// Updates a single [ImmutableObjectWithTable] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ImmutableObjectWithTable?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<ImmutableObjectWithTableUpdateTable>
     columnValues,
@@ -413,7 +413,7 @@ class ImmutableObjectWithTableRepository {
   /// Updates all [ImmutableObjectWithTable]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ImmutableObjectWithTable>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ImmutableObjectWithTableUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable> where,
@@ -440,7 +440,7 @@ class ImmutableObjectWithTableRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ImmutableObjectWithTable>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ImmutableObjectWithTable> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -452,7 +452,7 @@ class ImmutableObjectWithTableRepository {
 
   /// Deletes a single [ImmutableObjectWithTable].
   Future<ImmutableObjectWithTable> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ImmutableObjectWithTable row, {
     _i1.Transaction? transaction,
   }) async {
@@ -464,7 +464,7 @@ class ImmutableObjectWithTableRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<ImmutableObjectWithTable>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -477,7 +477,7 @@ class ImmutableObjectWithTableRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -491,7 +491,7 @@ class ImmutableObjectWithTableRepository {
 
   /// Acquires row-level locks on [ImmutableObjectWithTable] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
