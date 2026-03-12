@@ -454,6 +454,47 @@ class MultipleMaxFieldNameRepository {
     );
   }
 
+  /// Upserts all [MultipleMaxFieldName]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [MultipleMaxFieldName]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<MultipleMaxFieldName>> upsert(
+    _i1.DatabaseSession session,
+    List<MultipleMaxFieldName> rows, {
+    required _i1.ColumnSelections<MultipleMaxFieldNameTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<MultipleMaxFieldName>(
+      rows,
+      uniqueColumns: uniqueColumns(MultipleMaxFieldName.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [MultipleMaxFieldName] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [MultipleMaxFieldName] will have its `id` field set.
+  Future<MultipleMaxFieldName> upsertRow(
+    _i1.DatabaseSession session,
+    MultipleMaxFieldName row, {
+    required _i1.ColumnSelections<MultipleMaxFieldNameTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<MultipleMaxFieldName>(
+      row,
+      uniqueColumns: uniqueColumns(MultipleMaxFieldName.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [MultipleMaxFieldName]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

@@ -462,6 +462,47 @@ class EnrollmentIntRepository {
     );
   }
 
+  /// Upserts all [EnrollmentInt]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [EnrollmentInt]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<EnrollmentInt>> upsert(
+    _i1.DatabaseSession session,
+    List<EnrollmentInt> rows, {
+    required _i1.ColumnSelections<EnrollmentIntTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<EnrollmentInt>(
+      rows,
+      uniqueColumns: uniqueColumns(EnrollmentInt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [EnrollmentInt] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [EnrollmentInt] will have its `id` field set.
+  Future<EnrollmentInt> upsertRow(
+    _i1.DatabaseSession session,
+    EnrollmentInt row, {
+    required _i1.ColumnSelections<EnrollmentIntTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<EnrollmentInt>(
+      row,
+      uniqueColumns: uniqueColumns(EnrollmentInt.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [EnrollmentInt]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

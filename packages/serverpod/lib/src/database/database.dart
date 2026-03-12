@@ -359,6 +359,43 @@ class Database {
     );
   }
 
+  /// Upserts all [TableRow]s in the list and returns the resulting rows.
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  /// This is an atomic operation.
+  @internal
+  Future<List<T>> upsert<T extends TableRow>(
+    List<T> rows, {
+    required List<Column> uniqueColumns,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.upsert<T>(
+      _session,
+      rows,
+      uniqueColumns: uniqueColumns,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
+    );
+  }
+
+  /// Upserts a single [TableRow] and returns the resulting row.
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  @internal
+  Future<T> upsertRow<T extends TableRow>(
+    T row, {
+    required List<Column> uniqueColumns,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.upsertRow<T>(
+      _session,
+      row,
+      uniqueColumns: uniqueColumns,
+      // ignore: invalid_use_of_visible_for_testing_member
+      transaction: transaction ?? _session.transaction,
+    );
+  }
+
   /// Deletes all [TableRow]s in the list and returns the deleted rows.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// be deleted, none of the rows will be deleted.

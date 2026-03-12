@@ -418,6 +418,138 @@ SELECT * FROM insertWithIdNotNull
   }
 }
 
+/// Builds a SQL query for an upsert (INSERT ... ON CONFLICT ... DO UPDATE)
+/// statement.
+/// This is typically only used internally by the serverpod framework.
+class UpsertQueryBuilder {
+  final Table _table;
+  final List<Column> _uniqueColumns;
+  late final List<TableRow> _rows;
+
+  /// Creates a new [UpsertQueryBuilder].
+  ///
+  /// [table] is the target table.
+  /// [rows] is the list of rows to upsert (must not be empty).
+  /// [uniqueColumns] defines which columns form the conflict target
+  /// (must not be empty, must be a subset of [table.columns], and must not
+  /// include the `id` column).
+  UpsertQueryBuilder({
+    required Table table,
+    required List<TableRow> rows,
+    required List<Column> uniqueColumns,
+  }) : _table = table,
+       _uniqueColumns = uniqueColumns {
+    if (rows.isEmpty) {
+      throw ArgumentError.value(
+        rows,
+        'rows',
+        'Cannot be empty',
+      );
+    }
+
+    if (uniqueColumns.isEmpty) {
+      throw ArgumentError.value(
+        uniqueColumns,
+        'uniqueColumns',
+        'Cannot be empty',
+      );
+    }
+
+    var tableColumnNames = table.columns.map((c) => c.columnName).toSet();
+    for (var col in uniqueColumns) {
+      if (!tableColumnNames.contains(col.columnName)) {
+        throw ArgumentError.value(
+          uniqueColumns,
+          'uniqueColumns',
+          'Column "${col.columnName}" is not a column of table "${table.tableName}"',
+        );
+      }
+      if (col.columnName == 'id') {
+        throw ArgumentError.value(
+          uniqueColumns,
+          'uniqueColumns',
+          'The "id" column cannot be used as a unique column for upsert',
+        );
+      }
+    }
+
+    _rows = rows;
+  }
+
+  /// Builds the upsert SQL sub-query for either rows with id null or not null.
+  String? _build(bool onlyWithIdNull) {
+    var selectedColumns = onlyWithIdNull
+        ? _table.columns.where((column) => column.columnName != 'id')
+        : _table.columns;
+
+    var columnNames = selectedColumns
+        .map((e) => '"${e.columnName}"')
+        .join(', ');
+
+    var filteredValues = onlyWithIdNull
+        ? _rows.where((row) => row.id == null)
+        : _rows.where((row) => row.id != null);
+
+    if (filteredValues.isEmpty) return null;
+
+    var values = filteredValues
+        .map((row) => row.toJsonForDatabase() as Map<String, dynamic>)
+        .map((row) {
+          var values = selectedColumns
+              .map((column) {
+                var unformattedValue = row[column.columnName];
+                return ValueEncoder.instance.convert(
+                  unformattedValue,
+                  hasDefaults: column.hasDefault,
+                );
+              })
+              .join(', ');
+          return '($values)';
+        })
+        .join(', ');
+
+    var uniqueColumnNames = _uniqueColumns
+        .map((c) => '"${c.columnName}"')
+        .join(', ');
+
+    // Build the DO UPDATE SET clause: update all non-unique, non-id columns
+    var uniqueColumnNameSet = _uniqueColumns
+        .map((c) => c.columnName)
+        .toSet();
+    var updateColumns = selectedColumns
+        .where((c) => c.columnName != 'id' && !uniqueColumnNameSet.contains(c.columnName));
+    var setClause = updateColumns
+        .map((c) => '"${c.columnName}" = EXCLUDED."${c.columnName}"')
+        .join(', ');
+
+    var returning = buildReturningClause(_table);
+    var onConflict = setClause.isEmpty
+        ? ' ON CONFLICT ($uniqueColumnNames) DO NOTHING'
+        : ' ON CONFLICT ($uniqueColumnNames) DO UPDATE SET $setClause';
+
+    return columnNames.isEmpty
+        ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES$onConflict RETURNING $returning'
+        : 'INSERT INTO "${_table.tableName}" ($columnNames) VALUES $values$onConflict RETURNING $returning';
+  }
+
+  /// Builds the upsert SQL query.
+  String build() {
+    // Can not be empty because the constructor checks for empty rows.
+    var upsertQueries = [true, false].map(_build).nonNulls;
+    if (upsertQueries.length == 1) return upsertQueries.single;
+
+    return '''
+WITH
+  upsertWithIdNull AS (${upsertQueries.first}),
+  upsertWithIdNotNull AS (${upsertQueries.last})
+
+SELECT * FROM upsertWithIdNull
+UNION ALL
+SELECT * FROM upsertWithIdNotNull
+''';
+  }
+}
+
 /// Builds a SQL query for a count statement.
 /// This is typically only used internally by the serverpod framework.
 ///

@@ -377,6 +377,47 @@ class ChildClassWithoutIdRepository {
     );
   }
 
+  /// Upserts all [ChildClassWithoutId]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [ChildClassWithoutId]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ChildClassWithoutId>> upsert(
+    _i2.DatabaseSession session,
+    List<ChildClassWithoutId> rows, {
+    required _i2.ColumnSelections<ChildClassWithoutIdTable> uniqueColumns,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ChildClassWithoutId>(
+      rows,
+      uniqueColumns: uniqueColumns(ChildClassWithoutId.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ChildClassWithoutId] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [ChildClassWithoutId] will have its `id` field set.
+  Future<ChildClassWithoutId> upsertRow(
+    _i2.DatabaseSession session,
+    ChildClassWithoutId row, {
+    required _i2.ColumnSelections<ChildClassWithoutIdTable> uniqueColumns,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ChildClassWithoutId>(
+      row,
+      uniqueColumns: uniqueColumns(ChildClassWithoutId.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [ChildClassWithoutId]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

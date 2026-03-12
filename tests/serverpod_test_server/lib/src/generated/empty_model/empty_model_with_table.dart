@@ -286,6 +286,47 @@ class EmptyModelWithTableRepository {
     );
   }
 
+  /// Upserts all [EmptyModelWithTable]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [EmptyModelWithTable]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<EmptyModelWithTable>> upsert(
+    _i1.DatabaseSession session,
+    List<EmptyModelWithTable> rows, {
+    required _i1.ColumnSelections<EmptyModelWithTableTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<EmptyModelWithTable>(
+      rows,
+      uniqueColumns: uniqueColumns(EmptyModelWithTable.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [EmptyModelWithTable] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [EmptyModelWithTable] will have its `id` field set.
+  Future<EmptyModelWithTable> upsertRow(
+    _i1.DatabaseSession session,
+    EmptyModelWithTable row, {
+    required _i1.ColumnSelections<EmptyModelWithTableTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<EmptyModelWithTable>(
+      row,
+      uniqueColumns: uniqueColumns(EmptyModelWithTable.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [EmptyModelWithTable]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

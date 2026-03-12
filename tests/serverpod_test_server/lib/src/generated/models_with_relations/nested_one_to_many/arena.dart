@@ -379,6 +379,47 @@ class ArenaRepository {
     );
   }
 
+  /// Upserts all [Arena]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Arena]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Arena>> upsert(
+    _i1.DatabaseSession session,
+    List<Arena> rows, {
+    required _i1.ColumnSelections<ArenaTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Arena>(
+      rows,
+      uniqueColumns: uniqueColumns(Arena.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Arena] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Arena] will have its `id` field set.
+  Future<Arena> upsertRow(
+    _i1.DatabaseSession session,
+    Arena row, {
+    required _i1.ColumnSelections<ArenaTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Arena>(
+      row,
+      uniqueColumns: uniqueColumns(Arena.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [Arena]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

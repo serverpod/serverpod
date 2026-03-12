@@ -358,6 +358,47 @@ class ObjectFieldPersistRepository {
     );
   }
 
+  /// Upserts all [ObjectFieldPersist]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [ObjectFieldPersist]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ObjectFieldPersist>> upsert(
+    _i1.DatabaseSession session,
+    List<ObjectFieldPersist> rows, {
+    required _i1.ColumnSelections<ObjectFieldPersistTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ObjectFieldPersist>(
+      rows,
+      uniqueColumns: uniqueColumns(ObjectFieldPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ObjectFieldPersist] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [ObjectFieldPersist] will have its `id` field set.
+  Future<ObjectFieldPersist> upsertRow(
+    _i1.DatabaseSession session,
+    ObjectFieldPersist row, {
+    required _i1.ColumnSelections<ObjectFieldPersistTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ObjectFieldPersist>(
+      row,
+      uniqueColumns: uniqueColumns(ObjectFieldPersist.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [ObjectFieldPersist]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

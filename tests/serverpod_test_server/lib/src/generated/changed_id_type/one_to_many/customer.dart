@@ -411,6 +411,47 @@ class CustomerIntRepository {
     );
   }
 
+  /// Upserts all [CustomerInt]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [CustomerInt]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<CustomerInt>> upsert(
+    _i1.DatabaseSession session,
+    List<CustomerInt> rows, {
+    required _i1.ColumnSelections<CustomerIntTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<CustomerInt>(
+      rows,
+      uniqueColumns: uniqueColumns(CustomerInt.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [CustomerInt] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [CustomerInt] will have its `id` field set.
+  Future<CustomerInt> upsertRow(
+    _i1.DatabaseSession session,
+    CustomerInt row, {
+    required _i1.ColumnSelections<CustomerIntTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<CustomerInt>(
+      row,
+      uniqueColumns: uniqueColumns(CustomerInt.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [CustomerInt]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
