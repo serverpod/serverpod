@@ -568,6 +568,47 @@ class QueryLogEntryRepository {
     );
   }
 
+  /// Upserts all [QueryLogEntry]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [QueryLogEntry]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<QueryLogEntry>> upsert(
+    _i1.DatabaseSession session,
+    List<QueryLogEntry> rows, {
+    required _i1.ColumnSelections<QueryLogEntryTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<QueryLogEntry>(
+      rows,
+      uniqueColumns: uniqueColumns(QueryLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [QueryLogEntry] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [QueryLogEntry] will have its `id` field set.
+  Future<QueryLogEntry> upsertRow(
+    _i1.DatabaseSession session,
+    QueryLogEntry row, {
+    required _i1.ColumnSelections<QueryLogEntryTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<QueryLogEntry>(
+      row,
+      uniqueColumns: uniqueColumns(QueryLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [QueryLogEntry]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

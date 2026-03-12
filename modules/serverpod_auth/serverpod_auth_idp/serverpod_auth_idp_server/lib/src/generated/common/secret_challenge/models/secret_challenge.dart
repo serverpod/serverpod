@@ -334,6 +334,47 @@ class SecretChallengeRepository {
     );
   }
 
+  /// Upserts all [SecretChallenge]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [SecretChallenge]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<SecretChallenge>> upsert(
+    _i1.DatabaseSession session,
+    List<SecretChallenge> rows, {
+    required _i1.ColumnSelections<SecretChallengeTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<SecretChallenge>(
+      rows,
+      uniqueColumns: uniqueColumns(SecretChallenge.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [SecretChallenge] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [SecretChallenge] will have its `id` field set.
+  Future<SecretChallenge> upsertRow(
+    _i1.DatabaseSession session,
+    SecretChallenge row, {
+    required _i1.ColumnSelections<SecretChallengeTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<SecretChallenge>(
+      row,
+      uniqueColumns: uniqueColumns(SecretChallenge.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [SecretChallenge]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
