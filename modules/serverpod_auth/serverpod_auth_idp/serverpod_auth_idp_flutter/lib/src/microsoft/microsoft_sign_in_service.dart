@@ -94,6 +94,7 @@ class MicrosoftSignInService {
     String authorityHost = 'login.microsoftonline.com',
     String? callbackUrlScheme,
     bool? useWebview,
+    Map<String, String> additionalAuthParams = const {},
   }) async {
     if (_config != null) return;
 
@@ -105,6 +106,7 @@ class MicrosoftSignInService {
       clientId: clientId,
       redirectUri: redirectUri,
       callbackUrlScheme: callbackUrlScheme ?? Uri.parse(redirectUri).scheme,
+      additionalAuthParams: additionalAuthParams,
     );
     _useWebview = useWebview;
   }
