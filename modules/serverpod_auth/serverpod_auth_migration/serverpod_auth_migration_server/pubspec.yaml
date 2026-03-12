@@ -34,6 +34,8 @@ dependency_overrides:
     path: ../../serverpod_auth_idp/serverpod_auth_idp_server
   serverpod_auth_server:
     path: ../../../legacy/serverpod_auth/serverpod_auth_server
+  serverpod_database:
+    path: ../../../../packages/serverpod_database
   serverpod_lints:
     path: ../../../../packages/serverpod_lints
   serverpod_serialization:

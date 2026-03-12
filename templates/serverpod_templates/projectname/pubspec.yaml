@@ -12,6 +12,8 @@ environment:
 dependency_overrides: 
   serverpod: 
     path: ../../../packages/serverpod 
+  serverpod_database: 
+    path: ../../../packages/serverpod_database 
   serverpod_serialization: 
     path: ../../../packages/serverpod_serialization 
   serverpod_shared: 

@@ -22,6 +22,8 @@ dependency_overrides:
     path: ../../../../packages/serverpod
   serverpod_auth_server:
     path: ../../../../modules/legacy/serverpod_auth/serverpod_auth_server
+  serverpod_database:
+    path: ../../../../packages/serverpod_database
   serverpod_serialization:
     path: ../../../../packages/serverpod_serialization
   serverpod_shared:
