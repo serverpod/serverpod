@@ -42,10 +42,10 @@ class LegacyAdminEndpoint extends Endpoint {
   Future<void> blockUser(final Session session, final int userId) async {
     final authUser = await _findAuthUserByLegacyUserId(session, userId);
     if (authUser == null) {
-      throw StateError('userId $userId not found');
+      throw InvalidParametersException('userId $userId not found');
     }
     if (authUser.blocked) {
-      throw StateError('userId $userId already blocked');
+      throw InvalidParametersException('userId $userId already blocked');
     }
 
     await AuthServices.instance.authUsers.update(
@@ -63,10 +63,10 @@ class LegacyAdminEndpoint extends Endpoint {
   Future<void> unblockUser(final Session session, final int userId) async {
     final authUser = await _findAuthUserByLegacyUserId(session, userId);
     if (authUser == null) {
-      throw StateError('userId $userId not found');
+      throw InvalidParametersException('userId $userId not found');
     }
     if (!authUser.blocked) {
-      throw StateError('userId $userId already unblocked');
+      throw InvalidParametersException('userId $userId already unblocked');
     }
 
     await AuthServices.instance.authUsers.update(
