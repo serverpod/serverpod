@@ -31,13 +31,19 @@ class CosSigner {
   /// [objectKey] – object path; a leading `/` is added if missing.
   /// [expires] – signature validity in seconds, defaults to 3600.
   /// [queryParams] – query parameters to include in the signature.
-  /// [headers] – HTTP headers to include in the signature.
+  /// [headers] – HTTP headers to include in the signature. Keys are
+  ///   normalized to lowercase internally for signing; callers may pass
+  ///   mixed-case keys.
+  /// [host] – when provided, overrides the default host resolution
+  ///   ([publicHost] → [defaultHost]). Use this for upload URLs that
+  ///   must hit the COS endpoint rather than a CDN / custom domain.
   String generatePresignedUrl(
     String httpMethod,
     String objectKey, {
     int expires = 3600,
     Map<String, String>? queryParams,
     Map<String, String>? headers,
+    String? host,
   }) {
     if (!objectKey.startsWith('/')) {
       objectKey = '/$objectKey';
@@ -50,20 +56,28 @@ class CosSigner {
 
     final signKey = _hmacSha1(secretKey, keyTime);
 
-    final params = queryParams ?? {};
-    final sortedParamKeys = params.keys.map((k) => k.toLowerCase()).toList()
-      ..sort();
+    // Normalize query param keys to lowercase for signing.
+    final rawParams = queryParams ?? {};
+    final normalizedParams = {
+      for (final e in rawParams.entries) e.key.toLowerCase(): e.value,
+    };
+    final sortedParamKeys = normalizedParams.keys.toList()..sort();
     final urlParamList = sortedParamKeys.map(_cosEncode).join(';');
     final httpParameters = sortedParamKeys
-        .map((k) => '${_cosEncode(k)}=${_cosEncode(params[k] ?? '')}')
+        .map((k) => '${_cosEncode(k)}=${_cosEncode(normalizedParams[k] ?? '')}')
         .join('&');
 
-    final headerMap = headers ?? {};
-    final sortedHeaderKeys = headerMap.keys.map((k) => k.toLowerCase()).toList()
-      ..sort();
+    // Normalize header keys to lowercase for signing.
+    final rawHeaders = headers ?? {};
+    final normalizedHeaders = {
+      for (final e in rawHeaders.entries) e.key.toLowerCase(): e.value,
+    };
+    final sortedHeaderKeys = normalizedHeaders.keys.toList()..sort();
     final headerList = sortedHeaderKeys.map(_cosEncode).join(';');
     final httpHeaders = sortedHeaderKeys
-        .map((k) => '${_cosEncode(k)}=${_cosEncode(headerMap[k] ?? '')}')
+        .map(
+          (k) => '${_cosEncode(k)}=${_cosEncode(normalizedHeaders[k] ?? '')}',
+        )
         .join('&');
 
     final httpString =
@@ -84,13 +98,13 @@ class CosSigner {
       'q-signature': signature,
     };
 
-    final allParams = {...params, ...signatureParams};
+    final allParams = {...rawParams, ...signatureParams};
     final queryString = allParams.entries
         .map((e) => '${e.key}=${_cosEncode(e.value)}')
         .join('&');
 
-    final host = _normalizeHost(publicHost) ?? defaultHost;
-    return 'https://$host$objectKey?$queryString';
+    final effectiveHost = host ?? _normalizeHost(publicHost) ?? defaultHost;
+    return 'https://$effectiveHost$objectKey?$queryString';
   }
 
   String _hmacSha1(String key, String msg) {

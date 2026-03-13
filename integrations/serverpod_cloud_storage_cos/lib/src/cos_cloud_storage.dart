@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
@@ -31,6 +32,61 @@ import 'signing/cos_signer.dart';
 ///   region: 'ap-guangzhou',
 /// ));
 /// ```
+///
+/// ## Client-side direct upload
+///
+/// Use `session.storage.createDirectFileUploadDescription(...)` to generate
+/// a presigned PUT description. The client receives a JSON string that
+/// `FileUploader` uses to perform a binary PUT directly to COS:
+///
+/// ```dart
+/// // Server endpoint
+/// final description = await session.storage
+///     .createDirectFileUploadDescription(
+///       storageId: 'public',
+///       path: 'uploads/photo.jpg',
+///     );
+///
+/// // Client
+/// final uploader = FileUploader(description);
+/// final success = await uploader.uploadByteData(byteData);
+/// if (success) {
+///   await session.storage.verifyDirectFileUpload(
+///     storageId: 'public',
+///     path: 'uploads/photo.jpg',
+///   );
+/// }
+/// ```
+///
+/// ## Provider-specific limitations
+///
+/// - **preventOverwrite on versioning-enabled buckets**: The
+///   `x-cos-forbid-overwrite` header has no effect when bucket versioning is
+///   enabled. COS will silently create a new object version instead of
+///   returning 409 Conflict.
+/// - **contentLength enforcement**: For server-side uploads,
+///   `storeFileWithOptions` performs both a client-side pre-check and
+///   server-side `Content-Length` validation. For direct client uploads,
+///   `Content-Length` is signed into the presigned URL; however, COS may
+///   still accept uploads if the actual size differs from the signed value
+///   depending on the transfer encoding.
+/// - **maxFileSize**: Pure presigned PUT URLs cannot enforce a maximum file
+///   size at the storage layer (unlike S3 POST policies). The `maxFileSize`
+///   parameter in `createDirectFileUploadDescription(WithOptions)` is used
+///   only for the server-side `contentLength > maxFileSize` pre-check.
+/// - **publicHost semantics**: The [publicHost] field is used exclusively
+///   for generating public read URLs (`getPublicUrl`). Upload URLs
+///   (`createDirectFileUploadDescription*`) always target the COS bucket
+///   endpoint (`<bucket>.cos.<region>.myqcloud.com`) because CDN / custom
+///   domains typically do not accept PUT requests.
+/// - **CORS configuration**: For client-side direct uploads from web
+///   browsers, the COS bucket must have a CORS policy allowing `PUT`
+///   requests from the client's origin, with the headers used in the
+///   upload description (`Content-Type`, `x-cos-forbid-overwrite`,
+///   `Content-Length`) listed as allowed headers.
+/// - **CAM permissions**: The access key must have `cos:PutObject`,
+///   `cos:GetObject`, `cos:HeadObject`, and `cos:DeleteObject` permissions
+///   on the target bucket.
 class CosCloudStorage extends CloudStorage with CloudStorageWithOptions {
   /// The COS bucket name (including the APPID suffix,
   /// e.g. `my-bucket-1250000000`).
@@ -92,25 +148,80 @@ class CosCloudStorage extends CloudStorage with CloudStorageWithOptions {
   }) : _signer = signer,
        super(storageId);
 
-  // ---------------------------------------------------------------------------
-  // CloudStorage overrides
-  // ---------------------------------------------------------------------------
-
   @override
-  Future<void> storeFile({
+  Future<String?> createDirectFileUploadDescription({
     required Session session,
     required String path,
-    required ByteData byteData,
-    DateTime? expiration,
-    bool verified = true,
+    Duration expirationDuration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
   }) async {
-    await _putObject(
+    return _buildUploadDescription(
       path: path,
-      bytes: byteData.buffer.asUint8List(
-        byteData.offsetInBytes,
-        byteData.lengthInBytes,
-      ),
+      expirationDuration: expirationDuration,
     );
+  }
+
+  @override
+  Future<String?> createDirectFileUploadDescriptionWithOptions({
+    required Session session,
+    required String path,
+    Duration expirationDuration = const Duration(minutes: 10),
+    int maxFileSize = 10 * 1024 * 1024,
+    required CloudStorageOptions options,
+  }) async {
+    if (options.contentLength != null && options.contentLength! > maxFileSize) {
+      throw CloudStorageException(
+        'Content length (${options.contentLength} bytes) exceeds '
+        'maximum file size ($maxFileSize bytes).',
+      );
+    }
+
+    return _buildUploadDescription(
+      path: path,
+      expirationDuration: expirationDuration,
+      contentLength: options.contentLength,
+      preventOverwrite: options.preventOverwrite,
+    );
+  }
+
+  @override
+  Future<void> deleteFile({
+    required Session session,
+    required String path,
+  }) async {
+    final url = _signer.generatePresignedUrl('DELETE', _normalizePath(path));
+    final response = await http.delete(Uri.parse(url));
+    if (response.statusCode == 200 || response.statusCode == 204) return;
+    if (response.statusCode == 404) return;
+    throw CloudStorageException(
+      'Failed to delete file "$path" '
+      '(status: ${response.statusCode}).',
+    );
+  }
+
+  @override
+  Future<bool> fileExists({
+    required Session session,
+    required String path,
+  }) async {
+    final url = _signer.generatePresignedUrl('HEAD', _normalizePath(path));
+    final response = await http.head(Uri.parse(url));
+    if (response.statusCode == 200) return true;
+    if (response.statusCode == 404) return false;
+    throw CloudStorageException(
+      'Failed to check existence of "$path" '
+      '(status: ${response.statusCode}).',
+    );
+  }
+
+  @override
+  Future<Uri?> getPublicUrl({
+    required Session session,
+    required String path,
+  }) async {
+    if (!public) return null;
+    if (!await fileExists(session: session, path: path)) return null;
+    return _buildPublicUri(path);
   }
 
   @override
@@ -131,70 +242,21 @@ class CosCloudStorage extends CloudStorage with CloudStorageWithOptions {
   }
 
   @override
-  Future<Uri?> getPublicUrl({
+  Future<void> storeFile({
     required Session session,
     required String path,
+    required ByteData byteData,
+    DateTime? expiration,
+    bool verified = true,
   }) async {
-    if (!public) return null;
-    if (!await fileExists(session: session, path: path)) return null;
-    return _buildPublicUri(path);
-  }
-
-  @override
-  Future<bool> fileExists({
-    required Session session,
-    required String path,
-  }) async {
-    final url = _signer.generatePresignedUrl('HEAD', _normalizePath(path));
-    final response = await http.head(Uri.parse(url));
-    if (response.statusCode == 200) return true;
-    if (response.statusCode == 404) return false;
-    throw CloudStorageException(
-      'Failed to check existence of "$path" '
-      '(status: ${response.statusCode}).',
+    await _putObject(
+      path: path,
+      bytes: byteData.buffer.asUint8List(
+        byteData.offsetInBytes,
+        byteData.lengthInBytes,
+      ),
     );
   }
-
-  @override
-  Future<void> deleteFile({
-    required Session session,
-    required String path,
-  }) async {
-    final url = _signer.generatePresignedUrl('DELETE', _normalizePath(path));
-    final response = await http.delete(Uri.parse(url));
-    if (response.statusCode == 200 || response.statusCode == 204) return;
-    if (response.statusCode == 404) return;
-    throw CloudStorageException(
-      'Failed to delete file "$path" '
-      '(status: ${response.statusCode}).',
-    );
-  }
-
-  /// Direct file upload is not yet implemented; returns `null`.
-  ///
-  /// This will be delivered in a follow-up with full presigned-URL
-  /// support and `FileUploader` integration.
-  @override
-  Future<String?> createDirectFileUploadDescription({
-    required Session session,
-    required String path,
-    Duration expirationDuration = const Duration(minutes: 10),
-    int maxFileSize = 10 * 1024 * 1024,
-  }) async {
-    return null;
-  }
-
-  @override
-  Future<bool> verifyDirectFileUpload({
-    required Session session,
-    required String path,
-  }) async {
-    return fileExists(session: session, path: path);
-  }
-
-  // ---------------------------------------------------------------------------
-  // CloudStorageWithOptions overrides
-  // ---------------------------------------------------------------------------
 
   /// Stores a file with extended options.
   ///
@@ -242,23 +304,91 @@ class CosCloudStorage extends CloudStorage with CloudStorageWithOptions {
     );
   }
 
-  /// Direct file upload with options is not yet implemented; returns `null`.
-  ///
-  /// This will be delivered in a follow-up.
   @override
-  Future<String?> createDirectFileUploadDescriptionWithOptions({
+  Future<bool> verifyDirectFileUpload({
     required Session session,
     required String path,
-    Duration expirationDuration = const Duration(minutes: 10),
-    int maxFileSize = 10 * 1024 * 1024,
-    required CloudStorageOptions options,
   }) async {
-    return null;
+    return fileExists(session: session, path: path);
   }
 
-  // ---------------------------------------------------------------------------
-  // Private helpers
-  // ---------------------------------------------------------------------------
+  /// Builds a public URI for the given [path].
+  ///
+  /// Uses [publicHost] (custom domain) when available, otherwise falls back
+  /// to the COS virtual-hosted-style default domain.
+  Uri _buildPublicUri(String path) {
+    final normalized = _normalizePath(path);
+    final host = publicHost;
+
+    if (host != null && host.trim().isNotEmpty) {
+      final trimmed = host.trim();
+      final parsed = Uri.tryParse(trimmed);
+      if (parsed != null && parsed.hasScheme && parsed.host.isNotEmpty) {
+        return Uri(
+          scheme: parsed.scheme,
+          host: parsed.host,
+          port: parsed.hasPort ? parsed.port : null,
+          path: '/$normalized',
+        );
+      }
+      return Uri(scheme: 'https', host: trimmed, path: '/$normalized');
+    }
+
+    return Uri(
+      scheme: 'https',
+      host: '$bucket.cos.$region.myqcloud.com',
+      path: '/$normalized',
+    );
+  }
+
+  /// Builds a `FileUploader`-compatible binary PUT upload description.
+  ///
+  /// The returned JSON encodes a presigned PUT URL targeting the COS
+  /// bucket endpoint ([CosSigner.defaultHost]) rather than any CDN or
+  /// custom [publicHost], because CDN domains do not accept PUT requests.
+  ///
+  /// Headers that affect server-side validation (`x-cos-forbid-overwrite`,
+  /// `Content-Length`) are signed into the URL **and** included in the
+  /// description so that `FileUploader` sends them with the PUT request.
+  String _buildUploadDescription({
+    required String path,
+    required Duration expirationDuration,
+    int? contentLength,
+    bool preventOverwrite = false,
+  }) {
+    final normalizedPath = _normalizePath(path);
+
+    final headers = <String, String>{
+      'Content-Type': 'application/octet-stream',
+    };
+    if (contentLength != null) {
+      headers['Content-Length'] = contentLength.toString();
+    }
+    if (preventOverwrite) {
+      headers['x-cos-forbid-overwrite'] = 'true';
+    }
+
+    final presignedUrl = _signer.generatePresignedUrl(
+      'PUT',
+      normalizedPath,
+      expires: expirationDuration.inSeconds,
+      headers: headers,
+      host: _signer.defaultHost,
+    );
+
+    return jsonEncode({
+      'url': presignedUrl,
+      'type': 'binary',
+      'method': 'PUT',
+      'headers': headers,
+    });
+  }
+
+  /// Strips a leading `/` to produce a relative path.
+  String _normalizePath(String path) {
+    if (path.startsWith('/')) return path.substring(1);
+    return path;
+  }
 
   Future<void> _putObject({
     required String path,
@@ -299,45 +429,6 @@ class CosCloudStorage extends CloudStorage with CloudStorageWithOptions {
       '(status: ${response.statusCode}).',
     );
   }
-
-  /// Builds a public URI for the given [path].
-  ///
-  /// Uses [publicHost] (custom domain) when available, otherwise falls back
-  /// to the COS virtual-hosted-style default domain.
-  Uri _buildPublicUri(String path) {
-    final normalized = _normalizePath(path);
-    final host = publicHost;
-
-    if (host != null && host.trim().isNotEmpty) {
-      final trimmed = host.trim();
-      final parsed = Uri.tryParse(trimmed);
-      if (parsed != null && parsed.hasScheme && parsed.host.isNotEmpty) {
-        return Uri(
-          scheme: parsed.scheme,
-          host: parsed.host,
-          port: parsed.hasPort ? parsed.port : null,
-          path: '/$normalized',
-        );
-      }
-      return Uri(scheme: 'https', host: trimmed, path: '/$normalized');
-    }
-
-    return Uri(
-      scheme: 'https',
-      host: '$bucket.cos.$region.myqcloud.com',
-      path: '/$normalized',
-    );
-  }
-
-  /// Strips a leading `/` to produce a relative path.
-  String _normalizePath(String path) {
-    if (path.startsWith('/')) return path.substring(1);
-    return path;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Credential loading
-  // ---------------------------------------------------------------------------
 
   static String _loadAccessKey(Serverpod serverpod) {
     serverpod.loadCustomPasswords([

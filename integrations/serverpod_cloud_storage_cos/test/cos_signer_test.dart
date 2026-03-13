@@ -121,8 +121,6 @@ void main() {
           expires: 3600,
         );
 
-        // The timestamps may differ by up to a second, so we compare
-        // everything except the time-dependent query params.
         final parsed1 = Uri.parse(url1);
         final parsed2 = Uri.parse(url2);
         expect(parsed1.scheme, parsed2.scheme);
@@ -135,6 +133,98 @@ void main() {
         expect(
           parsed1.queryParameters['q-ak'],
           parsed2.queryParameters['q-ak'],
+        );
+      });
+    });
+
+    group('host override', () {
+      test('uses explicit host parameter over publicHost', () {
+        final cdnSigner = CosSigner(
+          secretId: 'id',
+          secretKey: 'key',
+          bucket: 'b-123',
+          region: 'ap-shanghai',
+          publicHost: 'cdn.example.com',
+        );
+
+        final url = cdnSigner.generatePresignedUrl(
+          'PUT',
+          '/upload.bin',
+          host: cdnSigner.defaultHost,
+        );
+        final parsed = Uri.parse(url);
+
+        expect(
+          parsed.host,
+          'b-123.cos.ap-shanghai.myqcloud.com',
+          reason: 'Explicit host must override publicHost',
+        );
+      });
+
+      test('falls back to publicHost when host is null', () {
+        final cdnSigner = CosSigner(
+          secretId: 'id',
+          secretKey: 'key',
+          bucket: 'b-123',
+          region: 'ap-shanghai',
+          publicHost: 'cdn.example.com',
+        );
+
+        final url = cdnSigner.generatePresignedUrl('GET', '/file.txt');
+        final parsed = Uri.parse(url);
+
+        expect(parsed.host, 'cdn.example.com');
+      });
+
+      test(
+        'falls back to defaultHost when both host and publicHost are null',
+        () {
+          final url = signer.generatePresignedUrl('GET', '/file.txt');
+          final parsed = Uri.parse(url);
+
+          expect(
+            parsed.host,
+            'my-bucket-1250000000.cos.ap-guangzhou.myqcloud.com',
+          );
+        },
+      );
+    });
+
+    group('header key normalization', () {
+      test('mixed-case header keys are lowercased in q-header-list', () {
+        final url = signer.generatePresignedUrl(
+          'PUT',
+          '/upload.bin',
+          headers: {'Content-Type': 'text/plain', 'X-Custom-Header': 'value'},
+        );
+        final parsed = Uri.parse(url);
+        final headerList = parsed.queryParameters['q-header-list'] ?? '';
+
+        expect(headerList.contains('content-type'), isTrue);
+        expect(headerList.contains('x-custom-header'), isTrue);
+        expect(headerList.contains('Content-Type'), isFalse);
+        expect(headerList.contains('X-Custom-Header'), isFalse);
+      });
+
+      test('mixed-case keys produce same signature as lowercase keys', () {
+        final urlMixed = signer.generatePresignedUrl(
+          'PUT',
+          '/upload.bin',
+          headers: {'Content-Type': 'application/octet-stream'},
+        );
+        final urlLower = signer.generatePresignedUrl(
+          'PUT',
+          '/upload.bin',
+          headers: {'content-type': 'application/octet-stream'},
+        );
+
+        final parsedMixed = Uri.parse(urlMixed);
+        final parsedLower = Uri.parse(urlLower);
+
+        expect(
+          parsedMixed.queryParameters['q-signature'],
+          parsedLower.queryParameters['q-signature'],
+          reason: 'Header key casing must not affect the signature',
         );
       });
     });
@@ -189,6 +279,28 @@ void main() {
         final parsed = Uri.parse(url);
 
         expect(parsed.host, 'b-123.cos.ap-shanghai.myqcloud.com');
+      });
+    });
+
+    group('special characters in paths', () {
+      test('handles spaces in object key', () {
+        final url = signer.generatePresignedUrl('GET', '/path with spaces.txt');
+        expect(Uri.tryParse(url), isNotNull);
+        expect(url.contains('path with spaces'), isTrue);
+      });
+
+      test('handles Chinese characters in object key', () {
+        final url = signer.generatePresignedUrl('GET', '/中文路径/文件.txt');
+        expect(Uri.tryParse(url), isNotNull);
+      });
+
+      test('handles nested paths', () {
+        final url = signer.generatePresignedUrl(
+          'PUT',
+          '/a/b/c/d/deeply/nested/file.bin',
+        );
+        final parsed = Uri.parse(url);
+        expect(parsed.path, '/a/b/c/d/deeply/nested/file.bin');
       });
     });
   });
