@@ -6,7 +6,7 @@ import 'package:uuid/uuid.dart';
 
 import '../test_tools/serverpod_test_tools.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
-import 'package:serverpod/src/database/migrations/server_migration_manager.dart';
+import 'package:serverpod/src/database/server_migration_manager.dart';
 import 'package:serverpod_cli/src/migrations/generator.dart';
 
 void main() {

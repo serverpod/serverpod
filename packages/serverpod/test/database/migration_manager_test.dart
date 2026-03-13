@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:serverpod/src/database/migrations/server_migration_manager.dart';
-import 'package:serverpod/src/database/adapters/postgres/value_encoder.dart';
-import 'package:serverpod/src/database/interface/value_encoder.dart';
+import 'package:serverpod/src/database/server_migration_manager.dart';
+import 'package:serverpod_database/src/adapters/postgres/value_encoder.dart';
+import 'package:serverpod_database/src/interface/value_encoder.dart';
 import 'package:test/test.dart';
 
 void main() {

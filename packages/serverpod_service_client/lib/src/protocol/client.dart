@@ -21,17 +21,14 @@ import 'package:serverpod_service_client/src/protocol/session_log_filter.dart'
 import 'package:serverpod_service_client/src/protocol/caches_info.dart' as _i6;
 import 'package:serverpod_service_client/src/protocol/server_health_result.dart'
     as _i7;
-import 'package:serverpod_service_client/src/protocol/database/table_definition.dart'
-    as _i8;
-import 'package:serverpod_service_client/src/protocol/database/database_definition.dart'
+import 'package:serverpod_database/src/generated/table_definition.dart' as _i8;
+import 'package:serverpod_database/src/generated/database_definition.dart'
     as _i9;
-import 'package:serverpod_service_client/src/protocol/database/database_definitions.dart'
+import 'package:serverpod_database/src/generated/database_definitions.dart'
     as _i10;
-import 'package:serverpod_service_client/src/protocol/database/bulk_data.dart'
-    as _i11;
-import 'package:serverpod_service_client/src/protocol/database/filter/filter.dart'
-    as _i12;
-import 'package:serverpod_service_client/src/protocol/database/bulk_query_result.dart'
+import 'package:serverpod_database/src/generated/bulk_data.dart' as _i11;
+import 'package:serverpod_database/src/generated/filter/filter.dart' as _i12;
+import 'package:serverpod_database/src/generated/bulk_query_result.dart'
     as _i13;
 import 'protocol.dart' as _i14;
 

@@ -2,11 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
-import 'package:serverpod/src/database/interface/database_pool_manager.dart';
-import 'package:serverpod/src/database/interface/provider.dart';
-import 'package:serverpod/src/database/migrations/server_migration_manager.dart';
+import 'package:serverpod/src/database/server_migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';

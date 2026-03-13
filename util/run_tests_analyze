@@ -27,6 +27,7 @@ declare -a projectPaths=(
     "packages/serverpod_serialization"
     "packages/serverpod_service_client"
     "packages/serverpod_shared"
+    "packages/serverpod_database"
     "packages/serverpod_flutter"
     "packages/serverpod_test"
 

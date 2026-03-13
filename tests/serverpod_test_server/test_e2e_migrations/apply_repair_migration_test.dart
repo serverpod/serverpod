@@ -136,10 +136,10 @@ fields:
     test(
       'when creating and applying destructive repair migration to older migration then database matches older migration',
       () async {
-        var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
-        var previousMigrationIndex = migrationRegistry.versions.length - 2;
-        var previousMigrationName =
-            migrationRegistry.versions[previousMigrationIndex];
+        var migrationVersions =
+            await MigrationTestUtils.loadMigrationRegistry();
+        var previousMigrationIndex = migrationVersions.length - 2;
+        var previousMigrationName = migrationVersions[previousMigrationIndex];
 
         var createRepairMigrationExitCode =
             await MigrationTestUtils.runCreateRepairMigration(
@@ -223,10 +223,10 @@ fields:
       test(
         'when creating and applying repair migration targeting older migration and applying migrations then database matches latest migration',
         () async {
-          var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
-          var previousMigrationIndex = migrationRegistry.versions.length - 2;
-          var previousMigrationName =
-              migrationRegistry.versions[previousMigrationIndex];
+          var migrationVersions =
+              await MigrationTestUtils.loadMigrationRegistry();
+          var previousMigrationIndex = migrationVersions.length - 2;
+          var previousMigrationName = migrationVersions[previousMigrationIndex];
 
           var createRepairMigrationExitCode =
               await MigrationTestUtils.runCreateRepairMigration(

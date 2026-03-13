@@ -11,13 +11,13 @@ abstract interface class SqlGenerator {
 
   String generateDatabaseDefinitionSql(
     DatabaseDefinition databaseDefinition, {
-    required List<DatabaseMigrationVersion> installedModules,
+    required List<DatabaseMigrationVersionModel> installedModules,
   });
 
   String generateDatabaseMigrationSql(
     DatabaseMigration databaseMigration, {
-    required List<DatabaseMigrationVersion> installedModules,
-    required List<DatabaseMigrationVersion> removedModules,
+    required List<DatabaseMigrationVersionModel> installedModules,
+    required List<DatabaseMigrationVersionModel> removedModules,
   });
 
   String? getColumnDefault(

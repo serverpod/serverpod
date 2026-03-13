@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:serverpod/src/database/migrations/server_migration_manager.dart';
+import 'package:serverpod/src/database/server_migration_manager.dart';
 import 'package:serverpod_cli/src/migrations/generator.dart';
 import 'package:serverpod_test_server/test_util/mock_stdout.dart';
 import 'package:serverpod_test_server/test_util/test_tags.dart';

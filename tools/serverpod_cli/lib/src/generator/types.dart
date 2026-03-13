@@ -416,6 +416,9 @@ class TypeDefinition {
                 );
         } else if (className == 'SerializableModel') {
           t.url = serverpodUrl(serverCode);
+        } else if (config.name != 'serverpod' &&
+            (url?.startsWith('package:serverpod_database/') ?? false)) {
+          t.url = serverpodDatabaseUrl(serverCode);
         } else {
           t.url = url;
         }
