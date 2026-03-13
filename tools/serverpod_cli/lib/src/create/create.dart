@@ -829,7 +829,7 @@ void _copyServerTemplates(
   required String name,
   String? customServerpodPath,
 }) {
-  log.debug('Copying root workspace pubspec');
+  log.debug('Copying root workspace files');
   var rootCopier = Copier(
     srcDir: Directory(
       p.join(resourceManager.templateDirectory.path, 'projectname'),

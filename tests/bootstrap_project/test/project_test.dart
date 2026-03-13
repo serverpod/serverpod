@@ -638,6 +638,14 @@ void main() async {
           );
         });
 
+        test('has a root Dockerfile', () {
+          expect(
+            File(path.join(tempPath, projectName, 'Dockerfile')).existsSync(),
+            isTrue,
+            reason: 'Root Dockerfile does not exist.',
+          );
+        });
+
         test('root pubspec.yaml has name: _', () {
           final content = File(
             path.join(tempPath, projectName, 'pubspec.yaml'),
@@ -694,6 +702,24 @@ void main() async {
             expect(content, contains('flutter_secure_storage'));
           },
         );
+
+        test('root Dockerfile compiles server in reduced workspace', () {
+          final dockerfile = File(
+            path.join(tempPath, projectName, 'Dockerfile'),
+          );
+          final content = dockerfile.readAsStringSync();
+          expect(
+            content,
+            contains(
+              'cp /workspace/pubspec.lock /build_workspace/pubspec.lock',
+            ),
+          );
+          expect(
+            content,
+            contains('/^dependency_overrides:/ { skip=1; next }'),
+          );
+          expect(content, contains('${projectName}_server/bin/main.dart'));
+        });
       });
 
       group('then the .vscode directory', () {
