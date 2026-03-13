@@ -39,6 +39,8 @@ class Serverpod {
 
   late Session _internalSession;
 
+  late Session _internalLoggingSession;
+
   DateTime? _startedTime;
 
   /// The time the [Serverpod] was started.
@@ -265,6 +267,11 @@ class Serverpod {
     _internalServicesShutdownTasks.addTask(
       'Internal Session',
       _internalSession.close,
+    );
+
+    _internalServicesShutdownTasks.addTask(
+      'Internal Logging Session',
+      _internalLoggingSession.close,
     );
 
     _internalServicesShutdownTasks.addTask(
@@ -590,6 +597,10 @@ class Serverpod {
     endpoints.initializeEndpoints(server);
 
     _internalSession = InternalSession(server: server, enableLogging: false);
+    _internalLoggingSession = InternalSession(
+      server: server,
+      enableLogging: true,
+    );
 
     _healthCheckService = HealthCheckService(this, _healthConfig);
 
@@ -599,6 +610,7 @@ class Serverpod {
         serializationManager,
         diagnosticsService: ServerpodFutureCallDiagnosticsService(server),
         internalSession: internalSession,
+        logSession: _internalLoggingSession,
         sessionProvider: (String futureCallName) => FutureCallSession(
           server: server,
           futureCallName: futureCallName,
@@ -773,6 +785,14 @@ class Serverpod {
       _internalLogVerbose('All servers started.');
     }
 
+    if (_futureCallManager != null) {
+      _internalLogVerbose('Initializing future calls.');
+      endpoints.futureCalls?.initialize(
+        _futureCallManager!,
+        serverId,
+      );
+    }
+
     // Start maintenance tasks. If we are running in maintenance mode, we
     // will only run the maintenance tasks once. If we are applying migrations
     // no other maintenance tasks will be run.
@@ -794,7 +814,7 @@ class Serverpod {
           ),
         );
       } else {
-        _futureCallManager?.start();
+        await _futureCallManager?.start();
       }
 
       // Start health check manager
@@ -807,14 +827,6 @@ class Serverpod {
     if (config.role == ServerpodRole.maintenance && appliedMigrations) {
       _internalLogVerbose('Finished applying database migrations.');
       throw ExitException(_exitCode);
-    }
-
-    if (_futureCallManager != null) {
-      _internalLogVerbose('Initializing future calls.');
-      endpoints.futureCalls?.initialize(
-        _futureCallManager!,
-        serverId,
-      );
     }
 
     if (Features.enableDatabase &&
@@ -1420,6 +1432,9 @@ extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the global internal session used by the Serverpod.
   /// Logging is turned off.
   Session get internalSession => _internalSession;
+
+  /// Retrieve the global internal session used by the Serverpod for logging.
+  Session get internalLoggingSession => _internalLoggingSession;
 
   /// Submits an event to registered event handlers.
   /// They will execute asynchronously.
