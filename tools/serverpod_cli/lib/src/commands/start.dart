@@ -299,15 +299,13 @@ Future<int> _runWatchMode({
     return 1;
   }
 
-  final watchPaths = watchPathsFromConfig(config, includeWeb: true);
-  final ignorePath = p.absolute(
-    p.joinAll(config.generatedServeModelPackagePathParts),
+  final watchPaths = watchPathsFromConfig(
+    config,
+    includeWeb: true,
+    includeClientPackage: true,
   );
 
-  final watcher = FileWatcher(
-    watchPaths: watchPaths,
-    ignorePath: ignorePath,
-  );
+  final watcher = FileWatcher(watchPaths: watchPaths);
 
   // The generate callback is shared by both modes.
   Future<bool> generate(Set<String> affectedPaths) async {

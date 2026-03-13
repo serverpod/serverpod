@@ -40,16 +40,17 @@ bool _isModelFile(String filePath) {
 /// categorized by file type.
 class FileWatcher {
   final List<String> _watchPaths;
-  final String _ignorePath;
+  final String? _ignorePath;
   final Duration debounceDelay;
 
   /// Creates a file watcher.
   ///
   /// [watchPaths] is the list of directories to watch.
-  /// [ignorePath] is a path prefix to ignore (e.g. generated directory).
+  /// [ignorePath] is an optional path prefix to ignore (e.g. generated
+  /// directory). When null, no paths are ignored.
   FileWatcher({
     required List<String> watchPaths,
-    required String ignorePath,
+    String? ignorePath,
     this.debounceDelay = const Duration(milliseconds: 500),
   }) : _watchPaths = watchPaths,
        _ignorePath = ignorePath;
@@ -76,7 +77,7 @@ class FileWatcher {
         : StreamGroup.merge(_watchers.map((w) => w.events));
 
     return mergedStream
-        .where((e) => !p.isWithin(_ignorePath, e.path))
+        .where((e) => _ignorePath == null || !p.isWithin(_ignorePath, e.path))
         .debounceBuffer(debounceDelay)
         .map((events) {
           final dartFiles = <String>{};

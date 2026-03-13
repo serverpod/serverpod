@@ -167,11 +167,15 @@ Future<bool> performGenerate({
 
 /// Computes the list of directories to watch for file changes.
 ///
-/// Includes `lib/` and shared model package `lib/` directories.
+/// Includes server `lib/` and shared model package `lib/` directories.
 /// If [includeWeb] is true, also includes the `web/` directory (if it exists).
+/// If [includeClientPackage] is true, also includes the client package `lib/`
+/// directory so that generated client code changes are picked up (needed for
+/// compilation in `serverpod start --watch`).
 List<String> watchPathsFromConfig(
   GeneratorConfig config, {
   bool includeWeb = false,
+  bool includeClientPackage = false,
 }) {
   final paths = <String>[
     p.absolute(p.joinAll(config.libSourcePathParts)),
@@ -184,6 +188,15 @@ List<String> watchPathsFromConfig(
         ]),
       ),
   ];
+
+  if (includeClientPackage) {
+    final clientLib = p.absolute(
+      p.joinAll([...config.clientPackagePathParts, 'lib']),
+    );
+    if (Directory(clientLib).existsSync()) {
+      paths.add(clientLib);
+    }
+  }
 
   if (includeWeb) {
     final webPath = p.absolute(
