@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_database
-version: 3.4.3
+version: 3.4.4
 description: Database implementations for Serverpod.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
@@ -16,11 +16,11 @@ dependencies:
   meta: ^1.15.0
   path: ^1.8.3
   postgres: ^3.4.0
-  serverpod_serialization: 3.4.3
-  serverpod_shared: 3.4.3
+  serverpod_serialization: 3.4.4
+  serverpod_shared: 3.4.4
 
 dev_dependencies:
-  serverpod_lints: 3.4.3
+  serverpod_lints: 3.4.4
   test: ^1.25.5
 
 dependency_overrides:
