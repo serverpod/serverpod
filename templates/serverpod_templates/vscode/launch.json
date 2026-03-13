@@ -11,16 +11,10 @@
         {
             "name": "projectname_server",
             "cwd": "${workspaceFolder}/projectname_server",
-            "request": "launch",
+            "request": "attach",
             "type": "dart",
-            "preLaunchTask": "docker_compose_up",
-            "program": "bin/main.dart",
-            "env": {
-                "SERVERPOD_PASSWORD_database": "DB_PASSWORD"
-            },
-            "args": [
-                "--apply-migrations"
-            ]
+            "preLaunchTask": "serverpod_start_watch",
+            "vmServiceInfoFile": "${workspaceFolder}/projectname_server/.dart_tool/serverpod/vm-service-info.json"
         }
     ],
     "compounds": [

@@ -12,7 +12,7 @@ import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_clas
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/util/analysis_helper.dart';
+import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
 import 'definitions.dart';
@@ -30,7 +30,7 @@ class EndpointsAnalyzer {
     : collection = AnalysisContextCollection(
         includedPaths: [directory.absolute.path],
         resourceProvider: PhysicalResourceProvider.INSTANCE,
-        sdkPath: findDartSdk(),
+        sdkPath: getSdkPath(),
       ),
       absoluteIncludedPaths = directory.absolute.path;
 
@@ -244,13 +244,17 @@ class EndpointsAnalyzer {
 
   bool _isEndpointFile(File file) {
     if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
+    return isEndpointFile(file);
+  }
+
+  /// Returns `true` if [file] appears to define an Endpoint subclass.
+  ///
+  /// This is a quick string check (no full analysis). Used to decide whether
+  /// code generation is needed after a file change.
+  static bool isEndpointFile(File file) {
     if (!file.path.endsWith('.dart')) return false;
     if (!file.existsSync()) return false;
-
-    var contents = file.readAsStringSync();
-    if (!contents.contains('extends Endpoint')) return false;
-
-    return true;
+    return file.readAsStringSync().contains('extends Endpoint');
   }
 
   Map<String, List<SourceSpanSeverityException>> _validateLibrary(
