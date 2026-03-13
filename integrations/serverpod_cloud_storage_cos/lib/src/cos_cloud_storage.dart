@@ -75,10 +75,12 @@ import 'signing/cos_signer.dart';
 ///   parameter in `createDirectFileUploadDescription(WithOptions)` is used
 ///   only for the server-side `contentLength > maxFileSize` pre-check.
 /// - **publicHost semantics**: The [publicHost] field is used exclusively
-///   for generating public read URLs (`getPublicUrl`). Upload URLs
-///   (`createDirectFileUploadDescription*`) always target the COS bucket
-///   endpoint (`<bucket>.cos.<region>.myqcloud.com`) because CDN / custom
-///   domains typically do not accept PUT requests.
+///   for generating public read URLs via `getPublicUrl`. All other
+///   operations — `storeFile`, `retrieveFile`, `fileExists`, `deleteFile`,
+///   `verifyDirectFileUpload`, and `createDirectFileUploadDescription*` —
+///   always target the COS bucket endpoint
+///   (`<bucket>.cos.<region>.myqcloud.com`) because CDN / custom domains
+///   typically do not accept PUT/HEAD/DELETE requests.
 /// - **CORS configuration**: For client-side direct uploads from web
 ///   browsers, the COS bucket must have a CORS policy allowing `PUT`
 ///   requests from the client's origin, with the headers used in the
@@ -106,6 +108,9 @@ class CosCloudStorage extends CloudStorage with CloudStorageWithOptions {
   final String? publicHost;
 
   late final CosSigner _signer;
+  final http.Client _httpClient;
+  final bool _ownsHttpClient;
+  bool _isClosed = false;
 
   /// Creates a new COS cloud storage instance.
   ///
@@ -122,7 +127,9 @@ class CosCloudStorage extends CloudStorage with CloudStorageWithOptions {
     required this.bucket,
     required this.region,
     this.publicHost,
-  }) : super(storageId) {
+  }) : _httpClient = http.Client(),
+       _ownsHttpClient = true,
+       super(storageId) {
     final accessKey = _loadAccessKey(serverpod);
     final secretKey = _loadSecretKey(serverpod);
 
@@ -135,9 +142,11 @@ class CosCloudStorage extends CloudStorage with CloudStorageWithOptions {
     );
   }
 
-  /// Creates a COS cloud storage with a pre-built [CosSigner].
+  /// Creates a COS cloud storage with a pre-built [CosSigner] and optional
+  /// [httpClient].
   ///
-  /// Intended for testing — bypasses credential loading.
+  /// Intended for testing — bypasses credential loading. When [httpClient] is
+  /// omitted a default [http.Client] is used.
   CosCloudStorage.withSigner({
     required String storageId,
     required this.public,
@@ -145,8 +154,29 @@ class CosCloudStorage extends CloudStorage with CloudStorageWithOptions {
     required this.region,
     required CosSigner signer,
     this.publicHost,
+    http.Client? httpClient,
   }) : _signer = signer,
+       _httpClient = httpClient ?? http.Client(),
+       _ownsHttpClient = httpClient == null,
        super(storageId);
+
+  /// Closes the underlying HTTP client, releasing its resources.
+  ///
+  /// Only closes the client if it was internally created by this instance.
+  /// When an external [http.Client] was provided via
+  /// [CosCloudStorage.withSigner], the caller retains ownership and is
+  /// responsible for closing it.
+  ///
+  /// This method is idempotent — calling it multiple times is safe.
+  /// After calling [close], no further operations should be performed
+  /// on this instance.
+  void close() {
+    if (_isClosed) return;
+    _isClosed = true;
+    if (_ownsHttpClient) {
+      _httpClient.close();
+    }
+  }
 
   @override
   Future<String?> createDirectFileUploadDescription({
@@ -189,8 +219,12 @@ class CosCloudStorage extends CloudStorage with CloudStorageWithOptions {
     required Session session,
     required String path,
   }) async {
-    final url = _signer.generatePresignedUrl('DELETE', _normalizePath(path));
-    final response = await http.delete(Uri.parse(url));
+    final url = _signer.generatePresignedUrl(
+      'DELETE',
+      _normalizePath(path),
+      host: _signer.defaultHost,
+    );
+    final response = await _httpClient.delete(Uri.parse(url));
     if (response.statusCode == 200 || response.statusCode == 204) return;
     if (response.statusCode == 404) return;
     throw CloudStorageException(
@@ -204,8 +238,12 @@ class CosCloudStorage extends CloudStorage with CloudStorageWithOptions {
     required Session session,
     required String path,
   }) async {
-    final url = _signer.generatePresignedUrl('HEAD', _normalizePath(path));
-    final response = await http.head(Uri.parse(url));
+    final url = _signer.generatePresignedUrl(
+      'HEAD',
+      _normalizePath(path),
+      host: _signer.defaultHost,
+    );
+    final response = await _httpClient.head(Uri.parse(url));
     if (response.statusCode == 200) return true;
     if (response.statusCode == 404) return false;
     throw CloudStorageException(
@@ -229,8 +267,12 @@ class CosCloudStorage extends CloudStorage with CloudStorageWithOptions {
     required Session session,
     required String path,
   }) async {
-    final url = _signer.generatePresignedUrl('GET', _normalizePath(path));
-    final response = await http.get(Uri.parse(url));
+    final url = _signer.generatePresignedUrl(
+      'GET',
+      _normalizePath(path),
+      host: _signer.defaultHost,
+    );
+    final response = await _httpClient.get(Uri.parse(url));
     if (response.statusCode == 200) {
       return ByteData.sublistView(response.bodyBytes);
     }
@@ -407,9 +449,10 @@ class CosCloudStorage extends CloudStorage with CloudStorageWithOptions {
       'PUT',
       normalizedPath,
       headers: signedHeaders,
+      host: _signer.defaultHost,
     );
 
-    final response = await http.put(
+    final response = await _httpClient.put(
       Uri.parse(url),
       headers: signedHeaders,
       body: bytes,
@@ -430,6 +473,12 @@ class CosCloudStorage extends CloudStorage with CloudStorageWithOptions {
     );
   }
 
+  /// Resolves the COS access key with the following priority:
+  ///
+  /// 1. `SERVERPOD_COS_ACCESS_KEY_ID` env var → `COSAccessKeyId` alias
+  /// 2. `tencentCosSecretId` legacy alias (for backward compatibility)
+  ///
+  /// Throws [StateError] if none of the above are configured.
   static String _loadAccessKey(Serverpod serverpod) {
     serverpod.loadCustomPasswords([
       (envName: 'SERVERPOD_COS_ACCESS_KEY_ID', alias: 'COSAccessKeyId'),
@@ -447,6 +496,12 @@ class CosCloudStorage extends CloudStorage with CloudStorageWithOptions {
     return key;
   }
 
+  /// Resolves the COS secret key with the following priority:
+  ///
+  /// 1. `SERVERPOD_COS_SECRET_KEY` env var → `COSSecretKey` alias
+  /// 2. `tencentCosSecretKey` legacy alias (for backward compatibility)
+  ///
+  /// Throws [StateError] if none of the above are configured.
   static String _loadSecretKey(Serverpod serverpod) {
     serverpod.loadCustomPasswords([
       (envName: 'SERVERPOD_COS_SECRET_KEY', alias: 'COSSecretKey'),

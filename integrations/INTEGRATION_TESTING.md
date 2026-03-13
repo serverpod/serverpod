@@ -29,6 +29,12 @@ SERVERPOD_TEST_GCP_REGION=us-central1
 
 # GCP (Native API with service account)
 SERVERPOD_TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON={"client_email":"...","private_key":"..."}
+
+# Tencent Cloud COS
+SERVERPOD_TEST_COS_ACCESS_KEY_ID=AKID...
+SERVERPOD_TEST_COS_SECRET_KEY=...
+SERVERPOD_TEST_COS_BUCKET=my-bucket-1250000000
+SERVERPOD_TEST_COS_REGION=ap-guangzhou
 ```
 
 You only need credentials for the providers you want to test. Tests for unconfigured providers are skipped automatically.
@@ -100,6 +106,17 @@ Create a JSON key: click the service account → Keys → Add Key → Create new
 
 Set the `SERVERPOD_TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON` environment variable to the full JSON content of the key file.
 
+### Tencent Cloud COS
+
+Create a COS bucket via the [Tencent Cloud console](https://console.cloud.tencent.com/cos/bucket). Make note of the full bucket name (including the APPID suffix, e.g. `my-bucket-1250000000`) and the region (e.g. `ap-guangzhou`).
+
+Create an API key via CAM → Access Keys. The key needs the following COS permissions on the test bucket:
+
+- `cos:PutObject`
+- `cos:GetObject`
+- `cos:HeadObject`
+- `cos:DeleteObject`
+
 ## CI/CD Setup
 
 ### GitHub Secrets
@@ -112,6 +129,7 @@ Add these secrets to your repository (Settings → Secrets → Actions):
 | Cloudflare R2 | `TEST_R2_HMAC_ACCESS_KEY_ID`, `TEST_R2_HMAC_SECRET_KEY`, `TEST_R2_BUCKET`, `TEST_R2_ACCOUNT_ID` |
 | GCP (S3-compatible) | `TEST_GCP_HMAC_ACCESS_KEY_ID`, `TEST_GCP_HMAC_SECRET_KEY`, `TEST_GCP_BUCKET`, `TEST_GCP_REGION` |
 | GCP Native | `TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON`, `TEST_GCP_BUCKET` |
+| Tencent COS | `TEST_COS_ACCESS_KEY_ID`, `TEST_COS_SECRET_KEY`, `TEST_COS_BUCKET`, `TEST_COS_REGION` |
 
 The CI workflow automatically skips providers without configured secrets and only runs on push events or same-repo PRs (not fork PRs, for security).
 

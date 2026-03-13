@@ -483,6 +483,7 @@ jobs:
       has_r2: ${{ steps.check.outputs.has_r2 }}
       has_gcp: ${{ steps.check.outputs.has_gcp }}
       has_gcp_native: ${{ steps.check.outputs.has_gcp_native }}
+      has_cos: ${{ steps.check.outputs.has_cos }}
     steps:
       - name: Check available credentials
         id: check
@@ -491,6 +492,7 @@ jobs:
           echo "has_r2=${{ secrets.SERVERPOD_TEST_R2_HMAC_ACCESS_KEY_ID != '' }}" >> $GITHUB_OUTPUT
           echo "has_gcp=${{ secrets.SERVERPOD_TEST_GCP_HMAC_ACCESS_KEY_ID != '' }}" >> $GITHUB_OUTPUT
           echo "has_gcp_native=${{ secrets.SERVERPOD_TEST_GCP_NATIVE_SERVICE_ACCOUNT_JSON != '' }}" >> $GITHUB_OUTPUT
+          echo "has_cos=${{ secrets.SERVERPOD_TEST_COS_ACCESS_KEY_ID != '' }}" >> $GITHUB_OUTPUT
 
   cloud_storage_integration_tests_aws:
     name: Cloud Storage Integration Tests (AWS S3)
@@ -564,6 +566,25 @@ jobs:
       - uses: dart-lang/setup-dart@v1
       - run: dart pub get
       - run: dart test test/integration/native_gcp_integration_test.dart --reporter=failures-only
+
+  cloud_storage_integration_tests_cos:
+    name: Cloud Storage Integration Tests (Tencent COS)
+    needs: cloud_storage_check_secrets
+    if: needs.cloud_storage_check_secrets.outputs.has_cos == 'true'
+    runs-on: ubuntu-latest
+    env:
+      SERVERPOD_TEST_COS_ACCESS_KEY_ID: ${{ secrets.SERVERPOD_TEST_COS_ACCESS_KEY_ID }}
+      SERVERPOD_TEST_COS_SECRET_KEY: ${{ secrets.SERVERPOD_TEST_COS_SECRET_KEY }}
+      SERVERPOD_TEST_COS_BUCKET: ${{ secrets.SERVERPOD_TEST_COS_BUCKET }}
+      SERVERPOD_TEST_COS_REGION: ${{ secrets.SERVERPOD_TEST_COS_REGION }}
+    defaults:
+      run:
+        working-directory: integrations/serverpod_cloud_storage_cos
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - run: dart pub get
+      - run: dart test test/integration --reporter=failures-only
 
   publish_check:
     name: Publish check
