@@ -272,8 +272,8 @@ class FutureCallManager {
 
     if (count >= threshold) {
       _logSession.log(
-        'Skipping check for broken future calls. '
-        'Enable FutureCallConfig.checkBrokenCalls to perform the check. '
+        'Skipping automatic check for broken future calls due to high number of future calls in the database. '
+        'Enable FutureCallConfig.checkBrokenCalls to always perform the check, regardless of the number of future calls. '
         'Optionally enable FutureCallConfig.deleteBrokenCalls to automatically delete broken future calls.',
         level: LogLevel.warning,
       );
