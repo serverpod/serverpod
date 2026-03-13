@@ -695,11 +695,23 @@ class FutureCallConfig {
   /// How long to wait before checking the queue again.
   final Duration scanInterval;
 
+  /// How long to keep claims before cleaning them up.
+  final Duration claimTTL;
+
+  /// How often to run the claim cleanup job.
+  final Duration claimCleanupInterval;
+
   /// Creates a new [FutureCallConfig].
   const FutureCallConfig({
     this.concurrencyLimit = defaultFutureCallConcurrencyLimit,
     this.scanInterval = const Duration(
       milliseconds: defaultFutureCallScanIntervalMs,
+    ),
+    this.claimCleanupInterval = const Duration(
+      minutes: defaultFutureCallClaimCleanupIntervalMinutes,
+    ),
+    this.claimTTL = const Duration(
+      minutes: defaultFutureCallClaimTTLMinutes,
     ),
   });
 
@@ -708,6 +720,12 @@ class FutureCallConfig {
 
   /// The default scan interval for future calls.
   static const int defaultFutureCallScanIntervalMs = 5000;
+
+  /// The default claim cleanup interval for future calls.
+  static const int defaultFutureCallClaimCleanupIntervalMinutes = 30;
+
+  /// The default claim TTL for future calls.
+  static const int defaultFutureCallClaimTTLMinutes = 10;
 
   factory FutureCallConfig._fromJson(Map futureCallConfigJson, String name) {
     final scanInterval =
@@ -729,6 +747,16 @@ class FutureCallConfig {
       concurrencyLimit = null;
     }
 
+    final claimCleanupInterval = _parseDurationWithValidation(
+      futureCallConfigJson[ServerpodEnv
+          .futureCallClaimCleanupInterval
+          .configKey],
+    );
+
+    final claimTTL = _parseDurationWithValidation(
+      futureCallConfigJson[ServerpodEnv.futureCallClaimTTL.configKey],
+    );
+
     return FutureCallConfig(
       // If the user did not configure the concurrency limit, use the default
       concurrencyLimit: hasConcurrencyLimitKey
@@ -737,6 +765,11 @@ class FutureCallConfig {
       scanInterval: Duration(
         milliseconds: scanInterval ?? defaultFutureCallScanIntervalMs,
       ),
+      claimCleanupInterval:
+          claimCleanupInterval ??
+          const Duration(minutes: defaultFutureCallClaimCleanupIntervalMinutes),
+      claimTTL:
+          claimTTL ?? const Duration(minutes: defaultFutureCallClaimTTLMinutes),
     );
   }
 
@@ -746,6 +779,12 @@ class FutureCallConfig {
     output.writeln('future call concurrency limit: $concurrencyLimit');
     output.writeln(
       'future call scan interval: ${scanInterval.inMilliseconds}ms',
+    );
+    output.writeln(
+      'future call claim cleanup interval: ${claimCleanupInterval.inMilliseconds}ms',
+    );
+    output.writeln(
+      'future call claim TTL: ${claimTTL.inMilliseconds}ms',
     );
     return output.toString();
   }
