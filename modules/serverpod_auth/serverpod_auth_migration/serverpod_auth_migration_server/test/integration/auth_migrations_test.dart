@@ -1,6 +1,5 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart';
-import 'package:serverpod_auth_bridge_server/src/generated/legacy_session.dart';
 import 'package:serverpod_auth_idp_server/core.dart' as new_auth_core;
 import 'package:serverpod_auth_idp_server/providers/email.dart'
     as new_auth_email;
