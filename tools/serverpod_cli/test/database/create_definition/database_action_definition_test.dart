@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
@@ -8,6 +9,27 @@ import '../../test_util/builders/model_class_definition_builder.dart';
 import '../../test_util/builders/serializable_entity_field_definition_builder.dart';
 
 void main() {
+  group(
+    'Given a class definition with a table when generating a database definition',
+    () {
+      var field = FieldDefinitionBuilder().withPrimaryKey().build();
+      var model = ModelClassDefinitionBuilder()
+          .withTableName('example')
+          .withField(field)
+          .build();
+
+      late var databaseDefinition = createDatabaseDefinitionFromModels(
+        [model],
+        'example',
+        [],
+      );
+
+      test('then the schemaVersion is set to 2.', () {
+        expect(databaseDefinition.schemaVersion, 2);
+      });
+    },
+  );
+
   test(
     'Given a class definition with a table, then generate a table with that name.',
     () {

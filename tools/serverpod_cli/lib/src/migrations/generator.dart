@@ -387,6 +387,7 @@ class MigrationGenerator {
     ];
 
     return DatabaseDefinition(
+      schemaVersion: currentSchemaVersion,
       moduleName: databaseDefinitionProject.moduleName,
       tables: tables,
       installedModules: installedModules,
