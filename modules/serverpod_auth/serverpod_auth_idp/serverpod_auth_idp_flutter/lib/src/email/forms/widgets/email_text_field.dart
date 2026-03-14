@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../common/text_formatters.dart';
+import '../../../localization/sign_in_localization_provider.dart';
 import '../../../common/widgets/text_field.dart';
 import '../../email_auth_controller.dart';
 
@@ -17,9 +18,11 @@ class EmailTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.emailSignInTexts;
+
     return CustomTextField(
       controller: controller.emailController,
-      labelText: 'Email',
+      labelText: texts.emailLabel,
       keyboardType: TextInputType.emailAddress,
       isLoading: controller.isLoading,
       errorText: controller.error is InvalidEmailException

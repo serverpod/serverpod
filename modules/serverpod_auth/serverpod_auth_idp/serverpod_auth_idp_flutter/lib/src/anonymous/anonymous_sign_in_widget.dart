@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
+import '../localization/sign_in_localization_provider.dart';
 import 'anonymous_auth_controller.dart';
 import 'anonymous_sign_in_style.dart';
 
@@ -74,6 +75,8 @@ class AnonymousSignInWidget extends StatefulWidget {
 }
 
 class _AnonymousSignInWidgetState extends State<AnonymousSignInWidget> {
+  static const _defaultButtonText = 'Continue without account';
+
   late final AnonymousAuthController _controller;
 
   @override
@@ -99,6 +102,7 @@ class _AnonymousSignInWidgetState extends State<AnonymousSignInWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.anonymousSignInTexts;
     final buttonStyle = AnonymousSignInStyle.fromConfiguration(
       shape: widget.shape,
       size: widget.size,
@@ -125,7 +129,7 @@ class _AnonymousSignInWidgetState extends State<AnonymousSignInWidget> {
               ),
             ),
             onPressed: _controller.login,
-            child: const Text('Continue without account'),
+            child: Text(texts.signInButton ?? _defaultButtonText),
           ),
         );
       },

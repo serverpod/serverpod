@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../common/widgets/buttons/action_button.dart';
 import '../../common/widgets/buttons/text_button.dart';
 import '../../common/widgets/gaps.dart';
+import '../../localization/sign_in_localization_provider.dart';
 import '../email_auth_controller.dart';
 import 'widgets/email_text_field.dart';
 import 'widgets/back_to_sign_in_button.dart';
@@ -20,13 +21,15 @@ class RequestPasswordResetForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.emailSignInTexts;
+
     return FormStandardLayout(
-      title: 'Reset password',
+      title: texts.resetPasswordTitle,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Enter the email address to reset password.',
+            texts.resetPasswordDescription,
             style: Theme.of(context).textTheme.bodyMedium,
             textAlign: TextAlign.left,
           ),
@@ -42,17 +45,17 @@ class RequestPasswordResetForm extends StatelessWidget {
                 controller.state == EmailAuthState.idle
             ? controller.startPasswordReset
             : null,
-        label: 'Request password reset',
+        label: texts.requestPasswordReset,
         isLoading: controller.isLoading,
       ),
       bottomText: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("Don't have an account?"),
+          Text(texts.dontHaveAnAccount),
           HyperlinkTextButton(
             onPressed: () =>
                 controller.navigateTo(EmailFlowScreen.startRegistration),
-            label: 'Sign up',
+            label: texts.signUp,
           ),
         ],
       ),
