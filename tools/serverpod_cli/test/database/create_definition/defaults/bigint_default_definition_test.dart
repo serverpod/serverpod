@@ -52,7 +52,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\'0\'::text',
+          "'0'",
         );
       });
     });
@@ -107,7 +107,7 @@ void main() {
         var column = table.columns.last;
         expect(
           column.columnDefault,
-          '\'-12345678909999999\'::text',
+          "'-12345678909999999'",
         );
       });
 

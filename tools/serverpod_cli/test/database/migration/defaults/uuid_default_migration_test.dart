@@ -1,5 +1,5 @@
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:test/test.dart';
 
 import '../../../test_util/builders/database/column_definition_builder.dart';
@@ -20,7 +20,7 @@ void main() {
                         .withName('uuid')
                         .withColumnType(ColumnType.uuid)
                         .withColumnDefault(
-                          "'550e8400-e29b-41d4-a716-446655440000'::uuid",
+                          "'550e8400-e29b-41d4-a716-446655440000'",
                         )
                         .build(),
                   )
@@ -72,7 +72,7 @@ void main() {
     );
 
     test(
-      'when generating SQL with columnDefault set to "gen_random_uuid()", then the table should have gen_random_uuid() as the default value.',
+      'when generating SQL with columnDefault set to "$defaultUuidValueRandom", then the table should have gen_random_uuid() as the default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -82,7 +82,7 @@ void main() {
                     ColumnDefinitionBuilder()
                         .withName('uuid')
                         .withColumnType(ColumnType.uuid)
-                        .withColumnDefault('gen_random_uuid()')
+                        .withColumnDefault(defaultUuidValueRandom)
                         .build(),
                   )
                   .build(),
@@ -101,7 +101,7 @@ void main() {
     );
 
     test(
-      'when generating SQL with columnDefault set to "gen_random_uuid_v7()", then the table should have gen_random_uuid_v7() as the default value.',
+      'when generating SQL with columnDefault set to "$defaultUuidValueRandomV7", then the table should have gen_random_uuid_v7() as the default value.',
       () {
         var databaseDefinition = DatabaseDefinitionBuilder()
             .withTable(
@@ -111,7 +111,7 @@ void main() {
                     ColumnDefinitionBuilder()
                         .withName('uuid')
                         .withColumnType(ColumnType.uuid)
-                        .withColumnDefault('gen_random_uuid_v7()')
+                        .withColumnDefault(defaultUuidValueRandomV7)
                         .build(),
                   )
                   .build(),
@@ -142,7 +142,7 @@ void main() {
                         .withColumnType(ColumnType.uuid)
                         .withIsNullable(true)
                         .withColumnDefault(
-                          "'550e8400-e29b-41d4-a716-446655440000'::uuid",
+                          "'550e8400-e29b-41d4-a716-446655440000'",
                         )
                         .build(),
                   )

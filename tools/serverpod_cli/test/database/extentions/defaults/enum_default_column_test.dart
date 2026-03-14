@@ -32,7 +32,7 @@ void main() {
               name: 'byNameEnumDefault',
               columnType: ColumnType.text,
               isNullable: false,
-              columnDefault: "'byName1'::text",
+              columnDefault: "'byName1'",
               dartType: 'String',
             );
 
@@ -69,7 +69,7 @@ void main() {
               name: 'byNameEnumDefaultNull',
               columnType: ColumnType.text,
               isNullable: true,
-              columnDefault: "'byName1'::text",
+              columnDefault: "'byName1'",
               dartType: 'String',
             );
 

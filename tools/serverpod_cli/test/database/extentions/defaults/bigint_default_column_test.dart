@@ -28,7 +28,7 @@ void main() {
         name: 'bigint',
         columnType: ColumnType.text,
         isNullable: false,
-        columnDefault: "'-13837646363612912343'::text",
+        columnDefault: "'-13837646363612912343'",
         dartType: 'BigInt',
       );
 

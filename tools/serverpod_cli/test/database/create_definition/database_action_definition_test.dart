@@ -27,6 +27,23 @@ void main() {
       test('then the schemaVersion is set to 2.', () {
         expect(databaseDefinition.schemaVersion, 2);
       });
+
+      test('then the id column is primary.', () {
+        var idColumn = databaseDefinition.tables.first.columns.first;
+        expect(idColumn.isPrimary, isTrue);
+      });
+
+      test('then the id column has default "serial".', () {
+        var idColumn = databaseDefinition.tables.first.columns.first;
+        expect(idColumn.columnDefault, defaultIntSerial);
+      });
+
+      test('then the id column has no PKEY index.', () {
+        var hasPkeyIndex = databaseDefinition.tables.first.indexes.any(
+          (i) => i.isPrimary && i.indexName.endsWith('_pkey'),
+        );
+        expect(hasPkeyIndex, isFalse);
+      });
     },
   );
 
