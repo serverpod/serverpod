@@ -303,6 +303,37 @@ class EmailIdp {
   /// Determines whether the current session has an associated email account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
+
+  /// Migrates the email account from [userToRemove] into [userToKeep].
+  static Future<void> migrate(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    final existingAccount = await EmailAccount.db.findFirstRow(
+      session,
+      where: (final t) => t.authUserId.equals(userToKeepId),
+      transaction: transaction,
+    );
+
+    if (existingAccount != null) {
+      await EmailAccount.db.deleteWhere(
+        session,
+        where: (final t) => t.authUserId.equals(userToRemoveId),
+        transaction: transaction,
+      );
+    } else {
+      await EmailAccount.db.updateWhere(
+        session,
+        where: (final t) => t.authUserId.equals(userToRemoveId),
+        columnValues: (final t) => [
+          t.authUserId(userToKeepId),
+        ],
+        transaction: transaction,
+      );
+    }
+  }
 }
 
 /// Extension to get the EmailIdp instance from the AuthServices.

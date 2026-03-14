@@ -142,6 +142,43 @@ class FirebaseIdp {
   /// Determines whether the current session has an associated Firebase account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
+
+  /// Migrates the [FirebaseAccount] from [userToRemove] to [userToKeep].
+  ///
+  /// If [userToKeep] already has a [FirebaseAccount], the [FirebaseAccount] of
+  /// [userToRemove] will be deleted.
+  ///
+  /// If [userToKeep] does not have a [FirebaseAccount], the [FirebaseAccount] of
+  /// [userToRemove] will be transferred to [userToKeep].
+  static Future<void> migrate(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    final existingAccount = await FirebaseAccount.db.findFirstRow(
+      session,
+      where: (final t) => t.authUserId.equals(userToKeepId),
+      transaction: transaction,
+    );
+
+    if (existingAccount != null) {
+      await FirebaseAccount.db.deleteWhere(
+        session,
+        where: (final t) => t.authUserId.equals(userToRemoveId),
+        transaction: transaction,
+      );
+    } else {
+      await FirebaseAccount.db.updateWhere(
+        session,
+        where: (final t) => t.authUserId.equals(userToRemoveId),
+        columnValues: (final t) => [
+          t.authUserId(userToKeepId),
+        ],
+        transaction: transaction,
+      );
+    }
+  }
 }
 
 /// Extension to get the FirebaseIdp instance from the AuthServices.

@@ -133,6 +133,43 @@ class AppleIdp {
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
 
+  /// Migrates the [AppleAccount] from [userToRemove] to [userToKeep].
+  ///
+  /// If [userToKeep] already has an [AppleAccount], the [AppleAccount] of
+  /// [userToRemove] will be deleted.
+  ///
+  /// If [userToKeep] does not have an [AppleAccount], the [AppleAccount] of
+  /// [userToRemove] will be transferred to [userToKeep].
+  static Future<void> migrate(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    final existingAccount = await AppleAccount.db.findFirstRow(
+      session,
+      where: (final t) => t.authUserId.equals(userToKeepId),
+      transaction: transaction,
+    );
+
+    if (existingAccount != null) {
+      await AppleAccount.db.deleteWhere(
+        session,
+        where: (final t) => t.authUserId.equals(userToRemoveId),
+        transaction: transaction,
+      );
+    } else {
+      await AppleAccount.db.updateWhere(
+        session,
+        where: (final t) => t.authUserId.equals(userToRemoveId),
+        columnValues: (final t) => [
+          t.authUserId(userToKeepId),
+        ],
+        transaction: transaction,
+      );
+    }
+  }
+
   /// {@macro apple_idp.revokedNotificationRoute}
   Route revokedNotificationRoute() =>
       AppleRevokedNotificationRoute(utils: utils);
