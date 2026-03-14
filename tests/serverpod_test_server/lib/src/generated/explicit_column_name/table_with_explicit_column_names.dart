@@ -357,6 +357,49 @@ class TableWithExplicitColumnNameRepository {
     );
   }
 
+  /// Upserts all [TableWithExplicitColumnName]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [TableWithExplicitColumnName]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<TableWithExplicitColumnName>> upsert(
+    _i1.DatabaseSession session,
+    List<TableWithExplicitColumnName> rows, {
+    required _i1.ColumnSelections<TableWithExplicitColumnNameTable>
+    uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<TableWithExplicitColumnName>(
+      rows,
+      uniqueColumns: uniqueColumns(TableWithExplicitColumnName.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [TableWithExplicitColumnName] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [TableWithExplicitColumnName] will have its `id` field set.
+  Future<TableWithExplicitColumnName> upsertRow(
+    _i1.DatabaseSession session,
+    TableWithExplicitColumnName row, {
+    required _i1.ColumnSelections<TableWithExplicitColumnNameTable>
+    uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<TableWithExplicitColumnName>(
+      row,
+      uniqueColumns: uniqueColumns(TableWithExplicitColumnName.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [TableWithExplicitColumnName]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

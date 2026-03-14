@@ -79,6 +79,8 @@ class BuildRepositoryClass {
           _buildFindByIdMethod(className, relationFields, idTypeReference),
           _buildInsertMethod(className),
           _buildInsertRowMethod(className),
+          _buildUpsertMethod(className),
+          _buildUpsertRowMethod(className),
           _buildUpdateMethod(className),
           _buildUpdateRowMethod(className),
           _buildUpdateByIdMethod(className, idTypeReference),
@@ -792,6 +794,151 @@ class BuildRepositoryClass {
             .call(
               [refer('row')],
               {
+                'transaction': refer('transaction'),
+              },
+              [refer(className)],
+            )
+            .returned
+            .statement;
+    });
+  }
+
+  Method _buildUpsertMethod(String className) {
+    return Method((methodBuilder) {
+      methodBuilder
+        ..docs.add('''
+/// Upserts all [$className]s in the list and returns the resulting rows.
+///
+/// If a row conflicts on the given [uniqueColumns], the existing row is
+/// updated with the new values. Otherwise, a new row is inserted.
+///
+/// The returned [$className]s will have their `id` fields set.
+///
+/// This is an atomic operation, meaning that if one of the rows fails,
+/// none of the rows will be affected.''')
+        ..name = 'upsert'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Future'
+            ..types.add(refer('List<$className>')),
+        )
+        ..requiredParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = _sessionReference
+              ..name = 'session',
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer('List<$className>')
+              ..name = 'rows',
+          ),
+        ])
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..symbol = 'ColumnSelections<${className}Table>'
+                  ..url = 'package:serverpod/serverpod.dart',
+              )
+              ..name = 'uniqueColumns'
+              ..named = true
+              ..required = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'Transaction'
+                  ..url = 'package:serverpod/serverpod.dart',
+              )
+              ..name = 'transaction'
+              ..named = true,
+          ),
+        ])
+        ..modifier = MethodModifier.async
+        ..body = refer('session')
+            .property('db')
+            .property('upsert')
+            .call(
+              [refer('rows')],
+              {
+                'uniqueColumns': refer('uniqueColumns').call([
+                  refer(className).property('t'),
+                ]),
+                'transaction': refer('transaction'),
+              },
+              [refer(className)],
+            )
+            .returned
+            .statement;
+    });
+  }
+
+  Method _buildUpsertRowMethod(String className) {
+    return Method((methodBuilder) {
+      methodBuilder
+        ..docs.add('''
+/// Upserts a single [$className] and returns the resulting row.
+///
+/// If the row conflicts on the given [uniqueColumns], the existing row is
+/// updated. Otherwise, a new row is inserted.
+///
+/// The returned [$className] will have its `id` field set.''')
+        ..name = 'upsertRow'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Future'
+            ..types.add(refer(className)),
+        )
+        ..requiredParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = _sessionReference
+              ..name = 'session',
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer(className)
+              ..name = 'row',
+          ),
+        ])
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..symbol = 'ColumnSelections<${className}Table>'
+                  ..url = 'package:serverpod/serverpod.dart',
+              )
+              ..name = 'uniqueColumns'
+              ..named = true
+              ..required = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'Transaction'
+                  ..url = 'package:serverpod/serverpod.dart',
+              )
+              ..name = 'transaction'
+              ..named = true,
+          ),
+        ])
+        ..modifier = MethodModifier.async
+        ..body = refer('session')
+            .property('db')
+            .property('upsertRow')
+            .call(
+              [refer('row')],
+              {
+                'uniqueColumns': refer('uniqueColumns').call([
+                  refer(className).property('t'),
+                ]),
                 'transaction': refer('transaction'),
               },
               [refer(className)],

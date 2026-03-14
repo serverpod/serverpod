@@ -464,6 +464,49 @@ class LongImplicitIdFieldCollectionRepository {
     );
   }
 
+  /// Upserts all [LongImplicitIdFieldCollection]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [LongImplicitIdFieldCollection]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<LongImplicitIdFieldCollection>> upsert(
+    _i1.DatabaseSession session,
+    List<LongImplicitIdFieldCollection> rows, {
+    required _i1.ColumnSelections<LongImplicitIdFieldCollectionTable>
+    uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<LongImplicitIdFieldCollection>(
+      rows,
+      uniqueColumns: uniqueColumns(LongImplicitIdFieldCollection.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [LongImplicitIdFieldCollection] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [LongImplicitIdFieldCollection] will have its `id` field set.
+  Future<LongImplicitIdFieldCollection> upsertRow(
+    _i1.DatabaseSession session,
+    LongImplicitIdFieldCollection row, {
+    required _i1.ColumnSelections<LongImplicitIdFieldCollectionTable>
+    uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<LongImplicitIdFieldCollection>(
+      row,
+      uniqueColumns: uniqueColumns(LongImplicitIdFieldCollection.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [LongImplicitIdFieldCollection]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

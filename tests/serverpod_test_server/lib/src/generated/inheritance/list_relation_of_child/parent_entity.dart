@@ -385,6 +385,47 @@ class ParentEntityRepository {
     );
   }
 
+  /// Upserts all [ParentEntity]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [ParentEntity]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ParentEntity>> upsert(
+    _i1.DatabaseSession session,
+    List<ParentEntity> rows, {
+    required _i1.ColumnSelections<ParentEntityTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ParentEntity>(
+      rows,
+      uniqueColumns: uniqueColumns(ParentEntity.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ParentEntity] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [ParentEntity] will have its `id` field set.
+  Future<ParentEntity> upsertRow(
+    _i1.DatabaseSession session,
+    ParentEntity row, {
+    required _i1.ColumnSelections<ParentEntityTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ParentEntity>(
+      row,
+      uniqueColumns: uniqueColumns(ParentEntity.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [ParentEntity]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

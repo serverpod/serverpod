@@ -416,6 +416,47 @@ class ChildWithInheritedIdRepository {
     );
   }
 
+  /// Upserts all [ChildWithInheritedId]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [ChildWithInheritedId]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ChildWithInheritedId>> upsert(
+    _i2.DatabaseSession session,
+    List<ChildWithInheritedId> rows, {
+    required _i2.ColumnSelections<ChildWithInheritedIdTable> uniqueColumns,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ChildWithInheritedId>(
+      rows,
+      uniqueColumns: uniqueColumns(ChildWithInheritedId.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ChildWithInheritedId] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [ChildWithInheritedId] will have its `id` field set.
+  Future<ChildWithInheritedId> upsertRow(
+    _i2.DatabaseSession session,
+    ChildWithInheritedId row, {
+    required _i2.ColumnSelections<ChildWithInheritedIdTable> uniqueColumns,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ChildWithInheritedId>(
+      row,
+      uniqueColumns: uniqueColumns(ChildWithInheritedId.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [ChildWithInheritedId]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

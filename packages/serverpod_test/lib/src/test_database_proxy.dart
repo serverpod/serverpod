@@ -219,6 +219,38 @@ class TestDatabaseProxy implements Database {
   }
 
   @override
+  Future<List<T>> upsert<T extends TableRow>(
+    List<T> rows, {
+    required List<Column> uniqueColumns,
+    Transaction? transaction,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.upsert<T>(
+        rows,
+        uniqueColumns: uniqueColumns,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  @override
+  Future<T> upsertRow<T extends TableRow>(
+    T row, {
+    required List<Column> uniqueColumns,
+    Transaction? transaction,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.upsertRow<T>(
+        row,
+        uniqueColumns: uniqueColumns,
+        transaction: transaction,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  @override
   Future<bool> testConnection() {
     return _db.testConnection();
   }

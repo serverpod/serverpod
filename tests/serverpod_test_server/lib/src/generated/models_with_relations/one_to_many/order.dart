@@ -482,6 +482,47 @@ class OrderRepository {
     );
   }
 
+  /// Upserts all [Order]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Order]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<Order>> upsert(
+    _i1.DatabaseSession session,
+    List<Order> rows, {
+    required _i1.ColumnSelections<OrderTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<Order>(
+      rows,
+      uniqueColumns: uniqueColumns(Order.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [Order] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [Order] will have its `id` field set.
+  Future<Order> upsertRow(
+    _i1.DatabaseSession session,
+    Order row, {
+    required _i1.ColumnSelections<OrderTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<Order>(
+      row,
+      uniqueColumns: uniqueColumns(Order.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [Order]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
