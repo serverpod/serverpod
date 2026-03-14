@@ -1,6 +1,8 @@
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/generator/types.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_database/serverpod_database.dart';
+
+export 'package:serverpod_database/src/definition/default_keywords.dart';
 
 /// An abstract representation of a yaml file in the
 /// protocol directory.
@@ -724,25 +726,3 @@ const ForeignKeyAction onDeleteDefault = ForeignKeyAction.noAction;
 const ForeignKeyAction onDeleteDefaultOld = ForeignKeyAction.cascade;
 
 const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
-
-const String defaultPrimaryKeyName = 'id';
-
-/// Int for the default primary key type.
-const String defaultIntSerial = 'serial';
-
-/// DateTime
-const String defaultDateTimeValueNow = 'now';
-
-/// bool
-const String defaultBooleanTrue = 'true';
-const String defaultBooleanFalse = 'false';
-
-/// UuidValue
-const String defaultUuidValueRandom = 'random';
-const String defaultUuidValueRandomV7 = 'random_v7';
-
-/// Allowed types for vector indexes.
-enum VectorIndexType {
-  hnsw,
-  ivfflat,
-}

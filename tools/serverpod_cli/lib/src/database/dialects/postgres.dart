@@ -1,7 +1,6 @@
 import 'package:intl/intl.dart';
-import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../analyzer/models/utils/quote_utils.dart';
@@ -169,12 +168,9 @@ extension PostgresTableDefinitionPgSqlGeneration on TableDefinition {
 }
 
 extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
-  /// Whether the column is the default primary key column.
-  bool get isIdColumn => name == defaultPrimaryKeyName;
-
   /// Whether the column is a primary key of type int serial.
   bool get isIntSerialIdColumn =>
-      isIdColumn &&
+      isPrimary &&
       (columnType == ColumnType.integer || columnType == ColumnType.bigint) &&
       (columnDefault?.startsWith('nextval') ?? false);
 
@@ -235,7 +231,7 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
     var defaultValue = columnDefault != null ? ' DEFAULT $columnDefault' : '';
 
     // The id column is special.
-    if (isIdColumn) {
+    if (isPrimary) {
       if (isNullable) {
         throw const FormatException('The id column must be non-nullable');
       }

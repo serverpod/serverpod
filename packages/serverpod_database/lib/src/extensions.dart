@@ -3,8 +3,8 @@ import 'package:collection/collection.dart';
 import '../serverpod_database.dart';
 import 'migrations/table_comparison_warning.dart';
 
-/// Comparison methods for [DatabaseDefinition].
-extension DatabaseComparisons on DatabaseDefinition {
+/// Utility methods for [DatabaseDefinition].
+extension DatabaseDefinitionUtils on DatabaseDefinition {
   /// Returns true if the database contains a table with the given [tableName].
   bool containsTableNamed(String tableName) {
     return (findTableNamed(tableName) != null);
@@ -16,8 +16,8 @@ extension DatabaseComparisons on DatabaseDefinition {
   }
 }
 
-/// Comparison methods for [TableDefinition].
-extension TableComparisons on TableDefinition {
+/// Utility methods for [TableDefinition].
+extension TableDefinitionUtils on TableDefinition {
   /// Returns true if the table contains a column with the given [columnName].
   bool containsColumnNamed(String columnName) {
     return findColumnNamed(columnName) != null;
@@ -58,7 +58,10 @@ extension TableComparisons on TableDefinition {
           : key.constraintName == keyName,
     );
   }
+}
 
+/// Comparison methods for [TableDefinition].
+extension TableComparisons on TableDefinition {
   /// Compares this table definition with [other], returning a list of mismatches.
   List<ComparisonWarning> like(TableDefinition other) {
     List<ComparisonWarning> mismatches = [];
@@ -171,6 +174,9 @@ extension TableComparisons on TableDefinition {
 
 /// Comparison methods for [ColumnDefinition].
 extension ColumnComparisons on ColumnDefinition {
+  /// Whether the column is a primary key.
+  bool get isPrimary => name == defaultPrimaryKeyName;
+
   /// Compares this column definition with [other], returning a list of mismatches.
   List<ColumnComparisonWarning> like(ColumnDefinition other) {
     List<ColumnComparisonWarning> mismatches = [];

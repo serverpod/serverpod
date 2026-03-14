@@ -14,6 +14,7 @@ export 'src/concepts/table.dart';
 export 'src/concepts/transaction.dart';
 export 'src/concepts/update_table.dart';
 export 'src/database.dart';
+export 'src/definition/default_keywords.dart';
 export 'src/extensions.dart';
 export 'src/generated/protocol.dart';
 export 'src/interface/analyzer.dart';
