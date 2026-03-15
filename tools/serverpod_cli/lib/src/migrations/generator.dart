@@ -129,6 +129,7 @@ class MigrationGenerator {
       ),
       migrationSql: sqlGenerator.generateDatabaseMigrationSql(
         migration,
+        databaseDefinitionNext,
         installedModules: databaseDefinitionNext.installedModules,
         removedModules: _removedModulesDiff(
           databaseDefinitionLatest.installedModules,
@@ -238,6 +239,7 @@ class MigrationGenerator {
     return await _writeRepairMigration(
       repairMigrationName,
       migration,
+      dstDatabase,
       installedModules,
       removedModules,
       dialect,
@@ -410,6 +412,7 @@ class MigrationGenerator {
   Future<File> _writeRepairMigration(
     String repairMigrationName,
     DatabaseMigration migration,
+    DatabaseDefinition databaseDefinition,
     List<DatabaseMigrationVersionModel> installedModules,
     List<DatabaseMigrationVersionModel> removedModules,
     DatabaseDialect dialect,
@@ -418,6 +421,7 @@ class MigrationGenerator {
 
     var repairMigrationSql = sqlGenerator.generateDatabaseMigrationSql(
       migration,
+      databaseDefinition,
       installedModules: installedModules,
       removedModules: removedModules,
     );

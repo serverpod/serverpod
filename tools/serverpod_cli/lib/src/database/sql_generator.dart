@@ -14,7 +14,8 @@ abstract interface class SqlGenerator {
   });
 
   String generateDatabaseMigrationSql(
-    DatabaseMigration databaseMigration, {
+    DatabaseMigration databaseMigration,
+    DatabaseDefinition databaseDefinition, {
     required List<DatabaseMigrationVersionModel> installedModules,
     required List<DatabaseMigrationVersionModel> removedModules,
   });

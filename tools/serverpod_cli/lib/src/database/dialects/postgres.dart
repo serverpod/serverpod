@@ -16,11 +16,13 @@ class PostgresSqlGenerator implements SqlGenerator {
 
   @override
   String generateDatabaseMigrationSql(
-    DatabaseMigration databaseMigration, {
+    DatabaseMigration databaseMigration,
+    DatabaseDefinition databaseDefinition, {
     required List<DatabaseMigrationVersionModel> installedModules,
     required List<DatabaseMigrationVersionModel> removedModules,
   }) {
     return databaseMigration.toPgSql(
+      databaseDefinition: databaseDefinition,
       installedModules: installedModules,
       removedModules: removedModules,
     );
@@ -326,6 +328,7 @@ extension on ForeignKeyAction {
 
 extension PostgresDatabaseMigrationPgSqlGenerator on DatabaseMigration {
   String toPgSql({
+    required DatabaseDefinition databaseDefinition,
     required List<DatabaseMigrationVersionModel> installedModules,
     required List<DatabaseMigrationVersionModel> removedModules,
   }) {
@@ -353,11 +356,15 @@ extension PostgresDatabaseMigrationPgSqlGenerator on DatabaseMigration {
       (e) =>
           (e.createTable != null &&
               e.createTable!.columns.any(
-                (c) => c.columnDefault == pgsqlFunctionRandomUuidV7,
+                (c) =>
+                    c.columnDefault == pgsqlFunctionRandomUuidV7 ||
+                    c.columnDefault == defaultUuidValueRandomV7,
               )) ||
           (e.alterTable != null &&
               (e.alterTable!.addColumns.any(
-                    (c) => c.columnDefault == pgsqlFunctionRandomUuidV7,
+                    (c) =>
+                        c.columnDefault == pgsqlFunctionRandomUuidV7 ||
+                        c.columnDefault == defaultUuidValueRandomV7,
                   ) ||
                   e.alterTable!.modifyColumns.any(
                     (c) => c.newDefault == pgsqlFunctionRandomUuidV7,
@@ -369,7 +376,7 @@ extension PostgresDatabaseMigrationPgSqlGenerator on DatabaseMigration {
 
     var foreignKeyActions = '';
     for (var action in actions) {
-      out += action.toPgSql();
+      out += action.toPgSql(databaseDefinition);
       foreignKeyActions += action.foreignRelationToSql();
     }
 
@@ -400,7 +407,7 @@ extension PostgresDatabaseMigrationPgSqlGenerator on DatabaseMigration {
 }
 
 extension PostgresMigrationActionPgSqlGeneration on DatabaseMigrationAction {
-  String toPgSql() {
+  String toPgSql(DatabaseDefinition databaseDefinition) {
     var out = '';
 
     switch (type) {
@@ -427,7 +434,9 @@ extension PostgresMigrationActionPgSqlGeneration on DatabaseMigrationAction {
         out += '--\n';
         out += '-- ACTION ALTER TABLE\n';
         out += '--\n';
-        out += alterTable!.toPgSql();
+        out += alterTable!.toPgSql(
+          databaseDefinition.findTableNamed(alterTable!.name)!.columns,
+        );
         break;
     }
 
@@ -455,7 +464,7 @@ extension PostgresMigrationActionPgSqlGeneration on DatabaseMigrationAction {
 }
 
 extension PostgresTableMigrationPgSqlGenerator on TableMigration {
-  String toPgSql() {
+  String toPgSql(List<ColumnDefinition> targetColumns) {
     var out = '';
 
     // Drop indexes
@@ -475,12 +484,18 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
 
     // Add columns
     for (var addColumn in addColumns) {
-      out += 'ALTER TABLE "$name" ADD COLUMN ${addColumn.toPgSqlFragment()};\n';
+      out +=
+          'ALTER TABLE "$name" ADD COLUMN ${addColumn.toPgSqlFragment(tableName: name)};\n';
     }
 
     // Modify columns
     for (var alterColumn in modifyColumns) {
-      out += alterColumn.toPgSql(tableName: name);
+      out += alterColumn.toPgSql(
+        tableName: name,
+        columnDefinition: targetColumns.firstWhere(
+          (c) => c.name == alterColumn.columnName,
+        ),
+      );
     }
 
     // Add indexes
@@ -507,6 +522,7 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
 extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
   String toPgSql({
     required String tableName,
+    required ColumnDefinition columnDefinition,
   }) {
     var out = '';
     if (addNullable) {
@@ -525,9 +541,14 @@ extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
             ' DROP DEFAULT;\n';
         return out;
       } else {
+        var newDefaultSql = columnDefinition.columnType.getPgColumnDefault(
+          newDefault,
+          tableName,
+          dartType: columnDefinition.dartType!,
+        );
         out +=
             'ALTER TABLE "$tableName" ALTER COLUMN "$columnName"'
-            ' SET DEFAULT $newDefault;\n';
+            ' SET DEFAULT $newDefaultSql;\n';
       }
     }
 

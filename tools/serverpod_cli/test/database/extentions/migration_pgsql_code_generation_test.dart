@@ -39,7 +39,11 @@ void main() {
         databaseTarget: targetDefinition,
       );
 
-      var psql = migration.toPgSql(installedModules: [], removedModules: []);
+      var psql = migration.toPgSql(
+        databaseDefinition: targetDefinition,
+        installedModules: [],
+        removedModules: [],
+      );
 
       test(
         'Given a table transitioning from none manage to manage then the psql code contains a create table if not exists.',
@@ -71,7 +75,11 @@ END
           warnings: [],
           migrationApiVersion: 1,
         );
-        var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+        var pgsql = migration.toPgSql(
+          databaseDefinition: DatabaseDefinitionBuilder().build(),
+          installedModules: [],
+          removedModules: [],
+        );
 
         expect(pgsql, isNot(contains(createVectorExtension)));
       },
@@ -102,7 +110,11 @@ END
           databaseTarget: targetDefinition,
         );
 
-        var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
 
         expect(pgsql, contains(createVectorExtension));
       },
@@ -137,7 +149,11 @@ END
           databaseTarget: targetDefinition,
         );
 
-        var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
 
         expect(pgsql, contains(createVectorExtension));
       },
@@ -168,7 +184,11 @@ END
           databaseTarget: targetDefinition,
         );
 
-        var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
 
         expect(pgsql, isNot(contains(createVectorExtension)));
       },
@@ -199,7 +219,11 @@ END
           databaseTarget: targetDefinition,
         );
 
-        var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
 
         expect(pgsql, contains(createVectorExtension));
       },
@@ -234,7 +258,11 @@ END
           databaseTarget: targetDefinition,
         );
 
-        var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
 
         expect(pgsql, contains(createVectorExtension));
       },
@@ -265,7 +293,11 @@ END
           databaseTarget: targetDefinition,
         );
 
-        var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
 
         expect(pgsql, isNot(contains(createVectorExtension)));
       },
@@ -296,7 +328,11 @@ END
           databaseTarget: targetDefinition,
         );
 
-        var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
 
         expect(pgsql, contains(createVectorExtension));
       },
@@ -331,7 +367,11 @@ END
           databaseTarget: targetDefinition,
         );
 
-        var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
 
         expect(pgsql, contains(createVectorExtension));
       },
@@ -362,7 +402,11 @@ END
           databaseTarget: targetDefinition,
         );
 
-        var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
 
         expect(pgsql, isNot(contains(createVectorExtension)));
       },
@@ -393,7 +437,11 @@ END
           databaseTarget: targetDefinition,
         );
 
-        var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
 
         expect(pgsql, contains(createVectorExtension));
       },
@@ -428,7 +476,11 @@ END
           databaseTarget: targetDefinition,
         );
 
-        var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
 
         expect(pgsql, contains(createVectorExtension));
       },
@@ -459,7 +511,11 @@ END
           databaseTarget: targetDefinition,
         );
 
-        var pgsql = migration.toPgSql(installedModules: [], removedModules: []);
+        var pgsql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
+          installedModules: [],
+          removedModules: [],
+        );
 
         expect(pgsql, isNot(contains(createVectorExtension)));
       },
@@ -514,7 +570,11 @@ fields:
         databaseTarget: targetDefinition,
       );
 
-      var psql = migration.toPgSql(installedModules: [], removedModules: []);
+      var psql = migration.toPgSql(
+        databaseDefinition: targetDefinition,
+        installedModules: [],
+        removedModules: [],
+      );
 
       var createNewModelTable = psql.indexOf('CREATE TABLE "z_new_model"');
       var addForeignKeyToExistingTable = psql.indexOf(
@@ -559,6 +619,7 @@ fields:
         );
 
         final psql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
           installedModules: [],
           removedModules: [],
         );
@@ -596,6 +657,7 @@ fields:
         );
 
         final psql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
           installedModules: [],
           removedModules: [],
         );
@@ -650,6 +712,7 @@ fields:
         );
 
         final psql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
           installedModules: [],
           removedModules: [],
         );
@@ -710,6 +773,7 @@ fields:
         );
 
         final psql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
           installedModules: [],
           removedModules: [],
         );
@@ -759,6 +823,7 @@ fields:
         );
 
         final psql = migration.toPgSql(
+          databaseDefinition: targetDefinition,
           installedModules: [],
           removedModules: [],
         );
