@@ -12,6 +12,11 @@ import 'package:serverpod_cli/src/database/sql_generator.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_database/serverpod_database.dart';
+// This is a temporary internal import since the normalize functions are not
+// meant to be exported from the database package. It will be removed once the
+// [MigrationGenerator] gets moved to the database package.
+// ignore: implementation_imports
+import 'package:serverpod_database/src/definition/definition_normalizer.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class MigrationGenerator {
@@ -190,7 +195,9 @@ class MigrationGenerator {
     var client = ConfigInfo(runMode).createServiceClient();
     DatabaseDefinition liveDatabase;
     try {
-      liveDatabase = await client.insights.getLiveDatabaseDefinition();
+      liveDatabase = normalizeDefinitionToV2(
+        await client.insights.getLiveDatabaseDefinition(),
+      );
     } catch (e) {
       throw MigrationLiveDatabaseDefinitionException(
         exception: e.toString(),
