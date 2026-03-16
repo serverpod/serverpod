@@ -189,9 +189,7 @@ void main() {
               );
           authKeyProvider.setToken('${authResult.keyId}:${authResult.key}');
 
-          final isValid = await legacy_auth.Caller(
-            legacyClient,
-          ).status.isSignedIn();
+          final isValid = await legacyClient.modules.auth.status.isSignedIn();
 
           expect(isValid, isTrue);
         },
@@ -212,9 +210,7 @@ void main() {
               );
           authKeyProvider.setToken('${authResult.keyId}:${authResult.key}');
 
-          final userInfo = await legacy_auth.Caller(
-            legacyClient,
-          ).status.getUserInfo();
+          final userInfo = await legacyClient.modules.auth.status.getUserInfo();
 
           expect(userInfo?.userIdentifier, equals(authUserId.toString()));
         },
@@ -235,12 +231,11 @@ void main() {
               );
           authKeyProvider.setToken('${authResult.keyId}:${authResult.key}');
 
-          final changed = await legacy_auth.Caller(
-            legacyClient,
-          ).user.changeFullName('Legacy Full Name');
-          final updatedUserInfo = await legacy_auth.Caller(
-            legacyClient,
-          ).status.getUserInfo();
+          final changed = await legacyClient.modules.auth.user.changeFullName(
+            'Legacy Full Name',
+          );
+          final updatedUserInfo = await legacyClient.modules.auth.status
+              .getUserInfo();
 
           expect(changed, isTrue);
           expect(updatedUserInfo?.fullName, equals('Legacy Full Name'));
@@ -264,9 +259,7 @@ void main() {
 
           await legacy_auth.Caller(legacyClient).status.signOutDevice();
 
-          final isValid = await legacy_auth.Caller(
-            legacyClient,
-          ).status.isSignedIn();
+          final isValid = await legacyClient.modules.auth.status.isSignedIn();
 
           expect(isValid, isFalse);
         },
@@ -469,9 +462,10 @@ void main() {
         'when calling changePassword then returns false.',
         () async {
           final legacyClient = _createLegacyClient(sessionBuilder);
-          final result = await legacy_auth.Caller(
-            legacyClient,
-          ).email.changePassword('old', 'new');
+          final result = await legacyClient.modules.auth.email.changePassword(
+            'old',
+            'new',
+          );
 
           expect(result, isFalse);
         },
@@ -516,9 +510,9 @@ void main() {
         'when calling Firebase authenticate then it is handled by non-legacy endpoint.',
         () async {
           final legacyClient = _createLegacyClient(sessionBuilder);
-          final result = await legacy_auth.Caller(
-            legacyClient,
-          ).firebase.authenticate('fake-token');
+          final result = await legacyClient.modules.auth.firebase.authenticate(
+            'fake-token',
+          );
 
           expect(result.success, isFalse);
           expect(
@@ -658,9 +652,11 @@ void main() {
           expect(blockedInfo!.blocked, isTrue);
 
           final targetLegacyClient = _createLegacyClient(sessionBuilder);
-          final authResult = await legacy_auth.Caller(
-            targetLegacyClient,
-          ).email.authenticate(targetEmail, password);
+          final authResult = await targetLegacyClient.modules.auth.email
+              .authenticate(
+                targetEmail,
+                password,
+              );
 
           expect(authResult.success, isFalse);
           expect(
@@ -709,20 +705,34 @@ _LegacyClient _createLegacyClient(
   return _LegacyClient(baseUrl)..authKeyProvider = authKeyProvider;
 }
 
-class _LegacyClient extends legacy_auth.ServerpodClientShared {
+class _LegacyClient extends ServerpodClientShared {
   _LegacyClient(final String host)
     : super(
         host,
         legacy_auth.Protocol(),
         streamingConnectionTimeout: null,
         connectionTimeout: null,
-      );
+      ) {
+    modules = _LegacyModules(this);
+  }
+
+  late final _LegacyModules modules;
 
   @override
-  Map<String, legacy_auth.EndpointRef> get endpointRefLookup => const {};
+  Map<String, EndpointRef> get endpointRefLookup => const {};
 
   @override
-  Map<String, legacy_auth.ModuleEndpointCaller> get moduleLookup => const {};
+  Map<String, ModuleEndpointCaller> get moduleLookup => {
+    'auth': modules.auth,
+  };
+}
+
+class _LegacyModules {
+  _LegacyModules(final _LegacyClient client) {
+    auth = legacy_auth.Caller(client);
+  }
+
+  late final legacy_auth.Caller auth;
 }
 
 Client _createClient(
