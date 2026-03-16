@@ -40,6 +40,11 @@ class MicrosoftIdpConfig extends IdentityProviderBuilder<MicrosoftIdp> {
   /// Defaults to `common` for multi-tenant support.
   final String tenant;
 
+  /// The authority host for the Microsoft identity provider.
+  ///
+  /// Defaults to `login.microsoftonline.com`.
+  final String authorityHost;
+
   /// Whether to automatically fetch and store user profile photos.
   ///
   /// When `true`, profile photos are fetched from Microsoft Graph API and
@@ -95,12 +100,13 @@ class MicrosoftIdpConfig extends IdentityProviderBuilder<MicrosoftIdp> {
     required this.clientId,
     required this.clientSecret,
     this.tenant = 'common',
+    this.authorityHost = 'login.microsoftonline.com',
     this.fetchProfilePhoto = true,
     this.microsoftAccountDetailsValidation = validateMicrosoftAccountDetails,
     this.getExtraMicrosoftInfoCallback,
   }) : oauth2Config = OAuth2PkceServerConfig(
          tokenEndpointUrl: Uri.https(
-           'login.microsoftonline.com',
+           authorityHost,
            '/$tenant/oauth2/v2.0/token',
          ),
          clientId: clientId,

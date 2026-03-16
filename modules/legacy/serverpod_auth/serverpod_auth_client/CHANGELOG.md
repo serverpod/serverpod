@@ -1,3 +1,10 @@
+## 3.4.4
+
+- fix: Fixes Google Sign-In not handling error when invoked directly from the controller.
+- fix: Allows configuring the authority host for the Microsoft identity provider.
+- fix: Adds support for additional authentication parameters on the Microsoft identity provider.
+- fix: Adds support for additional authentication parameters on the GitHub identity provider.
+
 ## 3.4.3
 
 - refactor: Changes the `session` parameter type on repository methods to `DatabaseSession`.
