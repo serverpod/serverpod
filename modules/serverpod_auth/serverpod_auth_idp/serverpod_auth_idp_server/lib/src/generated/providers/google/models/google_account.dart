@@ -552,15 +552,25 @@ class GoogleAccountRepository {
   }
 
   /// Deletes all [GoogleAccount]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<GoogleAccount>> delete(
     _i1.DatabaseSession session,
     List<GoogleAccount> rows, {
+    _i1.OrderByBuilder<GoogleAccountTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<GoogleAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<GoogleAccount>(
       rows,
+      orderBy: orderBy?.call(GoogleAccount.t),
+      orderByList: orderByList?.call(GoogleAccount.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -578,13 +588,22 @@ class GoogleAccountRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<GoogleAccount>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<GoogleAccountTable> where,
+    _i1.OrderByBuilder<GoogleAccountTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<GoogleAccountTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<GoogleAccount>(
       where: where(GoogleAccount.t),
+      orderBy: orderBy?.call(GoogleAccount.t),
+      orderByList: orderByList?.call(GoogleAccount.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

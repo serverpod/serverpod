@@ -645,15 +645,25 @@ class MessageLogEntryRepository {
   }
 
   /// Deletes all [MessageLogEntry]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<MessageLogEntry>> delete(
     _i1.DatabaseSession session,
     List<MessageLogEntry> rows, {
+    _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<MessageLogEntry>(
       rows,
+      orderBy: orderBy?.call(MessageLogEntry.t),
+      orderByList: orderByList?.call(MessageLogEntry.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -671,13 +681,22 @@ class MessageLogEntryRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<MessageLogEntry>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
+    _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<MessageLogEntry>(
       where: where(MessageLogEntry.t),
+      orderBy: orderBy?.call(MessageLogEntry.t),
+      orderByList: orderByList?.call(MessageLogEntry.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

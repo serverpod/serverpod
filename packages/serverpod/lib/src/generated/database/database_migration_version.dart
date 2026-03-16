@@ -465,15 +465,25 @@ class DatabaseMigrationVersionRepository {
   }
 
   /// Deletes all [DatabaseMigrationVersion]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<DatabaseMigrationVersion>> delete(
     _i1.DatabaseSession session,
     List<DatabaseMigrationVersion> rows, {
+    _i1.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<DatabaseMigrationVersion>(
       rows,
+      orderBy: orderBy?.call(DatabaseMigrationVersion.t),
+      orderByList: orderByList?.call(DatabaseMigrationVersion.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -491,13 +501,22 @@ class DatabaseMigrationVersionRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<DatabaseMigrationVersion>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
+    _i1.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<DatabaseMigrationVersion>(
       where: where(DatabaseMigrationVersion.t),
+      orderBy: orderBy?.call(DatabaseMigrationVersion.t),
+      orderByList: orderByList?.call(DatabaseMigrationVersion.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

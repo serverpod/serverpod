@@ -41,7 +41,6 @@ enum AuthenticationFailReason implements _i1.SerializableModel {
 
   @override
   int toJson() => index;
-
   @override
   String toString() => name;
 }

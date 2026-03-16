@@ -46,7 +46,6 @@ enum SharedEnum implements _i1.SerializableModel {
 
   @override
   String toJson() => name;
-
   @override
   String toString() => name;
 }
