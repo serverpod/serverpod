@@ -82,24 +82,25 @@ void main() {
 
   test(
     'when deleting a table with explicit column names and multiple order by columns then all returned rows are ordered by the field aliases',
-        () {
+    () {
       final table = TableWithColumnOverride();
-      final query = DeleteQueryBuilder(
-        table: table,
-      ).withReturn(Returning.all).withOrderBy([
-        Order(column: table.userName),
-        Order(column: table.userAge, orderDescending: true),
-      ]).build();
+      final query =
+          DeleteQueryBuilder(
+            table: table,
+          ).withReturn(Returning.all).withOrderBy([
+            Order(column: table.userName),
+            Order(column: table.userAge, orderDescending: true),
+          ]).build();
 
       expect(
         query,
         'WITH deleted_rows AS (DELETE FROM "${table.tableName}" '
-            'RETURNING "${table.tableName}"."id" AS "${table.tableName}.id", '
-            '"${table.tableName}"."user_name" AS "${table.tableName}.userName", '
-            '"${table.tableName}"."user_age" AS "${table.tableName}.userAge") '
-            'SELECT * FROM deleted_rows '
-            'ORDER BY "${table.tableName}.userName" ASC NULLS LAST, '
-            '"${table.tableName}.userAge" DESC NULLS FIRST',
+        'RETURNING "${table.tableName}"."id" AS "${table.tableName}.id", '
+        '"${table.tableName}"."user_name" AS "${table.tableName}.userName", '
+        '"${table.tableName}"."user_age" AS "${table.tableName}.userAge") '
+        'SELECT * FROM deleted_rows '
+        'ORDER BY "${table.tableName}.userName" ASC NULLS LAST, '
+        '"${table.tableName}.userAge" DESC NULLS FIRST',
       );
     },
   );

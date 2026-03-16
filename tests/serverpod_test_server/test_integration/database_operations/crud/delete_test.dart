@@ -249,7 +249,7 @@ void main() async {
 
     test(
       'Given two entries in the database when batch deleting with orderBy then deleted rows are returned in ascending order.',
-          () async {
+      () async {
         var data = <UniqueData>[
           UniqueData(number: 2, email: 'dev@serverpod.dev'),
           UniqueData(number: 1, email: 'info@serverpod.dev'),
@@ -270,7 +270,7 @@ void main() async {
 
     test(
       'Given two entries in the database when batch deleting with descending orderBy then deleted rows are returned in descending order.',
-          () async {
+      () async {
         var data = <UniqueData>[
           UniqueData(number: 1, email: 'info@serverpod.dev'),
           UniqueData(number: 2, email: 'dev@serverpod.dev'),
@@ -289,8 +289,6 @@ void main() async {
         expect(deleted.map((e) => e.number).toList(), [2, 1]);
       },
     );
-
-
 
     test(
       'Given two entries in the database when batch deleting the rows then the rows are deleted from the database.',
