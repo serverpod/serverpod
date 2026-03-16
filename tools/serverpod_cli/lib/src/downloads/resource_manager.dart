@@ -31,7 +31,7 @@ class ResourceManager {
     }
   }
 
-  String get uniqueUserId {
+  String? get uniqueUserId {
     const uuidFilePath = 'uuid';
     try {
       var userIdFile = File(p.join(localStorageDirectory.path, uuidFilePath));
@@ -40,12 +40,17 @@ class ResourceManager {
     } catch (e) {
       // Failed to read userId from file, it's probably not created.
     }
+
     var userId = const Uuid().v4();
     try {
       var userIdFile = File(p.join(localStorageDirectory.path, uuidFilePath));
       userIdFile.createSync(recursive: true);
       userIdFile.writeAsStringSync(userId);
-    } finally {}
+    } catch (e) {
+      // Failed to write userId to file. Return null to indicate that the UUID
+      // is not available for this session.
+      return null;
+    }
 
     return userId;
   }
