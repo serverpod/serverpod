@@ -497,15 +497,25 @@ class EnumDefaultMixRepository {
   }
 
   /// Deletes all [EnumDefaultMix]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<EnumDefaultMix>> delete(
     _i1.DatabaseSession session,
     List<EnumDefaultMix> rows, {
+    _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<EnumDefaultMix>(
       rows,
+      orderBy: orderBy?.call(EnumDefaultMix.t),
+      orderByList: orderByList?.call(EnumDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -523,13 +533,22 @@ class EnumDefaultMixRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<EnumDefaultMix>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
+    _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<EnumDefaultMix>(
       where: where(EnumDefaultMix.t),
+      orderBy: orderBy?.call(EnumDefaultMix.t),
+      orderByList: orderByList?.call(EnumDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

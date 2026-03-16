@@ -374,15 +374,25 @@ class ServerOnlyChangedIdFieldClassRepository {
   }
 
   /// Deletes all [ServerOnlyChangedIdFieldClass]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ServerOnlyChangedIdFieldClass>> delete(
     _i1.DatabaseSession session,
     List<ServerOnlyChangedIdFieldClass> rows, {
+    _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ServerOnlyChangedIdFieldClass>(
       rows,
+      orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
+      orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -400,14 +410,23 @@ class ServerOnlyChangedIdFieldClassRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ServerOnlyChangedIdFieldClass>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>
     where,
+    _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ServerOnlyChangedIdFieldClass>(
       where: where(ServerOnlyChangedIdFieldClass.t),
+      orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
+      orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

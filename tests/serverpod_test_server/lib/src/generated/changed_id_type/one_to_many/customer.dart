@@ -486,15 +486,25 @@ class CustomerIntRepository {
   }
 
   /// Deletes all [CustomerInt]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<CustomerInt>> delete(
     _i1.DatabaseSession session,
     List<CustomerInt> rows, {
+    _i1.OrderByBuilder<CustomerIntTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CustomerIntTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<CustomerInt>(
       rows,
+      orderBy: orderBy?.call(CustomerInt.t),
+      orderByList: orderByList?.call(CustomerInt.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -512,13 +522,22 @@ class CustomerIntRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<CustomerInt>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CustomerIntTable> where,
+    _i1.OrderByBuilder<CustomerIntTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<CustomerIntTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<CustomerInt>(
       where: where(CustomerInt.t),
+      orderBy: orderBy?.call(CustomerInt.t),
+      orderByList: orderByList?.call(CustomerInt.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

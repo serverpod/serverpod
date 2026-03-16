@@ -517,15 +517,25 @@ class RelationToMultipleMaxFieldNameRepository {
   }
 
   /// Deletes all [RelationToMultipleMaxFieldName]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<RelationToMultipleMaxFieldName>> delete(
     _i1.DatabaseSession session,
     List<RelationToMultipleMaxFieldName> rows, {
+    _i1.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<RelationToMultipleMaxFieldName>(
       rows,
+      orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
+      orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -543,14 +553,23 @@ class RelationToMultipleMaxFieldNameRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<RelationToMultipleMaxFieldName>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>
     where,
+    _i1.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<RelationToMultipleMaxFieldName>(
       where: where(RelationToMultipleMaxFieldName.t),
+      orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
+      orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

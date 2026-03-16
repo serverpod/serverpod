@@ -549,15 +549,25 @@ class ObjectWithBitRepository {
   }
 
   /// Deletes all [ObjectWithBit]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ObjectWithBit>> delete(
     _i1.DatabaseSession session,
     List<ObjectWithBit> rows, {
+    _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ObjectWithBit>(
       rows,
+      orderBy: orderBy?.call(ObjectWithBit.t),
+      orderByList: orderByList?.call(ObjectWithBit.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -575,13 +585,22 @@ class ObjectWithBitRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ObjectWithBit>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ObjectWithBitTable> where,
+    _i1.OrderByBuilder<ObjectWithBitTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithBitTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ObjectWithBit>(
       where: where(ObjectWithBit.t),
+      orderBy: orderBy?.call(ObjectWithBit.t),
+      orderByList: orderByList?.call(ObjectWithBit.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

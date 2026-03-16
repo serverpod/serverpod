@@ -485,15 +485,25 @@ class RelatedUniqueDataRepository {
   }
 
   /// Deletes all [RelatedUniqueData]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<RelatedUniqueData>> delete(
     _i1.DatabaseSession session,
     List<RelatedUniqueData> rows, {
+    _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<RelatedUniqueData>(
       rows,
+      orderBy: orderBy?.call(RelatedUniqueData.t),
+      orderByList: orderByList?.call(RelatedUniqueData.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -511,13 +521,22 @@ class RelatedUniqueDataRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<RelatedUniqueData>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
+    _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<RelatedUniqueData>(
       where: where(RelatedUniqueData.t),
+      orderBy: orderBy?.call(RelatedUniqueData.t),
+      orderByList: orderByList?.call(RelatedUniqueData.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

@@ -466,15 +466,25 @@ class IntDefaultMixRepository {
   }
 
   /// Deletes all [IntDefaultMix]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<IntDefaultMix>> delete(
     _i1.DatabaseSession session,
     List<IntDefaultMix> rows, {
+    _i1.OrderByBuilder<IntDefaultMixTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<IntDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<IntDefaultMix>(
       rows,
+      orderBy: orderBy?.call(IntDefaultMix.t),
+      orderByList: orderByList?.call(IntDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -492,13 +502,22 @@ class IntDefaultMixRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<IntDefaultMix>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<IntDefaultMixTable> where,
+    _i1.OrderByBuilder<IntDefaultMixTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<IntDefaultMixTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<IntDefaultMix>(
       where: where(IntDefaultMix.t),
+      orderBy: orderBy?.call(IntDefaultMix.t),
+      orderByList: orderByList?.call(IntDefaultMix.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

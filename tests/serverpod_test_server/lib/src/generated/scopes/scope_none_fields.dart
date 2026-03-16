@@ -441,15 +441,25 @@ class ScopeNoneFieldsRepository {
   }
 
   /// Deletes all [ScopeNoneFields]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ScopeNoneFields>> delete(
     _i1.DatabaseSession session,
     List<ScopeNoneFields> rows, {
+    _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ScopeNoneFields>(
       rows,
+      orderBy: orderBy?.call(ScopeNoneFields.t),
+      orderByList: orderByList?.call(ScopeNoneFields.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -467,13 +477,22 @@ class ScopeNoneFieldsRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ScopeNoneFields>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
+    _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ScopeNoneFields>(
       where: where(ScopeNoneFields.t),
+      orderBy: orderBy?.call(ScopeNoneFields.t),
+      orderByList: orderByList?.call(ScopeNoneFields.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

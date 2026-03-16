@@ -483,15 +483,25 @@ class AddressRepository {
   }
 
   /// Deletes all [Address]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<Address>> delete(
     _i1.DatabaseSession session,
     List<Address> rows, {
+    _i1.OrderByBuilder<AddressTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<AddressTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Address>(
       rows,
+      orderBy: orderBy?.call(Address.t),
+      orderByList: orderByList?.call(Address.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -509,13 +519,22 @@ class AddressRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<Address>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<AddressTable> where,
+    _i1.OrderByBuilder<AddressTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<AddressTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<Address>(
       where: where(Address.t),
+      orderBy: orderBy?.call(Address.t),
+      orderByList: orderByList?.call(Address.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
