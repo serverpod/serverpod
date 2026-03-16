@@ -507,6 +507,8 @@ class DeleteQueryBuilder {
   final Table _table;
   String? _returningStatement;
   Expression? _where;
+  List<Order>? _orderBy;
+  Returning? _returning;
 
   /// Creates a new [DeleteQueryBuilder].
   DeleteQueryBuilder({required Table table})
@@ -527,6 +529,7 @@ class DeleteQueryBuilder {
         _returningStatement = null;
         break;
     }
+    _returning = returning;
     return this;
   }
 
@@ -539,21 +542,47 @@ class DeleteQueryBuilder {
     return this;
   }
 
+  /// Sets the order by for the returned deleted rows.
+  ///
+  /// Order by should only include columns from the current table.
+  DeleteQueryBuilder withOrderBy(List<Order>? orderBy) {
+    _orderBy = orderBy;
+    return this;
+  }
+
   /// Builds the SQL query.
   String build() {
-    _validateTableReferences(_table.tableName, where: _where);
-
+    _validateTableReferences(
+      _table.tableName,
+      where: _where,
+    );
+    _validateDeleteOrderByAndReturning(
+      _table.tableName,
+      _orderBy,
+      _returning,
+    );
     var subQueries = _SubQueries.gatherSubQueries(where: _where);
     var using = _buildUsingQuery(where: _where);
     var where = _buildWhereQuery(where: _where, subQueries: subQueries);
 
+    var deleteQuery = '';
+    if (subQueries != null) deleteQuery += 'WITH ${subQueries.buildQueries()} ';
+    deleteQuery += 'DELETE FROM "${_table.tableName}"';
+    if (using != null) deleteQuery += ' USING ${using.using}';
+    if (where != null) deleteQuery += ' WHERE $where';
+    if (using != null) deleteQuery += ' AND ${using.where}';
+    if (_returningStatement != null) deleteQuery += _returningStatement!;
+
+    var orderBy = _buildDeleteOrderByQuery(_orderBy);
+    if (orderBy == null) {
+      return deleteQuery;
+    }
+    // Wrap the delete query so the returned rows can be ordered.
     var query = '';
-    if (subQueries != null) query += 'WITH ${subQueries.buildQueries()} ';
-    query += 'DELETE FROM "${_table.tableName}"';
-    if (using != null) query += ' USING ${using.using}';
-    if (where != null) query += ' WHERE $where';
-    if (using != null) query += ' AND ${using.where}';
-    if (_returningStatement != null) query += _returningStatement!;
+    var deletedRowsAlias = 'deleted_rows';
+    query += 'WITH $deletedRowsAlias AS ($deleteQuery)';
+    query += ' SELECT * FROM $deletedRowsAlias';
+    query += ' ORDER BY $orderBy';
     return query;
   }
 }
@@ -1106,6 +1135,29 @@ String? _buildOrderByQuery({List<Order>? orderBy, _SubQueries? subQueries}) {
       .join(', ');
 }
 
+String? _buildDeleteOrderByQuery(List<Order>? orderBy) {
+  if (orderBy == null) {
+    return null;
+  }
+
+  return orderBy
+      .map((order) {
+        var column = order.column;
+
+        var alias = truncateIdentifier(
+          column.fieldQueryAlias,
+          DatabaseConstants.pgsqlMaxNameLimitation,
+        );
+
+        var direction = order.orderDescending
+            ? 'DESC NULLS FIRST'
+            : 'ASC NULLS LAST';
+
+        return '"$alias" $direction';
+      })
+      .join(', ');
+}
+
 String _formatOrderByCount(
   int index,
   _SubQueries? subQueries,
@@ -1378,6 +1430,45 @@ void _validateTableReferences(
     var errorMessage =
         'Column references starting from other tables than "$tableName" are '
         'not supported. The following expressions need to be removed or '
+        'modified:\n${exceptionMessages.join('\n')}';
+    throw FormatException(errorMessage);
+  }
+}
+
+void _validateDeleteOrderByAndReturning(
+  String tableName,
+  List<Order>? orderBy,
+  Returning? returning,
+) {
+  if (orderBy == null || orderBy.isEmpty) return;
+
+  List<String> exceptionMessages = [];
+
+  if (returning != Returning.all) {
+    exceptionMessages.add(
+      'Order by is not supported when returning is set to $returning.',
+    );
+  }
+
+  for (var order in orderBy) {
+    var column = order.column;
+
+    if (column is ColumnCount) {
+      exceptionMessages.add(
+        'DeleteQueryBuilder does not support ordering returned rows by ColumnCount.',
+      );
+    }
+
+    if (column.table.tableName != tableName) {
+      exceptionMessages.add(
+        'DeleteQueryBuilder orderBy only supports columns from "$tableName".',
+      );
+    }
+  }
+
+  if (exceptionMessages.isNotEmpty) {
+    var errorMessage =
+        'The following expressions need to be removed or '
         'modified:\n${exceptionMessages.join('\n')}';
     throw FormatException(errorMessage);
   }
