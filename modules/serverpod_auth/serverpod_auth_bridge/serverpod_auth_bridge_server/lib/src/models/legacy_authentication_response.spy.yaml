@@ -1,0 +1,13 @@
+### Response payload for legacy authentication methods.
+class: LegacyAuthenticationResponse
+fields:
+  ### True when authentication succeeded.
+  success: bool
+  ### Session secret for successful sign-in.
+  key: String?
+  ### Session id for successful sign-in.
+  keyId: int?
+  ### Authenticated user info on success.
+  userInfo: LegacyUserInfo?
+  ### Failure reason when authentication fails.
+  failReason: LegacyAuthenticationFailReason?
