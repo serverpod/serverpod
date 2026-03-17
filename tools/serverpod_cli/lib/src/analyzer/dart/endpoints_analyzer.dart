@@ -242,16 +242,12 @@ class EndpointsAnalyzer {
     }
   }
 
-  bool _isEndpointFile(File file) {
-    if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
-    return isEndpointFile(file);
-  }
-
   /// Returns `true` if [file] appears to define an Endpoint subclass.
   ///
   /// This is a quick string check (no full analysis). Used to decide whether
   /// code generation is needed after a file change.
-  static bool isEndpointFile(File file) {
+  bool _isEndpointFile(File file) {
+    if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
     if (!file.path.endsWith('.dart')) return false;
     if (!file.existsSync()) return false;
     return file.readAsStringSync().contains('extends Endpoint');

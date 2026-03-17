@@ -54,70 +54,81 @@ void main() {
     resetLogger();
   });
 
-  group('Given a ServerProcess', () {
+  group('Given a ServerProcess with a simple exit command', () {
+    late Directory tempDir;
+    late ServerProcess serverProcess;
+
+    setUp(() async {
+      tempDir = await Directory.systemTemp.createTemp(
+        'server_process_test_',
+      );
+      await _createMinimalDartProject(tempDir.path);
+      await File(
+        '${tempDir.path}/bin/main.dart',
+      ).writeAsString('void main() { print("hello"); }');
+
+      serverProcess = ServerProcess(
+        serverDir: tempDir.path,
+        serverArgs: [],
+        stdoutSink: _NullIOSink(),
+        stderrSink: _NullIOSink(),
+      );
+    });
+
+    tearDown(() async {
+      await tempDir.delete(recursive: true);
+    });
+
     test(
-      'when started with a simple dart command, '
+      'when started, '
       'then it returns the exit code when the process exits',
       () async {
-        final tempDir = await Directory.systemTemp.createTemp(
-          'server_process_test_',
-        );
-        try {
-          await _createMinimalDartProject(tempDir.path);
-          await File(
-            '${tempDir.path}/bin/main.dart',
-          ).writeAsString('void main() { print("hello"); }');
-
-          final serverProcess = ServerProcess(
-            serverDir: tempDir.path,
-            serverArgs: [],
-            stdoutSink: _NullIOSink(),
-            stderrSink: _NullIOSink(),
-          );
-
-          await serverProcess.start();
-          final exitCode = await serverProcess.exitCode;
-          expect(exitCode, 0);
-          expect(serverProcess.isRunning, isFalse);
-        } finally {
-          await tempDir.delete(recursive: true);
-        }
+        await serverProcess.start();
+        final exitCode = await serverProcess.exitCode;
+        expect(exitCode, 0);
+        expect(serverProcess.isRunning, isFalse);
       },
     );
+  });
+
+  group('Given a ServerProcess with a long-running command', () {
+    late Directory tempDir;
+    late ServerProcess serverProcess;
+
+    setUp(() async {
+      tempDir = await Directory.systemTemp.createTemp(
+        'server_process_test_',
+      );
+      await _createMinimalDartProject(tempDir.path);
+      await File('${tempDir.path}/bin/main.dart').writeAsString('''
+import 'dart:io';
+void main() {
+  ProcessSignal.sigint.watch().listen((_) => exit(0));
+  Future.delayed(Duration(hours: 1));
+}
+''');
+
+      serverProcess = ServerProcess(
+        serverDir: tempDir.path,
+        serverArgs: [],
+        stdoutSink: _NullIOSink(),
+        stderrSink: _NullIOSink(),
+      );
+    });
+
+    tearDown(() async {
+      await tempDir.delete(recursive: true);
+    });
 
     test(
       'when stop is called, '
       'then the process is terminated',
       () async {
-        final tempDir = await Directory.systemTemp.createTemp(
-          'server_process_test_',
-        );
-        try {
-          await _createMinimalDartProject(tempDir.path);
-          await File('${tempDir.path}/bin/main.dart').writeAsString('''
-import 'dart:io';
-void main() {
-  // SIGTERM is not supported on Windows; process.kill() uses TerminateProcess.
-  if (!Platform.isWindows) ProcessSignal.sigterm.watch().listen((_) => exit(0));
-  Future.delayed(Duration(hours: 1));
-}
-''');
+        await serverProcess.start();
+        expect(serverProcess.isRunning, isTrue);
 
-          final serverProcess = ServerProcess(
-            serverDir: tempDir.path,
-            serverArgs: [],
-            stdoutSink: _NullIOSink(),
-            stderrSink: _NullIOSink(),
-          );
-
-          await serverProcess.start();
-          expect(serverProcess.isRunning, isTrue);
-
-          await serverProcess.stop();
-          expect(serverProcess.isRunning, isFalse);
-        } finally {
-          await tempDir.delete(recursive: true);
-        }
+        await serverProcess.stop();
+        expect(serverProcess.isRunning, isFalse);
       },
     );
 
@@ -125,35 +136,11 @@ void main() {
       'when start is called while already running, '
       'then it throws a StateError',
       () async {
-        final tempDir = await Directory.systemTemp.createTemp(
-          'server_process_test_',
-        );
-        try {
-          await _createMinimalDartProject(tempDir.path);
-          await File('${tempDir.path}/bin/main.dart').writeAsString('''
-import 'dart:io';
-void main() {
-  // SIGTERM is not supported on Windows; process.kill() uses TerminateProcess.
-  if (!Platform.isWindows) ProcessSignal.sigterm.watch().listen((_) => exit(0));
-  Future.delayed(Duration(hours: 1));
-}
-''');
+        await serverProcess.start();
 
-          final serverProcess = ServerProcess(
-            serverDir: tempDir.path,
-            serverArgs: [],
-            stdoutSink: _NullIOSink(),
-            stderrSink: _NullIOSink(),
-          );
+        expect(() => serverProcess.start(), throwsStateError);
 
-          await serverProcess.start();
-
-          expect(() => serverProcess.start(), throwsStateError);
-
-          await serverProcess.stop();
-        } finally {
-          await tempDir.delete(recursive: true);
-        }
+        await serverProcess.stop();
       },
     );
   });
@@ -163,6 +150,7 @@ void main() {
     late String dillPath;
     late String vmServiceInfoFile;
     late String dartExecutable;
+    late ServerProcess serverProcess;
 
     setUp(() async {
       final sdkRoot = getSdkPath();
@@ -175,8 +163,7 @@ void main() {
       await File(mainFile).writeAsString('''
 import 'dart:io';
 void main() {
-  // SIGTERM is not supported on Windows; process.kill() uses TerminateProcess.
-  if (!Platform.isWindows) ProcessSignal.sigterm.watch().listen((_) => exit(0));
+  ProcessSignal.sigint.watch().listen((_) => exit(0));
   Future.delayed(Duration(hours: 1));
 }
 ''');
@@ -203,6 +190,16 @@ void main() {
       }
       compiler.accept();
       compiler.dispose();
+
+      serverProcess = ServerProcess(
+        serverDir: tempDir.path,
+        serverArgs: [],
+        dartExecutable: dartExecutable,
+        enableVmService: true,
+        vmServiceInfoFile: vmServiceInfoFile,
+        stdoutSink: _NullIOSink(),
+        stderrSink: _NullIOSink(),
+      );
     });
 
     tearDown(() async {
@@ -222,16 +219,6 @@ void main() {
       'when connectToVmService is called, '
       'then it connects to the VM service',
       () async {
-        final serverProcess = ServerProcess(
-          serverDir: tempDir.path,
-          serverArgs: [],
-          dartExecutable: dartExecutable,
-          enableVmService: true,
-          vmServiceInfoFile: vmServiceInfoFile,
-          stdoutSink: _NullIOSink(),
-          stderrSink: _NullIOSink(),
-        );
-
         await serverProcess.start(dillPath: dillPath);
         await serverProcess.connectToVmService();
 
@@ -245,16 +232,6 @@ void main() {
       'when reload is called with the same dill path, '
       'then the reload succeeds',
       () async {
-        final serverProcess = ServerProcess(
-          serverDir: tempDir.path,
-          serverArgs: [],
-          dartExecutable: dartExecutable,
-          enableVmService: true,
-          vmServiceInfoFile: vmServiceInfoFile,
-          stdoutSink: _NullIOSink(),
-          stderrSink: _NullIOSink(),
-        );
-
         await serverProcess.start(dillPath: dillPath);
         await serverProcess.connectToVmService();
 
@@ -264,37 +241,109 @@ void main() {
         await serverProcess.stop();
       },
     );
-
-    test(
-      'when onReloadRequested is provided and connectToVmService is called, '
-      'then it connects successfully without invoking the callback',
-      () async {
-        var callbackCalled = false;
-        final serverProcess = ServerProcess(
-          serverDir: tempDir.path,
-          serverArgs: [],
-          dartExecutable: dartExecutable,
-          enableVmService: true,
-          vmServiceInfoFile: vmServiceInfoFile,
-          stdoutSink: _NullIOSink(),
-          stderrSink: _NullIOSink(),
-          onReloadRequested: () async {
-            callbackCalled = true;
-            return dillPath;
-          },
-        );
-
-        await serverProcess.start(dillPath: dillPath);
-        await serverProcess.connectToVmService();
-
-        // The service is registered; verify the process is connected.
-        expect(serverProcess.isVmServiceConnected, isTrue);
-        expect(callbackCalled, isFalse);
-
-        await serverProcess.stop();
-      },
-    );
   });
+
+  group(
+    'Given a ServerProcess with VM service enabled and an onReloadRequested callback',
+    () {
+      late Directory tempDir;
+      late String dillPath;
+      late String vmServiceInfoFile;
+      late String dartExecutable;
+
+      setUp(() async {
+        final sdkRoot = getSdkPath();
+        dartExecutable = p.join(sdkRoot, 'bin', 'dart');
+        tempDir = await Directory.systemTemp.createTemp(
+          'server_process_vm_test_',
+        );
+        await _createMinimalDartProject(tempDir.path);
+        final mainFile = p.join(tempDir.path, 'bin', 'main.dart');
+        await File(mainFile).writeAsString('''
+import 'dart:io';
+void main() {
+  ProcessSignal.sigint.watch().listen((_) => exit(0));
+  Future.delayed(Duration(hours: 1));
+}
+''');
+
+        // Compile the initial kernel using KernelCompiler.
+        dillPath = p.join(
+          tempDir.path,
+          '.dart_tool',
+          'serverpod',
+          'server.dill',
+        );
+        vmServiceInfoFile = p.join(
+          tempDir.path,
+          '.dart_tool',
+          'serverpod',
+          'vm-service-info.json',
+        );
+        final compiler = KernelCompiler(
+          entryPoint: mainFile,
+          outputDill: dillPath,
+          packagesPath: p.join(
+            tempDir.path,
+            '.dart_tool',
+            'package_config.json',
+          ),
+        );
+        await compiler.start();
+        final result = await compiler.compile();
+        if (result.errorCount > 0) {
+          throw StateError(
+            'Failed to compile kernel: ${result.compilerOutputLines.join('\n')}',
+          );
+        }
+        compiler.accept();
+        compiler.dispose();
+      });
+
+      tearDown(() async {
+        // On Windows, TerminateProcess may not release file handles immediately.
+        for (var i = 0; ; i++) {
+          try {
+            await tempDir.delete(recursive: true);
+            break;
+          } on FileSystemException {
+            if (i >= 4) rethrow;
+            await Future.delayed(const Duration(milliseconds: 500));
+          }
+        }
+      });
+
+      test(
+        'when onReloadRequested is provided and connectToVmService is called, '
+        'then it connects successfully without invoking the callback',
+        () async {
+          var callbackCalled = false;
+          final serverProcess = ServerProcess(
+            serverDir: tempDir.path,
+            serverArgs: [],
+            dartExecutable: dartExecutable,
+            enableVmService: true,
+            vmServiceInfoFile: vmServiceInfoFile,
+            stdoutSink: _NullIOSink(),
+            stderrSink: _NullIOSink(),
+            onReloadRequested: () async {
+              callbackCalled = true;
+              return dillPath;
+            },
+          );
+
+          await serverProcess.start(dillPath: dillPath);
+          await serverProcess.connectToVmService();
+
+          // The service is registered; verify the process is connected.
+          expect(serverProcess.isVmServiceConnected, isTrue);
+          expect(callbackCalled, isFalse);
+
+          await serverProcess.stop();
+        },
+      );
+    },
+  );
 }
 
 /// Creates a minimal Dart project structure.

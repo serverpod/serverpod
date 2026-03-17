@@ -34,26 +34,53 @@ bool _isModelFile(String filePath) {
   return spyModelFileExtensions.any((ext) => filePath.endsWith(ext));
 }
 
+/// Merges multiple buffered [FileChangeEvent]s into a single event.
+extension FileChangeEventMerge on List<FileChangeEvent> {
+  /// Combines all events into one, unioning their file sets and flags.
+  FileChangeEvent merge() {
+    if (length == 1) return first;
+
+    final dartFiles = <String>{};
+    final modelFiles = <String>{};
+    var packageConfigChanged = false;
+    var staticFilesChanged = false;
+
+    for (final event in this) {
+      dartFiles.addAll(event.dartFiles);
+      modelFiles.addAll(event.modelFiles);
+      packageConfigChanged |= event.packageConfigChanged;
+      staticFilesChanged |= event.staticFilesChanged;
+    }
+
+    return FileChangeEvent(
+      dartFiles: dartFiles,
+      modelFiles: modelFiles,
+      packageConfigChanged: packageConfigChanged,
+      staticFilesChanged: staticFilesChanged,
+    );
+  }
+}
+
 /// Watches project directories for file changes.
 ///
 /// Debounces raw file system events into batched [FileChangeEvent]s,
 /// categorized by file type.
 class FileWatcher {
-  final List<String> _watchPaths;
-  final String? _ignorePath;
+  final Set<String> _watchPaths;
+  final Set<String> _ignorePaths;
   final Duration debounceDelay;
 
   /// Creates a file watcher.
   ///
-  /// [watchPaths] is the list of directories to watch.
-  /// [ignorePath] is an optional path prefix to ignore (e.g. generated
-  /// directory). When null, no paths are ignored.
+  /// [watchPaths] is the set of directories to watch.
+  /// [ignorePaths] is a set of path prefixes to ignore (e.g. generated
+  /// directories). Defaults to empty.
   FileWatcher({
-    required List<String> watchPaths,
-    String? ignorePath,
+    required Iterable<String> watchPaths,
+    Iterable<String> ignorePaths = const {},
     this.debounceDelay = const Duration(milliseconds: 500),
-  }) : _watchPaths = watchPaths,
-       _ignorePath = ignorePath;
+  }) : _watchPaths = watchPaths.map(p.canonicalize).toSet(),
+       _ignorePaths = ignorePaths.map(p.canonicalize).toSet();
 
   late final List<DirectoryWatcher> _watchers = [
     for (final watchPath in _watchPaths)
@@ -77,7 +104,7 @@ class FileWatcher {
         : StreamGroup.merge(_watchers.map((w) => w.events));
 
     return mergedStream
-        .where((e) => _ignorePath == null || !p.isWithin(_ignorePath, e.path))
+        .where((e) => !_ignorePaths.any((ip) => p.isWithin(ip, e.path)))
         .debounceBuffer(debounceDelay)
         .map((events) {
           final dartFiles = <String>{};

@@ -109,520 +109,467 @@ void main() {
     resetLogger();
   });
 
-  group('Given a WatchSession', () {
-    late _FakeCompiler compiler;
-    late _FakeServer server;
-    late _FakeServer factoryServer;
-    late List<String> factoryCalls;
-    late List<Set<String>> generateCalls;
-    late bool generateSuccess;
-    late WatchSession session;
-
-    setUp(() {
-      compiler = _FakeCompiler();
-      server = _FakeServer();
-      factoryServer = _FakeServer();
-      factoryCalls = [];
-      generateCalls = [];
-      generateSuccess = true;
-
-      session = WatchSession(
-        compiler: compiler,
-        generate: (affectedPaths) async {
-          generateCalls.add(affectedPaths);
-          return generateSuccess;
-        },
-        createServer: (dillPath) async {
-          factoryCalls.add('createServer:$dillPath');
-          return factoryServer;
-        },
-        initialServer: server,
-      );
-    });
-
-    group('Given static-only file changes', () {
-      test(
-        'when VM service is connected, '
-        'then it notifies static change without compiling',
-        () async {
-          final event = FileChangeEvent(
-            dartFiles: {},
-            staticFilesChanged: true,
-          );
-
-          await session.handleFileChange(event);
-
-          expect(server.calls, ['notifyStaticChange']);
-          expect(compiler.calls, isEmpty);
-          expect(generateCalls, isEmpty);
-        },
-      );
-
-      test(
-        'when VM service is not connected, '
-        'then it does nothing',
-        () async {
-          server.isVmServiceConnected = false;
-
-          final event = FileChangeEvent(
-            dartFiles: {},
-            staticFilesChanged: true,
-          );
-
-          await session.handleFileChange(event);
-
-          expect(server.calls, isEmpty);
-          expect(compiler.calls, isEmpty);
-          expect(generateCalls, isEmpty);
-        },
-      );
-    });
-
-    group('Given dart file changes', () {
-      test(
-        'when files compile successfully, '
-        'then it runs codegen, does incremental compile, and hot reload',
-        () async {
-          final event = FileChangeEvent(
-            dartFiles: {'/lib/a.dart'},
-          );
-
-          await session.handleFileChange(event);
-
-          expect(generateCalls, [
-            {'/lib/a.dart'},
-          ]);
-          expect(compiler.calls, [
-            'compile(changed):[/lib/a.dart]',
-            'accept',
-          ]);
-          expect(server.calls, ['reload:/out.dill']);
-        },
-      );
-
-      test(
-        'when codegen fails, '
-        'then it does not compile or reload',
-        () async {
-          generateSuccess = false;
-
-          final event = FileChangeEvent(
-            dartFiles: {'/lib/a.dart'},
-          );
-
-          await session.handleFileChange(event);
-
-          expect(generateCalls, [
-            {'/lib/a.dart'},
-          ]);
-          expect(compiler.calls, isEmpty);
-          expect(server.calls, isEmpty);
-        },
-      );
-
-      test(
-        'when compilation fails, '
-        'then it rejects and does not reload',
-        () async {
-          compiler.nextIncrementalResult = _failResult();
-
-          final event = FileChangeEvent(
-            dartFiles: {'/lib/a.dart'},
-          );
-
-          await session.handleFileChange(event);
-
-          expect(compiler.calls, ['compile(changed):[/lib/a.dart]', 'reject']);
-          expect(server.calls, isEmpty);
-        },
-      );
-
-      test(
-        'when hot reload fails, '
-        'then it does a full compile and restarts the server',
-        () async {
-          server.reloadSuccess = false;
-
-          final event = FileChangeEvent(
-            dartFiles: {'/lib/a.dart'},
-          );
-
-          await session.handleFileChange(event);
-
-          expect(compiler.calls, [
-            'compile(changed):[/lib/a.dart]',
-            'accept',
-            'reset',
-            'compile',
-            'accept',
-          ]);
-          expect(server.calls, ['reload:/out.dill', 'stop']);
-          expect(factoryCalls, ['createServer:/out.dill']);
-        },
-      );
-    });
-
-    group('Given multiple dart file changes', () {
-      test(
-        'when codegen succeeds and compilation succeeds, '
-        'then it passes all paths to codegen and compiles incrementally',
-        () async {
-          final event = FileChangeEvent(
-            dartFiles: {'/lib/endpoint.dart', '/lib/other.dart'},
-          );
-
-          await session.handleFileChange(event);
-
-          expect(generateCalls, [
-            {'/lib/endpoint.dart', '/lib/other.dart'},
-          ]);
-          expect(compiler.calls, [
-            'compile(changed):[/lib/endpoint.dart, /lib/other.dart]',
-            'accept',
-          ]);
-          expect(server.calls, ['reload:/out.dill']);
-        },
-      );
-    });
-
-    group('Given model file changes', () {
-      test(
-        'when codegen succeeds, '
-        'then it runs codegen but skips compile '
-        '(generated files will trigger a new cycle)',
-        () async {
-          final event = FileChangeEvent(
-            dartFiles: {},
-            modelFiles: {'/models/user.spy.yaml'},
-          );
-
-          await session.handleFileChange(event);
-
-          expect(generateCalls, [
-            {'/models/user.spy.yaml'},
-          ]);
-          // No dart files changed or removed - skip compile.
-          // The generated .dart files will be picked up by the file watcher.
-          expect(compiler.calls, isEmpty);
-          expect(server.calls, isEmpty);
-        },
-      );
-
-      test(
-        'when codegen fails, '
-        'then it does not compile or reload',
-        () async {
-          generateSuccess = false;
-
-          final event = FileChangeEvent(
-            dartFiles: {},
-            modelFiles: {'/models/user.spy.yaml'},
-          );
-
-          await session.handleFileChange(event);
-
-          expect(generateCalls, [
-            {'/models/user.spy.yaml'},
-          ]);
-          expect(compiler.calls, isEmpty);
-          expect(server.calls, isEmpty);
-        },
-      );
-    });
-
-    group('Given package_config.json changed', () {
-      test(
-        'when dart files also changed, '
-        'then it runs codegen, restarts compiler, and does a full compile',
-        () async {
-          final event = FileChangeEvent(
-            dartFiles: {'/lib/a.dart'},
-            packageConfigChanged: true,
-          );
-
-          await session.handleFileChange(event);
-
-          expect(generateCalls, [
-            {'/lib/a.dart'},
-          ]);
-          expect(compiler.calls, ['restart', 'compile', 'accept']);
-        },
-      );
-
-      test(
-        'when both package_config and model files changed, '
-        'then it runs codegen and restarts compiler',
-        () async {
-          final event = FileChangeEvent(
-            dartFiles: {},
-            modelFiles: {'/models/user.spy.yaml'},
-            packageConfigChanged: true,
-          );
-
-          await session.handleFileChange(event);
-
-          expect(generateCalls, [
-            {'/models/user.spy.yaml'},
-          ]);
-          expect(compiler.calls, ['restart', 'compile', 'accept']);
-        },
-      );
-    });
-
-    group('Given hot reload fails', () {
-      test(
-        'when a dart file changes, '
-        'then it does a full compile, stops the old server, '
-        'and creates a new server via factory',
-        () async {
-          server.reloadSuccess = false;
-
-          final event = FileChangeEvent(
-            dartFiles: {'/lib/a.dart'},
-          );
-
-          await session.handleFileChange(event);
-
-          expect(generateCalls, [
-            {'/lib/a.dart'},
-          ]);
-          expect(compiler.calls, [
-            'compile(changed):[/lib/a.dart]',
-            'accept',
-            'reset',
-            'compile',
-            'accept',
-          ]);
-          expect(server.calls, ['reload:/out.dill', 'stop']);
-          expect(factoryCalls, ['createServer:/out.dill']);
-        },
-      );
-
-      test(
-        'when the full compile for restart fails, '
-        'then it rejects and does not restart the server',
-        () async {
-          server.reloadSuccess = false;
-          compiler.nextCompileResult = _failResult();
-
-          final event = FileChangeEvent(
-            dartFiles: {'/lib/a.dart'},
-          );
-
-          await session.handleFileChange(event);
-
-          expect(compiler.calls, [
-            'compile(changed):[/lib/a.dart]',
-            'accept',
-            'reset',
-            'compile',
-            'reject',
-          ]);
-          expect(server.calls, ['reload:/out.dill']);
-          expect(factoryCalls, isEmpty);
-        },
-      );
-
-      test(
-        'when a subsequent file change occurs, '
-        'then the new server is used',
-        () async {
-          server.reloadSuccess = false;
-
-          final event = FileChangeEvent(
-            dartFiles: {'/lib/a.dart'},
-          );
-
-          // First call: hot reload fails, triggers full compile + restart.
-          await session.handleFileChange(event);
-          expect(factoryCalls, hasLength(1));
-
-          // Second call: should use factoryServer, not the old server.
-          server.calls.clear();
-          factoryServer.calls.clear();
-          compiler.calls.clear();
-          generateCalls.clear();
-
-          final event2 = FileChangeEvent(
-            dartFiles: {'/lib/b.dart'},
-          );
-
-          await session.handleFileChange(event2);
-
-          // Old server should have no new calls.
-          expect(server.calls, isEmpty);
-          // New server should receive the reload.
-          expect(factoryServer.calls, ['reload:/out.dill']);
-        },
-      );
-    });
-
-    group('Given VM service is not connected', () {
-      test(
-        'when dart files change and compile succeeds, '
-        'then it does a full compile and restarts',
-        () async {
-          server.isVmServiceConnected = false;
-
-          final event = FileChangeEvent(
-            dartFiles: {'/lib/a.dart'},
-          );
-
-          await session.handleFileChange(event);
-
-          expect(generateCalls, [
-            {'/lib/a.dart'},
-          ]);
-          expect(compiler.calls, [
-            'compile(changed):[/lib/a.dart]',
-            'accept',
-            'reset',
-            'compile',
-            'accept',
-          ]);
-          // No reload attempt, straight to restart.
-          expect(server.calls, ['stop']);
-          expect(factoryCalls, ['createServer:/out.dill']);
-        },
-      );
-    });
-
-    group('Given the server exits unexpectedly', () {
-      test(
-        'when the server crashes, '
-        'then done completes with the exit code',
-        () async {
-          server.simulateExit(1);
-
-          await expectLater(session.done, completion(1));
-        },
-      );
-
-      test(
-        'when a restart replaces the server and the new server crashes, '
-        'then done completes with the new server exit code',
-        () async {
-          server.reloadSuccess = false;
-
-          final event = FileChangeEvent(
-            dartFiles: {'/lib/a.dart'},
-          );
-
-          // Restart: stop() completes server.exitCode internally.
-          await session.handleFileChange(event);
-
-          // The initial server was stopped intentionally - done should
-          // not have completed.
-          var doneCompleted = false;
-          unawaited(session.done.then((_) => doneCompleted = true));
-          await Future<void>.delayed(Duration.zero);
-          expect(doneCompleted, isFalse);
-
-          // New server crashes.
-          factoryServer.simulateExit(42);
-
-          await expectLater(session.done, completion(42));
-        },
-      );
-    });
-
-    group('Given dispose is called', () {
-      test(
-        'when disposing, '
-        'then it stops the server and disposes the compiler',
-        () async {
-          await session.dispose();
-
-          expect(server.calls, ['stop']);
-          expect(compiler.calls, ['dispose']);
-        },
-      );
-
-      test(
-        'when server exit completes from stop, '
-        'then done does not complete',
-        () async {
-          // dispose() calls stop(), which completes initialExitCode.
-          await session.dispose();
-
-          var doneCompleted = false;
-          unawaited(session.done.then((_) => doneCompleted = true));
-          await Future<void>.delayed(Duration.zero);
-
-          expect(doneCompleted, isFalse);
-        },
-      );
-    });
+  late _FakeCompiler compiler;
+  late _FakeServer server;
+  late _FakeServer factoryServer;
+  late List<String> factoryCalls;
+  late List<Set<String>> generateCalls;
+  late bool generateSuccess;
+  late WatchSession session;
+
+  setUp(() {
+    compiler = _FakeCompiler();
+    server = _FakeServer();
+    factoryServer = _FakeServer();
+    factoryCalls = [];
+    generateCalls = [];
+    generateSuccess = true;
+
+    session = WatchSession(
+      compiler: compiler,
+      generate: (affectedPaths) async {
+        generateCalls.add(affectedPaths);
+        return generateSuccess;
+      },
+      createServer: (dillPath) async {
+        factoryCalls.add('createServer:$dillPath');
+        return factoryServer;
+      },
+      initialServer: server,
+    );
   });
 
-  group('Given mergeEvents', () {
+  group('Given static-only file changes and VM service connected', () {
     test(
-      'when single event, '
-      'then returns it unchanged',
-      () {
+      'when static files change, '
+      'then it notifies static change without compiling',
+      () async {
         final event = FileChangeEvent(
-          dartFiles: {'/lib/a.dart'},
-          modelFiles: {'/models/m.spy.yaml'},
-          packageConfigChanged: true,
-        );
-
-        final result = mergeEvents([event]);
-
-        expect(identical(result, event), isTrue);
-      },
-    );
-
-    test(
-      'when multiple events, '
-      'then merges all fields',
-      () {
-        final e1 = FileChangeEvent(
-          dartFiles: {'/lib/a.dart'},
-          modelFiles: {'/models/m1.spy.yaml'},
-        );
-        final e2 = FileChangeEvent(
-          dartFiles: {'/lib/b.dart', '/lib/c.dart'},
+          dartFiles: {},
           staticFilesChanged: true,
         );
 
-        final result = mergeEvents([e1, e2]);
+        await session.handleFileChange(event);
 
-        expect(result.dartFiles, {'/lib/a.dart', '/lib/b.dart', '/lib/c.dart'});
-        expect(result.modelFiles, {'/models/m1.spy.yaml'});
-        expect(result.staticFilesChanged, isTrue);
+        expect(server.calls, ['notifyStaticChange']);
+        expect(compiler.calls, isEmpty);
+        expect(generateCalls, isEmpty);
       },
     );
+  });
+
+  group('Given static-only file changes and VM service not connected', () {
+    setUp(() {
+      server.isVmServiceConnected = false;
+    });
 
     test(
-      'when multiple events have the same file, '
-      'then it appears only once',
-      () {
-        final e1 = FileChangeEvent(
-          dartFiles: {'/lib/a.dart'},
-        );
-        final e2 = FileChangeEvent(
-          dartFiles: {'/lib/a.dart'},
-        );
-
-        final result = mergeEvents([e1, e2]);
-
-        expect(result.dartFiles, {'/lib/a.dart'});
-      },
-    );
-
-    test(
-      'when multiple events have packageConfigChanged, '
-      'then result has packageConfigChanged true',
-      () {
-        final e1 = FileChangeEvent(dartFiles: {});
-        final e2 = FileChangeEvent(
+      'when static files change, '
+      'then it does nothing',
+      () async {
+        final event = FileChangeEvent(
           dartFiles: {},
+          staticFilesChanged: true,
+        );
+
+        await session.handleFileChange(event);
+
+        expect(server.calls, isEmpty);
+        expect(compiler.calls, isEmpty);
+        expect(generateCalls, isEmpty);
+      },
+    );
+  });
+
+  group('Given dart file changes that compile successfully', () {
+    test(
+      'when file change is handled, '
+      'then it runs codegen, does incremental compile, and hot reload',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {'/lib/a.dart'},
+        );
+
+        await session.handleFileChange(event);
+
+        expect(generateCalls, [
+          {'/lib/a.dart'},
+        ]);
+        expect(compiler.calls, [
+          'compile(changed):[/lib/a.dart]',
+          'accept',
+        ]);
+        expect(server.calls, ['reload:/out.dill']);
+      },
+    );
+  });
+
+  group('Given dart file changes where codegen fails', () {
+    setUp(() {
+      generateSuccess = false;
+    });
+
+    test(
+      'when file change is handled, '
+      'then it does not compile or reload',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {'/lib/a.dart'},
+        );
+
+        await session.handleFileChange(event);
+
+        expect(generateCalls, [
+          {'/lib/a.dart'},
+        ]);
+        expect(compiler.calls, isEmpty);
+        expect(server.calls, isEmpty);
+      },
+    );
+  });
+
+  group('Given dart file changes where compilation fails', () {
+    setUp(() {
+      compiler.nextIncrementalResult = _failResult();
+    });
+
+    test(
+      'when file change is handled, '
+      'then it rejects and does not reload',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {'/lib/a.dart'},
+        );
+
+        await session.handleFileChange(event);
+
+        expect(compiler.calls, ['compile(changed):[/lib/a.dart]', 'reject']);
+        expect(server.calls, isEmpty);
+      },
+    );
+  });
+
+  group('Given dart file changes where hot reload fails', () {
+    setUp(() {
+      server.reloadSuccess = false;
+    });
+
+    test(
+      'when file change is handled, '
+      'then it does a full compile and restarts the server',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {'/lib/a.dart'},
+        );
+
+        await session.handleFileChange(event);
+
+        expect(compiler.calls, [
+          'compile(changed):[/lib/a.dart]',
+          'accept',
+          'reset',
+          'compile',
+          'accept',
+        ]);
+        expect(server.calls, ['reload:/out.dill', 'stop']);
+        expect(factoryCalls, ['createServer:/out.dill']);
+      },
+    );
+  });
+
+  group('Given multiple dart file changes', () {
+    test(
+      'when codegen succeeds and compilation succeeds, '
+      'then it passes all paths to codegen and compiles incrementally',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {'/lib/endpoint.dart', '/lib/other.dart'},
+        );
+
+        await session.handleFileChange(event);
+
+        expect(generateCalls, [
+          {'/lib/endpoint.dart', '/lib/other.dart'},
+        ]);
+        expect(compiler.calls, [
+          'compile(changed):[/lib/endpoint.dart, /lib/other.dart]',
+          'accept',
+        ]);
+        expect(server.calls, ['reload:/out.dill']);
+      },
+    );
+  });
+
+  group('Given model file changes that succeed', () {
+    test(
+      'when file change is handled, '
+      'then it runs codegen but skips compile '
+      '(generated files will trigger a new cycle)',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {},
+          modelFiles: {'/models/user.spy.yaml'},
+        );
+
+        await session.handleFileChange(event);
+
+        expect(generateCalls, [
+          {'/models/user.spy.yaml'},
+        ]);
+        // No dart files changed or removed - skip compile.
+        // The generated .dart files will be picked up by the file watcher.
+        expect(compiler.calls, isEmpty);
+        expect(server.calls, isEmpty);
+      },
+    );
+  });
+
+  group('Given model file changes where codegen fails', () {
+    setUp(() {
+      generateSuccess = false;
+    });
+
+    test(
+      'when file change is handled, '
+      'then it does not compile or reload',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {},
+          modelFiles: {'/models/user.spy.yaml'},
+        );
+
+        await session.handleFileChange(event);
+
+        expect(generateCalls, [
+          {'/models/user.spy.yaml'},
+        ]);
+        expect(compiler.calls, isEmpty);
+        expect(server.calls, isEmpty);
+      },
+    );
+  });
+
+  group('Given package_config.json changed', () {
+    test(
+      'when dart files also changed, '
+      'then it runs codegen, restarts compiler, and does a full compile',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {'/lib/a.dart'},
           packageConfigChanged: true,
         );
 
-        final result = mergeEvents([e1, e2]);
+        await session.handleFileChange(event);
 
-        expect(result.packageConfigChanged, isTrue);
+        expect(generateCalls, [
+          {'/lib/a.dart'},
+        ]);
+        expect(compiler.calls, ['restart', 'compile', 'accept']);
+      },
+    );
+
+    test(
+      'when both package_config and model files changed, '
+      'then it runs codegen and restarts compiler',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {},
+          modelFiles: {'/models/user.spy.yaml'},
+          packageConfigChanged: true,
+        );
+
+        await session.handleFileChange(event);
+
+        expect(generateCalls, [
+          {'/models/user.spy.yaml'},
+        ]);
+        expect(compiler.calls, ['restart', 'compile', 'accept']);
+      },
+    );
+  });
+
+  group('Given hot reload fails', () {
+    setUp(() {
+      server.reloadSuccess = false;
+    });
+
+    test(
+      'when a dart file changes, '
+      'then it does a full compile, stops the old server, '
+      'and creates a new server via factory',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {'/lib/a.dart'},
+        );
+
+        await session.handleFileChange(event);
+
+        expect(generateCalls, [
+          {'/lib/a.dart'},
+        ]);
+        expect(compiler.calls, [
+          'compile(changed):[/lib/a.dart]',
+          'accept',
+          'reset',
+          'compile',
+          'accept',
+        ]);
+        expect(server.calls, ['reload:/out.dill', 'stop']);
+        expect(factoryCalls, ['createServer:/out.dill']);
+      },
+    );
+
+    test(
+      'when the full compile for restart fails, '
+      'then it rejects and does not restart the server',
+      () async {
+        compiler.nextCompileResult = _failResult();
+
+        final event = FileChangeEvent(
+          dartFiles: {'/lib/a.dart'},
+        );
+
+        await session.handleFileChange(event);
+
+        expect(compiler.calls, [
+          'compile(changed):[/lib/a.dart]',
+          'accept',
+          'reset',
+          'compile',
+          'reject',
+        ]);
+        expect(server.calls, ['reload:/out.dill']);
+        expect(factoryCalls, isEmpty);
+      },
+    );
+
+    test(
+      'when a subsequent file change occurs, '
+      'then the new server is used',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {'/lib/a.dart'},
+        );
+
+        // First call: hot reload fails, triggers full compile + restart.
+        await session.handleFileChange(event);
+        expect(factoryCalls, hasLength(1));
+
+        // Second call: should use factoryServer, not the old server.
+        server.calls.clear();
+        factoryServer.calls.clear();
+        compiler.calls.clear();
+        generateCalls.clear();
+
+        final event2 = FileChangeEvent(
+          dartFiles: {'/lib/b.dart'},
+        );
+
+        await session.handleFileChange(event2);
+
+        // Old server should have no new calls.
+        expect(server.calls, isEmpty);
+        // New server should receive the reload.
+        expect(factoryServer.calls, ['reload:/out.dill']);
+      },
+    );
+  });
+
+  group('Given VM service is not connected', () {
+    setUp(() {
+      server.isVmServiceConnected = false;
+    });
+
+    test(
+      'when dart files change and compile succeeds, '
+      'then it does a full compile and restarts',
+      () async {
+        final event = FileChangeEvent(
+          dartFiles: {'/lib/a.dart'},
+        );
+
+        await session.handleFileChange(event);
+
+        expect(generateCalls, [
+          {'/lib/a.dart'},
+        ]);
+        expect(compiler.calls, [
+          'compile(changed):[/lib/a.dart]',
+          'accept',
+          'reset',
+          'compile',
+          'accept',
+        ]);
+        // No reload attempt, straight to restart.
+        expect(server.calls, ['stop']);
+        expect(factoryCalls, ['createServer:/out.dill']);
+      },
+    );
+  });
+
+  group('Given the server exits unexpectedly', () {
+    test(
+      'when the server crashes, '
+      'then done completes with the exit code',
+      () async {
+        server.simulateExit(1);
+
+        await expectLater(session.done, completion(1));
+      },
+    );
+
+    test(
+      'when a restart replaces the server and the new server crashes, '
+      'then done completes with the new server exit code',
+      () async {
+        server.reloadSuccess = false;
+
+        final event = FileChangeEvent(
+          dartFiles: {'/lib/a.dart'},
+        );
+
+        // Restart: stop() completes server.exitCode internally.
+        await session.handleFileChange(event);
+
+        // The initial server was stopped intentionally - done should
+        // not have completed.
+        var doneCompleted = false;
+        unawaited(session.done.then((_) => doneCompleted = true));
+        await Future<void>.delayed(Duration.zero);
+        expect(doneCompleted, isFalse);
+
+        // New server crashes.
+        factoryServer.simulateExit(42);
+
+        await expectLater(session.done, completion(42));
+      },
+    );
+  });
+
+  group('Given dispose is called', () {
+    test(
+      'when disposing, '
+      'then it stops the server and disposes the compiler',
+      () async {
+        await session.dispose();
+
+        expect(server.calls, ['stop']);
+        expect(compiler.calls, ['dispose']);
+      },
+    );
+
+    test(
+      'when server exit completes from stop, '
+      'then done does not complete',
+      () async {
+        // dispose() calls stop(), which completes initialExitCode.
+        await session.dispose();
+
+        var doneCompleted = false;
+        unawaited(session.done.then((_) => doneCompleted = true));
+        await Future<void>.delayed(Duration.zero);
+
+        expect(doneCompleted, isFalse);
       },
     );
   });

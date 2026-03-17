@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/dev_auto_refresh_script.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
@@ -26,6 +27,9 @@ class WebServer {
 
   RelicApp? _appOrNull;
 
+  // The __dev/version endpoint returns the static change counter in dev mode.
+  // In production mode the handler returns 404, which tells the injected
+  // polling script to stop polling.
   RelicApp get _app => _appOrNull ??= RelicApp(useHostWhenRouting: true)
     ..get('*/__dev/version', _devStaticChangeCount)
     ..use('*/', _devHtmlInjection)
@@ -265,6 +269,7 @@ class WebServer {
   ///
   /// When set, overrides the auto-detection of dev mode from the VM service.
   /// Must be called before [WebServer.start].
+  @visibleForTesting
   void setDevModeForTesting(bool devMode) {
     _devModeOverride = devMode;
   }

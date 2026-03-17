@@ -14,6 +14,20 @@ void main() {
         'kernel_compiler_test_',
       );
       await _createMinimalDartProject(tempDir.path);
+      compiler = KernelCompiler(
+        entryPoint: p.join(tempDir.path, 'bin', 'main.dart'),
+        outputDill: p.join(
+          tempDir.path,
+          '.dart_tool',
+          'serverpod',
+          'server.dill',
+        ),
+        packagesPath: p.join(
+          tempDir.path,
+          '.dart_tool',
+          'package_config.json',
+        ),
+      );
     });
 
     tearDown(() async {
@@ -32,16 +46,6 @@ void main() {
           'server.dill',
         );
 
-        compiler = KernelCompiler(
-          entryPoint: p.join(tempDir.path, 'bin', 'main.dart'),
-          outputDill: outputDill,
-          packagesPath: p.join(
-            tempDir.path,
-            '.dart_tool',
-            'package_config.json',
-          ),
-        );
-
         await compiler.start();
         final result = await compiler.compile();
 
@@ -56,23 +60,7 @@ void main() {
       'when compile is called with changed paths, '
       'then it succeeds incrementally',
       () async {
-        final outputDill = p.join(
-          tempDir.path,
-          '.dart_tool',
-          'serverpod',
-          'server.dill',
-        );
         final mainFile = p.join(tempDir.path, 'bin', 'main.dart');
-
-        compiler = KernelCompiler(
-          entryPoint: mainFile,
-          outputDill: outputDill,
-          packagesPath: p.join(
-            tempDir.path,
-            '.dart_tool',
-            'package_config.json',
-          ),
-        );
 
         await compiler.start();
 
@@ -93,31 +81,46 @@ void main() {
       },
       timeout: const Timeout(Duration(seconds: 60)),
     );
+  });
 
-    test(
-      'when compiling code with errors, '
-      'then it reports a non-zero error count',
-      () async {
-        final mainFile = p.join(tempDir.path, 'bin', 'main.dart');
-        await File(mainFile).writeAsString('void main() { undefinedFunc(); }');
+  group('Given a KernelCompiler with a file containing errors', () {
+    late Directory tempDir;
+    late KernelCompiler compiler;
 
-        final outputDill = p.join(
+    setUp(() async {
+      tempDir = await Directory.systemTemp.createTemp(
+        'kernel_compiler_test_',
+      );
+      await _createMinimalDartProject(tempDir.path);
+
+      final mainFile = p.join(tempDir.path, 'bin', 'main.dart');
+      await File(mainFile).writeAsString('void main() { undefinedFunc(); }');
+
+      compiler = KernelCompiler(
+        entryPoint: mainFile,
+        outputDill: p.join(
           tempDir.path,
           '.dart_tool',
           'serverpod',
           'server.dill',
-        );
+        ),
+        packagesPath: p.join(
+          tempDir.path,
+          '.dart_tool',
+          'package_config.json',
+        ),
+      );
+    });
 
-        compiler = KernelCompiler(
-          entryPoint: mainFile,
-          outputDill: outputDill,
-          packagesPath: p.join(
-            tempDir.path,
-            '.dart_tool',
-            'package_config.json',
-          ),
-        );
+    tearDown(() async {
+      compiler.dispose();
+      await tempDir.delete(recursive: true);
+    });
 
+    test(
+      'when compile is called, '
+      'then it reports a non-zero error count',
+      () async {
         await compiler.start();
         final result = await compiler.compile();
 

@@ -150,9 +150,7 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
     } else {
       success = await log.progress(
         'Generating code',
-        () => Isolate.run(
-          () => performOneShotGenerate(config: config, logLevel: logLevel),
-        ),
+        () => generateInIsolate(config),
       );
     }
 
@@ -172,12 +170,62 @@ Future<bool> performOneShotGenerate({
   required LogLevel logLevel,
 }) async {
   log.logLevel = logLevel;
-  final a = await createAnalyzers(config);
-  return performGenerate(
-    config: config,
-    endpointsAnalyzer: a.endpoints,
-    modelAnalyzer: a.models,
-    futureCallsAnalyzer: a.futureCalls,
+  return await initialGenerate(config) != null;
+}
+
+/// Runs one-shot code generation in a fresh isolate.
+Future<bool> generateInIsolate(GeneratorConfig config) {
+  final logLevel = log.logLevel;
+  return Isolate.run(
+    () => performOneShotGenerate(config: config, logLevel: logLevel),
+  );
+}
+
+/// Creates analyzers and runs the initial code generation pass.
+///
+/// Returns the analyzers on success, or `null` if generation failed.
+Future<Analyzers?> initialGenerate(GeneratorConfig config) async {
+  final analyzers = await createAnalyzers(config);
+  final success = await log.progress(
+    'Generating code',
+    () => performGenerate(
+      config: config,
+      endpointsAnalyzer: analyzers.endpoints,
+      modelAnalyzer: analyzers.models,
+      futureCallsAnalyzer: analyzers.futureCalls,
+    ),
+  );
+  return success ? analyzers : null;
+}
+
+/// Analyzes affected paths and runs code generation if needed.
+///
+/// Returns `true` if generation succeeded or was not needed.
+Future<bool> analyzeAndGenerate({
+  required GeneratorConfig config,
+  required Analyzers analyzers,
+  required Set<String> affectedPaths,
+}) async {
+  bool needsGenerate = false;
+  await log.progress('Analyzing changes', () async {
+    needsGenerate = await updateAnalyzers(
+      config: config,
+      endpointsAnalyzer: analyzers.endpoints,
+      modelAnalyzer: analyzers.models,
+      futureCallsAnalyzer: analyzers.futureCalls,
+      affectedPaths: affectedPaths,
+    );
+    return true;
+  });
+  if (!needsGenerate) return true;
+  return log.progress(
+    'Generating code',
+    () => performGenerate(
+      config: config,
+      endpointsAnalyzer: analyzers.endpoints,
+      modelAnalyzer: analyzers.models,
+      futureCallsAnalyzer: analyzers.futureCalls,
+    ),
   );
 }
 
@@ -187,23 +235,9 @@ Future<bool> _performGenerateWatch({
   required LogLevel logLevel,
 }) async {
   log.logLevel = logLevel;
-  final a = await createAnalyzers(config);
-  final endpointsAnalyzer = a.endpoints;
-  final modelAnalyzer = a.models;
-  final futureCallsAnalyzer = a.futureCalls;
 
-  // Initial generation.
-  final success = await log.progress(
-    'Generating code',
-    () => performGenerate(
-      config: config,
-      endpointsAnalyzer: endpointsAnalyzer,
-      modelAnalyzer: modelAnalyzer,
-      futureCallsAnalyzer: futureCallsAnalyzer,
-    ),
-  );
-
-  if (!success) return false;
+  final analyzers = await initialGenerate(config);
+  if (analyzers == null) return false;
 
   log.info(
     'Initial code generation complete. Listening for changes.',
@@ -217,7 +251,7 @@ Future<bool> _performGenerateWatch({
 
   final watcher = FileWatcher(
     watchPaths: watchPaths,
-    ignorePath: ignorePath,
+    ignorePaths: {ignorePath},
   );
 
   // Process file change events.
@@ -230,32 +264,14 @@ Future<bool> _performGenerateWatch({
     if (affectedPaths.isEmpty) continue;
 
     try {
-      bool needsGenerate = false;
-      await log.progress('Analyzing changes', () async {
-        needsGenerate = await updateAnalyzers(
-          config: config,
-          endpointsAnalyzer: endpointsAnalyzer,
-          modelAnalyzer: modelAnalyzer,
-          futureCallsAnalyzer: futureCallsAnalyzer,
-          affectedPaths: affectedPaths,
-        );
-        return true;
-      });
+      final genSuccess = await analyzeAndGenerate(
+        config: config,
+        analyzers: analyzers,
+        affectedPaths: affectedPaths,
+      );
 
-      if (needsGenerate) {
-        final genSuccess = await log.progress(
-          'Generating code',
-          () => performGenerate(
-            config: config,
-            endpointsAnalyzer: endpointsAnalyzer,
-            modelAnalyzer: modelAnalyzer,
-            futureCallsAnalyzer: futureCallsAnalyzer,
-          ),
-        );
-
-        if (genSuccess) {
-          log.info('Incremental code generation complete.');
-        }
+      if (genSuccess) {
+        log.info('Incremental code generation complete.');
       }
     } catch (e, stackTrace) {
       log.error(e.toString(), stackTrace: stackTrace);

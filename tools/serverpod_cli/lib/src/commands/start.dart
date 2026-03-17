@@ -152,7 +152,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
         // One-shot: generate in an isolate, then run.
         final success = await log.progress(
           'Generating code',
-          () => _generateInIsolate(config),
+          () => generateInIsolate(config),
         );
 
         if (!success) {
@@ -277,24 +277,9 @@ Future<int> _runWatchMode({
     }
   }
 
-  // Create persistent analyzers for incremental generation.
-  final a = await createAnalyzers(config);
-  final endpointsAnalyzer = a.endpoints;
-  final modelAnalyzer = a.models;
-  final futureCallsAnalyzer = a.futureCalls;
-
-  // Initial code generation.
-  final genSuccess = await log.progress(
-    'Generating code',
-    () => performGenerate(
-      config: config,
-      endpointsAnalyzer: endpointsAnalyzer,
-      modelAnalyzer: modelAnalyzer,
-      futureCallsAnalyzer: futureCallsAnalyzer,
-    ),
-  );
-
-  if (!genSuccess) {
+  // Create analyzers and run initial code generation.
+  final analyzers = await initialGenerate(config);
+  if (analyzers == null) {
     log.error('Code generation failed.');
     return 1;
   }
@@ -307,30 +292,12 @@ Future<int> _runWatchMode({
 
   final watcher = FileWatcher(watchPaths: watchPaths);
 
-  // The generate callback is shared by both modes.
-  Future<bool> generate(Set<String> affectedPaths) async {
-    bool needsGenerate = false;
-    await log.progress('Analyzing changes', () async {
-      needsGenerate = await updateAnalyzers(
-        config: config,
-        endpointsAnalyzer: endpointsAnalyzer,
-        modelAnalyzer: modelAnalyzer,
-        futureCallsAnalyzer: futureCallsAnalyzer,
-        affectedPaths: affectedPaths,
-      );
-      return true;
-    });
-    if (!needsGenerate) return true;
-    return log.progress(
-      'Generating code',
-      () => performGenerate(
-        config: config,
-        endpointsAnalyzer: endpointsAnalyzer,
-        modelAnalyzer: modelAnalyzer,
-        futureCallsAnalyzer: futureCallsAnalyzer,
-      ),
-    );
-  }
+  // The generate callback delegates to the shared helper.
+  Future<bool> generate(Set<String> affectedPaths) => analyzeAndGenerate(
+    config: config,
+    analyzers: analyzers,
+    affectedPaths: affectedPaths,
+  );
 
   return _startWatchSession(
     serverDir: serverDir,
@@ -367,15 +334,15 @@ Future<int> _startWatchSession({
     // No compiler - the IDE handles compilation and hot reload.
     // Start the server with dart run; the VM's kernel_service gets its
     // own compiler, so IDE-initiated reloadSources calls work natively.
-    final sp = ServerProcess(
+    final serverProcess = ServerProcess(
       serverDir: serverDir,
       serverArgs: serverArgs,
       enableVmService: true,
       vmServiceInfoFile: vmServiceInfoFile,
     );
-    await sp.start();
-    await sp.connectToVmService();
-    initialServerProcess = sp;
+    await serverProcess.start();
+    await serverProcess.connectToVmService();
+    initialServerProcess = serverProcess;
   } else {
     // Resolve the dart executable from the SDK to ensure we use the same
     // version that compiled the kernel.
@@ -419,7 +386,7 @@ Future<int> _startWatchSession({
     }
 
     serverProcessFactory = (String dillPath) async {
-      final sp = ServerProcess(
+      final serverProcess = ServerProcess(
         serverDir: serverDir,
         serverArgs: serverArgs,
         dartExecutable: dartExecutable,
@@ -427,9 +394,9 @@ Future<int> _startWatchSession({
         vmServiceInfoFile: vmServiceInfoFile,
         onReloadRequested: onReloadRequested,
       );
-      await sp.start(dillPath: dillPath);
-      await sp.connectToVmService();
-      return sp;
+      await serverProcess.start(dillPath: dillPath);
+      await serverProcess.connectToVmService();
+      return serverProcess;
     };
 
     initialServerProcess = await serverProcessFactory(initialDill);
@@ -446,7 +413,7 @@ Future<int> _startWatchSession({
 
   final fileChangeSub = watcher.onFilesChanged
       .asyncMapBuffer(
-        (events) => session.handleFileChange(mergeEvents(events)),
+        (events) => session.handleFileChange(events.merge()),
       )
       .listen((_) {});
 
@@ -461,14 +428,6 @@ Future<int> _startWatchSession({
   await teardownSignal();
 
   return exitCode;
-}
-
-/// Runs code generation in a fresh isolate (used for one-shot generation).
-Future<bool> _generateInIsolate(GeneratorConfig config) {
-  final logLevel = log.logLevel;
-  return Isolate.run(
-    () => performOneShotGenerate(config: config, logLevel: logLevel),
-  );
 }
 
 /// Returns a future that completes with 0 when SIGINT or SIGTERM is received,

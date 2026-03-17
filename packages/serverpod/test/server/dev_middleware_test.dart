@@ -64,6 +64,15 @@ void main() {
         expect(response.body, '0');
       },
     );
+
+    test(
+      'when the dev auto-refresh script is inspected, '
+      'then it contains a polling fetch to /__dev/version',
+      () {
+        expect(devAutoRefreshScript, contains('/__dev/version'));
+        expect(devAutoRefreshScript, contains('location.reload()'));
+      },
+    );
   });
 
   group('Given a WebServer started without dev mode', () {
@@ -101,17 +110,6 @@ void main() {
         );
 
         expect(response.statusCode, isNot(200));
-      },
-    );
-  });
-
-  group('Given the dev auto-refresh script', () {
-    test(
-      'when inspected, '
-      'then it contains a polling fetch to /__dev/version',
-      () {
-        expect(devAutoRefreshScript, contains('/__dev/version'));
-        expect(devAutoRefreshScript, contains('location.reload()'));
       },
     );
   });

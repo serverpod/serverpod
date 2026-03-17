@@ -66,14 +66,8 @@ class WatchSession {
         event.packageConfigChanged;
 
     // Static-only changes (HTML, JS, CSS, templates): no compilation needed.
-    // Notify the server so it increments its static change counter, which
-    // triggers browser refresh and template reloading.
     if (!hasDartChanges) {
-      if (_server.isVmServiceConnected) {
-        log.debug('Static files changed, notifying server.');
-        await _server.notifyStaticChange();
-        log.info('Browser refresh triggered.');
-      }
+      await _handleStaticChange();
       return;
     }
 
@@ -98,8 +92,23 @@ class WatchSession {
     }
 
     // Without a compiler (--no-fes), the IDE handles compilation and reload.
-    final compiler = _compiler;
-    if (compiler == null) return;
+    if (_compiler == null) return;
+
+    await _compileAndReload(event);
+  }
+
+  /// Notifies the server of static file changes for browser refresh.
+  Future<void> _handleStaticChange() async {
+    if (_server.isVmServiceConnected) {
+      log.debug('Static files changed, notifying server.');
+      await _server.notifyStaticChange();
+      log.info('Browser refresh triggered.');
+    }
+  }
+
+  /// Compiles changed files and hot-reloads or restarts the server.
+  Future<void> _compileAndReload(FileChangeEvent event) async {
+    final compiler = _compiler!;
 
     // Compile changes. Merge any paths carried over from prior rejected
     // compiles so the FES re-invalidates them (reject rolls back its state).
@@ -139,7 +148,11 @@ class WatchSession {
     _pendingPaths.clear();
     compiler.accept();
 
-    // Hot reload if VM service is connected, otherwise fall back to restart.
+    await _reloadOrRestart(result);
+  }
+
+  /// Attempts hot reload; falls back to full server restart if reload fails.
+  Future<void> _reloadOrRestart(CompileResult result) async {
     if (_server.isVmServiceConnected) {
       final reloaded = await _server.reload(result.dillOutput!);
       if (reloaded) {
@@ -152,6 +165,7 @@ class WatchSession {
     // Fall back to restart: need a full dill to boot a new process.
     // The incremental dill only contains deltas. Reset the compiler
     // so the next compile produces a complete kernel.
+    final compiler = _compiler!;
     compiler.reset();
     final fullResult = await compileWithProgress(
       'Compiling server',
@@ -187,28 +201,4 @@ class WatchSession {
       }),
     );
   }
-}
-
-/// Merges multiple buffered [FileChangeEvent]s into a single event.
-FileChangeEvent mergeEvents(List<FileChangeEvent> events) {
-  if (events.length == 1) return events.first;
-
-  final dartFiles = <String>{};
-  final modelFiles = <String>{};
-  var packageConfigChanged = false;
-  var staticFilesChanged = false;
-
-  for (final event in events) {
-    dartFiles.addAll(event.dartFiles);
-    modelFiles.addAll(event.modelFiles);
-    packageConfigChanged |= event.packageConfigChanged;
-    staticFilesChanged |= event.staticFilesChanged;
-  }
-
-  return FileChangeEvent(
-    dartFiles: dartFiles,
-    modelFiles: modelFiles,
-    packageConfigChanged: packageConfigChanged,
-    staticFilesChanged: staticFilesChanged,
-  );
 }

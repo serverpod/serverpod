@@ -120,17 +120,17 @@ class ServerProcess {
     );
     _process = process;
 
-    // The child process inherits the parent's process group, so terminal
-    // signals (SIGINT) are delivered to both processes by the OS. Forwarding
-    // SIGINT would cause double-delivery, which triggers Serverpod's force-exit.
-    // Only forward SIGTERM, which is sent to a specific process (e.g. by kill).
-    // SIGTERM is not supported on Windows, so skip signal forwarding there.
+    // Forward SIGTERM as SIGINT to the child for graceful shutdown.
+    // SIGINT is used because it works cross-platform (CTRL_C_EVENT on Windows).
+    // We don't forward SIGINT itself: the child inherits the process group,
+    // so terminal SIGINT is already delivered to both processes by the OS.
+    // SIGTERM is not supported on Windows, so skip forwarding there.
     // TODO: On Windows the child process is not terminated when the parent
     // exits. Consider using a Job Object (via FFI) to tie child lifetime
     // to the parent.
     if (!Platform.isWindows) {
       _sigtermSub = ProcessSignal.sigterm.watch().listen(
-        (_) => process.kill(ProcessSignal.sigterm),
+        (_) => process.kill(ProcessSignal.sigint),
       );
     }
 
@@ -256,7 +256,10 @@ class ServerProcess {
     await _sigtermSub?.cancel();
     _sigtermSub = null;
 
-    process.kill(ProcessSignal.sigterm);
+    // Use SIGINT rather than SIGTERM: on Windows SIGTERM maps to
+    // TerminateProcess (immediate kill), while SIGINT sends CTRL_C_EVENT
+    // which allows the server to shut down gracefully.
+    process.kill(ProcessSignal.sigint);
 
     final exitCode = await process.exitCode.timeout(
       timeout,
