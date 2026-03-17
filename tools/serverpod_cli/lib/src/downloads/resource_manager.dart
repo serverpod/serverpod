@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:cli_tools/cli_tools.dart';
+import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/downloads/resource_manager_constants.dart';
@@ -60,29 +61,84 @@ class ResourceManager {
       return _runCount!;
     }
 
-    const runCountFilePath = 'run_count';
-    var count = 0;
-    try {
-      var runCountFile = File(
-        p.join(localStorageDirectory.path, runCountFilePath),
-      );
-      var fileContents = runCountFile.readAsStringSync();
-      count = int.parse(fileContents);
-    } catch (e) {
-      // Failed to read run count from file, it's probably not created.
-    }
-
-    count += 1;
-    try {
-      var runCountFile = File(
-        p.join(localStorageDirectory.path, runCountFilePath),
-      );
-      runCountFile.createSync(recursive: true);
-      runCountFile.writeAsStringSync(count.toString());
-    } finally {}
-
+    var count = _readCurrentRunCount() + 1;
+    _atomicSaveRunCount(count);
+    _deleteOldRunCountFiles();
     _runCount = count;
     return count;
+  }
+
+  static const _runCountPrefix = 'run_count_';
+
+  List<File>? _cachedPreviousRunCountFiles;
+  List<File> get _previousRunCountFiles {
+    if (_cachedPreviousRunCountFiles != null) {
+      return _cachedPreviousRunCountFiles!;
+    }
+    try {
+      if (localStorageDirectory.existsSync()) {
+        _importOldRunCountIfExists();
+        _cachedPreviousRunCountFiles = localStorageDirectory
+            .listSync()
+            .whereType<File>()
+            .where((file) => p.basename(file.path).startsWith(_runCountPrefix))
+            .toList();
+      }
+    } catch (e) {
+      // Failed to list directory. Assume no files exist.
+    }
+    _cachedPreviousRunCountFiles ??= [];
+    return _cachedPreviousRunCountFiles!;
+  }
+
+  /// Import the old run count if it exists to prevent invoking the welcome
+  /// and check-in pages for already seen users.
+  void _importOldRunCountIfExists() {
+    try {
+      var oldCountFile = File(p.join(localStorageDirectory.path, 'run_count'));
+      var oldRunCountInt = int.parse(oldCountFile.readAsStringSync());
+      _atomicSaveRunCount(oldRunCountInt);
+      oldCountFile.deleteSync();
+    } catch (e) {
+      // Failed to import old run count file. Might not exist anymore.
+    }
+  }
+
+  /// Read the current run count by finding the max 'run_count_*' file.
+  int _readCurrentRunCount() {
+    var maxCount = _previousRunCountFiles
+        .map((file) => p.basename(file.path).substring(_runCountPrefix.length))
+        .map(int.parse)
+        .maxOrNull;
+    return maxCount ?? 0;
+  }
+
+  /// Atomically save the new count by creating a new file. This prevents losing
+  ///  the count if the process is terminated while saving the new count.
+  void _atomicSaveRunCount(int count) {
+    try {
+      if (!localStorageDirectory.existsSync()) {
+        localStorageDirectory.createSync(recursive: true);
+      }
+      var newFileName = '$_runCountPrefix$count';
+      var newFile = File(p.join(localStorageDirectory.path, newFileName));
+      newFile.createSync();
+    } catch (e) {
+      // Failed to save run count. The count won't persist to the next
+      // run, but we still track it for this session.
+    }
+  }
+
+  /// Delete all cached 'run_count_*' files from previous runs.
+  void _deleteOldRunCountFiles() {
+    try {
+      for (var file in _previousRunCountFiles) {
+        file.deleteSync();
+      }
+    } catch (e) {
+      // Failed to delete old files. Not critical, since the next run will just
+      // pick the max count from all existing files and clean up the old ones.
+    }
   }
 
   Future<void> storeLatestCliVersion(
