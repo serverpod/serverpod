@@ -30,13 +30,11 @@ table: serverpod_future_call_claim
 
 fields:
     ### The id of the future call this claim entry is associated with
-    futureCallId: int?, relation(parent=serverpod_future_call,onDelete=Cascade)
+    id: int?, relation(parent=serverpod_future_call,onDelete=Cascade)
 
-    ### Timestamp of this claim entry
-    time: DateTime
-
-    ### The id of the server where the claim was created.
-    serverId: String
+    ### Heartbeat timestamp for this claim entry.
+    ### Used to detect stale claims that should be cleaned up.
+    heartbeat: DateTime
 ```
 
 ### Execution Flow
@@ -58,11 +56,13 @@ The server attempts to claim execution of a future call by inserting a record in
 
 ```dart
 final claim = FutureCallClaimEntry(
-  futureCallId: futureCallEntry.id,
-  serverId: _serverId,
-  time: DateTime.now().toUtc(),
+  id: futureCallEntry.id,
+  heartbeat: DateTime.now().toUtc(),
 );
-await FutureCallClaimEntry.db.insertRow(_internalSession, claim);
+
+await FutureCallClaimEntry.db.insert(_internalSession, [
+  claim,
+], ignoreConflicts: true);
 ```
 
 The server executes the future calls if the insert is successful. The claim acts as a lease lock during execution. If the insert fails due to the unique constraint, another server has already claimed the call.
@@ -76,9 +76,23 @@ The future call is permanently deleted from `serverpod_future_call` and `serverp
 await FutureCallEntry.db.delete(_internalSession, futureCallEntry);
 ```
 
-#### 4. Crash recovery
+#### 4. Hearbeat Pings
 
-If a server crashes, the future calls and claims remain. A cleanup job removes all pending claims created by that server on start up so that the claimed future calls become eligible for execution again.
+Claims for future calls that are running will be updated with a heartbeat timestamp every 30 seconds to keep them alive. This will allow for the `FutureCallScanner` to also delete stale claims when it finds due future calls.
+A claim will be considered stale if its heartbeat timestamp is behind by 2x the normal hearbeat interval (that is, by 1 minute).
+
+```dart
+final staleClaimThreshold = DateTime.now().toUtc().subtract(
+  _heartbeatInterval * 2,
+);
+
+await FutureCallClaimEntry.db.deleteWhere(
+  _internalSession,
+  where: (t) => t.heartbeat < staleClaimThreshold,
+);
+```
+
+This mechanism ensures that claims obtained by degraded or dead server instances are freed for available instances to re-claim.
 
 ### Potential Issues
 
@@ -88,19 +102,9 @@ Server crashes mid execution may allow multiple executions of a future call. Dev
 
 #### 2. Orphaned claims
 
-Claims may accumulate if:
+A claim becomes orphaned when a server with claim to a future call becomes unavailable before the future call execution completes.
 
-- Cleanup fails on startup
-- A server with claim to a future call becomes unavailable in a distributed environment
-
-A periodic maintenance job will be introduced delete claim entries that are older than a configured TTL. Developers will also be able to configure how often this maintenance job runs.
-
-## Configurations
-
-Two new configurations will be introduced:
-
-- **futureCall.claimCleanupInterval**: Configures how often to run the future call claim cleanup job. Defaults to 30 minutes.
-- **futureCall.claimTTL**: Configures how long to keep future call claims before they become eligible for cleanup. Defaults to 10 minutes.
+The heartbeat mechanism ensures that orphaned claims are freed. However there will be a delay of 2x the heartbeat interval before orphaned claims can be freed for available servers to reclaim.
 
 ## Backwards Compatibility
 
