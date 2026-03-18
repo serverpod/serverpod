@@ -25,6 +25,7 @@ class FutureCallScanner {
   final ShouldSkipScan _shouldSkipScan;
   final DispatchEntries _dispatchEntries;
   final Duration _heartbeatInterval;
+  final String _serverId;
 
   bool _isStopping = false;
 
@@ -56,12 +57,14 @@ class FutureCallScanner {
     required DispatchEntries dispatchEntries,
     required FutureCallDiagnosticsService diagnosticsService,
     required Duration heartbeatInterval,
+    required String serverId,
   }) : _internalSession = internalSession,
        _scanInterval = scanInterval,
        _shouldSkipScan = shouldSkipScan,
        _dispatchEntries = dispatchEntries,
        _diagnosticReporting = diagnosticsService,
-       _heartbeatInterval = heartbeatInterval;
+       _heartbeatInterval = heartbeatInterval,
+       _serverId = serverId;
 
   /// Scans the database for overdue future calls and queues them for execution.
   Future<void> scanFutureCallEntries() async {
@@ -86,7 +89,7 @@ class FutureCallScanner {
       );
 
       stdout.writeln(
-        'Deleted stale claims: ${deletedEntries.map((e) => e.toJson())}',
+        'Server $_serverId: Deleted stale claims: ${deletedEntries.map((e) => e.toJson())}',
       );
 
       final entries = await FutureCallEntry.db.find(

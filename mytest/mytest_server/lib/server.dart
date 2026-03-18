@@ -76,6 +76,8 @@ void run(List<String> args) async {
   // Start the server.
   await pod.start();
 
+  stdout.writeln('Server ${pod.serverId} has started');
+
   await pod.futureCalls.callWithDelay(Duration(seconds: 10)).reminder.hello();
   await pod.futureCalls
       .callWithDelay(Duration(seconds: 10))
