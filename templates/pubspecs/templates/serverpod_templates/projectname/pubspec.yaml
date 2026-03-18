@@ -12,6 +12,8 @@ environment:
 dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
   serverpod: #--CONDITIONALLY_REMOVE_LINE--#
     path: ../../../packages/serverpod #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_database: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_database #--CONDITIONALLY_REMOVE_LINE--#
   serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
     path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
   serverpod_shared: #--CONDITIONALLY_REMOVE_LINE--#

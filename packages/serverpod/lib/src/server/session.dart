@@ -120,6 +120,11 @@ abstract class Session implements DatabaseSession {
   @override
   LogQueryFunction? get logQuery => _logManager?.logQuery;
 
+  @override
+  LogWarningFunction? get logWarning => (message) async {
+    log(message, level: LogLevel.warning);
+  };
+
   /// Endpoint that triggered this session.
   final String endpoint;
 
@@ -253,19 +258,12 @@ abstract class Session implements DatabaseSession {
 
   /// Logs a message. Default [LogLevel] is [LogLevel.info]. The log is written
   /// to the database when the session is closed.
-  @override
   void log(
     String message, {
     LogLevel? level,
     dynamic exception,
     StackTrace? stackTrace,
   }) {
-    if (_closed) {
-      throw StateError(
-        'Session is closed, and logging can no longer be performed.',
-      );
-    }
-
     _logManager?.logEntry(
       message: message,
       level: level ?? LogLevel.info,

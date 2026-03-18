@@ -4,11 +4,10 @@ FROM dart:3.8.0 AS build
 # Set the working directory
 WORKDIR /app
 
-RUN echo "deb http://deb.debian.org/debian/ unstable main contrib non-free" >> /etc/apt/sources.list.d/debian.list
-RUN apt-get update
-RUN apt-get install --fix-missing -y xvfb
-
-RUN apt-get install -y --no-install-recommends firefox
+RUN echo "deb http://security.debian.org/debian-security bookworm-security main" >> /etc/apt/sources.list.d/debian.list \
+    && apt-get update \
+    && apt-get install --fix-missing -y xvfb firefox-esr \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy the whole serverpod repo into the container.
 COPY . .

@@ -1,0 +1,9 @@
+### Represents a version of a database migration with a table.
+class: DatabaseMigrationVersion
+extends: DatabaseMigrationVersionModel
+table: serverpod_migrations
+
+indexes:
+  serverpod_migrations_ids:
+    fields: module
+    unique: true

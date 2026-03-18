@@ -10,6 +10,7 @@ import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' hide ExitException;
 
 enum CreateMigrationOption<V> implements OptionDefinition<V> {
@@ -98,7 +99,7 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
       projectName: projectName,
     );
 
-    MigrationVersion? migration;
+    MigrationVersionArtifacts? migration;
     bool migrationAborted = false;
     bool migrationFailed = false;
     await log.progress('Creating migration', () async {
@@ -149,13 +150,12 @@ class CreateMigrationCommand extends ServerpodCommand<CreateMigrationOption> {
     // Dart does not infer the type of `migration` to be non-nullable here,
     // so we use the null-check operator to assert that it is not null.
     var createdMigration = migration!;
-    var projectDirectory = createdMigration.projectDirectory;
-    var migrationName = createdMigration.versionName;
+    var migrationName = createdMigration.version;
 
     log.info(
       'Migration created: ${path.relative(
         MigrationConstants.migrationVersionDirectory(
-          projectDirectory,
+          serverDirectory,
           migrationName,
         ).path,
         from: Directory.current.path,

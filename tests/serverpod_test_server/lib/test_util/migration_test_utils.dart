@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/migrations/migration_registry.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod/protocol.dart' as serverProtocol;
 
@@ -80,10 +80,11 @@ abstract class MigrationTestUtils {
     return migrationRegistryFile.readAsStringSync();
   }
 
-  static MigrationRegistry loadMigrationRegistry() {
-    return MigrationRegistry.load(
-      _migrationsProjectDirectory(),
+  static Future<List<String>> loadMigrationRegistry() async {
+    var artifactStore = FileSystemMigrationArtifactStore(
+      projectDirectory: Directory.current,
     );
+    return artifactStore.listVersions();
   }
 
   static Future<void> migrationTestCleanup({
@@ -93,18 +94,19 @@ abstract class MigrationTestUtils {
     removeAllTaggedMigrations();
     removeRepairMigration();
     _removeMigrationTestProtocolFolder();
-    _recreateMigrationRegistryFile();
+    await _recreateMigrationRegistryFile();
     if (resetSql != null) {
       await _resetDatabase(resetSql: resetSql, serviceClient: serviceClient);
     }
     await _setDatabaseMigrationToLatestInRegistry(serviceClient: serviceClient);
   }
 
-  static void _recreateMigrationRegistryFile() {
-    var migrationRegistry = MigrationRegistry.load(
-      _migrationsProjectDirectory(),
+  static Future<void> _recreateMigrationRegistryFile() async {
+    var artifactStore = FileSystemMigrationArtifactStore(
+      projectDirectory: Directory.current,
     );
-    migrationRegistry.write();
+    var versions = await artifactStore.listVersions();
+    await artifactStore.writeVersionRegistry(versions);
   }
 
   static void removeRepairMigration() {
@@ -256,9 +258,8 @@ abstract class MigrationTestUtils {
   static Future<void> _setDatabaseMigrationToLatestInRegistry({
     required Client serviceClient,
   }) async {
-    var migrationRegistry = loadMigrationRegistry();
-
-    var latestMigration = migrationRegistry.getLatest();
+    var versions = await loadMigrationRegistry();
+    var latestMigration = versions.lastOrNull;
 
     await serviceClient.insights.executeSql('''
 INSERT INTO "${serverProtocol.DatabaseMigrationVersion.t.tableName}"

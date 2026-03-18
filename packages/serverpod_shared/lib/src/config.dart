@@ -695,12 +695,23 @@ class FutureCallConfig {
   /// How long to wait before checking the queue again.
   final Duration scanInterval;
 
+  /// If true, the server will check for broken future calls on startup.
+  /// If null, the server will check for broken future calls if there are
+  /// less than 1000 future calls in the database. This is the default behavior.
+  /// If false, the server will not check for broken future calls.
+  final bool? checkBrokenCalls;
+
+  /// If true, the server will delete broken future calls on startup.
+  final bool deleteBrokenCalls;
+
   /// Creates a new [FutureCallConfig].
   const FutureCallConfig({
     this.concurrencyLimit = defaultFutureCallConcurrencyLimit,
     this.scanInterval = const Duration(
       milliseconds: defaultFutureCallScanIntervalMs,
     ),
+    this.checkBrokenCalls,
+    this.deleteBrokenCalls = false,
   });
 
   /// The default concurrency limit for future calls.
@@ -729,6 +740,14 @@ class FutureCallConfig {
       concurrencyLimit = null;
     }
 
+    final checkBrokenCalls =
+        futureCallConfigJson[ServerpodEnv.futureCallCheckBrokenCalls.configKey];
+
+    final deleteBrokenCalls =
+        futureCallConfigJson[ServerpodEnv
+            .futureCallDeleteBrokenCalls
+            .configKey];
+
     return FutureCallConfig(
       // If the user did not configure the concurrency limit, use the default
       concurrencyLimit: hasConcurrencyLimitKey
@@ -737,6 +756,8 @@ class FutureCallConfig {
       scanInterval: Duration(
         milliseconds: scanInterval ?? defaultFutureCallScanIntervalMs,
       ),
+      checkBrokenCalls: checkBrokenCalls,
+      deleteBrokenCalls: deleteBrokenCalls ?? false,
     );
   }
 
@@ -747,6 +768,8 @@ class FutureCallConfig {
     output.writeln(
       'future call scan interval: ${scanInterval.inMilliseconds}ms',
     );
+    output.writeln('check broken future calls: $checkBrokenCalls');
+    output.writeln('delete broken future calls: $deleteBrokenCalls');
     return output.toString();
   }
 }
@@ -997,6 +1020,8 @@ Map? _buildFutureCallConfigMap(Map configMap, Map<String, String> environment) {
   return _buildConfigMap(futureCallConfig, environment, [
     (ServerpodEnv.futureCallConcurrencyLimit, int.parse),
     (ServerpodEnv.futureCallScanInterval, int.parse),
+    (ServerpodEnv.futureCallCheckBrokenCalls, bool.parse),
+    (ServerpodEnv.futureCallDeleteBrokenCalls, bool.parse),
   ]);
 }
 

@@ -1,0 +1,548 @@
+/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+/*   To generate run: "serverpod generate"    */
+
+// ignore_for_file: implementation_imports
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
+
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_database/serverpod_database.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _i2;
+
+/// Represents a version of a database migration with a table.
+abstract class DatabaseMigrationVersion
+    extends _i1.DatabaseMigrationVersionModel
+    implements _i2.TableRow<int?>, _i2.ProtocolSerialization {
+  DatabaseMigrationVersion._({
+    this.id,
+    required super.module,
+    required super.version,
+    super.timestamp,
+  });
+
+  factory DatabaseMigrationVersion({
+    int? id,
+    required String module,
+    required String version,
+    DateTime? timestamp,
+  }) = _DatabaseMigrationVersionImpl;
+
+  factory DatabaseMigrationVersion.fromJson(
+    Map<String, dynamic> jsonSerialization,
+  ) {
+    return DatabaseMigrationVersion(
+      id: jsonSerialization['id'] as int?,
+      module: jsonSerialization['module'] as String,
+      version: jsonSerialization['version'] as String,
+      timestamp: jsonSerialization['timestamp'] == null
+          ? null
+          : _i2.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
+    );
+  }
+
+  static final t = DatabaseMigrationVersionTable();
+
+  static const db = DatabaseMigrationVersionRepository._();
+
+  @override
+  int? id;
+
+  @override
+  _i2.Table<int?> get table => t;
+
+  /// Returns a shallow copy of this [DatabaseMigrationVersion]
+  /// with some or all fields replaced by the given arguments.
+  @override
+  @_i2.useResult
+  DatabaseMigrationVersion copyWith({
+    int? id,
+    String? module,
+    String? version,
+    Object? timestamp,
+  });
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.DatabaseMigrationVersion',
+      if (id != null) 'id': id,
+      'module': module,
+      'version': version,
+      if (timestamp != null) 'timestamp': timestamp?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'serverpod.DatabaseMigrationVersion',
+      if (id != null) 'id': id,
+      'module': module,
+      'version': version,
+      if (timestamp != null) 'timestamp': timestamp?.toJson(),
+    };
+  }
+
+  static DatabaseMigrationVersionInclude include() {
+    return DatabaseMigrationVersionInclude._();
+  }
+
+  static DatabaseMigrationVersionIncludeList includeList({
+    _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    int? limit,
+    int? offset,
+    _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    bool orderDescending = false,
+    _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    DatabaseMigrationVersionInclude? include,
+  }) {
+    return DatabaseMigrationVersionIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DatabaseMigrationVersion.t),
+      orderDescending: orderDescending,
+      orderByList: orderByList?.call(DatabaseMigrationVersion.t),
+      include: include,
+    );
+  }
+
+  @override
+  String toString() {
+    return _i2.SerializationManager.encode(this);
+  }
+}
+
+class _Undefined {}
+
+class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
+  _DatabaseMigrationVersionImpl({
+    int? id,
+    required String module,
+    required String version,
+    DateTime? timestamp,
+  }) : super._(
+         id: id,
+         module: module,
+         version: version,
+         timestamp: timestamp,
+       );
+
+  /// Returns a shallow copy of this [DatabaseMigrationVersion]
+  /// with some or all fields replaced by the given arguments.
+  @_i2.useResult
+  @override
+  DatabaseMigrationVersion copyWith({
+    Object? id = _Undefined,
+    String? module,
+    String? version,
+    Object? timestamp = _Undefined,
+  }) {
+    return DatabaseMigrationVersion(
+      id: id is int? ? id : this.id,
+      module: module ?? this.module,
+      version: version ?? this.version,
+      timestamp: timestamp is DateTime? ? timestamp : this.timestamp,
+    );
+  }
+}
+
+class DatabaseMigrationVersionUpdateTable
+    extends _i2.UpdateTable<DatabaseMigrationVersionTable> {
+  DatabaseMigrationVersionUpdateTable(super.table);
+
+  _i2.ColumnValue<String, String> module(String value) => _i2.ColumnValue(
+    table.module,
+    value,
+  );
+
+  _i2.ColumnValue<String, String> version(String value) => _i2.ColumnValue(
+    table.version,
+    value,
+  );
+
+  _i2.ColumnValue<DateTime, DateTime> timestamp(DateTime? value) =>
+      _i2.ColumnValue(
+        table.timestamp,
+        value,
+      );
+}
+
+class DatabaseMigrationVersionTable extends _i2.Table<int?> {
+  DatabaseMigrationVersionTable({super.tableRelation})
+    : super(tableName: 'serverpod_migrations') {
+    updateTable = DatabaseMigrationVersionUpdateTable(this);
+    module = _i2.ColumnString(
+      'module',
+      this,
+    );
+    version = _i2.ColumnString(
+      'version',
+      this,
+    );
+    timestamp = _i2.ColumnDateTime(
+      'timestamp',
+      this,
+    );
+  }
+
+  late final DatabaseMigrationVersionUpdateTable updateTable;
+
+  /// The module the migration belongs to.
+  late final _i2.ColumnString module;
+
+  /// The version of the migration.
+  late final _i2.ColumnString version;
+
+  /// The timestamp of the migration. Only set if the migration is applied.
+  late final _i2.ColumnDateTime timestamp;
+
+  @override
+  List<_i2.Column> get columns => [
+    id,
+    module,
+    version,
+    timestamp,
+  ];
+}
+
+class DatabaseMigrationVersionInclude extends _i2.IncludeObject {
+  DatabaseMigrationVersionInclude._();
+
+  @override
+  Map<String, _i2.Include?> get includes => {};
+
+  @override
+  _i2.Table<int?> get table => DatabaseMigrationVersion.t;
+}
+
+class DatabaseMigrationVersionIncludeList extends _i2.IncludeList {
+  DatabaseMigrationVersionIncludeList._({
+    _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(DatabaseMigrationVersion.t);
+  }
+
+  @override
+  Map<String, _i2.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i2.Table<int?> get table => DatabaseMigrationVersion.t;
+}
+
+class DatabaseMigrationVersionRepository {
+  const DatabaseMigrationVersionRepository._();
+
+  /// Returns a list of [DatabaseMigrationVersion]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<DatabaseMigrationVersion>> find(
+    _i2.DatabaseSession session, {
+    _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    int? limit,
+    int? offset,
+    _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    bool orderDescending = false,
+    _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    _i2.Transaction? transaction,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.find<DatabaseMigrationVersion>(
+      where: where?.call(DatabaseMigrationVersion.t),
+      orderBy: orderBy?.call(DatabaseMigrationVersion.t),
+      orderByList: orderByList?.call(DatabaseMigrationVersion.t),
+      orderDescending: orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [DatabaseMigrationVersion] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<DatabaseMigrationVersion?> findFirstRow(
+    _i2.DatabaseSession session, {
+    _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    int? offset,
+    _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    bool orderDescending = false,
+    _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    _i2.Transaction? transaction,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findFirstRow<DatabaseMigrationVersion>(
+      where: where?.call(DatabaseMigrationVersion.t),
+      orderBy: orderBy?.call(DatabaseMigrationVersion.t),
+      orderByList: orderByList?.call(DatabaseMigrationVersion.t),
+      orderDescending: orderDescending,
+      offset: offset,
+      transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [DatabaseMigrationVersion] by its [id] or null if no such row exists.
+  Future<DatabaseMigrationVersion?> findById(
+    _i2.DatabaseSession session,
+    int id, {
+    _i2.Transaction? transaction,
+    _i2.LockMode? lockMode,
+    _i2.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findById<DatabaseMigrationVersion>(
+      id,
+      transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Inserts all [DatabaseMigrationVersion]s in the list and returns the inserted rows.
+  ///
+  /// The returned [DatabaseMigrationVersion]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  Future<List<DatabaseMigrationVersion>> insert(
+    _i2.DatabaseSession session,
+    List<DatabaseMigrationVersion> rows, {
+    _i2.Transaction? transaction,
+    bool ignoreConflicts = false,
+  }) async {
+    return session.db.insert<DatabaseMigrationVersion>(
+      rows,
+      transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+    );
+  }
+
+  /// Inserts a single [DatabaseMigrationVersion] and returns the inserted row.
+  ///
+  /// The returned [DatabaseMigrationVersion] will have its `id` field set.
+  Future<DatabaseMigrationVersion> insertRow(
+    _i2.DatabaseSession session,
+    DatabaseMigrationVersion row, {
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<DatabaseMigrationVersion>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DatabaseMigrationVersion]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
+  Future<List<DatabaseMigrationVersion>> update(
+    _i2.DatabaseSession session,
+    List<DatabaseMigrationVersion> rows, {
+    _i2.ColumnSelections<DatabaseMigrationVersionTable>? columns,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.update<DatabaseMigrationVersion>(
+      rows,
+      columns: columns?.call(DatabaseMigrationVersion.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [DatabaseMigrationVersion]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
+  Future<DatabaseMigrationVersion> updateRow(
+    _i2.DatabaseSession session,
+    DatabaseMigrationVersion row, {
+    _i2.ColumnSelections<DatabaseMigrationVersionTable>? columns,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<DatabaseMigrationVersion>(
+      row,
+      columns: columns?.call(DatabaseMigrationVersion.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [DatabaseMigrationVersion] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<DatabaseMigrationVersion?> updateById(
+    _i2.DatabaseSession session,
+    int id, {
+    required _i2.ColumnValueListBuilder<DatabaseMigrationVersionUpdateTable>
+    columnValues,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.updateById<DatabaseMigrationVersion>(
+      id,
+      columnValues: columnValues(DatabaseMigrationVersion.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [DatabaseMigrationVersion]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  Future<List<DatabaseMigrationVersion>> updateWhere(
+    _i2.DatabaseSession session, {
+    required _i2.ColumnValueListBuilder<DatabaseMigrationVersionUpdateTable>
+    columnValues,
+    required _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
+    int? limit,
+    int? offset,
+    _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    bool orderDescending = false,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.updateWhere<DatabaseMigrationVersion>(
+      columnValues: columnValues(DatabaseMigrationVersion.t.updateTable),
+      where: where(DatabaseMigrationVersion.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DatabaseMigrationVersion.t),
+      orderByList: orderByList?.call(DatabaseMigrationVersion.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all [DatabaseMigrationVersion]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<DatabaseMigrationVersion>> delete(
+      _i2.DatabaseSession session,
+    List<DatabaseMigrationVersion> rows, {
+        _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    bool orderDescending = false,
+        _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.delete<DatabaseMigrationVersion>(
+      rows,
+      orderBy: orderBy?.call(DatabaseMigrationVersion.t),
+      orderByList: orderByList?.call(DatabaseMigrationVersion.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes a single [DatabaseMigrationVersion].
+  Future<DatabaseMigrationVersion> deleteRow(
+    _i2.DatabaseSession session,
+    DatabaseMigrationVersion row, {
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<DatabaseMigrationVersion>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  Future<List<DatabaseMigrationVersion>> deleteWhere(
+      _i2.DatabaseSession session, {
+    required _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
+        _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    bool orderDescending = false,
+        _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+        _i2.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<DatabaseMigrationVersion>(
+      where: where(DatabaseMigrationVersion.t),
+      orderBy: orderBy?.call(DatabaseMigrationVersion.t),
+      orderByList: orderByList?.call(DatabaseMigrationVersion.t),
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
+  Future<int> count(
+    _i2.DatabaseSession session, {
+    _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    int? limit,
+    _i2.Transaction? transaction,
+  }) async {
+    return session.db.count<DatabaseMigrationVersion>(
+      where: where?.call(DatabaseMigrationVersion.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [DatabaseMigrationVersion] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i2.DatabaseSession session, {
+    required _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
+    required _i2.LockMode lockMode,
+    required _i2.Transaction transaction,
+    _i2.LockBehavior lockBehavior = _i2.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<DatabaseMigrationVersion>(
+      where: where(DatabaseMigrationVersion.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+      transaction: transaction,
+    );
+  }
+}

@@ -2,11 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
-import 'package:serverpod/src/database/interface/database_pool_manager.dart';
-import 'package:serverpod/src/database/interface/provider.dart';
-import 'package:serverpod/src/database/migrations/server_migration_manager.dart';
+import 'package:serverpod/src/database/server_migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
@@ -38,6 +37,8 @@ class Serverpod {
   static Serverpod? _instance;
 
   late Session _internalSession;
+
+  late Session _internalLoggingSession;
 
   DateTime? _startedTime;
 
@@ -265,6 +266,11 @@ class Serverpod {
     _internalServicesShutdownTasks.addTask(
       'Internal Session',
       _internalSession.close,
+    );
+
+    _internalServicesShutdownTasks.addTask(
+      'Internal Logging Session',
+      _internalLoggingSession.close,
     );
 
     _internalServicesShutdownTasks.addTask(
@@ -590,6 +596,10 @@ class Serverpod {
     endpoints.initializeEndpoints(server);
 
     _internalSession = InternalSession(server: server, enableLogging: false);
+    _internalLoggingSession = InternalSession(
+      server: server,
+      enableLogging: true,
+    );
 
     _healthCheckService = HealthCheckService(this, _healthConfig);
 
@@ -599,6 +609,7 @@ class Serverpod {
         serializationManager,
         diagnosticsService: ServerpodFutureCallDiagnosticsService(server),
         internalSession: internalSession,
+        logSession: _internalLoggingSession,
         sessionProvider: (String futureCallName) => FutureCallSession(
           server: server,
           futureCallName: futureCallName,
@@ -773,6 +784,14 @@ class Serverpod {
       _internalLogVerbose('All servers started.');
     }
 
+    if (_futureCallManager != null) {
+      _internalLogVerbose('Initializing future calls.');
+      endpoints.futureCalls?.initialize(
+        _futureCallManager!,
+        serverId,
+      );
+    }
+
     // Start maintenance tasks. If we are running in maintenance mode, we
     // will only run the maintenance tasks once. If we are applying migrations
     // no other maintenance tasks will be run.
@@ -794,7 +813,7 @@ class Serverpod {
           ),
         );
       } else {
-        _futureCallManager?.start();
+        await _futureCallManager?.start();
       }
 
       // Start health check manager
@@ -807,14 +826,6 @@ class Serverpod {
     if (config.role == ServerpodRole.maintenance && appliedMigrations) {
       _internalLogVerbose('Finished applying database migrations.');
       throw ExitException(_exitCode);
-    }
-
-    if (_futureCallManager != null) {
-      _internalLogVerbose('Initializing future calls.');
-      endpoints.futureCalls?.initialize(
-        _futureCallManager!,
-        serverId,
-      );
     }
 
     if (Features.enableDatabase &&
@@ -1420,6 +1431,9 @@ extension ServerpodInternalMethods on Serverpod {
   /// Retrieve the global internal session used by the Serverpod.
   /// Logging is turned off.
   Session get internalSession => _internalSession;
+
+  /// Retrieve the global internal session used by the Serverpod for logging.
+  Session get internalLoggingSession => _internalLoggingSession;
 
   /// Submits an event to registered event handlers.
   /// They will execute asynchronously.

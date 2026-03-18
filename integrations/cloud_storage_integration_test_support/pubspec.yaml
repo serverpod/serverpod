@@ -10,8 +10,8 @@ environment:
   sdk: '^3.8.0'
 
 dependencies:
-  serverpod_client: 3.4.3
-  serverpod_cloud_storage_s3_compat: 3.4.3
+  serverpod_client: 3.4.4
+  serverpod_cloud_storage_s3_compat: 3.4.4
   test: ^1.25.5
 
 dependency_overrides:
@@ -21,6 +21,8 @@ dependency_overrides:
     path: ../../packages/serverpod_client
   serverpod_cloud_storage_s3_compat:
     path: ../serverpod_cloud_storage_s3_compat
+  serverpod_database:
+    path: ../../packages/serverpod_database
   serverpod_serialization:
     path: ../../packages/serverpod_serialization
   serverpod_shared:
