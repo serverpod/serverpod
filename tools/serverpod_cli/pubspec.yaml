@@ -32,6 +32,7 @@ dependencies:
   pub_semver: ^2.1.4
   pubspec_parse: ^1.4.0
   recase: ^4.1.0
+  serverpod_database: 3.4.4
   serverpod_serialization: 3.4.4
   serverpod_service_client: 3.4.4
   serverpod_shared: 3.4.4
@@ -52,6 +53,8 @@ dev_dependencies:
 dependency_overrides:
   serverpod_client:
     path: ../../packages/serverpod_client
+  serverpod_database:
+    path: ../../packages/serverpod_database
   serverpod_lints:
     path: ../../packages/serverpod_lints
   serverpod_serialization:

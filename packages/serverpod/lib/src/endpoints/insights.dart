@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:serverpod/src/database/bulk_data.dart';
-import 'package:serverpod/src/database/migrations/server_migration_manager.dart';
+import 'package:serverpod_database/serverpod_database.dart';
+import 'package:serverpod/src/database/server_migration_manager.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/util/path_util.dart';
@@ -236,7 +236,7 @@ class InsightsEndpoint extends Endpoint {
       Directory.current,
     ).listAvailableVersions();
 
-    var latestAvailableMigrations = <DatabaseMigrationVersion>[];
+    var latestAvailableMigrations = <DatabaseMigrationVersionModel>[];
     if (versions.isNotEmpty) {
       var version = versions.last;
       var file = MigrationConstants.databaseDefinitionJSONPath(

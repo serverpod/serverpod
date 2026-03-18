@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class DatabaseSetup {
@@ -29,7 +30,7 @@ class DatabaseSetup {
       projectName: name,
     );
 
-    MigrationVersion? migration;
+    MigrationVersionArtifacts? migration;
     try {
       migration = await generator.createMigration(
         force: false,

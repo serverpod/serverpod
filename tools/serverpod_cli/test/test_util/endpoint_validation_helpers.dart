@@ -34,6 +34,8 @@ dependency_overrides:
     path: $pathToServerpodRoot/packages/serverpod_lints
   serverpod_client:
     path: $pathToServerpodRoot/packages/serverpod_client
+  serverpod_database:
+    path: $pathToServerpodRoot/packages/serverpod_database
 ''');
 
   var result = await Process.run(

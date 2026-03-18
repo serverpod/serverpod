@@ -130,10 +130,10 @@ fields:
     test(
       'when creating repair migration towards older migration then a migration is not created.',
       () async {
-        var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
-        var previousMigrationIndex = migrationRegistry.versions.length - 2;
-        var previousMigrationName =
-            migrationRegistry.versions[previousMigrationIndex];
+        var migrationVersions =
+            await MigrationTestUtils.loadMigrationRegistry();
+        var previousMigrationIndex = migrationVersions.length - 2;
+        var previousMigrationName = migrationVersions[previousMigrationIndex];
 
         var exitCode = await MigrationTestUtils.runCreateRepairMigration(
           targetVersion: previousMigrationName,
@@ -150,10 +150,10 @@ fields:
     test(
       'when creating repair migration towards older migration with --force then migration is created.',
       () async {
-        var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
-        var previousMigrationIndex = migrationRegistry.versions.length - 2;
-        var previousMigrationName =
-            migrationRegistry.versions[previousMigrationIndex];
+        var migrationVersions =
+            await MigrationTestUtils.loadMigrationRegistry();
+        var previousMigrationIndex = migrationVersions.length - 2;
+        var previousMigrationName = migrationVersions[previousMigrationIndex];
 
         var exitCode = await MigrationTestUtils.runCreateRepairMigration(
           targetVersion: previousMigrationName,
@@ -219,10 +219,10 @@ indexes:
       test(
         'when creating repair migration towards older migration then a migration is created.',
         () async {
-          var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
-          var previousMigrationIndex = migrationRegistry.versions.length - 2;
-          var previousMigrationName =
-              migrationRegistry.versions[previousMigrationIndex];
+          var migrationVersions =
+              await MigrationTestUtils.loadMigrationRegistry();
+          var previousMigrationIndex = migrationVersions.length - 2;
+          var previousMigrationName = migrationVersions[previousMigrationIndex];
 
           var exitCode = await MigrationTestUtils.runCreateRepairMigration(
             targetVersion: previousMigrationName,
