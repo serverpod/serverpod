@@ -22,6 +22,8 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:vm_service/vm_service_io.dart';
 
+import '../generator/generation_staleness.dart';
+
 /// Options for the `start` command.
 enum StartOption<V> implements OptionDefinition<V> {
   watch(
@@ -278,8 +280,14 @@ Future<int> _runWatchMode({
   }
 
   // Create analyzers and run initial code generation.
-  final analyzers = await initialGenerate(config);
-  if (analyzers == null) {
+  final analyzers = await createAnalyzers(config);
+  final allSources = enumerateSourceFiles(config);
+  final genSuccess = await analyzeAndGenerate(
+    config: config,
+    analyzers: analyzers,
+    affectedPaths: allSources,
+  );
+  if (!genSuccess) {
     log.error('Code generation failed.');
     return 1;
   }
@@ -292,20 +300,18 @@ Future<int> _runWatchMode({
 
   final watcher = FileWatcher(watchPaths: watchPaths);
 
-  // The generate callback delegates to the shared helper.
-  Future<bool> generate(Set<String> affectedPaths) => analyzeAndGenerate(
-    config: config,
-    analyzers: analyzers,
-    affectedPaths: affectedPaths,
-  );
-
   return _startWatchSession(
     serverDir: serverDir,
     serverArgs: serverArgs,
     serverpodToolDir: serverpodToolDir,
     vmServiceInfoFile: vmServiceInfoFile,
     watcher: watcher,
-    generate: generate,
+    generate: (Set<String> affectedPaths) => analyzeAndGenerate(
+      config: config,
+      analyzers: analyzers,
+      affectedPaths: affectedPaths,
+      skipStalenessCheck: true,
+    ),
     noFes: noFes,
   );
 }

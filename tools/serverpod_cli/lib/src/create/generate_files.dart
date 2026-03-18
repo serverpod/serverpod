@@ -52,9 +52,11 @@ class GenerateFiles {
 
     return await performGenerate(
       config: config,
-      endpointsAnalyzer: endpointsAnalyzer,
-      modelAnalyzer: modelAnalyzer,
-      futureCallsAnalyzer: futureCallsAnalyzer,
+      analyzers: (
+        endpoints: endpointsAnalyzer,
+        models: modelAnalyzer,
+        futureCalls: futureCallsAnalyzer,
+      ),
     );
   }
 }

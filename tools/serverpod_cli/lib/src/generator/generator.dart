@@ -4,6 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -38,26 +39,38 @@ Future<Analyzers> createAnalyzers(GeneratorConfig config) async {
 /// Refreshes the Dart analysis context for endpoints and future calls,
 /// and updates the model analyzer for changed or removed model files.
 ///
+/// When [skipStalenessCheck] is `false` (default), checks whether the
+/// affected files are newer than the generation stamp. If all files are
+/// up to date, returns `false` without doing any analysis.
+/// Set to `true` when the caller already knows the files changed (e.g.
+/// from a file watcher event).
+///
 /// Returns `true` if any of the changes are relevant for code generation
 /// (endpoint, future call, or model changes), `false` otherwise.
 Future<bool> updateAnalyzers({
   required GeneratorConfig config,
-  required EndpointsAnalyzer endpointsAnalyzer,
-  required FutureCallsAnalyzer futureCallsAnalyzer,
-  required StatefulAnalyzer modelAnalyzer,
+  required Analyzers analyzers,
   required Set<String> affectedPaths,
+  bool skipStalenessCheck = false,
 }) async {
+  if (!skipStalenessCheck && isGenerationUpToDate(config, affectedPaths)) {
+    log.debug('All affected files are older than generation stamp, skipping.');
+    return false;
+  }
+
   var shouldGenerate = false;
 
-  shouldGenerate |= await endpointsAnalyzer.updateFileContexts(affectedPaths);
-  shouldGenerate |= await futureCallsAnalyzer.updateFileContexts(affectedPaths);
+  shouldGenerate |= await analyzers.endpoints.updateFileContexts(affectedPaths);
+  shouldGenerate |= await analyzers.futureCalls.updateFileContexts(
+    affectedPaths,
+  );
 
   for (final path in affectedPaths) {
     if (ModelHelper.isModelFile(path, loadConfig: config)) {
       shouldGenerate = true;
       final file = File(path);
       if (file.existsSync()) {
-        modelAnalyzer.addYamlModel(
+        analyzers.models.addYamlModel(
           ModelHelper.createModelSourceForPath(
             config,
             path,
@@ -65,7 +78,7 @@ Future<bool> updateAnalyzers({
           ),
         );
       } else {
-        modelAnalyzer.removeYamlModel(Uri.parse(p.absolute(path)));
+        analyzers.models.removeYamlModel(Uri.parse(p.absolute(path)));
       }
     }
   }
@@ -81,22 +94,20 @@ Future<bool> updateAnalyzers({
 Future<bool> performGenerate({
   bool dartFormat = true,
   required GeneratorConfig config,
-  required EndpointsAnalyzer endpointsAnalyzer,
-  required FutureCallsAnalyzer futureCallsAnalyzer,
-  required StatefulAnalyzer modelAnalyzer,
+  required Analyzers analyzers,
 }) async {
   bool success = true;
 
   log.debug('Analyzing serializable models in the protocol directory.');
 
-  final models = modelAnalyzer.validateAll();
-  success &= !modelAnalyzer.hasSevereErrors;
+  final models = analyzers.models.validateAll();
+  success &= !analyzers.models.hasSevereErrors;
 
   log.debug('Analyzing the future calls models.');
 
   var futureCallsModelsAnalyzerCollector = CodeGenerationCollector();
 
-  final futureCallModels = await futureCallsAnalyzer.analyzeModels(
+  final futureCallModels = await analyzers.futureCalls.analyzeModels(
     futureCallsModelsAnalyzerCollector,
     models,
   );
@@ -120,7 +131,7 @@ Future<bool> performGenerate({
   log.debug('Analyzing the endpoints.');
 
   final endpointAnalyzerCollector = CodeGenerationCollector();
-  final endpoints = await endpointsAnalyzer.analyze(
+  final endpoints = await analyzers.endpoints.analyze(
     collector: endpointAnalyzerCollector,
     changedFiles: generatedModelFiles.toSet(),
   );
@@ -131,7 +142,7 @@ Future<bool> performGenerate({
   log.debug('Analyzing the future calls.');
 
   var futureCallsAnalyzerCollector = CodeGenerationCollector();
-  var futureCalls = await futureCallsAnalyzer.analyze(
+  var futureCalls = await analyzers.futureCalls.analyze(
     collector: futureCallsAnalyzerCollector,
     changedFiles: generatedModelFiles.toSet(),
     analyzedModels: allModels,

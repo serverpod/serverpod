@@ -9,6 +9,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
@@ -170,7 +171,13 @@ Future<bool> performOneShotGenerate({
   required LogLevel logLevel,
 }) async {
   log.logLevel = logLevel;
-  return await initialGenerate(config) != null;
+  final analyzers = await createAnalyzers(config);
+  final allSources = enumerateSourceFiles(config);
+  return analyzeAndGenerate(
+    config: config,
+    analyzers: analyzers,
+    affectedPaths: allSources,
+  );
 }
 
 /// Runs one-shot code generation in a fresh isolate.
@@ -181,53 +188,38 @@ Future<bool> generateInIsolate(GeneratorConfig config) {
   );
 }
 
-/// Creates analyzers and runs the initial code generation pass.
-///
-/// Returns the analyzers on success, or `null` if generation failed.
-Future<Analyzers?> initialGenerate(GeneratorConfig config) async {
-  final analyzers = await createAnalyzers(config);
-  final success = await log.progress(
-    'Generating code',
-    () => performGenerate(
-      config: config,
-      endpointsAnalyzer: analyzers.endpoints,
-      modelAnalyzer: analyzers.models,
-      futureCallsAnalyzer: analyzers.futureCalls,
-    ),
-  );
-  return success ? analyzers : null;
-}
-
 /// Analyzes affected paths and runs code generation if needed.
+///
+/// When [skipStalenessCheck] is `true`, skips the mtime check against the
+/// generation stamp (use when the caller already knows files changed, e.g.
+/// from a file watcher event).
 ///
 /// Returns `true` if generation succeeded or was not needed.
 Future<bool> analyzeAndGenerate({
   required GeneratorConfig config,
   required Analyzers analyzers,
   required Set<String> affectedPaths,
+  bool skipStalenessCheck = false,
 }) async {
   bool needsGenerate = false;
   await log.progress('Analyzing changes', () async {
     needsGenerate = await updateAnalyzers(
       config: config,
-      endpointsAnalyzer: analyzers.endpoints,
-      modelAnalyzer: analyzers.models,
-      futureCallsAnalyzer: analyzers.futureCalls,
+      analyzers: analyzers,
       affectedPaths: affectedPaths,
+      skipStalenessCheck: skipStalenessCheck,
     );
     return true;
   });
   if (!needsGenerate) return true;
   final success = await log.progress(
     'Generating code',
-    () => performGenerate(
-      config: config,
-      endpointsAnalyzer: analyzers.endpoints,
-      modelAnalyzer: analyzers.models,
-      futureCallsAnalyzer: analyzers.futureCalls,
-    ),
+    () => performGenerate(config: config, analyzers: analyzers),
   );
-  if (success) log.info('Incremental code generation complete.');
+  if (success) {
+    await writeGenerationStamp(config);
+    log.info('Incremental code generation complete.');
+  }
   return success;
 }
 
@@ -238,8 +230,14 @@ Future<bool> _performGenerateWatch({
 }) async {
   log.logLevel = logLevel;
 
-  final analyzers = await initialGenerate(config);
-  if (analyzers == null) return false;
+  final analyzers = await createAnalyzers(config);
+  final allSources = enumerateSourceFiles(config);
+  final success = await analyzeAndGenerate(
+    config: config,
+    analyzers: analyzers,
+    affectedPaths: allSources,
+  );
+  if (!success) return false;
 
   log.info(
     'Initial code generation complete. Listening for changes.',
@@ -270,6 +268,7 @@ Future<bool> _performGenerateWatch({
         config: config,
         analyzers: analyzers,
         affectedPaths: affectedPaths,
+        skipStalenessCheck: true,
       );
     } catch (e, stackTrace) {
       log.error(e.toString(), stackTrace: stackTrace);
