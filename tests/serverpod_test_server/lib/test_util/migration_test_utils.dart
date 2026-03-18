@@ -279,6 +279,9 @@ INSERT INTO "${serverProtocol.DatabaseMigrationVersion.t.tableName}"
       command,
       arguments ?? [],
       workingDirectory: workingDirectory?.path ?? Directory.current.path,
+      environment: {
+        'SERVERPOD_HOME': path.join(Directory.current.path, '..', '..'),
+      },
     );
 
     process.stderr.transform(utf8.decoder).listen(print);
