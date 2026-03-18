@@ -218,7 +218,7 @@ Future<bool> analyzeAndGenerate({
     return true;
   });
   if (!needsGenerate) return true;
-  return log.progress(
+  final success = await log.progress(
     'Generating code',
     () => performGenerate(
       config: config,
@@ -227,6 +227,8 @@ Future<bool> analyzeAndGenerate({
       futureCallsAnalyzer: analyzers.futureCalls,
     ),
   );
+  if (success) log.info('Incremental code generation complete.');
+  return success;
 }
 
 /// Watch-mode code generation with persistent analyzers and file watching.
@@ -264,15 +266,11 @@ Future<bool> _performGenerateWatch({
     if (affectedPaths.isEmpty) continue;
 
     try {
-      final genSuccess = await analyzeAndGenerate(
+      await analyzeAndGenerate(
         config: config,
         analyzers: analyzers,
         affectedPaths: affectedPaths,
       );
-
-      if (genSuccess) {
-        log.info('Incremental code generation complete.');
-      }
     } catch (e, stackTrace) {
       log.error(e.toString(), stackTrace: stackTrace);
     }
