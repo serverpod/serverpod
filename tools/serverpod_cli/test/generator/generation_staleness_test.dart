@@ -75,8 +75,8 @@ void main() {
     test(
       'when isGenerationUpToDate is called, '
       'then it returns false',
-      () {
-        final sources = enumerateSourceFiles(config);
+      () async {
+        final sources = await enumerateSourceFiles(config);
         expect(isGenerationUpToDate(config, sources), isFalse);
       },
     );
@@ -84,17 +84,17 @@ void main() {
 
   group('Given a stamp newer than all sources with matching CLI version', () {
     setUp(() async {
-      // Wait a moment so stamp mtime is strictly after source files.
+      // Ensure the file system clock has advanced past source file mtimes.
       final srcMtime = (await endpointFile.stat()).modified;
       await waitForMtimeAfter(srcMtime, tempDir);
-      await writeGenerationStamp(config);
+      await writeGenerationStamp(config, generatedFiles: {});
     });
 
     test(
       'when isGenerationUpToDate is called, '
       'then it returns true',
-      () {
-        final sources = enumerateSourceFiles(config);
+      () async {
+        final sources = await enumerateSourceFiles(config);
         expect(isGenerationUpToDate(config, sources), isTrue);
       },
     );
@@ -102,7 +102,7 @@ void main() {
 
   group('Given one source file newer than stamp', () {
     setUp(() async {
-      await writeGenerationStamp(config);
+      await writeGenerationStamp(config, generatedFiles: {});
       final stampMtime = stampFile.statSync().modified;
       await waitForMtimeAfter(stampMtime, tempDir);
       // Touch a source file after stamp.
@@ -114,8 +114,8 @@ void main() {
     test(
       'when isGenerationUpToDate is called, '
       'then it returns false',
-      () {
-        final sources = enumerateSourceFiles(config);
+      () async {
+        final sources = await enumerateSourceFiles(config);
         expect(isGenerationUpToDate(config, sources), isFalse);
       },
     );
@@ -123,7 +123,7 @@ void main() {
 
   group('Given config/generator.yaml newer than stamp', () {
     setUp(() async {
-      await writeGenerationStamp(config);
+      await writeGenerationStamp(config, generatedFiles: {});
       final stampMtime = stampFile.statSync().modified;
       await waitForMtimeAfter(stampMtime, tempDir);
       await configFile.writeAsString('modules: [updated]');
@@ -132,8 +132,8 @@ void main() {
     test(
       'when isGenerationUpToDate is called, '
       'then it returns false',
-      () {
-        final sources = enumerateSourceFiles(config);
+      () async {
+        final sources = await enumerateSourceFiles(config);
         expect(isGenerationUpToDate(config, sources), isFalse);
       },
     );
@@ -151,8 +151,46 @@ void main() {
     test(
       'when isGenerationUpToDate is called, '
       'then it returns false',
-      () {
-        final sources = enumerateSourceFiles(config);
+      () async {
+        final sources = await enumerateSourceFiles(config);
+        expect(isGenerationUpToDate(config, sources), isFalse);
+      },
+    );
+  });
+
+  group('Given a stamp with recorded generated files', () {
+    late File generatedFile;
+
+    setUp(() async {
+      // Create a generated file that will be recorded in the stamp.
+      final genDir = Directory(p.join(tempDir.path, 'lib', 'src', 'generated'));
+      await genDir.create(recursive: true);
+      generatedFile = File(p.join(genDir.path, 'protocol.dart'));
+      await generatedFile.writeAsString('// generated');
+
+      final genMtime = generatedFile.statSync().modified;
+      await waitForMtimeAfter(genMtime, tempDir);
+      await writeGenerationStamp(
+        config,
+        generatedFiles: {generatedFile.path},
+      );
+    });
+
+    test(
+      'when all generated files exist, '
+      'then isGenerationUpToDate returns true',
+      () async {
+        final sources = await enumerateSourceFiles(config);
+        expect(isGenerationUpToDate(config, sources), isTrue);
+      },
+    );
+
+    test(
+      'when a recorded generated file is deleted, '
+      'then isGenerationUpToDate returns false',
+      () async {
+        await generatedFile.delete();
+        final sources = await enumerateSourceFiles(config);
         expect(isGenerationUpToDate(config, sources), isFalse);
       },
     );
@@ -178,7 +216,7 @@ void main() {
         },
       );
 
-      await writeGenerationStamp(sharedConfig);
+      await writeGenerationStamp(sharedConfig, generatedFiles: {});
       final stampMtime = stampFile.statSync().modified;
       await waitForMtimeAfter(stampMtime, tempDir);
 
@@ -191,8 +229,8 @@ void main() {
     test(
       'when isGenerationUpToDate is called, '
       'then it returns false',
-      () {
-        final sources = enumerateSourceFiles(sharedConfig);
+      () async {
+        final sources = await enumerateSourceFiles(sharedConfig);
         expect(isGenerationUpToDate(sharedConfig, sources), isFalse);
       },
     );
@@ -203,12 +241,32 @@ void main() {
       'when the stamp file is read, '
       'then it contains the current CLI version',
       () async {
-        await writeGenerationStamp(config);
+        await writeGenerationStamp(config, generatedFiles: {});
 
         expect(stampFile.existsSync(), isTrue);
 
         final content = stampFile.readAsStringSync();
         expect(content, startsWith('$templateVersion\n'));
+      },
+    );
+
+    test(
+      'when generatedFiles are provided, '
+      'then the stamp file contains the file paths',
+      () async {
+        await writeGenerationStamp(
+          config,
+          generatedFiles: {'/tmp/a.dart', '/tmp/b.dart'},
+        );
+
+        final lines = (await stampFile.readAsString()).trim().split('\n');
+
+        // version, timestamp, then file paths.
+        expect(lines.length, greaterThanOrEqualTo(4));
+        expect(
+          lines.skip(2).toSet(),
+          containsAll(['/tmp/a.dart', '/tmp/b.dart']),
+        );
       },
     );
   });
@@ -223,7 +281,7 @@ void main() {
           p.join(tempDir.path, 'lib', 'src', 'model.spy.yaml'),
         ).writeAsString('class: Test');
 
-        final sources = enumerateSourceFiles(config);
+        final sources = await enumerateSourceFiles(config);
 
         expect(sources, contains(endsWith('endpoint.dart')));
         expect(sources, contains(endsWith('model.spy.yaml')));
@@ -238,7 +296,7 @@ void main() {
           p.join(tempDir.path, 'lib', 'src', 'readme.md'),
         ).writeAsString('# Readme');
 
-        final sources = enumerateSourceFiles(config);
+        final sources = await enumerateSourceFiles(config);
 
         expect(sources.where((s) => s.endsWith('.md')), isEmpty);
       },

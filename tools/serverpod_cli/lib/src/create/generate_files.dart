@@ -50,7 +50,7 @@ class GenerateFiles {
       return false;
     }
 
-    return await performGenerate(
+    final result = await performGenerate(
       config: config,
       analyzers: (
         endpoints: endpointsAnalyzer,
@@ -58,5 +58,6 @@ class GenerateFiles {
         futureCalls: futureCallsAnalyzer,
       ),
     );
+    return result.success;
   }
 }

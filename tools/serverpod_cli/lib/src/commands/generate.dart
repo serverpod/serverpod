@@ -172,7 +172,7 @@ Future<bool> performOneShotGenerate({
 }) async {
   log.logLevel = logLevel;
   final analyzers = await createAnalyzers(config);
-  final allSources = enumerateSourceFiles(config);
+  final allSources = await enumerateSourceFiles(config);
   return analyzeAndGenerate(
     config: config,
     analyzers: analyzers,
@@ -212,15 +212,16 @@ Future<bool> analyzeAndGenerate({
     return true;
   });
   if (!needsGenerate) return true;
-  final success = await log.progress(
-    'Generating code',
-    () => performGenerate(config: config, analyzers: analyzers),
-  );
-  if (success) {
-    await writeGenerationStamp(config);
+  late final GenerateResult result;
+  await log.progress('Generating code', () async {
+    result = await performGenerate(config: config, analyzers: analyzers);
+    return result.success;
+  });
+  if (result.success) {
+    await writeGenerationStamp(config, generatedFiles: result.generatedFiles);
     log.info('Incremental code generation complete.');
   }
-  return success;
+  return result.success;
 }
 
 /// Watch-mode code generation with persistent analyzers and file watching.
@@ -231,7 +232,7 @@ Future<bool> _performGenerateWatch({
   log.logLevel = logLevel;
 
   final analyzers = await createAnalyzers(config);
-  final allSources = enumerateSourceFiles(config);
+  final allSources = await enumerateSourceFiles(config);
   final success = await analyzeAndGenerate(
     config: config,
     analyzers: analyzers,

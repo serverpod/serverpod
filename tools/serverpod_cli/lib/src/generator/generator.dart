@@ -90,8 +90,11 @@ Future<bool> updateAnalyzers({
   return shouldGenerate;
 }
 
+/// Result of a code generation run.
+typedef GenerateResult = ({bool success, Set<String> generatedFiles});
+
 /// Analyze the server package and generate the code.
-Future<bool> performGenerate({
+Future<GenerateResult> performGenerate({
   bool dartFormat = true,
   required GeneratorConfig config,
   required Analyzers analyzers,
@@ -167,13 +170,18 @@ Future<bool> performGenerate({
 
   log.debug('Cleaning old files.');
 
+  final allGeneratedFiles = <String>{
+    ...generatedModelFiles,
+    ...generatedProtocolFiles,
+  };
+
   await ServerpodCodeGenerator.cleanPreviouslyGeneratedDartFiles(
-    generatedFiles: <String>{...generatedModelFiles, ...generatedProtocolFiles},
+    generatedFiles: allGeneratedFiles,
     protocolDefinition: protocolDefinition,
     config: config,
   );
 
-  return success;
+  return (success: success, generatedFiles: allGeneratedFiles);
 }
 
 /// Computes the list of directories to watch for file changes.

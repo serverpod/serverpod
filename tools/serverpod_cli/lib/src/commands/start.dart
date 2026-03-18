@@ -281,7 +281,7 @@ Future<int> _runWatchMode({
 
   // Create analyzers and run initial code generation.
   final analyzers = await createAnalyzers(config);
-  final allSources = enumerateSourceFiles(config);
+  final allSources = await enumerateSourceFiles(config);
   final genSuccess = await analyzeAndGenerate(
     config: config,
     analyzers: analyzers,
