@@ -1,0 +1,23 @@
+{
+  "__className__": "serverpod.DatabaseDefinition",
+  "moduleName": "mytest",
+  "tables": [],
+  "installedModules": [
+    {
+      "__className__": "serverpod.DatabaseMigrationVersion",
+      "module": "serverpod",
+      "version": "20260318104133623"
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationVersion",
+      "module": "serverpod_auth_idp",
+      "version": "20260318104210379"
+    },
+    {
+      "__className__": "serverpod.DatabaseMigrationVersion",
+      "module": "serverpod_auth_core",
+      "version": "20260318104204932"
+    }
+  ],
+  "migrationApiVersion": 1
+}

@@ -1,0 +1,113 @@
+html {
+    box-sizing: border-box;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    background: url('/images/background.svg') no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+body, h1, h2, h3, h4, h5, h6, p, ol, ul {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+}
+
+ol, ul {
+    list-style: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+body {
+    padding: 16px;
+}
+
+hr {
+    margin-top: 16px; margin-bottom: 16px;
+    border: 0;
+    height: 1px;
+    background: #999;
+}
+
+.content {
+    min-width: 300px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.logo-box a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #666;
+}
+
+.logo-box {
+    text-align: center;
+}
+
+.info-box p {
+    margin-top: 2px;
+}
+
+.link-box {
+    text-align: center;
+    color: #999;
+}
+
+.link-box a {
+    text-decoration: none;
+}
+
+.cta{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:.5rem;
+  
+    width:100%;
+    margin-top:12px;
+  
+    padding:12px 14px;
+    border-radius:10px;
+  
+    background: #1D4ED8;          /* primary */
+    color:#fff;
+    text-decoration:none;
+  
+    font-weight:600;
+    font-size:14px;
+    line-height:1;
+  
+    box-shadow: 0 6px 16px rgba(0,0,0,.18);
+    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
+  }
+  
+  .cta:hover{
+    background:#1E40AF;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(0,0,0,.22);
+  }
+  
+  .cta:active{ transform: translateY(0px); }
+  
+  .cta:focus-visible{
+    outline: 3px solid rgba(59,130,246,.45);
+    outline-offset: 2px;
+  }
