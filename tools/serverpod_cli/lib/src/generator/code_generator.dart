@@ -54,7 +54,13 @@ extension GenerateCode on Library {
         trailingCommas: TrailingCommas.preserve,
       ).format('$_fileHeader${ignoreForFile.isEmpty ? '\n' : ''}$code');
     } on FormatterException catch (e) {
-      log.error(e.toString());
+      const maxErrorLength = 4000;
+      final message = e.toString();
+      log.error(
+        message.length > maxErrorLength
+            ? '${message.substring(0, maxErrorLength)}\n\n... (truncated, ${message.length - maxErrorLength} more characters)'
+            : message,
+      );
     }
     return code;
   }
