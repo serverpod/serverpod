@@ -610,7 +610,6 @@ class Serverpod {
         diagnosticsService: ServerpodFutureCallDiagnosticsService(server),
         internalSession: internalSession,
         logSession: _internalLoggingSession,
-        serverId: serverId,
         sessionProvider: (String futureCallName) => FutureCallSession(
           server: server,
           futureCallName: futureCallName,

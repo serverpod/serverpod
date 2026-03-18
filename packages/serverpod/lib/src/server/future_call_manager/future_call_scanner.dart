@@ -25,7 +25,6 @@ class FutureCallScanner {
   final ShouldSkipScan _shouldSkipScan;
   final DispatchEntries _dispatchEntries;
   final Duration _heartbeatInterval;
-  final String _serverId;
 
   bool _isStopping = false;
 
@@ -57,14 +56,12 @@ class FutureCallScanner {
     required DispatchEntries dispatchEntries,
     required FutureCallDiagnosticsService diagnosticsService,
     required Duration heartbeatInterval,
-    required String serverId,
   }) : _internalSession = internalSession,
        _scanInterval = scanInterval,
        _shouldSkipScan = shouldSkipScan,
        _dispatchEntries = dispatchEntries,
        _diagnosticReporting = diagnosticsService,
-       _heartbeatInterval = heartbeatInterval,
-       _serverId = serverId;
+       _heartbeatInterval = heartbeatInterval;
 
   /// Scans the database for overdue future calls and queues them for execution.
   Future<void> scanFutureCallEntries() async {
@@ -77,27 +74,25 @@ class FutureCallScanner {
     try {
       final now = DateTime.now().toUtc();
 
-      // Delete future call claims with heartbeats that are behind by
-      // at least 3x the normal interval.
-      final staleClaimThreshold = DateTime.now().toUtc().subtract(
-        _heartbeatInterval * 3,
-      );
-
-      final deletedEntries = await FutureCallClaimEntry.db.deleteWhere(
-        _internalSession,
-        where: (t) => t.heartbeat < staleClaimThreshold,
-      );
-
-      stdout.writeln(
-        'Server $_serverId: Deleted stale claims: ${deletedEntries.map((e) => e.toJson())}',
-      );
-
       final entries = await FutureCallEntry.db.find(
         _internalSession,
         where: (row) => row.time <= now,
       );
 
       entries.sort((a, b) => a.time.compareTo(b.time));
+
+      if (entries.isNotEmpty) {
+        // Delete future call claims with heartbeats that are behind by
+        // at least 2x the normal interval.
+        final staleClaimThreshold = DateTime.now().toUtc().subtract(
+          _heartbeatInterval * 2,
+        );
+
+        await FutureCallClaimEntry.db.deleteWhere(
+          _internalSession,
+          where: (t) => t.heartbeat < staleClaimThreshold,
+        );
+      }
 
       _dispatchEntries(entries);
     } catch (error, stackTrace) {
