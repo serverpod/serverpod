@@ -204,11 +204,10 @@ class FileSystemMigrationArtifactStore implements MigrationArtifactStore {
   }
 
   static Future<String?> _readFileIfExists(File file) async {
-    if (!await file.exists()) {
-      return null;
-    }
-
-    return file.readAsString();
+    try {
+      return await file.readAsString();
+    } on PathNotFoundException catch (_) {} // ignore
+    return null;
   }
 
   static Future<String> _readRequiredFile(File file) async {
