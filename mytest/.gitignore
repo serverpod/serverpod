@@ -1,0 +1,2 @@
+# scloud deployment generated files should not be committed to git
+**/.scloud/

@@ -1,0 +1,14 @@
+# This file configures your Serverpod Cloud project.
+# It is automatically generated and updated by the `scloud` command.
+# 
+# Useful commands:
+# - Deploy: `scloud deploy`
+# - Get Help: `scloud help`
+#
+# For full documentation, visit: https://docs.serverpod.cloud
+
+project:
+  projectId: "my-test"
+  scripts:
+    pre_deploy: []
+    post_deploy: []
