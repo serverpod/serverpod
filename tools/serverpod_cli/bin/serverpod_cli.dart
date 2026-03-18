@@ -24,14 +24,18 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 const _mixPanelToken = '05e8ab306c393c7482e0f41851a176d8';
 const _postHogApiKey = 'phc_xGBPHgcrTrDuWGtyNX3UJODXgnR684rzRPZjWRlqVxf';
 
+/// The unique user ID for the CLI. If the user ID is not available, we use
+/// 'unknown' to still collect analytics, albeit anonymously.
+final _uniqueUserId = ResourceManager().uniqueUserId ?? 'unknown';
+
 final Analytics _analytics = CompoundAnalytics([
   MixPanelAnalytics(
-    uniqueUserId: ResourceManager().uniqueUserId,
+    uniqueUserId: _uniqueUserId,
     projectToken: _mixPanelToken,
     version: templateVersion,
   ),
   PostHogAnalytics(
-    uniqueUserId: ResourceManager().uniqueUserId,
+    uniqueUserId: _uniqueUserId,
     projectApiKey: _postHogApiKey,
     version: templateVersion,
     libName: 'serverpod_cli',
@@ -62,19 +66,26 @@ void main(List<String> args) async {
   );
 }
 
+/// Check the number of runs and pop the web browser on first and 20th run.
+///
+/// If the user ID is not available, we skip the welcome and check-in pages to
+/// avoid invoking the webpage every time the CLI is run if there is any
+/// configuration preventing the CLI from writing to the user home directory.
 Future<void> _main(List<String> args) async {
-  // Check the numer of runs and pop the web browser on first and 20th run.
-  final runCount = ResourceManager().runCount;
-  if (runCount == 1) {
-    final uuid = ResourceManager().uniqueUserId;
-    await BrowserLauncher.openUrl(
-      Uri.parse('https://serverpod.dev/welcome?distinct_id=$uuid'),
-    );
-  } else if (runCount == 20) {
-    final uuid = ResourceManager().uniqueUserId;
-    await BrowserLauncher.openUrl(
-      Uri.parse('https://serverpod.dev/checkin?distinct_id=$uuid'),
-    );
+  final resourceManager = ResourceManager();
+  final runCount = resourceManager.runCount;
+  final uuid = resourceManager.uniqueUserId;
+
+  if (uuid != null) {
+    if (runCount == 1) {
+      await BrowserLauncher.openUrl(
+        Uri.parse('https://serverpod.dev/welcome?distinct_id=$uuid'),
+      );
+    } else if (runCount == 20) {
+      await BrowserLauncher.openUrl(
+        Uri.parse('https://serverpod.dev/checkin?distinct_id=$uuid'),
+      );
+    }
   }
 
   // Need to initialize logger before building command runner because we need
