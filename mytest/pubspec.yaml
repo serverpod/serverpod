@@ -5,9 +5,9 @@ environment:
   sdk: '^3.8.0'
 
 workspace:
-  - mytest_client
+  # - mytest_client
   - mytest_server
-  - mytest_flutter
+  # - mytest_flutter
 
 dependency_overrides: 
   serverpod: 
@@ -52,11 +52,11 @@ dependency_overrides:
       ref: feat/reliable-future-call-execution-local
       path: packages/serverpod_client 
     # path: /Users/crazelu/works/serverpod/serverpod/packages/serverpod_client 
-  serverpod_flutter: 
-    git:
-      url: https://github.com/Crazelu/serverpod.git
-      ref: feat/reliable-future-call-execution-local
-      path: packages/serverpod_flutter 
+  # serverpod_flutter: 
+  #   git:
+  #     url: https://github.com/Crazelu/serverpod.git
+  #     ref: feat/reliable-future-call-execution-local
+  #     path: packages/serverpod_flutter 
     # path: /Users/crazelu/works/serverpod/serverpod/packages/serverpod_flutter 
   serverpod_auth_idp_server:
     git:
@@ -70,12 +70,12 @@ dependency_overrides:
       ref: feat/reliable-future-call-execution-local
       path: modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
     # path: /Users/crazelu/works/serverpod/serverpod/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_server
-  flutter_secure_storage: ^10.0.0
-  serverpod_auth_idp_flutter:
-    git:
-      url: https://github.com/Crazelu/serverpod.git
-      ref: feat/reliable-future-call-execution-local
-      path: modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter
+  # flutter_secure_storage: ^10.0.0
+  # serverpod_auth_idp_flutter:
+  #   git:
+  #     url: https://github.com/Crazelu/serverpod.git
+  #     ref: feat/reliable-future-call-execution-local
+  #     path: modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter
     # path: /Users/crazelu/works/serverpod/serverpod/modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter
   serverpod_auth_core_client:
     git:
@@ -83,11 +83,11 @@ dependency_overrides:
       ref: feat/reliable-future-call-execution-local
       path: modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
     # path: /Users/crazelu/works/serverpod/serverpod/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_client
-  serverpod_auth_core_flutter:
-    git:
-      url: https://github.com/Crazelu/serverpod.git
-      ref: feat/reliable-future-call-execution-local
-      path: modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter 
+  # serverpod_auth_core_flutter:
+  #   git:
+  #     url: https://github.com/Crazelu/serverpod.git
+  #     ref: feat/reliable-future-call-execution-local
+  #     path: modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter 
     # path: /Users/crazelu/works/serverpod/serverpod/modules/serverpod_auth/serverpod_auth_core/serverpod_auth_core_flutter
   serverpod_auth_idp_client:
     git:
