@@ -34,6 +34,20 @@ Future<Analyzers> createAnalyzers(GeneratorConfig config) async {
   );
 }
 
+/// Creates and updates the analyzers needed for code generation from [config].
+///
+/// Returns the analyzers after they have been primed with the current
+/// state of the source files.
+Future<Analyzers> createAndUpdateAnalyzers(GeneratorConfig config) async {
+  final analyzers = await createAnalyzers(config);
+  await updateAnalyzers(
+    config: config,
+    analyzers: analyzers,
+    affectedPaths: await enumerateSourceFiles(config),
+  );
+  return analyzers;
+}
+
 /// Incrementally updates analyzer state for the given [affectedPaths].
 ///
 /// Refreshes the Dart analysis context for endpoints and future calls,

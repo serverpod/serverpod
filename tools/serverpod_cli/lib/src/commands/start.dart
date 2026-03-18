@@ -13,6 +13,7 @@ import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
+import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
@@ -21,8 +22,6 @@ import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:vm_service/vm_service_io.dart';
-
-import '../generator/generation_staleness.dart';
 
 /// Options for the `start` command.
 enum StartOption<V> implements OptionDefinition<V> {
@@ -280,16 +279,21 @@ Future<int> _runWatchMode({
   }
 
   // Create analyzers and run initial code generation.
-  final analyzers = await createAnalyzers(config);
+  final analyzers = createAndUpdateAnalyzers(config); // async
+
+  // Ensure generated code is up to date.
   final allSources = await enumerateSourceFiles(config);
-  final genSuccess = await analyzeAndGenerate(
-    config: config,
-    analyzers: analyzers,
-    affectedPaths: allSources,
-  );
-  if (!genSuccess) {
-    log.error('Code generation failed.');
-    return 1;
+  if (!isGenerationUpToDate(config, allSources)) {
+    // Generated code is stale! Block on generation before the server starts.
+    final genSuccess = await analyzeAndGenerate(
+      config: config,
+      analyzers: await analyzers,
+      affectedPaths: allSources,
+    );
+    if (!genSuccess) {
+      log.error('Code generation failed.');
+      return 1;
+    }
   }
 
   final watchPaths = watchPathsFromConfig(
@@ -306,12 +310,15 @@ Future<int> _runWatchMode({
     serverpodToolDir: serverpodToolDir,
     vmServiceInfoFile: vmServiceInfoFile,
     watcher: watcher,
-    generate: (Set<String> affectedPaths) => analyzeAndGenerate(
-      config: config,
-      analyzers: analyzers,
-      affectedPaths: affectedPaths,
-      skipStalenessCheck: true,
-    ),
+    generate: (Set<String> affectedPaths) async {
+      // Wait for background priming to finish before touching analyzers.
+      return analyzeAndGenerate(
+        config: config,
+        analyzers: await analyzers,
+        affectedPaths: affectedPaths,
+        skipStalenessCheck: true,
+      );
+    },
     noFes: noFes,
   );
 }
