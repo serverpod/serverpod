@@ -189,7 +189,7 @@ void main() {
         );
       }
       compiler.accept();
-      compiler.dispose();
+      await compiler.dispose();
 
       serverProcess = ServerProcess(
         serverDir: tempDir.path,
@@ -297,7 +297,7 @@ void main() {
           );
         }
         compiler.accept();
-        compiler.dispose();
+        await compiler.dispose();
       });
 
       tearDown(() async {

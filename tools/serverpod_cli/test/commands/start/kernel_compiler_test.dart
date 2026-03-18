@@ -31,7 +31,7 @@ void main() {
     });
 
     tearDown(() async {
-      compiler.dispose();
+      await compiler.dispose();
       await tempDir.delete(recursive: true);
     });
 
@@ -113,7 +113,7 @@ void main() {
     });
 
     tearDown(() async {
-      compiler.dispose();
+      await compiler.dispose();
       await tempDir.delete(recursive: true);
     });
 

@@ -205,12 +205,12 @@ Future<GenerateResult> performGenerate({
 /// If [includeClientPackage] is true, also includes the client package `lib/`
 /// directory so that generated client code changes are picked up (needed for
 /// compilation in `serverpod start --watch`).
-List<String> watchPathsFromConfig(
+Set<String> watchPathsFromConfig(
   GeneratorConfig config, {
   bool includeWeb = false,
   bool includeClientPackage = false,
 }) {
-  final paths = <String>[
+  final paths = <String>{
     p.absolute(p.joinAll(config.libSourcePathParts)),
     for (final pathParts in config.sharedModelsSourcePathsParts.values)
       p.absolute(
@@ -220,7 +220,7 @@ List<String> watchPathsFromConfig(
           'lib',
         ]),
       ),
-  ];
+  };
 
   if (includeClientPackage) {
     final clientLib = p.absolute(

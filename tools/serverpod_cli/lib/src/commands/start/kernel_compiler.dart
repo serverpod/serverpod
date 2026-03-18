@@ -17,11 +17,10 @@ class KernelCompiler {
   final String outputDill;
   final String? packagesPath;
 
-  FrontendServerClient? _clientOrNull;
-  FrontendServerClient get _client =>
-      _clientOrNull ?? (throw StateError('Compiler not started'));
+  late Future<FrontendServerClient> _client;
 
   bool _needsFullCompile = true;
+  bool _started = false;
 
   KernelCompiler({
     required this.entryPoint,
@@ -34,6 +33,8 @@ class KernelCompiler {
   /// This starts the server in resident mode, ready to receive compile
   /// commands. Call [compile] to perform the initial compilation.
   Future<void> start() async {
+    if (_started) return;
+
     final sdkRoot = getSdkPath();
     final platformDill = p.join(
       sdkRoot,
@@ -42,7 +43,7 @@ class KernelCompiler {
       'vm_platform_strong.dill',
     );
 
-    _clientOrNull = await FrontendServerClient.start(
+    _client = FrontendServerClient.start(
       entryPoint,
       outputDill,
       platformDill,
@@ -50,6 +51,7 @@ class KernelCompiler {
       target: 'vm',
       packagesJson: packagesPath,
     );
+    _started = true;
     _needsFullCompile = true;
   }
 
@@ -59,28 +61,31 @@ class KernelCompiler {
   /// [changedPaths] is ignored and a complete kernel is produced.
   /// Otherwise, performs an incremental recompile for [changedPaths].
   Future<CompileResult> compile({Set<String> changedPaths = const {}}) async {
+    final client = await _client;
+
     if (_needsFullCompile) {
-      final result = await _client.compile();
+      final result = await client.compile();
       _needsFullCompile = false;
       return result;
     }
 
     final invalidatedUris = changedPaths.map(Uri.file).toList();
-    return _client.compile(invalidatedUris);
+    return client.compile(invalidatedUris);
   }
 
   /// Accept the last compile result.
-  void accept() => _client.accept();
+  void accept() => _client.then((c) => c.accept());
 
   /// Reject the last compile result.
-  Future<void> reject() => _client.reject();
+  Future<void> reject() => _client.then((c) => c.reject());
 
   /// Reset the compiler so the next [compile] produces a complete kernel.
   ///
   /// Use this when incremental state may be stale (e.g., an external reload
   /// happened without going through this compiler).
-  void reset() {
-    _client.reset();
+  Future<void> reset() async {
+    final client = await _client;
+    client.reset();
     _needsFullCompile = true;
   }
 
@@ -88,15 +93,18 @@ class KernelCompiler {
   ///
   /// Required when package_config.json changes, since the FES reads it
   /// only at startup. Kills the existing process and starts a fresh one.
-  Future<void> restart() {
-    dispose();
-    return start();
+  Future<void> restart() async {
+    await dispose();
+    await start();
   }
 
   /// Stop the Frontend Server process.
-  void dispose() {
-    _clientOrNull?.kill();
-    _clientOrNull = null;
+  Future<void> dispose() async {
+    if (_started) {
+      final client = await _client;
+      client.kill();
+      _started = false;
+    }
   }
 }
 

@@ -58,6 +58,9 @@ class WatchSession {
   /// Completes when the server exits unexpectedly (crash).
   Future<int> get done => _done.future;
 
+  /// Returns `true` if the server is currently running.
+  bool get isRunning => !_done.isCompleted;
+
   /// Processes a single (merged) file change event.
   Future<void> handleFileChange(FileChangeEvent event) async {
     final hasDartChanges =
@@ -166,7 +169,7 @@ class WatchSession {
     // The incremental dill only contains deltas. Reset the compiler
     // so the next compile produces a complete kernel.
     final compiler = _compiler!;
-    compiler.reset();
+    await compiler.reset();
     final fullResult = await compileWithProgress(
       'Compiling server',
       compiler,
@@ -189,7 +192,7 @@ class WatchSession {
   Future<void> dispose() async {
     _restarting = true;
     await _server.stop();
-    _compiler?.dispose();
+    await _compiler?.dispose();
   }
 
   void _monitorExit(ServerProcess server) {

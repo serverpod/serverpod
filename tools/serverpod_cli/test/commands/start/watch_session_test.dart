@@ -49,13 +49,13 @@ class _FakeCompiler extends Fake implements KernelCompiler {
   Future<void> reject() async => calls.add('reject');
 
   @override
-  void reset() => calls.add('reset');
+  Future<void> reset() async => calls.add('reset');
 
   @override
   Future<void> restart() async => calls.add('restart');
 
   @override
-  void dispose() => calls.add('dispose');
+  Future<void> dispose() async => calls.add('dispose');
 }
 
 class _FakeServer extends Fake implements ServerProcess {

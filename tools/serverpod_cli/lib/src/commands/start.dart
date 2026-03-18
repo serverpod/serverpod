@@ -309,6 +309,7 @@ Future<int> _runWatchMode({
     serverArgs: serverArgs,
     serverpodToolDir: serverpodToolDir,
     vmServiceInfoFile: vmServiceInfoFile,
+    watchPaths: watchPaths,
     watcher: watcher,
     generate: (Set<String> affectedPaths) async {
       // Wait for background priming to finish before touching analyzers.
@@ -335,6 +336,7 @@ Future<int> _startWatchSession({
   required List<String> serverArgs,
   required String serverpodToolDir,
   required String vmServiceInfoFile,
+  required Set<String> watchPaths,
   required FileWatcher watcher,
   required GenerateAction generate,
   required bool noFes,
@@ -369,25 +371,38 @@ Future<int> _startWatchSession({
       entryPoint: entryPoint,
       outputDill: initialDill,
     );
-
     await compiler.start();
 
-    final initialResult = await compileWithProgress(
-      'Compiling server',
-      compiler,
+    // Check if the cached dill is newer than all watched source files.
+    // If so, skip the initial compile and boot from the cached dill
+    // directly. The FES starts in the background (KernelCompiler gates
+    // compile/reset calls internally until start completes).
+    final platformDill = p.join(
+      sdkRoot,
+      'lib',
+      '_internal',
+      'vm_platform_strong.dill',
     );
+    if (_isDillUpToDate(initialDill, watchPaths, platformDill)) {
+      log.debug('Cached server.dill is up to date, skipping initial compile.');
+    } else {
+      final initialResult = await compileWithProgress(
+        'Compiling server',
+        compiler,
+      );
 
-    if (initialResult == null) {
-      compiler.dispose();
-      log.error('Initial compilation failed.');
-      return 1;
+      if (initialResult == null) {
+        await compiler.dispose();
+        log.error('Initial compilation failed.');
+        return 1;
+      }
+
+      compiler.accept();
     }
-
-    compiler.accept();
 
     // IDE reload callback: compile incrementally and return the dill path.
     Future<String?> onReloadRequested() async {
-      compiler!.reset();
+      await compiler!.reset();
       final result = await compileWithProgress(
         'Compiling server (IDE reload)',
         compiler,
@@ -415,8 +430,6 @@ Future<int> _startWatchSession({
     initialServerProcess = await serverProcessFactory(initialDill);
   }
 
-  log.info('Server running.');
-
   final session = WatchSession(
     compiler: compiler,
     generate: generate,
@@ -433,7 +446,11 @@ Future<int> _startWatchSession({
   // Wait for SIGINT/SIGTERM or unexpected server exit.
   final (signal, teardownSignal) = _onTerminationSignal();
 
+  if (session.isRunning) log.info('Server running.');
+
   final exitCode = await Future.any([signal, session.done]);
+
+  log.info('Server stopped (exitCode: $exitCode).');
 
   // Clean up.
   await fileChangeSub.cancel();
@@ -460,6 +477,67 @@ Future<int> _startWatchSession({
       await sigtermSub.cancel();
     },
   );
+}
+
+/// Returns `true` if [dillPath] exists, is newer than every file under
+/// [watchPaths], and is compatible with the current Dart SDK's kernel binary
+/// format (by comparing the first 8 header bytes against [platformDillPath]).
+bool _isDillUpToDate(
+  String dillPath,
+  Set<String> watchPaths,
+  String platformDillPath,
+) {
+  final dillFile = File(dillPath);
+  if (!dillFile.existsSync()) return false;
+
+  if (!_dillHeadersMatch(dillPath, platformDillPath)) return false;
+
+  final dillMtime = dillFile.statSync().modified;
+
+  for (final watchPath in watchPaths) {
+    final dir = Directory(watchPath);
+    if (!dir.existsSync()) continue;
+    for (final entity in dir.listSync(recursive: true)) {
+      if (entity is File && entity.statSync().modified.isAfter(dillMtime)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+/// The Dart kernel binary header is 8 bytes: 4-byte magic number followed by
+/// a 4-byte binary format version. Two .dill files are compatible only if
+/// these bytes match.
+const _dillHeaderSize = 8;
+
+/// Returns `true` if both files exist and their first [_dillHeaderSize] bytes
+/// are identical.
+bool _dillHeadersMatch(String pathA, String pathB) {
+  try {
+    final fileA = File(pathA);
+    final fileB = File(pathB);
+    final headerA = fileA.openSync()..setPositionSync(0);
+    final headerB = fileB.openSync()..setPositionSync(0);
+    try {
+      final bytesA = headerA.readSync(_dillHeaderSize);
+      final bytesB = headerB.readSync(_dillHeaderSize);
+      if (bytesA.length != _dillHeaderSize ||
+          bytesB.length != _dillHeaderSize) {
+        return false;
+      }
+      for (var i = 0; i < _dillHeaderSize; i++) {
+        if (bytesA[i] != bytesB[i]) return false;
+      }
+      return true;
+    } finally {
+      headerA.closeSync();
+      headerB.closeSync();
+    }
+  } on FileSystemException {
+    return false;
+  }
 }
 
 /// Checks if a server is already running by reading the VM service info file
