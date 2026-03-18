@@ -57,7 +57,7 @@ abstract class MigrationTestUtils {
         '--tag',
         tag,
         if (force) '--force',
-        '--verbose',
+        // '--verbose',
         '--no-analytics',
         '--experimental-features=all',
       ],
@@ -137,8 +137,8 @@ abstract class MigrationTestUtils {
         'maintenance',
         '--mode',
         'production',
-        '--logging',
-        'verbose',
+        // '--logging',
+        // 'verbose',
       ],
     );
   }
@@ -154,8 +154,8 @@ abstract class MigrationTestUtils {
         'maintenance',
         '--mode',
         'production',
-        '--logging',
-        'verbose',
+        // '--logging',
+        // 'verbose',
       ],
     );
   }
@@ -172,8 +172,8 @@ abstract class MigrationTestUtils {
         'maintenance',
         '--mode',
         'production',
-        '--logging',
-        'verbose',
+        // '--logging',
+        // 'verbose',
       ],
     );
   }
@@ -193,7 +193,7 @@ abstract class MigrationTestUtils {
         'production',
         if (targetVersion != null) ...['--version', targetVersion],
         if (force) '--force',
-        '--verbose',
+        // '--verbose',
         '--no-analytics',
       ],
     );
