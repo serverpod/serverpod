@@ -36,19 +36,13 @@ class FutureCallManager {
   final InitializeFutureCall _initializeFutureCall;
   final FutureCallConfig _config;
   final SerializationManager _serializationManager;
-  final String _serverId;
 
   final _futureCalls = <String, FutureCall>{};
   final FutureCallDiagnosticsService _diagnosticsService;
 
   late final ServerpodTaskScheduler _scheduler;
   late final FutureCallScanner _scanner;
-
-  /// Timer used to schedule periodic maintenance tasks
-  /// to clean up orphaned future call claims.
-  /// This timer is initialized when the manager starts
-  /// and is cancelled when the manager stops.
-  Timer? _timer;
+  final Duration _heartbeatInterval;
 
   /// Tracks whether start() was called but the scanner hasn't been started
   /// yet because there were no registered future calls at the time.
@@ -64,6 +58,8 @@ class FutureCallManager {
   /// - [internalSession]: A session used internally for database operations.
   /// - [sessionProvider]: A function to create sessions for executing future calls.
   /// - [initializeFutureCall]: A function to initialize a [FutureCall] with its name.
+  /// - [heartbeatInterval]: The interval for updating future call claims with a heartbeat
+  /// to keep them alive. Defaults to 30 seconds.
   FutureCallManager(
     this._config,
     this._serializationManager, {
@@ -72,13 +68,13 @@ class FutureCallManager {
     required Session logSession,
     required FutureCallSessionBuilder sessionProvider,
     required InitializeFutureCall initializeFutureCall,
-    required String serverId,
+    Duration? heartbeatInterval,
   }) : _diagnosticsService = diagnosticsService,
        _internalSession = internalSession,
        _logSession = logSession,
        _sessionBuilder = sessionProvider,
        _initializeFutureCall = initializeFutureCall,
-       _serverId = serverId {
+       _heartbeatInterval = heartbeatInterval ?? const Duration(seconds: 30) {
     _scheduler = ServerpodTaskScheduler(
       concurrencyLimit: _config.concurrencyLimit,
     );
@@ -89,6 +85,7 @@ class FutureCallManager {
       shouldSkipScan: _scheduler.isConcurrentLimitReached,
       dispatchEntries: _dispatchEntries,
       diagnosticsService: _diagnosticsService,
+      heartbeatInterval: _heartbeatInterval,
     );
   }
 
@@ -202,7 +199,6 @@ class FutureCallManager {
     await _scanner.stop();
     await _scheduler.drain();
     if (unregisterAll) _futureCalls.clear();
-    _timer?.cancel();
   }
 
   /// Internal method to dispatch a list of [FutureCallEntry] objects to
@@ -238,6 +234,23 @@ class FutureCallManager {
   }) async {
     final futureCallSession = _sessionBuilder(futureCallEntry.name);
     bool deleteFutureCallEntry = true;
+    Timer? heartbeatTimer;
+
+    Future<void> updateHeartbeat() async {
+      try {
+        stdout.writeln('Updating heartbeat for ${futureCallEntry.id}');
+        await FutureCallClaimEntry.db.updateWhere(
+          _internalSession,
+          where: (t) => t.id.equals(futureCallEntry.id!),
+          columnValues: (t) => [t.heartbeat(DateTime.now().toUtc())],
+        );
+      } catch (e) {
+        stdout.writeln(
+          'Cancelling heartbeat for ${futureCallEntry.id} due to $e',
+        );
+        heartbeatTimer?.cancel();
+      }
+    }
 
     try {
       dynamic object;
@@ -249,21 +262,30 @@ class FutureCallManager {
       }
 
       final claim = FutureCallClaimEntry(
-        futureCallId: futureCallEntry.id,
-        serverId: _serverId,
-        time: DateTime.now().toUtc(),
+        id: futureCallEntry.id,
+        heartbeat: DateTime.now().toUtc(),
       );
 
       // If claim insertion fails, then another instance has claimed
       // execution for this future call entry.
       // We should also not delete the future call entry from the table.
       // The instance with the claim will clean up after execution.
-      try {
-        await FutureCallClaimEntry.db.insertRow(_internalSession, claim);
-      } on DatabaseInsertRowException {
+      final insertedClaims = await FutureCallClaimEntry.db.insert(
+        _internalSession,
+        [claim],
+        ignoreConflicts: true,
+      );
+
+      if (insertedClaims.isEmpty) {
+        stdout.writeln('Existing claim was found for ${futureCallEntry.id}');
         deleteFutureCallEntry = false;
-        rethrow;
+        return;
       }
+
+      heartbeatTimer = Timer.periodic(
+        _heartbeatInterval,
+        (_) => updateHeartbeat(),
+      );
 
       await futureCall.invoke(futureCallSession, object);
       await futureCallSession.close();
@@ -276,12 +298,28 @@ class FutureCallManager {
 
       await futureCallSession.close(error: error, stackTrace: stackTrace);
     } finally {
+      stdout.writeln('Stopping heartbeat for ${futureCallEntry.id}');
+      heartbeatTimer?.cancel();
+
       if (deleteFutureCallEntry) {
+        stdout.writeln(
+          'Deleting future call on completion ${futureCallEntry.id}',
+        );
         await FutureCallEntry.db.deleteWhere(
           _internalSession,
           where: (t) => t.id.equals(futureCallEntry.id),
         );
       }
+
+      final futureCalls = await FutureCallEntry.db.find(_internalSession);
+      stdout.writeln(
+        'Future calls: ${futureCalls.map((e) => {'name': e.name, 'id': e.id})}',
+      );
+
+      final claims = await FutureCallClaimEntry.db.find(_internalSession);
+      stdout.writeln(
+        'Future call claims: ${claims.map((e) => e.toJson())}',
+      );
     }
   }
 

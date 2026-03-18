@@ -16,16 +16,12 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 abstract class FutureCallClaimEntry implements _i1.SerializableModel {
   FutureCallClaimEntry._({
     this.id,
-    this.futureCallId,
-    required this.time,
-    required this.serverId,
+    required this.heartbeat,
   });
 
   factory FutureCallClaimEntry({
     int? id,
-    int? futureCallId,
-    required DateTime time,
-    required String serverId,
+    required DateTime heartbeat,
   }) = _FutureCallClaimEntryImpl;
 
   factory FutureCallClaimEntry.fromJson(
@@ -33,43 +29,32 @@ abstract class FutureCallClaimEntry implements _i1.SerializableModel {
   ) {
     return FutureCallClaimEntry(
       id: jsonSerialization['id'] as int?,
-      futureCallId: jsonSerialization['futureCallId'] as int?,
-      time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
-      serverId: jsonSerialization['serverId'] as String,
+      heartbeat: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['heartbeat'],
+      ),
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
+  /// The id of the future call this claim entry is associated with
   int? id;
 
-  /// The id of the future call this claim entry is associated with
-  int? futureCallId;
-
-  /// Timestamp of this claim entry
-  DateTime time;
-
-  /// The id of the server where the claim was created.
-  String serverId;
+  /// Last heartbeat timestamp for this claim entry.
+  /// Used to detect stale claims that should be cleaned up.
+  DateTime heartbeat;
 
   /// Returns a shallow copy of this [FutureCallClaimEntry]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   FutureCallClaimEntry copyWith({
     int? id,
-    int? futureCallId,
-    DateTime? time,
-    String? serverId,
+    DateTime? heartbeat,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'serverpod.FutureCallClaimEntry',
       if (id != null) 'id': id,
-      if (futureCallId != null) 'futureCallId': futureCallId,
-      'time': time.toJson(),
-      'serverId': serverId,
+      'heartbeat': heartbeat.toJson(),
     };
   }
 
@@ -84,14 +69,10 @@ class _Undefined {}
 class _FutureCallClaimEntryImpl extends FutureCallClaimEntry {
   _FutureCallClaimEntryImpl({
     int? id,
-    int? futureCallId,
-    required DateTime time,
-    required String serverId,
+    required DateTime heartbeat,
   }) : super._(
          id: id,
-         futureCallId: futureCallId,
-         time: time,
-         serverId: serverId,
+         heartbeat: heartbeat,
        );
 
   /// Returns a shallow copy of this [FutureCallClaimEntry]
@@ -100,15 +81,11 @@ class _FutureCallClaimEntryImpl extends FutureCallClaimEntry {
   @override
   FutureCallClaimEntry copyWith({
     Object? id = _Undefined,
-    Object? futureCallId = _Undefined,
-    DateTime? time,
-    String? serverId,
+    DateTime? heartbeat,
   }) {
     return FutureCallClaimEntry(
       id: id is int? ? id : this.id,
-      futureCallId: futureCallId is int? ? futureCallId : this.futureCallId,
-      time: time ?? this.time,
-      serverId: serverId ?? this.serverId,
+      heartbeat: heartbeat ?? this.heartbeat,
     );
   }
 }

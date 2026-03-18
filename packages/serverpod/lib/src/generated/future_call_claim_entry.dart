@@ -17,16 +17,12 @@ abstract class FutureCallClaimEntry
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   FutureCallClaimEntry._({
     this.id,
-    this.futureCallId,
-    required this.time,
-    required this.serverId,
+    required this.heartbeat,
   });
 
   factory FutureCallClaimEntry({
     int? id,
-    int? futureCallId,
-    required DateTime time,
-    required String serverId,
+    required DateTime heartbeat,
   }) = _FutureCallClaimEntryImpl;
 
   factory FutureCallClaimEntry.fromJson(
@@ -34,9 +30,9 @@ abstract class FutureCallClaimEntry
   ) {
     return FutureCallClaimEntry(
       id: jsonSerialization['id'] as int?,
-      futureCallId: jsonSerialization['futureCallId'] as int?,
-      time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
-      serverId: jsonSerialization['serverId'] as String,
+      heartbeat: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['heartbeat'],
+      ),
     );
   }
 
@@ -47,14 +43,9 @@ abstract class FutureCallClaimEntry
   @override
   int? id;
 
-  /// The id of the future call this claim entry is associated with
-  int? futureCallId;
-
-  /// Timestamp of this claim entry
-  DateTime time;
-
-  /// The id of the server where the claim was created.
-  String serverId;
+  /// Last heartbeat timestamp for this claim entry.
+  /// Used to detect stale claims that should be cleaned up.
+  DateTime heartbeat;
 
   @override
   _i1.Table<int?> get table => t;
@@ -64,18 +55,14 @@ abstract class FutureCallClaimEntry
   @_i1.useResult
   FutureCallClaimEntry copyWith({
     int? id,
-    int? futureCallId,
-    DateTime? time,
-    String? serverId,
+    DateTime? heartbeat,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'serverpod.FutureCallClaimEntry',
       if (id != null) 'id': id,
-      if (futureCallId != null) 'futureCallId': futureCallId,
-      'time': time.toJson(),
-      'serverId': serverId,
+      'heartbeat': heartbeat.toJson(),
     };
   }
 
@@ -84,9 +71,7 @@ abstract class FutureCallClaimEntry
     return {
       '__className__': 'serverpod.FutureCallClaimEntry',
       if (id != null) 'id': id,
-      if (futureCallId != null) 'futureCallId': futureCallId,
-      'time': time.toJson(),
-      'serverId': serverId,
+      'heartbeat': heartbeat.toJson(),
     };
   }
 
@@ -125,14 +110,10 @@ class _Undefined {}
 class _FutureCallClaimEntryImpl extends FutureCallClaimEntry {
   _FutureCallClaimEntryImpl({
     int? id,
-    int? futureCallId,
-    required DateTime time,
-    required String serverId,
+    required DateTime heartbeat,
   }) : super._(
          id: id,
-         futureCallId: futureCallId,
-         time: time,
-         serverId: serverId,
+         heartbeat: heartbeat,
        );
 
   /// Returns a shallow copy of this [FutureCallClaimEntry]
@@ -141,15 +122,11 @@ class _FutureCallClaimEntryImpl extends FutureCallClaimEntry {
   @override
   FutureCallClaimEntry copyWith({
     Object? id = _Undefined,
-    Object? futureCallId = _Undefined,
-    DateTime? time,
-    String? serverId,
+    DateTime? heartbeat,
   }) {
     return FutureCallClaimEntry(
       id: id is int? ? id : this.id,
-      futureCallId: futureCallId is int? ? futureCallId : this.futureCallId,
-      time: time ?? this.time,
-      serverId: serverId ?? this.serverId,
+      heartbeat: heartbeat ?? this.heartbeat,
     );
   }
 }
@@ -158,57 +135,33 @@ class FutureCallClaimEntryUpdateTable
     extends _i1.UpdateTable<FutureCallClaimEntryTable> {
   FutureCallClaimEntryUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> futureCallId(int? value) => _i1.ColumnValue(
-    table.futureCallId,
-    value,
-  );
-
-  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
-    table.time,
-    value,
-  );
-
-  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
-    table.serverId,
-    value,
-  );
+  _i1.ColumnValue<DateTime, DateTime> heartbeat(DateTime value) =>
+      _i1.ColumnValue(
+        table.heartbeat,
+        value,
+      );
 }
 
 class FutureCallClaimEntryTable extends _i1.Table<int?> {
   FutureCallClaimEntryTable({super.tableRelation})
     : super(tableName: 'serverpod_future_call_claim') {
     updateTable = FutureCallClaimEntryUpdateTable(this);
-    futureCallId = _i1.ColumnInt(
-      'futureCallId',
-      this,
-    );
-    time = _i1.ColumnDateTime(
-      'time',
-      this,
-    );
-    serverId = _i1.ColumnString(
-      'serverId',
+    heartbeat = _i1.ColumnDateTime(
+      'heartbeat',
       this,
     );
   }
 
   late final FutureCallClaimEntryUpdateTable updateTable;
 
-  /// The id of the future call this claim entry is associated with
-  late final _i1.ColumnInt futureCallId;
-
-  /// Timestamp of this claim entry
-  late final _i1.ColumnDateTime time;
-
-  /// The id of the server where the claim was created.
-  late final _i1.ColumnString serverId;
+  /// Last heartbeat timestamp for this claim entry.
+  /// Used to detect stale claims that should be cleaned up.
+  late final _i1.ColumnDateTime heartbeat;
 
   @override
   List<_i1.Column> get columns => [
     id,
-    futureCallId,
-    time,
-    serverId,
+    heartbeat,
   ];
 }
 
@@ -268,7 +221,7 @@ class FutureCallClaimEntryRepository {
   /// );
   /// ```
   Future<List<FutureCallClaimEntry>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
     int? limit,
     int? offset,
@@ -310,7 +263,7 @@ class FutureCallClaimEntryRepository {
   /// );
   /// ```
   Future<FutureCallClaimEntry?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
@@ -334,7 +287,7 @@ class FutureCallClaimEntryRepository {
 
   /// Finds a single [FutureCallClaimEntry] by its [id] or null if no such row exists.
   Future<FutureCallClaimEntry?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -359,7 +312,7 @@ class FutureCallClaimEntryRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<FutureCallClaimEntry>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<FutureCallClaimEntry> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -375,7 +328,7 @@ class FutureCallClaimEntryRepository {
   ///
   /// The returned [FutureCallClaimEntry] will have its `id` field set.
   Future<FutureCallClaimEntry> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     FutureCallClaimEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -391,7 +344,7 @@ class FutureCallClaimEntryRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<FutureCallClaimEntry>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<FutureCallClaimEntry> rows, {
     _i1.ColumnSelections<FutureCallClaimEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -407,7 +360,7 @@ class FutureCallClaimEntryRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<FutureCallClaimEntry> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     FutureCallClaimEntry row, {
     _i1.ColumnSelections<FutureCallClaimEntryTable>? columns,
     _i1.Transaction? transaction,
@@ -422,7 +375,7 @@ class FutureCallClaimEntryRepository {
   /// Updates a single [FutureCallClaimEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<FutureCallClaimEntry?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<FutureCallClaimEntryUpdateTable>
     columnValues,
@@ -438,7 +391,7 @@ class FutureCallClaimEntryRepository {
   /// Updates all [FutureCallClaimEntry]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<FutureCallClaimEntry>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<FutureCallClaimEntryUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<FutureCallClaimEntryTable> where,
@@ -465,7 +418,7 @@ class FutureCallClaimEntryRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<FutureCallClaimEntry>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<FutureCallClaimEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -477,7 +430,7 @@ class FutureCallClaimEntryRepository {
 
   /// Deletes a single [FutureCallClaimEntry].
   Future<FutureCallClaimEntry> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     FutureCallClaimEntry row, {
     _i1.Transaction? transaction,
   }) async {
@@ -489,7 +442,7 @@ class FutureCallClaimEntryRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<FutureCallClaimEntry>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<FutureCallClaimEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -502,7 +455,7 @@ class FutureCallClaimEntryRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -516,7 +469,7 @@ class FutureCallClaimEntryRepository {
 
   /// Acquires row-level locks on [FutureCallClaimEntry] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<FutureCallClaimEntryTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

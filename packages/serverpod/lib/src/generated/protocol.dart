@@ -336,36 +336,13 @@ class Protocol extends _i1.SerializationManagerServer {
               'nextval(\'serverpod_future_call_claim_id_seq\'::regclass)',
         ),
         _i2.ColumnDefinition(
-          name: 'futureCallId',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'time',
+          name: 'heartbeat',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
-        _i2.ColumnDefinition(
-          name: 'serverId',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
       ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'serverpod_future_call_claim_fk_0',
-          columns: ['futureCallId'],
-          referenceTable: 'serverpod_future_call',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        ),
-      ],
+      foreignKeys: [],
       indexes: [
         _i2.IndexDefinition(
           indexName: 'serverpod_future_call_claim_pkey',
