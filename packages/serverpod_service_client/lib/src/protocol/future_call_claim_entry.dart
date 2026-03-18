@@ -38,7 +38,7 @@ abstract class FutureCallClaimEntry implements _i1.SerializableModel {
   /// The id of the future call this claim entry is associated with
   int? id;
 
-  /// Last heartbeat timestamp for this claim entry.
+  /// Heartbeat timestamp for this claim entry.
   /// Used to detect stale claims that should be cleaned up.
   DateTime heartbeat;
 

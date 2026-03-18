@@ -43,7 +43,7 @@ abstract class FutureCallClaimEntry
   @override
   int? id;
 
-  /// Last heartbeat timestamp for this claim entry.
+  /// Heartbeat timestamp for this claim entry.
   /// Used to detect stale claims that should be cleaned up.
   DateTime heartbeat;
 
@@ -154,7 +154,7 @@ class FutureCallClaimEntryTable extends _i1.Table<int?> {
 
   late final FutureCallClaimEntryUpdateTable updateTable;
 
-  /// Last heartbeat timestamp for this claim entry.
+  /// Heartbeat timestamp for this claim entry.
   /// Used to detect stale claims that should be cleaned up.
   late final _i1.ColumnDateTime heartbeat;
 
