@@ -25,6 +25,8 @@ class FutureCallManagerBuilder {
     scanInterval: const Duration(milliseconds: 10),
   );
 
+  Duration? _heartbeatInterval;
+
   Protocol _protocol = Protocol();
 
   FutureCallDiagnosticsService _diagnosticsService = _MockDiagnosticsService();
@@ -54,6 +56,7 @@ class FutureCallManagerBuilder {
     logSession: _logSession,
     sessionProvider: _sessionBuilder,
     initializeFutureCall: _initializeFutureCall,
+    heartbeatInterval: _heartbeatInterval,
   );
 
   FutureCallManagerBuilder withConfig(FutureCallConfig config) {
@@ -91,6 +94,11 @@ class FutureCallManagerBuilder {
     FutureCallSessionBuilder sessionProvider,
   ) {
     _sessionBuilder = sessionProvider;
+    return this;
+  }
+
+  FutureCallManagerBuilder withHeartbeatInterval(Duration heartbeatInterval) {
+    _heartbeatInterval = heartbeatInterval;
     return this;
   }
 }
