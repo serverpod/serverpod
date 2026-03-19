@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/util/file_ex.dart';
+import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
@@ -64,7 +65,7 @@ class ServerProcess {
     ReloadRequestedCallback? onReloadRequested,
   }) : _serverDir = serverDir,
        _serverArgs = serverArgs,
-       _dartExecutable = dartExecutable ?? 'dart',
+       _dartExecutable = dartExecutable ?? p.join(getSdkPath(), 'bin', 'dart'),
        _enableVmService = enableVmService,
        _vmServiceInfoFile = vmServiceInfoFile,
        _stdout = stdoutSink ?? stdout,

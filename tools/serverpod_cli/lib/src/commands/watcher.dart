@@ -13,12 +13,21 @@ extension GeneratorConfigFileWatcher on GeneratorConfig {
   /// If [includeClientPackage] is true, also includes the client package `lib/`
   /// directory so that generated client code changes are picked up (needed for
   /// compilation in `serverpod start --watch`).
+  /// Returns the set of source directories that should be watched.
+  Set<String> watchPaths({
+    bool includeWeb = false,
+    bool includeClientPackage = false,
+  }) => _watchPathsFromConfig(
+    this,
+    includeWeb: includeWeb,
+    includeClientPackage: includeClientPackage,
+  );
+
   FileWatcher createFileWatcher({
     bool includeWeb = false,
     bool includeClientPackage = false,
   }) => FileWatcher(
-    watchPaths: _watchPathsFromConfig(
-      this,
+    watchPaths: watchPaths(
       includeWeb: includeWeb,
       includeClientPackage: includeClientPackage,
     ),

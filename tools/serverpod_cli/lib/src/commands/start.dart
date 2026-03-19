@@ -20,7 +20,6 @@ import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/file_ex.dart';
-import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:stream_transform/stream_transform.dart';
 import 'package:vm_service/vm_service_io.dart';
@@ -166,6 +165,11 @@ class StartCommand extends ServerpodCommand<StartOption> {
         await _startOnce(
           serverDir: serverDir,
           serverArgs: serverArgs,
+          noFes: noFes,
+          watchDirs: config.watchPaths(
+            includeWeb: true,
+            includeClientPackage: true,
+          ),
         );
       }
     } finally {
@@ -176,24 +180,60 @@ class StartCommand extends ServerpodCommand<StartOption> {
   }
 
   /// Starts the server once and waits for it to exit.
+  ///
+  /// When [noFes] is false (default), compiles the server to a .dill file
+  /// using the Frontend Server and starts from the compiled kernel.
+  /// When [noFes] is true, starts the server with `dart run`.
   Future<void> _startOnce({
     required String serverDir,
     required List<String> serverArgs,
+    required bool noFes,
+    required Set<String> watchDirs,
   }) async {
     log.info('Starting server...');
 
-    final serverProcess = ServerProcess(
-      serverDir: serverDir,
-      serverArgs: serverArgs,
+    if (noFes) {
+      final serverProcess = ServerProcess(
+        serverDir: serverDir,
+        serverArgs: serverArgs,
+      );
+
+      await serverProcess.start();
+      log.info('Server running.');
+
+      final exitCode = await serverProcess.exitCode;
+      if (exitCode != 0) throw ExitException(exitCode);
+      return;
+    }
+
+    final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
+    final entryPoint = p.join(serverDir, 'bin', 'main.dart');
+    final dillPath = p.join(serverpodToolDir, 'server.dill');
+
+    final compiler = KernelCompiler(
+      entryPoint: entryPoint,
+      outputDill: dillPath,
     );
+    await compiler.start();
 
-    await serverProcess.start();
-    log.info('Server running.');
+    try {
+      if (!await compiler.compileIfNeeded(watchDirs)) {
+        log.error('Compilation failed.');
+        throw ExitException.error();
+      }
 
-    final exitCode = await serverProcess.exitCode;
+      final serverProcess = ServerProcess(
+        serverDir: serverDir,
+        serverArgs: serverArgs,
+        dartExecutable: compiler.dartExecutable,
+      );
+      await serverProcess.start(dillPath: dillPath);
+      log.info('Server running.');
 
-    if (exitCode != 0) {
-      throw ExitException(exitCode);
+      final exitCode = await serverProcess.exitCode;
+      if (exitCode != 0) throw ExitException(exitCode);
+    } finally {
+      await compiler.dispose();
     }
   }
 
@@ -203,7 +243,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
   /// stop them on shutdown). Returns `false` if no action was taken.
   Future<bool> _ensureDockerServices(String serverDir) async {
     final composeFile = File(p.join(serverDir, 'docker-compose.yaml'));
-    if (!composeFile.existsSync()) return false;
+    if (!await composeFile.exists()) return false;
 
     // Check if containers are already running.
     final ps = await Process.run(
@@ -360,11 +400,6 @@ Future<int> _startWatchSession({
     await serverProcess.connectToVmService();
     initialServerProcess = serverProcess;
   } else {
-    // Resolve the dart executable from the SDK to ensure we use the same
-    // version that compiled the kernel.
-    final sdkRoot = getSdkPath();
-    final dartExecutable = p.join(sdkRoot, 'bin', 'dart');
-
     // Set up incremental compiler.
     final entryPoint = p.join(serverDir, 'bin', 'main.dart');
     final initialDill = p.join(serverpodToolDir, 'server.dill');
@@ -374,31 +409,13 @@ Future<int> _startWatchSession({
     );
     await compiler.start();
 
-    // Check if the cached dill is newer than all watched source files.
-    // If so, skip the initial compile and boot from the cached dill
-    // directly. The FES starts in the background (KernelCompiler gates
-    // compile/reset calls internally until start completes).
-    final platformDill = p.join(
-      sdkRoot,
-      'lib',
-      '_internal',
-      'vm_platform_strong.dill',
-    );
-    if (_isDillUpToDate(initialDill, watcher.watchPaths, platformDill)) {
-      log.debug('Cached server.dill is up to date, skipping initial compile.');
-    } else {
-      final initialResult = await compileWithProgress(
-        'Compiling server',
-        compiler,
-      );
-
-      if (initialResult == null) {
-        await compiler.dispose();
-        log.error('Initial compilation failed.');
-        return 1;
-      }
-
-      compiler.accept();
+    // Compile if the cached dill is stale. The FES starts in the background
+    // (KernelCompiler gates compile/reset calls internally until start
+    // completes), so if the dill is up to date we boot immediately.
+    if (!await compiler.compileIfNeeded(watcher.watchPaths)) {
+      await compiler.dispose();
+      log.error('Initial compilation failed.');
+      return 1;
     }
 
     // IDE reload callback: compile incrementally and return the dill path.
@@ -418,7 +435,7 @@ Future<int> _startWatchSession({
       final serverProcess = ServerProcess(
         serverDir: serverDir,
         serverArgs: serverArgs,
-        dartExecutable: dartExecutable,
+        dartExecutable: compiler!.dartExecutable,
         enableVmService: true,
         vmServiceInfoFile: vmServiceInfoFile,
         onReloadRequested: onReloadRequested,
@@ -478,67 +495,6 @@ Future<int> _startWatchSession({
       await sigtermSub.cancel();
     },
   );
-}
-
-/// Returns `true` if [dillPath] exists, is newer than every file under
-/// [watchPaths], and is compatible with the current Dart SDK's kernel binary
-/// format (by comparing the first 8 header bytes against [platformDillPath]).
-bool _isDillUpToDate(
-  String dillPath,
-  Set<String> watchPaths,
-  String platformDillPath,
-) {
-  final dillFile = File(dillPath);
-  if (!dillFile.existsSync()) return false;
-
-  if (!_dillHeadersMatch(dillPath, platformDillPath)) return false;
-
-  final dillMtime = dillFile.statSync().modified;
-
-  for (final watchPath in watchPaths) {
-    final dir = Directory(watchPath);
-    if (!dir.existsSync()) continue;
-    for (final entity in dir.listSync(recursive: true)) {
-      if (entity is File && entity.statSync().modified.isAfter(dillMtime)) {
-        return false;
-      }
-    }
-  }
-
-  return true;
-}
-
-/// The Dart kernel binary header is 8 bytes: 4-byte magic number followed by
-/// a 4-byte binary format version. Two .dill files are compatible only if
-/// these bytes match.
-const _dillHeaderSize = 8;
-
-/// Returns `true` if both files exist and their first [_dillHeaderSize] bytes
-/// are identical.
-bool _dillHeadersMatch(String pathA, String pathB) {
-  try {
-    final fileA = File(pathA);
-    final fileB = File(pathB);
-    final headerA = fileA.openSync()..setPositionSync(0);
-    final headerB = fileB.openSync()..setPositionSync(0);
-    try {
-      final bytesA = headerA.readSync(_dillHeaderSize);
-      final bytesB = headerB.readSync(_dillHeaderSize);
-      if (bytesA.length != _dillHeaderSize ||
-          bytesB.length != _dillHeaderSize) {
-        return false;
-      }
-      for (var i = 0; i < _dillHeaderSize; i++) {
-        if (bytesA[i] != bytesB[i]) return false;
-      }
-      return true;
-    } finally {
-      headerA.closeSync();
-      headerB.closeSync();
-    }
-  } on FileSystemException {
-    return false;
-  }
 }
 
 /// Checks if a server is already running by reading the VM service info file

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -17,6 +19,8 @@ class KernelCompiler {
   final String outputDill;
   final String? packagesPath;
 
+  late final String _sdkRoot;
+  late final String _platformDill;
   late Future<FrontendServerClient> _client;
 
   bool _needsFullCompile = true;
@@ -28,6 +32,9 @@ class KernelCompiler {
     this.packagesPath,
   });
 
+  /// The path to the `dart` executable from the SDK used by this compiler.
+  String get dartExecutable => p.join(_sdkRoot, 'bin', 'dart');
+
   /// Start the Frontend Server process.
   ///
   /// This starts the server in resident mode, ready to receive compile
@@ -35,9 +42,9 @@ class KernelCompiler {
   Future<void> start() async {
     if (_started) return;
 
-    final sdkRoot = getSdkPath();
-    final platformDill = p.join(
-      sdkRoot,
+    _sdkRoot = getSdkPath();
+    _platformDill = p.join(
+      _sdkRoot,
       'lib',
       '_internal',
       'vm_platform_strong.dill',
@@ -46,13 +53,53 @@ class KernelCompiler {
     _client = FrontendServerClient.start(
       entryPoint,
       outputDill,
-      platformDill,
-      sdkRoot: sdkRoot,
+      _platformDill,
+      sdkRoot: _sdkRoot,
       target: 'vm',
       packagesJson: packagesPath,
     );
     _started = true;
     _needsFullCompile = true;
+  }
+
+  /// Returns `true` if [outputDill] exists, is newer than every file under
+  /// [watchDirs], and is compatible with the current Dart SDK's kernel binary
+  /// format.
+  bool isDillUpToDate(Set<String> watchDirs) {
+    final dillFile = File(outputDill);
+    if (!dillFile.existsSync()) return false;
+
+    if (!_dillHeadersMatch(outputDill, _platformDill)) return false;
+
+    final dillMtime = dillFile.statSync().modified;
+
+    for (final watchDir in watchDirs) {
+      final dir = Directory(watchDir);
+      if (!dir.existsSync()) continue;
+      for (final entity in dir.listSync(recursive: true)) {
+        if (entity is File && entity.statSync().modified.isAfter(dillMtime)) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /// Compiles the project if the cached dill is stale relative to [watchDirs].
+  ///
+  /// Returns `true` on success (including when no compilation was needed).
+  /// Returns `false` if compilation failed.
+  Future<bool> compileIfNeeded(Set<String> watchDirs) async {
+    if (isDillUpToDate(watchDirs)) {
+      log.debug('Cached server.dill is up to date, skipping initial compile.');
+      return true;
+    }
+
+    final result = await compileWithProgress('Compiling server', this);
+    if (result == null) return false;
+    accept();
+    return true;
   }
 
   /// Compile the project.
@@ -104,6 +151,39 @@ class KernelCompiler {
       final client = await _client;
       client.kill();
       _started = false;
+    }
+  }
+
+  /// The Dart kernel binary header is 8 bytes: 4-byte magic number followed by
+  /// a 4-byte binary format version. Two .dill files are compatible only if
+  /// these bytes match.
+  static const _dillHeaderSize = 8;
+
+  /// Returns `true` if both files exist and their first [_dillHeaderSize] bytes
+  /// are identical.
+  static bool _dillHeadersMatch(String pathA, String pathB) {
+    try {
+      final fileA = File(pathA);
+      final fileB = File(pathB);
+      final headerA = fileA.openSync()..setPositionSync(0);
+      final headerB = fileB.openSync()..setPositionSync(0);
+      try {
+        final bytesA = headerA.readSync(_dillHeaderSize);
+        final bytesB = headerB.readSync(_dillHeaderSize);
+        if (bytesA.length != _dillHeaderSize ||
+            bytesB.length != _dillHeaderSize) {
+          return false;
+        }
+        for (var i = 0; i < _dillHeaderSize; i++) {
+          if (bytesA[i] != bytesB[i]) return false;
+        }
+        return true;
+      } finally {
+        headerA.closeSync();
+        headerB.closeSync();
+      }
+    } on FileSystemException {
+      return false;
     }
   }
 }
