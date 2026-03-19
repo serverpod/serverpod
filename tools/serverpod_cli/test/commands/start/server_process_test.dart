@@ -203,6 +203,7 @@ void main() {
     });
 
     tearDown(() async {
+      await serverProcess.stop();
       // On Windows, TerminateProcess may not release file handles immediately.
       for (var i = 0; ; i++) {
         try {
@@ -223,8 +224,6 @@ void main() {
         await serverProcess.connectToVmService();
 
         expect(serverProcess.isVmServiceConnected, isTrue);
-
-        await serverProcess.stop();
       },
     );
 
@@ -237,8 +236,6 @@ void main() {
 
         final reloaded = await serverProcess.reload(dillPath);
         expect(reloaded, isTrue);
-
-        await serverProcess.stop();
       },
     );
   });
@@ -250,6 +247,8 @@ void main() {
       late String dillPath;
       late String vmServiceInfoFile;
       late String dartExecutable;
+      late ServerProcess serverProcess;
+      late bool callbackCalled;
 
       setUp(() async {
         final sdkRoot = getSdkPath();
@@ -298,9 +297,25 @@ void main() {
         }
         compiler.accept();
         await compiler.dispose();
+
+        callbackCalled = false;
+        serverProcess = ServerProcess(
+          serverDir: tempDir.path,
+          serverArgs: [],
+          dartExecutable: dartExecutable,
+          enableVmService: true,
+          vmServiceInfoFile: vmServiceInfoFile,
+          stdoutSink: _NullIOSink(),
+          stderrSink: _NullIOSink(),
+          onReloadRequested: () async {
+            callbackCalled = true;
+            return dillPath;
+          },
+        );
       });
 
       tearDown(() async {
+        await serverProcess.stop();
         // On Windows, TerminateProcess may not release file handles immediately.
         for (var i = 0; ; i++) {
           try {
@@ -317,29 +332,12 @@ void main() {
         'when onReloadRequested is provided and connectToVmService is called, '
         'then it connects successfully without invoking the callback',
         () async {
-          var callbackCalled = false;
-          final serverProcess = ServerProcess(
-            serverDir: tempDir.path,
-            serverArgs: [],
-            dartExecutable: dartExecutable,
-            enableVmService: true,
-            vmServiceInfoFile: vmServiceInfoFile,
-            stdoutSink: _NullIOSink(),
-            stderrSink: _NullIOSink(),
-            onReloadRequested: () async {
-              callbackCalled = true;
-              return dillPath;
-            },
-          );
-
           await serverProcess.start(dillPath: dillPath);
           await serverProcess.connectToVmService();
 
           // The service is registered; verify the process is connected.
           expect(serverProcess.isVmServiceConnected, isTrue);
           expect(callbackCalled, isFalse);
-
-          await serverProcess.stop();
         },
       );
     },

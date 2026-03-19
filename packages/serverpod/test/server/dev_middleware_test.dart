@@ -18,6 +18,18 @@ class _DummyRoute extends Route {
   }
 }
 
+class _HtmlRoute extends Route {
+  @override
+  FutureOr<Result> handleCall(Session session, Request request) {
+    return Response.ok(
+      body: Body.fromString(
+        '<html><body></body></html>',
+        mimeType: MimeType.html,
+      ),
+    );
+  }
+}
+
 void main() {
   final portZeroConfig = ServerConfig(
     port: 0,
@@ -42,6 +54,7 @@ void main() {
       );
 
       pod.webServer.addRoute(_DummyRoute(), '/dummy');
+      pod.webServer.addRoute(_HtmlRoute(), '/page');
       pod.webServer.setDevModeForTesting(true);
 
       await pod.start();
@@ -62,6 +75,19 @@ void main() {
 
         expect(response.statusCode, 200);
         expect(response.body, '0');
+      },
+    );
+
+    test(
+      'when an HTML route is requested, '
+      'then the auto-refresh script is injected',
+      () async {
+        final response = await http.get(
+          Uri.parse('http://localhost:$port/page'),
+        );
+
+        expect(response.statusCode, 200);
+        expect(response.body, contains('/__dev/version'));
       },
     );
 
@@ -91,6 +117,7 @@ void main() {
       );
 
       pod.webServer.addRoute(_DummyRoute(), '/dummy');
+      pod.webServer.addRoute(_HtmlRoute(), '/page');
       pod.webServer.setDevModeForTesting(false);
 
       await pod.start();
@@ -110,6 +137,19 @@ void main() {
         );
 
         expect(response.statusCode, isNot(200));
+      },
+    );
+
+    test(
+      'when an HTML route is requested, '
+      'then the auto-refresh script is not injected',
+      () async {
+        final response = await http.get(
+          Uri.parse('http://localhost:$port/page'),
+        );
+
+        expect(response.statusCode, 200);
+        expect(response.body, isNot(contains('/__dev/version')));
       },
     );
   });
