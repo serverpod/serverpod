@@ -303,8 +303,7 @@ void main() {
   group('Given model file changes that succeed', () {
     test(
       'when file change is handled, '
-      'then it runs codegen but skips compile '
-      '(generated files will trigger a new cycle)',
+      'then it runs codegen with full requirements and compiles',
       () async {
         final event = FileChangeEvent(
           dartFiles: {},
@@ -316,10 +315,9 @@ void main() {
         expect(generateCalls, [
           {'/models/user.spy.yaml'},
         ]);
-        // No dart files changed or removed - skip compile.
-        // The generated .dart files will be picked up by the file watcher.
-        expect(compiler.calls, isEmpty);
-        expect(server.calls, isEmpty);
+        // Model files trigger a full compile directly.
+        expect(compiler.calls, ['compile', 'accept']);
+        expect(server.calls, ['reload:/out.dill']);
       },
     );
   });
