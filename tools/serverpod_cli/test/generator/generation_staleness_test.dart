@@ -22,6 +22,12 @@ class _FakeConfig extends Fake implements GeneratorConfig {
 
   @override
   Map<String, List<String>> get sharedModelsSourcePathsParts => _sharedModels;
+
+  @override
+  List<String> get sharedModelsLibSourcePaths => [
+    for (final pathParts in _sharedModels.values)
+      p.joinAll([...serverPackageDirectoryPathParts, ...pathParts, 'lib']),
+  ];
 }
 
 /// Waits until the file system reports an mtime strictly after [reference].
