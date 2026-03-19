@@ -14,6 +14,7 @@ import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
+import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
@@ -299,28 +300,15 @@ Future<int> _runWatchMode({
     }
   }
 
-  final watchPaths = watchPathsFromConfig(
-    config,
-    includeWeb: true,
-    includeClientPackage: true,
-  );
-
-  final watcher = FileWatcher(
-    watchPaths: watchPaths,
-    ignorePaths: {
-      p.absolute(p.joinAll(config.generatedServeModelPathParts)),
-      p.absolute(p.joinAll(config.generatedDartClientModelPathParts)),
-      ...config.generatedSharedModelsPaths.map(p.absolute),
-    },
-  );
-
   return _startWatchSession(
     serverDir: serverDir,
     serverArgs: serverArgs,
     serverpodToolDir: serverpodToolDir,
     vmServiceInfoFile: vmServiceInfoFile,
-    watchPaths: watchPaths,
-    watcher: watcher,
+    watcher: config.createFileWatcher(
+      includeWeb: true,
+      includeClientPackage: true,
+    ),
     generate: (Set<String> affectedPaths) async {
       // Wait for background priming to finish before touching analyzers.
       return analyzeAndGenerate(
@@ -346,7 +334,6 @@ Future<int> _startWatchSession({
   required List<String> serverArgs,
   required String serverpodToolDir,
   required String vmServiceInfoFile,
-  required Set<String> watchPaths,
   required FileWatcher watcher,
   required GenerateAction generate,
   required bool noFes,
@@ -393,7 +380,7 @@ Future<int> _startWatchSession({
       '_internal',
       'vm_platform_strong.dill',
     );
-    if (_isDillUpToDate(initialDill, watchPaths, platformDill)) {
+    if (_isDillUpToDate(initialDill, watcher.watchPaths, platformDill)) {
       log.debug('Cached server.dill is up to date, skipping initial compile.');
     } else {
       final initialResult = await compileWithProgress(

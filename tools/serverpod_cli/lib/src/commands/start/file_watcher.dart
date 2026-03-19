@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:async/async.dart';
+import 'package:collection/collection.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:stream_transform/stream_transform.dart';
@@ -86,6 +87,9 @@ class FileWatcher {
     for (final watchPath in _watchPaths)
       if (Directory(watchPath).existsSync()) DirectoryWatcher(watchPath),
   ];
+
+  /// An immutable view of the paths being watched.
+  Set<String> get watchPaths => UnmodifiableSetView(_watchPaths);
 
   /// Completes when all underlying directory watchers are initialized.
   ///
