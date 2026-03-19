@@ -212,14 +212,7 @@ Set<String> watchPathsFromConfig(
 }) {
   final paths = <String>{
     p.absolute(p.joinAll(config.libSourcePathParts)),
-    for (final pathParts in config.sharedModelsSourcePathsParts.values)
-      p.absolute(
-        p.joinAll([
-          ...config.serverPackageDirectoryPathParts,
-          ...pathParts,
-          'lib',
-        ]),
-      ),
+    ...config.sharedModelsLibSourcePaths.map(p.absolute),
   };
 
   if (includeClientPackage) {

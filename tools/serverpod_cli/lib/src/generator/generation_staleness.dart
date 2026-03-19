@@ -105,14 +105,8 @@ Future<Set<String>> enumerateSourceFiles(GeneratorConfig config) async {
   }
 
   // Shared model packages.
-  for (final pathParts in config.sharedModelsSourcePathsParts.values) {
-    final dir = Directory(
-      p.joinAll([
-        ...config.serverPackageDirectoryPathParts,
-        ...pathParts,
-        'lib',
-      ]),
-    );
+  for (final path in config.sharedModelsLibSourcePaths) {
+    final dir = Directory(path);
     if (!await dir.exists()) continue;
     await for (final entity in dir.list(recursive: true)) {
       if (entity is File &&

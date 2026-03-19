@@ -245,13 +245,14 @@ Future<bool> _performGenerateWatch({
 
   // Set up file watcher.
   final watchPaths = watchPathsFromConfig(config);
-  final ignorePath = path.absolute(
-    path.joinAll(config.generatedServeModelPackagePathParts),
-  );
 
   final watcher = FileWatcher(
     watchPaths: watchPaths,
-    ignorePaths: {ignorePath},
+    ignorePaths: {
+      path.absolute(path.joinAll(config.generatedServeModelPackagePathParts)),
+      path.absolute(path.joinAll(config.generatedDartClientModelPathParts)),
+      ...config.generatedSharedModelsPaths.map(path.absolute),
+    },
   );
 
   // Process file change events.

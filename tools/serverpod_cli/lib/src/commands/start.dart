@@ -305,7 +305,14 @@ Future<int> _runWatchMode({
     includeClientPackage: true,
   );
 
-  final watcher = FileWatcher(watchPaths: watchPaths);
+  final watcher = FileWatcher(
+    watchPaths: watchPaths,
+    ignorePaths: {
+      p.absolute(p.joinAll(config.generatedServeModelPathParts)),
+      p.absolute(p.joinAll(config.generatedDartClientModelPathParts)),
+      ...config.generatedSharedModelsPaths.map(p.absolute),
+    },
+  );
 
   return _startWatchSession(
     serverDir: serverDir,

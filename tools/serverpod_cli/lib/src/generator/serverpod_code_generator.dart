@@ -114,14 +114,7 @@ List<String> _getDirectoriesRequiringCleaning({
   return [
     p.joinAll(config.generatedServeModelPathParts),
     p.joinAll(config.generatedDartClientModelPathParts),
-    for (var pathParts in config.sharedModelsSourcePathsParts.values)
-      p.joinAll([
-        ...config.serverPackageDirectoryPathParts,
-        ...pathParts,
-        'lib',
-        'src',
-        'generated',
-      ]),
+    ...config.generatedSharedModelsPaths,
   ];
 }
 
