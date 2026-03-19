@@ -39,9 +39,7 @@ class GenerateFiles {
       }
     });
 
-    var futureCallsAnalyzer = FutureCallsAnalyzer(
-      directory: libDirectory,
-    );
+    var futureCallsAnalyzer = FutureCallsAnalyzer(directory: libDirectory);
 
     if (hasErrors) {
       log.error(

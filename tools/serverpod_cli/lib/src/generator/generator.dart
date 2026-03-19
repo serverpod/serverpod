@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
@@ -20,13 +21,18 @@ typedef Analyzers = ({
 /// Creates the analyzers needed for code generation from [config].
 Future<Analyzers> createAnalyzers(GeneratorConfig config) async {
   final libDirectory = Directory(p.joinAll(config.libSourcePathParts));
-  final endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
+  final collection = createAnalysisContextCollection(libDirectory);
+  final endpointsAnalyzer = EndpointsAnalyzer(
+    libDirectory,
+    collection: collection,
+  );
   final yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
   final modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
     collector.printErrors();
   });
   final futureCallsAnalyzer = FutureCallsAnalyzer(
     directory: libDirectory,
+    collection: collection,
   );
   return (
     endpoints: endpointsAnalyzer,

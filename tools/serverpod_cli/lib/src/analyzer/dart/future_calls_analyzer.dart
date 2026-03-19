@@ -5,9 +5,9 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
-import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_analyzer.dart';
@@ -15,8 +15,18 @@ import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_cal
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/model_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
-import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
+
+/// Cached analysis result for a single future call file.
+class _CachedFutureCallFileResult {
+  final List<FutureCallDefinition> definitions;
+  final bool hadErrors;
+
+  _CachedFutureCallFileResult({
+    required this.definitions,
+    required this.hadErrors,
+  });
+}
 
 /// Analyzes dart files for [FutureCall]s.
 ///
@@ -29,25 +39,21 @@ class FutureCallsAnalyzer {
 
   final List<SerializableModelDefinition> _cachedAnalyzedModels = [];
 
-  /// Create a new [FutureCallsAnalyzer], containing a
-  /// [AnalysisContextCollection] that analyzes all dart files in the
-  /// provided [directory].
+  /// Create a new [FutureCallsAnalyzer] for [directory].
+  ///
+  /// When [collection] is provided it is reused (e.g. shared with
+  /// [EndpointsAnalyzer]). Otherwise a new one is created internally.
   FutureCallsAnalyzer({
     required Directory directory,
-  }) : collection = AnalysisContextCollection(
-         includedPaths: [directory.absolute.path],
-         resourceProvider: PhysicalResourceProvider.INSTANCE,
-         sdkPath: getSdkPath(),
-       ),
+    AnalysisContextCollection? collection,
+  }) : collection = collection ?? createAnalysisContextCollection(directory),
        absoluteIncludedPaths = directory.absolute.path;
 
-  /// Files that contained future call classes in the last full [analyze] run.
-  final Set<String> _knownFutureCallFiles = {};
+  /// Cached per-file analysis results for future call files.
+  final Map<String, _CachedFutureCallFileResult> _fileCache = {};
 
-  /// Files that contained future call classes but had analysis errors.
-  /// When this set is non-empty, any file change is treated as potentially
-  /// relevant because fixing a dependency might unblock the errored file.
-  final Set<String> _erroredFutureCallFiles = {};
+  /// Files that need re-analysis on the next [analyze] call.
+  final Set<String> _dirtyFiles = {};
 
   /// Inform the analyzer that the provided [filePaths] have been updated.
   ///
@@ -57,13 +63,14 @@ class FutureCallsAnalyzer {
   /// next [analyze] call.
   Future<bool> updateFileContexts(Set<String> filePaths) async {
     await _refreshContextForFiles(filePaths);
+    _dirtyFiles.addAll(filePaths);
 
     // If there are errored future call files, any file change might fix them.
-    if (_erroredFutureCallFiles.isNotEmpty) return true;
+    if (_fileCache.values.any((r) => r.hadErrors)) return true;
 
     for (var path in filePaths) {
       // File was previously known to contain future calls.
-      if (_knownFutureCallFiles.contains(path)) return true;
+      if (_fileCache.containsKey(path)) return true;
       // File now appears to contain future calls.
       if (_isFutureCallFile(File(path))) return true;
     }
@@ -108,7 +115,12 @@ class FutureCallsAnalyzer {
     return models;
   }
 
-  /// Analyze all files in the [AnalysisContextCollection].
+  /// Analyze files in the [AnalysisContextCollection].
+  ///
+  /// On the first call, analyzes every Dart file. On subsequent calls, only
+  /// re-analyzes files that changed since the last run (tracked via
+  /// [updateFileContexts] and [changedFiles]), reusing cached results for
+  /// unchanged files.
   ///
   /// [analyzedModels] are the validated models from [StatefulAnalyzer.validateAll].
   /// When provided, they are used for parameter validation and cached for
@@ -127,51 +139,99 @@ class FutureCallsAnalyzer {
       ..clear()
       ..addAll(analyzedModels);
     await _refreshContextForFiles(changedFiles);
+    if (changedFiles != null) _dirtyFiles.addAll(changedFiles);
 
-    var futureCallDefs = <FutureCallDefinition>[];
+    // On the first run, mark every Dart file as dirty so the single
+    // code path handles both first and subsequent runs.
+    if (_fileCache.isEmpty) {
+      _dirtyFiles.addAll(_allAnalyzedDartFiles);
+    }
 
+    // Files to analyze: dirty files + previously errored future call files
+    // (fixing a dependency elsewhere might unblock them).
+    final filesToAnalyze = <String>{
+      ..._dirtyFiles,
+      ..._fileCache.entries.where((e) => e.value.hadErrors).map((e) => e.key),
+    };
+
+    // Remove deleted files from cache.
+    for (var path in filesToAnalyze) {
+      if (!File(path).existsSync()) {
+        _fileCache.remove(path);
+      }
+    }
+
+    // Phase 1: Resolve only the files that need re-analysis.
     List<(ResolvedLibraryResult, String)> validLibraries = [];
     List<String> erroredFiles = [];
-    Map<String, int> futureCallClassMap = {};
 
-    final templateRegistry = DartDocTemplateRegistry();
+    for (var path in filesToAnalyze) {
+      if (!path.endsWith('.dart') || path.endsWith('_test.dart')) continue;
+      if (!File(path).existsSync()) continue;
 
-    await for (var (library, filePath) in _libraries) {
+      var library = await _resolveLibrary(path);
+      if (library == null) continue;
+
       var futureCallClasses = _getFutureCallClasses(library);
-      if (futureCallClasses.isEmpty) continue;
+      if (futureCallClasses.isEmpty) {
+        _fileCache.remove(path);
+        continue;
+      }
 
-      var maybeDartErrors = await _getErrorsForFile(library.session, filePath);
+      var maybeDartErrors = await _getErrorsForFile(library.session, path);
       if (maybeDartErrors.isNotEmpty) {
-        erroredFiles.add(filePath);
+        erroredFiles.add(path);
         collector.addError(
           SourceSpanSeverityException(
             'FutureCall analysis skipped due to invalid Dart syntax. Please '
             'review and correct the syntax errors.'
-            '\nFile: $filePath',
+            '\nFile: $path',
             null,
             severity: SourceSpanSeverity.error,
           ),
         );
 
+        _fileCache[path] = _CachedFutureCallFileResult(
+          definitions: [],
+          hadErrors: true,
+        );
         continue;
       }
 
-      for (var futureCallClass in futureCallClasses) {
-        var className = futureCallClass.name!;
+      validLibraries.add((library, path));
+    }
+
+    // Phase 2: Build future call class map from ALL files for duplicate
+    // detection. Errored files have empty definitions so they naturally
+    // don't contribute, matching the original behavior.
+    Map<String, int> futureCallClassMap = {};
+    for (var entry in _fileCache.entries) {
+      if (validLibraries.any((lib) => lib.$2 == entry.key)) continue;
+      for (var def in entry.value.definitions) {
         futureCallClassMap.update(
-          className,
-          (value) => value + 1,
+          def.className,
+          (v) => v + 1,
           ifAbsent: () => 1,
         );
       }
-
-      validLibraries.add((library, filePath));
+    }
+    for (var (library, _) in validLibraries) {
+      for (var cls in _getFutureCallClasses(library)) {
+        futureCallClassMap.update(
+          cls.name!,
+          (v) => v + 1,
+          ifAbsent: () => 1,
+        );
+      }
     }
 
     var duplicateFutureCallClasses = futureCallClassMap.entries
         .where((entry) => entry.value > 1)
         .map((entry) => entry.key)
         .toSet();
+
+    // Phase 3: Validate and parse re-analyzed files, update cache.
+    final templateRegistry = DartDocTemplateRegistry();
 
     for (var (library, filePath) in validLibraries) {
       var severityExceptions = _validateLibrary(
@@ -184,29 +244,52 @@ class FutureCallsAnalyzer {
 
       var failingExceptions = _filterNoFailExceptions(severityExceptions);
 
-      futureCallDefs.addAll(
-        _parseLibrary(
-          library,
-          filePath,
-          failingExceptions,
-          templateRegistry: templateRegistry,
-        ),
+      var defs = _parseLibrary(
+        library,
+        filePath,
+        failingExceptions,
+        templateRegistry: templateRegistry,
+      );
+
+      _fileCache[filePath] = _CachedFutureCallFileResult(
+        definitions: defs,
+        hadErrors: false,
       );
     }
 
-    // After parsing all future calls, we must remove all that are not part of
-    // this package to avoid generating them as well.
+    // Phase 4: Collect all future call definitions from cache.
+    var futureCallDefs = <FutureCallDefinition>[];
+    for (var result in _fileCache.values) {
+      futureCallDefs.addAll(result.definitions);
+    }
     futureCallDefs.removeWhere((e) => e.filePath.startsWith('package:'));
 
-    // Track which files contain future calls for fast incremental checks.
-    _knownFutureCallFiles
-      ..clear()
-      ..addAll(validLibraries.map((e) => e.$2));
-    _erroredFutureCallFiles
-      ..clear()
-      ..addAll(erroredFiles);
+    _dirtyFiles.clear();
 
     return futureCallDefs;
+  }
+
+  /// Returns all Dart file paths known to the analysis context, sorted and
+  /// excluding test files.
+  Iterable<String> get _allAnalyzedDartFiles sync* {
+    for (var context in collection.contexts) {
+      var analyzedFiles = context.contextRoot.analyzedFiles().toList();
+      analyzedFiles.sort();
+      yield* analyzedFiles
+          .where((path) => path.endsWith('.dart'))
+          .where((path) => !path.endsWith('_test.dart'));
+    }
+  }
+
+  /// Resolves a single file to a [ResolvedLibraryResult].
+  Future<ResolvedLibraryResult?> _resolveLibrary(String filePath) async {
+    for (var context in collection.contexts) {
+      var result = await context.currentSession.getResolvedLibrary(filePath);
+      if (result is ResolvedLibraryResult) {
+        return result;
+      }
+    }
+    return null;
   }
 
   Future<List<String>> _getErrorsForFile(
@@ -326,22 +409,6 @@ class FutureCallsAnalyzer {
     }
 
     return validationErrors;
-  }
-
-  Stream<(ResolvedLibraryResult, String)> get _libraries async* {
-    for (var context in collection.contexts) {
-      var analyzedFiles = context.contextRoot.analyzedFiles().toList();
-      analyzedFiles.sort();
-      var analyzedDartFiles = analyzedFiles
-          .where((path) => path.endsWith('.dart'))
-          .where((path) => !path.endsWith('_test.dart'));
-      for (var filePath in analyzedDartFiles) {
-        var library = await context.currentSession.getResolvedLibrary(filePath);
-        if (library is ResolvedLibraryResult) {
-          yield (library, filePath);
-        }
-      }
-    }
   }
 
   Iterable<ClassElement> _getFutureCallClasses(ResolvedLibraryResult library) {

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
+import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
 
 /// Whether this process is running as an AOT-compiled executable.
@@ -25,6 +27,17 @@ String? _cachedSdkPath;
 /// 2. Platform.resolvedExecutable (reliable when running via `dart`)
 /// 3. Shell out to `dart` to resolve its executable path (when AOT-compiled)
 String getSdkPath() => _cachedSdkPath ??= _resolveSdkPath();
+
+/// Creates an [AnalysisContextCollection] for the given [directory].
+AnalysisContextCollection createAnalysisContextCollection(
+  Directory directory,
+) {
+  return AnalysisContextCollection(
+    includedPaths: [directory.absolute.path],
+    resourceProvider: PhysicalResourceProvider.INSTANCE,
+    sdkPath: getSdkPath(),
+  );
+}
 
 String _resolveSdkPath() {
   final dartSdkEnv = Platform.environment['DART_SDK'];
