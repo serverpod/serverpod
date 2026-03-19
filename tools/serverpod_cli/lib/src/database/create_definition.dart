@@ -1,10 +1,13 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
 import 'package:serverpod_cli/src/config/config.dart';
-import 'package:serverpod_cli/src/database/sql_generator.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_database/serverpod_database.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-/// Create the target [DatabaseDefinition] based on the [serializableModel].
+/// Create the target [DatabaseDefinition] based on the [serializableModels].
 DatabaseDefinition createDatabaseDefinitionFromModels(
   List<SerializableModelDefinition> serializableModels,
   String moduleName,
@@ -31,29 +34,12 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                   // The id column is not null, since it is auto generated.
                   isNullable: column.name != 'id' && column.type.nullable,
                   dartType: column.type.toString(),
-                  columnDefault: SqlGenerator.forDialect(dialect)
-                      .getColumnDefault(
-                        column.type,
-                        column.defaultPersistValue,
-                        classDefinition.tableName!,
-                      ),
+                  columnDefault: _parseColumnDefault(column),
                   vectorDimension: column.type.vectorDimension,
                 ),
           ],
           foreignKeys: _createForeignKeys(classDefinition),
           indexes: [
-            IndexDefinition(
-              indexName: '${classDefinition.tableName!}_pkey',
-              elements: [
-                IndexElementDefinition(
-                  definition: 'id',
-                  type: IndexElementDefinitionType.column,
-                ),
-              ],
-              type: 'btree',
-              isUnique: true,
-              isPrimary: true,
-            ),
             for (var index in classDefinition.indexesIncludingInherited)
               IndexDefinition(
                 indexName: index.name,
@@ -93,6 +79,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
   _sortTableDefinitions(tables);
 
   return DatabaseDefinition(
+    schemaVersion: currentSchemaVersion,
     moduleName: moduleName,
     tables: tables,
     migrationApiVersion: DatabaseConstants.migrationApiVersion,
@@ -135,6 +122,58 @@ List<ForeignKeyDefinition> _createForeignKeys(
   }
 
   return foreignKeys;
+}
+
+/// Parses the default value for a column.
+///
+/// String defaults are stored in SQL-escaped form so they can be used directly
+/// in SQL without further escaping or unescaping during normalization.
+///
+/// If the column is an enum, it returns the value in the expected format for
+/// the enum serialization.
+///
+/// The transformations in this function match the expected type of the column
+/// on all database implementations.
+dynamic _parseColumnDefault(SerializableModelFieldDefinition column) {
+  final defaultPersistValue = column.defaultPersistValue;
+  final defaultValueType = column.type.defaultValueType;
+  if (defaultPersistValue == null || defaultValueType == null) return null;
+
+  switch (defaultValueType) {
+    case DefaultValueAllowedType.string:
+    case DefaultValueAllowedType.uri:
+      return escapeSqlString(defaultPersistValue);
+    case DefaultValueAllowedType.uuidValue:
+      // Special values like "random" and "random_v7" are SQL function names,
+      // not string literals - return as-is without escaping.
+      if (defaultPersistValue == defaultUuidValueRandom ||
+          defaultPersistValue == defaultUuidValueRandomV7) {
+        return defaultPersistValue;
+      }
+      return escapeSqlString(defaultPersistValue);
+    case DefaultValueAllowedType.int:
+    case DefaultValueAllowedType.bool:
+    case DefaultValueAllowedType.double:
+    case DefaultValueAllowedType.dateTime:
+      return defaultPersistValue.toString();
+    case DefaultValueAllowedType.bigInt:
+      // BigInt is stored in as text in the database, so keep the abstract
+      // default as a quoted text literal to match database introspection.
+      return escapeSqlString("'${defaultPersistValue.toString()}'");
+    case DefaultValueAllowedType.duration:
+      // Duration is stored as bigint milliseconds in the database.
+      return parseDuration(defaultPersistValue).toJson().toString();
+    case DefaultValueAllowedType.isEnum:
+      final enumDefinition = column.type.enumDefinition;
+      if (enumDefinition == null) return null;
+      return switch (enumDefinition.serialized) {
+        // Matches the expected value format for an integer column.
+        EnumSerialization.byIndex =>
+          '${enumDefinition.values.indexWhere((e) => e.name == defaultPersistValue)}',
+        // Matches the expected value format for a text column.
+        EnumSerialization.byName => escapeSqlString("'$defaultPersistValue'"),
+      };
+  }
 }
 
 void _sortTableDefinitions(List<TableDefinition> tables) {

@@ -1,6 +1,9 @@
 ### Defines the structure of the database used by Serverpod.
 class: DatabaseDefinition
 fields:
+  ### Schema version of the definition format.
+  schemaVersion: int, default=1
+
   ### The name of the database.
   ### Null if the name is not available.
   name: String?

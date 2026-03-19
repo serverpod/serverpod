@@ -60,7 +60,11 @@ fields:
         databaseTarget: targetDefinition,
       );
 
-      var psql = migration.toPgSql(installedModules: [], removedModules: []);
+      var psql = migration.toPgSql(
+        databaseDefinition: targetDefinition,
+        installedModules: [],
+        removedModules: [],
+      );
 
       var dropTableSourceIndex = psql.indexOf('DROP TABLE "source"');
       var dropTableTargetIndex = psql.indexOf('DROP TABLE "target"');
@@ -136,7 +140,11 @@ fields:
         databaseTarget: targetDefinition,
       );
 
-      var psql = migration.toPgSql(installedModules: [], removedModules: []);
+      var psql = migration.toPgSql(
+        databaseDefinition: targetDefinition,
+        installedModules: [],
+        removedModules: [],
+      );
 
       var dropTableSourceIndex = psql.indexOf('DROP TABLE "source"');
       var dropTableTargetIndex = psql.indexOf('DROP TABLE "target"');
@@ -212,7 +220,11 @@ fields:
         databaseTarget: targetDefinition,
       );
 
-      var psql = migration.toPgSql(installedModules: [], removedModules: []);
+      var psql = migration.toPgSql(
+        databaseDefinition: targetDefinition,
+        installedModules: [],
+        removedModules: [],
+      );
 
       var dropTableSourceIndex = psql.indexOf('DROP TABLE "b"');
       var dropTableTargetIndex = psql.indexOf('DROP TABLE "a"');
@@ -307,7 +319,11 @@ fields:
         databaseTarget: targetDefinition,
       );
 
-      var psql = migration.toPgSql(installedModules: [], removedModules: []);
+      var psql = migration.toPgSql(
+        databaseDefinition: targetDefinition,
+        installedModules: [],
+        removedModules: [],
+      );
 
       expect(psql, isNot(contains('"c"'))); // C is unchanged
     },
@@ -369,7 +385,11 @@ fields:
         databaseTarget: targetDefinition,
       );
 
-      var psql = migration.toPgSql(installedModules: [], removedModules: []);
+      var psql = migration.toPgSql(
+        databaseDefinition: targetDefinition,
+        installedModules: [],
+        removedModules: [],
+      );
 
       var dropTableSourceIndex = psql.indexOf(
         'DROP TABLE "source"',

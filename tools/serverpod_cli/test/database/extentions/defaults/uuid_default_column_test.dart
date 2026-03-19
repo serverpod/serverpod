@@ -1,5 +1,5 @@
 import 'package:serverpod_cli/src/database/extensions.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -28,7 +28,7 @@ void main() {
         name: 'uuid',
         columnType: ColumnType.uuid,
         isNullable: false,
-        columnDefault: 'gen_random_uuid()',
+        columnDefault: defaultUuidValueRandom,
         dartType: 'UuidValue',
       );
 
@@ -48,7 +48,7 @@ void main() {
         name: 'uuid',
         columnType: ColumnType.uuid,
         isNullable: false,
-        columnDefault: 'gen_random_uuid_v7()',
+        columnDefault: defaultUuidValueRandomV7,
         dartType: 'UuidValue',
       );
 
@@ -68,7 +68,7 @@ void main() {
         name: 'uuid',
         columnType: ColumnType.uuid,
         isNullable: false,
-        columnDefault: "'550e8400-e29b-41d4-a716-446655440000'::uuid",
+        columnDefault: "'550e8400-e29b-41d4-a716-446655440000'",
         dartType: 'UuidValue',
       );
 
@@ -107,7 +107,7 @@ void main() {
         name: 'uuid',
         columnType: ColumnType.uuid,
         isNullable: true,
-        columnDefault: 'gen_random_uuid()',
+        columnDefault: defaultUuidValueRandom,
         dartType: 'UuidValue',
       );
 

@@ -37,7 +37,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'nextval(\'channel_id_seq\'::regclass)',
+          columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
           name: 'name',
@@ -53,21 +53,7 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'channel_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-      ],
+      indexes: [],
       managed: true,
     ),
     ..._i3.Protocol.targetTableDefinitions,

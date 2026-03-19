@@ -60,7 +60,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'nextval(\'serverpod_auth_key_id_seq\'::regclass)',
+          columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
           name: 'userId',
@@ -90,19 +90,6 @@ class Protocol extends _i1.SerializationManagerServer {
       foreignKeys: [],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'serverpod_auth_key_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
           indexName: 'serverpod_auth_key_userId_idx',
           tableSpace: null,
           elements: [
@@ -129,7 +116,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'nextval(\'serverpod_email_auth_id_seq\'::regclass)',
+          columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
           name: 'userId',
@@ -152,19 +139,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       foreignKeys: [],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_email_auth_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'serverpod_email_auth_email',
           tableSpace: null,
@@ -192,8 +166,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault:
-              'nextval(\'serverpod_email_create_request_id_seq\'::regclass)',
+          columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
           name: 'userName',
@@ -223,19 +196,6 @@ class Protocol extends _i1.SerializationManagerServer {
       foreignKeys: [],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'serverpod_email_create_request_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
           indexName: 'serverpod_email_auth_create_account_request_idx',
           tableSpace: null,
           elements: [
@@ -262,8 +222,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault:
-              'nextval(\'serverpod_email_failed_sign_in_id_seq\'::regclass)',
+          columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
           name: 'email',
@@ -286,19 +245,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       foreignKeys: [],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_email_failed_sign_in_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'serverpod_email_failed_sign_in_email_idx',
           tableSpace: null,
@@ -339,7 +285,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'nextval(\'serverpod_email_reset_id_seq\'::regclass)',
+          columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
           name: 'userId',
@@ -362,19 +308,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       foreignKeys: [],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_email_reset_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'serverpod_email_reset_verification_idx',
           tableSpace: null,
@@ -402,8 +335,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault:
-              'nextval(\'serverpod_google_refresh_token_id_seq\'::regclass)',
+          columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
           name: 'userId',
@@ -420,19 +352,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       foreignKeys: [],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_google_refresh_token_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'serverpod_google_refresh_token_userId_idx',
           tableSpace: null,
@@ -460,7 +379,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'nextval(\'serverpod_user_image_id_seq\'::regclass)',
+          columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
           name: 'userId',
@@ -483,19 +402,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       foreignKeys: [],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_user_image_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'serverpod_user_image_user_id',
           tableSpace: null,
@@ -527,7 +433,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
-          columnDefault: 'nextval(\'serverpod_user_info_id_seq\'::regclass)',
+          columnDefault: 'serial',
         ),
         _i2.ColumnDefinition(
           name: 'userIdentifier',
@@ -580,19 +486,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       foreignKeys: [],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_user_info_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'serverpod_user_info_user_identifier',
           tableSpace: null,

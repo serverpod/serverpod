@@ -16,14 +16,16 @@ import 'package:serverpod_database/serverpod_database.dart' as _i2;
 /// Defines the structure of the database used by Serverpod.
 abstract class DatabaseDefinition implements _i1.SerializableModel {
   DatabaseDefinition._({
+    int? schemaVersion,
     this.name,
     required this.moduleName,
     required this.tables,
     required this.installedModules,
     required this.migrationApiVersion,
-  });
+  }) : schemaVersion = schemaVersion ?? 1;
 
   factory DatabaseDefinition({
+    int? schemaVersion,
     String? name,
     required String moduleName,
     required List<_i2.TableDefinition> tables,
@@ -33,6 +35,7 @@ abstract class DatabaseDefinition implements _i1.SerializableModel {
 
   factory DatabaseDefinition.fromJson(Map<String, dynamic> jsonSerialization) {
     return DatabaseDefinition(
+      schemaVersion: jsonSerialization['schemaVersion'] as int?,
       name: jsonSerialization['name'] as String?,
       moduleName: jsonSerialization['moduleName'] as String,
       tables: _i2.Protocol().deserialize<List<_i2.TableDefinition>>(
@@ -45,6 +48,9 @@ abstract class DatabaseDefinition implements _i1.SerializableModel {
       migrationApiVersion: jsonSerialization['migrationApiVersion'] as int,
     );
   }
+
+  /// Schema version of the definition format.
+  int schemaVersion;
 
   /// The name of the database.
   /// Null if the name is not available.
@@ -67,6 +73,7 @@ abstract class DatabaseDefinition implements _i1.SerializableModel {
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   DatabaseDefinition copyWith({
+    int? schemaVersion,
     String? name,
     String? moduleName,
     List<_i2.TableDefinition>? tables,
@@ -77,6 +84,7 @@ abstract class DatabaseDefinition implements _i1.SerializableModel {
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'serverpod.DatabaseDefinition',
+      'schemaVersion': schemaVersion,
       if (name != null) 'name': name,
       'moduleName': moduleName,
       'tables': tables.toJson(valueToJson: (v) => v.toJson()),
@@ -97,12 +105,14 @@ class _Undefined {}
 
 class _DatabaseDefinitionImpl extends DatabaseDefinition {
   _DatabaseDefinitionImpl({
+    int? schemaVersion,
     String? name,
     required String moduleName,
     required List<_i2.TableDefinition> tables,
     required List<_i2.DatabaseMigrationVersionModel> installedModules,
     required int migrationApiVersion,
   }) : super._(
+         schemaVersion: schemaVersion,
          name: name,
          moduleName: moduleName,
          tables: tables,
@@ -115,6 +125,7 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
   @_i1.useResult
   @override
   DatabaseDefinition copyWith({
+    int? schemaVersion,
     Object? name = _Undefined,
     String? moduleName,
     List<_i2.TableDefinition>? tables,
@@ -122,6 +133,7 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
     int? migrationApiVersion,
   }) {
     return DatabaseDefinition(
+      schemaVersion: schemaVersion ?? this.schemaVersion,
       name: name is String? ? name : this.name,
       moduleName: moduleName ?? this.moduleName,
       tables: tables ?? this.tables.map((e0) => e0.copyWith()).toList(),

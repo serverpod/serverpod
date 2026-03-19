@@ -2,6 +2,7 @@ import 'package:meta/meta.dart';
 
 import '../../../serverpod_database.dart';
 import '../../util/column_type_extension.dart';
+import 'postgres_default_value.dart';
 
 @internal
 /// Analyzes the structure of [Database]s.
@@ -82,18 +83,18 @@ ORDER BY ordinal_position;
 ''',
     );
 
-    return queryResult
-        .map(
-          (e) => ColumnDefinition(
-            name: e[0],
-            columnDefault: e[1],
-            columnType: ExtendedColumnType.fromSqlType(e[3]),
-            // SQL outputs YES or NO. So we have to convert it to a bool manually.
-            isNullable: e[2] == 'YES',
-            vectorDimension: e[4],
-          ),
-        )
-        .toList();
+    return queryResult.map((e) {
+      var columnType = ExtendedColumnType.fromSqlType(e[3]);
+
+      return ColumnDefinition(
+        name: e[0] as String,
+        columnDefault: pgSqlToAbstractDefault(e[1] as String?, columnType),
+        columnType: columnType,
+        // SQL outputs YES or NO. So we have to convert it to a bool manually.
+        isNullable: e[2] == 'YES',
+        vectorDimension: e[4],
+      );
+    }).toList();
   }
 
   @override
@@ -161,7 +162,7 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
 ''',
     );
 
-    return queryResult.map((index) {
+    var indexes = queryResult.map((index) {
       var indkeyNames = index[4];
       var indkeyIsColumn = index[5];
       if (indkeyNames is! List<String> || indkeyIsColumn is! List<bool>) {
@@ -230,6 +231,8 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
         parameters: parameters.isEmpty ? null : parameters,
       );
     }).toList();
+
+    return indexes.where((index) => !index.isPrimary).toList();
   }
 
   @override

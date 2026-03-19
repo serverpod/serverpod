@@ -70,7 +70,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
-          columnDefault: 'gen_random_uuid_v7()',
+          columnDefault: 'random_v7',
         ),
         _i2.ColumnDefinition(
           name: 'authUserId',
@@ -113,14 +113,14 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'createdAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
       ],
       foreignKeys: [
@@ -136,19 +136,6 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_auth_core_jwt_refresh_token_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName: 'serverpod_auth_core_jwt_refresh_token_last_updated_at',
           tableSpace: null,
@@ -176,7 +163,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
-          columnDefault: 'gen_random_uuid_v7()',
+          columnDefault: 'random_v7',
         ),
         _i2.ColumnDefinition(
           name: 'authUserId',
@@ -207,7 +194,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'imageId',
@@ -240,19 +227,6 @@ class Protocol extends _i1.SerializationManagerServer {
       ],
       indexes: [
         _i2.IndexDefinition(
-          indexName: 'serverpod_auth_core_profile_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
           indexName: 'serverpod_auth_profile_user_profile_email_auth_user_id',
           tableSpace: null,
           elements: [
@@ -279,7 +253,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
-          columnDefault: 'gen_random_uuid_v7()',
+          columnDefault: 'random_v7',
         ),
         _i2.ColumnDefinition(
           name: 'userProfileId',
@@ -292,7 +266,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'storageId',
@@ -325,21 +299,7 @@ class Protocol extends _i1.SerializationManagerServer {
           matchType: null,
         ),
       ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_auth_core_profile_image_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-      ],
+      indexes: [],
       managed: true,
     ),
     _i2.TableDefinition(
@@ -353,7 +313,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
-          columnDefault: 'gen_random_uuid_v7()',
+          columnDefault: 'random_v7',
         ),
         _i2.ColumnDefinition(
           name: 'authUserId',
@@ -372,14 +332,14 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'lastUsedAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'expiresAt',
@@ -424,21 +384,7 @@ class Protocol extends _i1.SerializationManagerServer {
           matchType: null,
         ),
       ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_auth_core_session_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-      ],
+      indexes: [],
       managed: true,
     ),
     _i2.TableDefinition(
@@ -452,7 +398,7 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
-          columnDefault: 'gen_random_uuid_v7()',
+          columnDefault: 'random_v7',
         ),
         _i2.ColumnDefinition(
           name: 'createdAt',
@@ -474,21 +420,7 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_auth_core_user_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-      ],
+      indexes: [],
       managed: true,
     ),
   ];

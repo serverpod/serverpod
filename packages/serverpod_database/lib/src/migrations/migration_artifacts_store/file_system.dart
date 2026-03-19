@@ -5,6 +5,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../../serverpod_database.dart';
+import '../../definition/definition_normalizer.dart';
 
 /// Stores migration artifacts using the current file-system based format.
 class FileSystemMigrationArtifactStore implements MigrationArtifactStore {
@@ -57,6 +58,13 @@ class FileSystemMigrationArtifactStore implements MigrationArtifactStore {
       MigrationConstants.databaseDefinitionJSONPath(_projectDirectory, version),
     );
 
+    var migration = await _readRequiredProtocolFile<DatabaseMigration>(
+      MigrationConstants.databaseMigrationJSONPath(
+        _projectDirectory,
+        version,
+      ),
+    );
+
     return MigrationVersionArtifacts(
       version: version,
       definitionSql: await _readRequiredFile(
@@ -68,19 +76,18 @@ class FileSystemMigrationArtifactStore implements MigrationArtifactStore {
       migrationSql: await _readRequiredFile(
         MigrationConstants.databaseMigrationSQLPath(_projectDirectory, version),
       ),
-      definition: definition,
-      projectDefinition: await _readRequiredProtocolFile<DatabaseDefinition>(
-        MigrationConstants.databaseDefinitionProjectJSONPath(
-          _projectDirectory,
-          version,
+      definition: normalizeDefinitionToV2(definition),
+      projectDefinition: normalizeDefinitionToV2(
+        await _readRequiredProtocolFile<DatabaseDefinition>(
+          MigrationConstants.databaseDefinitionProjectJSONPath(
+            _projectDirectory,
+            version,
+          ),
         ),
       ),
-      migration: await _readRequiredProtocolFile<DatabaseMigration>(
-        MigrationConstants.databaseMigrationJSONPath(
-          _projectDirectory,
-          version,
-        ),
-      ),
+      migration: definition.schemaVersion < 2
+          ? normalizeMigrationToV2(migration, definition)
+          : migration,
     );
   }
 

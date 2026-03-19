@@ -100,7 +100,7 @@ void main() {
           var newColumn = columns[2];
           expect(
             newColumn.columnDefault,
-            'CURRENT_TIMESTAMP',
+            'now',
             reason: 'Could not find "columnDefault" for "newColumn"',
           );
         },
@@ -194,7 +194,7 @@ void main() {
           var existingColumn = columns[2];
           expect(
             existingColumn.columnDefault,
-            'CURRENT_TIMESTAMP',
+            'now',
             reason: 'Could not find "columnDefault" for "existingColumn"',
           );
         },
