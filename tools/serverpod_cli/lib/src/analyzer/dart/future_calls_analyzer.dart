@@ -15,7 +15,6 @@ import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_cal
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/model_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
-import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
@@ -42,26 +41,34 @@ class FutureCallsAnalyzer {
        ),
        absoluteIncludedPaths = directory.absolute.path;
 
-  Set<FutureCallDefinition> _futureCallDefinitions = {};
+  /// Files that contained future call classes in the last full [analyze] run.
+  final Set<String> _knownFutureCallFiles = {};
+
+  /// Files that contained future call classes but had analysis errors.
+  /// When this set is non-empty, any file change is treated as potentially
+  /// relevant because fixing a dependency might unblock the errored file.
+  final Set<String> _erroredFutureCallFiles = {};
 
   /// Inform the analyzer that the provided [filePaths] have been updated.
   ///
-  /// This will trigger a re-analysis of the files and return true if the
-  /// updated files should trigger a code generation.
+  /// Refreshes the Dart analysis context for the changed files and returns
+  /// `true` if any of them are (or were) future call files, meaning code
+  /// generation should run. The actual full analysis is deferred to the
+  /// next [analyze] call.
   Future<bool> updateFileContexts(Set<String> filePaths) async {
     await _refreshContextForFiles(filePaths);
 
-    var oldDefinitionsLength = _futureCallDefinitions.length;
-    await analyze(
-      collector: CodeGenerationCollector(),
-      analyzedModels: _cachedAnalyzedModels,
-    );
+    // If there are errored future call files, any file change might fix them.
+    if (_erroredFutureCallFiles.isNotEmpty) return true;
 
-    if (_futureCallDefinitions.length != oldDefinitionsLength) {
-      return true;
+    for (var path in filePaths) {
+      // File was previously known to contain future calls.
+      if (_knownFutureCallFiles.contains(path)) return true;
+      // File now appears to contain future calls.
+      if (_isFutureCallFile(File(path))) return true;
     }
 
-    return filePaths.any((e) => _isFutureCallFile(File(e)));
+    return false;
   }
 
   /// Analyze all files in the [AnalysisContextCollection] for
@@ -124,6 +131,7 @@ class FutureCallsAnalyzer {
     var futureCallDefs = <FutureCallDefinition>[];
 
     List<(ResolvedLibraryResult, String)> validLibraries = [];
+    List<String> erroredFiles = [];
     Map<String, int> futureCallClassMap = {};
 
     final templateRegistry = DartDocTemplateRegistry();
@@ -134,6 +142,7 @@ class FutureCallsAnalyzer {
 
       var maybeDartErrors = await _getErrorsForFile(library.session, filePath);
       if (maybeDartErrors.isNotEmpty) {
+        erroredFiles.add(filePath);
         collector.addError(
           SourceSpanSeverityException(
             'FutureCall analysis skipped due to invalid Dart syntax. Please '
@@ -189,7 +198,14 @@ class FutureCallsAnalyzer {
     // this package to avoid generating them as well.
     futureCallDefs.removeWhere((e) => e.filePath.startsWith('package:'));
 
-    _futureCallDefinitions = futureCallDefs.toSet();
+    // Track which files contain future calls for fast incremental checks.
+    _knownFutureCallFiles
+      ..clear()
+      ..addAll(validLibraries.map((e) => e.$2));
+    _erroredFutureCallFiles
+      ..clear()
+      ..addAll(erroredFiles);
+
     return futureCallDefs;
   }
 

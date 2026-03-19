@@ -11,7 +11,6 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
-import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
@@ -34,23 +33,34 @@ class EndpointsAnalyzer {
       ),
       absoluteIncludedPaths = directory.absolute.path;
 
-  Set<EndpointDefinition> _endpointDefinitions = {};
+  /// Files that contained endpoint classes in the last full [analyze] run.
+  final Set<String> _knownEndpointFiles = {};
+
+  /// Files that contained endpoint classes but had analysis errors.
+  /// When this set is non-empty, any file change is treated as potentially
+  /// relevant because fixing a dependency might unblock the errored endpoint.
+  final Set<String> _erroredEndpointFiles = {};
 
   /// Inform the analyzer that the provided [filePaths] have been updated.
   ///
-  /// This will trigger a re-analysis of the files and return true if the
-  /// updated files should trigger a code generation.
+  /// Refreshes the Dart analysis context for the changed files and returns
+  /// `true` if any of them are (or were) endpoint files, meaning code
+  /// generation should run. The actual full analysis is deferred to the
+  /// next [analyze] call.
   Future<bool> updateFileContexts(Set<String> filePaths) async {
     await _refreshContextForFiles(filePaths);
 
-    var oldDefinitionsLength = _endpointDefinitions.length;
-    await analyze(collector: CodeGenerationCollector());
+    // If there are errored endpoint files, any file change might fix them.
+    if (_erroredEndpointFiles.isNotEmpty) return true;
 
-    if (_endpointDefinitions.length != oldDefinitionsLength) {
-      return true;
+    for (var path in filePaths) {
+      // File was previously known to contain endpoints.
+      if (_knownEndpointFiles.contains(path)) return true;
+      // File now appears to contain endpoints.
+      if (_isEndpointFile(File(path))) return true;
     }
 
-    return filePaths.any((e) => _isEndpointFile(File(e)));
+    return false;
   }
 
   /// Analyze all files in the [AnalysisContextCollection].
@@ -67,6 +77,7 @@ class EndpointsAnalyzer {
     var endpointDefs = <EndpointDefinition>[];
 
     List<(ResolvedLibraryResult, String)> validLibraries = [];
+    List<String> erroredFiles = [];
     Map<String, int> endpointClassMap = {};
 
     final templateRegistry = DartDocTemplateRegistry();
@@ -83,6 +94,7 @@ class EndpointsAnalyzer {
 
       var maybeDartErrors = await _getErrorsForFile(library.session, filePath);
       if (maybeDartErrors.isNotEmpty) {
+        erroredFiles.add(filePath);
         collector.addError(
           SourceSpanSeverityException(
             'Endpoint analysis skipped due to invalid Dart syntax. Please '
@@ -137,7 +149,14 @@ class EndpointsAnalyzer {
     // this package to avoid generating them as well.
     endpointDefs.removeWhere((e) => e.filePath.startsWith('package:'));
 
-    _endpointDefinitions = endpointDefs.toSet();
+    // Track which files contain endpoints for fast incremental checks.
+    _knownEndpointFiles
+      ..clear()
+      ..addAll(validLibraries.map((e) => e.$2));
+    _erroredEndpointFiles
+      ..clear()
+      ..addAll(erroredFiles);
+
     return endpointDefs;
   }
 
