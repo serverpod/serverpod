@@ -217,7 +217,7 @@ class WatchSession {
   }
 }
 
-extension on FileChangeEvent {
+extension FileChangeEventGenerationRequirements on FileChangeEvent {
   /// Creates generation requirements from a file change event.
   GenerationRequirements toGenerationRequirements() {
     return GenerationRequirements(
