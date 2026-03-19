@@ -308,4 +308,48 @@ void main() {
       },
     );
   });
+
+  test(
+    'Given stamp file that does not exist, '
+    'when calling readGenerationStamp, '
+    'then it returns an empty set.',
+    () {
+      final files = readGenerationStamp(config);
+      expect(files, isEmpty);
+    },
+  );
+
+  test(
+    'Given stamp file that exists with only version and timestamp, '
+    'when calling readGenerationStamp, '
+    'then it returns an empty set.',
+    () async {
+      await writeGenerationStamp(
+        config,
+        generatedFiles: {},
+      );
+
+      final files = readGenerationStamp(config);
+
+      expect(files, isEmpty);
+    },
+  );
+
+  test(
+    'Given stamp file that exists with generated files, '
+    'when calling readGenerationStamp, '
+    'then it returns the file paths.',
+    () async {
+      await writeGenerationStamp(
+        config,
+        generatedFiles: {'/tmp/a.dart', '/tmp/b.dart', '/tmp/models/c.dart'},
+      );
+
+      final files = readGenerationStamp(config);
+
+      expect(files, contains('/tmp/a.dart'));
+      expect(files, contains('/tmp/b.dart'));
+      expect(files, contains('/tmp/models/c.dart'));
+    },
+  );
 }
