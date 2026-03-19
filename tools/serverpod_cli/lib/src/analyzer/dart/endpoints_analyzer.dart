@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
@@ -45,7 +46,9 @@ class EndpointsAnalyzer {
        absoluteIncludedPaths = directory.absolute.path;
 
   /// Cached per-file analysis results for endpoint files.
-  final Map<String, _CachedFileResult> _fileCache = {};
+  /// Uses [SplayTreeMap] to keep keys sorted, ensuring deterministic
+  /// iteration order when collecting definitions across runs.
+  final _fileCache = SplayTreeMap<String, _CachedFileResult>();
 
   /// Cached template entries for files that don't contain endpoints.
   /// These are tracked separately since they don't appear in [_fileCache].
@@ -232,6 +235,7 @@ class EndpointsAnalyzer {
     }
 
     // Phase 5: Collect all endpoint definitions from cache.
+    // _fileCache is a SplayTreeMap so iteration is in sorted key order.
     var endpointDefs = <EndpointDefinition>[];
     for (var result in _fileCache.values) {
       endpointDefs.addAll(result.definitions);

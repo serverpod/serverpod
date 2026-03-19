@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
@@ -50,7 +51,9 @@ class FutureCallsAnalyzer {
        absoluteIncludedPaths = directory.absolute.path;
 
   /// Cached per-file analysis results for future call files.
-  final Map<String, _CachedFutureCallFileResult> _fileCache = {};
+  /// Uses [SplayTreeMap] to keep keys sorted, ensuring deterministic
+  /// iteration order when collecting definitions across runs.
+  final _fileCache = SplayTreeMap<String, _CachedFutureCallFileResult>();
 
   /// Files that need re-analysis on the next [analyze] call.
   final Set<String> _dirtyFiles = {};
@@ -258,6 +261,7 @@ class FutureCallsAnalyzer {
     }
 
     // Phase 4: Collect all future call definitions from cache.
+    // _fileCache is a SplayTreeMap so iteration is in sorted key order.
     var futureCallDefs = <FutureCallDefinition>[];
     for (var result in _fileCache.values) {
       futureCallDefs.addAll(result.definitions);
