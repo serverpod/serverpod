@@ -35,17 +35,7 @@ abstract class ServerpodCodeGenerator {
           config: config,
         ),
     };
-    for (var file in allFiles.entries) {
-      try {
-        log.debug('Generating ${file.key}.');
-        var out = File(file.key);
-        await out.create(recursive: true);
-        await out.writeAsString(file.value, flush: true);
-      } catch (e, stackTrace) {
-        log.error('Failed to generate ${file.key}!');
-        printInternalError(e, stackTrace);
-      }
-    }
+    await _writeFiles(allFiles);
 
     return allFiles.keys.toList();
   }
@@ -65,19 +55,32 @@ abstract class ServerpodCodeGenerator {
           config: config,
         ),
     };
-    for (var file in allFiles.entries) {
+    await _writeFiles(allFiles);
+
+    return allFiles.keys.toList();
+  }
+
+  /// Writes generated files to disk, skipping files whose content is
+  /// unchanged to avoid unnecessary file-system modification timestamps.
+  static Future<void> _writeFiles(Map<String, String> files) async {
+    for (var file in files.entries) {
       try {
         log.debug('Generating ${file.key}.');
         var out = File(file.key);
+
+        // Skip the write if the file already has the same content.
+        if (out.existsSync()) {
+          final existing = await out.readAsString();
+          if (existing == file.value) continue;
+        }
+
         await out.create(recursive: true);
         await out.writeAsString(file.value, flush: true);
       } catch (e, stackTrace) {
-        log.error('Failed to generate ${file.key}');
+        log.error('Failed to generate ${file.key}.');
         printInternalError(e, stackTrace);
       }
     }
-
-    return allFiles.keys.toList();
   }
 
   /// Removes files from previous generation runs.
