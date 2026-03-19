@@ -9,9 +9,9 @@ import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
-import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
+import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
 import 'definitions.dart';

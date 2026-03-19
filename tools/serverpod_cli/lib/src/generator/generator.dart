@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
+import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// Holds the set of analyzers needed for code generation.
