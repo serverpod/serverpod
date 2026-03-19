@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
@@ -10,7 +11,11 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 ///
 /// The function should update analyzer contexts and generate code as needed.
 /// Returns true on success (including when no generation was needed).
-typedef GenerateAction = Future<bool> Function(Set<String> affectedPaths);
+typedef GenerateAction =
+    Future<bool> Function(
+      Set<String> affectedPaths,
+      GenerationRequirements requirements,
+    );
 
 /// Creates a new server process, starts it, connects VM service,
 /// and returns it ready for use.
@@ -75,7 +80,7 @@ class WatchSession {
       return;
     }
 
-    log.info('Files changed, reloading server...');
+    log.info('\nFiles changed, reloading server...');
     if (event.dartFiles.isNotEmpty) log.debug('  .dart: ${event.dartFiles}');
     if (event.modelFiles.isNotEmpty) log.debug('  .spy: ${event.modelFiles}');
     if (event.packageConfigChanged) log.debug('  package_config.json changed');
@@ -89,7 +94,8 @@ class WatchSession {
       ...event.modelFiles,
     };
 
-    final genSuccess = await _generate(affectedPaths);
+    final genRequirements = event.toGenerationRequirements();
+    final genSuccess = await _generate(affectedPaths, genRequirements);
     if (!genSuccess) {
       log.error('Code generation failed. Server not reloaded.');
       return;
@@ -98,7 +104,10 @@ class WatchSession {
     // Without a compiler (--no-fes), the IDE handles compilation and reload.
     if (_compiler == null) return;
 
-    await _compileAndReload(event);
+    await _compileAndReload(
+      event,
+      modelFilesChanged: event.modelFiles.isNotEmpty,
+    );
   }
 
   /// Notifies the server of static file changes for browser refresh.
@@ -111,7 +120,10 @@ class WatchSession {
   }
 
   /// Compiles changed files and hot-reloads or restarts the server.
-  Future<void> _compileAndReload(FileChangeEvent event) async {
+  Future<void> _compileAndReload(
+    FileChangeEvent event, {
+    bool modelFilesChanged = false,
+  }) async {
     final compiler = _compiler!;
 
     // Compile changes. Merge any paths carried over from prior rejected
@@ -129,7 +141,7 @@ class WatchSession {
         compiler,
         rejectOnFailure: true,
       );
-    } else if (changedPaths.isNotEmpty) {
+    } else if (changedPaths.isNotEmpty || modelFilesChanged) {
       result = await compileWithProgress(
         'Compiling server',
         compiler,
@@ -137,9 +149,7 @@ class WatchSession {
         rejectOnFailure: true,
       );
     } else {
-      // Model-only changes: codegen already ran above. The generated .dart
-      // files will be picked up by the file watcher, triggering a new cycle
-      // with dartFiles populated.
+      // No changes to compile.
       return;
     }
 
@@ -203,6 +213,16 @@ class WatchSession {
           _done.complete(code);
         }
       }),
+    );
+  }
+}
+
+extension on FileChangeEvent {
+  /// Creates generation requirements from a file change event.
+  GenerationRequirements toGenerationRequirements() {
+    return GenerationRequirements(
+      generateModels: modelFiles.isNotEmpty,
+      generateProtocol: dartFiles.isNotEmpty || modelFiles.isNotEmpty,
     );
   }
 }

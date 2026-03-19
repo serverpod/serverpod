@@ -127,7 +127,7 @@ void main() {
 
     session = WatchSession(
       compiler: compiler,
-      generate: (affectedPaths) async {
+      generate: (affectedPaths, requirements) async {
         generateCalls.add(affectedPaths);
         return generateSuccess;
       },

@@ -195,12 +195,18 @@ Future<bool> generateInIsolate(GeneratorConfig config) {
 /// generation stamp (use when the caller already knows files changed, e.g.
 /// from a file watcher event).
 ///
+/// The [requirements] parameter controls which parts of the generation
+/// pipeline run. When model files change, use [GenerationRequirements.full].
+/// When only Dart files change, use [GenerationRequirements.protocolOnly]
+/// to skip expensive model generation.
+///
 /// Returns `true` if generation succeeded or was not needed.
 Future<bool> analyzeAndGenerate({
   required GeneratorConfig config,
   required Analyzers analyzers,
   required Set<String> affectedPaths,
   bool skipStalenessCheck = false,
+  GenerationRequirements requirements = GenerationRequirements.full,
 }) async {
   bool needsGenerate = false;
   await log.progress('Analyzing changes', () async {
@@ -209,13 +215,18 @@ Future<bool> analyzeAndGenerate({
       analyzers: analyzers,
       affectedPaths: affectedPaths,
       skipStalenessCheck: skipStalenessCheck,
+      requirements: requirements,
     );
     return true;
   });
   if (!needsGenerate) return true;
   late final GenerateResult result;
   await log.progress('Generating code', () async {
-    result = await performGenerate(config: config, analyzers: analyzers);
+    result = await performGenerate(
+      config: config,
+      analyzers: analyzers,
+      requirements: requirements,
+    );
     return result.success;
   });
   if (result.success) {
@@ -269,4 +280,35 @@ Future<bool> _performGenerateWatch({
 
   // The await-for loop above runs indefinitely; this is unreachable.
   return true;
+}
+
+/// Specifies which parts of the code generation pipeline need to run.
+///
+/// Used to optimize watch-mode generation by skipping expensive steps
+/// (like model generation) when they're not needed.
+class GenerationRequirements {
+  /// Whether model generation is required.
+  /// Set to `true` when model files (.spy, .spy.yaml, .spy.yml) have changed.
+  final bool generateModels;
+
+  /// Whether endpoint analysis and protocol generation is required.
+  /// Set to `true` when any Dart files have changed.
+  final bool generateProtocol;
+
+  const GenerationRequirements({
+    required this.generateModels,
+    required this.generateProtocol,
+  });
+
+  /// Full generation - models and protocol.
+  static const full = GenerationRequirements(
+    generateModels: true,
+    generateProtocol: true,
+  );
+
+  /// Protocol-only generation - skips expensive model generation.
+  static const protocolOnly = GenerationRequirements(
+    generateModels: false,
+    generateProtocol: true,
+  );
 }

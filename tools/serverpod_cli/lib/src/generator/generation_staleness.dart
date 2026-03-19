@@ -89,6 +89,20 @@ Future<void> writeGenerationStamp(
   await file.writeAsString(buf.toString());
 }
 
+/// Reads the list of previously generated files from the generation stamp.
+///
+/// Returns an empty set if the stamp file doesn't exist or is malformed.
+Set<String> readGenerationStamp(GeneratorConfig config) {
+  try {
+    final stampFile = File(_stampFilePath(config));
+    final lines = stampFile.readAsLinesSync();
+    // First line is CLI version, second is timestamp, rest are file paths.
+    return lines.skip(2).where((l) => l.isNotEmpty).toSet();
+  } catch (e) {
+    return {};
+  }
+}
+
 /// Enumerates all source files that feed into code generation.
 Future<Set<String>> enumerateSourceFiles(GeneratorConfig config) async {
   final sources = <String>{};

@@ -289,10 +289,13 @@ Future<int> _runWatchMode({
   final allSources = await enumerateSourceFiles(config);
   if (!isGenerationUpToDate(config, allSources)) {
     // Generated code is stale! Block on generation before the server starts.
+    // Use full requirements for initial generation to ensure all models,
+    // endpoints, and future calls are properly generated.
     final genSuccess = await analyzeAndGenerate(
       config: config,
       analyzers: await analyzers,
       affectedPaths: allSources,
+      requirements: GenerationRequirements.full,
     );
     if (!genSuccess) {
       log.error('Code generation failed.');
@@ -309,13 +312,14 @@ Future<int> _runWatchMode({
       includeWeb: true,
       includeClientPackage: true,
     ),
-    generate: (Set<String> affectedPaths) async {
+    generate: (affectedPaths, requirements) async {
       // Wait for background priming to finish before touching analyzers.
       return analyzeAndGenerate(
         config: config,
         analyzers: await analyzers,
         affectedPaths: affectedPaths,
         skipStalenessCheck: true,
+        requirements: requirements,
       );
     },
     noFes: noFes,

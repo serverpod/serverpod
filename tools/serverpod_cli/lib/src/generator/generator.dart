@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
@@ -59,6 +60,10 @@ Future<Analyzers> createAndUpdateAnalyzers(GeneratorConfig config) async {
 /// Set to `true` when the caller already knows the files changed (e.g.
 /// from a file watcher event).
 ///
+/// The [requirements] parameter controls which analyzers to update.
+/// When [GenerationRequirements.generateModels] is `false`, the model
+/// analyzer is not updated (saving time when only Dart files changed).
+///
 /// Returns `true` if any of the changes are relevant for code generation
 /// (endpoint, future call, or model changes), `false` otherwise.
 Future<bool> updateAnalyzers({
@@ -66,6 +71,7 @@ Future<bool> updateAnalyzers({
   required Analyzers analyzers,
   required Set<String> affectedPaths,
   bool skipStalenessCheck = false,
+  GenerationRequirements requirements = GenerationRequirements.full,
 }) async {
   if (!skipStalenessCheck && isGenerationUpToDate(config, affectedPaths)) {
     log.debug('All affected files are older than generation stamp, skipping.');
@@ -74,25 +80,31 @@ Future<bool> updateAnalyzers({
 
   var shouldGenerate = false;
 
-  shouldGenerate |= await analyzers.endpoints.updateFileContexts(affectedPaths);
-  shouldGenerate |= await analyzers.futureCalls.updateFileContexts(
-    affectedPaths,
-  );
+  if (requirements.generateProtocol) {
+    shouldGenerate |= await analyzers.endpoints.updateFileContexts(
+      affectedPaths,
+    );
+    shouldGenerate |= await analyzers.futureCalls.updateFileContexts(
+      affectedPaths,
+    );
+  }
 
-  for (final path in affectedPaths) {
-    if (ModelHelper.isModelFile(path, loadConfig: config)) {
-      shouldGenerate = true;
-      final file = File(path);
-      if (file.existsSync()) {
-        analyzers.models.addYamlModel(
-          ModelHelper.createModelSourceForPath(
-            config,
-            path,
-            file.readAsStringSync(),
-          ),
-        );
-      } else {
-        analyzers.models.removeYamlModel(Uri.parse(p.absolute(path)));
+  if (requirements.generateModels) {
+    for (final path in affectedPaths) {
+      if (ModelHelper.isModelFile(path, loadConfig: config)) {
+        shouldGenerate = true;
+        final file = File(path);
+        if (file.existsSync()) {
+          analyzers.models.addYamlModel(
+            ModelHelper.createModelSourceForPath(
+              config,
+              path,
+              file.readAsStringSync(),
+            ),
+          );
+        } else {
+          analyzers.models.removeYamlModel(Uri.parse(p.absolute(path)));
+        }
       }
     }
   }
@@ -108,10 +120,15 @@ Future<bool> updateAnalyzers({
 typedef GenerateResult = ({bool success, Set<String> generatedFiles});
 
 /// Analyze the server package and generate the code.
+///
+/// When [requirements] is provided, only generates the specified parts.
+/// This allows watch mode to skip expensive model generation when only
+/// Dart files (endpoints/future calls) changed.
 Future<GenerateResult> performGenerate({
   bool dartFormat = true,
   required GeneratorConfig config,
   required Analyzers analyzers,
+  GenerationRequirements requirements = GenerationRequirements.full,
 }) async {
   bool success = true;
 
@@ -139,18 +156,29 @@ Future<GenerateResult> performGenerate({
     ...futureCallModels,
   ];
 
-  final generatedModelFiles =
-      await ServerpodCodeGenerator.generateSerializableModels(
-        models: allModels,
-        config: config,
-      );
+  List<String> generatedModelFiles = [];
 
+  if (requirements.generateModels) {
+    log.debug('Generating files for serializable models.');
+    generatedModelFiles =
+        await ServerpodCodeGenerator.generateSerializableModels(
+          models: allModels,
+          config: config,
+        );
+  }
+
+  if (!requirements.generateProtocol) {
+    return (success: success, generatedFiles: generatedModelFiles.toSet());
+  }
   log.debug('Analyzing the endpoints.');
+  final changedFiles = requirements.generateModels
+      ? generatedModelFiles.toSet()
+      : <String>{};
 
   final endpointAnalyzerCollector = CodeGenerationCollector();
   final endpoints = await analyzers.endpoints.analyze(
     collector: endpointAnalyzerCollector,
-    changedFiles: generatedModelFiles.toSet(),
+    changedFiles: changedFiles,
   );
 
   success &= !endpointAnalyzerCollector.hasSevereErrors;
@@ -161,7 +189,7 @@ Future<GenerateResult> performGenerate({
   var futureCallsAnalyzerCollector = CodeGenerationCollector();
   var futureCalls = await analyzers.futureCalls.analyze(
     collector: futureCallsAnalyzerCollector,
-    changedFiles: generatedModelFiles.toSet(),
+    changedFiles: changedFiles,
     analyzedModels: allModels,
   );
 
@@ -183,11 +211,31 @@ Future<GenerateResult> performGenerate({
       );
 
   log.debug('Cleaning old files.');
-
   final allGeneratedFiles = <String>{
     ...generatedModelFiles,
     ...generatedProtocolFiles,
   };
+
+  // When doing protocol-only generation, we need to preserve existing model
+  // files from the generation stamp so they don't get cleaned up.
+  if (!requirements.generateModels) {
+    final previouslyGeneratedModelsDirs = [
+      p.joinAll(config.generatedServeModelPathParts),
+      p.joinAll(config.generatedDartClientModelPathParts),
+      ...config.generatedSharedModelsPaths,
+    ];
+
+    // Keep previous model files so they don't get deleted.
+    final previousFiles = readGenerationStamp(config);
+    final previousModelFiles = previousFiles.where(
+      (f) => previouslyGeneratedModelsDirs.any((dir) => p.isWithin(dir, f)),
+    );
+
+    allGeneratedFiles.addAll(previousModelFiles);
+    log.debug(
+      'Preserving ${previousModelFiles.length} existing model files from stamp.',
+    );
+  }
 
   await ServerpodCodeGenerator.cleanPreviouslyGeneratedDartFiles(
     generatedFiles: allGeneratedFiles,
