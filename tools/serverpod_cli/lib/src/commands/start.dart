@@ -186,6 +186,8 @@ class StartCommand extends ServerpodCommand<StartOption> {
     );
 
     await serverProcess.start();
+    log.info('Server running.');
+
     final exitCode = await serverProcess.exitCode;
 
     if (exitCode != 0) {
