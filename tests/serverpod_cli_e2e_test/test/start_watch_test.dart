@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli_e2e_test/src/keyword_search_in_stream.dart';
 import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
@@ -10,9 +11,9 @@ import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:uuid/uuid.dart';
 
 const startWatchKeywords = [
-  'Server running.',
-  'Server reloaded.',
-  'Server restarted.',
+  serverRunning,
+  serverReloaded,
+  serverRestarted,
 ];
 
 /// Creates a `config/development.yaml` with port 0 (OS-assigned) to avoid

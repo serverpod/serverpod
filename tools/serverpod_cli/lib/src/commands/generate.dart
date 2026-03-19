@@ -7,6 +7,7 @@ import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
@@ -219,7 +220,7 @@ Future<bool> analyzeAndGenerate({
   });
   if (result.success) {
     await writeGenerationStamp(config, generatedFiles: result.generatedFiles);
-    log.info('Incremental code generation complete.');
+    log.info(incrementalCodeGenerationComplete);
   }
   return result.success;
 }
@@ -240,9 +241,7 @@ Future<bool> _performGenerateWatch({
   );
   if (!success) return false;
 
-  log.info(
-    'Initial code generation complete. Listening for changes.',
-  );
+  log.info(initialCodeGenerationComplete);
 
   // Set up file watcher.
   final watchPaths = watchPathsFromConfig(config);

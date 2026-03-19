@@ -9,6 +9,7 @@ import 'package:config/config.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
+import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
@@ -448,7 +449,7 @@ Future<int> _startWatchSession({
   // Wait for SIGINT/SIGTERM or unexpected server exit.
   final (signal, teardownSignal) = _onTerminationSignal();
 
-  if (session.isRunning) log.info('Server running.');
+  if (session.isRunning) log.info(serverRunning);
 
   final exitCode = await Future.any([signal, session.done]);
 

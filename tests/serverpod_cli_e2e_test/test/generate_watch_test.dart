@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli_e2e_test/src/keyword_search_in_stream.dart';
 import 'package:serverpod_cli_e2e_test/src/run_serverpod.dart';
 import 'package:test/test.dart';
@@ -12,8 +13,8 @@ import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:uuid/uuid.dart';
 
 const generateWatchCompletionKeywords = [
-  'Initial code generation complete. Listening for changes.',
-  'Incremental code generation complete.',
+  initialCodeGenerationComplete,
+  incrementalCodeGenerationComplete,
 ];
 
 void main() async {

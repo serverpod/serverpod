@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
@@ -159,7 +160,7 @@ class WatchSession {
     if (_server.isVmServiceConnected) {
       final reloaded = await _server.reload(result.dillOutput!);
       if (reloaded) {
-        log.info('Server reloaded.');
+        log.info(serverReloaded);
         return;
       }
       log.warning('Hot reload failed, falling back to restart.');
@@ -185,7 +186,7 @@ class WatchSession {
     _server = await _createServer!(fullResult.dillOutput!);
     _monitorExit(_server);
     _restarting = false;
-    log.info('Server restarted.');
+    log.info(serverRestarted);
   }
 
   /// Disposes the session: stops server and disposes compiler.
