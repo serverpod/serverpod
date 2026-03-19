@@ -60,12 +60,6 @@ Future<Analyzers> createAndUpdateAnalyzers(GeneratorConfig config) async {
 /// Refreshes the Dart analysis context for endpoints and future calls,
 /// and updates the model analyzer for changed or removed model files.
 ///
-/// When [skipStalenessCheck] is `false` (default), checks whether the
-/// affected files are newer than the generation stamp. If all files are
-/// up to date, returns `false` without doing any analysis.
-/// Set to `true` when the caller already knows the files changed (e.g.
-/// from a file watcher event).
-///
 /// The [requirements] parameter controls which analyzers to update.
 /// When [GenerationRequirements.generateModels] is `false`, the model
 /// analyzer is not updated (saving time when only Dart files changed).
@@ -76,14 +70,8 @@ Future<bool> updateAnalyzers({
   required GeneratorConfig config,
   required Analyzers analyzers,
   required Set<String> affectedPaths,
-  bool skipStalenessCheck = false,
   GenerationRequirements requirements = GenerationRequirements.full,
 }) async {
-  if (!skipStalenessCheck && isGenerationUpToDate(config, affectedPaths)) {
-    log.debug('All affected files are older than generation stamp, skipping.');
-    return false;
-  }
-
   var shouldGenerate = false;
 
   if (requirements.generateProtocol) {
@@ -202,7 +190,6 @@ Future<GenerateResult> performGenerate({
   var futureCalls = await analyzers.futureCalls.analyze(
     collector: futureCallsAnalyzerCollector,
     changedFiles: changedFiles,
-    analyzedModels: allModels,
   );
 
   success &= !futureCallsAnalyzerCollector.hasSevereErrors;

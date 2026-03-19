@@ -11,6 +11,7 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
+import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
@@ -54,9 +55,6 @@ class EndpointsAnalyzer {
   /// These are tracked separately since they don't appear in [_fileCache].
   final Map<String, DartDocTemplateRegistry> _nonEndpointTemplateCache = {};
 
-  /// Files that need re-analysis on the next [analyze] call.
-  final Set<String> _dirtyFiles = {};
-
   /// Inform the analyzer that the provided [filePaths] have been updated.
   ///
   /// Refreshes the Dart analysis context for the changed files and returns
@@ -64,9 +62,10 @@ class EndpointsAnalyzer {
   /// generation should run. The actual full analysis is deferred to the
   /// next [analyze] call.
   Future<bool> updateFileContexts(Set<String> filePaths) async {
-    await _refreshContextForFiles(filePaths);
-    _dirtyFiles.addAll(filePaths);
-
+    await analyze(
+      collector: CodeGenerationCollector(),
+      changedFiles: filePaths,
+    );
     // If there are errored endpoint files, any file change might fix them.
     if (_fileCache.values.any((r) => r.hadErrors)) return true;
 
@@ -95,19 +94,19 @@ class EndpointsAnalyzer {
     required CodeAnalysisCollector collector,
     Set<String>? changedFiles,
   }) async {
+    changedFiles ??= {};
     await _refreshContextForFiles(changedFiles);
-    if (changedFiles != null) _dirtyFiles.addAll(changedFiles);
 
     // On the first run, mark every Dart file as dirty so the single
     // code path handles both first and subsequent runs.
     if (_fileCache.isEmpty && _nonEndpointTemplateCache.isEmpty) {
-      _dirtyFiles.addAll(_allAnalyzedDartFiles);
+      changedFiles.addAll(_allAnalyzedDartFiles);
     }
 
     // Files to analyze: dirty files + previously errored endpoint files
     // (fixing a dependency elsewhere might unblock them).
     final filesToAnalyze = <String>{
-      ..._dirtyFiles,
+      ...changedFiles,
       ..._fileCache.entries.where((e) => e.value.hadErrors).map((e) => e.key),
     };
 
@@ -139,7 +138,7 @@ class EndpointsAnalyzer {
 
       var endpointClasses = _getEndpointClasses(library);
       if (endpointClasses.isEmpty) {
-        // Not (or no longer) an endpoint file — cache templates only.
+        // Not (or no longer) an endpoint file - cache templates only.
         _fileCache.remove(path);
         _nonEndpointTemplateCache[path] = fileTemplates;
         continue;
@@ -241,8 +240,6 @@ class EndpointsAnalyzer {
       endpointDefs.addAll(result.definitions);
     }
     endpointDefs.removeWhere((e) => e.filePath.startsWith('package:'));
-
-    _dirtyFiles.clear();
 
     return endpointDefs;
   }
@@ -359,9 +356,7 @@ class EndpointsAnalyzer {
     return endpointDefinitions;
   }
 
-  Future<void> _refreshContextForFiles(Set<String>? changedFiles) async {
-    if (changedFiles == null) return;
-
+  Future<void> _refreshContextForFiles(Set<String> changedFiles) async {
     for (var context in collection.contexts) {
       for (var changedFile in changedFiles) {
         var file = File(changedFile);

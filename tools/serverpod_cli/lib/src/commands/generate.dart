@@ -219,12 +219,15 @@ Future<bool> analyzeAndGenerate({
       config: config,
       analyzers: analyzers,
       affectedPaths: affectedPaths,
-      skipStalenessCheck: skipStalenessCheck,
       requirements: requirements,
     );
     return true;
   });
   if (!needsGenerate) return true;
+  if (!skipStalenessCheck && isGenerationUpToDate(config, affectedPaths)) {
+    log.debug('All affected files are older than generation stamp, skipping.');
+    return true;
+  }
   late final GenerateResult result;
   await log.progress('Generating code', () async {
     result = await performGenerate(
