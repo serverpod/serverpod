@@ -13,8 +13,8 @@ import 'package:test_descriptor/test_descriptor.dart' as d;
 import 'package:uuid/uuid.dart';
 
 const generateWatchCompletionKeywords = [
-  initialCodeGenerationComplete,
-  incrementalCodeGenerationComplete,
+  'DEBUG: $initialCodeGenerationComplete',
+  'DEBUG: $incrementalCodeGenerationComplete',
 ];
 
 void main() async {
@@ -44,7 +44,7 @@ void main() async {
 
     test('then the entity files are generated and updated as expected.', () async {
       generateWatch = await startServerpod(
-        ['generate', '--watch'],
+        ['generate', '--watch', '--verbose'],
         workingDirectory: path.join(d.sandbox, serverDir),
       );
 
@@ -194,7 +194,7 @@ fields:
 
       test('then the entity files are generated and updated as expected.', () async {
         generateWatch = await startServerpod(
-          ['generate', '--watch'],
+          ['generate', '--watch', '--verbose'],
           workingDirectory: path.join(d.sandbox, serverDir),
         );
 
@@ -342,7 +342,7 @@ fields:
     });
     test('then endpoint dispatcher is generated and updated as expected.', () async {
       generateWatch = await startServerpod(
-        ['generate', '--watch'],
+        ['generate', '--watch', '--verbose'],
         workingDirectory: path.join(d.sandbox, serverDir),
       );
 
@@ -500,7 +500,7 @@ class TestEndpoint extends Endpoint {
 
       test('then endpoint dispatcher is generated and updated as expected.', () async {
         generateWatch = await startServerpod(
-          ['generate', '--watch'],
+          ['generate', '--watch', '--verbose'],
           workingDirectory: path.join(d.sandbox, serverDir),
         );
 
@@ -693,7 +693,7 @@ fields:
 ''', flush: true);
 
         generateWatch = await startServerpod(
-          ['generate', '--watch'],
+          ['generate', '--watch', '--verbose'],
           workingDirectory: path.join(d.sandbox, serverDir),
         );
 
@@ -814,7 +814,7 @@ fields:
 
     test('then generator is not triggered.', () async {
       generateWatch = await startServerpod(
-        ['generate', '--watch'],
+        ['generate', '--watch', '--verbose'],
         workingDirectory: path.join(d.sandbox, serverDir),
       );
 

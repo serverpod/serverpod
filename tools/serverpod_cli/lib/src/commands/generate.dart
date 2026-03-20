@@ -240,7 +240,7 @@ Future<bool> analyzeAndGenerate({
   });
   if (result.success) {
     await writeGenerationStamp(config, generatedFiles: result.generatedFiles);
-    log.info(incrementalCodeGenerationComplete);
+    log.debug(incrementalCodeGenerationComplete);
   }
   return result.success;
 }
@@ -261,7 +261,7 @@ Future<bool> _performGenerateWatch({
   );
   if (!success) return false;
 
-  log.info(initialCodeGenerationComplete);
+  log.debug(initialCodeGenerationComplete);
 
   // Set up file watcher.
   final watcher = config.createFileWatcher();
