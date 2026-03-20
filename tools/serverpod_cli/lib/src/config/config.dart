@@ -158,6 +158,16 @@ class GeneratorConfig implements ModelLoadConfig {
     ...relativeModelSourcePathParts,
   ];
 
+  /// The paths of the lib directory in shared model packages.
+  List<String> get sharedModelsLibSourcePaths => [
+    for (var pathParts in sharedModelsSourcePathsParts.values)
+      p.joinAll([
+        ...serverPackageDirectoryPathParts,
+        ...pathParts,
+        'lib',
+      ]),
+  ];
+
   /// The internal package path parts of the directory, where the generated code is stored in the
   /// server package.
   List<String> get generatedServeModelPackagePathParts => ['src', 'generated'];
@@ -192,6 +202,17 @@ class GeneratorConfig implements ModelLoadConfig {
     ...serverPackageDirectoryPathParts,
     'lib',
     ...generatedServeModelPackagePathParts,
+  ];
+
+  /// The paths of the generated source code in shared model packages.
+  List<String> get generatedSharedModelsPaths => [
+    for (var pathParts in sharedModelsSourcePathsParts.values)
+      p.joinAll([
+        ...serverPackageDirectoryPathParts,
+        ...pathParts,
+        'lib',
+        ...generatedServeModelPackagePathParts,
+      ]),
   ];
 
   /// Path parts from the server package to the dart client package.

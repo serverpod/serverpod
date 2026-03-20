@@ -12,6 +12,7 @@ import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/commands/run.dart';
+import 'package:serverpod_cli/src/commands/start.dart';
 import 'package:serverpod_cli/src/commands/upgrade.dart';
 import 'package:serverpod_cli/src/commands/version.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
@@ -116,6 +117,7 @@ ServerpodCommandRunner buildCommandRunner() {
     CreateMigrationCommand(),
     CreateRepairMigrationCommand(),
     RunCommand(),
+    StartCommand(),
     UpgradeCommand(),
     VersionCommand(version),
   ]);

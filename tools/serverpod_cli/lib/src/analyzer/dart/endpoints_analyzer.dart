@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
@@ -5,17 +6,29 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
-import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/util/analysis_helper.dart';
+import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 
 import 'definitions.dart';
+
+/// Cached analysis result for a single endpoint file.
+class _CachedFileResult {
+  final List<EndpointDefinition> definitions;
+  final DartDocTemplateRegistry templates;
+  final bool hadErrors;
+
+  _CachedFileResult({
+    required this.definitions,
+    required this.templates,
+    required this.hadErrors,
+  });
+}
 
 /// Analyzes dart files for the protocol specification.
 class EndpointsAnalyzer {
@@ -23,89 +36,177 @@ class EndpointsAnalyzer {
 
   final String absoluteIncludedPaths;
 
-  /// Create a new [EndpointsAnalyzer], containing a
-  /// [AnalysisContextCollection] that analyzes all dart files in the
-  /// provided [directory].
-  EndpointsAnalyzer(Directory directory)
-    : collection = AnalysisContextCollection(
-        includedPaths: [directory.absolute.path],
-        resourceProvider: PhysicalResourceProvider.INSTANCE,
-        sdkPath: findDartSdk(),
-      ),
-      absoluteIncludedPaths = directory.absolute.path;
+  /// Create a new [EndpointsAnalyzer] for [directory].
+  ///
+  /// When [collection] is provided it is reused (e.g. shared with
+  /// [FutureCallsAnalyzer]). Otherwise a new one is created internally.
+  EndpointsAnalyzer(
+    Directory directory, {
+    AnalysisContextCollection? collection,
+  }) : collection = collection ?? createAnalysisContextCollection(directory),
+       absoluteIncludedPaths = directory.absolute.path;
 
-  Set<EndpointDefinition> _endpointDefinitions = {};
+  /// Cached per-file analysis results for endpoint files.
+  /// Uses [SplayTreeMap] to keep keys sorted, ensuring deterministic
+  /// iteration order when collecting definitions across runs.
+  final _fileCache = SplayTreeMap<String, _CachedFileResult>();
+
+  /// Cached template entries for files that don't contain endpoints.
+  /// These are tracked separately since they don't appear in [_fileCache].
+  final Map<String, DartDocTemplateRegistry> _nonEndpointTemplateCache = {};
 
   /// Inform the analyzer that the provided [filePaths] have been updated.
   ///
-  /// This will trigger a re-analysis of the files and return true if the
-  /// updated files should trigger a code generation.
+  /// Refreshes the Dart analysis context for the changed files and returns
+  /// `true` if any of them are (or were) endpoint files, meaning code
+  /// generation should run. The actual full analysis is deferred to the
+  /// next [analyze] call.
   Future<bool> updateFileContexts(Set<String> filePaths) async {
-    await _refreshContextForFiles(filePaths);
+    // Only consider files within the tracked directory.
+    final relevantPaths = filePaths
+        .where((f) => p.isWithin(absoluteIncludedPaths, p.absolute(f)))
+        .toSet();
 
-    var oldDefinitionsLength = _endpointDefinitions.length;
-    await analyze(collector: CodeGenerationCollector());
+    final errorsBefore = _fileCache.values.any((r) => r.hadErrors);
+    final keysBefore = _fileCache.keys.toSet();
 
-    if (_endpointDefinitions.length != oldDefinitionsLength) {
+    await analyze(
+      collector: CodeGenerationCollector(),
+      changedFiles: relevantPaths,
+    );
+
+    final errorsAfter = _fileCache.values.any((r) => r.hadErrors);
+    final keysAfter = _fileCache.keys.toSet();
+
+    if (errorsBefore ||
+        errorsAfter ||
+        keysBefore.length != keysAfter.length ||
+        keysAfter.difference(keysBefore).isNotEmpty) {
       return true;
     }
 
-    return filePaths.any((e) => _isEndpointFile(File(e)));
+    // Editing methods on an existing endpoint does not add/remove cache keys,
+    // but generated protocol must still be refreshed (otherwise stale
+    // generated Dart can break analysis/compile before the next generate).
+    for (final path in relevantPaths) {
+      if (!path.endsWith('.dart') || path.endsWith('_test.dart')) continue;
+      if (_fileCache.containsKey(path)) return true;
+      if (_isEndpointFile(File(path))) return true;
+    }
+
+    return false;
   }
 
-  /// Analyze all files in the [AnalysisContextCollection].
+  /// Analyze files in the [AnalysisContextCollection].
   ///
-  /// [changedFiles] is an optional list of files that should have their context
+  /// On the first call, analyzes every Dart file. On subsequent calls, only
+  /// re-analyzes files that changed since the last run (tracked via
+  /// [updateFileContexts] and [changedFiles]), reusing cached results for
+  /// unchanged files.
+  ///
+  /// [changedFiles] is an optional set of files that should have their context
   /// refreshed before analysis. This is useful when only a subset of files have
-  /// changed since [updateFileContexts] was last called.
+  /// changed since [updateFileContexts] was last called (e.g. generated model
+  /// files).
   Future<List<EndpointDefinition>> analyze({
     required CodeAnalysisCollector collector,
     Set<String>? changedFiles,
   }) async {
+    changedFiles ??= {};
     await _refreshContextForFiles(changedFiles);
 
-    var endpointDefs = <EndpointDefinition>[];
+    // On the first run, mark every Dart file as dirty so the single
+    // code path handles both first and subsequent runs.
+    if (_fileCache.isEmpty && _nonEndpointTemplateCache.isEmpty) {
+      changedFiles.addAll(_allAnalyzedDartFiles);
+    }
 
-    List<(ResolvedLibraryResult, String)> validLibraries = [];
-    Map<String, int> endpointClassMap = {};
+    // Files to analyze: dirty files + previously errored endpoint files
+    // (fixing a dependency elsewhere might unblock them).
+    final filesToAnalyze = <String>{
+      ...changedFiles,
+      ..._fileCache.keys,
+    };
 
-    final templateRegistry = DartDocTemplateRegistry();
+    // Remove deleted files from caches.
+    for (var path in filesToAnalyze) {
+      if (!File(path).existsSync()) {
+        _fileCache.remove(path);
+        _nonEndpointTemplateCache.remove(path);
+      }
+    }
 
-    await for (var (library, filePath) in _libraries) {
-      templateRegistry.addAll(
-        _extractTemplatesFromLibrary(library, filePath, collector),
+    // Phase 1: Resolve only the files that need re-analysis.
+    List<(ResolvedLibraryResult, String, DartDocTemplateRegistry)>
+    validLibraries = [];
+    List<String> erroredFiles = [];
+
+    for (var path in filesToAnalyze) {
+      if (!path.endsWith('.dart') || path.endsWith('_test.dart')) continue;
+      if (!File(path).existsSync()) continue;
+
+      var library = await _resolveLibrary(path);
+      if (library == null) continue;
+
+      var fileTemplates = _extractTemplatesFromLibrary(
+        library,
+        path,
+        collector,
       );
 
       var endpointClasses = _getEndpointClasses(library);
       if (endpointClasses.isEmpty) {
+        // Not (or no longer) an endpoint file - cache templates only.
+        _fileCache.remove(path);
+        _nonEndpointTemplateCache[path] = fileTemplates;
         continue;
       }
 
-      var maybeDartErrors = await _getErrorsForFile(library.session, filePath);
+      // It is an endpoint file, not a plain file.
+      _nonEndpointTemplateCache.remove(path);
+
+      var maybeDartErrors = await _getErrorsForFile(library.session, path);
       if (maybeDartErrors.isNotEmpty) {
+        erroredFiles.add(path);
         collector.addError(
           SourceSpanSeverityException(
             'Endpoint analysis skipped due to invalid Dart syntax. Please '
             'review and correct the syntax errors.'
-            '\nFile: $filePath',
+            '\nFile: $path',
             null,
             severity: SourceSpanSeverity.error,
           ),
         );
 
+        _fileCache[path] = _CachedFileResult(
+          definitions: [],
+          templates: fileTemplates,
+          hadErrors: true,
+        );
         continue;
       }
 
-      for (var endpointClass in endpointClasses) {
-        var className = endpointClass.name!;
+      validLibraries.add((library, path, fileTemplates));
+    }
+
+    // Phase 2: Build endpoint class map from ALL files for duplicate detection.
+    // Errored files have empty definitions so they naturally don't contribute,
+    // matching the original behavior.
+    Map<String, int> endpointClassMap = {};
+    for (var entry in _fileCache.entries) {
+      if (validLibraries.any((lib) => lib.$2 == entry.key)) continue;
+      for (var def in entry.value.definitions) {
         endpointClassMap.update(
-          className,
-          (value) => value + 1,
+          def.className,
+          (v) => v + 1,
           ifAbsent: () => 1,
         );
       }
-
-      validLibraries.add((library, filePath));
+    }
+    for (var (library, _, _) in validLibraries) {
+      for (var cls in _getEndpointClasses(library)) {
+        endpointClassMap.update(cls.name!, (v) => v + 1, ifAbsent: () => 1);
+      }
     }
 
     var duplicateEndpointClasses = endpointClassMap.entries
@@ -113,7 +214,20 @@ class EndpointsAnalyzer {
         .map((entry) => entry.key)
         .toSet();
 
-    for (var (library, filePath) in validLibraries) {
+    // Phase 3: Build full template registry from all caches + fresh results.
+    final templateRegistry = DartDocTemplateRegistry();
+    for (var entry in _fileCache.entries) {
+      if (validLibraries.any((lib) => lib.$2 == entry.key)) continue;
+      templateRegistry.addAll(entry.value.templates);
+    }
+    for (var templates in _nonEndpointTemplateCache.values) {
+      templateRegistry.addAll(templates);
+    }
+
+    // Phase 4: Validate and parse re-analyzed files, update cache.
+    for (var (library, filePath, fileTemplates) in validLibraries) {
+      templateRegistry.addAll(fileTemplates);
+
       var severityExceptions = _validateLibrary(
         library,
         filePath,
@@ -123,22 +237,52 @@ class EndpointsAnalyzer {
 
       var failingExceptions = _filterNoFailExceptions(severityExceptions);
 
-      endpointDefs.addAll(
-        _parseLibrary(
-          library,
-          filePath,
-          failingExceptions,
-          templateRegistry: templateRegistry,
-        ),
+      var defs = _parseLibrary(
+        library,
+        filePath,
+        failingExceptions,
+        templateRegistry: templateRegistry,
+      );
+
+      _fileCache[filePath] = _CachedFileResult(
+        definitions: defs,
+        templates: fileTemplates,
+        hadErrors: false,
       );
     }
 
-    // After parsing all endpoints, we must remove all that are not part of
-    // this package to avoid generating them as well.
+    // Phase 5: Collect all endpoint definitions from cache.
+    // _fileCache is a SplayTreeMap so iteration is in sorted key order.
+    var endpointDefs = <EndpointDefinition>[];
+    for (var result in _fileCache.values) {
+      endpointDefs.addAll(result.definitions);
+    }
     endpointDefs.removeWhere((e) => e.filePath.startsWith('package:'));
 
-    _endpointDefinitions = endpointDefs.toSet();
     return endpointDefs;
+  }
+
+  /// Returns all Dart file paths known to the analysis context, sorted and
+  /// excluding test files.
+  Iterable<String> get _allAnalyzedDartFiles sync* {
+    for (var context in collection.contexts) {
+      var analyzedFiles = context.contextRoot.analyzedFiles().toList();
+      analyzedFiles.sort();
+      yield* analyzedFiles
+          .where((path) => path.endsWith('.dart'))
+          .where((path) => !path.endsWith('_test.dart'));
+    }
+  }
+
+  /// Resolves a single file to a [ResolvedLibraryResult].
+  Future<ResolvedLibraryResult?> _resolveLibrary(String filePath) async {
+    for (var context in collection.contexts) {
+      var result = await context.currentSession.getResolvedLibrary(filePath);
+      if (result is ResolvedLibraryResult) {
+        return result;
+      }
+    }
+    return null;
   }
 
   /// Extracts all {@template}...{@endtemplate} definitions from all classes
@@ -230,9 +374,7 @@ class EndpointsAnalyzer {
     return endpointDefinitions;
   }
 
-  Future<void> _refreshContextForFiles(Set<String>? changedFiles) async {
-    if (changedFiles == null) return;
-
+  Future<void> _refreshContextForFiles(Set<String> changedFiles) async {
     for (var context in collection.contexts) {
       for (var changedFile in changedFiles) {
         var file = File(changedFile);
@@ -242,15 +384,16 @@ class EndpointsAnalyzer {
     }
   }
 
+  /// Returns `true` if [file] appears to define an Endpoint subclass.
+  ///
+  /// Quick content check (no full analysis). Used with [_fileCache] so saves
+  /// to newly added endpoint files still trigger generation when the cache
+  /// has not yet been updated for other reasons.
   bool _isEndpointFile(File file) {
     if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
     if (!file.path.endsWith('.dart')) return false;
     if (!file.existsSync()) return false;
-
-    var contents = file.readAsStringSync();
-    if (!contents.contains('extends Endpoint')) return false;
-
-    return true;
+    return file.readAsStringSync().contains('extends Endpoint');
   }
 
   Map<String, List<SourceSpanSeverityException>> _validateLibrary(
@@ -294,22 +437,6 @@ class EndpointsAnalyzer {
     }
 
     return validationErrors;
-  }
-
-  Stream<(ResolvedLibraryResult, String)> get _libraries async* {
-    for (var context in collection.contexts) {
-      var analyzedFiles = context.contextRoot.analyzedFiles().toList();
-      analyzedFiles.sort();
-      var analyzedDartFiles = analyzedFiles
-          .where((path) => path.endsWith('.dart'))
-          .where((path) => !path.endsWith('_test.dart'));
-      for (var filePath in analyzedDartFiles) {
-        var library = await context.currentSession.getResolvedLibrary(filePath);
-        if (library is ResolvedLibraryResult) {
-          yield (library, filePath);
-        }
-      }
-    }
   }
 
   Iterable<ClassElement> _getEndpointClasses(ResolvedLibraryResult library) {
