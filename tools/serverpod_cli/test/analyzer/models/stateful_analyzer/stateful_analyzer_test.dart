@@ -505,7 +505,7 @@ fields:
       statefulAnalyzer.validateAll(reportIssuesForPaths: {pathInScope});
 
       expect(notified, hasLength(1));
-      expect(notified.single.toFilePath(), pathInScope);
+      expect(notified.single.toFilePath(windows: false), pathInScope);
     },
   );
 
