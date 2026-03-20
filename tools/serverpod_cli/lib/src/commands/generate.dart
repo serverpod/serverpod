@@ -7,14 +7,14 @@ import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/commands/messages.dart';
+import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
-import 'package:serverpod_cli/src/generator/generator_continuous.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
-import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/pubspec_lock_parser.dart';
 import 'package:serverpod_cli/src/util/pubspec_plus.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -140,18 +140,17 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
       }
     }
 
-    final futureSuccess = Isolate.run(
-      () => _performGenerate(config: config, watch: watch),
-    );
-
     late final bool success;
-    if (!watch) {
-      success = await log.progress(
-        'Generating code',
-        () => futureSuccess,
+    final logLevel = log.logLevel;
+    if (watch) {
+      // Watch mode: the entire loop (generation + file watching) runs in one
+      // long-lived isolate so analyzers persist and can be updated
+      // incrementally on each file change.
+      success = await Isolate.run(
+        () => _performGenerateWatch(config: config, logLevel: logLevel),
       );
     } else {
-      success = await futureSuccess;
+      success = await generateInIsolate(config);
     }
 
     if (!success) {
@@ -162,35 +161,163 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
   }
 }
 
-Future<bool> _performGenerate({
+/// One-shot code generation in an isolate-friendly function.
+///
+/// Sets the log level (for isolate use) and creates fresh analyzers.
+Future<bool> performOneShotGenerate({
   required GeneratorConfig config,
-  required bool watch,
+  required LogLevel logLevel,
 }) async {
-  var libDirectory = Directory(path.joinAll(config.libSourcePathParts));
-  var endpointsAnalyzer = EndpointsAnalyzer(libDirectory);
-
-  var yamlModels = await ModelHelper.loadProjectYamlModelsFromDisk(config);
-  var modelAnalyzer = StatefulAnalyzer(config, yamlModels, (uri, collector) {
-    collector.printErrors();
-  });
-
-  var futureCallsAnalyzer = FutureCallsAnalyzer(
-    directory: libDirectory,
+  log.logLevel = logLevel;
+  final analyzers = await createAnalyzers(config);
+  final allSources = await enumerateSourceFiles(config);
+  return analyzeAndGenerate(
+    config: config,
+    analyzers: analyzers,
+    affectedPaths: allSources,
+    // Always run generation to prevent bad output from the watch command to be
+    // persisted, since the generation stamp will be greater than source files.
+    skipStalenessCheck: true,
   );
+}
 
-  if (watch) {
-    return await performGenerateContinuously(
+/// Runs one-shot code generation in a fresh isolate.
+Future<bool> generateInIsolate(GeneratorConfig config) {
+  final logLevel = log.logLevel;
+  return Isolate.run(
+    () => performOneShotGenerate(config: config, logLevel: logLevel),
+  );
+}
+
+/// Analyzes affected paths and runs code generation if needed.
+///
+/// When [skipStalenessCheck] is `true`, skips the mtime check against the
+/// generation stamp (use when the caller already knows files changed, e.g.
+/// from a file watcher event).
+///
+/// The [requirements] parameter controls which parts of the generation
+/// pipeline run. When model files change, use [GenerationRequirements.full].
+/// When only Dart files change, use [GenerationRequirements.protocolOnly]
+/// to skip expensive model generation.
+///
+/// Returns `true` if generation succeeded or was not needed.
+///
+/// When [skipStalenessCheck] is `true` (watcher-driven runs), model hint/info
+/// output is limited to [affectedPaths]. When `false`, all model issues are
+/// reported (one-shot generate and runs that re-check staleness against the
+/// whole project).
+Future<bool> analyzeAndGenerate({
+  required GeneratorConfig config,
+  required Analyzers analyzers,
+  required Set<String> affectedPaths,
+  bool skipStalenessCheck = false,
+  GenerationRequirements requirements = GenerationRequirements.full,
+}) async {
+  bool needsGenerate = false;
+  await log.progress('Analyzing changes', () async {
+    needsGenerate = await updateAnalyzers(
       config: config,
-      endpointsAnalyzer: endpointsAnalyzer,
-      modelAnalyzer: modelAnalyzer,
-      futureCallsAnalyzer: futureCallsAnalyzer,
+      analyzers: analyzers,
+      affectedPaths: affectedPaths,
+      requirements: requirements,
     );
+    return true;
+  });
+  if (!needsGenerate) return true;
+  if (!skipStalenessCheck && isGenerationUpToDate(config, affectedPaths)) {
+    log.debug('All affected files are older than generation stamp, skipping.');
+    return true;
+  }
+  late final GenerateResult result;
+  await log.progress('Generating code', () async {
+    result = await performGenerate(
+      config: config,
+      analyzers: analyzers,
+      requirements: requirements,
+      affectedPaths: skipStalenessCheck ? affectedPaths : null,
+    );
+    return result.success;
+  });
+  if (result.success) {
+    await writeGenerationStamp(config, generatedFiles: result.generatedFiles);
+    log.debug(incrementalCodeGenerationComplete);
+  }
+  return result.success;
+}
+
+/// Watch-mode code generation with persistent analyzers and file watching.
+Future<bool> _performGenerateWatch({
+  required GeneratorConfig config,
+  required LogLevel logLevel,
+}) async {
+  log.logLevel = logLevel;
+
+  final analyzers = await createAnalyzers(config);
+  final allSources = await enumerateSourceFiles(config);
+  final success = await analyzeAndGenerate(
+    config: config,
+    analyzers: analyzers,
+    affectedPaths: allSources,
+  );
+  if (!success) return false;
+
+  log.debug(initialCodeGenerationComplete);
+
+  // Set up file watcher.
+  final watcher = config.createFileWatcher();
+
+  // Process file change events.
+  await for (final event in watcher.onFilesChanged) {
+    final affectedPaths = {
+      ...event.dartFiles,
+      ...event.modelFiles,
+    };
+
+    if (affectedPaths.isEmpty) continue;
+
+    try {
+      await analyzeAndGenerate(
+        config: config,
+        analyzers: analyzers,
+        affectedPaths: affectedPaths,
+        skipStalenessCheck: true,
+      );
+    } catch (e, stackTrace) {
+      log.error(e.toString(), stackTrace: stackTrace);
+    }
   }
 
-  return performGenerate(
-    config: config,
-    endpointsAnalyzer: endpointsAnalyzer,
-    modelAnalyzer: modelAnalyzer,
-    futureCallsAnalyzer: futureCallsAnalyzer,
+  // The await-for loop above runs indefinitely; this is unreachable.
+  return true;
+}
+
+/// Specifies which parts of the code generation pipeline need to run.
+///
+/// Used to optimize watch-mode generation by skipping expensive steps
+/// (like model generation) when they're not needed.
+class GenerationRequirements {
+  /// Whether model generation is required.
+  /// Set to `true` when model files (.spy, .spy.yaml, .spy.yml) have changed.
+  final bool generateModels;
+
+  /// Whether endpoint analysis and protocol generation is required.
+  /// Set to `true` when any Dart files have changed.
+  final bool generateProtocol;
+
+  const GenerationRequirements({
+    required this.generateModels,
+    required this.generateProtocol,
+  });
+
+  /// Full generation - models and protocol.
+  static const full = GenerationRequirements(
+    generateModels: true,
+    generateProtocol: true,
+  );
+
+  /// Protocol-only generation - skips expensive model generation.
+  static const protocolOnly = GenerationRequirements(
+    generateModels: false,
+    generateProtocol: true,
   );
 }

@@ -40,10 +40,7 @@ dependency_overrides:
 
   var result = await Process.run(
     'dart',
-    [
-      'pub',
-      'get',
-    ],
+    ['pub', 'get', '--offline'],
     workingDirectory: path.join(
       Directory.current.path,
       testProjectDirectory.path,

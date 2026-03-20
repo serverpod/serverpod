@@ -39,9 +39,7 @@ class GenerateFiles {
       }
     });
 
-    var futureCallsAnalyzer = FutureCallsAnalyzer(
-      directory: libDirectory,
-    );
+    var futureCallsAnalyzer = FutureCallsAnalyzer(directory: libDirectory);
 
     if (hasErrors) {
       log.error(
@@ -50,11 +48,14 @@ class GenerateFiles {
       return false;
     }
 
-    return await performGenerate(
+    final result = await performGenerate(
       config: config,
-      endpointsAnalyzer: endpointsAnalyzer,
-      modelAnalyzer: modelAnalyzer,
-      futureCallsAnalyzer: futureCallsAnalyzer,
+      analyzers: (
+        endpoints: endpointsAnalyzer,
+        models: modelAnalyzer,
+        futureCalls: futureCallsAnalyzer,
+      ),
     );
+    return result.success;
   }
 }
