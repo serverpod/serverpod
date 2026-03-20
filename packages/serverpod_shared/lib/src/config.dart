@@ -720,12 +720,6 @@ class FutureCallConfig {
   /// The default scan interval for future calls.
   static const int defaultFutureCallScanIntervalMs = 5000;
 
-  /// The default claim cleanup interval for future calls.
-  static const int defaultFutureCallClaimCleanupIntervalMinutes = 30;
-
-  /// The default claim TTL for future calls.
-  static const int defaultFutureCallClaimTTLMinutes = 10;
-
   factory FutureCallConfig._fromJson(Map futureCallConfigJson, String name) {
     final scanInterval =
         futureCallConfigJson[ServerpodEnv.futureCallScanInterval.configKey];
