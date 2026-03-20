@@ -178,6 +178,9 @@ Future<bool> performOneShotGenerate({
     config: config,
     analyzers: analyzers,
     affectedPaths: allSources,
+    // Always run generation to prevent bad output from the watch command to be
+    // persisted, since the generation stamp will be greater than source files.
+    skipStalenessCheck: true,
   );
 }
 
