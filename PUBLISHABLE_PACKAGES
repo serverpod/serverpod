@@ -1,9 +1,9 @@
 packages/serverpod_lints
 packages/serverpod_serialization
-packages/serverpod_client
-packages/serverpod_service_client
 packages/serverpod_shared
 packages/serverpod_database
+packages/serverpod_client
+packages/serverpod_service_client
 packages/serverpod
 packages/serverpod_flutter
 packages/serverpod_test
