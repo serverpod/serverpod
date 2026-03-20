@@ -1,12 +1,10 @@
-import 'dart:async';
-
 import 'package:serverpod/protocol.dart' show FutureCallEntry;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/generated/future_call_claim_entry.dart';
 import 'package:serverpod_test_server/src/generated/simple_data.dart';
 import 'package:test/test.dart';
 import '../test_tools/serverpod_test_tools.dart';
 import '../utils/future_call_manager_builder.dart';
-import 'package:serverpod/src/generated/future_call_claim_entry.dart';
 
 class _CounterFutureCall extends FutureCall<SimpleData> {
   int counter = 0;
@@ -137,7 +135,7 @@ void main() {
   );
 
   withServerpod(
-    'Given FutureCallManager with scheduled FutureCall that is due'
+    'Given FutureCallManager with scheduled FutureCall that is due '
     'and existing valid claim in the database for the FutureCall',
     (sessionBuilder, _) {
       late FutureCallManager futureCallManager;
@@ -169,7 +167,7 @@ void main() {
 
         // Insert an existing claim for this future call
         final claim = FutureCallClaimEntry(
-          id: existingEntry.id,
+          futureCallId: existingEntry.id,
           heartbeat: DateTime.now().toUtc(),
         );
         await FutureCallClaimEntry.db.insert(session, [claim]);
@@ -200,7 +198,7 @@ void main() {
     },
   );
 
-  withServerpod('Given FutureCallManager with scheduled FutureCall that is due'
+  withServerpod('Given FutureCallManager with scheduled FutureCall that is due '
       'and existing stale claim in the database for the FutureCall', (
     sessionBuilder,
     _,
@@ -234,7 +232,7 @@ void main() {
 
       // Insert a stale claim for this future call
       final claim = FutureCallClaimEntry(
-        id: existingEntry.id,
+        futureCallId: existingEntry.id,
         heartbeat: DateTime.now().toUtc().subtract(
           const Duration(minutes: 5),
         ),
