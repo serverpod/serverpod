@@ -135,12 +135,6 @@ enum ServerpodEnv {
   /// How long to wait before checking the queue again in milliseconds.
   futureCallScanInterval,
 
-  /// How often to run the future call claim cleanup job.
-  futureCallClaimCleanupInterval,
-
-  /// How long to keep future call claims before they become eligible for cleanup.
-  futureCallClaimTTL,
-
   /// Toggle to disable future call execution.
   futureCallExecutionEnabled,
 
@@ -247,9 +241,6 @@ enum ServerpodEnv {
       (ServerpodEnv.applyRepairMigration) => 'applyRepairMigration',
       (ServerpodEnv.validateHeaders) => 'validateHeaders',
       (ServerpodEnv.websocketPingInterval) => 'websocketPingInterval',
-      (ServerpodEnv.futureCallClaimCleanupInterval) =>
-        'futureCallClaimCleanupInterval',
-      (ServerpodEnv.futureCallClaimTTL) => 'futureCallClaimTTL',
     };
   }
 
@@ -319,9 +310,6 @@ enum ServerpodEnv {
       (ServerpodEnv.validateHeaders) => 'SERVERPOD_VALIDATE_HEADERS',
       (ServerpodEnv.websocketPingInterval) =>
         'SERVERPOD_WEBSOCKET_PING_INTERVAL',
-      (ServerpodEnv.futureCallClaimCleanupInterval) =>
-        'SERVERPOD_FUTURE_CALL_CLAIM_CLEANUP_INTERVAL',
-      (ServerpodEnv.futureCallClaimTTL) => 'SERVERPOD_FUTURE_CALL_CLAIM_TTL',
     };
   }
 }
