@@ -78,11 +78,20 @@ class FutureCallsAnalyzer {
     final errorsAfter = _fileCache.values.any((r) => r.hadErrors);
     final keysAfter = _fileCache.keys.toSet();
 
-    // Generation needed if errors changed or endpoint files were added/removed.
-    return errorsBefore ||
+    if (errorsBefore ||
         errorsAfter ||
         keysBefore.length != keysAfter.length ||
-        keysAfter.difference(keysBefore).isNotEmpty;
+        keysAfter.difference(keysBefore).isNotEmpty) {
+      return true;
+    }
+
+    for (final path in relevantPaths) {
+      if (!path.endsWith('.dart') || path.endsWith('_test.dart')) continue;
+      if (_fileCache.containsKey(path)) return true;
+      if (_isFutureCallFile(File(path))) return true;
+    }
+
+    return false;
   }
 
   /// Analyze all files in the [AnalysisContextCollection] for
@@ -355,6 +364,13 @@ class FutureCallsAnalyzer {
       }
       await context.applyPendingFileChanges();
     }
+  }
+
+  bool _isFutureCallFile(File file) {
+    if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
+    if (!file.path.endsWith('.dart')) return false;
+    if (!file.existsSync()) return false;
+    return file.readAsStringSync().contains('extends FutureCall');
   }
 
   Map<String, List<SourceSpanSeverityException>> _validateLibrary(

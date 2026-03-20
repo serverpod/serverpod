@@ -78,11 +78,23 @@ class EndpointsAnalyzer {
     final errorsAfter = _fileCache.values.any((r) => r.hadErrors);
     final keysAfter = _fileCache.keys.toSet();
 
-    // Generation needed if errors changed or endpoint files were added/removed.
-    return errorsBefore ||
+    if (errorsBefore ||
         errorsAfter ||
         keysBefore.length != keysAfter.length ||
-        keysAfter.difference(keysBefore).isNotEmpty;
+        keysAfter.difference(keysBefore).isNotEmpty) {
+      return true;
+    }
+
+    // Editing methods on an existing endpoint does not add/remove cache keys,
+    // but generated protocol must still be refreshed (otherwise stale
+    // generated Dart can break analysis/compile before the next generate).
+    for (final path in relevantPaths) {
+      if (!path.endsWith('.dart') || path.endsWith('_test.dart')) continue;
+      if (_fileCache.containsKey(path)) return true;
+      if (_isEndpointFile(File(path))) return true;
+    }
+
+    return false;
   }
 
   /// Analyze files in the [AnalysisContextCollection].
@@ -370,6 +382,18 @@ class EndpointsAnalyzer {
       }
       await context.applyPendingFileChanges();
     }
+  }
+
+  /// Returns `true` if [file] appears to define an Endpoint subclass.
+  ///
+  /// Quick content check (no full analysis). Used with [_fileCache] so saves
+  /// to newly added endpoint files still trigger generation when the cache
+  /// has not yet been updated for other reasons.
+  bool _isEndpointFile(File file) {
+    if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
+    if (!file.path.endsWith('.dart')) return false;
+    if (!file.existsSync()) return false;
+    return file.readAsStringSync().contains('extends Endpoint');
   }
 
   Map<String, List<SourceSpanSeverityException>> _validateLibrary(
