@@ -62,21 +62,27 @@ class EndpointsAnalyzer {
   /// generation should run. The actual full analysis is deferred to the
   /// next [analyze] call.
   Future<bool> updateFileContexts(Set<String> filePaths) async {
+    // Only consider files within the tracked directory.
+    final relevantPaths = filePaths
+        .where((f) => p.isWithin(absoluteIncludedPaths, p.absolute(f)))
+        .toSet();
+
+    final errorsBefore = _fileCache.values.any((r) => r.hadErrors);
+    final keysBefore = _fileCache.keys.toSet();
+
     await analyze(
       collector: CodeGenerationCollector(),
-      changedFiles: filePaths,
+      changedFiles: relevantPaths,
     );
-    // If there are errored endpoint files, any file change might fix them.
-    if (_fileCache.values.any((r) => r.hadErrors)) return true;
 
-    for (var path in filePaths) {
-      // File was previously known to contain endpoints.
-      if (_fileCache.containsKey(path)) return true;
-      // File now appears to contain endpoints.
-      if (_isEndpointFile(File(path))) return true;
-    }
+    final errorsAfter = _fileCache.values.any((r) => r.hadErrors);
+    final keysAfter = _fileCache.keys.toSet();
 
-    return false;
+    // Generation needed if errors changed or endpoint files were added/removed.
+    return errorsBefore ||
+        errorsAfter ||
+        keysBefore.length != keysAfter.length ||
+        keysAfter.difference(keysBefore).isNotEmpty;
   }
 
   /// Analyze files in the [AnalysisContextCollection].
@@ -364,17 +370,6 @@ class EndpointsAnalyzer {
       }
       await context.applyPendingFileChanges();
     }
-  }
-
-  /// Returns `true` if [file] appears to define an Endpoint subclass.
-  ///
-  /// This is a quick string check (no full analysis). Used to decide whether
-  /// code generation is needed after a file change.
-  bool _isEndpointFile(File file) {
-    if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
-    if (!file.path.endsWith('.dart')) return false;
-    if (!file.existsSync()) return false;
-    return file.readAsStringSync().contains('extends Endpoint');
   }
 
   Map<String, List<SourceSpanSeverityException>> _validateLibrary(

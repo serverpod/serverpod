@@ -62,22 +62,27 @@ class FutureCallsAnalyzer {
   /// `true` if any of them are (or were) future call files, meaning code
   /// generation should run.
   Future<bool> updateFileContexts(Set<String> filePaths) async {
+    // Only consider files within the tracked directory.
+    final relevantPaths = filePaths
+        .where((f) => p.isWithin(absoluteIncludedPaths, p.absolute(f)))
+        .toSet();
+
+    final errorsBefore = _fileCache.values.any((r) => r.hadErrors);
+    final keysBefore = _fileCache.keys.toSet();
+
     await analyze(
       collector: CodeGenerationCollector(),
-      changedFiles: filePaths,
+      changedFiles: relevantPaths,
     );
 
-    // If there are errored future call files, any file change might fix them.
-    if (_fileCache.values.any((r) => r.hadErrors)) return true;
+    final errorsAfter = _fileCache.values.any((r) => r.hadErrors);
+    final keysAfter = _fileCache.keys.toSet();
 
-    for (var path in filePaths) {
-      // File was previously known to contain future calls.
-      if (_fileCache.containsKey(path)) return true;
-      // File now appears to contain future calls.
-      if (_isFutureCallFile(File(path))) return true;
-    }
-
-    return false;
+    // Generation needed if errors changed or endpoint files were added/removed.
+    return errorsBefore ||
+        errorsAfter ||
+        keysBefore.length != keysAfter.length ||
+        keysAfter.difference(keysBefore).isNotEmpty;
   }
 
   /// Analyze all files in the [AnalysisContextCollection] for
@@ -350,17 +355,6 @@ class FutureCallsAnalyzer {
       }
       await context.applyPendingFileChanges();
     }
-  }
-
-  bool _isFutureCallFile(File file) {
-    if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
-    if (!file.path.endsWith('.dart')) return false;
-    if (!file.existsSync()) return false;
-
-    var contents = file.readAsStringSync();
-    if (!contents.contains('extends FutureCall')) return false;
-
-    return true;
   }
 
   Map<String, List<SourceSpanSeverityException>> _validateLibrary(
