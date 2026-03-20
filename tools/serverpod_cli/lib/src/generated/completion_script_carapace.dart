@@ -88,16 +88,6 @@ commands:
     exclusiveFlags:
       - [list, no-list]
 
-  - name: start
-    flags:
-      -w, --watch: "Watch for changes and hot reload the server."
-      -d, --directory=: "The server directory (defaults to auto-detect from current directory)."
-      --docker: "Start Docker Compose services if a docker-compose.yaml exists."
-      --no-docker: "Start Docker Compose services if a docker-compose.yaml exists."
-      --no-fes: "Skip the Frontend Server compilation pipeline. The server is started with dart run and the VM service info file is kept so an IDE debugger can attach and handle hot reload."
-    exclusiveFlags:
-      - [docker, no-docker]
-
   - name: upgrade
 
   - name: version
