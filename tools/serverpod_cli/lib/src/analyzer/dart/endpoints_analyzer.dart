@@ -125,7 +125,7 @@ class EndpointsAnalyzer {
     // (fixing a dependency elsewhere might unblock them).
     final filesToAnalyze = <String>{
       ...changedFiles,
-      ..._fileCache.entries.where((e) => e.value.hadErrors).map((e) => e.key),
+      ..._fileCache.keys,
     };
 
     // Remove deleted files from caches.
