@@ -117,6 +117,7 @@ void main() {
     });
 
     tearDown(() async {
+      await serverProcess.stop();
       await tempDir.delete(recursive: true);
     });
 
@@ -137,10 +138,7 @@ void main() {
       'then it throws a StateError',
       () async {
         await serverProcess.start();
-
         expect(() => serverProcess.start(), throwsStateError);
-
-        await serverProcess.stop();
       },
     );
   });
