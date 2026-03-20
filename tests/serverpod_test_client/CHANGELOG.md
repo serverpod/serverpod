@@ -1,3 +1,13 @@
+## 3.5.0-beta.1
+
+- feat: Adds legacy client support for Email auth migrations.
+- feat: Exposes configuration options for finding and deleting broken future calls on server startup.
+- feat(EXPERIMENTAL): Introduces a new `serverpod start` command for running the server, docker and app with `--watch` flag for hot reload/restart support.
+- refactor: Decouples all database-related code from `serverpod` into the new `serverpod_database` package to allow supporting client-side databases in the future.
+- refactor: Removes database-specific default values from the definition files to allow supporting extra database dialects.
+- fix: Truncates logged error messages to prevent hanging on formatter issues during code generation.
+- fix: Fixes the CLI invoking the welcome page more than once per install.
+
 ## 3.4.4
 
 - fix: Fixes Google Sign-In not handling error when invoked directly from the controller.
