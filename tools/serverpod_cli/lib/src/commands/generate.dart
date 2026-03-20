@@ -150,10 +150,7 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
         () => _performGenerateWatch(config: config, logLevel: logLevel),
       );
     } else {
-      success = await log.progress(
-        'Generating code',
-        () => generateInIsolate(config),
-      );
+      success = await generateInIsolate(config);
     }
 
     if (!success) {

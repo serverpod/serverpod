@@ -155,10 +155,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
         if (exitCode != 0) throw ExitException(exitCode);
       } else {
         // One-shot: generate in an isolate, then run.
-        final success = await log.progress(
-          'Generating code',
-          () => generateInIsolate(config),
-        );
+        final success = await generateInIsolate(config);
 
         if (!success) {
           log.error('Code generation failed.');
