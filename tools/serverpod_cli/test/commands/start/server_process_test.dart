@@ -134,7 +134,7 @@ void main() {
     );
 
     test(
-      'when start is called while already running, '
+      'when start is called again, '
       'then it throws a StateError',
       () async {
         await serverProcess.start();
@@ -327,7 +327,7 @@ void main() {
       });
 
       test(
-        'when onReloadRequested is provided and connectToVmService is called, '
+        'when connectToVmService is called, '
         'then it connects successfully without invoking the callback',
         () async {
           await serverProcess.start(dillPath: dillPath);
@@ -336,6 +336,105 @@ void main() {
           // The service is registered; verify the process is connected.
           expect(serverProcess.isVmServiceConnected, isTrue);
           expect(callbackCalled, isFalse);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a ServerProcess with VM service enabled and a dill path containing spaces',
+    () {
+      late Directory tempDir;
+      late String dillPath;
+      late String vmServiceInfoFile;
+      late String dartExecutable;
+      late ServerProcess serverProcess;
+
+      setUp(() async {
+        final sdkRoot = getSdkPath();
+        dartExecutable = p.join(sdkRoot, 'bin', 'dart');
+        // Temp directory name includes spaces so the compiled .dill path does too.
+        tempDir = await Directory.systemTemp.createTemp(
+          'server process vm spaces',
+        );
+        await _createMinimalDartProject(tempDir.path);
+        final mainFile = p.join(tempDir.path, 'bin', 'main.dart');
+        await File(mainFile).writeAsString('''
+import 'dart:io';
+void main() {
+  ProcessSignal.sigint.watch().listen((_) => exit(0));
+  Future.delayed(Duration(hours: 1));
+}
+''');
+
+        dillPath = p.join(
+          tempDir.path,
+          '.dart_tool',
+          'serverpod',
+          'server.dill',
+        );
+        vmServiceInfoFile = p.join(
+          tempDir.path,
+          '.dart_tool',
+          'serverpod',
+          'vm-service-info.json',
+        );
+        final compiler = KernelCompiler(
+          entryPoint: mainFile,
+          outputDill: dillPath,
+          packagesPath: p.join(
+            tempDir.path,
+            '.dart_tool',
+            'package_config.json',
+          ),
+        );
+        await compiler.start();
+        final result = await compiler.compile();
+        if (result.errorCount > 0) {
+          throw StateError(
+            'Failed to compile kernel: ${result.compilerOutputLines.join('\n')}',
+          );
+        }
+        compiler.accept();
+        await compiler.dispose();
+
+        expect(dillPath.contains(' '), isTrue);
+
+        serverProcess = ServerProcess(
+          serverDir: tempDir.path,
+          serverArgs: [],
+          dartExecutable: dartExecutable,
+          enableVmService: true,
+          vmServiceInfoFile: vmServiceInfoFile,
+          stdoutSink: _NullIOSink(),
+          stderrSink: _NullIOSink(),
+        );
+      });
+
+      tearDown(() async {
+        await serverProcess.stop();
+        for (var i = 0; ; i++) {
+          try {
+            await tempDir.delete(recursive: true);
+            break;
+          } on FileSystemException {
+            if (i >= 4) rethrow;
+            await Future.delayed(const Duration(milliseconds: 500));
+          }
+        }
+      });
+
+      test(
+        'when start and reload use a dillPath with spaces, '
+        'then VM service connect and reload succeed',
+        () async {
+          await serverProcess.start(dillPath: dillPath);
+          await serverProcess.connectToVmService();
+
+          expect(serverProcess.isVmServiceConnected, isTrue);
+
+          final reloaded = await serverProcess.reload(dillPath);
+          expect(reloaded, isTrue);
         },
       );
     },
