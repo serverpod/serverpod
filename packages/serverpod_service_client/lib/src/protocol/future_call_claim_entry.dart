@@ -16,11 +16,13 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 abstract class FutureCallClaimEntry implements _i1.SerializableModel {
   FutureCallClaimEntry._({
     this.id,
+    this.futureCallId,
     required this.heartbeat,
   });
 
   factory FutureCallClaimEntry({
     int? id,
+    int? futureCallId,
     required DateTime heartbeat,
   }) = _FutureCallClaimEntryImpl;
 
@@ -29,14 +31,20 @@ abstract class FutureCallClaimEntry implements _i1.SerializableModel {
   ) {
     return FutureCallClaimEntry(
       id: jsonSerialization['id'] as int?,
+      futureCallId: jsonSerialization['futureCallId'] as int?,
       heartbeat: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['heartbeat'],
       ),
     );
   }
 
-  /// The id of the future call this claim entry is associated with
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   int? id;
+
+  /// The id of the future call this claim entry is associated with
+  int? futureCallId;
 
   /// Heartbeat timestamp for this claim entry.
   /// Used to detect stale claims that should be cleaned up.
@@ -47,6 +55,7 @@ abstract class FutureCallClaimEntry implements _i1.SerializableModel {
   @_i1.useResult
   FutureCallClaimEntry copyWith({
     int? id,
+    int? futureCallId,
     DateTime? heartbeat,
   });
   @override
@@ -54,6 +63,7 @@ abstract class FutureCallClaimEntry implements _i1.SerializableModel {
     return {
       '__className__': 'serverpod.FutureCallClaimEntry',
       if (id != null) 'id': id,
+      if (futureCallId != null) 'futureCallId': futureCallId,
       'heartbeat': heartbeat.toJson(),
     };
   }
@@ -69,9 +79,11 @@ class _Undefined {}
 class _FutureCallClaimEntryImpl extends FutureCallClaimEntry {
   _FutureCallClaimEntryImpl({
     int? id,
+    int? futureCallId,
     required DateTime heartbeat,
   }) : super._(
          id: id,
+         futureCallId: futureCallId,
          heartbeat: heartbeat,
        );
 
@@ -81,10 +93,12 @@ class _FutureCallClaimEntryImpl extends FutureCallClaimEntry {
   @override
   FutureCallClaimEntry copyWith({
     Object? id = _Undefined,
+    Object? futureCallId = _Undefined,
     DateTime? heartbeat,
   }) {
     return FutureCallClaimEntry(
       id: id is int? ? id : this.id,
+      futureCallId: futureCallId is int? ? futureCallId : this.futureCallId,
       heartbeat: heartbeat ?? this.heartbeat,
     );
   }

@@ -17,11 +17,13 @@ abstract class FutureCallClaimEntry
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   FutureCallClaimEntry._({
     this.id,
+    this.futureCallId,
     required this.heartbeat,
   });
 
   factory FutureCallClaimEntry({
     int? id,
+    int? futureCallId,
     required DateTime heartbeat,
   }) = _FutureCallClaimEntryImpl;
 
@@ -30,6 +32,7 @@ abstract class FutureCallClaimEntry
   ) {
     return FutureCallClaimEntry(
       id: jsonSerialization['id'] as int?,
+      futureCallId: jsonSerialization['futureCallId'] as int?,
       heartbeat: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['heartbeat'],
       ),
@@ -43,6 +46,9 @@ abstract class FutureCallClaimEntry
   @override
   int? id;
 
+  /// The id of the future call this claim entry is associated with
+  int? futureCallId;
+
   /// Heartbeat timestamp for this claim entry.
   /// Used to detect stale claims that should be cleaned up.
   DateTime heartbeat;
@@ -55,6 +61,7 @@ abstract class FutureCallClaimEntry
   @_i1.useResult
   FutureCallClaimEntry copyWith({
     int? id,
+    int? futureCallId,
     DateTime? heartbeat,
   });
   @override
@@ -62,6 +69,7 @@ abstract class FutureCallClaimEntry
     return {
       '__className__': 'serverpod.FutureCallClaimEntry',
       if (id != null) 'id': id,
+      if (futureCallId != null) 'futureCallId': futureCallId,
       'heartbeat': heartbeat.toJson(),
     };
   }
@@ -71,6 +79,7 @@ abstract class FutureCallClaimEntry
     return {
       '__className__': 'serverpod.FutureCallClaimEntry',
       if (id != null) 'id': id,
+      if (futureCallId != null) 'futureCallId': futureCallId,
       'heartbeat': heartbeat.toJson(),
     };
   }
@@ -110,9 +119,11 @@ class _Undefined {}
 class _FutureCallClaimEntryImpl extends FutureCallClaimEntry {
   _FutureCallClaimEntryImpl({
     int? id,
+    int? futureCallId,
     required DateTime heartbeat,
   }) : super._(
          id: id,
+         futureCallId: futureCallId,
          heartbeat: heartbeat,
        );
 
@@ -122,10 +133,12 @@ class _FutureCallClaimEntryImpl extends FutureCallClaimEntry {
   @override
   FutureCallClaimEntry copyWith({
     Object? id = _Undefined,
+    Object? futureCallId = _Undefined,
     DateTime? heartbeat,
   }) {
     return FutureCallClaimEntry(
       id: id is int? ? id : this.id,
+      futureCallId: futureCallId is int? ? futureCallId : this.futureCallId,
       heartbeat: heartbeat ?? this.heartbeat,
     );
   }
@@ -134,6 +147,11 @@ class _FutureCallClaimEntryImpl extends FutureCallClaimEntry {
 class FutureCallClaimEntryUpdateTable
     extends _i1.UpdateTable<FutureCallClaimEntryTable> {
   FutureCallClaimEntryUpdateTable(super.table);
+
+  _i1.ColumnValue<int, int> futureCallId(int? value) => _i1.ColumnValue(
+    table.futureCallId,
+    value,
+  );
 
   _i1.ColumnValue<DateTime, DateTime> heartbeat(DateTime value) =>
       _i1.ColumnValue(
@@ -146,6 +164,10 @@ class FutureCallClaimEntryTable extends _i1.Table<int?> {
   FutureCallClaimEntryTable({super.tableRelation})
     : super(tableName: 'serverpod_future_call_claim') {
     updateTable = FutureCallClaimEntryUpdateTable(this);
+    futureCallId = _i1.ColumnInt(
+      'futureCallId',
+      this,
+    );
     heartbeat = _i1.ColumnDateTime(
       'heartbeat',
       this,
@@ -154,6 +176,9 @@ class FutureCallClaimEntryTable extends _i1.Table<int?> {
 
   late final FutureCallClaimEntryUpdateTable updateTable;
 
+  /// The id of the future call this claim entry is associated with
+  late final _i1.ColumnInt futureCallId;
+
   /// Heartbeat timestamp for this claim entry.
   /// Used to detect stale claims that should be cleaned up.
   late final _i1.ColumnDateTime heartbeat;
@@ -161,6 +186,7 @@ class FutureCallClaimEntryTable extends _i1.Table<int?> {
   @override
   List<_i1.Column> get columns => [
     id,
+    futureCallId,
     heartbeat,
   ];
 }

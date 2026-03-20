@@ -241,7 +241,7 @@ class FutureCallManager {
       try {
         await FutureCallClaimEntry.db.updateWhere(
           _internalSession,
-          where: (t) => t.id.equals(futureCallEntry.id!),
+          where: (t) => t.futureCallId.equals(futureCallEntry.id!),
           columnValues: (t) => [t.heartbeat(DateTime.now().toUtc())],
         );
       } catch (_) {
@@ -259,7 +259,7 @@ class FutureCallManager {
       }
 
       final claim = FutureCallClaimEntry(
-        id: futureCallEntry.id,
+        futureCallId: futureCallEntry.id,
         heartbeat: DateTime.now().toUtc(),
       );
 
