@@ -130,17 +130,23 @@ typedef GenerateResult = ({bool success, Set<String> generatedFiles});
 /// When [requirements] is provided, only generates the specified parts.
 /// This allows watch mode to skip expensive model generation when only
 /// Dart files (endpoints/future calls) changed.
+///
+/// When [reportIssuesForPaths] is non-null, model validation only prints
+/// hint/info issues for files in that set (see [StatefulAnalyzer.validateAll]).
 Future<GenerateResult> performGenerate({
   bool dartFormat = true,
   required GeneratorConfig config,
   required Analyzers analyzers,
   GenerationRequirements requirements = GenerationRequirements.full,
+  Set<String>? reportIssuesForPaths,
 }) async {
   bool success = true;
 
   log.debug('Analyzing serializable models in the protocol directory.');
 
-  final models = analyzers.models.validateAll();
+  final models = analyzers.models.validateAll(
+    reportIssuesForPaths: reportIssuesForPaths,
+  );
   success &= !analyzers.models.hasSevereErrors;
 
   log.debug('Analyzing the future calls models.');

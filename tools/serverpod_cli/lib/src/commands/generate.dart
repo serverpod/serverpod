@@ -201,6 +201,11 @@ Future<bool> generateInIsolate(GeneratorConfig config) {
 /// to skip expensive model generation.
 ///
 /// Returns `true` if generation succeeded or was not needed.
+///
+/// When [skipStalenessCheck] is `true` (watcher-driven runs), model hint/info
+/// output is limited to [affectedPaths]. When `false`, all model issues are
+/// reported (one-shot generate and runs that re-check staleness against the
+/// whole project).
 Future<bool> analyzeAndGenerate({
   required GeneratorConfig config,
   required Analyzers analyzers,
@@ -226,6 +231,7 @@ Future<bool> analyzeAndGenerate({
       config: config,
       analyzers: analyzers,
       requirements: requirements,
+      reportIssuesForPaths: skipStalenessCheck ? affectedPaths : null,
     );
     return result.success;
   });
