@@ -234,7 +234,7 @@ Future<bool> analyzeAndGenerate({
       config: config,
       analyzers: analyzers,
       requirements: requirements,
-      reportIssuesForPaths: skipStalenessCheck ? affectedPaths : null,
+      affectedPaths: skipStalenessCheck ? affectedPaths : null,
     );
     return result.success;
   });

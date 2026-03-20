@@ -119,21 +119,21 @@ typedef GenerateResult = ({bool success, Set<String> generatedFiles});
 /// This allows watch mode to skip expensive model generation when only
 /// Dart files (endpoints/future calls) changed.
 ///
-/// When [reportIssuesForPaths] is non-null, model validation only prints
-/// hint/info issues for files in that set (see [StatefulAnalyzer.validateAll]).
+/// When [affectedPaths] is non-null, model validation only prints hint/info
+/// issues for files in that set (see [StatefulAnalyzer.validateAll]).
 Future<GenerateResult> performGenerate({
   bool dartFormat = true,
   required GeneratorConfig config,
   required Analyzers analyzers,
   GenerationRequirements requirements = GenerationRequirements.full,
-  Set<String>? reportIssuesForPaths,
+  Set<String>? affectedPaths,
 }) async {
   bool success = true;
 
   log.debug('Analyzing serializable models in the protocol directory.');
 
   final models = analyzers.models.validateAll(
-    reportIssuesForPaths: reportIssuesForPaths,
+    reportIssuesForPaths: affectedPaths,
   );
   success &= !analyzers.models.hasSevereErrors;
 
@@ -170,11 +170,12 @@ Future<GenerateResult> performGenerate({
   if (!requirements.generateProtocol) {
     return (success: success, generatedFiles: generatedModelFiles.toSet());
   }
-  log.debug('Analyzing the endpoints.');
-  final changedFiles = requirements.generateModels
-      ? generatedModelFiles.toSet()
-      : <String>{};
 
+  final changedFiles = requirements.generateModels
+      ? {...?affectedPaths, ...generatedModelFiles}
+      : {...?affectedPaths};
+
+  log.debug('Analyzing the endpoints.');
   final endpointAnalyzerCollector = CodeGenerationCollector();
   final endpoints = await analyzers.endpoints.analyze(
     collector: endpointAnalyzerCollector,
@@ -185,7 +186,6 @@ Future<GenerateResult> performGenerate({
   endpointAnalyzerCollector.printErrors();
 
   log.debug('Analyzing the future calls.');
-
   var futureCallsAnalyzerCollector = CodeGenerationCollector();
   var futureCalls = await analyzers.futureCalls.analyze(
     collector: futureCallsAnalyzerCollector,
@@ -196,7 +196,6 @@ Future<GenerateResult> performGenerate({
   futureCallsAnalyzerCollector.printErrors();
 
   log.debug('Generating the protocol.');
-
   var protocolDefinition = ProtocolDefinition(
     endpoints: endpoints,
     models: allModels,
