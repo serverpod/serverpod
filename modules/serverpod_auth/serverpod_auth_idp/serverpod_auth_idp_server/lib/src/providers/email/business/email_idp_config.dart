@@ -4,7 +4,7 @@ import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
 import '../../../utils/get_passwords_extension.dart';
-import '../util/default_code_generators.dart';
+import '../../utils/default_code_generators.dart';
 import '../util/registration_password_policy.dart';
 import 'email_idp.dart';
 
@@ -159,11 +159,11 @@ class EmailIdpConfig extends IdentityProviderBuilder<EmailIdp> {
     this.registrationVerificationCodeLifetime = const Duration(minutes: 15),
     this.registrationVerificationCodeAllowedAttempts = 3,
     this.registrationVerificationCodeGenerator =
-        defaultVerificationCodeGenerator,
+        defaultNumericVerificationCodeGenerator,
     this.passwordResetVerificationCodeLifetime = const Duration(minutes: 15),
     this.passwordResetVerificationCodeAllowedAttempts = 3,
     this.passwordResetVerificationCodeGenerator =
-        defaultVerificationCodeGenerator,
+        defaultNumericVerificationCodeGenerator,
     this.sendRegistrationVerificationCode,
     this.sendPasswordResetVerificationCode,
     this.onPasswordResetCompleted,

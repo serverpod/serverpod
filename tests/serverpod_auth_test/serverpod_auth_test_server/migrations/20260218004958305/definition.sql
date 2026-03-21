@@ -43,36 +43,6 @@ CREATE TABLE "challenge_tracker" (
 CREATE UNIQUE INDEX "secret_challenge_id_unique_idx" ON "challenge_tracker" USING btree ("secretChallengeId");
 
 --
--- Class SessionMetadata as table session_metadata
---
-CREATE TABLE "session_metadata" (
-    "id" bigserial PRIMARY KEY,
-    "serverSideSessionId" uuid NOT NULL,
-    "deviceName" text NOT NULL,
-    "ipAddress" text,
-    "userAgent" text,
-    "metadata" text
-);
-
--- Indexes
-CREATE UNIQUE INDEX "server_side_session_id_unique_idx" ON "session_metadata" USING btree ("serverSideSessionId");
-
---
--- Class TokenMetadata as table token_metadata
---
-CREATE TABLE "token_metadata" (
-    "id" bigserial PRIMARY KEY,
-    "refreshTokenId" uuid NOT NULL,
-    "deviceName" text NOT NULL,
-    "ipAddress" text,
-    "userAgent" text,
-    "metadata" text
-);
-
--- Indexes
-CREATE UNIQUE INDEX "refresh_token_id_unique_idx" ON "token_metadata" USING btree ("refreshTokenId");
-
---
 -- Class UserData as table user_data
 --
 CREATE TABLE "user_data" (
@@ -470,23 +440,6 @@ CREATE TABLE "serverpod_auth_idp_email_account_request" (
 CREATE UNIQUE INDEX "serverpod_auth_idp_email_account_request_email" ON "serverpod_auth_idp_email_account_request" USING btree ("email");
 
 --
--- Class FacebookAccount as table serverpod_auth_idp_facebook_account
---
-CREATE TABLE "serverpod_auth_idp_facebook_account" (
-    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
-    "authUserId" uuid NOT NULL,
-    "createdAt" timestamp without time zone NOT NULL,
-    "userIdentifier" text NOT NULL,
-    "email" text,
-    "fullName" text,
-    "firstName" text,
-    "lastName" text
-);
-
--- Indexes
-CREATE UNIQUE INDEX "serverpod_auth_facebook_account_user_identifier" ON "serverpod_auth_idp_facebook_account" USING btree ("userIdentifier");
-
---
 -- Class FirebaseAccount as table serverpod_auth_idp_firebase_account
 --
 CREATE TABLE "serverpod_auth_idp_firebase_account" (
@@ -500,6 +453,20 @@ CREATE TABLE "serverpod_auth_idp_firebase_account" (
 
 -- Indexes
 CREATE UNIQUE INDEX "serverpod_auth_firebase_account_user_identifier" ON "serverpod_auth_idp_firebase_account" USING btree ("userIdentifier");
+
+--
+-- Class GenericPasswordlessLoginRequest as table serverpod_auth_idp_generic_passwordless_login_request
+--
+CREATE TABLE "serverpod_auth_idp_generic_passwordless_login_request" (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
+    "createdAt" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "nonce" text NOT NULL,
+    "challengeId" uuid NOT NULL,
+    "loginChallengeId" uuid
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_auth_idp_generic_passwordless_login_request_nonce" ON "serverpod_auth_idp_generic_passwordless_login_request" USING btree ("nonce");
 
 --
 -- Class GitHubAccount as table serverpod_auth_idp_github_account
@@ -719,18 +686,21 @@ CREATE UNIQUE INDEX "serverpod_user_info_user_identifier" ON "serverpod_user_inf
 CREATE INDEX "serverpod_user_info_email" ON "serverpod_user_info" USING btree ("email");
 
 --
--- Class GenericPasswordlessLoginRequest as table serverpod_auth_idp_generic_passwordless_login_request
+-- Class FacebookAccount as table serverpod_auth_idp_facebook_account
 --
-CREATE TABLE "serverpod_auth_idp_generic_passwordless_login_request" (
+CREATE TABLE "serverpod_auth_idp_facebook_account" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid_v7(),
-    "createdAt" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "nonce" text NOT NULL,
-    "challengeId" uuid NOT NULL,
-    "loginChallengeId" uuid
+    "authUserId" uuid NOT NULL,
+    "createdAt" timestamp without time zone NOT NULL,
+    "userIdentifier" text NOT NULL,
+    "email" text,
+    "fullName" text,
+    "firstName" text,
+    "lastName" text
 );
 
 -- Indexes
-CREATE UNIQUE INDEX "serverpod_auth_idp_generic_passwordless_login_request_nonce" ON "serverpod_auth_idp_generic_passwordless_login_request" USING btree ("nonce");
+CREATE UNIQUE INDEX "serverpod_auth_facebook_account_user_identifier" ON "serverpod_auth_idp_facebook_account" USING btree ("userIdentifier");
 
 --
 -- Foreign relations for "challenge_tracker" table
@@ -739,26 +709,6 @@ ALTER TABLE ONLY "challenge_tracker"
     ADD CONSTRAINT "challenge_tracker_fk_0"
     FOREIGN KEY("secretChallengeId")
     REFERENCES "serverpod_auth_idp_secret_challenge"("id")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION;
-
---
--- Foreign relations for "session_metadata" table
---
-ALTER TABLE ONLY "session_metadata"
-    ADD CONSTRAINT "session_metadata_fk_0"
-    FOREIGN KEY("serverSideSessionId")
-    REFERENCES "serverpod_auth_core_session"("id")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION;
-
---
--- Foreign relations for "token_metadata" table
---
-ALTER TABLE ONLY "token_metadata"
-    ADD CONSTRAINT "token_metadata_fk_0"
-    FOREIGN KEY("refreshTokenId")
-    REFERENCES "serverpod_auth_core_jwt_refresh_token"("id")
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
@@ -947,22 +897,28 @@ ALTER TABLE ONLY "serverpod_auth_idp_email_account_request"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "serverpod_auth_idp_facebook_account" table
---
-ALTER TABLE ONLY "serverpod_auth_idp_facebook_account"
-    ADD CONSTRAINT "serverpod_auth_idp_facebook_account_fk_0"
-    FOREIGN KEY("authUserId")
-    REFERENCES "serverpod_auth_core_user"("id")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION;
-
---
 -- Foreign relations for "serverpod_auth_idp_firebase_account" table
 --
 ALTER TABLE ONLY "serverpod_auth_idp_firebase_account"
     ADD CONSTRAINT "serverpod_auth_idp_firebase_account_fk_0"
     FOREIGN KEY("authUserId")
     REFERENCES "serverpod_auth_core_user"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
+-- Foreign relations for "serverpod_auth_idp_generic_passwordless_login_request" table
+--
+ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
+    ADD CONSTRAINT "serverpod_auth_idp_generic_passwordless_login_request_fk_0"
+    FOREIGN KEY("challengeId")
+    REFERENCES "serverpod_auth_idp_secret_challenge"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
+    ADD CONSTRAINT "serverpod_auth_idp_generic_passwordless_login_request_fk_1"
+    FOREIGN KEY("loginChallengeId")
+    REFERENCES "serverpod_auth_idp_secret_challenge"("id")
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
@@ -1023,18 +979,12 @@ ALTER TABLE ONLY "serverpod_auth_migration_migrated_user"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "serverpod_auth_idp_generic_passwordless_login_request" table
+-- Foreign relations for "serverpod_auth_idp_facebook_account" table
 --
-ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
-    ADD CONSTRAINT "serverpod_auth_idp_generic_passwordless_login_request_fk_0"
-    FOREIGN KEY("challengeId")
-    REFERENCES "serverpod_auth_idp_secret_challenge"("id")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION;
-ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
-    ADD CONSTRAINT "serverpod_auth_idp_generic_passwordless_login_request_fk_1"
-    FOREIGN KEY("loginChallengeId")
-    REFERENCES "serverpod_auth_idp_secret_challenge"("id")
+ALTER TABLE ONLY "serverpod_auth_idp_facebook_account"
+    ADD CONSTRAINT "serverpod_auth_idp_facebook_account_fk_0"
+    FOREIGN KEY("authUserId")
+    REFERENCES "serverpod_auth_core_user"("id")
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
@@ -1043,9 +993,9 @@ ALTER TABLE ONLY "serverpod_auth_idp_generic_passwordless_login_request"
 -- MIGRATION VERSION FOR serverpod_auth_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth_test', '20260218183834214', now())
+    VALUES ('serverpod_auth_test', '20260218004958305', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260218183834214', "timestamp" = now();
+    DO UPDATE SET "version" = '20260218004958305', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
