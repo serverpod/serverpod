@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../localization/sign_in_localization_provider.dart';
 import 'github_sign_in_style.dart';
 
 /// A styled button for GitHub Sign-In.
@@ -60,6 +61,7 @@ class GitHubSignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.githubSignInTexts;
     final buttonStyle = GitHubSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
@@ -94,12 +96,15 @@ class GitHubSignInButton extends StatelessWidget {
             alpha: 0.6,
           ),
         ),
-        child: _buildButtonContent(buttonStyle),
+        child: _buildButtonContent(buttonStyle, texts),
       ),
     );
   }
 
-  Widget _buildButtonContent(GitHubSignInStyle buttonStyle) {
+  Widget _buildButtonContent(
+    GitHubSignInStyle buttonStyle,
+    GitHubSignInTexts texts,
+  ) {
     if (isLoading) {
       return SizedBox(
         height: 20,
@@ -118,7 +123,7 @@ class GitHubSignInButton extends StatelessWidget {
     }
 
     final textWidget = Text(
-      _getButtonText(),
+      texts.signInButton ?? _getButtonText(),
       style: TextStyle(
         fontSize: size == GitHubButtonSize.large ? 16 : 14,
         color: buttonStyle.foregroundColor,

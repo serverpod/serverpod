@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
 import '../common/widgets/password_requirements.dart';
+import '../localization/sign_in_localization_provider.dart';
 import 'email_auth_controller.dart';
 import 'forms/login.dart';
 import 'forms/password_reset_start.dart';
@@ -162,6 +163,8 @@ class _EmailSignInWidgetState extends State<EmailSignInWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.emailSignInTexts;
+
     return PageTransitionSwitcher(
       duration: const Duration(milliseconds: 600),
       reverse: _controller.currentScreen != _controller.startScreen,
@@ -173,11 +176,11 @@ class _EmailSignInWidgetState extends State<EmailSignInWidget> {
           child: child,
         );
       },
-      child: _buildScreen(),
+      child: _buildScreen(texts),
     );
   }
 
-  Widget _buildScreen() {
+  Widget _buildScreen(EmailSignInTexts texts) {
     return switch (_controller.currentScreen) {
       EmailFlowScreen.login => LoginForm(
         controller: _controller,
@@ -188,9 +191,11 @@ class _EmailSignInWidgetState extends State<EmailSignInWidget> {
         onPrivacyPolicyPressed: widget.onPrivacyPolicyPressed,
       ),
       EmailFlowScreen.verifyRegistration => VerificationForm(
-        title: 'Verify account',
+        title: texts.verifyAccountTitle,
+        messageText: texts.verificationMessage,
         controller: _controller,
         onCompleted: _controller.verifyRegistrationCode,
+        verifyButtonLabel: texts.verify,
         verificationCodeConfig: widget.verificationCodeConfig,
       ),
       EmailFlowScreen.completeRegistration => CompleteRegistrationForm(
@@ -200,9 +205,11 @@ class _EmailSignInWidgetState extends State<EmailSignInWidget> {
         controller: _controller,
       ),
       EmailFlowScreen.verifyPasswordReset => VerificationForm(
-        title: 'Verify reset code',
+        title: texts.verifyResetCodeTitle,
+        messageText: texts.verificationMessage,
         controller: _controller,
         onCompleted: _controller.verifyPasswordResetCode,
+        verifyButtonLabel: texts.verify,
         verificationCodeConfig: widget.verificationCodeConfig,
       ),
       EmailFlowScreen.completePasswordReset => CompletePasswordResetForm(

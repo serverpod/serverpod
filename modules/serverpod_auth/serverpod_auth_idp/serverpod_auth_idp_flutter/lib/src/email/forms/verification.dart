@@ -4,6 +4,7 @@ import '../../common/text_formatters.dart';
 import '../../common/widgets/buttons/action_button.dart';
 import '../../common/widgets/gaps.dart';
 import '../../common/widgets/verification_code.dart';
+import '../../localization/sign_in_localization_provider.dart';
 import '../email_auth_controller.dart';
 import 'widgets/back_to_sign_in_button.dart';
 import 'widgets/form_standard_layout.dart';
@@ -92,6 +93,7 @@ class _VerificationFormState extends State<VerificationForm> {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.emailSignInTexts;
     final config = widget.verificationCodeConfig;
 
     return FormStandardLayout(
@@ -100,9 +102,7 @@ class _VerificationFormState extends State<VerificationForm> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            widget.messageText ??
-                'A verification email has been sent. Please check your email '
-                    'and enter the verification code below.',
+            widget.messageText ?? texts.verificationMessage,
             style: Theme.of(context).textTheme.bodyMedium,
             textAlign: TextAlign.left,
           ),
@@ -126,7 +126,7 @@ class _VerificationFormState extends State<VerificationForm> {
       ),
       actionButton: ActionButton(
         onPressed: widget.onCompleted,
-        label: widget.verifyButtonLabel ?? 'Verify',
+        label: widget.verifyButtonLabel ?? texts.verify,
         isLoading: controller.isLoading,
       ),
       bottomText: BackToSignInButton(controller: controller),
