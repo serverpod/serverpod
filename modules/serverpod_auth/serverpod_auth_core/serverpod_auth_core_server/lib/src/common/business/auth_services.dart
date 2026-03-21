@@ -48,6 +48,7 @@ class AuthServices {
     required final List<TokenManagerBuilder> tokenManagerBuilders,
     final List<IdentityProviderBuilder> identityProviderBuilders = const [],
     final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
+    final AccountMergeConfig accountMergeConfig = const AccountMergeConfig(),
     final UserProfileConfig userProfileConfig = const UserProfileConfig(),
   }) {
     final instance = AuthServices(
@@ -56,6 +57,7 @@ class AuthServices {
       additionalTokenManagerBuilders: tokenManagerBuilders.skip(1).toList(),
       authUsers: AuthUsers(config: authUsersConfig),
       userProfiles: UserProfiles(config: userProfileConfig),
+      accountMerger: AccountMerger(config: accountMergeConfig),
     );
     _instance = instance;
   }
@@ -89,6 +91,7 @@ class AuthServices {
     final List<TokenManagerBuilder> additionalTokenManagerBuilders = const [],
     this.authUsers = const AuthUsers(),
     this.userProfiles = const UserProfiles(),
+    this.accountMerger = const AccountMerger(),
   }) {
     tokenManager = MultiTokenManager(
       primaryTokenManager: primaryTokenManagerBuilder.build(
@@ -130,6 +133,9 @@ class AuthServices {
   /// Manager for managing user profiles.
   final UserProfiles userProfiles;
 
+  /// Manager for managing account mergers.
+  final AccountMerger accountMerger;
+
   /// The token manager that handles token lifecycle operations.
   late final MultiTokenManager tokenManager;
 
@@ -158,12 +164,14 @@ extension AuthServicesInit on Serverpod {
     required final List<TokenManagerBuilder> tokenManagerBuilders,
     final List<IdentityProviderBuilder> identityProviderBuilders = const [],
     final AuthUsersConfig authUsersConfig = const AuthUsersConfig(),
+    final AccountMergeConfig accountMergeConfig = const AccountMergeConfig(),
     final UserProfileConfig userProfileConfig = const UserProfileConfig(),
   }) {
     AuthServices.set(
       tokenManagerBuilders: tokenManagerBuilders,
       identityProviderBuilders: identityProviderBuilders,
       authUsersConfig: authUsersConfig,
+      accountMergeConfig: accountMergeConfig,
       userProfileConfig: userProfileConfig,
     );
 

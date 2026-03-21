@@ -17,3 +17,4 @@ export 'src/common/secret_challenge/secret_challenge_config.dart';
 export 'src/common/secret_challenge/secret_challenge_exceptions.dart';
 export 'src/common/secret_challenge/secret_challenge_util.dart';
 export 'src/generated/protocol.dart' hide Protocol;
+export 'src/utils/idp_merge_hook.dart';

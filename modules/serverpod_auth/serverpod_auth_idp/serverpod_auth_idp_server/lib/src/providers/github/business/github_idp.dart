@@ -150,6 +150,43 @@ class GitHubIdp {
   /// Determines whether the current session has an associated GitHub account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
+
+  /// Migrates the [GitHubAccount] from [userToRemove] to [userToKeep].
+  ///
+  /// If [userToKeep] already has a [GitHubAccount], the [GitHubAccount] of
+  /// [userToRemove] will be deleted.
+  ///
+  /// If [userToKeep] does not have a [GitHubAccount], the [GitHubAccount] of
+  /// [userToRemove] will be transferred to [userToKeep].
+  static Future<void> migrate(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    final existingAccount = await GitHubAccount.db.findFirstRow(
+      session,
+      where: (final t) => t.authUserId.equals(userToKeepId),
+      transaction: transaction,
+    );
+
+    if (existingAccount != null) {
+      await GitHubAccount.db.deleteWhere(
+        session,
+        where: (final t) => t.authUserId.equals(userToRemoveId),
+        transaction: transaction,
+      );
+    } else {
+      await GitHubAccount.db.updateWhere(
+        session,
+        where: (final t) => t.authUserId.equals(userToRemoveId),
+        columnValues: (final t) => [
+          t.authUserId(userToKeepId),
+        ],
+        transaction: transaction,
+      );
+    }
+  }
 }
 
 /// Extension to get the GitHubIdp instance from the AuthServices.

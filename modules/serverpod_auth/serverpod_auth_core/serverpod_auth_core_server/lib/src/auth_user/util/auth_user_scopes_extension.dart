@@ -8,4 +8,12 @@ extension AuthUserScopes on AuthUserModel {
   Set<Scope> get scopes {
     return scopeNames.map(Scope.new).toSet();
   }
+
+  /// Converts this [AuthUserModel] to an [AuthUser] entity.
+  AuthUser toEntity() => AuthUser(
+    id: id,
+    blocked: blocked,
+    scopeNames: scopeNames,
+    createdAt: createdAt,
+  );
 }
