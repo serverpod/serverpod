@@ -188,12 +188,7 @@ void main() {
         ),
       );
 
-      pod.webServer.addRoute(
-        FlutterRoute(
-          webDir,
-          cacheControlFactory: StaticRoute.public(maxAge: Duration(hours: 1)),
-        ),
-      );
+      pod.webServer.addRoute(FlutterRoute(webDir));
 
       await pod.start();
       port = pod.webServer.port!;
