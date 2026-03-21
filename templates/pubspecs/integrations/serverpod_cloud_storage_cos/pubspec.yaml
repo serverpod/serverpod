@@ -1,0 +1,32 @@
+# TEMPLATE
+
+name: serverpod_cloud_storage_cos
+description: Serverpod integration for Tencent Cloud Object Storage (COS)
+version: SERVERPOD_VERSION
+repository: https://github.com/serverpod/serverpod
+homepage: https://serverpod.dev
+issue_tracker: https://github.com/serverpod/serverpod/issues
+
+environment:
+  sdk: DART_VERSION
+
+dependencies:
+  crypto: ^3.0.2
+  http: '>=1.1.0 <2.0.0'
+  serverpod: SERVERPOD_VERSION
+
+dev_dependencies:
+  lints: ">=3.0.0 <7.0.0"
+  mocktail: ^1.0.0
+  serverpod_client: SERVERPOD_VERSION
+  test: ^1.25.5
+
+dependency_overrides:
+  serverpod:
+    path: ../../packages/serverpod
+  serverpod_client:
+    path: ../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../packages/serverpod_shared
