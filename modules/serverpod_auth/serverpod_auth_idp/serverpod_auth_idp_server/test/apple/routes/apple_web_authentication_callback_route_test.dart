@@ -28,14 +28,6 @@ void main() {
   }) {
     final signInWithApple = _SignInWithAppleFake();
     final utils = AppleIdpUtils(
-      config: const AppleIdpConfig(
-        serviceIdentifier: 'id',
-        bundleIdentifier: 'bundle',
-        redirectUri: 'uri',
-        teamId: 'team',
-        keyId: 'key',
-        key: 'private',
-      ),
       tokenManager: tokenManager,
       signInWithApple: signInWithApple,
       authUsers: const AuthUsers(),
