@@ -241,7 +241,6 @@ class PostgresDatabaseConnection
         settings: const TransactionSettings(),
         session: session,
       );
-     }
     }
 
     var table = rows.first.table;
