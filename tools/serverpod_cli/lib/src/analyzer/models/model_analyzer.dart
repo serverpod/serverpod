@@ -179,6 +179,15 @@ class SerializableModelAnalyzer {
       collector,
     );
 
+    // Validate unique field index name collisions
+    if (model is ModelClassDefinition && model.tableName != null) {
+      var indexCollisionErrors = _validateUniqueFieldIndexCollisions(
+        model,
+        documentContents,
+      );
+      collector.addErrors(indexCollisionErrors);
+    }
+
     return;
   }
 
@@ -219,5 +228,47 @@ class SerializableModelAnalyzer {
     }
 
     return null;
+  }
+
+  static List<SourceSpanSeverityException> _validateUniqueFieldIndexCollisions(
+    ModelClassDefinition model,
+    YamlMap documentContents,
+  ) {
+    var errors = <SourceSpanSeverityException>[];
+    var tableName = model.tableName;
+    if (tableName == null) return errors;
+
+    // Get manually defined index names
+    var indexesNode = documentContents.nodes[Keyword.indexes];
+    if (indexesNode is! YamlMap) return errors;
+
+    var manualIndexNames = <String, YamlScalar>{};
+    for (var entry in indexesNode.nodes.entries) {
+      var keyScalar = entry.key;
+      if (keyScalar is YamlScalar && keyScalar.value is String) {
+        manualIndexNames[keyScalar.value as String] = keyScalar;
+      }
+    }
+
+    // Check for fields with unique modifier and detect collisions
+    for (var field in model.fields) {
+      if (field.shouldCreateUniqueIndex) {
+        var autoIndexName = '${tableName}__${field.columnName}__unique_idx';
+        if (manualIndexNames.containsKey(autoIndexName)) {
+          var span = manualIndexNames[autoIndexName]!.span;
+          errors.add(
+            SourceSpanSeverityException(
+              'The index name "$autoIndexName" is already defined manually. '
+              'This index is auto-generated for the field "${field.name}" '
+              'marked as unique. Either remove the unique modifier from the '
+              'field or use a different name for the manual index.',
+              span,
+            ),
+          );
+        }
+      }
+    }
+
+    return errors;
   }
 }
