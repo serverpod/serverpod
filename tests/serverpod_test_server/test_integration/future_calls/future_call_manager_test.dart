@@ -752,6 +752,11 @@ void main() async {
       });
 
       tearDown(() async {
+        await FutureCallEntry.db.deleteWhere(
+          session,
+          where: (t) => t.name.equals(testCallName),
+        );
+
         await session.close();
         await logSession.close();
         await server.shutdown(exitProcess: false);

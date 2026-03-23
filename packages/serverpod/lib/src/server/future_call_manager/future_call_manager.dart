@@ -34,9 +34,7 @@ class FutureCallManager {
   final Session _logSession;
   final FutureCallSessionBuilder _sessionBuilder;
   final InitializeFutureCall _initializeFutureCall;
-
   final FutureCallConfig _config;
-
   final SerializationManager _serializationManager;
 
   final _futureCalls = <String, FutureCall>{};
@@ -44,6 +42,7 @@ class FutureCallManager {
 
   late final ServerpodTaskScheduler _scheduler;
   late final FutureCallScanner _scanner;
+  final Duration _heartbeatInterval;
 
   /// Tracks whether start() was called but the scanner hasn't been started
   /// yet because there were no registered future calls at the time.
@@ -59,6 +58,8 @@ class FutureCallManager {
   /// - [internalSession]: A session used internally for database operations.
   /// - [sessionProvider]: A function to create sessions for executing future calls.
   /// - [initializeFutureCall]: A function to initialize a [FutureCall] with its name.
+  /// - [heartbeatInterval]: The interval for updating future call claims with a heartbeat
+  /// to keep them alive. Defaults to 30 seconds.
   FutureCallManager(
     this._config,
     this._serializationManager, {
@@ -67,11 +68,13 @@ class FutureCallManager {
     required Session logSession,
     required FutureCallSessionBuilder sessionProvider,
     required InitializeFutureCall initializeFutureCall,
+    Duration? heartbeatInterval,
   }) : _diagnosticsService = diagnosticsService,
        _internalSession = internalSession,
        _logSession = logSession,
        _sessionBuilder = sessionProvider,
-       _initializeFutureCall = initializeFutureCall {
+       _initializeFutureCall = initializeFutureCall,
+       _heartbeatInterval = heartbeatInterval ?? const Duration(seconds: 30) {
     _scheduler = ServerpodTaskScheduler(
       concurrencyLimit: _config.concurrencyLimit,
     );
@@ -82,6 +85,7 @@ class FutureCallManager {
       shouldSkipScan: _scheduler.isConcurrentLimitReached,
       dispatchEntries: _dispatchEntries,
       diagnosticsService: _diagnosticsService,
+      heartbeatInterval: _heartbeatInterval,
     );
   }
 
@@ -229,6 +233,21 @@ class FutureCallManager {
     required FutureCall<SerializableModel> futureCall,
   }) async {
     final futureCallSession = _sessionBuilder(futureCallEntry.name);
+    bool deleteFutureCallEntry = true;
+    Timer? heartbeatTimer;
+
+    /// Update hearbeat column for the future call claim to keep claim alive.
+    Future<void> updateHeartbeat() async {
+      try {
+        await FutureCallClaimEntry.db.updateWhere(
+          _internalSession,
+          where: (t) => t.futureCallId.equals(futureCallEntry.id),
+          columnValues: (t) => [t.heartbeat(DateTime.now().toUtc())],
+        );
+      } catch (_) {
+        heartbeatTimer?.cancel();
+      }
+    }
 
     try {
       dynamic object;
@@ -238,6 +257,29 @@ class FutureCallManager {
           futureCall.dataType,
         );
       }
+
+      final claim = FutureCallClaimEntry(
+        futureCallId: futureCallEntry.id,
+        heartbeat: DateTime.now().toUtc(),
+      );
+
+      final insertedClaims = await FutureCallClaimEntry.db.insert(
+        _internalSession,
+        [claim],
+        ignoreConflicts: true,
+      );
+
+      if (insertedClaims.isEmpty) {
+        // Claim already exists. The instance with the
+        // claim will run the call and clean up after running.
+        deleteFutureCallEntry = false;
+        return;
+      }
+
+      heartbeatTimer = Timer.periodic(
+        _heartbeatInterval,
+        (_) => updateHeartbeat(),
+      );
 
       await futureCall.invoke(futureCallSession, object);
       await futureCallSession.close();
@@ -249,6 +291,15 @@ class FutureCallManager {
       );
 
       await futureCallSession.close(error: error, stackTrace: stackTrace);
+    } finally {
+      heartbeatTimer?.cancel();
+
+      if (deleteFutureCallEntry) {
+        await FutureCallEntry.db.deleteWhere(
+          _internalSession,
+          where: (t) => t.id.equals(futureCallEntry.id),
+        );
+      }
     }
   }
 

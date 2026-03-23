@@ -24,6 +24,7 @@ class FutureCallScanner {
 
   final ShouldSkipScan _shouldSkipScan;
   final DispatchEntries _dispatchEntries;
+  final Duration _heartbeatInterval;
 
   bool _isStopping = false;
 
@@ -45,17 +46,22 @@ class FutureCallScanner {
   ///
   /// The [diagnosticsService] is used to report any errors that occur during
   /// the scan.
+  ///
+  /// The [heartbeatInterval] is the interval for updating future call claims
+  /// with a heartbeat to keep them alive.
   FutureCallScanner({
     required Session internalSession,
     required Duration scanInterval,
     required ShouldSkipScan shouldSkipScan,
     required DispatchEntries dispatchEntries,
     required FutureCallDiagnosticsService diagnosticsService,
+    required Duration heartbeatInterval,
   }) : _internalSession = internalSession,
        _scanInterval = scanInterval,
        _shouldSkipScan = shouldSkipScan,
        _dispatchEntries = dispatchEntries,
-       _diagnosticReporting = diagnosticsService;
+       _diagnosticReporting = diagnosticsService,
+       _heartbeatInterval = heartbeatInterval;
 
   /// Scans the database for overdue future calls and queues them for execution.
   Future<void> scanFutureCallEntries() async {
@@ -68,12 +74,25 @@ class FutureCallScanner {
     try {
       final now = DateTime.now().toUtc();
 
-      final entries = await FutureCallEntry.db.deleteWhere(
+      final entries = await FutureCallEntry.db.find(
         _internalSession,
         where: (row) => row.time <= now,
       );
 
       entries.sort((a, b) => a.time.compareTo(b.time));
+
+      if (entries.isNotEmpty) {
+        // Delete future call claims with heartbeats that are behind by
+        // at least 2x the normal interval.
+        final staleClaimThreshold = DateTime.now().toUtc().subtract(
+          _heartbeatInterval * 2,
+        );
+
+        await FutureCallClaimEntry.db.deleteWhere(
+          _internalSession,
+          where: (t) => t.heartbeat < staleClaimThreshold,
+        );
+      }
 
       _dispatchEntries(entries);
     } catch (error, stackTrace) {
