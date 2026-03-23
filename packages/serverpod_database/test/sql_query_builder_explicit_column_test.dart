@@ -58,54 +58,6 @@ void main() {
     );
   });
 
-  test(
-    'when deleting a table with explicit column names and order by then the returned rows are ordered by the field alias',
-    () {
-      final table = TableWithColumnOverride();
-      final query =
-          DeleteQueryBuilder(
-            table: table,
-          ).withReturn(Returning.all).withOrderBy([
-            Order(column: table.userName),
-          ]).build();
-
-      expect(
-        query,
-        'WITH deleted_rows AS (DELETE FROM "${table.tableName}" '
-        'RETURNING "${table.tableName}"."id" AS "${table.tableName}.id", '
-        '"${table.tableName}"."user_name" AS "${table.tableName}.userName", '
-        '"${table.tableName}"."user_age" AS "${table.tableName}.userAge") '
-        'SELECT * FROM deleted_rows '
-        'ORDER BY "${table.tableName}.userName" ASC NULLS LAST',
-      );
-    },
-  );
-
-  test(
-    'when deleting a table with explicit column names and multiple order by columns then all returned rows are ordered by the field aliases',
-    () {
-      final table = TableWithColumnOverride();
-      final query =
-          DeleteQueryBuilder(
-            table: table,
-          ).withReturn(Returning.all).withOrderBy([
-            Order(column: table.userName),
-            Order(column: table.userAge, orderDescending: true),
-          ]).build();
-
-      expect(
-        query,
-        'WITH deleted_rows AS (DELETE FROM "${table.tableName}" '
-        'RETURNING "${table.tableName}"."id" AS "${table.tableName}.id", '
-        '"${table.tableName}"."user_name" AS "${table.tableName}.userName", '
-        '"${table.tableName}"."user_age" AS "${table.tableName}.userAge") '
-        'SELECT * FROM deleted_rows '
-        'ORDER BY "${table.tableName}.userName" ASC NULLS LAST, '
-        '"${table.tableName}.userAge" DESC NULLS FIRST',
-      );
-    },
-  );
-
   group('Given model with relation with explicit column name', () {
     var citizenTable = TableWithExplicitColumn(tableName: 'citizen');
     var companyTable = Table<int?>(tableName: 'company');
@@ -344,6 +296,218 @@ void main() {
   group('Given DeleteQueryBuilder with explicit column names', () {
     var citizenTable = TableWithExplicitColumn(tableName: 'citizen');
     var companyTable = Table<int?>(tableName: 'company');
+
+    test(
+      'when deleting a table with explicit column names with where and order by then the order by uses the field alias in the sql',
+      () {
+        final table = TableWithColumnOverride();
+        final query =
+            DeleteQueryBuilder(
+                  table: table,
+                )
+                .withWhere(const Expression('"user_name"=test'))
+                .withReturn(Returning.all)
+                .withOrderBy([
+                  Order(column: table.userName),
+                ])
+                .build();
+
+        expect(
+          query,
+          'WITH deleted_rows AS (DELETE FROM "${table.tableName}" WHERE "user_name"=test '
+          'RETURNING "${table.tableName}"."id" AS "${table.tableName}.id", '
+          '"${table.tableName}"."user_name" AS "${table.tableName}.userName", '
+          '"${table.tableName}"."user_age" AS "${table.tableName}.userAge") '
+          'SELECT * FROM deleted_rows '
+          'ORDER BY "${table.tableName}.userName" ASC NULLS LAST',
+        );
+      },
+    );
+
+    test(
+      'when deleting a table with explicit column names and multiple order by columns then the order by uses the field aliases in the sql',
+      () {
+        final table = TableWithColumnOverride();
+        final query =
+            DeleteQueryBuilder(
+              table: table,
+            ).withReturn(Returning.all).withOrderBy([
+              Order(column: table.userName),
+              Order(column: table.userAge, orderDescending: true),
+            ]).build();
+
+        expect(
+          query,
+          'WITH deleted_rows AS (DELETE FROM "${table.tableName}" '
+          'RETURNING "${table.tableName}"."id" AS "${table.tableName}.id", '
+          '"${table.tableName}"."user_name" AS "${table.tableName}.userName", '
+          '"${table.tableName}"."user_age" AS "${table.tableName}.userAge") '
+          'SELECT * FROM deleted_rows '
+          'ORDER BY "${table.tableName}.userName" ASC NULLS LAST, '
+          '"${table.tableName}.userAge" DESC NULLS FIRST',
+        );
+      },
+    );
+
+    test(
+      'when query with return id and order by is built then format exception is thrown.',
+      () {
+        final table = TableWithColumnOverride();
+        final queryBuilder =
+            DeleteQueryBuilder(
+                table: table,
+              )
+              ..withReturn(Returning.id)
+              ..withOrderBy([
+                Order(column: table.userName),
+              ]);
+
+        expect(
+          () => queryBuilder.build(),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.toString(),
+              'message',
+              equals(
+                'FormatException: The following expressions need to be removed or modified:\n'
+                'Order by is not supported when returning is set to Returning.id.',
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when query with return none and order by is built then format exception is thrown.',
+      () {
+        final table = TableWithColumnOverride();
+        final queryBuilder =
+            DeleteQueryBuilder(
+                table: table,
+              )
+              ..withReturn(Returning.none)
+              ..withOrderBy([
+                Order(column: table.userName),
+              ]);
+
+        expect(
+          () => queryBuilder.build(),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.toString(),
+              'message',
+              equals(
+                'FormatException: The following expressions need to be removed or modified:\n'
+                'Order by is not supported when returning is set to Returning.none.',
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when delete query orders by a column that references its own table then format exception is thrown.',
+      () {
+        final table = TableWithColumnOverride();
+        var relationTable = TableWithExplicitColumn(
+          tableName: table.tableName,
+          tableRelation: TableRelation([
+            TableRelationEntry(
+              relationAlias: 'father',
+              field: ColumnInt('fatherId', table),
+              foreignField: ColumnInt('id', table),
+            ),
+          ]),
+        );
+
+        var queryBuilder =
+            DeleteQueryBuilder(
+                table: table,
+              )
+              ..withReturn(Returning.all)
+              ..withOrderBy([
+                Order(column: ColumnString('user_age', relationTable)),
+              ]);
+
+        expect(
+          () => queryBuilder.build(),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.toString(),
+              'message',
+              equals(
+                'FormatException: The following expressions need to be removed or modified:\n'
+                'DeleteQueryBuilder orderBy only supports columns from "user" and its aliases. '
+                'Column "user_father_user"."user_age" resolves to alias "user_father_user.user_age", which is not present in the returned result.',
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when delete query orders by column count then format exception is thrown.',
+      () {
+        var relationTable = TableWithExplicitManyRelation(
+          tableName: citizenTable.tableName,
+          relationAlias: 'friends',
+        );
+
+        var queryBuilder =
+            DeleteQueryBuilder(
+                table: citizenTable,
+              )
+              ..withReturn(Returning.all)
+              ..withOrderBy([
+                Order(column: relationTable.manyRelation.count()),
+              ]);
+
+        expect(
+          () => queryBuilder.build(),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.toString(),
+              'message',
+              equals(
+                'FormatException: The following expressions need to be removed or modified:\n'
+                'DeleteQueryBuilder does not support ordering returned rows by ColumnCount.',
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when delete query order by has different table as base then exception is thrown.',
+      () {
+        var queryBuilder =
+            DeleteQueryBuilder(
+                table: citizenTable,
+              )
+              ..withReturn(Returning.all)
+              ..withOrderBy([
+                Order(column: ColumnString('name', companyTable)),
+              ]);
+
+        expect(
+          () => queryBuilder.build(),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.toString(),
+              'message',
+              equals(
+                'FormatException: The following expressions need to be removed or modified:\n'
+                'DeleteQueryBuilder orderBy only supports columns from "citizen".',
+              ),
+            ),
+          ),
+        );
+      },
+    );
 
     test(
       'when where expression depends on relations then output includes using according to table relations.',

@@ -1,5 +1,5 @@
 import 'package:serverpod/database.dart';
-import 'package:serverpod_test_server/src/generated/protocol.dart';
+import 'package:serverpod_test_server/src/generated/protocol.dart' hide Order;
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
@@ -164,6 +164,24 @@ void main() async {
         expect(numbers, [3, 2, 1]);
       });
     });
+
+    group('when deleting based on filter with orderByList', () {
+      late List<SimpleData> deleteResult;
+
+      setUp(() async {
+        deleteResult = await SimpleData.db.deleteWhere(
+          session,
+          where: (t) => t.num.inSet({data[0].num, data[1].num, data[2].num}),
+          orderByList: (t) => [Order(column: t.num)],
+        );
+      });
+
+      test('then removed rows are returned in ascending order', () async {
+        expect(deleteResult, hasLength(3));
+        var numbers = deleteResult.map((e) => e.num).toList();
+        expect(numbers, [1, 2, 3]);
+      });
+    });
   });
 
   group(' ', () {
@@ -287,6 +305,31 @@ void main() async {
 
         expect(deleted, hasLength(2));
         expect(deleted.map((e) => e.number).toList(), [2, 1]);
+      },
+    );
+
+    test(
+      'Given two entries in the database with the same number when batch deleting with orderByList then deleted rows are returned in ascending order of email.',
+      () async {
+        var data = <UniqueData>[
+          UniqueData(number: 1, email: 'info@serverpod.dev'),
+          UniqueData(number: 1, email: 'dev@serverpod.dev'),
+        ];
+
+        var inserted = await UniqueData.db.insert(session, data);
+
+        var deleted = await UniqueData.db.delete(
+          session,
+          inserted,
+          orderByList: (t) => [Order(column: t.number), Order(column: t.email)],
+        );
+
+        expect(deleted, hasLength(2));
+        expect(deleted.map((e) => e.number).toList(), [1, 1]);
+        expect(deleted.map((e) => e.email).toList(), [
+          'dev@serverpod.dev',
+          'info@serverpod.dev',
+        ]);
       },
     );
 

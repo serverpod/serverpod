@@ -642,7 +642,7 @@ void main() {
         test('that takes the orderDescending bool as an optional param', () {
           expect(
             deleteMethod?.parameters?.toSource(),
-            contains('bool orderDescending'),
+            contains('bool orderDescending = false'),
           );
         });
 
@@ -762,7 +762,7 @@ void main() {
         test('that takes the orderDescending bool as an optional param', () {
           expect(
             deleteWhereMethod?.parameters?.toSource(),
-            contains('bool orderDescending'),
+            contains('bool orderDescending = false'),
           );
         });
 

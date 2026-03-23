@@ -559,7 +559,7 @@ class DeleteQueryBuilder {
       where: _where,
     );
     _validateDeleteOrderByAndReturning(
-      _table.tableName,
+      _table,
       _orderBy,
       _returning,
     );
@@ -1138,7 +1138,7 @@ String? _buildOrderByQuery({List<Order>? orderBy, _SubQueries? subQueries}) {
 }
 
 String? _buildDeleteOrderByQuery(List<Order>? orderBy) {
-  if (orderBy == null) {
+  if (orderBy == null || orderBy.isEmpty) {
     return null;
   }
 
@@ -1438,11 +1438,20 @@ void _validateTableReferences(
 }
 
 void _validateDeleteOrderByAndReturning(
-  String tableName,
+  Table table,
   List<Order>? orderBy,
   Returning? returning,
 ) {
   if (orderBy == null || orderBy.isEmpty) return;
+
+  final returnedAliases = table.columns
+      .map(
+        (column) => truncateIdentifier(
+          column.fieldQueryAlias,
+          DatabaseConstants.pgsqlMaxNameLimitation,
+        ),
+      )
+      .toSet();
 
   List<String> exceptionMessages = [];
 
@@ -1459,11 +1468,25 @@ void _validateDeleteOrderByAndReturning(
       exceptionMessages.add(
         'DeleteQueryBuilder does not support ordering returned rows by ColumnCount.',
       );
+      continue;
     }
 
-    if (column.table.tableName != tableName) {
+    if (column.table.tableName != table.tableName) {
       exceptionMessages.add(
-        'DeleteQueryBuilder orderBy only supports columns from "$tableName".',
+        'DeleteQueryBuilder orderBy only supports columns from "${table.tableName}".',
+      );
+      continue;
+    }
+
+    final requestedAlias = truncateIdentifier(
+      column.fieldQueryAlias,
+      DatabaseConstants.pgsqlMaxNameLimitation,
+    );
+
+    if (!returnedAliases.contains(requestedAlias)) {
+      exceptionMessages.add(
+        'DeleteQueryBuilder orderBy only supports columns from "${table.tableName}" and its aliases. '
+        'Column $column resolves to alias "$requestedAlias", which is not present in the returned result.',
       );
     }
   }
