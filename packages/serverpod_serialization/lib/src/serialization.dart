@@ -106,6 +106,18 @@ abstract class SerializationManager {
       return BigInt.parse(data) as T;
     }
 
+    // Handle dynamic types and already-decoded JSON containers (List, Map).
+    // When deserializing Map<String, dynamic> values, the type parameter is
+    // `dynamic` and runtime types like List<dynamic> or _Map<String, dynamic>
+    // don't match the static _isNullableType checks above.
+    if (t == dynamic) {
+      if (data == null) return data as T;
+      // Already-decoded containers: return as-is when caller asked for dynamic.
+      // Don't do this for typed deserialization — let Protocol subclasses handle it.
+      if (data is List || data is Map) return data as T;
+      return deserialize<T>(data, data.runtimeType);
+    }
+
     throw DeserializationTypeNotFoundException(
       type: t,
     );
