@@ -21,6 +21,17 @@ typedef GetExtraMicrosoftInfoCallback =
       required Transaction? transaction,
     });
 
+/// Callback to be invoked after a new Microsoft account has been created and
+/// linked to an auth user. The [session] and [transaction] can be used to
+/// perform additional database operations.
+typedef AfterMicrosoftAccountCreatedFunction =
+    Future<void> Function(
+      Session session,
+      AuthUserModel authUser,
+      MicrosoftAccount microsoftAccount, {
+      required Transaction? transaction,
+    });
+
 /// Configuration for the Microsoft identity provider.
 class MicrosoftIdpConfig extends IdentityProviderBuilder<MicrosoftIdp> {
   /// The client ID from your Microsoft Entra ID (Azure AD) application.
@@ -95,6 +106,14 @@ class MicrosoftIdpConfig extends IdentityProviderBuilder<MicrosoftIdp> {
   /// [MicrosoftAccountDetails.userIdentifier]. Keep operations lightweight.
   final GetExtraMicrosoftInfoCallback? getExtraMicrosoftInfoCallback;
 
+  /// Callback to be invoked after a new Microsoft account has been created
+  /// and linked to an auth user.
+  ///
+  /// This can be used to perform additional setup tasks after the Microsoft
+  /// account has been created and linked.
+  final AfterMicrosoftAccountCreatedFunction?
+      onAfterMicrosoftAccountCreated;
+
   /// Creates a new instance of [MicrosoftIdpConfig].
   MicrosoftIdpConfig({
     required this.clientId,
@@ -104,6 +123,7 @@ class MicrosoftIdpConfig extends IdentityProviderBuilder<MicrosoftIdp> {
     this.fetchProfilePhoto = true,
     this.microsoftAccountDetailsValidation = validateMicrosoftAccountDetails,
     this.getExtraMicrosoftInfoCallback,
+    this.onAfterMicrosoftAccountCreated,
   }) : oauth2Config = OAuth2PkceServerConfig(
          tokenEndpointUrl: Uri.https(
            authorityHost,
@@ -189,6 +209,7 @@ class MicrosoftIdpConfigFromPasswords extends MicrosoftIdpConfig {
     super.fetchProfilePhoto,
     super.microsoftAccountDetailsValidation,
     super.getExtraMicrosoftInfoCallback,
+    super.onAfterMicrosoftAccountCreated,
   }) : super(
          clientId: Serverpod.instance.getPasswordOrThrow('microsoftClientId'),
          clientSecret: Serverpod.instance.getPasswordOrThrow(
