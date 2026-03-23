@@ -525,9 +525,12 @@ class UpsertQueryBuilder {
         .join(', ');
 
     var returning = buildReturningClause(_table);
-    var onConflict = setClause.isEmpty
-        ? ' ON CONFLICT ($uniqueColumnNames) DO NOTHING'
-        : ' ON CONFLICT ($uniqueColumnNames) DO UPDATE SET $setClause';
+    if (setClause.isEmpty) {
+      final noOpColumn = _uniqueColumns.first.columnName;
+      setClause = '"$noOpColumn" = EXCLUDED."$noOpColumn"';
+    }
+    var onConflict =
+        ' ON CONFLICT ($uniqueColumnNames) DO UPDATE SET $setClause';
 
     return columnNames.isEmpty
         ? 'INSERT INTO "${_table.tableName}" DEFAULT VALUES$onConflict RETURNING $returning'

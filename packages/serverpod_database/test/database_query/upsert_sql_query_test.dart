@@ -146,7 +146,7 @@ void main() {
         expect(
           query,
           'INSERT INTO "person" ("name", "age") VALUES (\'Alex\', 33) '
-          'ON CONFLICT ("name", "age") DO NOTHING '
+          'ON CONFLICT ("name", "age") DO UPDATE SET "name" = EXCLUDED."name" '
           'RETURNING *',
         );
       },
