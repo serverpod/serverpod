@@ -57,6 +57,7 @@ class AppleIdp {
     final signInWithAppleConfig = config.toSignInWithAppleConfiguration();
 
     final utils = AppleIdpUtils(
+      config: config,
       tokenManager: tokenManager,
       signInWithApple: SignInWithApple(config: signInWithAppleConfig),
       authUsers: authUsers,
