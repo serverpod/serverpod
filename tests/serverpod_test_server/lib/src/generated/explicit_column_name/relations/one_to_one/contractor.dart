@@ -484,15 +484,25 @@ class ContractorRepository {
   }
 
   /// Deletes all [Contractor]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<Contractor>> delete(
     _i1.DatabaseSession session,
     List<Contractor> rows, {
+    _i1.OrderByBuilder<ContractorTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ContractorTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Contractor>(
       rows,
+      orderBy: orderBy?.call(Contractor.t),
+      orderByList: orderByList?.call(Contractor.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -510,13 +520,22 @@ class ContractorRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<Contractor>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ContractorTable> where,
+    _i1.OrderByBuilder<ContractorTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ContractorTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<Contractor>(
       where: where(Contractor.t),
+      orderBy: orderBy?.call(Contractor.t),
+      orderByList: orderByList?.call(Contractor.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

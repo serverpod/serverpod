@@ -788,6 +788,188 @@ void main() {
     );
 
     test(
+      'when query with return all and order by is built then output is wrapped and ordered.',
+      () {
+        var query =
+            DeleteQueryBuilder(
+              table: citizenTable,
+            ).withReturn(Returning.all).withOrderBy([
+              Order(column: ColumnString('name', citizenTable)),
+            ]).build();
+
+        expect(
+          query,
+          'WITH deleted_rows AS (DELETE FROM "citizen" RETURNING "citizen"."id" AS "citizen.id") '
+          'SELECT * FROM deleted_rows '
+          'ORDER BY "citizen.name" ASC NULLS LAST',
+        );
+      },
+    );
+
+    test(
+      'when query with return all and multiple order by columns is built then output is wrapped and ordered by all columns.',
+      () {
+        var query =
+            DeleteQueryBuilder(
+              table: citizenTable,
+            ).withReturn(Returning.all).withOrderBy([
+              Order(column: ColumnString('name', citizenTable)),
+              Order(
+                column: ColumnString('age', citizenTable),
+                orderDescending: true,
+              ),
+            ]).build();
+
+        expect(
+          query,
+          'WITH deleted_rows AS (DELETE FROM "citizen" RETURNING "citizen"."id" AS "citizen.id") '
+          'SELECT * FROM deleted_rows '
+          'ORDER BY "citizen.name" ASC NULLS LAST, "citizen.age" DESC NULLS FIRST',
+        );
+      },
+    );
+
+    test(
+      'when query with where, return all, and order by is built then output is wrapped and ordered.',
+      () {
+        var query =
+            DeleteQueryBuilder(
+                  table: citizenTable,
+                )
+                .withWhere(const Expression('"test"=@test'))
+                .withReturn(Returning.all)
+                .withOrderBy([
+                  Order(column: ColumnString('name', citizenTable)),
+                ])
+                .build();
+
+        expect(
+          query,
+          'WITH deleted_rows AS (DELETE FROM "citizen" WHERE "test"=@test RETURNING "citizen"."id" AS "citizen.id") '
+          'SELECT * FROM deleted_rows '
+          'ORDER BY "citizen.name" ASC NULLS LAST',
+        );
+      },
+    );
+
+    test(
+      'when query with return id and order by is built then format exception is thrown.',
+      () {
+        var queryBuilder =
+            DeleteQueryBuilder(
+                table: citizenTable,
+              )
+              ..withReturn(Returning.id)
+              ..withOrderBy([
+                Order(column: ColumnString('name', citizenTable)),
+              ]);
+
+        expect(
+          () => queryBuilder.build(),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.toString(),
+              'message',
+              equals(
+                'FormatException: The following expressions need to be removed or modified:\n'
+                'Order by is not supported when returning is set to Returning.id.',
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when query with return none and order by is built then format exception is thrown.',
+      () {
+        var queryBuilder =
+            DeleteQueryBuilder(
+                table: citizenTable,
+              )
+              ..withReturn(Returning.none)
+              ..withOrderBy([
+                Order(column: ColumnString('name', citizenTable)),
+              ]);
+
+        expect(
+          () => queryBuilder.build(),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.toString(),
+              'message',
+              equals(
+                'FormatException: The following expressions need to be removed or modified:\n'
+                'Order by is not supported when returning is set to Returning.none.',
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when delete query orders by column count then format exception is thrown.',
+      () {
+        var relationTable = _TableWithManyRelation(
+          tableName: citizenTable.tableName,
+          relationAlias: 'friends',
+        );
+
+        var queryBuilder =
+            DeleteQueryBuilder(
+                table: citizenTable,
+              )
+              ..withReturn(Returning.all)
+              ..withOrderBy([
+                Order(column: relationTable.manyRelation.count()),
+              ]);
+
+        expect(
+          () => queryBuilder.build(),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.toString(),
+              'message',
+              equals(
+                'FormatException: The following expressions need to be removed or modified:\n'
+                'DeleteQueryBuilder does not support ordering returned rows by ColumnCount.',
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when delete query order by has different table as base then exception is thrown.',
+      () {
+        var queryBuilder =
+            DeleteQueryBuilder(
+                table: citizenTable,
+              )
+              ..withReturn(Returning.all)
+              ..withOrderBy([
+                Order(column: ColumnString('name', companyTable)),
+              ]);
+
+        expect(
+          () => queryBuilder.build(),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.toString(),
+              'message',
+              equals(
+                'FormatException: The following expressions need to be removed or modified:\n'
+                'DeleteQueryBuilder orderBy only supports columns from "citizen".',
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
       'when where expression depends on relations then output includes using according to table relations.',
       () {
         var relationTable = Table<int?>(
@@ -859,11 +1041,18 @@ void main() {
         var query = DeleteQueryBuilder(table: citizenTable)
             .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
             .withReturn(Returning.all)
+            .withOrderBy([
+              Order(column: ColumnString('name', citizenTable)),
+            ])
             .build();
 
         expect(
           query,
-          'DELETE FROM "citizen" USING "company" AS "citizen_company_company" WHERE "citizen_company_company"."name" = \'Serverpod\' AND "citizen"."companyId" = "citizen_company_company"."id" RETURNING "citizen"."id" AS "citizen.id"',
+          'WITH deleted_rows AS (DELETE FROM "citizen" USING "company" AS "citizen_company_company" '
+          'WHERE "citizen_company_company"."name" = \'Serverpod\' AND "citizen"."companyId" = "citizen_company_company"."id" '
+          'RETURNING "citizen"."id" AS "citizen.id") '
+          'SELECT * FROM deleted_rows '
+          'ORDER BY "citizen.name" ASC NULLS LAST',
         );
       },
     );

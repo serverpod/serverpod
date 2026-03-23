@@ -465,15 +465,25 @@ class EmptyModelRelationItemRepository {
   }
 
   /// Deletes all [EmptyModelRelationItem]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<EmptyModelRelationItem>> delete(
     _i1.DatabaseSession session,
     List<EmptyModelRelationItem> rows, {
+    _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<EmptyModelRelationItem>(
       rows,
+      orderBy: orderBy?.call(EmptyModelRelationItem.t),
+      orderByList: orderByList?.call(EmptyModelRelationItem.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -491,13 +501,22 @@ class EmptyModelRelationItemRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<EmptyModelRelationItem>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmptyModelRelationItemTable> where,
+    _i1.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<EmptyModelRelationItem>(
       where: where(EmptyModelRelationItem.t),
+      orderBy: orderBy?.call(EmptyModelRelationItem.t),
+      orderByList: orderByList?.call(EmptyModelRelationItem.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

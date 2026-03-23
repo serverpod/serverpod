@@ -514,15 +514,25 @@ class FutureCallEntryRepository {
   }
 
   /// Deletes all [FutureCallEntry]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<FutureCallEntry>> delete(
     _i1.DatabaseSession session,
     List<FutureCallEntry> rows, {
+    _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<FutureCallEntry>(
       rows,
+      orderBy: orderBy?.call(FutureCallEntry.t),
+      orderByList: orderByList?.call(FutureCallEntry.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -540,13 +550,22 @@ class FutureCallEntryRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<FutureCallEntry>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
+    _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<FutureCallEntry>(
       where: where(FutureCallEntry.t),
+      orderBy: orderBy?.call(FutureCallEntry.t),
+      orderByList: orderByList?.call(FutureCallEntry.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

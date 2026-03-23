@@ -672,15 +672,25 @@ class EmailAccountPasswordResetRequestRepository {
   }
 
   /// Deletes all [EmailAccountPasswordResetRequest]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<EmailAccountPasswordResetRequest>> delete(
     _i1.DatabaseSession session,
     List<EmailAccountPasswordResetRequest> rows, {
+    _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<EmailAccountPasswordResetRequest>(
       rows,
+      orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
+      orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -698,14 +708,23 @@ class EmailAccountPasswordResetRequestRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<EmailAccountPasswordResetRequest>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>
     where,
+    _i1.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<EmailAccountPasswordResetRequest>(
       where: where(EmailAccountPasswordResetRequest.t),
+      orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
+      orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

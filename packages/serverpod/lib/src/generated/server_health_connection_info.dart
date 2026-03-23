@@ -547,15 +547,25 @@ class ServerHealthConnectionInfoRepository {
   }
 
   /// Deletes all [ServerHealthConnectionInfo]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ServerHealthConnectionInfo>> delete(
     _i1.DatabaseSession session,
     List<ServerHealthConnectionInfo> rows, {
+    _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ServerHealthConnectionInfo>(
       rows,
+      orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
+      orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -573,13 +583,22 @@ class ServerHealthConnectionInfoRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<ServerHealthConnectionInfo>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
+    _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<ServerHealthConnectionInfo>(
       where: where(ServerHealthConnectionInfo.t),
+      orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
+      orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }

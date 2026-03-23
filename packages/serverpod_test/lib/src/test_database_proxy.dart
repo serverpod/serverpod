@@ -53,11 +53,17 @@ class TestDatabaseProxy implements Database {
   @override
   Future<List<T>> delete<T extends TableRow>(
     List<T> rows, {
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.delete<T>(
         rows,
+        orderBy: orderBy,
+        orderByList: orderByList,
+        orderDescending: orderDescending,
         transaction: transaction,
       ),
       isPartOfUserTransaction: transaction != null,
@@ -81,11 +87,17 @@ class TestDatabaseProxy implements Database {
   @override
   Future<List<T>> deleteWhere<T extends TableRow>({
     required Expression where,
+    Column? orderBy,
+    List<Order>? orderByList,
+    bool orderDescending = false,
     Transaction? transaction,
   }) {
     return _rollbackSingleOperationIfDatabaseException(
       () => _db.deleteWhere<T>(
         where: where,
+        orderBy: orderBy,
+        orderByList: orderByList,
+        orderDescending: orderDescending,
         transaction: transaction,
       ),
       isPartOfUserTransaction: transaction != null,

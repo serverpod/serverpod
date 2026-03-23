@@ -411,15 +411,25 @@ class SecretChallengeRepository {
   }
 
   /// Deletes all [SecretChallenge]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<SecretChallenge>> delete(
     _i1.DatabaseSession session,
     List<SecretChallenge> rows, {
+    _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<SecretChallenge>(
       rows,
+      orderBy: orderBy?.call(SecretChallenge.t),
+      orderByList: orderByList?.call(SecretChallenge.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -437,13 +447,22 @@ class SecretChallengeRepository {
   }
 
   /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
   Future<List<SecretChallenge>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<SecretChallengeTable> where,
+    _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteWhere<SecretChallenge>(
       where: where(SecretChallenge.t),
+      orderBy: orderBy?.call(SecretChallenge.t),
+      orderByList: orderByList?.call(SecretChallenge.t),
+      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
