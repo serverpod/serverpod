@@ -38,7 +38,7 @@ typedef AppleAuthSuccess = ({
 /// be sufficient.
 class AppleIdpUtils {
   /// Configuration for the Apple identity provider.
-  final AppleIdpConfig config;
+  final AppleIdpConfig? config;
 
   final TokenManager _tokenManager;
   final SignInWithApple _signInWithApple;
@@ -46,7 +46,7 @@ class AppleIdpUtils {
 
   /// Creates a new instance of [AppleIdpUtils].
   AppleIdpUtils({
-    required this.config,
+    this.config,
     required final TokenManager tokenManager,
     required final SignInWithApple signInWithApple,
     required final AuthUsers authUsers,
@@ -126,7 +126,7 @@ class AppleIdpUtils {
         transaction: transaction,
       );
 
-      await config.onAfterAppleAccountCreated?.call(
+      await config?.onAfterAppleAccountCreated?.call(
         session,
         authUser,
         appleAccount,
