@@ -141,7 +141,6 @@ void main() {
       late FutureCallManager futureCallManager;
       late Session session;
       late _CounterFutureCall testCall;
-      late FutureCallEntry existingEntry;
       final testCallName = 'testCall';
 
       setUp(() async {
@@ -155,19 +154,18 @@ void main() {
         futureCallManager.registerFutureCall(testCall, testCallName);
 
         // Insert a future call entry that is due
-        final entry = FutureCallEntry(
-          id: 1,
+        var entry = FutureCallEntry(
           name: testCallName,
           serializedObject: SimpleData(num: 4).toString(),
           time: DateTime.now().subtract(const Duration(seconds: 1)),
           serverId: '1',
         );
 
-        existingEntry = await FutureCallEntry.db.insertRow(session, entry);
+        entry = await FutureCallEntry.db.insertRow(session, entry);
 
         // Insert an existing claim for this future call
         final claim = FutureCallClaimEntry(
-          futureCallId: existingEntry.id,
+          futureCallId: entry.id,
           heartbeat: DateTime.now().toUtc(),
         );
         await FutureCallClaimEntry.db.insert(session, [claim]);
@@ -206,7 +204,6 @@ void main() {
     late FutureCallManager futureCallManager;
     late Session session;
     late _CounterFutureCall testCall;
-    late FutureCallEntry existingEntry;
     final testCallName = 'testCall';
 
     setUp(() async {
@@ -220,7 +217,7 @@ void main() {
       futureCallManager.registerFutureCall(testCall, testCallName);
 
       // Insert a future call entry that is due
-      final entry = FutureCallEntry(
+      var entry = FutureCallEntry(
         name: testCallName,
         serializedObject: SimpleData(num: 4).toString(),
         time: DateTime.now().subtract(const Duration(seconds: 1)),
@@ -228,11 +225,11 @@ void main() {
         identifier: '',
       );
 
-      existingEntry = await FutureCallEntry.db.insertRow(session, entry);
+      entry = await FutureCallEntry.db.insertRow(session, entry);
 
       // Insert a stale claim for this future call
       final claim = FutureCallClaimEntry(
-        futureCallId: existingEntry.id,
+        futureCallId: entry.id,
         heartbeat: DateTime.now().toUtc().subtract(
           const Duration(minutes: 5),
         ),
