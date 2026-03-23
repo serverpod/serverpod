@@ -23,6 +23,16 @@ extension GeneratorConfigFileWatcher on GeneratorConfig {
     includeClientPackage: includeClientPackage,
   );
 
+  /// Absolute paths of directories containing generated code.
+  ///
+  /// Used by [WatchSession] to distinguish generated files from source files
+  /// so that generated file changes trigger compilation but not re-generation.
+  Set<String> get generatedDirPaths => {
+    p.absolute(p.joinAll(generatedServeModelPathParts)),
+    p.absolute(p.joinAll(generatedDartClientModelPathParts)),
+    ...generatedSharedModelsPaths.map(p.absolute),
+  };
+
   FileWatcher createFileWatcher({
     bool includeWeb = false,
     bool includeClientPackage = false,
@@ -31,11 +41,6 @@ extension GeneratorConfigFileWatcher on GeneratorConfig {
       includeWeb: includeWeb,
       includeClientPackage: includeClientPackage,
     ),
-    ignorePaths: {
-      p.absolute(p.joinAll(generatedServeModelPathParts)),
-      p.absolute(p.joinAll(generatedDartClientModelPathParts)),
-      ...generatedSharedModelsPaths.map(p.absolute),
-    },
   );
 }
 

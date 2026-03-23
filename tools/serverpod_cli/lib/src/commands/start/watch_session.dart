@@ -1,18 +1,21 @@
 import 'dart:async';
 
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
+import 'package:serverpod_cli/src/generator/generator.dart' show GenerateResult;
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// Runs code generation for the given affected file paths.
 ///
 /// The function should update analyzer contexts and generate code as needed.
-/// Returns true on success (including when no generation was needed).
+/// Returns a [GenerateResult] with success status and the set of files
+/// written by code generation.
 typedef GenerateAction =
-    Future<bool> Function(
+    Future<GenerateResult> Function(
       Set<String> affectedPaths,
       GenerationRequirements requirements,
     );
@@ -27,6 +30,12 @@ typedef ServerProcessFactory = Future<ServerProcess> Function(String dillPath);
 /// compilation (incremental or full restart), and hot reload or server
 /// restart are needed.
 ///
+/// Generated directory paths ([generatedDirPaths]) are used to split
+/// incoming `.dart` file changes into source files (which trigger generation)
+/// and generated files (which only need compilation). This ensures the
+/// incremental compiler sees all `.dart` changes, including those produced
+/// by code generation.
+///
 /// When [compiler] is `null` (--no-fes mode), the session still runs code
 /// generation and triggers VM service reloads for static file changes, but
 /// leaves compilation and hot reload to the IDE.
@@ -34,6 +43,7 @@ class WatchSession {
   final KernelCompiler? _compiler;
   final GenerateAction _generate;
   final ServerProcessFactory? _createServer;
+  final Set<String> _generatedDirPaths;
 
   final Completer<int> _done = Completer<int>();
 
@@ -50,10 +60,12 @@ class WatchSession {
     required GenerateAction generate,
     ServerProcessFactory? createServer,
     required ServerProcess initialServer,
+    required Set<String> generatedDirPaths,
   }) : _compiler = compiler,
        _generate = generate,
        _createServer = createServer,
-       _server = initialServer {
+       _server = initialServer,
+       _generatedDirPaths = generatedDirPaths {
     assert(
       (compiler == null) == (createServer == null),
       'compiler and createServer must both be provided or both be null.',
@@ -80,35 +92,72 @@ class WatchSession {
       return;
     }
 
+    // Split .dart files into source (triggers generation) and generated
+    // (only needs compilation).
+    final sourceDartFiles = <String>{};
+    final generatedDartFiles = <String>{};
+    for (final f in event.dartFiles) {
+      if (_isGenerated(f)) {
+        generatedDartFiles.add(f);
+      } else {
+        sourceDartFiles.add(f);
+      }
+    }
+
     log.info('\nFiles changed, reloading server...');
-    if (event.dartFiles.isNotEmpty) log.debug('  .dart: ${event.dartFiles}');
+    if (sourceDartFiles.isNotEmpty) log.debug('  .dart: $sourceDartFiles');
+    if (generatedDartFiles.isNotEmpty) {
+      log.debug('  .dart (generated): $generatedDartFiles');
+    }
     if (event.modelFiles.isNotEmpty) log.debug('  .spy: ${event.modelFiles}');
     if (event.packageConfigChanged) log.debug('  package_config.json changed');
 
-    // Pass all affected paths to the generator. It updates analyzer contexts
-    // for all changed files (keeping them fresh) and only runs the full
-    // generation pipeline when relevant files (endpoints, models, future
-    // calls) actually changed.
-    final affectedPaths = {
-      ...event.dartFiles,
-      ...event.modelFiles,
-    };
+    // Only source files and model files trigger generation. Generated files
+    // from the watcher are just forwarded to the compiler.
+    final needsGeneration =
+        sourceDartFiles.isNotEmpty || event.modelFiles.isNotEmpty;
 
-    final genRequirements = event.toGenerationRequirements();
-    final genSuccess = await _generate(affectedPaths, genRequirements);
-    if (!genSuccess) {
-      log.error('Code generation failed. Server not reloaded.');
-      return;
+    Set<String> genOutputFiles = const {};
+    if (needsGeneration) {
+      final affectedPaths = {
+        ...sourceDartFiles,
+        ...event.modelFiles,
+      };
+
+      final genRequirements = GenerationRequirements(
+        generateModels: event.modelFiles.isNotEmpty,
+        generateProtocol:
+            sourceDartFiles.isNotEmpty || event.modelFiles.isNotEmpty,
+      );
+
+      final genResult = await _generate(affectedPaths, genRequirements);
+      if (!genResult.success) {
+        log.error('Code generation failed. Server not reloaded.');
+        return;
+      }
+      genOutputFiles = genResult.generatedFiles;
     }
 
     // Without a compiler (--no-fes), the IDE handles compilation and reload.
     if (_compiler == null) return;
 
+    // Merge all .dart paths for the compiler: source files, generated files
+    // from generation output, and generated files detected by the watcher.
+    final allDartChanges = {
+      ...sourceDartFiles,
+      ...genOutputFiles,
+      ...generatedDartFiles,
+    };
+
     await _compileAndReload(
-      event,
-      modelFilesChanged: event.modelFiles.isNotEmpty,
+      dartFiles: allDartChanges,
+      packageConfigChanged: event.packageConfigChanged,
     );
   }
+
+  /// Returns `true` if [path] is inside a generated directory.
+  bool _isGenerated(String path) =>
+      _generatedDirPaths.any((prefix) => p.isWithin(prefix, path));
 
   /// Notifies the server of static file changes for browser refresh.
   Future<void> _handleStaticChange() async {
@@ -120,18 +169,18 @@ class WatchSession {
   }
 
   /// Compiles changed files and hot-reloads or restarts the server.
-  Future<void> _compileAndReload(
-    FileChangeEvent event, {
-    bool modelFilesChanged = false,
+  Future<void> _compileAndReload({
+    required Set<String> dartFiles,
+    required bool packageConfigChanged,
   }) async {
     final compiler = _compiler!;
 
     // Compile changes. Merge any paths carried over from prior rejected
     // compiles so the FES re-invalidates them (reject rolls back its state).
-    final changedPaths = {..._pendingPaths, ...event.dartFiles};
+    final changedPaths = {..._pendingPaths, ...dartFiles};
 
     CompileResult? result;
-    if (event.packageConfigChanged) {
+    if (packageConfigChanged) {
       // FES reads package_config.json only at startup - must restart it.
       // After restart the FES is in initial state, so we do a full compile.
       _pendingPaths.clear();
@@ -141,7 +190,7 @@ class WatchSession {
         compiler,
         rejectOnFailure: true,
       );
-    } else if (changedPaths.isNotEmpty || modelFilesChanged) {
+    } else if (changedPaths.isNotEmpty) {
       result = await compileWithProgress(
         'Compiling server',
         compiler,
@@ -213,16 +262,6 @@ class WatchSession {
           _done.complete(code);
         }
       }),
-    );
-  }
-}
-
-extension FileChangeEventGenerationRequirements on FileChangeEvent {
-  /// Creates generation requirements from a file change event.
-  GenerationRequirements toGenerationRequirements() {
-    return GenerationRequirements(
-      generateModels: modelFiles.isNotEmpty,
-      generateProtocol: dartFiles.isNotEmpty || modelFiles.isNotEmpty,
     );
   }
 }

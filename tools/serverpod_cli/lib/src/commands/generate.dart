@@ -171,7 +171,7 @@ Future<bool> performOneShotGenerate({
   log.logLevel = logLevel;
   final analyzers = await createAnalyzers(config);
   final allSources = await enumerateSourceFiles(config);
-  return analyzeAndGenerate(
+  final result = await analyzeAndGenerate(
     config: config,
     analyzers: analyzers,
     affectedPaths: allSources,
@@ -179,6 +179,7 @@ Future<bool> performOneShotGenerate({
     // persisted, since the generation stamp will be greater than source files.
     skipStalenessCheck: true,
   );
+  return result.success;
 }
 
 /// Runs one-shot code generation in a fresh isolate.
@@ -200,13 +201,14 @@ Future<bool> generateInIsolate(GeneratorConfig config) {
 /// When only Dart files change, use [GenerationRequirements.protocolOnly]
 /// to skip expensive model generation.
 ///
-/// Returns `true` if generation succeeded or was not needed.
+/// Returns a [GenerateResult] with success status and the set of files
+/// written by code generation (empty when generation was skipped).
 ///
 /// When [skipStalenessCheck] is `true` (watcher-driven runs), model hint/info
 /// output is limited to [affectedPaths]. When `false`, all model issues are
 /// reported (one-shot generate and runs that re-check staleness against the
 /// whole project).
-Future<bool> analyzeAndGenerate({
+Future<GenerateResult> analyzeAndGenerate({
   required GeneratorConfig config,
   required Analyzers analyzers,
   required Set<String> affectedPaths,
@@ -223,10 +225,10 @@ Future<bool> analyzeAndGenerate({
     );
     return true;
   });
-  if (!needsGenerate) return true;
+  if (!needsGenerate) return (success: true, generatedFiles: <String>{});
   if (!skipStalenessCheck && isGenerationUpToDate(config, affectedPaths)) {
     log.debug('All affected files are older than generation stamp, skipping.');
-    return true;
+    return (success: true, generatedFiles: <String>{});
   }
   late final GenerateResult result;
   await log.progress('Generating code', () async {
@@ -242,7 +244,7 @@ Future<bool> analyzeAndGenerate({
     await writeGenerationStamp(config, generatedFiles: result.generatedFiles);
     log.debug(incrementalCodeGenerationComplete);
   }
-  return result.success;
+  return result;
 }
 
 /// Watch-mode code generation with persistent analyzers and file watching.
@@ -254,12 +256,12 @@ Future<bool> _performGenerateWatch({
 
   final analyzers = await createAnalyzers(config);
   final allSources = await enumerateSourceFiles(config);
-  final success = await analyzeAndGenerate(
+  final initialResult = await analyzeAndGenerate(
     config: config,
     analyzers: analyzers,
     affectedPaths: allSources,
   );
-  if (!success) return false;
+  if (!initialResult.success) return false;
 
   log.debug(initialCodeGenerationComplete);
 

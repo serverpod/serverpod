@@ -115,6 +115,7 @@ void main() {
   late List<String> factoryCalls;
   late List<Set<String>> generateCalls;
   late bool generateSuccess;
+  late Set<String> generatedFiles;
   late WatchSession session;
 
   setUp(() {
@@ -124,18 +125,23 @@ void main() {
     factoryCalls = [];
     generateCalls = [];
     generateSuccess = true;
+    generatedFiles = {};
 
     session = WatchSession(
       compiler: compiler,
       generate: (affectedPaths, requirements) async {
         generateCalls.add(affectedPaths);
-        return generateSuccess;
+        return (
+          success: generateSuccess,
+          generatedFiles: generatedFiles,
+        );
       },
       createServer: (dillPath) async {
         factoryCalls.add('createServer:$dillPath');
         return factoryServer;
       },
       initialServer: server,
+      generatedDirPaths: {'/generated'},
     );
   });
 
@@ -300,23 +306,30 @@ void main() {
     );
   });
 
-  group('Given model file changes that succeed', () {
+  group('Given model file changes that produce generated files', () {
+    late FileChangeEvent event;
+
+    setUp(() {
+      generatedFiles = {'/generated/user.dart'};
+      event = FileChangeEvent(
+        dartFiles: {},
+        modelFiles: {'/models/user.spy.yaml'},
+      );
+    });
+
     test(
       'when file change is handled, '
-      'then it runs codegen with full requirements and compiles',
+      'then it runs codegen and compiles with generated files',
       () async {
-        final event = FileChangeEvent(
-          dartFiles: {},
-          modelFiles: {'/models/user.spy.yaml'},
-        );
-
         await session.handleFileChange(event);
 
         expect(generateCalls, [
           {'/models/user.spy.yaml'},
         ]);
-        // Model files trigger a full compile directly.
-        expect(compiler.calls, ['compile', 'accept']);
+        expect(compiler.calls, [
+          'compile(changed):[/generated/user.dart]',
+          'accept',
+        ]);
         expect(server.calls, ['reload:/out.dill']);
       },
     );
@@ -343,6 +356,60 @@ void main() {
         ]);
         expect(compiler.calls, isEmpty);
         expect(server.calls, isEmpty);
+      },
+    );
+  });
+
+  group('Given only generated dart files change in the watcher', () {
+    late FileChangeEvent event;
+
+    setUp(() {
+      event = FileChangeEvent(
+        dartFiles: {'/generated/protocol.dart'},
+      );
+    });
+
+    test(
+      'when file change is handled, '
+      'then it skips generation and only compiles',
+      () async {
+        await session.handleFileChange(event);
+
+        expect(generateCalls, isEmpty);
+        expect(compiler.calls, [
+          'compile(changed):[/generated/protocol.dart]',
+          'accept',
+        ]);
+        expect(server.calls, ['reload:/out.dill']);
+      },
+    );
+  });
+
+  group('Given model and source dart files change with generated output', () {
+    late FileChangeEvent event;
+
+    setUp(() {
+      generatedFiles = {'/generated/user.dart', '/generated/protocol.dart'};
+      event = FileChangeEvent(
+        dartFiles: {'/lib/endpoint.dart'},
+        modelFiles: {'/models/user.spy.yaml'},
+      );
+    });
+
+    test(
+      'when file change is handled, '
+      'then generated output is merged with source files for compilation',
+      () async {
+        await session.handleFileChange(event);
+
+        expect(generateCalls, [
+          {'/lib/endpoint.dart', '/models/user.spy.yaml'},
+        ]);
+        expect(compiler.calls, [
+          'compile(changed):[/generated/protocol.dart, /generated/user.dart, /lib/endpoint.dart]',
+          'accept',
+        ]);
+        expect(server.calls, ['reload:/out.dill']);
       },
     );
   });

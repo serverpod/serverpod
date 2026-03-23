@@ -331,13 +331,13 @@ Future<int> _runWatchMode({
     // Generated code is stale! Block on generation before the server starts.
     // Use full requirements for initial generation to ensure all models,
     // endpoints, and future calls are properly generated.
-    final genSuccess = await analyzeAndGenerate(
+    final genResult = await analyzeAndGenerate(
       config: config,
       analyzers: await analyzers,
       affectedPaths: allSources,
       requirements: GenerationRequirements.full,
     );
-    if (!genSuccess) {
+    if (!genResult.success) {
       log.error('Code generation failed.');
       return 1;
     }
@@ -352,6 +352,7 @@ Future<int> _runWatchMode({
       includeWeb: true,
       includeClientPackage: true,
     ),
+    generatedDirPaths: config.generatedDirPaths,
     generate: (affectedPaths, requirements) async {
       // Wait for background priming to finish before touching analyzers.
       return analyzeAndGenerate(
@@ -379,6 +380,7 @@ Future<int> _startWatchSession({
   required String serverpodToolDir,
   required String vmServiceInfoFile,
   required FileWatcher watcher,
+  required Set<String> generatedDirPaths,
   required GenerateAction generate,
   required bool noFes,
 }) async {
@@ -453,6 +455,7 @@ Future<int> _startWatchSession({
     generate: generate,
     createServer: serverProcessFactory,
     initialServer: initialServerProcess,
+    generatedDirPaths: generatedDirPaths,
   );
 
   final fileChangeSub = watcher.onFilesChanged
