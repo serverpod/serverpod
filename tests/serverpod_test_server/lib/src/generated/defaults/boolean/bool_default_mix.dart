@@ -403,6 +403,47 @@ class BoolDefaultMixRepository {
     );
   }
 
+  /// Upserts all [BoolDefaultMix]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [BoolDefaultMix]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<BoolDefaultMix>> upsert(
+    _i1.DatabaseSession session,
+    List<BoolDefaultMix> rows, {
+    required _i1.ColumnSelections<BoolDefaultMixTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<BoolDefaultMix>(
+      rows,
+      uniqueColumns: uniqueColumns(BoolDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [BoolDefaultMix] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [BoolDefaultMix] will have its `id` field set.
+  Future<BoolDefaultMix> upsertRow(
+    _i1.DatabaseSession session,
+    BoolDefaultMix row, {
+    required _i1.ColumnSelections<BoolDefaultMixTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<BoolDefaultMix>(
+      row,
+      uniqueColumns: uniqueColumns(BoolDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [BoolDefaultMix]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

@@ -331,6 +331,47 @@ class ObjectWithDurationRepository {
     );
   }
 
+  /// Upserts all [ObjectWithDuration]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [ObjectWithDuration]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<ObjectWithDuration>> upsert(
+    _i1.DatabaseSession session,
+    List<ObjectWithDuration> rows, {
+    required _i1.ColumnSelections<ObjectWithDurationTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<ObjectWithDuration>(
+      rows,
+      uniqueColumns: uniqueColumns(ObjectWithDuration.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [ObjectWithDuration] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [ObjectWithDuration] will have its `id` field set.
+  Future<ObjectWithDuration> upsertRow(
+    _i1.DatabaseSession session,
+    ObjectWithDuration row, {
+    required _i1.ColumnSelections<ObjectWithDurationTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ObjectWithDuration>(
+      row,
+      uniqueColumns: uniqueColumns(ObjectWithDuration.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [ObjectWithDuration]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

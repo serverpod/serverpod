@@ -391,6 +391,47 @@ class IntDefaultMixRepository {
     );
   }
 
+  /// Upserts all [IntDefaultMix]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [IntDefaultMix]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<IntDefaultMix>> upsert(
+    _i1.DatabaseSession session,
+    List<IntDefaultMix> rows, {
+    required _i1.ColumnSelections<IntDefaultMixTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<IntDefaultMix>(
+      rows,
+      uniqueColumns: uniqueColumns(IntDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [IntDefaultMix] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [IntDefaultMix] will have its `id` field set.
+  Future<IntDefaultMix> upsertRow(
+    _i1.DatabaseSession session,
+    IntDefaultMix row, {
+    required _i1.ColumnSelections<IntDefaultMixTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<IntDefaultMix>(
+      row,
+      uniqueColumns: uniqueColumns(IntDefaultMix.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [IntDefaultMix]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

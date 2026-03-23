@@ -352,6 +352,47 @@ class IntDefaultModelRepository {
     );
   }
 
+  /// Upserts all [IntDefaultModel]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [IntDefaultModel]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<IntDefaultModel>> upsert(
+    _i1.DatabaseSession session,
+    List<IntDefaultModel> rows, {
+    required _i1.ColumnSelections<IntDefaultModelTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<IntDefaultModel>(
+      rows,
+      uniqueColumns: uniqueColumns(IntDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [IntDefaultModel] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [IntDefaultModel] will have its `id` field set.
+  Future<IntDefaultModel> upsertRow(
+    _i1.DatabaseSession session,
+    IntDefaultModel row, {
+    required _i1.ColumnSelections<IntDefaultModelTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<IntDefaultModel>(
+      row,
+      uniqueColumns: uniqueColumns(IntDefaultModel.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [IntDefaultModel]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.

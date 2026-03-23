@@ -641,6 +641,47 @@ class StringDefaultPersistRepository {
     );
   }
 
+  /// Upserts all [StringDefaultPersist]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [uniqueColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// The returned [StringDefaultPersist]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  Future<List<StringDefaultPersist>> upsert(
+    _i1.DatabaseSession session,
+    List<StringDefaultPersist> rows, {
+    required _i1.ColumnSelections<StringDefaultPersistTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsert<StringDefaultPersist>(
+      rows,
+      uniqueColumns: uniqueColumns(StringDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts a single [StringDefaultPersist] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [uniqueColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// The returned [StringDefaultPersist] will have its `id` field set.
+  Future<StringDefaultPersist> upsertRow(
+    _i1.DatabaseSession session,
+    StringDefaultPersist row, {
+    required _i1.ColumnSelections<StringDefaultPersistTable> uniqueColumns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<StringDefaultPersist>(
+      row,
+      uniqueColumns: uniqueColumns(StringDefaultPersist.t),
+      transaction: transaction,
+    );
+  }
+
   /// Updates all [StringDefaultPersist]s in the list and returns the updated rows. If
   /// [columns] is provided, only those columns will be updated. Defaults to
   /// all columns.
