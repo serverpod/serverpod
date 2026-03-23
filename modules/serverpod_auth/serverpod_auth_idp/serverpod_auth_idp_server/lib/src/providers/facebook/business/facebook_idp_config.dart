@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/src/utils/get_passwords_extension.dart';
 
@@ -20,6 +22,17 @@ typedef GetExtraFacebookInfoCallback =
       Session session, {
       required FacebookAccountDetails accountDetails,
       required String accessToken,
+      required Transaction? transaction,
+    });
+
+/// Callback to be invoked after a new Facebook account has been created and
+/// linked to an auth user. The [session] and [transaction] can be used to
+/// perform additional database operations.
+typedef AfterFacebookAccountCreatedFunction =
+    FutureOr<void> Function(
+      Session session,
+      AuthUserModel authUser,
+      FacebookAccount facebookAccount, {
       required Transaction? transaction,
     });
 
@@ -63,12 +76,20 @@ class FacebookIdpConfig extends IdentityProviderBuilder<FacebookIdp> {
   /// [FacebookAccountDetails.userIdentifier]. Keep operations lightweight.
   final GetExtraFacebookInfoCallback? getExtraFacebookInfoCallback;
 
+  /// Callback to be invoked after a new Facebook account has been created
+  /// and linked to an auth user.
+  ///
+  /// This can be used to perform additional setup tasks after the Facebook
+  /// account has been created and linked.
+  final AfterFacebookAccountCreatedFunction? onAfterFacebookAccountCreated;
+
   /// Creates a new instance of [FacebookIdpConfig].
   const FacebookIdpConfig({
     required this.appId,
     required this.appSecret,
     this.facebookAccountDetailsValidation = validateFacebookAccountDetails,
     this.getExtraFacebookInfoCallback,
+    this.onAfterFacebookAccountCreated,
   });
 
   /// Default validation function for extracted Facebook account details.
@@ -117,6 +138,7 @@ class FacebookIdpConfigFromPasswords extends FacebookIdpConfig {
   FacebookIdpConfigFromPasswords({
     super.facebookAccountDetailsValidation,
     super.getExtraFacebookInfoCallback,
+    super.onAfterFacebookAccountCreated,
   }) : super(
          appId: Serverpod.instance.getPasswordOrThrow('facebookAppId'),
          appSecret: Serverpod.instance.getPasswordOrThrow('facebookAppSecret'),
