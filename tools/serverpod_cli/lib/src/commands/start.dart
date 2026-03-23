@@ -348,9 +348,15 @@ Future<int> _runWatchMode({
     serverArgs: serverArgs,
     serverpodToolDir: serverpodToolDir,
     vmServiceInfoFile: vmServiceInfoFile,
-    watcher: config.createFileWatcher(
-      includeWeb: true,
-      includeClientPackage: true,
+    watcher: FileWatcher(
+      watchPaths: {
+        p.absolute(p.joinAll(config.libSourcePathParts)),
+        ...config.sharedModelsLibSourcePaths.map(p.absolute),
+        p.absolute(p.joinAll([...config.clientPackagePathParts, 'lib'])),
+        p.absolute(
+          p.joinAll([...config.serverPackageDirectoryPathParts, 'web']),
+        ),
+      },
     ),
     generatedDirPaths: config.generatedDirPaths,
     generate: (affectedPaths, requirements) async {

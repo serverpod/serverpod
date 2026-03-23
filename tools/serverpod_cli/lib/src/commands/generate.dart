@@ -8,7 +8,7 @@ import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
-import 'package:serverpod_cli/src/commands/watcher.dart';
+import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
@@ -265,8 +265,13 @@ Future<bool> _performGenerateWatch({
 
   log.debug(initialCodeGenerationComplete);
 
-  // Set up file watcher.
-  final watcher = config.createFileWatcher();
+  // Set up file watcher for source directories only (no web or client).
+  final watcher = FileWatcher(
+    watchPaths: {
+      path.absolute(path.joinAll(config.libSourcePathParts)),
+      ...config.sharedModelsLibSourcePaths.map(path.absolute),
+    },
+  );
 
   // Process file change events.
   await for (final event in watcher.onFilesChanged) {
