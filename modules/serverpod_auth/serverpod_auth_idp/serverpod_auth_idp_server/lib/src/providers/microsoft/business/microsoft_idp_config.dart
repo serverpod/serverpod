@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
@@ -25,7 +27,7 @@ typedef GetExtraMicrosoftInfoCallback =
 /// linked to an auth user. The [session] and [transaction] can be used to
 /// perform additional database operations.
 typedef AfterMicrosoftAccountCreatedFunction =
-    Future<void> Function(
+    FutureOr<void> Function(
       Session session,
       MicrosoftAccount microsoftAccount, {
       required Transaction? transaction,
