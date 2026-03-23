@@ -1,9 +1,8 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/endpoints/test_tools.dart';
-import 'package:serverpod_test_server/test_util/mock_stdout.dart';
+import 'package:serverpod_test_server/test_util/logging_utils.dart';
 import 'package:test/test.dart';
 
 import 'serverpod_test_tools.dart';
@@ -41,24 +40,25 @@ void main() {
       );
 
       test(
-        'when method logs to session then can be observered in stdout',
+        'when method logs to session then the log can be observed persistently',
         () async {
-          var stdout = MockStdout();
-          await IOOverrides.runZoned(
-            () async {
-              await endpoints.testTools.logMessageWithSession(
-                sessionBuilder.copyWith(
-                  enableLogging: true,
-                ),
-              );
-            },
-            stdout: () => stdout,
-            stderr: () => stdout,
+          final querySession = sessionBuilder.build();
+          await LoggingUtil.clearAllLogs(querySession);
+
+          await endpoints.testTools.logMessageWithSession(
+            sessionBuilder.copyWith(
+              enableLogging: true,
+            ),
           );
 
+          final logs = await LoggingUtil.findAllLogs(querySession);
+          final messages = logs
+              .expand((info) => info.logs)
+              .map((l) => l.message);
+
           expect(
-            stdout.output,
-            contains('"message":"test session log in endpoint"'),
+            messages,
+            anyElement(contains('test session log in endpoint')),
           );
         },
       );
