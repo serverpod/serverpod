@@ -111,8 +111,7 @@ class MicrosoftIdpConfig extends IdentityProviderBuilder<MicrosoftIdp> {
   ///
   /// This can be used to perform additional setup tasks after the Microsoft
   /// account has been created and linked.
-  final AfterMicrosoftAccountCreatedFunction?
-      onAfterMicrosoftAccountCreated;
+  final AfterMicrosoftAccountCreatedFunction? onAfterMicrosoftAccountCreated;
 
   /// Creates a new instance of [MicrosoftIdpConfig].
   MicrosoftIdpConfig({
