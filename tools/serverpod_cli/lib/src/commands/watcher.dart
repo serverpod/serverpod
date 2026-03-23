@@ -2,18 +2,15 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 
-/// Extension to expose a [FileWatcher] from [GeneratorConfig].
+/// Extension to expose watch-related path helpers from [GeneratorConfig].
 extension GeneratorConfigFileWatcher on GeneratorConfig {
-  /// A [FileWatcher] to watch changes in the non-generated files of the project.
+  /// Returns the set of source directories that should be watched.
   ///
   /// Includes server `lib/` and shared model package `lib/` directories.
   /// If [includeWeb] is true, also includes the `web/` directory (if it exists).
   /// If [includeClientPackage] is true, also includes the client package `lib/`
-  /// directory so that generated client code changes are picked up (needed for
-  /// compilation in `serverpod start --watch`).
-  /// Returns the set of source directories that should be watched.
+  /// directory.
   Set<String> watchPaths({
     bool includeWeb = false,
     bool includeClientPackage = false,
@@ -23,20 +20,15 @@ extension GeneratorConfigFileWatcher on GeneratorConfig {
     includeClientPackage: includeClientPackage,
   );
 
-  FileWatcher createFileWatcher({
-    bool includeWeb = false,
-    bool includeClientPackage = false,
-  }) => FileWatcher(
-    watchPaths: watchPaths(
-      includeWeb: includeWeb,
-      includeClientPackage: includeClientPackage,
-    ),
-    ignorePaths: {
-      p.absolute(p.joinAll(generatedServeModelPathParts)),
-      p.absolute(p.joinAll(generatedDartClientModelPathParts)),
-      ...generatedSharedModelsPaths.map(p.absolute),
-    },
-  );
+  /// Absolute paths of directories containing generated code.
+  ///
+  /// Used by [WatchSession] to distinguish generated files from source files
+  /// so that generated file changes trigger compilation but not re-generation.
+  Set<String> get generatedDirPaths => {
+    p.absolute(p.joinAll(generatedServeModelPathParts)),
+    p.absolute(p.joinAll(generatedDartClientModelPathParts)),
+    ...generatedSharedModelsPaths.map(p.absolute),
+  };
 }
 
 Set<String> _watchPathsFromConfig(

@@ -68,20 +68,15 @@ extension FileChangeEventMerge on List<FileChangeEvent> {
 /// categorized by file type.
 class FileWatcher {
   final Set<String> _watchPaths;
-  final Set<String> _ignorePaths;
   final Duration debounceDelay;
 
   /// Creates a file watcher.
   ///
   /// [watchPaths] is the set of directories to watch.
-  /// [ignorePaths] is a set of path prefixes to ignore (e.g. generated
-  /// directories). Defaults to empty.
   FileWatcher({
     required Iterable<String> watchPaths,
-    Iterable<String> ignorePaths = const {},
-    this.debounceDelay = const Duration(milliseconds: 500),
-  }) : _watchPaths = watchPaths.map(p.canonicalize).toSet(),
-       _ignorePaths = ignorePaths.map(p.canonicalize).toSet();
+    this.debounceDelay = const Duration(milliseconds: 100),
+  }) : _watchPaths = watchPaths.map(p.canonicalize).toSet();
 
   late final List<DirectoryWatcher> _watchers = [
     for (final watchPath in _watchPaths)
@@ -108,7 +103,6 @@ class FileWatcher {
         : StreamGroup.merge(_watchers.map((w) => w.events));
 
     return mergedStream
-        .where((e) => !_ignorePaths.any((ip) => p.isWithin(ip, e.path)))
         .debounceBuffer(debounceDelay)
         .map((events) {
           final dartFiles = <String>{};

@@ -67,48 +67,41 @@ void main() {
     );
   });
 
-  group('Given a FileWatcher with ignored paths', () {
-    late FileWatcher watcher;
-    late String generatedDir;
+  group(
+    'Given a FileWatcher watching a directory with generated subdirectory',
+    () {
+      late FileWatcher watcher;
+      late String generatedDir;
 
-    setUp(() async {
-      generatedDir = p.join(tempDir.path, 'lib', 'src', 'generated');
-      await Directory(generatedDir).create(recursive: true);
+      setUp(() async {
+        generatedDir = p.join(tempDir.path, 'lib', 'src', 'generated');
+        await Directory(generatedDir).create(recursive: true);
 
-      watcher = FileWatcher(
-        watchPaths: [p.join(tempDir.path, 'lib')],
-        ignorePaths: {generatedDir},
-        debounceDelay: const Duration(milliseconds: 200),
+        watcher = FileWatcher(
+          watchPaths: [p.join(tempDir.path, 'lib')],
+          debounceDelay: const Duration(milliseconds: 200),
+        );
+      });
+
+      test(
+        'when a file in a generated directory is created, '
+        'then it is emitted as a dart file change',
+        () async {
+          final firstEvent = watcher.onFilesChanged.first;
+          await watcher.ready;
+
+          await File(
+            p.join(generatedDir, 'generated.dart'),
+          ).writeAsString('// generated');
+
+          final event = await firstEvent;
+
+          expect(event.dartFiles, isNotEmpty);
+          expect(event.dartFiles.first, contains('generated.dart'));
+        },
       );
-    });
-
-    test(
-      'when a file in the ignored directory is created, '
-      'then no event is emitted',
-      () async {
-        // Subscribe and wait for the watcher to be ready.
-        final events = <FileChangeEvent>[];
-        final subscription = watcher.onFilesChanged.listen(events.add);
-        await watcher.ready;
-
-        // Write an ignored file, then a non-ignored sentinel file.
-        await File(
-          p.join(generatedDir, 'generated.dart'),
-        ).writeAsString('// generated');
-        await File(
-          p.join(tempDir.path, 'lib', 'sentinel.dart'),
-        ).writeAsString('// sentinel');
-
-        // Wait for the sentinel event to arrive.
-        await watcher.onFilesChanged.first;
-        await subscription.cancel();
-
-        // The only event should be the sentinel - the ignored file is filtered.
-        expect(events, hasLength(1));
-        expect(events.first.dartFiles.first, contains('sentinel.dart'));
-      },
-    );
-  });
+    },
+  );
 
   group('Given a list of FileChangeEvents', () {
     test(

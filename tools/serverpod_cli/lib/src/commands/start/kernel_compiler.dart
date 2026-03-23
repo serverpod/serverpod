@@ -111,11 +111,13 @@ class KernelCompiler {
     final client = await _client;
 
     if (_needsFullCompile) {
+      log.debug('compile: full');
       final result = await client.compile();
       _needsFullCompile = false;
       return result;
     }
 
+    log.debug('compile: $changedPaths');
     final invalidatedUris = changedPaths.map(Uri.file).toList();
     return client.compile(invalidatedUris);
   }
