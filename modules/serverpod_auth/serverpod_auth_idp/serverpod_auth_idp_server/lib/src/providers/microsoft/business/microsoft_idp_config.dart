@@ -27,7 +27,6 @@ typedef GetExtraMicrosoftInfoCallback =
 typedef AfterMicrosoftAccountCreatedFunction =
     Future<void> Function(
       Session session,
-      AuthUserModel authUser,
       MicrosoftAccount microsoftAccount, {
       required Transaction? transaction,
     });

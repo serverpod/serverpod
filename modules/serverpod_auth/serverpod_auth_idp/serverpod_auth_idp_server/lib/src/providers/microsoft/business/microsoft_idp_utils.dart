@@ -156,7 +156,6 @@ class MicrosoftIdpUtils {
 
       await config.onAfterMicrosoftAccountCreated?.call(
         session,
-        authUser,
         microsoftAccount,
         transaction: transaction,
       );
