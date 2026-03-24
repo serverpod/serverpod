@@ -108,9 +108,15 @@ class SignInScreen extends StatelessWidget {
       // body: FirebaseSignInScreen(client: client),
       body: SignInLocalizationProvider(
         basic: BasicSignInTexts.defaults.copyWith(orContinueWith: 'or'),
-        apple: AppleSignInTexts.defaults.copyWith(signInButton: 'Use Apple account'),
-        google: GoogleSignInTexts.defaults.copyWith(signInButton: 'Use Google account'),
-        github: GitHubSignInTexts.defaults.copyWith(signInButton: 'Use GitHub account'),
+        apple: AppleSignInTexts.defaults.copyWith(
+          signInButton: 'Use Apple account',
+        ),
+        google: GoogleSignInTexts.defaults.copyWith(
+          signInButton: 'Use Google account',
+        ),
+        github: GitHubSignInTexts.defaults.copyWith(
+          signInButton: 'Use GitHub account',
+        ),
         anonymous: AnonymousSignInTexts.defaults.copyWith(
           signInButton: 'Continue as guest',
         ),

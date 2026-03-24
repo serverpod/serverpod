@@ -36,7 +36,7 @@ class EmailSignInTexts {
     required this.privacyPolicy,
   });
 
-  /// Default english texts.
+  /// Default English texts.
   static const defaults = EmailSignInTexts(
     title: 'Sign In with email',
     forgotPassword: 'Forgot password?',

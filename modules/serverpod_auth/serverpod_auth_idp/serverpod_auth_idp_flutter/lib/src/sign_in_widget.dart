@@ -128,7 +128,8 @@ class SignInWidget extends StatefulWidget {
 class _SignInWidgetState extends State<SignInWidget> {
   FlutterAuthSessionManager get auth => widget.client.auth;
 
-  bool get hasAnonymous => auth.idp.hasAnonymous && !widget.disableAnonymousSignInWidget;
+  bool get hasAnonymous =>
+      auth.idp.hasAnonymous && !widget.disableAnonymousSignInWidget;
 
   bool get hasEmail => auth.idp.hasEmail && !widget.disableEmailSignInWidget;
 
@@ -138,9 +139,11 @@ class _SignInWidgetState extends State<SignInWidget> {
 
   bool get hasGitHub => auth.idp.hasGitHub && !widget.disableGitHubSignInWidget;
 
-  bool get hasMicrosoft => auth.idp.hasMicrosoft && !widget.disableMicrosoftSignInWidget;
+  bool get hasMicrosoft =>
+      auth.idp.hasMicrosoft && !widget.disableMicrosoftSignInWidget;
 
-  bool get hasFacebook => auth.idp.hasFacebook && !widget.disableFacebookSignInWidget;
+  bool get hasFacebook =>
+      auth.idp.hasFacebook && !widget.disableFacebookSignInWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +188,8 @@ class _SignInWidgetState extends State<SignInWidget> {
     }
 
     if (hasFacebook) {
-      final builder = ExternalIdpRegistry.instance.getBuilder<EndpointFacebookIdpBase>();
+      final builder = ExternalIdpRegistry.instance
+          .getBuilder<EndpointFacebookIdpBase>();
       if (builder != null) {
         socialProviders.add(
           builder(

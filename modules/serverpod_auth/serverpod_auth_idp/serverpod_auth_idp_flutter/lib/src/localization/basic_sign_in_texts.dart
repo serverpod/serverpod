@@ -11,7 +11,7 @@ class BasicSignInTexts {
     required this.orContinueWith,
   });
 
-  /// Default english texts.
+  /// Default English texts.
   static const defaults = BasicSignInTexts(
     noAuthenticationProvidersConfigured:
         'No authentication providers configured',
