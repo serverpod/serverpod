@@ -9,171 +9,222 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 void main() {
   group('Apple sign-in button localization', () {
-    testWidgets('falls back to enum-based text when override is null', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        _wrapInApp(
-          child: const AppleSignInButton(
-            onPressed: null,
-            isLoading: false,
-            isDisabled: false,
-            type: AppleButtonText.signupWith,
+    testWidgets(
+      'Given default SignInLocalizationProvider with no override, '
+      'when building the AppleSignInButton with signup variant, '
+      'then the enum-based English fallback is used.',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialAppWithAppBundle(
+            child: SignInLocalizationProvider(
+              child: AppleSignInButton(
+                onPressed: null,
+                isLoading: false,
+                isDisabled: false,
+                type: AppleButtonText.signupWith,
+              ),
+            ),
           ),
-        ),
-      );
+        );
 
-      final button = tester.widget<SignInWithAppleButton>(
-        find.byType(SignInWithAppleButton),
-      );
-      expect(button.text, 'Sign up with Apple');
-    });
+        final button = tester.widget<SignInWithAppleButton>(
+          find.byType(SignInWithAppleButton),
+        );
+        expect(button.text, 'Sign up with Apple');
+      },
+    );
 
-    testWidgets('uses provider override when set', (tester) async {
-      await tester.pumpWidget(
-        _wrapInApp(
-          apple: const AppleSignInTexts(signInButton: 'Use Apple account'),
-          child: const AppleSignInButton(
-            onPressed: null,
-            isLoading: false,
-            isDisabled: false,
-            type: AppleButtonText.signinWith,
+    testWidgets(
+      'Given SignInLocalizationProvider with Apple sign-in button label override, '
+      'when building the AppleSignInButton with sign-in variant, '
+      'then the override label is shown instead of the enum fallback.',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialAppWithAppBundle(
+            child: SignInLocalizationProvider(
+              apple: AppleSignInTexts(signInButton: 'Use Apple account'),
+              child: AppleSignInButton(
+                onPressed: null,
+                isLoading: false,
+                isDisabled: false,
+                type: AppleButtonText.signinWith,
+              ),
+            ),
           ),
-        ),
-      );
+        );
 
-      final button = tester.widget<SignInWithAppleButton>(
-        find.byType(SignInWithAppleButton),
-      );
-      expect(button.text, 'Use Apple account');
-    });
+        final button = tester.widget<SignInWithAppleButton>(
+          find.byType(SignInWithAppleButton),
+        );
+        expect(button.text, 'Use Apple account');
+      },
+    );
   });
 
   group('Google sign-in button localization', () {
-    testWidgets('falls back to enum-based text when override is null', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        _wrapInApp(
-          child: const GoogleSignInNativeButton(
-            onPressed: null,
-            isLoading: true,
-            isDisabled: false,
-            text: GSIButtonText.signinWith,
+    testWidgets(
+      'Given default SignInLocalizationProvider with no override, '
+      'when building the GoogleSignInNativeButton with sign-in variant while loading, '
+      'then the enum-based English fallback is used.',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialAppWithAppBundle(
+            child: SignInLocalizationProvider(
+              child: GoogleSignInNativeButton(
+                onPressed: null,
+                isLoading: true,
+                isDisabled: false,
+                text: GSIButtonText.signinWith,
+              ),
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('Sign in with Google'), findsOneWidget);
-    });
+        expect(find.text('Sign in with Google'), findsOneWidget);
+      },
+    );
 
-    testWidgets('uses provider override when set', (tester) async {
-      await tester.pumpWidget(
-        _wrapInApp(
-          google: const GoogleSignInTexts(signInButton: 'Use Google account'),
-          child: const GoogleSignInNativeButton(
-            onPressed: null,
-            isLoading: true,
-            isDisabled: false,
-            text: GSIButtonText.signupWith,
+    testWidgets(
+      'Given SignInLocalizationProvider with Google sign-in button label override, '
+      'when building the GoogleSignInNativeButton with sign-up variant while loading, '
+      'then the override label is shown instead of the enum fallback.',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialAppWithAppBundle(
+            child: SignInLocalizationProvider(
+              google: GoogleSignInTexts(signInButton: 'Use Google account'),
+              child: GoogleSignInNativeButton(
+                onPressed: null,
+                isLoading: true,
+                isDisabled: false,
+                text: GSIButtonText.signupWith,
+              ),
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('Use Google account'), findsOneWidget);
-    });
+        expect(find.text('Use Google account'), findsOneWidget);
+        expect(find.text('Sign up with Google'), findsNothing);
+      },
+    );
   });
 
   group('GitHub sign-in button localization', () {
-    testWidgets('falls back to enum-based text when override is null', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        _wrapInApp(
-          child: const GitHubSignInButton(
-            onPressed: null,
-            isLoading: false,
-            isDisabled: false,
-            text: GitHubButtonText.signUp,
+    testWidgets(
+      'Given default SignInLocalizationProvider with no override, '
+      'when building the GitHubSignInButton with sign-up variant, '
+      'then the enum-based English fallback is used.',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialAppWithAppBundle(
+            child: SignInLocalizationProvider(
+              child: GitHubSignInButton(
+                onPressed: null,
+                isLoading: false,
+                isDisabled: false,
+                text: GitHubButtonText.signUp,
+              ),
+            ),
           ),
-        ),
-      );
+        );
 
-      await tester.pump();
-      expect(find.text('Sign up with GitHub'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
+        await tester.pump();
+        expect(find.text('Sign up with GitHub'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
 
-    testWidgets('uses provider override when set', (tester) async {
-      await tester.pumpWidget(
-        _wrapInApp(
-          github: const GitHubSignInTexts(signInButton: 'Use GitHub account'),
-          child: const GitHubSignInButton(
-            onPressed: null,
-            isLoading: false,
-            isDisabled: false,
-            text: GitHubButtonText.continueWith,
+    testWidgets(
+      'Given SignInLocalizationProvider with GitHub sign-in button label override, '
+      'when building the GitHubSignInButton with continue-with variant, '
+      'then the override label is shown instead of the enum fallback.',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialAppWithAppBundle(
+            child: SignInLocalizationProvider(
+              github: GitHubSignInTexts(signInButton: 'Use GitHub account'),
+              child: GitHubSignInButton(
+                onPressed: null,
+                isLoading: false,
+                isDisabled: false,
+                text: GitHubButtonText.continueWith,
+              ),
+            ),
           ),
-        ),
-      );
+        );
 
-      await tester.pump();
-      expect(find.text('Use GitHub account'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
+        await tester.pump();
+        expect(find.text('Use GitHub account'), findsOneWidget);
+        expect(find.text('Continue with GitHub'), findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
 
   group('Anonymous sign-in button localization', () {
-    testWidgets('falls back to default text when override is null', (
-      tester,
-    ) async {
-      final controller = AnonymousAuthController(client: _TestClient());
-      await tester.pumpWidget(
-        _wrapInApp(
-          child: AnonymousSignInWidget(controller: controller),
-        ),
-      );
-
-      expect(find.text('Continue without account'), findsOneWidget);
-    });
-
-    testWidgets('uses provider override when set', (tester) async {
-      final controller = AnonymousAuthController(client: _TestClient());
-      await tester.pumpWidget(
-        _wrapInApp(
-          anonymous: const AnonymousSignInTexts(
-            signInButton: 'Continue as guest',
+    testWidgets(
+      'Given default SignInLocalizationProvider with no override and a test AnonymousAuthController, '
+      'when building the AnonymousSignInWidget, '
+      'then the built-in English default button label is used.',
+      (tester) async {
+        final controller = AnonymousAuthController(client: _TestClient());
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: SignInLocalizationProvider(
+                child: AnonymousSignInWidget(controller: controller),
+              ),
+            ),
           ),
-          child: AnonymousSignInWidget(controller: controller),
-        ),
-      );
+        );
 
-      expect(find.text('Continue as guest'), findsOneWidget);
-    });
+        expect(find.text('Continue without account'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'Given SignInLocalizationProvider with anonymous sign-in button label override and a test AnonymousAuthController, '
+      'when building the AnonymousSignInWidget, '
+      'then the override label is shown instead of the default.',
+      (tester) async {
+        final controller = AnonymousAuthController(client: _TestClient());
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: SignInLocalizationProvider(
+                anonymous: const AnonymousSignInTexts(
+                  signInButton: 'Continue as guest',
+                ),
+                child: AnonymousSignInWidget(controller: controller),
+              ),
+            ),
+          ),
+        );
+
+        expect(find.text('Continue as guest'), findsOneWidget);
+        expect(find.text('Continue without account'), findsNothing);
+      },
+    );
   });
 }
 
-Widget _wrapInApp({
-  required Widget child,
-  AppleSignInTexts? apple,
-  GoogleSignInTexts? google,
-  GitHubSignInTexts? github,
-  AnonymousSignInTexts? anonymous,
-}) {
-  return DefaultAssetBundle(
-    bundle: _SvgAssetBundle(),
-    child: MaterialApp(
-      home: Scaffold(
-        body: SignInLocalizationProvider(
-          apple: apple ?? AppleSignInTexts.defaults,
-          google: google ?? GoogleSignInTexts.defaults,
-          github: github ?? GitHubSignInTexts.defaults,
-          anonymous: anonymous ?? AnonymousSignInTexts.defaults,
-          child: child,
+/// [MaterialApp] wrapped with [DefaultAssetBundle] so SVG assets resolve in tests.
+class MaterialAppWithAppBundle extends StatelessWidget {
+  const MaterialAppWithAppBundle({required this.child, super.key});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultAssetBundle(
+      bundle: _SvgAssetBundle(),
+      child: MaterialApp(
+        home: Scaffold(
+          body: child,
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _SvgAssetBundle extends CachingAssetBundle {
