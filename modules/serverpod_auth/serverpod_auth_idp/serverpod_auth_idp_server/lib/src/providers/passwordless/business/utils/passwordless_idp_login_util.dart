@@ -1,41 +1,58 @@
+import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
 import '../passwordless_idp_config.dart';
 import '../passwordless_idp_server_exceptions.dart';
-import '../passwordless_idp_utils.dart';
 import 'passwordless_login_request_store.dart';
 
 /// {@template passwordless_idp_login_util}
-/// Utility functions for passwordless login.
+/// Internal utility for passwordless login flows.
+///
+/// Directly uses [Argon2HashUtil] and [DatabaseRateLimitedRequestAttemptUtil]
+/// without the two-step [SecretChallengeUtil] pattern, because the
+/// passwordless flow does not need a separate completion phase.
 /// {@endtemplate}
 class PasswordlessIdpLoginUtil<THandle> {
   final PasswordlessIdpConfig<THandle> _config;
   final Argon2HashUtil _hashUtil;
-  final PasswordlessLoginRequestStore _requestStore;
-  late final SecretChallengeUtil<PasswordlessLoginRequestData> _challengeUtil;
-  late final DatabaseRateLimitedRequestAttemptUtil<String> _requestRateLimiter;
+  final GenericPasswordlessLoginRequestStore _requestStore;
+  final DatabaseRateLimitedRequestAttemptUtil<String> _requestRateLimiter;
+  final DatabaseRateLimitedRequestAttemptUtil<UuidValue> _verifyRateLimiter;
 
   /// Creates a new [PasswordlessIdpLoginUtil] instance.
   PasswordlessIdpLoginUtil({
     required final PasswordlessIdpConfig<THandle> config,
-    required final Argon2HashUtil hashUtil,
-    required final PasswordlessLoginRequestStore requestStore,
   }) : _config = config,
-       _hashUtil = hashUtil,
-       _requestStore = requestStore {
-    _challengeUtil = SecretChallengeUtil(
-      hashUtil: _hashUtil,
-      verificationConfig: _buildVerificationConfig(),
-      completionConfig: _buildCompletionConfig(),
-    );
-    _requestRateLimiter = DatabaseRateLimitedRequestAttemptUtil(
-      RateLimitedRequestAttemptConfig<String>(
-        domain: 'passwordless',
-        source: 'login_request',
-        maxAttempts: _config.loginRequestRateLimit.maxAttempts,
-        timeframe: _config.loginRequestRateLimit.timeframe,
-      ),
+       _hashUtil = _createHashUtil(config),
+       _requestStore = const GenericPasswordlessLoginRequestStore(),
+       _requestRateLimiter = DatabaseRateLimitedRequestAttemptUtil(
+         RateLimitedRequestAttemptConfig<String>(
+           domain: 'passwordless',
+           source: 'login_request',
+           maxAttempts: config.loginRequestRateLimit.maxAttempts,
+           timeframe: config.loginRequestRateLimit.timeframe,
+         ),
+       ),
+       _verifyRateLimiter = DatabaseRateLimitedRequestAttemptUtil(
+         RateLimitedRequestAttemptConfig(
+           domain: 'passwordless',
+           source: 'login_verify',
+           maxAttempts: config.loginVerificationCodeAllowedAttempts,
+           timeframe: config.loginVerificationCodeLifetime,
+         ),
+       );
+
+  // 19MiB memory cost as recommended by OWASP:
+  // https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
+  static Argon2HashUtil _createHashUtil(
+    final PasswordlessIdpConfig<dynamic> config,
+  ) {
+    return Argon2HashUtil(
+      hashPepper: config.secretHashPepper,
+      fallbackHashPeppers: config.fallbackSecretHashPeppers,
+      hashSaltLength: config.secretHashSaltLength,
+      parameters: Argon2HashParameters(memory: 19456),
     );
   }
 
@@ -45,16 +62,7 @@ class PasswordlessIdpLoginUtil<THandle> {
     required final String handle,
     required final Transaction transaction,
   }) async {
-    final normalizedHandle = _config.normalizeHandle(handle);
-    if (normalizedHandle.isEmpty) {
-      throw PasswordlessLoginInvalidException();
-    }
-
-    final typedHandle = _deserializeHandle(normalizedHandle);
-    final serializedHandle = _serializeHandle(typedHandle);
-    if (serializedHandle.isEmpty) {
-      throw PasswordlessLoginInvalidException();
-    }
+    final serializedHandle = _toSerializedHandle(handle);
 
     if (await _requestRateLimiter.hasTooManyAttempts(
       session,
@@ -70,9 +78,13 @@ class PasswordlessIdpLoginUtil<THandle> {
     );
 
     final verificationCode = _config.loginVerificationCodeGenerator();
-    final challenge = await _challengeUtil.createChallenge(
+    final verificationCodeHash = await _hashUtil.createHashFromString(
+      secret: verificationCode,
+    );
+
+    final challenge = await SecretChallenge.db.insertRow(
       session,
-      verificationCode: verificationCode,
+      SecretChallenge(challengeCodeHash: verificationCodeHash),
       transaction: transaction,
     );
 
@@ -85,7 +97,7 @@ class PasswordlessIdpLoginUtil<THandle> {
 
     await _config.sendLoginVerificationCode?.call(
       session,
-      handle: normalizedHandle,
+      handle: handle,
       requestId: requestId,
       verificationCode: verificationCode,
       transaction: transaction,
@@ -94,163 +106,98 @@ class PasswordlessIdpLoginUtil<THandle> {
     return requestId;
   }
 
-  /// Verifies the login code and returns a completion token.
-  Future<String> verifyLoginCode(
+  /// Verifies the login code and completes the login in a single step.
+  ///
+  /// Returns the request data on success; the request row is atomically
+  /// deleted to enforce single-use semantics.
+  Future<PasswordlessLoginRequestData> verifyAndCompleteLogin(
     final Session session, {
     required final UuidValue loginRequestId,
     required final String verificationCode,
     required final Transaction transaction,
   }) async {
-    return PasswordlessIdpUtils.withReplacedLoginException(
-      () => _challengeUtil.verifyChallenge(
-        session,
-        requestId: loginRequestId,
-        verificationCode: verificationCode,
-        transaction: transaction,
-      ),
+    if (await _verifyRateLimiter.hasTooManyAttempts(
+      session,
+      nonce: loginRequestId,
+    )) {
+      throw PasswordlessLoginTooManyAttemptsException();
+    }
+
+    final request = await _requestStore.getRequestWithChallenge(
+      session,
+      requestId: loginRequestId,
+      transaction: transaction,
     );
+    if (request == null) {
+      throw PasswordlessLoginNotFoundException();
+    }
+
+    final challenge = request.challenge;
+    if (challenge == null) {
+      throw PasswordlessLoginNotFoundException();
+    }
+
+    if (!await _hashUtil.validateHashFromString(
+      secret: verificationCode,
+      hashString: challenge.challengeCodeHash,
+    )) {
+      throw PasswordlessLoginInvalidException();
+    }
+
+    if (_isExpired(request)) {
+      await _requestStore.deleteById(session, requestId: request.id);
+      throw PasswordlessLoginExpiredException();
+    }
+
+    final deleted = await _requestStore.deleteById(
+      session,
+      requestId: request.id,
+      transaction: transaction,
+    );
+    if (!deleted) {
+      throw PasswordlessLoginNotFoundException();
+    }
+
+    return request;
   }
 
-  /// Completes the login process and returns the login request data.
-  Future<PasswordlessLoginRequestData> completeLogin(
+  /// {@template passwordless_idp_login_util.delete_incomplete_login_attempts}
+  /// Cleans up the log of login request rate limit attempts older than
+  /// [olderThan].
+  ///
+  /// If [olderThan] is `null`, this will remove all attempts outside the time
+  /// window that is checked upon login, as configured in
+  /// [PasswordlessIdpConfig.loginRequestRateLimit].
+  ///
+  /// If [serializedHandle] is provided, only attempts for the given handle
+  /// will be deleted.
+  /// {@endtemplate}
+  Future<void> deleteIncompleteLoginAttempts(
     final Session session, {
-    required final String loginToken,
+    final Duration? olderThan,
+    final String? serializedHandle,
     required final Transaction transaction,
   }) async {
-    return PasswordlessIdpUtils.withReplacedLoginException(
-      () => _challengeUtil.completeChallenge(
-        session,
-        completionToken: loginToken,
-        transaction: transaction,
-      ),
-    );
-  }
-
-  /// Deletes a login request by id.
-  Future<bool> deleteRequest(
-    final Session session, {
-    required final UuidValue requestId,
-    required final Transaction? transaction,
-  }) async {
-    return _requestStore.deleteById(
+    await _requestRateLimiter.deleteAttempts(
       session,
-      requestId: requestId,
+      olderThan: olderThan,
+      nonce: serializedHandle,
       transaction: transaction,
     );
   }
 
-  SecretChallengeVerificationConfig<PasswordlessLoginRequestData>
-  _buildVerificationConfig() {
-    final limiter = DatabaseRateLimitedRequestAttemptUtil<UuidValue>(
-      RateLimitedRequestAttemptConfig(
-        domain: 'passwordless',
-        source: 'login_verify',
-        maxAttempts: _config.loginVerificationCodeAllowedAttempts,
-        timeframe: _config.loginVerificationCodeLifetime,
-      ),
-    );
-
-    return SecretChallengeVerificationConfig(
-      getRequest:
-          (
-            final session,
-            final requestId, {
-            required final Transaction? transaction,
-          }) {
-            return _requestStore.getRequestForVerification(
-              session,
-              requestId: requestId,
-              transaction: transaction,
-            );
-          },
-      isAlreadyUsed: (final request) => request.loginChallengeId != null,
-      getChallenge: (final request) {
-        final challenge = request.challenge;
-        if (challenge == null) {
-          throw ChallengeRequestNotFoundException();
-        }
-        return challenge;
-      },
-      isExpired: (final request) => request.createdAt
-          .add(_config.loginVerificationCodeLifetime)
-          .isBefore(DateTime.now()),
-      onExpired: (final session, final request) async {
-        await _requestStore.deleteById(
-          session,
-          requestId: request.id,
-        );
-      },
-      linkCompletionToken:
-          (
-            final session,
-            final request,
-            final completionChallenge, {
-            required final transaction,
-          }) async {
-            final updated = await _requestStore
-                .linkCompletionChallengeAtomically(
-                  session,
-                  requestId: request.id,
-                  completionChallengeId: completionChallenge.id!,
-                  transaction: transaction,
-                );
-            if (!updated) {
-              throw ChallengeAlreadyUsedException();
-            }
-          },
-      rateLimiter: limiter,
-    );
+  bool _isExpired(final PasswordlessLoginRequestData request) {
+    return request.createdAt
+        .add(_config.loginVerificationCodeLifetime)
+        .isBefore(clock.now());
   }
 
-  SecretChallengeCompletionConfig<PasswordlessLoginRequestData>
-  _buildCompletionConfig() {
-    final limiter = DatabaseRateLimitedRequestAttemptUtil<UuidValue>(
-      RateLimitedRequestAttemptConfig(
-        domain: 'passwordless',
-        source: 'login_complete',
-        maxAttempts: _config.loginVerificationCodeAllowedAttempts,
-        timeframe: _config.loginVerificationCodeLifetime,
-      ),
-    );
-
-    return SecretChallengeCompletionConfig(
-      getRequest:
-          (
-            final session,
-            final requestId, {
-            required final Transaction? transaction,
-          }) {
-            return _requestStore.getRequestForCompletion(
-              session,
-              requestId: requestId,
-              transaction: transaction,
-            );
-          },
-      getCompletionChallenge: (final request) => request.loginChallenge,
-      isExpired: (final request) => request.createdAt
-          .add(_config.loginVerificationCodeLifetime)
-          .isBefore(DateTime.now()),
-      onExpired: (final session, final request) async {
-        await _requestStore.deleteById(
-          session,
-          requestId: request.id,
-        );
-      },
-      rateLimiter: limiter,
-    );
-  }
-
-  String _serializeHandle(final THandle handle) {
+  String _toSerializedHandle(final String handle) {
     try {
-      return _config.serializeHandle(handle);
-    } catch (_) {
-      throw PasswordlessLoginInvalidException();
-    }
-  }
-
-  THandle _deserializeHandle(final String handle) {
-    try {
-      return _config.deserializeHandle(handle);
+      final typed = _config.deserializeHandle(handle);
+      final serialized = _config.serializeHandle(typed);
+      if (serialized.isEmpty) throw const FormatException();
+      return serialized;
     } catch (_) {
       throw PasswordlessLoginInvalidException();
     }

@@ -2,13 +2,16 @@ import 'dart:async';
 
 import 'package:serverpod/serverpod.dart';
 
-import '../../../../../core.dart';
+import '../../../../core.dart';
+import '../../../common/rate_limited_request_attempt/rate_limit.dart';
+import '../../../generated/protocol.dart' as proto;
 import '../../../utils/get_passwords_extension.dart';
 import '../../utils/default_code_generators.dart';
 import 'passwordless_idp.dart';
-import 'utils/passwordless_login_request_store.dart';
 
-export '../util/default_code_generators.dart';
+export '../../../common/rate_limited_request_attempt/rate_limit.dart';
+export '../../utils/default_code_generators.dart'
+    show defaultNumericVerificationCodeGenerator;
 
 /// Function for sending out passwordless verification codes.
 typedef SendPasswordlessVerificationCodeFunction =
@@ -20,9 +23,6 @@ typedef SendPasswordlessVerificationCodeFunction =
       required Transaction? transaction,
     });
 
-/// Function for normalizing a login handle before using it.
-typedef NormalizeHandleFunction = String Function(String handle);
-
 /// Function for converting a handle to a stable serialized string.
 typedef SerializeHandleFunction<THandle> = String Function(THandle handle);
 
@@ -30,27 +30,16 @@ typedef SerializeHandleFunction<THandle> = String Function(THandle handle);
 typedef DeserializeHandleFunction<THandle> = THandle Function(String handle);
 
 /// Function for resolving an auth user id from a handle.
+///
+/// Called after the verification code has been successfully verified.
+/// If the handle does not correspond to an existing user, the implementation
+/// is responsible for creating one and returning the new auth user ID.
 typedef ResolveAuthUserIdFunction<THandle> =
     FutureOr<UuidValue> Function(
       Session session, {
       required THandle handle,
       required Transaction? transaction,
     });
-
-/// A rolling rate limit configuration.
-class PasswordlessRateLimit {
-  /// The maximum number of attempts allowed within the timeframe.
-  final int maxAttempts;
-
-  /// The timeframe within which the attempts are allowed.
-  final Duration timeframe;
-
-  /// Creates a new [PasswordlessRateLimit] instance.
-  const PasswordlessRateLimit({
-    required this.maxAttempts,
-    required this.timeframe,
-  });
-}
 
 /// {@template passwordless_idp_config}
 /// Configuration options for the passwordless identity provider.
@@ -63,17 +52,19 @@ class PasswordlessIdpConfig<THandle>
   /// [fallbackSecretHashPeppers].
   final String secretHashPepper;
 
+  /// Callback for resolving which auth user should be signed in after a login
+  /// request has been verified.
+  ///
+  /// If the handle does not correspond to an existing user, the implementation
+  /// is responsible for creating one and returning the new auth user ID.
+  final ResolveAuthUserIdFunction<THandle> resolveAuthUserId;
+
   /// Optional fallback peppers for validating verification codes created with
   /// previous peppers.
   final List<String> fallbackSecretHashPeppers;
 
   /// The length of the random salt in bytes for hashing verification codes.
   final int secretHashSaltLength;
-
-  /// Function for normalizing a login handle before using it.
-  ///
-  /// Defaults to trimming whitespace.
-  final NormalizeHandleFunction normalizeHandle;
 
   /// Function for converting a handle to a serialized string for persistence.
   final SerializeHandleFunction<THandle> serializeHandle;
@@ -91,90 +82,44 @@ class PasswordlessIdpConfig<THandle>
   final String Function() loginVerificationCodeGenerator;
 
   /// Rate limit for login requests.
-  final PasswordlessRateLimit loginRequestRateLimit;
+  final RateLimit loginRequestRateLimit;
 
   /// Callback for sending login verification codes.
   ///
   /// This is optional. If `null`, no verification code will be delivered.
+  /// This allows integrators to deliver codes through other channels.
   final SendPasswordlessVerificationCodeFunction? sendLoginVerificationCode;
-
-  /// Callback for resolving which auth user should be signed in after a login
-  /// request has been verified.
-  ///
-  /// If `null`, calling [PasswordlessIdp.finishLogin] will throw.
-  final ResolveAuthUserIdFunction<THandle>? resolveAuthUserId;
-
-  /// Custom request store for passwordless login requests.
-  final PasswordlessLoginRequestStore loginRequestStore;
 
   /// Creates a new passwordless identity provider configuration.
   PasswordlessIdpConfig({
     required this.secretHashPepper,
-    this.fallbackSecretHashPeppers = const [],
-    this.secretHashSaltLength = 16,
-    this.normalizeHandle = _defaultNormalizeHandle,
+    required this.resolveAuthUserId,
     final SerializeHandleFunction<THandle>? serializeHandle,
     final DeserializeHandleFunction<THandle>? deserializeHandle,
+    this.fallbackSecretHashPeppers = const [],
+    this.secretHashSaltLength = 16,
     this.loginVerificationCodeLifetime = const Duration(minutes: 10),
     this.loginVerificationCodeAllowedAttempts = 3,
     this.loginVerificationCodeGenerator =
         defaultNumericVerificationCodeGenerator,
-    this.loginRequestRateLimit = const PasswordlessRateLimit(
+    this.loginRequestRateLimit = const RateLimit(
       maxAttempts: 5,
       timeframe: Duration(minutes: 10),
     ),
     this.sendLoginVerificationCode,
-    this.resolveAuthUserId,
-    required this.loginRequestStore,
-  }) : serializeHandle = _resolveSerializeHandle(serializeHandle),
-       deserializeHandle = _resolveDeserializeHandle(deserializeHandle);
+  }) : serializeHandle = serializeHandle ?? _defaultSerializeHandle<THandle>(),
+       deserializeHandle =
+           deserializeHandle ?? _defaultDeserializeHandle<THandle>();
 
-  static String _defaultNormalizeHandle(final String handle) => handle.trim();
+  static SerializeHandleFunction<THandle> _defaultSerializeHandle<THandle>() =>
+      (final handle) =>
+          handle is String ? handle : SerializationManager.encode(handle);
 
-  static SerializeHandleFunction<THandle> _resolveSerializeHandle<THandle>(
-    final SerializeHandleFunction<THandle>? serializeHandle,
-  ) {
-    if (serializeHandle != null) return serializeHandle;
-    _ensureDefaultHandleTypeIsSupported<THandle>();
-    return (final handle) => _serializeDefaultHandle<THandle>(handle);
-  }
-
-  static DeserializeHandleFunction<THandle> _resolveDeserializeHandle<THandle>(
-    final DeserializeHandleFunction<THandle>? deserializeHandle,
-  ) {
-    if (deserializeHandle != null) return deserializeHandle;
-    _ensureDefaultHandleTypeIsSupported<THandle>();
-    return (final handle) => _deserializeDefaultHandle<THandle>(handle);
-  }
-
-  static void _ensureDefaultHandleTypeIsSupported<THandle>() {
-    if (THandle == String || THandle == int || THandle == UuidValue) return;
-    throw ArgumentError(
-      'serializeHandle and deserializeHandle must be provided when THandle '
-      'is not one of the supported basic types: String, int, UuidValue.',
-    );
-  }
-
-  static String _serializeDefaultHandle<THandle>(final THandle handle) =>
-      switch (handle) {
-        String() => handle,
-        int() => handle.toString(),
-        UuidValue() => handle.uuid,
-        _ => throw UnimplementedError(),
-      };
-
-  static THandle _deserializeDefaultHandle<THandle>(final String handle) {
-    if (THandle == String) {
-      return handle as THandle;
-    }
-    if (THandle == int) {
-      return int.parse(handle) as THandle;
-    }
-    if (THandle == UuidValue) {
-      return UuidValue.withValidation(handle) as THandle;
-    }
-    throw UnimplementedError();
-  }
+  static DeserializeHandleFunction<THandle>
+  _defaultDeserializeHandle<THandle>() =>
+      (final handle) => THandle == String
+      ? handle as THandle
+      : proto.Protocol().deserialize<THandle>(handle);
 
   @override
   PasswordlessIdp<THandle> build({
@@ -199,9 +144,9 @@ class PasswordlessIdpConfigFromPasswords<THandle>
     extends PasswordlessIdpConfig<THandle> {
   /// Creates a new [PasswordlessIdpConfigFromPasswords] instance.
   PasswordlessIdpConfigFromPasswords({
+    required super.resolveAuthUserId,
     super.fallbackSecretHashPeppers,
     super.secretHashSaltLength,
-    super.normalizeHandle,
     super.serializeHandle,
     super.deserializeHandle,
     super.loginVerificationCodeLifetime,
@@ -209,8 +154,6 @@ class PasswordlessIdpConfigFromPasswords<THandle>
     super.loginVerificationCodeGenerator,
     super.loginRequestRateLimit,
     super.sendLoginVerificationCode,
-    super.resolveAuthUserId,
-    required super.loginRequestStore,
   }) : super(
          secretHashPepper: Serverpod.instance.getPasswordOrThrow(
            'passwordlessSecretHashPepper',

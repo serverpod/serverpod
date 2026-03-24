@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
+import '../../../common/rate_limited_request_attempt/rate_limit.dart';
 import '../../../utils/get_passwords_extension.dart';
 import '../../utils/default_code_generators.dart';
 import '../util/registration_password_policy.dart';
 import 'email_idp.dart';
 
-export '../util/default_code_generators.dart';
+export '../../../common/rate_limited_request_attempt/rate_limit.dart';
+export '../../utils/default_code_generators.dart'
+    show defaultNumericVerificationCodeGenerator;
 
 /// Function to be called after a password reset is successfully completed.
 typedef OnPasswordResetCompletedFunction =
@@ -19,10 +22,7 @@ typedef OnPasswordResetCompletedFunction =
     });
 
 /// Function to be called to check whether a password matches the requirements during registration.
-typedef PasswordValidationFunction =
-    bool Function(
-      String password,
-    );
+typedef PasswordValidationFunction = bool Function(String password);
 
 /// Function for sending out the verification codes for password reset requests.
 typedef SendPasswordResetVerificationCodeFunction =
@@ -222,16 +222,4 @@ class EmailIdpConfigFromPasswords extends EmailIdpConfig {
            'emailSecretHashPepper',
          ),
        );
-}
-
-/// A rolling rate limit which allows [maxAttempts] in the most recent [timeframe].
-class RateLimit {
-  /// The maximum number of attempts allowed within the timeframe.
-  final int maxAttempts;
-
-  /// The timeframe within which the attempts are allowed.
-  final Duration timeframe;
-
-  /// Creates a new [RateLimit] instance.
-  const RateLimit({required this.maxAttempts, required this.timeframe});
 }

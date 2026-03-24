@@ -37,8 +37,9 @@ abstract class PasswordlessIdpBaseEndpoint extends Endpoint {
     );
   }
 
-  /// Verifies a login code and returns a token that can be used to complete the
-  /// login.
+  /// Verifies the login code and completes the login in a single step.
+  ///
+  /// Returns an [AuthSuccess] with the authentication tokens.
   ///
   /// Throws a [PasswordlessLoginException] in case of errors, with reason:
   /// - [PasswordlessLoginExceptionReason.expired] if the login request has
@@ -47,35 +48,17 @@ abstract class PasswordlessIdpBaseEndpoint extends Endpoint {
   ///   for the given [loginRequestId] or [verificationCode] is invalid.
   /// - [PasswordlessLoginExceptionReason.tooManyAttempts] if there have been
   ///   too many failed verification attempts.
-  Future<String> verifyLoginCode(
-    final Session session, {
-    required final UuidValue loginRequestId,
-    required final String verificationCode,
-  }) async {
-    return passwordlessIdp.verifyLoginCode(
-      session,
-      loginRequestId: loginRequestId,
-      verificationCode: verificationCode,
-    );
-  }
-
-  /// Completes the login process and returns a new session.
-  ///
-  /// Throws a [PasswordlessLoginException] in case of errors, with reason:
-  /// - [PasswordlessLoginExceptionReason.expired] if the login request has
-  ///   already expired.
-  /// - [PasswordlessLoginExceptionReason.invalid] if the [loginToken] is invalid.
-  /// - [PasswordlessLoginExceptionReason.tooManyAttempts] if there have been
-  ///   too many failed completion attempts.
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   Future<AuthSuccess> finishLogin(
     final Session session, {
-    required final String loginToken,
+    required final UuidValue loginRequestId,
+    required final String verificationCode,
   }) async {
     return passwordlessIdp.finishLogin(
       session,
-      loginToken: loginToken,
+      loginRequestId: loginRequestId,
+      verificationCode: verificationCode,
     );
   }
 }

@@ -1,9 +1,5 @@
-/// Base exception for all passwordless authentication related errors.
-sealed class PasswordlessServerException implements Exception {}
-
 /// Base exception for all passwordless login related errors.
-sealed class PasswordlessLoginServerException
-    extends PasswordlessServerException {}
+sealed class PasswordlessLoginServerException implements Exception {}
 
 /// Exception thrown when login credentials are invalid.
 final class PasswordlessLoginInvalidException

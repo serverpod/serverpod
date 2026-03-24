@@ -1,32 +1,28 @@
 import 'package:serverpod/serverpod.dart';
 
-import '../../../../../core.dart';
+import '../../../../core.dart';
 import 'passwordless_idp_config.dart';
 import 'passwordless_idp_server_exceptions.dart';
-import 'passwordless_idp_utils.dart';
+import 'utils/passwordless_idp_login_util.dart';
 
 /// Main class for the passwordless identity provider.
 ///
 /// The methods defined here are intended to be called from an endpoint.
-///
-/// The `utils` property provides access to [PasswordlessIdpUtils], which contains
-/// utility methods for working with passwordless login requests.
 class PasswordlessIdp<THandle> {
-  /// The method used when authenticating with the passwordless identity provider.
+  /// The method used when authenticating with the passwordless identity
+  /// provider.
   static const String method = 'passwordless';
 
   /// The configuration for the passwordless identity provider.
   final PasswordlessIdpConfig<THandle> config;
 
-  /// Utility functions for the passwordless identity provider.
-  final PasswordlessIdpUtils<THandle> utils;
-
+  final PasswordlessIdpLoginUtil<THandle> _loginUtil;
   final TokenManager _tokenManager;
   final AuthUsers _authUsers;
 
   PasswordlessIdp._(
     this.config,
-    this.utils,
+    this._loginUtil,
     this._tokenManager,
     this._authUsers,
   );
@@ -37,8 +33,8 @@ class PasswordlessIdp<THandle> {
     required final TokenManager tokenManager,
     required final AuthUsers authUsers,
   }) {
-    final utils = PasswordlessIdpUtils<THandle>(config: config);
-    return PasswordlessIdp._(config, utils, tokenManager, authUsers);
+    final loginUtil = PasswordlessIdpLoginUtil<THandle>(config: config);
+    return PasswordlessIdp._(config, loginUtil, tokenManager, authUsers);
   }
 
   /// Starts the login process.
@@ -52,21 +48,20 @@ class PasswordlessIdp<THandle> {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) =>
-          PasswordlessIdpUtils.withReplacedServerPasswordlessException(
-            () => utils.login.startLogin(
-              session,
-              handle: handle,
-              transaction: transaction,
-            ),
-          ),
+      (final transaction) => _withReplacedServerException(
+        () => _loginUtil.startLogin(
+          session,
+          handle: handle,
+          transaction: transaction,
+        ),
+      ),
     );
   }
 
-  /// Verifies the login code.
+  /// Verifies the login code and finishes the login process in one step.
   ///
-  /// Returns a completion token to be used with [finishLogin].
-  Future<String> verifyLoginCode(
+  /// Returns an [AuthSuccess] with the authentication tokens.
+  Future<AuthSuccess> finishLogin(
     final Session session, {
     required final UuidValue loginRequestId,
     required final String verificationCode,
@@ -75,84 +70,82 @@ class PasswordlessIdp<THandle> {
     return DatabaseUtil.runInTransactionOrSavepoint(
       session.db,
       transaction,
-      (final transaction) =>
-          PasswordlessIdpUtils.withReplacedServerPasswordlessException(
-            () => utils.login.verifyLoginCode(
-              session,
-              loginRequestId: loginRequestId,
-              verificationCode: verificationCode,
-              transaction: transaction,
-            ),
-          ),
+      (final transaction) => _withReplacedServerException(
+        () async {
+          final request = await _loginUtil.verifyAndCompleteLogin(
+            session,
+            loginRequestId: loginRequestId,
+            verificationCode: verificationCode,
+            transaction: transaction,
+          );
+
+          final THandle handle;
+          try {
+            handle = config.deserializeHandle(request.serializedHandle);
+          } catch (_) {
+            throw PasswordlessLoginInvalidException();
+          }
+
+          final authUserId = await config.resolveAuthUserId(
+            session,
+            handle: handle,
+            transaction: transaction,
+          );
+
+          final authUser = await _authUsers.get(
+            session,
+            authUserId: authUserId,
+            transaction: transaction,
+          );
+
+          return _tokenManager.issueToken(
+            session,
+            authUserId: authUserId,
+            method: method,
+            scopes: authUser.scopes,
+            transaction: transaction,
+          );
+        },
+      ),
     );
   }
 
-  /// Finishes the login process.
-  ///
-  /// Returns an [AuthSuccess] with the authentication tokens.
-  Future<AuthSuccess> finishLogin(
+  /// {@macro passwordless_idp_login_util.delete_incomplete_login_attempts}
+  Future<void> deleteIncompleteLoginAttempts(
     final Session session, {
-    required final String loginToken,
-    final Transaction? transaction,
+    final Duration? olderThan,
+    final String? serializedHandle,
+    required final Transaction transaction,
   }) async {
-    final resolveAuthUserId = config.resolveAuthUserId;
-    if (resolveAuthUserId == null) {
-      throw StateError(
-        'PasswordlessIdpConfig.resolveAuthUserId must be set to use finishLogin.',
-      );
-    }
-
-    return DatabaseUtil.runInTransactionOrSavepoint(
-      session.db,
-      transaction,
-      (final transaction) =>
-          PasswordlessIdpUtils.withReplacedServerPasswordlessException(
-            () async {
-              final request = await utils.login.completeLogin(
-                session,
-                loginToken: loginToken,
-                transaction: transaction,
-              );
-              final handle = _deserializeHandle(request.serializedHandle);
-
-              final authUserId = await resolveAuthUserId(
-                session,
-                handle: handle,
-                transaction: transaction,
-              );
-
-              final authUser = await _authUsers.get(
-                session,
-                authUserId: authUserId,
-                transaction: transaction,
-              );
-
-              final isDeleted = await utils.login.deleteRequest(
-                session,
-                requestId: request.id,
-                transaction: transaction,
-              );
-              if (!isDeleted) {
-                throw PasswordlessLoginNotFoundException();
-              }
-
-              return _tokenManager.issueToken(
-                session,
-                authUserId: authUserId,
-                method: method,
-                scopes: authUser.scopes,
-                transaction: transaction,
-              );
-            },
-          ),
+    return _loginUtil.deleteIncompleteLoginAttempts(
+      session,
+      olderThan: olderThan,
+      serializedHandle: serializedHandle,
+      transaction: transaction,
     );
   }
 
-  THandle _deserializeHandle(final String serializedHandle) {
+  static Future<T> _withReplacedServerException<T>(
+    final Future<T> Function() fn,
+  ) async {
     try {
-      return config.deserializeHandle(serializedHandle);
-    } catch (_) {
-      throw PasswordlessLoginInvalidException();
+      return await fn();
+    } on PasswordlessLoginServerException catch (e) {
+      throw PasswordlessLoginException(reason: e._reason);
+    }
+  }
+}
+
+extension on PasswordlessLoginServerException {
+  PasswordlessLoginExceptionReason get _reason {
+    switch (this) {
+      case PasswordlessLoginInvalidException():
+      case PasswordlessLoginNotFoundException():
+        return PasswordlessLoginExceptionReason.invalid;
+      case PasswordlessLoginTooManyAttemptsException():
+        return PasswordlessLoginExceptionReason.tooManyAttempts;
+      case PasswordlessLoginExpiredException():
+        return PasswordlessLoginExceptionReason.expired;
     }
   }
 }
