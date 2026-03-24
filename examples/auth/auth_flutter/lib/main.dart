@@ -107,25 +107,26 @@ class SignInScreen extends StatelessWidget {
       // See the `firebase.dart` file for more information.
       // body: FirebaseSignInScreen(client: client),
       body: SignInLocalizationProvider(
-        basic: BasicSignInTexts.defaults.copyWith(orContinueWith: 'or'),
-        apple: AppleSignInTexts.defaults.copyWith(
-          signInButton: 'Use Apple account',
+        basic: BasicSignInTexts(
+          noAuthenticationProvidersConfigured: 'No auth providers configured',
+          orContinueWith: 'or continue with',
         ),
-        google: GoogleSignInTexts.defaults.copyWith(
-          signInButton: 'Use Google account',
+        // To override only a few, you can use the copyWith method.
+        email: EmailSignInTexts.defaults.copyWith(
+          title: 'Sign in with email',
+          forgotPassword: 'Forgot password?',
+          signIn: 'Sign in',
+          dontHaveAnAccount: "Don't have an account?",
+          signUp: 'Sign up',
+          signUpTitle: 'Sign up with email',
+          continueAction: 'Continue',
         ),
-        github: GitHubSignInTexts.defaults.copyWith(
-          signInButton: 'Use GitHub account',
-        ),
-        microsoft: MicrosoftSignInTexts.defaults.copyWith(
-          signInButton: 'Use Microsoft account',
-        ),
-        facebook: FacebookSignInTexts.defaults.copyWith(
-          signInButton: 'Use Facebook account',
-        ),
-        anonymous: AnonymousSignInTexts.defaults.copyWith(
-          signInButton: 'Continue as guest',
-        ),
+        apple: AppleSignInTexts(signInButton: 'Use Apple account'),
+        google: GoogleSignInTexts(signInButton: 'Use Google account'),
+        github: GitHubSignInTexts(signInButton: 'Use GitHub account'),
+        microsoft: MicrosoftSignInTexts(signInButton: 'Use Microsoft account'),
+        facebook: FacebookSignInTexts(signInButton: 'Use Facebook account'),
+        anonymous: AnonymousSignInTexts(signInButton: 'Continue as guest'),
         child: SignInWidget(
           client: client,
           // NOTE: No need to call navigation here if it gets done on the
