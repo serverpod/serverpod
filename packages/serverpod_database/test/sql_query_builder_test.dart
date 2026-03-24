@@ -1267,7 +1267,7 @@ void main() {
 
       expect(
         query,
-        'WITH _base_query_sorting_and_ordering AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3) ORDER BY "citizen"."id" DESC), _partitioned_list_by_parent_id AS (SELECT *, row_number() OVER ( PARTITION BY _base_query_sorting_and_ordering."citizen.id" ORDER BY _base_query_sorting_and_ordering."citizen.id" DESC) FROM _base_query_sorting_and_ordering) SELECT * FROM _partitioned_list_by_parent_id WHERE row_number BETWEEN 1 AND 10',
+        'WITH _base_query_sorting_and_ordering AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3) ORDER BY "citizen"."id" DESC NULLS FIRST), _partitioned_list_by_parent_id AS (SELECT *, row_number() OVER ( PARTITION BY _base_query_sorting_and_ordering."citizen.id" ORDER BY _base_query_sorting_and_ordering."citizen.id" DESC) AS row_number FROM _base_query_sorting_and_ordering) SELECT * FROM _partitioned_list_by_parent_id WHERE row_number BETWEEN 1 AND 10',
       );
     },
   );
@@ -1301,7 +1301,7 @@ void main() {
 
       expect(
         query,
-        'WITH _base_query_sorting_and_ordering AS (SELECT "citizen"."id" AS "citizen.id", "citizen"."name" AS "citizen.name" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3) ORDER BY "citizen"."name", "citizen"."id" DESC), _partitioned_list_by_parent_id AS (SELECT *, row_number() OVER ( PARTITION BY _base_query_sorting_and_ordering."citizen.id" ORDER BY _base_query_sorting_and_ordering."citizen.name", _base_query_sorting_and_ordering."citizen.id" DESC) FROM _base_query_sorting_and_ordering) SELECT * FROM _partitioned_list_by_parent_id WHERE row_number BETWEEN 1 AND 5',
+        'WITH _base_query_sorting_and_ordering AS (SELECT "citizen"."id" AS "citizen.id", "citizen"."name" AS "citizen.name" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3) ORDER BY "citizen"."name" ASC NULLS LAST, "citizen"."id" DESC NULLS FIRST), _partitioned_list_by_parent_id AS (SELECT *, row_number() OVER ( PARTITION BY _base_query_sorting_and_ordering."citizen.id" ORDER BY _base_query_sorting_and_ordering."citizen.name", _base_query_sorting_and_ordering."citizen.id" DESC) AS row_number FROM _base_query_sorting_and_ordering) SELECT * FROM _partitioned_list_by_parent_id WHERE row_number BETWEEN 1 AND 5',
       );
     },
   );
