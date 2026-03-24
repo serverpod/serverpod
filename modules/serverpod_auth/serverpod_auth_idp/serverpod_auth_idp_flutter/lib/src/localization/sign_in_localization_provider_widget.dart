@@ -3,8 +3,10 @@ import 'package:flutter/widgets.dart';
 import '../anonymous/anonymous_sign_in_texts.dart';
 import '../apple/apple_sign_in_texts.dart';
 import '../email/email_sign_in_texts.dart';
+import '../facebook/facebook_sign_in_texts.dart';
 import '../github/github_sign_in_texts.dart';
 import '../google/google_sign_in_texts.dart';
+import '../microsoft/microsoft_sign_in_texts.dart';
 import 'basic_sign_in_texts.dart';
 
 /// Inherited widget that provides customizable sign-in texts.
@@ -16,6 +18,8 @@ class SignInLocalizationProvider extends InheritedWidget {
     this.apple = AppleSignInTexts.defaults,
     this.google = GoogleSignInTexts.defaults,
     this.github = GitHubSignInTexts.defaults,
+    this.microsoft = MicrosoftSignInTexts.defaults,
+    this.facebook = FacebookSignInTexts.defaults,
     this.anonymous = AnonymousSignInTexts.defaults,
     required super.child,
     super.key,
@@ -35,6 +39,12 @@ class SignInLocalizationProvider extends InheritedWidget {
 
   /// Texts for the GitHub Sign-In button.
   final GitHubSignInTexts github;
+
+  /// Texts for the Microsoft Sign-In button.
+  final MicrosoftSignInTexts microsoft;
+
+  /// Texts for the Facebook Sign-In button.
+  final FacebookSignInTexts facebook;
 
   /// Texts for anonymous sign-in.
   final AnonymousSignInTexts anonymous;
@@ -63,6 +73,8 @@ class SignInLocalizationProvider extends InheritedWidget {
         oldWidget.apple != apple ||
         oldWidget.google != google ||
         oldWidget.github != github ||
+        oldWidget.microsoft != microsoft ||
+        oldWidget.facebook != facebook ||
         oldWidget.anonymous != anonymous;
   }
 }

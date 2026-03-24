@@ -161,6 +161,60 @@ void main() {
     );
   });
 
+  group('Microsoft sign-in button localization', () {
+    testWidgets(
+      'Given default SignInLocalizationProvider with no override, '
+      'when building the MicrosoftSignInButton with sign-up variant, '
+      'then the enum-based English fallback is used.',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialAppWithAppBundle(
+            child: SignInLocalizationProvider(
+              child: MicrosoftSignInButton(
+                onPressed: null,
+                isLoading: false,
+                isDisabled: false,
+                text: MicrosoftButtonText.signUp,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pump();
+        expect(find.text('Sign up with Microsoft'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'Given SignInLocalizationProvider with Microsoft sign-in button label override, '
+      'when building the MicrosoftSignInButton with continue-with variant, '
+      'then the override label is shown instead of the enum fallback.',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialAppWithAppBundle(
+            child: SignInLocalizationProvider(
+              microsoft: MicrosoftSignInTexts(
+                signInButton: 'Use Microsoft account',
+              ),
+              child: MicrosoftSignInButton(
+                onPressed: null,
+                isLoading: false,
+                isDisabled: false,
+                text: MicrosoftButtonText.continueWith,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pump();
+        expect(find.text('Use Microsoft account'), findsOneWidget);
+        expect(find.text('Continue with Microsoft'), findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  });
+
   group('Anonymous sign-in button localization', () {
     testWidgets(
       'Given default SignInLocalizationProvider with no override and a test AnonymousAuthController, '

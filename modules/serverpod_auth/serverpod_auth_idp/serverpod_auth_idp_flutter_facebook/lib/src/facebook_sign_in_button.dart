@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
 import 'facebook_sign_in_style.dart';
 
@@ -59,6 +60,7 @@ class FacebookSignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.facebookSignInTexts;
     final buttonStyle = FacebookSignInStyle.fromConfiguration(
       shape: shape,
       size: size,
@@ -94,12 +96,15 @@ class FacebookSignInButton extends StatelessWidget {
             alpha: 0.6,
           ),
         ),
-        child: _buildButtonContent(buttonStyle),
+        child: _buildButtonContent(buttonStyle, texts),
       ),
     );
   }
 
-  Widget _buildButtonContent(FacebookSignInStyle buttonStyle) {
+  Widget _buildButtonContent(
+    FacebookSignInStyle buttonStyle,
+    FacebookSignInTexts texts,
+  ) {
     if (isLoading) {
       return SizedBox(
         height: 20,
@@ -129,7 +134,7 @@ class FacebookSignInButton extends StatelessWidget {
     );
 
     final textWidget = Text(
-      _getButtonText(),
+      texts.signInButton ?? _getButtonText(),
       style: TextStyle(
         fontSize: _getFontSize(),
         color: buttonStyle.textColor,

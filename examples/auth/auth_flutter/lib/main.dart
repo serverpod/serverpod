@@ -117,6 +117,12 @@ class SignInScreen extends StatelessWidget {
         github: GitHubSignInTexts.defaults.copyWith(
           signInButton: 'Use GitHub account',
         ),
+        microsoft: MicrosoftSignInTexts.defaults.copyWith(
+          signInButton: 'Use Microsoft account',
+        ),
+        facebook: FacebookSignInTexts.defaults.copyWith(
+          signInButton: 'Use Facebook account',
+        ),
         anonymous: AnonymousSignInTexts.defaults.copyWith(
           signInButton: 'Continue as guest',
         ),
