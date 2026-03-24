@@ -1,3 +1,9 @@
+## 3.5.0-beta.2
+
+- fix: Fixes time spinners not updating correctly when running the `generate` or `start` commands.
+- fix: Ensures docker compose down is run on early Ctrl-C to abort the `start --watch` command.
+- fix: Fixes incremental compiler missing changes to the generated `.dart` files when running commands in watch mode.
+
 ## 3.5.0-beta.1
 
 - feat: Adds legacy client support for Email auth migrations.
@@ -5,6 +11,7 @@
 - feat(EXPERIMENTAL): Introduces a new `serverpod start` command for running the server, docker and app with `--watch` flag for hot reload/restart support.
 - refactor: Decouples all database-related code from `serverpod` into the new `serverpod_database` package to allow supporting client-side databases in the future.
 - refactor: Removes database-specific default values from the definition files to allow supporting extra database dialects.
+- refactor: Reduces the time taken to run incremental generation steps with the `--watch` flag by x15 and regular `generate` command by 20%.
 - fix: Truncates logged error messages to prevent hanging on formatter issues during code generation.
 - fix: Fixes the CLI invoking the welcome page more than once per install.
 

@@ -7,4 +7,4 @@ environment:
 #resolution: workspace #--UNCOMMENT_LINE--#
 
 dependencies:
-  serverpod_client: 3.5.0-beta.1
+  serverpod_client: 3.5.0-beta.2
