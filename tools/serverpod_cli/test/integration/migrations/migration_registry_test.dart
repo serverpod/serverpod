@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/migrations/migration_registry.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -14,24 +13,21 @@ void main() {
   );
 
   group(
-    'Given a migration folder with multiple migrations when loading migration registry',
+    'Given a migration folder with multiple migrations',
     () {
       var projectDirectory = Directory(
         path.join(testAssetsPath, 'multiple_migrations'),
       );
-      var moduleMigrationsDirectory = Directory(
-        path.join(
-          MigrationConstants.migrationsBaseDirectory(projectDirectory).path,
-        ),
-      );
+
       test(
         'when loading migration registry then migrations are listed in alphabetical sorting order',
-        () {
-          var migrationRegistry = MigrationRegistry.load(
-            moduleMigrationsDirectory,
+        () async {
+          var artifactStore = FileSystemMigrationArtifactStore(
+            projectDirectory: projectDirectory,
           );
+          var versions = await artifactStore.listVersions();
 
-          expect(migrationRegistry.versions, [
+          expect(versions, [
             '00000000000000',
             '00000000000001',
             '00000000000002',

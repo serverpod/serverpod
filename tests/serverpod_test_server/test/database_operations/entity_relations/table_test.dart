@@ -1,4 +1,5 @@
 import 'package:serverpod/database.dart';
+import 'package:serverpod_database/src/adapters/postgres/value_encoder.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 

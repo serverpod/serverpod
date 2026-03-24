@@ -432,7 +432,7 @@ class PasskeyAccountRepository {
   /// );
   /// ```
   Future<List<PasskeyAccount>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<PasskeyAccountTable>? where,
     int? limit,
     int? offset,
@@ -476,7 +476,7 @@ class PasskeyAccountRepository {
   /// );
   /// ```
   Future<PasskeyAccount?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<PasskeyAccountTable>? where,
     int? offset,
     _i1.OrderByBuilder<PasskeyAccountTable>? orderBy,
@@ -502,7 +502,7 @@ class PasskeyAccountRepository {
 
   /// Finds a single [PasskeyAccount] by its [id] or null if no such row exists.
   Future<PasskeyAccount?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     PasskeyAccountInclude? include,
@@ -529,7 +529,7 @@ class PasskeyAccountRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<PasskeyAccount>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<PasskeyAccount> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -545,7 +545,7 @@ class PasskeyAccountRepository {
   ///
   /// The returned [PasskeyAccount] will have its `id` field set.
   Future<PasskeyAccount> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     PasskeyAccount row, {
     _i1.Transaction? transaction,
   }) async {
@@ -561,7 +561,7 @@ class PasskeyAccountRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<PasskeyAccount>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<PasskeyAccount> rows, {
     _i1.ColumnSelections<PasskeyAccountTable>? columns,
     _i1.Transaction? transaction,
@@ -577,7 +577,7 @@ class PasskeyAccountRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<PasskeyAccount> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     PasskeyAccount row, {
     _i1.ColumnSelections<PasskeyAccountTable>? columns,
     _i1.Transaction? transaction,
@@ -592,7 +592,7 @@ class PasskeyAccountRepository {
   /// Updates a single [PasskeyAccount] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<PasskeyAccount?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<PasskeyAccountUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -607,7 +607,7 @@ class PasskeyAccountRepository {
   /// Updates all [PasskeyAccount]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<PasskeyAccount>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<PasskeyAccountUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<PasskeyAccountTable> where,
     int? limit,
@@ -633,7 +633,7 @@ class PasskeyAccountRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<PasskeyAccount>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<PasskeyAccount> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -645,7 +645,7 @@ class PasskeyAccountRepository {
 
   /// Deletes a single [PasskeyAccount].
   Future<PasskeyAccount> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     PasskeyAccount row, {
     _i1.Transaction? transaction,
   }) async {
@@ -657,7 +657,7 @@ class PasskeyAccountRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<PasskeyAccount>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<PasskeyAccountTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -670,7 +670,7 @@ class PasskeyAccountRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<PasskeyAccountTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -684,7 +684,7 @@ class PasskeyAccountRepository {
 
   /// Acquires row-level locks on [PasskeyAccount] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<PasskeyAccountTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -705,7 +705,7 @@ class PasskeyAccountAttachRowRepository {
   /// Creates a relation between the given [PasskeyAccount] and [AuthUser]
   /// by setting the [PasskeyAccount]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     PasskeyAccount passkeyAccount,
     _i2.AuthUser authUser, {
     _i1.Transaction? transaction,

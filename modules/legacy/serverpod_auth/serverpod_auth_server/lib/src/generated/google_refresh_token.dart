@@ -240,7 +240,7 @@ class GoogleRefreshTokenRepository {
   /// );
   /// ```
   Future<List<GoogleRefreshToken>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? limit,
     int? offset,
@@ -282,7 +282,7 @@ class GoogleRefreshTokenRepository {
   /// );
   /// ```
   Future<GoogleRefreshToken?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? offset,
     _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
@@ -306,7 +306,7 @@ class GoogleRefreshTokenRepository {
 
   /// Finds a single [GoogleRefreshToken] by its [id] or null if no such row exists.
   Future<GoogleRefreshToken?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -331,7 +331,7 @@ class GoogleRefreshTokenRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<GoogleRefreshToken>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<GoogleRefreshToken> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -347,7 +347,7 @@ class GoogleRefreshTokenRepository {
   ///
   /// The returned [GoogleRefreshToken] will have its `id` field set.
   Future<GoogleRefreshToken> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GoogleRefreshToken row, {
     _i1.Transaction? transaction,
   }) async {
@@ -363,7 +363,7 @@ class GoogleRefreshTokenRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<GoogleRefreshToken>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<GoogleRefreshToken> rows, {
     _i1.ColumnSelections<GoogleRefreshTokenTable>? columns,
     _i1.Transaction? transaction,
@@ -379,7 +379,7 @@ class GoogleRefreshTokenRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<GoogleRefreshToken> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GoogleRefreshToken row, {
     _i1.ColumnSelections<GoogleRefreshTokenTable>? columns,
     _i1.Transaction? transaction,
@@ -394,7 +394,7 @@ class GoogleRefreshTokenRepository {
   /// Updates a single [GoogleRefreshToken] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<GoogleRefreshToken?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<GoogleRefreshTokenUpdateTable>
     columnValues,
@@ -410,7 +410,7 @@ class GoogleRefreshTokenRepository {
   /// Updates all [GoogleRefreshToken]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<GoogleRefreshToken>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<GoogleRefreshTokenUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
@@ -437,7 +437,7 @@ class GoogleRefreshTokenRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<GoogleRefreshToken>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<GoogleRefreshToken> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -449,7 +449,7 @@ class GoogleRefreshTokenRepository {
 
   /// Deletes a single [GoogleRefreshToken].
   Future<GoogleRefreshToken> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GoogleRefreshToken row, {
     _i1.Transaction? transaction,
   }) async {
@@ -461,7 +461,7 @@ class GoogleRefreshTokenRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<GoogleRefreshToken>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -474,7 +474,7 @@ class GoogleRefreshTokenRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -488,7 +488,7 @@ class GoogleRefreshTokenRepository {
 
   /// Acquires row-level locks on [GoogleRefreshToken] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

@@ -510,7 +510,7 @@ class RefreshTokenRepository {
   /// );
   /// ```
   Future<List<RefreshToken>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<RefreshTokenTable>? where,
     int? limit,
     int? offset,
@@ -554,7 +554,7 @@ class RefreshTokenRepository {
   /// );
   /// ```
   Future<RefreshToken?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<RefreshTokenTable>? where,
     int? offset,
     _i1.OrderByBuilder<RefreshTokenTable>? orderBy,
@@ -580,7 +580,7 @@ class RefreshTokenRepository {
 
   /// Finds a single [RefreshToken] by its [id] or null if no such row exists.
   Future<RefreshToken?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     RefreshTokenInclude? include,
@@ -607,7 +607,7 @@ class RefreshTokenRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<RefreshToken>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<RefreshToken> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -623,7 +623,7 @@ class RefreshTokenRepository {
   ///
   /// The returned [RefreshToken] will have its `id` field set.
   Future<RefreshToken> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RefreshToken row, {
     _i1.Transaction? transaction,
   }) async {
@@ -639,7 +639,7 @@ class RefreshTokenRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<RefreshToken>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<RefreshToken> rows, {
     _i1.ColumnSelections<RefreshTokenTable>? columns,
     _i1.Transaction? transaction,
@@ -655,7 +655,7 @@ class RefreshTokenRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<RefreshToken> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RefreshToken row, {
     _i1.ColumnSelections<RefreshTokenTable>? columns,
     _i1.Transaction? transaction,
@@ -670,7 +670,7 @@ class RefreshTokenRepository {
   /// Updates a single [RefreshToken] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<RefreshToken?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<RefreshTokenUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -685,7 +685,7 @@ class RefreshTokenRepository {
   /// Updates all [RefreshToken]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<RefreshToken>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<RefreshTokenUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<RefreshTokenTable> where,
     int? limit,
@@ -711,7 +711,7 @@ class RefreshTokenRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<RefreshToken>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<RefreshToken> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -723,7 +723,7 @@ class RefreshTokenRepository {
 
   /// Deletes a single [RefreshToken].
   Future<RefreshToken> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RefreshToken row, {
     _i1.Transaction? transaction,
   }) async {
@@ -735,7 +735,7 @@ class RefreshTokenRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<RefreshToken>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RefreshTokenTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -748,7 +748,7 @@ class RefreshTokenRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<RefreshTokenTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -762,7 +762,7 @@ class RefreshTokenRepository {
 
   /// Acquires row-level locks on [RefreshToken] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<RefreshTokenTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -783,7 +783,7 @@ class RefreshTokenAttachRowRepository {
   /// Creates a relation between the given [RefreshToken] and [AuthUser]
   /// by setting the [RefreshToken]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     RefreshToken refreshToken,
     _i2.AuthUser authUser, {
     _i1.Transaction? transaction,

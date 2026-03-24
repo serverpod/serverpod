@@ -293,7 +293,7 @@ class ChildEntityRepository {
   /// );
   /// ```
   Future<List<ChildEntity>> find(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     _i2.WhereExpressionBuilder<ChildEntityTable>? where,
     int? limit,
     int? offset,
@@ -335,7 +335,7 @@ class ChildEntityRepository {
   /// );
   /// ```
   Future<ChildEntity?> findFirstRow(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     _i2.WhereExpressionBuilder<ChildEntityTable>? where,
     int? offset,
     _i2.OrderByBuilder<ChildEntityTable>? orderBy,
@@ -359,7 +359,7 @@ class ChildEntityRepository {
 
   /// Finds a single [ChildEntity] by its [id] or null if no such row exists.
   Future<ChildEntity?> findById(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     int id, {
     _i2.Transaction? transaction,
     _i2.LockMode? lockMode,
@@ -384,7 +384,7 @@ class ChildEntityRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<ChildEntity>> insert(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     List<ChildEntity> rows, {
     _i2.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -400,7 +400,7 @@ class ChildEntityRepository {
   ///
   /// The returned [ChildEntity] will have its `id` field set.
   Future<ChildEntity> insertRow(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     ChildEntity row, {
     _i2.Transaction? transaction,
   }) async {
@@ -416,7 +416,7 @@ class ChildEntityRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<ChildEntity>> update(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     List<ChildEntity> rows, {
     _i2.ColumnSelections<ChildEntityTable>? columns,
     _i2.Transaction? transaction,
@@ -432,7 +432,7 @@ class ChildEntityRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ChildEntity> updateRow(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     ChildEntity row, {
     _i2.ColumnSelections<ChildEntityTable>? columns,
     _i2.Transaction? transaction,
@@ -447,7 +447,7 @@ class ChildEntityRepository {
   /// Updates a single [ChildEntity] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ChildEntity?> updateById(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     int id, {
     required _i2.ColumnValueListBuilder<ChildEntityUpdateTable> columnValues,
     _i2.Transaction? transaction,
@@ -462,7 +462,7 @@ class ChildEntityRepository {
   /// Updates all [ChildEntity]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ChildEntity>> updateWhere(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     required _i2.ColumnValueListBuilder<ChildEntityUpdateTable> columnValues,
     required _i2.WhereExpressionBuilder<ChildEntityTable> where,
     int? limit,
@@ -488,7 +488,7 @@ class ChildEntityRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ChildEntity>> delete(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     List<ChildEntity> rows, {
     _i2.Transaction? transaction,
   }) async {
@@ -500,7 +500,7 @@ class ChildEntityRepository {
 
   /// Deletes a single [ChildEntity].
   Future<ChildEntity> deleteRow(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     ChildEntity row, {
     _i2.Transaction? transaction,
   }) async {
@@ -512,7 +512,7 @@ class ChildEntityRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<ChildEntity>> deleteWhere(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ChildEntityTable> where,
     _i2.Transaction? transaction,
   }) async {
@@ -525,7 +525,7 @@ class ChildEntityRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     _i2.WhereExpressionBuilder<ChildEntityTable>? where,
     int? limit,
     _i2.Transaction? transaction,
@@ -539,7 +539,7 @@ class ChildEntityRepository {
 
   /// Acquires row-level locks on [ChildEntity] rows matching the [where] expression.
   Future<void> lockRows(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ChildEntityTable> where,
     required _i2.LockMode lockMode,
     required _i2.Transaction transaction,

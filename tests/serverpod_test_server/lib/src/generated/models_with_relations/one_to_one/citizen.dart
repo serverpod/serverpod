@@ -400,7 +400,7 @@ class CitizenRepository {
   /// );
   /// ```
   Future<List<Citizen>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? limit,
     int? offset,
@@ -444,7 +444,7 @@ class CitizenRepository {
   /// );
   /// ```
   Future<Citizen?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? offset,
     _i1.OrderByBuilder<CitizenTable>? orderBy,
@@ -470,7 +470,7 @@ class CitizenRepository {
 
   /// Finds a single [Citizen] by its [id] or null if no such row exists.
   Future<Citizen?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     CitizenInclude? include,
@@ -497,7 +497,7 @@ class CitizenRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<Citizen>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Citizen> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -513,7 +513,7 @@ class CitizenRepository {
   ///
   /// The returned [Citizen] will have its `id` field set.
   Future<Citizen> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen row, {
     _i1.Transaction? transaction,
   }) async {
@@ -529,7 +529,7 @@ class CitizenRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<Citizen>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Citizen> rows, {
     _i1.ColumnSelections<CitizenTable>? columns,
     _i1.Transaction? transaction,
@@ -545,7 +545,7 @@ class CitizenRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Citizen> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen row, {
     _i1.ColumnSelections<CitizenTable>? columns,
     _i1.Transaction? transaction,
@@ -560,7 +560,7 @@ class CitizenRepository {
   /// Updates a single [Citizen] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Citizen?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<CitizenUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -575,7 +575,7 @@ class CitizenRepository {
   /// Updates all [Citizen]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Citizen>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CitizenUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<CitizenTable> where,
     int? limit,
@@ -601,7 +601,7 @@ class CitizenRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<Citizen>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Citizen> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -613,7 +613,7 @@ class CitizenRepository {
 
   /// Deletes a single [Citizen].
   Future<Citizen> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen row, {
     _i1.Transaction? transaction,
   }) async {
@@ -625,7 +625,7 @@ class CitizenRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<Citizen>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CitizenTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -638,7 +638,7 @@ class CitizenRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -652,7 +652,7 @@ class CitizenRepository {
 
   /// Acquires row-level locks on [Citizen] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CitizenTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -673,7 +673,7 @@ class CitizenAttachRowRepository {
   /// Creates a relation between the given [Citizen] and [Address]
   /// by setting the [Citizen]'s foreign key `id` to refer to the [Address].
   Future<void> address(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen citizen,
     _i2.Address address, {
     _i1.Transaction? transaction,
@@ -696,7 +696,7 @@ class CitizenAttachRowRepository {
   /// Creates a relation between the given [Citizen] and [Company]
   /// by setting the [Citizen]'s foreign key `companyId` to refer to the [Company].
   Future<void> company(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen citizen,
     _i3.Company company, {
     _i1.Transaction? transaction,
@@ -719,7 +719,7 @@ class CitizenAttachRowRepository {
   /// Creates a relation between the given [Citizen] and [Company]
   /// by setting the [Citizen]'s foreign key `oldCompanyId` to refer to the [Company].
   Future<void> oldCompany(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen citizen,
     _i3.Company oldCompany, {
     _i1.Transaction? transaction,
@@ -749,7 +749,7 @@ class CitizenDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> address(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen citizen, {
     _i1.Transaction? transaction,
   }) async {
@@ -779,7 +779,7 @@ class CitizenDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> oldCompany(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Citizen citizen, {
     _i1.Transaction? transaction,
   }) async {

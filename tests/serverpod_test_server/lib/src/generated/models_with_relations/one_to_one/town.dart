@@ -280,7 +280,7 @@ class TownRepository {
   /// );
   /// ```
   Future<List<Town>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<TownTable>? where,
     int? limit,
     int? offset,
@@ -324,7 +324,7 @@ class TownRepository {
   /// );
   /// ```
   Future<Town?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<TownTable>? where,
     int? offset,
     _i1.OrderByBuilder<TownTable>? orderBy,
@@ -350,7 +350,7 @@ class TownRepository {
 
   /// Finds a single [Town] by its [id] or null if no such row exists.
   Future<Town?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     TownInclude? include,
@@ -377,7 +377,7 @@ class TownRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<Town>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Town> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -393,7 +393,7 @@ class TownRepository {
   ///
   /// The returned [Town] will have its `id` field set.
   Future<Town> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Town row, {
     _i1.Transaction? transaction,
   }) async {
@@ -409,7 +409,7 @@ class TownRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<Town>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Town> rows, {
     _i1.ColumnSelections<TownTable>? columns,
     _i1.Transaction? transaction,
@@ -425,7 +425,7 @@ class TownRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Town> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Town row, {
     _i1.ColumnSelections<TownTable>? columns,
     _i1.Transaction? transaction,
@@ -440,7 +440,7 @@ class TownRepository {
   /// Updates a single [Town] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Town?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<TownUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -455,7 +455,7 @@ class TownRepository {
   /// Updates all [Town]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Town>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<TownUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<TownTable> where,
     int? limit,
@@ -481,7 +481,7 @@ class TownRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<Town>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Town> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -493,7 +493,7 @@ class TownRepository {
 
   /// Deletes a single [Town].
   Future<Town> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Town row, {
     _i1.Transaction? transaction,
   }) async {
@@ -505,7 +505,7 @@ class TownRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<Town>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<TownTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -518,7 +518,7 @@ class TownRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<TownTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -532,7 +532,7 @@ class TownRepository {
 
   /// Acquires row-level locks on [Town] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<TownTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -553,7 +553,7 @@ class TownAttachRowRepository {
   /// Creates a relation between the given [Town] and [Citizen]
   /// by setting the [Town]'s foreign key `mayorId` to refer to the [Citizen].
   Future<void> mayor(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Town town,
     _i2.Citizen mayor, {
     _i1.Transaction? transaction,
@@ -583,7 +583,7 @@ class TownDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> mayor(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Town town, {
     _i1.Transaction? transaction,
   }) async {

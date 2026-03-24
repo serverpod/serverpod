@@ -240,7 +240,7 @@ class TableWithExplicitColumnNameRepository {
   /// );
   /// ```
   Future<List<TableWithExplicitColumnName>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
     int? limit,
     int? offset,
@@ -282,7 +282,7 @@ class TableWithExplicitColumnNameRepository {
   /// );
   /// ```
   Future<TableWithExplicitColumnName?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
@@ -306,7 +306,7 @@ class TableWithExplicitColumnNameRepository {
 
   /// Finds a single [TableWithExplicitColumnName] by its [id] or null if no such row exists.
   Future<TableWithExplicitColumnName?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -331,7 +331,7 @@ class TableWithExplicitColumnNameRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<TableWithExplicitColumnName>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<TableWithExplicitColumnName> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -347,7 +347,7 @@ class TableWithExplicitColumnNameRepository {
   ///
   /// The returned [TableWithExplicitColumnName] will have its `id` field set.
   Future<TableWithExplicitColumnName> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     TableWithExplicitColumnName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -363,7 +363,7 @@ class TableWithExplicitColumnNameRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<TableWithExplicitColumnName>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<TableWithExplicitColumnName> rows, {
     _i1.ColumnSelections<TableWithExplicitColumnNameTable>? columns,
     _i1.Transaction? transaction,
@@ -379,7 +379,7 @@ class TableWithExplicitColumnNameRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<TableWithExplicitColumnName> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     TableWithExplicitColumnName row, {
     _i1.ColumnSelections<TableWithExplicitColumnNameTable>? columns,
     _i1.Transaction? transaction,
@@ -394,7 +394,7 @@ class TableWithExplicitColumnNameRepository {
   /// Updates a single [TableWithExplicitColumnName] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<TableWithExplicitColumnName?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<TableWithExplicitColumnNameUpdateTable>
     columnValues,
@@ -410,7 +410,7 @@ class TableWithExplicitColumnNameRepository {
   /// Updates all [TableWithExplicitColumnName]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<TableWithExplicitColumnName>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<TableWithExplicitColumnNameUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable> where,
@@ -437,7 +437,7 @@ class TableWithExplicitColumnNameRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<TableWithExplicitColumnName>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<TableWithExplicitColumnName> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -449,7 +449,7 @@ class TableWithExplicitColumnNameRepository {
 
   /// Deletes a single [TableWithExplicitColumnName].
   Future<TableWithExplicitColumnName> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     TableWithExplicitColumnName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -461,7 +461,7 @@ class TableWithExplicitColumnNameRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<TableWithExplicitColumnName>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -474,7 +474,7 @@ class TableWithExplicitColumnNameRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -488,7 +488,7 @@ class TableWithExplicitColumnNameRepository {
 
   /// Acquires row-level locks on [TableWithExplicitColumnName] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

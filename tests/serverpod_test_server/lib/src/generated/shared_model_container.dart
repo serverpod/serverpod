@@ -965,7 +965,7 @@ class SharedModelContainerRepository {
   /// );
   /// ```
   Future<List<SharedModelContainer>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<SharedModelContainerTable>? where,
     int? limit,
     int? offset,
@@ -1007,7 +1007,7 @@ class SharedModelContainerRepository {
   /// );
   /// ```
   Future<SharedModelContainer?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<SharedModelContainerTable>? where,
     int? offset,
     _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
@@ -1031,7 +1031,7 @@ class SharedModelContainerRepository {
 
   /// Finds a single [SharedModelContainer] by its [id] or null if no such row exists.
   Future<SharedModelContainer?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -1056,7 +1056,7 @@ class SharedModelContainerRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<SharedModelContainer>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<SharedModelContainer> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -1072,7 +1072,7 @@ class SharedModelContainerRepository {
   ///
   /// The returned [SharedModelContainer] will have its `id` field set.
   Future<SharedModelContainer> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     SharedModelContainer row, {
     _i1.Transaction? transaction,
   }) async {
@@ -1088,7 +1088,7 @@ class SharedModelContainerRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<SharedModelContainer>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<SharedModelContainer> rows, {
     _i1.ColumnSelections<SharedModelContainerTable>? columns,
     _i1.Transaction? transaction,
@@ -1104,7 +1104,7 @@ class SharedModelContainerRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<SharedModelContainer> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     SharedModelContainer row, {
     _i1.ColumnSelections<SharedModelContainerTable>? columns,
     _i1.Transaction? transaction,
@@ -1119,7 +1119,7 @@ class SharedModelContainerRepository {
   /// Updates a single [SharedModelContainer] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<SharedModelContainer?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<SharedModelContainerUpdateTable>
     columnValues,
@@ -1135,7 +1135,7 @@ class SharedModelContainerRepository {
   /// Updates all [SharedModelContainer]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<SharedModelContainer>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<SharedModelContainerUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<SharedModelContainerTable> where,
@@ -1162,7 +1162,7 @@ class SharedModelContainerRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<SharedModelContainer>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<SharedModelContainer> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -1174,7 +1174,7 @@ class SharedModelContainerRepository {
 
   /// Deletes a single [SharedModelContainer].
   Future<SharedModelContainer> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     SharedModelContainer row, {
     _i1.Transaction? transaction,
   }) async {
@@ -1186,7 +1186,7 @@ class SharedModelContainerRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<SharedModelContainer>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<SharedModelContainerTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -1199,7 +1199,7 @@ class SharedModelContainerRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<SharedModelContainerTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -1213,7 +1213,7 @@ class SharedModelContainerRepository {
 
   /// Acquires row-level locks on [SharedModelContainer] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<SharedModelContainerTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

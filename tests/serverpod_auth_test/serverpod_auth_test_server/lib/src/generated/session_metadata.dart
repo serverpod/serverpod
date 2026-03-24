@@ -367,7 +367,7 @@ class SessionMetadataRepository {
   /// );
   /// ```
   Future<List<SessionMetadata>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<SessionMetadataTable>? where,
     int? limit,
     int? offset,
@@ -411,7 +411,7 @@ class SessionMetadataRepository {
   /// );
   /// ```
   Future<SessionMetadata?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<SessionMetadataTable>? where,
     int? offset,
     _i1.OrderByBuilder<SessionMetadataTable>? orderBy,
@@ -437,7 +437,7 @@ class SessionMetadataRepository {
 
   /// Finds a single [SessionMetadata] by its [id] or null if no such row exists.
   Future<SessionMetadata?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     SessionMetadataInclude? include,
@@ -464,7 +464,7 @@ class SessionMetadataRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<SessionMetadata>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<SessionMetadata> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -480,7 +480,7 @@ class SessionMetadataRepository {
   ///
   /// The returned [SessionMetadata] will have its `id` field set.
   Future<SessionMetadata> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     SessionMetadata row, {
     _i1.Transaction? transaction,
   }) async {
@@ -496,7 +496,7 @@ class SessionMetadataRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<SessionMetadata>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<SessionMetadata> rows, {
     _i1.ColumnSelections<SessionMetadataTable>? columns,
     _i1.Transaction? transaction,
@@ -512,7 +512,7 @@ class SessionMetadataRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<SessionMetadata> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     SessionMetadata row, {
     _i1.ColumnSelections<SessionMetadataTable>? columns,
     _i1.Transaction? transaction,
@@ -527,7 +527,7 @@ class SessionMetadataRepository {
   /// Updates a single [SessionMetadata] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<SessionMetadata?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<SessionMetadataUpdateTable>
     columnValues,
@@ -543,7 +543,7 @@ class SessionMetadataRepository {
   /// Updates all [SessionMetadata]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<SessionMetadata>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<SessionMetadataUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<SessionMetadataTable> where,
@@ -570,7 +570,7 @@ class SessionMetadataRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<SessionMetadata>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<SessionMetadata> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -582,7 +582,7 @@ class SessionMetadataRepository {
 
   /// Deletes a single [SessionMetadata].
   Future<SessionMetadata> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     SessionMetadata row, {
     _i1.Transaction? transaction,
   }) async {
@@ -594,7 +594,7 @@ class SessionMetadataRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<SessionMetadata>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<SessionMetadataTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -607,7 +607,7 @@ class SessionMetadataRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<SessionMetadataTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -621,7 +621,7 @@ class SessionMetadataRepository {
 
   /// Acquires row-level locks on [SessionMetadata] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<SessionMetadataTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -642,7 +642,7 @@ class SessionMetadataAttachRowRepository {
   /// Creates a relation between the given [SessionMetadata] and [ServerSideSession]
   /// by setting the [SessionMetadata]'s foreign key `serverSideSessionId` to refer to the [ServerSideSession].
   Future<void> serverSideSession(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     SessionMetadata sessionMetadata,
     _i2.ServerSideSession serverSideSession, {
     _i1.Transaction? transaction,

@@ -337,7 +337,7 @@ class MultipleMaxFieldNameRepository {
   /// );
   /// ```
   Future<List<MultipleMaxFieldName>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
     int? limit,
     int? offset,
@@ -379,7 +379,7 @@ class MultipleMaxFieldNameRepository {
   /// );
   /// ```
   Future<MultipleMaxFieldName?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<MultipleMaxFieldNameTable>? orderBy,
@@ -403,7 +403,7 @@ class MultipleMaxFieldNameRepository {
 
   /// Finds a single [MultipleMaxFieldName] by its [id] or null if no such row exists.
   Future<MultipleMaxFieldName?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -428,7 +428,7 @@ class MultipleMaxFieldNameRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<MultipleMaxFieldName>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MultipleMaxFieldName> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -444,7 +444,7 @@ class MultipleMaxFieldNameRepository {
   ///
   /// The returned [MultipleMaxFieldName] will have its `id` field set.
   Future<MultipleMaxFieldName> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MultipleMaxFieldName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -460,7 +460,7 @@ class MultipleMaxFieldNameRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<MultipleMaxFieldName>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MultipleMaxFieldName> rows, {
     _i1.ColumnSelections<MultipleMaxFieldNameTable>? columns,
     _i1.Transaction? transaction,
@@ -476,7 +476,7 @@ class MultipleMaxFieldNameRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<MultipleMaxFieldName> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MultipleMaxFieldName row, {
     _i1.ColumnSelections<MultipleMaxFieldNameTable>? columns,
     _i1.Transaction? transaction,
@@ -491,7 +491,7 @@ class MultipleMaxFieldNameRepository {
   /// Updates a single [MultipleMaxFieldName] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<MultipleMaxFieldName?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<MultipleMaxFieldNameUpdateTable>
     columnValues,
@@ -507,7 +507,7 @@ class MultipleMaxFieldNameRepository {
   /// Updates all [MultipleMaxFieldName]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<MultipleMaxFieldName>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<MultipleMaxFieldNameUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable> where,
@@ -534,7 +534,7 @@ class MultipleMaxFieldNameRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<MultipleMaxFieldName>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MultipleMaxFieldName> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -546,7 +546,7 @@ class MultipleMaxFieldNameRepository {
 
   /// Deletes a single [MultipleMaxFieldName].
   Future<MultipleMaxFieldName> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MultipleMaxFieldName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -558,7 +558,7 @@ class MultipleMaxFieldNameRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<MultipleMaxFieldName>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -571,7 +571,7 @@ class MultipleMaxFieldNameRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -585,7 +585,7 @@ class MultipleMaxFieldNameRepository {
 
   /// Acquires row-level locks on [MultipleMaxFieldName] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MultipleMaxFieldNameTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

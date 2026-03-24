@@ -23,7 +23,7 @@ jobs:
 
       - name: Start containers
         working-directory: projectname_server
-        run: docker compose up --build -d
+        run: docker compose up --quiet-pull --quiet-build --build -d
 
       - name: Install dependencies
         working-directory: projectname_server

@@ -286,7 +286,7 @@ class ContractorRepository {
   /// );
   /// ```
   Future<List<Contractor>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ContractorTable>? where,
     int? limit,
     int? offset,
@@ -330,7 +330,7 @@ class ContractorRepository {
   /// );
   /// ```
   Future<Contractor?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ContractorTable>? where,
     int? offset,
     _i1.OrderByBuilder<ContractorTable>? orderBy,
@@ -356,7 +356,7 @@ class ContractorRepository {
 
   /// Finds a single [Contractor] by its [id] or null if no such row exists.
   Future<Contractor?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     ContractorInclude? include,
@@ -383,7 +383,7 @@ class ContractorRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<Contractor>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Contractor> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -399,7 +399,7 @@ class ContractorRepository {
   ///
   /// The returned [Contractor] will have its `id` field set.
   Future<Contractor> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Contractor row, {
     _i1.Transaction? transaction,
   }) async {
@@ -415,7 +415,7 @@ class ContractorRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<Contractor>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Contractor> rows, {
     _i1.ColumnSelections<ContractorTable>? columns,
     _i1.Transaction? transaction,
@@ -431,7 +431,7 @@ class ContractorRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Contractor> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Contractor row, {
     _i1.ColumnSelections<ContractorTable>? columns,
     _i1.Transaction? transaction,
@@ -446,7 +446,7 @@ class ContractorRepository {
   /// Updates a single [Contractor] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Contractor?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<ContractorUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -461,7 +461,7 @@ class ContractorRepository {
   /// Updates all [Contractor]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Contractor>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ContractorUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<ContractorTable> where,
     int? limit,
@@ -487,7 +487,7 @@ class ContractorRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<Contractor>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Contractor> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -499,7 +499,7 @@ class ContractorRepository {
 
   /// Deletes a single [Contractor].
   Future<Contractor> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Contractor row, {
     _i1.Transaction? transaction,
   }) async {
@@ -511,7 +511,7 @@ class ContractorRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<Contractor>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ContractorTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -524,7 +524,7 @@ class ContractorRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ContractorTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -538,7 +538,7 @@ class ContractorRepository {
 
   /// Acquires row-level locks on [Contractor] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ContractorTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -559,7 +559,7 @@ class ContractorAttachRowRepository {
   /// Creates a relation between the given [Contractor] and [Service]
   /// by setting the [Contractor]'s foreign key `serviceIdField` to refer to the [Service].
   Future<void> service(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Contractor contractor,
     _i2.Service service, {
     _i1.Transaction? transaction,
@@ -589,7 +589,7 @@ class ContractorDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> service(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Contractor contractor, {
     _i1.Transaction? transaction,
   }) async {

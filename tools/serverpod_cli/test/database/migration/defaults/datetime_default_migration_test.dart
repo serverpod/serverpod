@@ -19,9 +19,7 @@ void main() {
                     ColumnDefinitionBuilder()
                         .withName('dateTime')
                         .withColumnType(ColumnType.timestampWithoutTimeZone)
-                        .withColumnDefault(
-                          '\'2024-01-01 01:01:01\'::timestamp without time zone',
-                        )
+                        .withColumnDefault('2024-01-01T01:01:01.000Z')
                         .build(),
                   )
                   .build(),
@@ -33,7 +31,7 @@ void main() {
         expect(
           sql,
           contains(
-            '"dateTime" timestamp without time zone NOT NULL DEFAULT \'2024-01-01 01:01:01\'::timestamp without time zone',
+            '"dateTime" timestamp without time zone NOT NULL DEFAULT \'2024-01-01 01:01:01.000\'::timestamp without time zone',
           ),
         );
       },
@@ -82,7 +80,7 @@ void main() {
                     ColumnDefinitionBuilder()
                         .withName('dateTime')
                         .withColumnType(ColumnType.timestampWithoutTimeZone)
-                        .withColumnDefault('CURRENT_TIMESTAMP')
+                        .withColumnDefault('now')
                         .build(),
                   )
                   .build(),
@@ -112,9 +110,7 @@ void main() {
                         .withName('dateTime')
                         .withColumnType(ColumnType.timestampWithoutTimeZone)
                         .withIsNullable(true)
-                        .withColumnDefault(
-                          '\'2024-01-01 01:01:01\'::timestamp without time zone',
-                        )
+                        .withColumnDefault('2024-01-01T01:01:01.000Z')
                         .build(),
                   )
                   .build(),
@@ -126,7 +122,7 @@ void main() {
         expect(
           sql,
           contains(
-            '"dateTime" timestamp without time zone DEFAULT \'2024-01-01 01:01:01\'::timestamp without time zone',
+            '"dateTime" timestamp without time zone DEFAULT \'2024-01-01 01:01:01.000\'::timestamp without time zone',
           ),
         );
       },

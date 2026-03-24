@@ -39,6 +39,7 @@ declare -a DART_PACKAGES_PATHS=(
     "packages/serverpod_serialization"
     "packages/serverpod_service_client"
     "packages/serverpod_shared"
+    "packages/serverpod_database"
     "packages/serverpod_test"
     "tests/serverpod_test_client"
     "tests/serverpod_test_server"

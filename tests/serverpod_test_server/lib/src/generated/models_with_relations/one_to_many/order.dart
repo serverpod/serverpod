@@ -359,7 +359,7 @@ class OrderRepository {
   /// );
   /// ```
   Future<List<Order>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? limit,
     int? offset,
@@ -403,7 +403,7 @@ class OrderRepository {
   /// );
   /// ```
   Future<Order?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? offset,
     _i1.OrderByBuilder<OrderTable>? orderBy,
@@ -429,7 +429,7 @@ class OrderRepository {
 
   /// Finds a single [Order] by its [id] or null if no such row exists.
   Future<Order?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     OrderInclude? include,
@@ -456,7 +456,7 @@ class OrderRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<Order>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Order> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -472,7 +472,7 @@ class OrderRepository {
   ///
   /// The returned [Order] will have its `id` field set.
   Future<Order> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Order row, {
     _i1.Transaction? transaction,
   }) async {
@@ -488,7 +488,7 @@ class OrderRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<Order>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Order> rows, {
     _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
@@ -504,7 +504,7 @@ class OrderRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Order> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Order row, {
     _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
@@ -519,7 +519,7 @@ class OrderRepository {
   /// Updates a single [Order] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Order?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<OrderUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -534,7 +534,7 @@ class OrderRepository {
   /// Updates all [Order]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Order>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<OrderUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<OrderTable> where,
     int? limit,
@@ -560,7 +560,7 @@ class OrderRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<Order>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Order> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -572,7 +572,7 @@ class OrderRepository {
 
   /// Deletes a single [Order].
   Future<Order> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Order row, {
     _i1.Transaction? transaction,
   }) async {
@@ -584,7 +584,7 @@ class OrderRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<Order>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<OrderTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -597,7 +597,7 @@ class OrderRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -611,7 +611,7 @@ class OrderRepository {
 
   /// Acquires row-level locks on [Order] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<OrderTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -632,7 +632,7 @@ class OrderAttachRepository {
   /// Creates a relation between this [Order] and the given [Comment]s
   /// by setting each [Comment]'s foreign key `orderId` to refer to this [Order].
   Future<void> comments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Order order,
     List<_i3.Comment> comment, {
     _i1.Transaction? transaction,
@@ -659,7 +659,7 @@ class OrderAttachRowRepository {
   /// Creates a relation between the given [Order] and [Customer]
   /// by setting the [Order]'s foreign key `customerId` to refer to the [Customer].
   Future<void> customer(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Order order,
     _i2.Customer customer, {
     _i1.Transaction? transaction,
@@ -682,7 +682,7 @@ class OrderAttachRowRepository {
   /// Creates a relation between this [Order] and the given [Comment]
   /// by setting the [Comment]'s foreign key `orderId` to refer to this [Order].
   Future<void> comments(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Order order,
     _i3.Comment comment, {
     _i1.Transaction? transaction,

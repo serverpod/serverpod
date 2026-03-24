@@ -194,7 +194,7 @@ void main() {
             expect(
               peopleMethod?.parameters?.toSource(),
               matches(
-                r'\(_i\d\.Session session, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)',
+                r'\(_i\d\.DatabaseSession session, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)',
               ),
             );
           },
@@ -254,7 +254,7 @@ void main() {
               expect(
                 peopleMethod?.parameters?.toSource(),
                 matches(
-                  r'\(_i\d\.Session session, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)',
+                  r'\(_i\d\.DatabaseSession session, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)',
                 ),
               );
             },
@@ -302,7 +302,7 @@ void main() {
               expect(
                 peopleMethod?.parameters?.toSource(),
                 matches(
-                  r'\(_i\d\.Session session, Person person, \{_i\d\.Transaction\? transaction\}\)',
+                  r'\(_i\d\.DatabaseSession session, Person person, \{_i\d\.Transaction\? transaction\}\)',
                 ),
               );
             },
@@ -364,7 +364,7 @@ void main() {
               expect(
                 peopleMethod?.parameters?.toSource(),
                 matches(
-                  r'\(_i\d\.Session session, List<Person> person, \{_i\d\.Transaction\? transaction\}\)',
+                  r'\(_i\d\.DatabaseSession session, List<Person> person, \{_i\d\.Transaction\? transaction\}\)',
                 ),
               );
             },
@@ -438,7 +438,7 @@ void main() {
               expect(
                 citizensMethod?.parameters?.toSource(),
                 matches(
-                  r'\(_i\d\.Session session, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)',
+                  r'\(_i\d\.DatabaseSession session, Example example, List<Person> person, \{_i\d\.Transaction\? transaction\}\)',
                 ),
               );
             },
@@ -470,7 +470,7 @@ void main() {
             expect(
               citizenMethod?.parameters?.toSource(),
               matches(
-                r'\(_i\d\.Session session, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)',
+                r'\(_i\d\.DatabaseSession session, Example example, Person person, \{_i\d\.Transaction\? transaction\}\)',
               ),
             );
           },
@@ -519,7 +519,7 @@ void main() {
               expect(
                 citizensMethod?.parameters?.toSource(),
                 matches(
-                  r'\(_i\d\.Session session, List<Person> person, \{_i\d\.Transaction\? transaction\}\)',
+                  r'\(_i\d\.DatabaseSession session, List<Person> person, \{_i\d\.Transaction\? transaction\}\)',
                 ),
               );
             },
@@ -551,7 +551,7 @@ void main() {
             expect(
               citizenMethod?.parameters?.toSource(),
               matches(
-                r'\(_i\d\.Session session, Person person, \{_i\d\.Transaction\? transaction\}\)',
+                r'\(_i\d\.DatabaseSession session, Person person, \{_i\d\.Transaction\? transaction\}\)',
               ),
             );
           },

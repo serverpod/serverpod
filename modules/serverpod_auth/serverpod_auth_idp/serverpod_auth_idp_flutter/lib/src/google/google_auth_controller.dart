@@ -155,9 +155,13 @@ class GoogleAuthController extends ChangeNotifier {
     }
     _setState(GoogleAuthState.loading);
 
-    // Only need to initialize the sign-in. The scopes authorization and server
-    // side authentication is handled by the authentication event listener.
-    await GoogleSignIn.instance.authenticate(scopeHint: scopes);
+    try {
+      // Only need to initialize the sign-in. The scopes authorization and server
+      // side authentication is handled by the authentication event listener.
+      await GoogleSignIn.instance.authenticate(scopeHint: scopes);
+    } catch (e) {
+      _handleAuthenticationError(e);
+    }
   }
 
   /// Handles authentication events from the Google Sign-In service.

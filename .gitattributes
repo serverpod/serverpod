@@ -4,4 +4,6 @@
 **/migrations/** linguist-generated=true
 
 # Compensate for too broad protocol pattern
+**/lib/src/**/migrations/** linguist-generated=false
+**/test/**/migrations/** linguist-generated=false
 tools/serverpod_cli/test/generator/dart/**/protocol/** linguist-generated=false

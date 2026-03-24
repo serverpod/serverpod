@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:meta/meta.dart';
-import 'package:serverpod/database.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod/src/server/log_manager/log_writers.dart';
 import 'package:serverpod/src/server/serverpod.dart';
 import 'package:serverpod/src/server/session.dart';

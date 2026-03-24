@@ -31,6 +31,7 @@ typedef InitializeFutureCall =
 /// - Monitoring and executing overdue future calls.
 class FutureCallManager {
   final Session _internalSession;
+  final Session _logSession;
   final FutureCallSessionBuilder _sessionBuilder;
   final InitializeFutureCall _initializeFutureCall;
 
@@ -63,10 +64,12 @@ class FutureCallManager {
     this._serializationManager, {
     required FutureCallDiagnosticsService diagnosticsService,
     required Session internalSession,
+    required Session logSession,
     required FutureCallSessionBuilder sessionProvider,
     required InitializeFutureCall initializeFutureCall,
   }) : _diagnosticsService = diagnosticsService,
        _internalSession = internalSession,
+       _logSession = logSession,
        _sessionBuilder = sessionProvider,
        _initializeFutureCall = initializeFutureCall {
     _scheduler = ServerpodTaskScheduler(
@@ -124,6 +127,7 @@ class FutureCallManager {
   /// If no future calls are registered, this method will skip processing
   /// and return immediately.
   Future<void> runScheduledFutureCalls() async {
+    await _checkBrokenFutureCalls();
     if (_futureCalls.isEmpty) {
       stdout.writeln('No future calls registered. Skipping processing.');
       return;
@@ -175,7 +179,8 @@ class FutureCallManager {
   /// If no future calls are registered, the scanner will not start immediately.
   /// Instead, the scanner will be started when the first future call is
   /// registered via [registerFutureCall].
-  void start() {
+  Future<void> start() async {
+    await _checkBrokenFutureCalls();
     if (_futureCalls.isNotEmpty) {
       _scanner.start();
     } else {
@@ -199,7 +204,7 @@ class FutureCallManager {
       final futureCall = _futureCalls[entry.name];
 
       if (futureCall == null) {
-        _internalSession.log(
+        _logSession.log(
           'Attempted to run a FutureCall that was not registered. This is likely due '
           'to changing a FutureCall method after it was scheduled, leading to an '
           'entry that no longer has a matching method. For legacy future calls, '
@@ -244,6 +249,108 @@ class FutureCallManager {
       );
 
       await futureCallSession.close(error: error, stackTrace: stackTrace);
+    }
+  }
+
+  /// Returns `true` if the server is configured to check for broken
+  /// future calls or if the server can perform a default check.
+  ///
+  /// The server can perform a default check for broken future calls
+  /// if the amount of future calls in the database
+  /// is less than [threshold].
+  Future<bool> _canCheckBrokenFutureCalls({
+    int threshold = 1000,
+  }) async {
+    if (_config.checkBrokenCalls != null) {
+      return _config.checkBrokenCalls!;
+    }
+
+    final count = await FutureCallEntry.db.count(
+      _internalSession,
+      limit: threshold,
+    );
+
+    if (count >= threshold) {
+      _logSession.log(
+        'Skipping automatic check for broken future calls due to high number of future calls in the database. '
+        'Enable FutureCallConfig.checkBrokenCalls to always perform the check, regardless of the number of future calls. '
+        'Optionally enable FutureCallConfig.deleteBrokenCalls to automatically delete broken future calls.',
+        level: LogLevel.warning,
+      );
+    }
+
+    return count < threshold;
+  }
+
+  /// Checks the database for broken future calls.
+  /// Broken future calls include unregistered calls and
+  /// those with stored inputs that cannot be deserialized.
+  ///
+  /// If [FutureCallConfig.deleteBrokenCalls] is enabled,
+  /// the broken future calls are deleted.
+  ///
+  /// The check will not happen if
+  /// [FutureCallConfig.checkBrokenCalls] is disabled.
+  Future<void> _checkBrokenFutureCalls() async {
+    if (!await _canCheckBrokenFutureCalls()) return;
+
+    List<FutureCallEntry> unregisteredCalls = [];
+    List<FutureCallEntry> brokenCalls = [];
+    final entries = await FutureCallEntry.db.find(_internalSession);
+
+    final buffer = StringBuffer();
+
+    for (final entry in entries) {
+      final futureCall = _futureCalls[entry.name];
+      if (futureCall == null) {
+        unregisteredCalls.add(entry);
+        buffer.writeln('Unregistered future call: $entry');
+      } else {
+        final error = _canDecodeFutureCallSerializedData(
+          futureCallEntry: entry,
+          futureCall: futureCall,
+        );
+
+        if (error != null) {
+          brokenCalls.add(entry);
+          buffer.writeln(
+            'Future call failed deserialization. Error: $error. Entry: $entry',
+          );
+        }
+      }
+    }
+    _logSession.log(buffer.toString(), level: LogLevel.warning);
+
+    final allCalls = unregisteredCalls + brokenCalls;
+
+    if (_config.deleteBrokenCalls && allCalls.isNotEmpty) {
+      final deletedEntries = await FutureCallEntry.db.delete(
+        _internalSession,
+        allCalls,
+      );
+      _logSession.log(
+        'Deleted ${deletedEntries.length}/${allCalls.length} broken future calls.',
+      );
+    }
+  }
+
+  /// Returns `null` if [futureCallEntry]'s stored serializedObject
+  /// can be deserialized for [futureCall]'s data type.
+  /// Otherwise, the error is returned.
+  String? _canDecodeFutureCallSerializedData({
+    required FutureCallEntry futureCallEntry,
+    required FutureCall<SerializableModel> futureCall,
+  }) {
+    try {
+      if (futureCallEntry.serializedObject != null) {
+        _serializationManager.decode(
+          futureCallEntry.serializedObject!,
+          futureCall.dataType,
+        );
+      }
+      return null;
+    } catch (e) {
+      return e.toString();
     }
   }
 }

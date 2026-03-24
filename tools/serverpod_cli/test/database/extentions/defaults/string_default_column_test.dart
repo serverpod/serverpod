@@ -37,7 +37,7 @@ void main() {
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
-            '"stringDefault" text NOT NULL DEFAULT \'This is a default value\'',
+            '"stringDefault" text NOT NULL DEFAULT \'This is a default value\'::text',
           );
         },
       );
@@ -57,7 +57,7 @@ void main() {
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
-            '"stringDefault" text NOT NULL DEFAULT \'Another default value\'',
+            '"stringDefault" text NOT NULL DEFAULT \'Another default value\'::text',
           );
         },
       );
@@ -98,7 +98,7 @@ void main() {
           () {
             expect(
               defaultColumn.toPgSqlFragment(),
-              '"stringDefault" text DEFAULT \'This is a default value\'',
+              '"stringDefault" text DEFAULT \'This is a default value\'::text',
             );
           },
         );
@@ -121,7 +121,7 @@ void main() {
           () {
             expect(
               defaultColumn.toPgSqlFragment(),
-              '"stringDefault" text DEFAULT \'Another default value\'',
+              '"stringDefault" text DEFAULT \'Another default value\'::text',
             );
           },
         );
@@ -142,7 +142,7 @@ void main() {
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
-            '"stringDefaultSingleQuote" text NOT NULL DEFAULT \'This is a \'\'default\'\' value\'',
+            '"stringDefaultSingleQuote" text NOT NULL DEFAULT \'This is a \'\'default\'\' value\'::text',
           );
         },
       );
@@ -162,7 +162,7 @@ void main() {
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
-            '"stringDefaultDoubleQuote" text NOT NULL DEFAULT \'This is a "default" value\'',
+            '"stringDefaultDoubleQuote" text NOT NULL DEFAULT \'This is a "default" value\'::text',
           );
         },
       );
@@ -182,7 +182,7 @@ void main() {
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
-            '"stringDefaultSingleQuote" text DEFAULT \'This is a \'\'default\'\' value\'',
+            '"stringDefaultSingleQuote" text DEFAULT \'This is a \'\'default\'\' value\'::text',
           );
         },
       );
@@ -202,7 +202,7 @@ void main() {
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
-            '"stringDefaultDoubleQuote" text DEFAULT \'This is a "default" value\'',
+            '"stringDefaultDoubleQuote" text DEFAULT \'This is a "default" value\'::text',
           );
         },
       );

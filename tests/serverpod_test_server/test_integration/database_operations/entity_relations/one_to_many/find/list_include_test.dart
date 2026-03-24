@@ -10,17 +10,17 @@ void main() async {
 
   /**
    * The structure of the data used in this test is as follows:
-   * 
+   *
    * City: {
    *   citizens: Person[],
    *   organizations: Organization[],
    * }
-   * 
+   *
    * Organization: {
    *   city: City?,
    *   people: Person[],
    * }
-   * 
+   *
    * Person: {
    *   organization: Organization?,
    * }
@@ -934,9 +934,6 @@ void main() async {
           ),
         ),
       );
-
-      print(city?.citizens?.map((e) => e.name));
-
       expect(city?.citizens, hasLength(2));
       expect(city?.citizens?.map((e) => e.id), [person3.id, person2.id]);
     },

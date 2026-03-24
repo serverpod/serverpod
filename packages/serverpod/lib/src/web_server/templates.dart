@@ -53,6 +53,9 @@ class Templates {
     return _templates[name];
   }
 
+  /// Clears all cached templates so they are reloaded on next [loadAll].
+  void clear() => _templates.clear();
+
   /// Returns true if no templates are loaded.
   bool get isEmpty => _templates.isEmpty;
 }

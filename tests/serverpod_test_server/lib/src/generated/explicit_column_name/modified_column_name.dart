@@ -238,7 +238,7 @@ class ModifiedColumnNameRepository {
   /// );
   /// ```
   Future<List<ModifiedColumnName>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
     int? limit,
     int? offset,
@@ -280,7 +280,7 @@ class ModifiedColumnNameRepository {
   /// );
   /// ```
   Future<ModifiedColumnName?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
@@ -304,7 +304,7 @@ class ModifiedColumnNameRepository {
 
   /// Finds a single [ModifiedColumnName] by its [id] or null if no such row exists.
   Future<ModifiedColumnName?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -329,7 +329,7 @@ class ModifiedColumnNameRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<ModifiedColumnName>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ModifiedColumnName> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -345,7 +345,7 @@ class ModifiedColumnNameRepository {
   ///
   /// The returned [ModifiedColumnName] will have its `id` field set.
   Future<ModifiedColumnName> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ModifiedColumnName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -361,7 +361,7 @@ class ModifiedColumnNameRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<ModifiedColumnName>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ModifiedColumnName> rows, {
     _i1.ColumnSelections<ModifiedColumnNameTable>? columns,
     _i1.Transaction? transaction,
@@ -377,7 +377,7 @@ class ModifiedColumnNameRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ModifiedColumnName> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ModifiedColumnName row, {
     _i1.ColumnSelections<ModifiedColumnNameTable>? columns,
     _i1.Transaction? transaction,
@@ -392,7 +392,7 @@ class ModifiedColumnNameRepository {
   /// Updates a single [ModifiedColumnName] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ModifiedColumnName?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<ModifiedColumnNameUpdateTable>
     columnValues,
@@ -408,7 +408,7 @@ class ModifiedColumnNameRepository {
   /// Updates all [ModifiedColumnName]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ModifiedColumnName>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ModifiedColumnNameUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<ModifiedColumnNameTable> where,
@@ -435,7 +435,7 @@ class ModifiedColumnNameRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ModifiedColumnName>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ModifiedColumnName> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -447,7 +447,7 @@ class ModifiedColumnNameRepository {
 
   /// Deletes a single [ModifiedColumnName].
   Future<ModifiedColumnName> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ModifiedColumnName row, {
     _i1.Transaction? transaction,
   }) async {
@@ -459,7 +459,7 @@ class ModifiedColumnNameRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<ModifiedColumnName>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ModifiedColumnNameTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -472,7 +472,7 @@ class ModifiedColumnNameRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -486,7 +486,7 @@ class ModifiedColumnNameRepository {
 
   /// Acquires row-level locks on [ModifiedColumnName] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ModifiedColumnNameTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

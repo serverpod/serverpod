@@ -380,7 +380,7 @@ class UserProfileImageRepository {
   /// );
   /// ```
   Future<List<UserProfileImage>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<UserProfileImageTable>? where,
     int? limit,
     int? offset,
@@ -424,7 +424,7 @@ class UserProfileImageRepository {
   /// );
   /// ```
   Future<UserProfileImage?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<UserProfileImageTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
@@ -450,7 +450,7 @@ class UserProfileImageRepository {
 
   /// Finds a single [UserProfileImage] by its [id] or null if no such row exists.
   Future<UserProfileImage?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     UserProfileImageInclude? include,
@@ -477,7 +477,7 @@ class UserProfileImageRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<UserProfileImage>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<UserProfileImage> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -493,7 +493,7 @@ class UserProfileImageRepository {
   ///
   /// The returned [UserProfileImage] will have its `id` field set.
   Future<UserProfileImage> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UserProfileImage row, {
     _i1.Transaction? transaction,
   }) async {
@@ -509,7 +509,7 @@ class UserProfileImageRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<UserProfileImage>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<UserProfileImage> rows, {
     _i1.ColumnSelections<UserProfileImageTable>? columns,
     _i1.Transaction? transaction,
@@ -525,7 +525,7 @@ class UserProfileImageRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<UserProfileImage> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UserProfileImage row, {
     _i1.ColumnSelections<UserProfileImageTable>? columns,
     _i1.Transaction? transaction,
@@ -540,7 +540,7 @@ class UserProfileImageRepository {
   /// Updates a single [UserProfileImage] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UserProfileImage?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<UserProfileImageUpdateTable>
     columnValues,
@@ -556,7 +556,7 @@ class UserProfileImageRepository {
   /// Updates all [UserProfileImage]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<UserProfileImage>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<UserProfileImageUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<UserProfileImageTable> where,
@@ -583,7 +583,7 @@ class UserProfileImageRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<UserProfileImage>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<UserProfileImage> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -595,7 +595,7 @@ class UserProfileImageRepository {
 
   /// Deletes a single [UserProfileImage].
   Future<UserProfileImage> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UserProfileImage row, {
     _i1.Transaction? transaction,
   }) async {
@@ -607,7 +607,7 @@ class UserProfileImageRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<UserProfileImage>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserProfileImageTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -620,7 +620,7 @@ class UserProfileImageRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<UserProfileImageTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -634,7 +634,7 @@ class UserProfileImageRepository {
 
   /// Acquires row-level locks on [UserProfileImage] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserProfileImageTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -655,7 +655,7 @@ class UserProfileImageAttachRowRepository {
   /// Creates a relation between the given [UserProfileImage] and [UserProfile]
   /// by setting the [UserProfileImage]'s foreign key `userProfileId` to refer to the [UserProfile].
   Future<void> userProfile(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UserProfileImage userProfileImage,
     _i2.UserProfile userProfile, {
     _i1.Transaction? transaction,

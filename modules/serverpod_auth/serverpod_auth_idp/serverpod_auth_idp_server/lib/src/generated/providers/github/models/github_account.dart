@@ -358,7 +358,7 @@ class GitHubAccountRepository {
   /// );
   /// ```
   Future<List<GitHubAccount>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<GitHubAccountTable>? where,
     int? limit,
     int? offset,
@@ -402,7 +402,7 @@ class GitHubAccountRepository {
   /// );
   /// ```
   Future<GitHubAccount?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<GitHubAccountTable>? where,
     int? offset,
     _i1.OrderByBuilder<GitHubAccountTable>? orderBy,
@@ -428,7 +428,7 @@ class GitHubAccountRepository {
 
   /// Finds a single [GitHubAccount] by its [id] or null if no such row exists.
   Future<GitHubAccount?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     GitHubAccountInclude? include,
@@ -455,7 +455,7 @@ class GitHubAccountRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<GitHubAccount>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<GitHubAccount> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -471,7 +471,7 @@ class GitHubAccountRepository {
   ///
   /// The returned [GitHubAccount] will have its `id` field set.
   Future<GitHubAccount> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GitHubAccount row, {
     _i1.Transaction? transaction,
   }) async {
@@ -487,7 +487,7 @@ class GitHubAccountRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<GitHubAccount>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<GitHubAccount> rows, {
     _i1.ColumnSelections<GitHubAccountTable>? columns,
     _i1.Transaction? transaction,
@@ -503,7 +503,7 @@ class GitHubAccountRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<GitHubAccount> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GitHubAccount row, {
     _i1.ColumnSelections<GitHubAccountTable>? columns,
     _i1.Transaction? transaction,
@@ -518,7 +518,7 @@ class GitHubAccountRepository {
   /// Updates a single [GitHubAccount] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<GitHubAccount?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<GitHubAccountUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -533,7 +533,7 @@ class GitHubAccountRepository {
   /// Updates all [GitHubAccount]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<GitHubAccount>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<GitHubAccountUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<GitHubAccountTable> where,
     int? limit,
@@ -559,7 +559,7 @@ class GitHubAccountRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<GitHubAccount>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<GitHubAccount> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -571,7 +571,7 @@ class GitHubAccountRepository {
 
   /// Deletes a single [GitHubAccount].
   Future<GitHubAccount> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GitHubAccount row, {
     _i1.Transaction? transaction,
   }) async {
@@ -583,7 +583,7 @@ class GitHubAccountRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<GitHubAccount>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<GitHubAccountTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -596,7 +596,7 @@ class GitHubAccountRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<GitHubAccountTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -610,7 +610,7 @@ class GitHubAccountRepository {
 
   /// Acquires row-level locks on [GitHubAccount] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<GitHubAccountTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -631,7 +631,7 @@ class GitHubAccountAttachRowRepository {
   /// Creates a relation between the given [GitHubAccount] and [AuthUser]
   /// by setting the [GitHubAccount]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GitHubAccount gitHubAccount,
     _i2.AuthUser authUser, {
     _i1.Transaction? transaction,

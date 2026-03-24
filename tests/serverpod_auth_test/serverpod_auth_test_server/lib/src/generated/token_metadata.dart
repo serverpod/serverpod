@@ -362,7 +362,7 @@ class TokenMetadataRepository {
   /// );
   /// ```
   Future<List<TokenMetadata>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<TokenMetadataTable>? where,
     int? limit,
     int? offset,
@@ -406,7 +406,7 @@ class TokenMetadataRepository {
   /// );
   /// ```
   Future<TokenMetadata?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<TokenMetadataTable>? where,
     int? offset,
     _i1.OrderByBuilder<TokenMetadataTable>? orderBy,
@@ -432,7 +432,7 @@ class TokenMetadataRepository {
 
   /// Finds a single [TokenMetadata] by its [id] or null if no such row exists.
   Future<TokenMetadata?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     TokenMetadataInclude? include,
@@ -459,7 +459,7 @@ class TokenMetadataRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<TokenMetadata>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<TokenMetadata> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -475,7 +475,7 @@ class TokenMetadataRepository {
   ///
   /// The returned [TokenMetadata] will have its `id` field set.
   Future<TokenMetadata> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     TokenMetadata row, {
     _i1.Transaction? transaction,
   }) async {
@@ -491,7 +491,7 @@ class TokenMetadataRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<TokenMetadata>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<TokenMetadata> rows, {
     _i1.ColumnSelections<TokenMetadataTable>? columns,
     _i1.Transaction? transaction,
@@ -507,7 +507,7 @@ class TokenMetadataRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<TokenMetadata> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     TokenMetadata row, {
     _i1.ColumnSelections<TokenMetadataTable>? columns,
     _i1.Transaction? transaction,
@@ -522,7 +522,7 @@ class TokenMetadataRepository {
   /// Updates a single [TokenMetadata] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<TokenMetadata?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<TokenMetadataUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -537,7 +537,7 @@ class TokenMetadataRepository {
   /// Updates all [TokenMetadata]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<TokenMetadata>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<TokenMetadataUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<TokenMetadataTable> where,
     int? limit,
@@ -563,7 +563,7 @@ class TokenMetadataRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<TokenMetadata>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<TokenMetadata> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -575,7 +575,7 @@ class TokenMetadataRepository {
 
   /// Deletes a single [TokenMetadata].
   Future<TokenMetadata> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     TokenMetadata row, {
     _i1.Transaction? transaction,
   }) async {
@@ -587,7 +587,7 @@ class TokenMetadataRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<TokenMetadata>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<TokenMetadataTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -600,7 +600,7 @@ class TokenMetadataRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<TokenMetadataTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -614,7 +614,7 @@ class TokenMetadataRepository {
 
   /// Acquires row-level locks on [TokenMetadata] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<TokenMetadataTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -635,7 +635,7 @@ class TokenMetadataAttachRowRepository {
   /// Creates a relation between the given [TokenMetadata] and [RefreshToken]
   /// by setting the [TokenMetadata]'s foreign key `refreshTokenId` to refer to the [RefreshToken].
   Future<void> refreshToken(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     TokenMetadata tokenMetadata,
     _i2.RefreshToken refreshToken, {
     _i1.Transaction? transaction,

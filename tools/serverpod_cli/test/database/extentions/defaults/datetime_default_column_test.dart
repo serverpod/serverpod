@@ -28,7 +28,7 @@ void main() {
         name: 'dateTime',
         columnType: ColumnType.timestampWithoutTimeZone,
         isNullable: false,
-        columnDefault: 'CURRENT_TIMESTAMP',
+        columnDefault: 'now',
         dartType: 'DateTime',
       );
 
@@ -48,8 +48,7 @@ void main() {
         name: 'dateTime',
         columnType: ColumnType.timestampWithoutTimeZone,
         isNullable: false,
-        columnDefault:
-            "'2024-01-01T01:01:01.000Z'::timestamp without time zone",
+        columnDefault: '2024-01-01T01:01:01.000Z',
         dartType: 'DateTime',
       );
 
@@ -58,7 +57,7 @@ void main() {
         () {
           expect(
             defaultColumn.toPgSqlFragment(),
-            '"dateTime" timestamp without time zone NOT NULL DEFAULT \'2024-01-01T01:01:01.000Z\'::timestamp without time zone',
+            '"dateTime" timestamp without time zone NOT NULL DEFAULT \'2024-01-01 01:01:01.000\'::timestamp without time zone',
           );
         },
       );
@@ -88,7 +87,7 @@ void main() {
         name: 'dateTime',
         columnType: ColumnType.timestampWithoutTimeZone,
         isNullable: true,
-        columnDefault: 'CURRENT_TIMESTAMP',
+        columnDefault: 'now',
         dartType: 'DateTime',
       );
 

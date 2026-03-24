@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -40,14 +39,7 @@ class GenerateFiles {
       }
     });
 
-    var parameterValidator = FutureCallMethodParameterValidator(
-      modelAnalyzer: modelAnalyzer,
-    );
-
-    var futureCallsAnalyzer = FutureCallsAnalyzer(
-      directory: libDirectory,
-      parameterValidator: parameterValidator,
-    );
+    var futureCallsAnalyzer = FutureCallsAnalyzer(directory: libDirectory);
 
     if (hasErrors) {
       log.error(
@@ -56,11 +48,14 @@ class GenerateFiles {
       return false;
     }
 
-    return await performGenerate(
+    final result = await performGenerate(
       config: config,
-      endpointsAnalyzer: endpointsAnalyzer,
-      modelAnalyzer: modelAnalyzer,
-      futureCallsAnalyzer: futureCallsAnalyzer,
+      analyzers: (
+        endpoints: endpointsAnalyzer,
+        models: modelAnalyzer,
+        futureCalls: futureCallsAnalyzer,
+      ),
     );
+    return result.success;
   }
 }

@@ -11,11 +11,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'shared/enum.dart' as _i2;
-import 'shared/exception.dart' as _i3;
-import 'shared/subclass.dart' as _i4;
-import 'shared/model.dart' as _i5;
-import 'shared/sealed/parent.dart' as _i6;
+import 'shared/container.dart' as _i2;
+import 'shared/enum.dart' as _i3;
+import 'shared/exception.dart' as _i4;
+import 'shared/subclass.dart' as _i5;
+import 'shared/model.dart' as _i6;
+import 'shared/sealed/parent.dart' as _i7;
+export 'shared/container.dart';
 export 'shared/enum.dart';
 export 'shared/exception.dart';
 export 'shared/subclass.dart';
@@ -56,46 +58,53 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.SharedEnum) {
-      return _i2.SharedEnum.fromJson(data) as T;
+    if (t == _i2.SharedContainer) {
+      return _i2.SharedContainer.fromJson(data) as T;
     }
-    if (t == _i3.SharedException) {
-      return _i3.SharedException.fromJson(data) as T;
+    if (t == _i3.SharedEnum) {
+      return _i3.SharedEnum.fromJson(data) as T;
     }
-    if (t == _i4.SharedSubclass) {
-      return _i4.SharedSubclass.fromJson(data) as T;
+    if (t == _i4.SharedException) {
+      return _i4.SharedException.fromJson(data) as T;
     }
-    if (t == _i5.SharedModel) {
-      return _i5.SharedModel.fromJson(data) as T;
+    if (t == _i5.SharedSubclass) {
+      return _i5.SharedSubclass.fromJson(data) as T;
     }
-    if (t == _i6.SharedSealedChild) {
-      return _i6.SharedSealedChild.fromJson(data) as T;
+    if (t == _i6.SharedModel) {
+      return _i6.SharedModel.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.SharedEnum?>()) {
-      return (data != null ? _i2.SharedEnum.fromJson(data) : null) as T;
+    if (t == _i7.SharedSealedChild) {
+      return _i7.SharedSealedChild.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i3.SharedException?>()) {
-      return (data != null ? _i3.SharedException.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i2.SharedContainer?>()) {
+      return (data != null ? _i2.SharedContainer.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i4.SharedSubclass?>()) {
-      return (data != null ? _i4.SharedSubclass.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i3.SharedEnum?>()) {
+      return (data != null ? _i3.SharedEnum.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i5.SharedModel?>()) {
-      return (data != null ? _i5.SharedModel.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i4.SharedException?>()) {
+      return (data != null ? _i4.SharedException.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.SharedSealedChild?>()) {
-      return (data != null ? _i6.SharedSealedChild.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i5.SharedSubclass?>()) {
+      return (data != null ? _i5.SharedSubclass.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i6.SharedModel?>()) {
+      return (data != null ? _i6.SharedModel.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i7.SharedSealedChild?>()) {
+      return (data != null ? _i7.SharedSealedChild.fromJson(data) : null) as T;
     }
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.SharedEnum => 'SharedEnum',
-      _i3.SharedException => 'SharedException',
-      _i4.SharedSubclass => 'SharedSubclass',
-      _i5.SharedModel => 'SharedModel',
-      _i6.SharedSealedChild => 'SharedSealedChild',
+      _i2.SharedContainer => 'SharedContainer',
+      _i3.SharedEnum => 'SharedEnum',
+      _i4.SharedException => 'SharedException',
+      _i5.SharedSubclass => 'SharedSubclass',
+      _i6.SharedModel => 'SharedModel',
+      _i7.SharedSealedChild => 'SharedSealedChild',
       _ => null,
     };
   }
@@ -113,15 +122,17 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.SharedEnum():
+      case _i2.SharedContainer():
+        return 'SharedContainer';
+      case _i3.SharedEnum():
         return 'SharedEnum';
-      case _i3.SharedException():
+      case _i4.SharedException():
         return 'SharedException';
-      case _i4.SharedSubclass():
+      case _i5.SharedSubclass():
         return 'SharedSubclass';
-      case _i5.SharedModel():
+      case _i6.SharedModel():
         return 'SharedModel';
-      case _i6.SharedSealedChild():
+      case _i7.SharedSealedChild():
         return 'SharedSealedChild';
     }
     return null;
@@ -133,20 +144,23 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'SharedContainer') {
+      return deserialize<_i2.SharedContainer>(data['data']);
+    }
     if (dataClassName == 'SharedEnum') {
-      return deserialize<_i2.SharedEnum>(data['data']);
+      return deserialize<_i3.SharedEnum>(data['data']);
     }
     if (dataClassName == 'SharedException') {
-      return deserialize<_i3.SharedException>(data['data']);
+      return deserialize<_i4.SharedException>(data['data']);
     }
     if (dataClassName == 'SharedSubclass') {
-      return deserialize<_i4.SharedSubclass>(data['data']);
+      return deserialize<_i5.SharedSubclass>(data['data']);
     }
     if (dataClassName == 'SharedModel') {
-      return deserialize<_i5.SharedModel>(data['data']);
+      return deserialize<_i6.SharedModel>(data['data']);
     }
     if (dataClassName == 'SharedSealedChild') {
-      return deserialize<_i6.SharedSealedChild>(data['data']);
+      return deserialize<_i7.SharedSealedChild>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

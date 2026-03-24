@@ -261,7 +261,7 @@ class ModelWithRequiredFieldRepository {
   /// );
   /// ```
   Future<List<ModelWithRequiredField>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
     int? limit,
     int? offset,
@@ -303,7 +303,7 @@ class ModelWithRequiredFieldRepository {
   /// );
   /// ```
   Future<ModelWithRequiredField?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
     int? offset,
     _i1.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
@@ -327,7 +327,7 @@ class ModelWithRequiredFieldRepository {
 
   /// Finds a single [ModelWithRequiredField] by its [id] or null if no such row exists.
   Future<ModelWithRequiredField?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -352,7 +352,7 @@ class ModelWithRequiredFieldRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<ModelWithRequiredField>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ModelWithRequiredField> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -368,7 +368,7 @@ class ModelWithRequiredFieldRepository {
   ///
   /// The returned [ModelWithRequiredField] will have its `id` field set.
   Future<ModelWithRequiredField> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ModelWithRequiredField row, {
     _i1.Transaction? transaction,
   }) async {
@@ -384,7 +384,7 @@ class ModelWithRequiredFieldRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<ModelWithRequiredField>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ModelWithRequiredField> rows, {
     _i1.ColumnSelections<ModelWithRequiredFieldTable>? columns,
     _i1.Transaction? transaction,
@@ -400,7 +400,7 @@ class ModelWithRequiredFieldRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ModelWithRequiredField> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ModelWithRequiredField row, {
     _i1.ColumnSelections<ModelWithRequiredFieldTable>? columns,
     _i1.Transaction? transaction,
@@ -415,7 +415,7 @@ class ModelWithRequiredFieldRepository {
   /// Updates a single [ModelWithRequiredField] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ModelWithRequiredField?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<ModelWithRequiredFieldUpdateTable>
     columnValues,
@@ -431,7 +431,7 @@ class ModelWithRequiredFieldRepository {
   /// Updates all [ModelWithRequiredField]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ModelWithRequiredField>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ModelWithRequiredFieldUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable> where,
@@ -458,7 +458,7 @@ class ModelWithRequiredFieldRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ModelWithRequiredField>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<ModelWithRequiredField> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -470,7 +470,7 @@ class ModelWithRequiredFieldRepository {
 
   /// Deletes a single [ModelWithRequiredField].
   Future<ModelWithRequiredField> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     ModelWithRequiredField row, {
     _i1.Transaction? transaction,
   }) async {
@@ -482,7 +482,7 @@ class ModelWithRequiredFieldRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<ModelWithRequiredField>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -495,7 +495,7 @@ class ModelWithRequiredFieldRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -509,7 +509,7 @@ class ModelWithRequiredFieldRepository {
 
   /// Acquires row-level locks on [ModelWithRequiredField] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

@@ -78,29 +78,39 @@ class MicrosoftSignInService {
   /// - `consumers`: Personal Microsoft accounts only
   /// - Specific tenant ID: Accounts from a specific organization
   ///
+  /// The [authorityHost] is the authority host for the Microsoft identity
+  /// provider. If not provided, defaults to `login.microsoftonline.com`.
+  ///
   /// The [callbackUrlScheme] is the URL scheme for the OAuth callback. If not
   /// provided, defaults to the scheme from [redirectUri].
   ///
   /// The [useWebview] controls the authentication method on Linux and Windows.
   /// When set to `true`, uses the webview implementation. When set to `false`,
   /// uses an internal server approach. Defaults to `true`.
+  ///
+  /// The [additionalAuthParams] are additional authentication parameters to
+  /// include in the authorization request. These are merged with the default
+  /// parameters, with precedence given to the default parameters on conflicts.
   Future<void> ensureInitialized({
     required String clientId,
     required String redirectUri,
     String tenant = 'common',
+    String authorityHost = 'login.microsoftonline.com',
     String? callbackUrlScheme,
     bool? useWebview,
+    Map<String, String> additionalAuthParams = const {},
   }) async {
     if (_config != null) return;
 
     _config = OAuth2PkceProviderClientConfig(
       authorizationEndpoint: Uri.https(
-        'login.microsoftonline.com',
+        authorityHost,
         '/$tenant/oauth2/v2.0/authorize',
       ),
       clientId: clientId,
       redirectUri: redirectUri,
       callbackUrlScheme: callbackUrlScheme ?? Uri.parse(redirectUri).scheme,
+      additionalAuthParams: additionalAuthParams,
     );
     _useWebview = useWebview;
   }

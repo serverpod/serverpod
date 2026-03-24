@@ -328,7 +328,7 @@ class EnumDefaultRepository {
   /// );
   /// ```
   Future<List<EnumDefault>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<EnumDefaultTable>? where,
     int? limit,
     int? offset,
@@ -370,7 +370,7 @@ class EnumDefaultRepository {
   /// );
   /// ```
   Future<EnumDefault?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<EnumDefaultTable>? where,
     int? offset,
     _i1.OrderByBuilder<EnumDefaultTable>? orderBy,
@@ -394,7 +394,7 @@ class EnumDefaultRepository {
 
   /// Finds a single [EnumDefault] by its [id] or null if no such row exists.
   Future<EnumDefault?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -419,7 +419,7 @@ class EnumDefaultRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<EnumDefault>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<EnumDefault> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -435,7 +435,7 @@ class EnumDefaultRepository {
   ///
   /// The returned [EnumDefault] will have its `id` field set.
   Future<EnumDefault> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EnumDefault row, {
     _i1.Transaction? transaction,
   }) async {
@@ -451,7 +451,7 @@ class EnumDefaultRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<EnumDefault>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<EnumDefault> rows, {
     _i1.ColumnSelections<EnumDefaultTable>? columns,
     _i1.Transaction? transaction,
@@ -467,7 +467,7 @@ class EnumDefaultRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EnumDefault> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EnumDefault row, {
     _i1.ColumnSelections<EnumDefaultTable>? columns,
     _i1.Transaction? transaction,
@@ -482,7 +482,7 @@ class EnumDefaultRepository {
   /// Updates a single [EnumDefault] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EnumDefault?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<EnumDefaultUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -497,7 +497,7 @@ class EnumDefaultRepository {
   /// Updates all [EnumDefault]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<EnumDefault>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<EnumDefaultUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<EnumDefaultTable> where,
     int? limit,
@@ -523,7 +523,7 @@ class EnumDefaultRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<EnumDefault>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<EnumDefault> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -535,7 +535,7 @@ class EnumDefaultRepository {
 
   /// Deletes a single [EnumDefault].
   Future<EnumDefault> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     EnumDefault row, {
     _i1.Transaction? transaction,
   }) async {
@@ -547,7 +547,7 @@ class EnumDefaultRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<EnumDefault>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EnumDefaultTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -560,7 +560,7 @@ class EnumDefaultRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<EnumDefaultTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -574,7 +574,7 @@ class EnumDefaultRepository {
 
   /// Acquires row-level locks on [EnumDefault] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EnumDefaultTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

@@ -249,7 +249,7 @@ class UniqueDataWithNonPersistRepository {
   /// );
   /// ```
   Future<List<UniqueDataWithNonPersist>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
     int? limit,
     int? offset,
@@ -291,7 +291,7 @@ class UniqueDataWithNonPersistRepository {
   /// );
   /// ```
   Future<UniqueDataWithNonPersist?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
@@ -315,7 +315,7 @@ class UniqueDataWithNonPersistRepository {
 
   /// Finds a single [UniqueDataWithNonPersist] by its [id] or null if no such row exists.
   Future<UniqueDataWithNonPersist?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -340,7 +340,7 @@ class UniqueDataWithNonPersistRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<UniqueDataWithNonPersist>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<UniqueDataWithNonPersist> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -356,7 +356,7 @@ class UniqueDataWithNonPersistRepository {
   ///
   /// The returned [UniqueDataWithNonPersist] will have its `id` field set.
   Future<UniqueDataWithNonPersist> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UniqueDataWithNonPersist row, {
     _i1.Transaction? transaction,
   }) async {
@@ -372,7 +372,7 @@ class UniqueDataWithNonPersistRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<UniqueDataWithNonPersist>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<UniqueDataWithNonPersist> rows, {
     _i1.ColumnSelections<UniqueDataWithNonPersistTable>? columns,
     _i1.Transaction? transaction,
@@ -388,7 +388,7 @@ class UniqueDataWithNonPersistRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<UniqueDataWithNonPersist> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UniqueDataWithNonPersist row, {
     _i1.ColumnSelections<UniqueDataWithNonPersistTable>? columns,
     _i1.Transaction? transaction,
@@ -403,7 +403,7 @@ class UniqueDataWithNonPersistRepository {
   /// Updates a single [UniqueDataWithNonPersist] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UniqueDataWithNonPersist?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<UniqueDataWithNonPersistUpdateTable>
     columnValues,
@@ -419,7 +419,7 @@ class UniqueDataWithNonPersistRepository {
   /// Updates all [UniqueDataWithNonPersist]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<UniqueDataWithNonPersist>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<UniqueDataWithNonPersistUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable> where,
@@ -446,7 +446,7 @@ class UniqueDataWithNonPersistRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<UniqueDataWithNonPersist>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<UniqueDataWithNonPersist> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -458,7 +458,7 @@ class UniqueDataWithNonPersistRepository {
 
   /// Deletes a single [UniqueDataWithNonPersist].
   Future<UniqueDataWithNonPersist> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UniqueDataWithNonPersist row, {
     _i1.Transaction? transaction,
   }) async {
@@ -470,7 +470,7 @@ class UniqueDataWithNonPersistRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<UniqueDataWithNonPersist>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -483,7 +483,7 @@ class UniqueDataWithNonPersistRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -497,7 +497,7 @@ class UniqueDataWithNonPersistRepository {
 
   /// Acquires row-level locks on [UniqueDataWithNonPersist] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

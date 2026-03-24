@@ -344,7 +344,7 @@ class PersonRepository {
   /// );
   /// ```
   Future<List<Person>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<PersonTable>? where,
     int? limit,
     int? offset,
@@ -388,7 +388,7 @@ class PersonRepository {
   /// );
   /// ```
   Future<Person?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<PersonTable>? where,
     int? offset,
     _i1.OrderByBuilder<PersonTable>? orderBy,
@@ -414,7 +414,7 @@ class PersonRepository {
 
   /// Finds a single [Person] by its [id] or null if no such row exists.
   Future<Person?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     PersonInclude? include,
@@ -441,7 +441,7 @@ class PersonRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<Person>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Person> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -457,7 +457,7 @@ class PersonRepository {
   ///
   /// The returned [Person] will have its `id` field set.
   Future<Person> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Person row, {
     _i1.Transaction? transaction,
   }) async {
@@ -473,7 +473,7 @@ class PersonRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<Person>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Person> rows, {
     _i1.ColumnSelections<PersonTable>? columns,
     _i1.Transaction? transaction,
@@ -489,7 +489,7 @@ class PersonRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Person> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Person row, {
     _i1.ColumnSelections<PersonTable>? columns,
     _i1.Transaction? transaction,
@@ -504,7 +504,7 @@ class PersonRepository {
   /// Updates a single [Person] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Person?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<PersonUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -519,7 +519,7 @@ class PersonRepository {
   /// Updates all [Person]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Person>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<PersonUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<PersonTable> where,
     int? limit,
@@ -545,7 +545,7 @@ class PersonRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<Person>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Person> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -557,7 +557,7 @@ class PersonRepository {
 
   /// Deletes a single [Person].
   Future<Person> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Person row, {
     _i1.Transaction? transaction,
   }) async {
@@ -569,7 +569,7 @@ class PersonRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<Person>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<PersonTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -582,7 +582,7 @@ class PersonRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<PersonTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -596,7 +596,7 @@ class PersonRepository {
 
   /// Acquires row-level locks on [Person] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<PersonTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -617,7 +617,7 @@ class PersonAttachRowRepository {
   /// Creates a relation between the given [Person] and [Organization]
   /// by setting the [Person]'s foreign key `organizationId` to refer to the [Organization].
   Future<void> organization(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Person person,
     _i2.Organization organization, {
     _i1.Transaction? transaction,
@@ -647,7 +647,7 @@ class PersonDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> organization(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Person person, {
     _i1.Transaction? transaction,
   }) async {

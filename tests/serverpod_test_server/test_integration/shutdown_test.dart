@@ -13,7 +13,7 @@ import 'package:test/test.dart';
 void main() {
   const signalDelay = Duration(seconds: 2);
   const terminationTimeout = Duration(seconds: 10);
-  const verbose = true;
+  const verbose = false;
 
   test('Given a serverpod server with db '
       'when run in maintenance mode '
@@ -26,6 +26,9 @@ void main() {
         '--role',
         'maintenance',
       ],
+      environment: {
+        'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
+      },
       verbose: verbose,
     );
 
@@ -51,6 +54,9 @@ void main() {
       final processOutput = await startProcess(
         'dart',
         ['bin/main.dart', '--mode=test'],
+        environment: {
+          'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
+        },
         verbose: verbose,
       );
 
@@ -87,6 +93,9 @@ void main() {
         final processOutput = await startProcess(
           'dart',
           ['bin/main.dart', '--mode=test'],
+          environment: {
+            'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
+          },
           verbose: verbose,
         );
 
@@ -128,6 +137,7 @@ void main() {
         ['bin/main.dart', '--mode=test'],
         environment: {
           '_SERVERPOD_SHUTDOWN_TEST_AUDITOR': '2',
+          'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
         },
         verbose: verbose,
       );
@@ -174,6 +184,9 @@ void main() {
       final processOutput = await startProcess(
         'dart',
         ['bin/main.dart', '--mode=test'],
+        environment: {
+          'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
+        },
         verbose: verbose,
       );
 
@@ -183,10 +196,8 @@ void main() {
       );
 
       await Future.delayed(Duration(seconds: 5));
-      print('server should be up');
 
       final httpClient = Client();
-      print('sending long-running request...');
       final responseTask = httpClient.post(
         Uri.parse('http://localhost:8080/failedCalls/slowCall'),
       );
@@ -207,9 +218,7 @@ void main() {
         ]),
       );
 
-      print('waiting for response...');
       final response = await responseTask;
-      print('response received with code ${response.statusCode}');
       expect(response.statusCode, 200);
 
       var exitCode = await processOutput.process.exitCode.timeout(

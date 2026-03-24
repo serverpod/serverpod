@@ -333,7 +333,7 @@ class BlockingRepository {
   /// );
   /// ```
   Future<List<Blocking>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<BlockingTable>? where,
     int? limit,
     int? offset,
@@ -377,7 +377,7 @@ class BlockingRepository {
   /// );
   /// ```
   Future<Blocking?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<BlockingTable>? where,
     int? offset,
     _i1.OrderByBuilder<BlockingTable>? orderBy,
@@ -403,7 +403,7 @@ class BlockingRepository {
 
   /// Finds a single [Blocking] by its [id] or null if no such row exists.
   Future<Blocking?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     BlockingInclude? include,
@@ -430,7 +430,7 @@ class BlockingRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<Blocking>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Blocking> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -446,7 +446,7 @@ class BlockingRepository {
   ///
   /// The returned [Blocking] will have its `id` field set.
   Future<Blocking> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Blocking row, {
     _i1.Transaction? transaction,
   }) async {
@@ -462,7 +462,7 @@ class BlockingRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<Blocking>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Blocking> rows, {
     _i1.ColumnSelections<BlockingTable>? columns,
     _i1.Transaction? transaction,
@@ -478,7 +478,7 @@ class BlockingRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Blocking> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Blocking row, {
     _i1.ColumnSelections<BlockingTable>? columns,
     _i1.Transaction? transaction,
@@ -493,7 +493,7 @@ class BlockingRepository {
   /// Updates a single [Blocking] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Blocking?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<BlockingUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -508,7 +508,7 @@ class BlockingRepository {
   /// Updates all [Blocking]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<Blocking>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<BlockingUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<BlockingTable> where,
     int? limit,
@@ -534,7 +534,7 @@ class BlockingRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<Blocking>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<Blocking> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -546,7 +546,7 @@ class BlockingRepository {
 
   /// Deletes a single [Blocking].
   Future<Blocking> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Blocking row, {
     _i1.Transaction? transaction,
   }) async {
@@ -558,7 +558,7 @@ class BlockingRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<Blocking>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BlockingTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -571,7 +571,7 @@ class BlockingRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<BlockingTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -585,7 +585,7 @@ class BlockingRepository {
 
   /// Acquires row-level locks on [Blocking] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<BlockingTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -606,7 +606,7 @@ class BlockingAttachRowRepository {
   /// Creates a relation between the given [Blocking] and [Member]
   /// by setting the [Blocking]'s foreign key `blockedId` to refer to the [Member].
   Future<void> blocked(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Blocking blocking,
     _i2.Member blocked, {
     _i1.Transaction? transaction,
@@ -629,7 +629,7 @@ class BlockingAttachRowRepository {
   /// Creates a relation between the given [Blocking] and [Member]
   /// by setting the [Blocking]'s foreign key `blockedById` to refer to the [Member].
   Future<void> blockedBy(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     Blocking blocking,
     _i2.Member blockedBy, {
     _i1.Transaction? transaction,

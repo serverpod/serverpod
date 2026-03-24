@@ -337,7 +337,7 @@ class MigratedUserRepository {
   /// );
   /// ```
   Future<List<MigratedUser>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MigratedUserTable>? where,
     int? limit,
     int? offset,
@@ -381,7 +381,7 @@ class MigratedUserRepository {
   /// );
   /// ```
   Future<MigratedUser?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MigratedUserTable>? where,
     int? offset,
     _i1.OrderByBuilder<MigratedUserTable>? orderBy,
@@ -407,7 +407,7 @@ class MigratedUserRepository {
 
   /// Finds a single [MigratedUser] by its [id] or null if no such row exists.
   Future<MigratedUser?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     MigratedUserInclude? include,
@@ -434,7 +434,7 @@ class MigratedUserRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<MigratedUser>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MigratedUser> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -450,7 +450,7 @@ class MigratedUserRepository {
   ///
   /// The returned [MigratedUser] will have its `id` field set.
   Future<MigratedUser> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MigratedUser row, {
     _i1.Transaction? transaction,
   }) async {
@@ -466,7 +466,7 @@ class MigratedUserRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<MigratedUser>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MigratedUser> rows, {
     _i1.ColumnSelections<MigratedUserTable>? columns,
     _i1.Transaction? transaction,
@@ -482,7 +482,7 @@ class MigratedUserRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<MigratedUser> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MigratedUser row, {
     _i1.ColumnSelections<MigratedUserTable>? columns,
     _i1.Transaction? transaction,
@@ -497,7 +497,7 @@ class MigratedUserRepository {
   /// Updates a single [MigratedUser] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<MigratedUser?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<MigratedUserUpdateTable> columnValues,
     _i1.Transaction? transaction,
@@ -512,7 +512,7 @@ class MigratedUserRepository {
   /// Updates all [MigratedUser]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<MigratedUser>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<MigratedUserUpdateTable> columnValues,
     required _i1.WhereExpressionBuilder<MigratedUserTable> where,
     int? limit,
@@ -538,7 +538,7 @@ class MigratedUserRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<MigratedUser>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<MigratedUser> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -550,7 +550,7 @@ class MigratedUserRepository {
 
   /// Deletes a single [MigratedUser].
   Future<MigratedUser> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MigratedUser row, {
     _i1.Transaction? transaction,
   }) async {
@@ -562,7 +562,7 @@ class MigratedUserRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<MigratedUser>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MigratedUserTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -575,7 +575,7 @@ class MigratedUserRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<MigratedUserTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -589,7 +589,7 @@ class MigratedUserRepository {
 
   /// Acquires row-level locks on [MigratedUser] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MigratedUserTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,
@@ -610,7 +610,7 @@ class MigratedUserAttachRowRepository {
   /// Creates a relation between the given [MigratedUser] and [UserInfo]
   /// by setting the [MigratedUser]'s foreign key `oldUserId` to refer to the [UserInfo].
   Future<void> oldUser(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MigratedUser migratedUser,
     _i2.UserInfo oldUser, {
     _i1.Transaction? transaction,
@@ -633,7 +633,7 @@ class MigratedUserAttachRowRepository {
   /// Creates a relation between the given [MigratedUser] and [AuthUser]
   /// by setting the [MigratedUser]'s foreign key `newAuthUserId` to refer to the [AuthUser].
   Future<void> newAuthUser(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     MigratedUser migratedUser,
     _i3.AuthUser newAuthUser, {
     _i1.Transaction? transaction,

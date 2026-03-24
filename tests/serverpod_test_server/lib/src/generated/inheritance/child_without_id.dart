@@ -260,7 +260,7 @@ class ChildClassWithoutIdRepository {
   /// );
   /// ```
   Future<List<ChildClassWithoutId>> find(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     _i2.WhereExpressionBuilder<ChildClassWithoutIdTable>? where,
     int? limit,
     int? offset,
@@ -302,7 +302,7 @@ class ChildClassWithoutIdRepository {
   /// );
   /// ```
   Future<ChildClassWithoutId?> findFirstRow(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     _i2.WhereExpressionBuilder<ChildClassWithoutIdTable>? where,
     int? offset,
     _i2.OrderByBuilder<ChildClassWithoutIdTable>? orderBy,
@@ -326,7 +326,7 @@ class ChildClassWithoutIdRepository {
 
   /// Finds a single [ChildClassWithoutId] by its [id] or null if no such row exists.
   Future<ChildClassWithoutId?> findById(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     _i2.UuidValue id, {
     _i2.Transaction? transaction,
     _i2.LockMode? lockMode,
@@ -351,7 +351,7 @@ class ChildClassWithoutIdRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<ChildClassWithoutId>> insert(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     List<ChildClassWithoutId> rows, {
     _i2.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -367,7 +367,7 @@ class ChildClassWithoutIdRepository {
   ///
   /// The returned [ChildClassWithoutId] will have its `id` field set.
   Future<ChildClassWithoutId> insertRow(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     ChildClassWithoutId row, {
     _i2.Transaction? transaction,
   }) async {
@@ -383,7 +383,7 @@ class ChildClassWithoutIdRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<ChildClassWithoutId>> update(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     List<ChildClassWithoutId> rows, {
     _i2.ColumnSelections<ChildClassWithoutIdTable>? columns,
     _i2.Transaction? transaction,
@@ -399,7 +399,7 @@ class ChildClassWithoutIdRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ChildClassWithoutId> updateRow(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     ChildClassWithoutId row, {
     _i2.ColumnSelections<ChildClassWithoutIdTable>? columns,
     _i2.Transaction? transaction,
@@ -414,7 +414,7 @@ class ChildClassWithoutIdRepository {
   /// Updates a single [ChildClassWithoutId] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ChildClassWithoutId?> updateById(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     _i2.UuidValue id, {
     required _i2.ColumnValueListBuilder<ChildClassWithoutIdUpdateTable>
     columnValues,
@@ -430,7 +430,7 @@ class ChildClassWithoutIdRepository {
   /// Updates all [ChildClassWithoutId]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<ChildClassWithoutId>> updateWhere(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     required _i2.ColumnValueListBuilder<ChildClassWithoutIdUpdateTable>
     columnValues,
     required _i2.WhereExpressionBuilder<ChildClassWithoutIdTable> where,
@@ -457,7 +457,7 @@ class ChildClassWithoutIdRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<ChildClassWithoutId>> delete(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     List<ChildClassWithoutId> rows, {
     _i2.Transaction? transaction,
   }) async {
@@ -469,7 +469,7 @@ class ChildClassWithoutIdRepository {
 
   /// Deletes a single [ChildClassWithoutId].
   Future<ChildClassWithoutId> deleteRow(
-    _i2.Session session,
+    _i2.DatabaseSession session,
     ChildClassWithoutId row, {
     _i2.Transaction? transaction,
   }) async {
@@ -481,7 +481,7 @@ class ChildClassWithoutIdRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<ChildClassWithoutId>> deleteWhere(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ChildClassWithoutIdTable> where,
     _i2.Transaction? transaction,
   }) async {
@@ -494,7 +494,7 @@ class ChildClassWithoutIdRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     _i2.WhereExpressionBuilder<ChildClassWithoutIdTable>? where,
     int? limit,
     _i2.Transaction? transaction,
@@ -508,7 +508,7 @@ class ChildClassWithoutIdRepository {
 
   /// Acquires row-level locks on [ChildClassWithoutId] rows matching the [where] expression.
   Future<void> lockRows(
-    _i2.Session session, {
+    _i2.DatabaseSession session, {
     required _i2.WhereExpressionBuilder<ChildClassWithoutIdTable> where,
     required _i2.LockMode lockMode,
     required _i2.Transaction transaction,

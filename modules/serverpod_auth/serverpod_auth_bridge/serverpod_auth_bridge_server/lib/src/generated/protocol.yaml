@@ -1,2 +1,24 @@
+legacyAdmin:
+  - getUserInfo:
+  - blockUser:
+  - unblockUser:
+legacyEmail:
+  - authenticate:
+  - createAccountRequest:
+  - createAccount:
+  - changePassword:
+  - initiatePasswordReset:
+  - resetPassword:
+legacyStatus:
+  - isSignedIn:
+  - signOutDevice:
+  - signOutAllDevices:
+  - getUserInfo:
+  - getUserSettingsConfig:
+legacyUser:
+  - removeUserImage:
+  - setUserImage:
+  - changeUserName:
+  - changeFullName:
 sessionMigration:
   - convertSession:

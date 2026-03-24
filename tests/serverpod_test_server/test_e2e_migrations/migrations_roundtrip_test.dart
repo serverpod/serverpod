@@ -1157,8 +1157,9 @@ void main() {
           reason: 'Should fail to create migration but exit code was 0.',
         );
 
-        var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
-        expect(migrationRegistry.versions, isNot(contains(tag)));
+        var migrationVersions =
+            await MigrationTestUtils.loadMigrationRegistry();
+        expect(migrationVersions, isNot(contains(tag)));
       },
     );
   });
@@ -1195,8 +1196,9 @@ void main() {
           reason: 'No managed changes should exit with code 0.',
         );
 
-        var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
-        expect(migrationRegistry.versions, isNot(contains(tag)));
+        var migrationVersions =
+            await MigrationTestUtils.loadMigrationRegistry();
+        expect(migrationVersions, isNot(contains(tag)));
       },
     );
   });

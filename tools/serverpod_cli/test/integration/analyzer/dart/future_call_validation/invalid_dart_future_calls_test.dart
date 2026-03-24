@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/dart/future_call_analyzers/future_call_method_parameter_validator.dart';
 import 'package:serverpod_cli/src/analyzer/dart/future_calls_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
@@ -11,6 +10,7 @@ import 'package:test/test.dart';
 import '../../../../test_util/builders/generator_config_builder.dart';
 import '../../../../test_util/endpoint_validation_helpers.dart';
 
+final config = GeneratorConfigBuilder().build();
 var pathToServerpodRoot = Directory('../..').absolute.path;
 late Directory testProjectDirectory;
 
@@ -49,16 +49,12 @@ class ExampleFutureCall extends FutureCall {
 
 
 ''');
-        final parameterValidator = FutureCallMethodParameterValidator(
-          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
-        );
 
-        analyzer = FutureCallsAnalyzer(
-          directory: testDirectory,
-          parameterValidator: parameterValidator,
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
         );
-
-        futureCallDefinitions = await analyzer.analyze(collector: collector);
       });
 
       test('then validation error for invalid Dart syntax is reported.', () {
@@ -101,16 +97,12 @@ import 'package:serverpod/serverpod.dart';
 class ExampleFutureCall extends FutureCall {
   Future<void> hello(Session session, String name) async {
 ''');
-        final parameterValidator = FutureCallMethodParameterValidator(
-          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
-        );
 
-        analyzer = FutureCallsAnalyzer(
-          directory: testDirectory,
-          parameterValidator: parameterValidator,
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
         );
-
-        futureCallDefinitions = await analyzer.analyze(collector: collector);
       });
 
       test('then validation error for invalid Dart syntax is reported.', () {
@@ -155,16 +147,12 @@ class ExampleFutureCall extends FutureCall {
   }
 }
 ''');
-        final parameterValidator = FutureCallMethodParameterValidator(
-          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
-        );
 
-        analyzer = FutureCallsAnalyzer(
-          directory: testDirectory,
-          parameterValidator: parameterValidator,
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
         );
-
-        futureCallDefinitions = await analyzer.analyze(collector: collector);
       });
 
       test('then validation error for invalid Dart syntax is reported.', () {
@@ -217,16 +205,12 @@ class ExampleFutureCallValid extends FutureCall {
   }
 }
 ''');
-      final parameterValidator = FutureCallMethodParameterValidator(
-        modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
-      );
 
-      analyzer = FutureCallsAnalyzer(
-        directory: testDirectory,
-        parameterValidator: parameterValidator,
+      analyzer = FutureCallsAnalyzer(directory: testDirectory);
+      futureCallDefinitions = await analyzer.analyze(
+        collector: collector,
+        analyzedModels: StatefulAnalyzer(config, []).validateAll(),
       );
-
-      futureCallDefinitions = await analyzer.analyze(collector: collector);
     });
 
     test('then validation error for invalid Dart syntax is reported.', () {
@@ -264,16 +248,12 @@ class InvalidClass {
 
 
 ''');
-      final parameterValidator = FutureCallMethodParameterValidator(
-        modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
-      );
 
-      analyzer = FutureCallsAnalyzer(
-        directory: testDirectory,
-        parameterValidator: parameterValidator,
+      analyzer = FutureCallsAnalyzer(directory: testDirectory);
+      await analyzer.analyze(
+        collector: collector,
+        analyzedModels: StatefulAnalyzer(config, []).validateAll(),
       );
-
-      await analyzer.analyze(collector: collector);
     });
 
     test('then no validation error for invalid Dart syntax is reported.', () {
@@ -315,16 +295,12 @@ class ExampleFutureCallValid extends FutureCall {
   }
 }
 ''');
-        final parameterValidator = FutureCallMethodParameterValidator(
-          modelAnalyzer: StatefulAnalyzer(GeneratorConfigBuilder().build(), []),
-        );
 
-        analyzer = FutureCallsAnalyzer(
-          directory: testDirectory,
-          parameterValidator: parameterValidator,
+        analyzer = FutureCallsAnalyzer(directory: testDirectory);
+        futureCallDefinitions = await analyzer.analyze(
+          collector: collector,
+          analyzedModels: StatefulAnalyzer(config, []).validateAll(),
         );
-
-        futureCallDefinitions = await analyzer.analyze(collector: collector);
       });
 
       test('then no validation error for invalid Dart syntax is reported.', () {

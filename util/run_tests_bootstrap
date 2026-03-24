@@ -6,6 +6,8 @@ if [ ! -f util/.serverpod_util_root ]; then
     exit 1
 fi
 
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+
 # Makes script exit on first non-zero error code
 set -e
 

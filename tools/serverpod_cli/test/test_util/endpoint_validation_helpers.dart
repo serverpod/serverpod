@@ -34,14 +34,13 @@ dependency_overrides:
     path: $pathToServerpodRoot/packages/serverpod_lints
   serverpod_client:
     path: $pathToServerpodRoot/packages/serverpod_client
+  serverpod_database:
+    path: $pathToServerpodRoot/packages/serverpod_database
 ''');
 
   var result = await Process.run(
     'dart',
-    [
-      'pub',
-      'get',
-    ],
+    ['pub', 'get', '--offline'],
     workingDirectory: path.join(
       Directory.current.path,
       testProjectDirectory.path,

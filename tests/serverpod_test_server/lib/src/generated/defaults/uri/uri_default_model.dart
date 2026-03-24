@@ -248,7 +248,7 @@ class UriDefaultModelRepository {
   /// );
   /// ```
   Future<List<UriDefaultModel>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<UriDefaultModelTable>? where,
     int? limit,
     int? offset,
@@ -290,7 +290,7 @@ class UriDefaultModelRepository {
   /// );
   /// ```
   Future<UriDefaultModel?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<UriDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<UriDefaultModelTable>? orderBy,
@@ -314,7 +314,7 @@ class UriDefaultModelRepository {
 
   /// Finds a single [UriDefaultModel] by its [id] or null if no such row exists.
   Future<UriDefaultModel?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -339,7 +339,7 @@ class UriDefaultModelRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<UriDefaultModel>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<UriDefaultModel> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -355,7 +355,7 @@ class UriDefaultModelRepository {
   ///
   /// The returned [UriDefaultModel] will have its `id` field set.
   Future<UriDefaultModel> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UriDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -371,7 +371,7 @@ class UriDefaultModelRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<UriDefaultModel>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<UriDefaultModel> rows, {
     _i1.ColumnSelections<UriDefaultModelTable>? columns,
     _i1.Transaction? transaction,
@@ -387,7 +387,7 @@ class UriDefaultModelRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<UriDefaultModel> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UriDefaultModel row, {
     _i1.ColumnSelections<UriDefaultModelTable>? columns,
     _i1.Transaction? transaction,
@@ -402,7 +402,7 @@ class UriDefaultModelRepository {
   /// Updates a single [UriDefaultModel] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UriDefaultModel?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     int id, {
     required _i1.ColumnValueListBuilder<UriDefaultModelUpdateTable>
     columnValues,
@@ -418,7 +418,7 @@ class UriDefaultModelRepository {
   /// Updates all [UriDefaultModel]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<UriDefaultModel>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<UriDefaultModelUpdateTable>
     columnValues,
     required _i1.WhereExpressionBuilder<UriDefaultModelTable> where,
@@ -445,7 +445,7 @@ class UriDefaultModelRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<UriDefaultModel>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<UriDefaultModel> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -457,7 +457,7 @@ class UriDefaultModelRepository {
 
   /// Deletes a single [UriDefaultModel].
   Future<UriDefaultModel> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     UriDefaultModel row, {
     _i1.Transaction? transaction,
   }) async {
@@ -469,7 +469,7 @@ class UriDefaultModelRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<UriDefaultModel>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UriDefaultModelTable> where,
     _i1.Transaction? transaction,
   }) async {
@@ -482,7 +482,7 @@ class UriDefaultModelRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<UriDefaultModelTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -496,7 +496,7 @@ class UriDefaultModelRepository {
 
   /// Acquires row-level locks on [UriDefaultModel] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UriDefaultModelTable> where,
     required _i1.LockMode lockMode,
     required _i1.Transaction transaction,

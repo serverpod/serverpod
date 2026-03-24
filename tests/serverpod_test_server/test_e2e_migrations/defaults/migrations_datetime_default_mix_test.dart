@@ -34,7 +34,7 @@ void main() {
             'migrated_table':
                 '''
         class: MigratedTable
-        table: $tableName 
+        table: $tableName
         fields:
           dateTimeDefaultNow: DateTime, defaultModel=now, defaultPersist=now
         ''',
@@ -84,7 +84,7 @@ void main() {
           var dateTimeDefaultNow = columns.last;
           expect(
             dateTimeDefaultNow.columnDefault,
-            'CURRENT_TIMESTAMP',
+            'now',
             reason: 'Could not find "columnDefault" for "dateTimeDefaultNow"',
           );
         },
@@ -99,7 +99,7 @@ void main() {
             'migrated_table':
                 '''
         class: MigratedTable
-        table: $tableName 
+        table: $tableName
         fields:
           dateTimeDefaultStr: DateTime, defaultModel=2024-05-01T22:00:00.000Z, defaultPersist=2024-05-24T22:00:00.000Z
         ''',
@@ -149,7 +149,7 @@ void main() {
           var dateTimeDefaultStr = columns.last;
           expect(
             dateTimeDefaultStr.columnDefault,
-            "'2024-05-24 22:00:00'::timestamp without time zone",
+            "2024-05-24T22:00:00.000Z",
             reason: 'Could not find "columnDefault" for "dateTimeDefaultStr"',
           );
         },
