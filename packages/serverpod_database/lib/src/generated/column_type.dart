@@ -27,9 +27,6 @@ enum ColumnType implements _i1.SerializableModel {
   /// Dart type: [double]
   doublePrecision,
 
-  /// Dart type: [Decimal]
-  numeric,
-
   /// Dart type: [DateTime]
   timestampWithoutTimeZone,
 
@@ -59,7 +56,10 @@ enum ColumnType implements _i1.SerializableModel {
   sparsevec,
 
   /// Dart type: [Bit]
-  bit;
+  bit,
+
+  /// Dart type: [Decimal]
+  numeric;
 
   static ColumnType fromJson(int index) {
     switch (index) {
@@ -72,27 +72,27 @@ enum ColumnType implements _i1.SerializableModel {
       case 3:
         return ColumnType.doublePrecision;
       case 4:
-        return ColumnType.numeric;
-      case 5:
         return ColumnType.timestampWithoutTimeZone;
-      case 6:
+      case 5:
         return ColumnType.bytea;
-      case 7:
+      case 6:
         return ColumnType.bigint;
-      case 8:
+      case 7:
         return ColumnType.uuid;
-      case 9:
+      case 8:
         return ColumnType.json;
-      case 10:
+      case 9:
         return ColumnType.unknown;
-      case 11:
+      case 10:
         return ColumnType.vector;
-      case 12:
+      case 11:
         return ColumnType.halfvec;
-      case 13:
+      case 12:
         return ColumnType.sparsevec;
-      case 14:
+      case 13:
         return ColumnType.bit;
+      case 14:
+        return ColumnType.numeric;
       default:
         throw ArgumentError(
           'Value "$index" cannot be converted to "ColumnType"',

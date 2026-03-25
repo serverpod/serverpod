@@ -1,6 +1,5 @@
 ## 3.5.0-beta.2
 
-- feat: Add first-class support for PostgreSQL `NUMERIC` / `DECIMAL` columns using `Decimal` for lossless precision.
 - fix: Fixes time spinners not updating correctly when running the `generate` or `start` commands.
 - fix: Ensures docker compose down is run on early Ctrl-C to abort the `start --watch` command.
 - fix: Fixes incremental compiler missing changes to the generated `.dart` files when running commands in watch mode.
