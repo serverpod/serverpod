@@ -371,8 +371,9 @@ abstract class EndpointPasswordlessIdpBase extends _i1.EndpointRef {
   ///   too many login attempts.
   _i2.Future<_i1.UuidValue> startLogin({required String handle});
 
-  /// Verifies a login code and returns a token that can be used to complete the
-  /// login.
+  /// Verifies the login code and completes the login in a single step.
+  ///
+  /// Returns an [AuthSuccess] with the authentication tokens.
   ///
   /// Throws a [PasswordlessLoginException] in case of errors, with reason:
   /// - [PasswordlessLoginExceptionReason.expired] if the login request has
@@ -381,22 +382,12 @@ abstract class EndpointPasswordlessIdpBase extends _i1.EndpointRef {
   ///   for the given [loginRequestId] or [verificationCode] is invalid.
   /// - [PasswordlessLoginExceptionReason.tooManyAttempts] if there have been
   ///   too many failed verification attempts.
-  _i2.Future<String> verifyLoginCode({
+  ///
+  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
+  _i2.Future<_i3.AuthSuccess> finishLogin({
     required _i1.UuidValue loginRequestId,
     required String verificationCode,
   });
-
-  /// Completes the login process and returns a new session.
-  ///
-  /// Throws a [PasswordlessLoginException] in case of errors, with reason:
-  /// - [PasswordlessLoginExceptionReason.expired] if the login request has
-  ///   already expired.
-  /// - [PasswordlessLoginExceptionReason.invalid] if the [loginToken] is invalid.
-  /// - [PasswordlessLoginExceptionReason.tooManyAttempts] if there have been
-  ///   too many failed completion attempts.
-  ///
-  /// Throws an [AuthUserBlockedException] if the auth user is blocked.
-  _i2.Future<_i3.AuthSuccess> finishLogin({required String loginToken});
 }
 
 class Caller extends _i1.ModuleEndpointCaller {

@@ -656,14 +656,14 @@ class Protocol extends _i1.SerializationManagerServer {
           columnType: _i2.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
-          columnDefault: 'gen_random_uuid_v7()',
+          columnDefault: 'random_v7',
         ),
         _i2.ColumnDefinition(
           name: 'createdAt',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
-          columnDefault: 'CURRENT_TIMESTAMP',
+          columnDefault: 'now',
         ),
         _i2.ColumnDefinition(
           name: 'nonce',
@@ -709,20 +709,6 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
-          indexName:
-              'serverpod_auth_idp_generic_passwordless_login_request_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
         _i2.IndexDefinition(
           indexName:
               'serverpod_auth_idp_generic_passwordless_login_request_nonce',

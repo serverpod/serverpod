@@ -422,7 +422,7 @@ class GenericPasswordlessLoginRequestRepository {
   /// );
   /// ```
   Future<List<GenericPasswordlessLoginRequest>> find(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<GenericPasswordlessLoginRequestTable>? where,
     int? limit,
     int? offset,
@@ -466,7 +466,7 @@ class GenericPasswordlessLoginRequestRepository {
   /// );
   /// ```
   Future<GenericPasswordlessLoginRequest?> findFirstRow(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<GenericPasswordlessLoginRequestTable>? where,
     int? offset,
     _i1.OrderByBuilder<GenericPasswordlessLoginRequestTable>? orderBy,
@@ -492,7 +492,7 @@ class GenericPasswordlessLoginRequestRepository {
 
   /// Finds a single [GenericPasswordlessLoginRequest] by its [id] or null if no such row exists.
   Future<GenericPasswordlessLoginRequest?> findById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     _i1.Transaction? transaction,
     GenericPasswordlessLoginRequestInclude? include,
@@ -519,7 +519,7 @@ class GenericPasswordlessLoginRequestRepository {
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
   Future<List<GenericPasswordlessLoginRequest>> insert(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<GenericPasswordlessLoginRequest> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
@@ -535,7 +535,7 @@ class GenericPasswordlessLoginRequestRepository {
   ///
   /// The returned [GenericPasswordlessLoginRequest] will have its `id` field set.
   Future<GenericPasswordlessLoginRequest> insertRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GenericPasswordlessLoginRequest row, {
     _i1.Transaction? transaction,
   }) async {
@@ -551,7 +551,7 @@ class GenericPasswordlessLoginRequestRepository {
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
   Future<List<GenericPasswordlessLoginRequest>> update(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<GenericPasswordlessLoginRequest> rows, {
     _i1.ColumnSelections<GenericPasswordlessLoginRequestTable>? columns,
     _i1.Transaction? transaction,
@@ -567,7 +567,7 @@ class GenericPasswordlessLoginRequestRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<GenericPasswordlessLoginRequest> updateRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GenericPasswordlessLoginRequest row, {
     _i1.ColumnSelections<GenericPasswordlessLoginRequestTable>? columns,
     _i1.Transaction? transaction,
@@ -582,7 +582,7 @@ class GenericPasswordlessLoginRequestRepository {
   /// Updates a single [GenericPasswordlessLoginRequest] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<GenericPasswordlessLoginRequest?> updateById(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     _i1.UuidValue id, {
     required _i1.ColumnValueListBuilder<
       GenericPasswordlessLoginRequestUpdateTable
@@ -600,7 +600,7 @@ class GenericPasswordlessLoginRequestRepository {
   /// Updates all [GenericPasswordlessLoginRequest]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
   Future<List<GenericPasswordlessLoginRequest>> updateWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<
       GenericPasswordlessLoginRequestUpdateTable
     >
@@ -630,7 +630,7 @@ class GenericPasswordlessLoginRequestRepository {
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
   Future<List<GenericPasswordlessLoginRequest>> delete(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     List<GenericPasswordlessLoginRequest> rows, {
     _i1.Transaction? transaction,
   }) async {
@@ -642,7 +642,7 @@ class GenericPasswordlessLoginRequestRepository {
 
   /// Deletes a single [GenericPasswordlessLoginRequest].
   Future<GenericPasswordlessLoginRequest> deleteRow(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GenericPasswordlessLoginRequest row, {
     _i1.Transaction? transaction,
   }) async {
@@ -654,7 +654,7 @@ class GenericPasswordlessLoginRequestRepository {
 
   /// Deletes all rows matching the [where] expression.
   Future<List<GenericPasswordlessLoginRequest>> deleteWhere(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<GenericPasswordlessLoginRequestTable>
     where,
     _i1.Transaction? transaction,
@@ -668,7 +668,7 @@ class GenericPasswordlessLoginRequestRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<GenericPasswordlessLoginRequestTable>? where,
     int? limit,
     _i1.Transaction? transaction,
@@ -682,7 +682,7 @@ class GenericPasswordlessLoginRequestRepository {
 
   /// Acquires row-level locks on [GenericPasswordlessLoginRequest] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.Session session, {
+    _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<GenericPasswordlessLoginRequestTable>
     where,
     required _i1.LockMode lockMode,
@@ -704,7 +704,7 @@ class GenericPasswordlessLoginRequestAttachRowRepository {
   /// Creates a relation between the given [GenericPasswordlessLoginRequest] and [SecretChallenge]
   /// by setting the [GenericPasswordlessLoginRequest]'s foreign key `challengeId` to refer to the [SecretChallenge].
   Future<void> challenge(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GenericPasswordlessLoginRequest genericPasswordlessLoginRequest,
     _i2.SecretChallenge challenge, {
     _i1.Transaction? transaction,
@@ -728,7 +728,7 @@ class GenericPasswordlessLoginRequestAttachRowRepository {
   /// Creates a relation between the given [GenericPasswordlessLoginRequest] and [SecretChallenge]
   /// by setting the [GenericPasswordlessLoginRequest]'s foreign key `loginChallengeId` to refer to the [SecretChallenge].
   Future<void> loginChallenge(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GenericPasswordlessLoginRequest genericPasswordlessLoginRequest,
     _i2.SecretChallenge loginChallenge, {
     _i1.Transaction? transaction,
@@ -759,7 +759,7 @@ class GenericPasswordlessLoginRequestDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> loginChallenge(
-    _i1.Session session,
+    _i1.DatabaseSession session,
     GenericPasswordlessLoginRequest genericPasswordlessLoginRequest, {
     _i1.Transaction? transaction,
   }) async {
