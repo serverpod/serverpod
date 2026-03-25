@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert' show jsonDecode;
 
 import 'package:serverpod/serverpod.dart';
 
@@ -12,19 +13,6 @@ import 'passwordless_idp.dart';
 export '../../../common/rate_limited_request_attempt/rate_limit.dart';
 export '../../utils/default_code_generators.dart'
     show defaultNumericVerificationCodeGenerator;
-
-/// Function for sending out passwordless verification codes.
-typedef SendPasswordlessVerificationCodeFunction =
-    FutureOr<void> Function(
-      Session session, {
-      required String handle,
-      required UuidValue requestId,
-      required String verificationCode,
-      required Transaction? transaction,
-    });
-
-/// Function for converting a handle to a stable serialized string.
-typedef SerializeHandleFunction<THandle> = String Function(THandle handle);
 
 /// Function for reading a handle from its serialized representation.
 typedef DeserializeHandleFunction<THandle> = THandle Function(String handle);
@@ -40,6 +28,19 @@ typedef ResolveAuthUserIdFunction<THandle> =
       required THandle handle,
       required Transaction? transaction,
     });
+
+/// Function for sending out passwordless verification codes.
+typedef SendPasswordlessVerificationCodeFunction =
+    FutureOr<void> Function(
+      Session session, {
+      required String handle,
+      required UuidValue requestId,
+      required String verificationCode,
+      required Transaction? transaction,
+    });
+
+/// Function for converting a handle to a stable serialized string.
+typedef SerializeHandleFunction<THandle> = String Function(THandle handle);
 
 /// {@template passwordless_idp_config}
 /// Configuration options for the passwordless identity provider.
@@ -111,16 +112,6 @@ class PasswordlessIdpConfig<THandle>
        deserializeHandle =
            deserializeHandle ?? _defaultDeserializeHandle<THandle>();
 
-  static SerializeHandleFunction<THandle> _defaultSerializeHandle<THandle>() =>
-      (final handle) =>
-          handle is String ? handle : SerializationManager.encode(handle);
-
-  static DeserializeHandleFunction<THandle>
-  _defaultDeserializeHandle<THandle>() =>
-      (final handle) => THandle == String
-      ? handle as THandle
-      : proto.Protocol().deserialize<THandle>(handle);
-
   @override
   PasswordlessIdp<THandle> build({
     required final TokenManager tokenManager,
@@ -133,6 +124,32 @@ class PasswordlessIdpConfig<THandle>
       authUsers: authUsers,
     );
   }
+
+  static DeserializeHandleFunction<THandle>
+  _defaultDeserializeHandle<THandle>() => (final handle) {
+    if (THandle == String) return handle as THandle;
+    // SerializationManager.encode produces JSON (e.g. '42' for int,
+    // '"uuid-str"' for UuidValue). Decode the JSON first so that
+    // Protocol().deserialize receives the native type it expects.
+    // For raw endpoint strings that are not valid JSON (e.g. a bare
+    // UUID), fall back to passing the string directly.
+    try {
+      return proto.Protocol().deserialize<THandle>(jsonDecode(handle));
+    } on FormatException {
+      return proto.Protocol().deserialize<THandle>(handle);
+    }
+  };
+
+  static SerializeHandleFunction<THandle> _defaultSerializeHandle<THandle>() =>
+      (final handle) {
+        if (handle is String) return handle;
+        final encoded = SerializationManager.encode(handle);
+        // SerializationManager.encode produces JSON, which wraps string-valued
+        // types (e.g. UuidValue) in quotes. Unwrap so that the stored value is
+        // a plain string suitable for DB equality queries and display.
+        final decoded = jsonDecode(encoded);
+        return decoded is String ? decoded : encoded;
+      };
 }
 
 /// Creates a new [PasswordlessIdpConfig] instance from passwords.yaml
