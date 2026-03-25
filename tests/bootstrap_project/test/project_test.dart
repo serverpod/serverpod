@@ -685,10 +685,10 @@ void main() async {
         });
 
         test(
-          'then the root pubspec contains override for flutter secure storage',
+          'then the flutter pubspec contains override for flutter secure storage',
           () {
             final pubspec = File(
-              path.join(tempPath, projectName, 'pubspec.yaml'),
+              path.join(tempPath, flutterDir, 'pubspec.yaml'),
             );
             final content = pubspec.readAsStringSync();
             expect(content, contains('flutter_secure_storage'));
