@@ -105,8 +105,8 @@ void main() {
     initializeLogger();
   });
 
-  tearDownAll(() {
-    resetLogger();
+  tearDownAll(() async {
+    await closeLogger();
   });
 
   late _FakeCompiler compiler;

@@ -125,5 +125,5 @@ ServerpodCommandRunner buildCommandRunner() {
 
 Future<void> _preExit() async {
   _analytics.cleanUp();
-  await log.flush();
+  await closeLogger();
 }

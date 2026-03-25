@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:isolate';
 import 'dart:math' as math;
 
 import 'package:cli_tools/cli_tools.dart';
@@ -163,7 +162,7 @@ Future<bool> performCreate(
     });
   }
 
-  success &= await _runGenerateInIsolate(
+  success &= await _runGenerate(
     serverpodDirs.serverDir,
     CommandLineExperimentalFeatures.instance.features,
     interactive: interactive,
@@ -285,7 +284,7 @@ Future<bool> _performUpgrade(
     },
   );
 
-  success &= await _runGenerateInIsolate(
+  success &= await _runGenerate(
     serverpodDir.serverDir,
     CommandLineExperimentalFeatures.instance.features,
     interactive: interactive,
@@ -473,6 +472,13 @@ Future<void> _copyFlutterUpgrade(
         ),
         type: DependencyType.normal,
       ),
+      (
+        name: 'flutter_secure_storage',
+        source: DependencySource.version(
+          VersionConstraint.parse('^10.0.0'),
+        ),
+        type: DependencyType.override,
+      ),
     ],
   );
 
@@ -486,23 +492,6 @@ Future<void> _copyFlutterUpgrade(
           VersionConstraint.parse(templateVersion),
         ),
         type: DependencyType.normal,
-      ),
-    ],
-  );
-
-  log.debug(
-    'Adding flutter_secure_storage override to root pubspec',
-    newParagraph: true,
-  );
-  _addDependenciesToPubspec(
-    pubspecFile: File(p.join(serverpodDirs.projectDir.path, 'pubspec.yaml')),
-    additions: [
-      (
-        name: 'flutter_secure_storage',
-        source: DependencySource.version(
-          VersionConstraint.parse('^10.0.0'),
-        ),
-        type: DependencyType.override,
       ),
     ],
   );
@@ -1076,20 +1065,18 @@ void _copyModuleTemplates(
   );
 }
 
-Future<bool> _runGenerateInIsolate(
+Future<bool> _runGenerate(
   Directory serverDir,
   List<ExperimentalFeature> experimentalFeatures, {
   required bool? interactive,
 }) {
   final serverDirPath = serverDir.path;
   return log.progress('Running serverpod generator', () async {
-    return await Isolate.run(() {
-      CommandLineExperimentalFeatures.initialize(experimentalFeatures);
-      return GenerateFiles.generateFiles(
-        Directory(serverDirPath),
-        interactive: interactive,
-      );
-    });
+    CommandLineExperimentalFeatures.initialize(experimentalFeatures);
+    return await GenerateFiles.generateFiles(
+      Directory(serverDirPath),
+      interactive: interactive,
+    );
   });
 }
 

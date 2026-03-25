@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
@@ -141,16 +140,10 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
     }
 
     late final bool success;
-    final logLevel = log.logLevel;
     if (watch) {
-      // Watch mode: the entire loop (generation + file watching) runs in one
-      // long-lived isolate so analyzers persist and can be updated
-      // incrementally on each file change.
-      success = await Isolate.run(
-        () => _performGenerateWatch(config: config, logLevel: logLevel),
-      );
+      success = await _performGenerateWatch(config: config);
     } else {
-      success = await generateInIsolate(config);
+      success = await performOneShotGenerate(config: config);
     }
 
     if (!success) {
@@ -162,13 +155,9 @@ class GenerateCommand extends ServerpodCommand<GenerateOption> {
 }
 
 /// One-shot code generation in an isolate-friendly function.
-///
-/// Sets the log level (for isolate use) and creates fresh analyzers.
 Future<bool> performOneShotGenerate({
   required GeneratorConfig config,
-  required LogLevel logLevel,
 }) async {
-  log.logLevel = logLevel;
   final analyzers = await createAnalyzers(config);
   final allSources = await enumerateSourceFiles(config);
   final result = await analyzeAndGenerate(
@@ -180,14 +169,6 @@ Future<bool> performOneShotGenerate({
     skipStalenessCheck: true,
   );
   return result.success;
-}
-
-/// Runs one-shot code generation in a fresh isolate.
-Future<bool> generateInIsolate(GeneratorConfig config) {
-  final logLevel = log.logLevel;
-  return Isolate.run(
-    () => performOneShotGenerate(config: config, logLevel: logLevel),
-  );
 }
 
 /// Analyzes affected paths and runs code generation if needed.
@@ -250,10 +231,7 @@ Future<GenerateResult> analyzeAndGenerate({
 /// Watch-mode code generation with persistent analyzers and file watching.
 Future<bool> _performGenerateWatch({
   required GeneratorConfig config,
-  required LogLevel logLevel,
 }) async {
-  log.logLevel = logLevel;
-
   final analyzers = await createAnalyzers(config);
   final allSources = await enumerateSourceFiles(config);
   final initialResult = await analyzeAndGenerate(

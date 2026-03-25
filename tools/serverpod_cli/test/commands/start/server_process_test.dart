@@ -50,8 +50,8 @@ void main() {
     initializeLogger();
   });
 
-  tearDownAll(() {
-    resetLogger();
+  tearDownAll(() async {
+    await closeLogger();
   });
 
   group('Given a ServerProcess with a simple exit command', () {
