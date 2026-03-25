@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../../localization/sign_in_localization_provider_widget.dart';
+import '../../../localization/sign_in_localization_provider_widget.dart';
 
 /// Localized strings for password rule labels (e.g. minimum length, character
 /// classes).

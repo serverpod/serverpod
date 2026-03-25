@@ -1,14 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../anonymous/anonymous_sign_in_texts.dart';
-import '../apple/apple_sign_in_texts.dart';
-import '../common/widgets/password_requirement_texts.dart';
-import '../email/email_sign_in_texts.dart';
-import '../facebook/facebook_sign_in_texts.dart';
-import '../github/github_sign_in_texts.dart';
-import '../google/google_sign_in_texts.dart';
-import '../microsoft/microsoft_sign_in_texts.dart';
-import 'basic_sign_in_texts.dart';
+import 'sign_in_localization_provider.dart';
 
 /// Inherited widget that provides customizable sign-in texts.
 class SignInLocalizationProvider extends InheritedWidget {

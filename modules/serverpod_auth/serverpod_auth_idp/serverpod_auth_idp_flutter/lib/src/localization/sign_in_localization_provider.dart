@@ -1,6 +1,6 @@
 export '../anonymous/anonymous_sign_in_texts.dart';
 export '../apple/apple_sign_in_texts.dart';
-export '../common/widgets/password_requirements.dart';
+export '../common/widgets/password_requirements/requirements.dart';
 export '../email/email_sign_in_texts.dart';
 export '../facebook/facebook_sign_in_texts.dart';
 export '../github/github_sign_in_texts.dart';
