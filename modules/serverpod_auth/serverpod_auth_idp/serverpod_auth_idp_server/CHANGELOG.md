@@ -1,3 +1,9 @@
+## 3.4.5
+
+- fix: Truncates logged error messages to prevent hanging on formatter issues during code generation.
+- fix: Fixes the CLI invoking the welcome page more than once per install.
+- chore: Moves the `flutter_secure_storage` override from the workspace to the created Flutter package on a new project.
+
 ## 3.4.4
 
 - fix: Fixes Google Sign-In not handling error when invoked directly from the controller.
