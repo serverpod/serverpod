@@ -1,5 +1,6 @@
 export 'package:meta/meta.dart' show useResult, immutable;
 export 'package:uuid/uuid.dart';
+export 'package:decimal/decimal.dart';
 
 export 'src/auth_encoding.dart';
 export 'src/bytedata_base64_ext.dart';

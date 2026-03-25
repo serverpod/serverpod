@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
@@ -803,6 +804,8 @@ class ModelParser {
         return int.tryParse(valueStr);
       case 'double':
         return double.tryParse(valueStr);
+      case 'Decimal':
+        return Decimal.tryParse(valueStr);
       case 'bool':
         var lower = valueStr.toLowerCase();
         if (lower == 'true') return true;

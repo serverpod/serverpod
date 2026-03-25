@@ -1989,6 +1989,11 @@ class SerializableModelLibraryGenerator {
         return refer(
           field.type.className,
         ).property('parse').call([literalString(defaultValue)]).code;
+      case DefaultValueAllowedType.decimal:
+        return refer(
+          field.type.className,
+          serverpodUrl(serverCode),
+        ).property('parse').call([literalString(defaultValue)]).code;
       case DefaultValueAllowedType.duration:
         Duration parsedDuration = parseDuration(defaultValue);
         return refer(field.type.className).constInstance([], {
@@ -3210,6 +3215,11 @@ class SerializableModelLibraryGenerator {
         return literalNum(value);
       case 'double':
         return literalNum(value);
+      case 'Decimal':
+        return refer(
+          'Decimal',
+          'package:decimal/decimal.dart',
+        ).property('parse').call([literalString(value.toString())]);
       case 'bool':
         return literalBool(value);
       case 'String':
@@ -3228,7 +3238,9 @@ class SerializableModelLibraryGenerator {
     var isNullable = type.endsWith('?');
     var baseType = isNullable ? type.substring(0, type.length - 1) : type;
 
-    var typeRef = refer(baseType);
+    var typeRef = baseType == 'Decimal'
+        ? refer('Decimal', 'package:decimal/decimal.dart')
+        : refer(baseType);
     return isNullable
         ? TypeReference(
             (t) => t

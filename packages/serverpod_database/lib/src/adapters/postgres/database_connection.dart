@@ -652,15 +652,30 @@ class PostgresDatabaseConnection
 
     return result.map((row) {
       return {
-        for (final entry in row.toColumnMap().entries)
-          // Serverpod serialization already knows the type of the target
-          // class, so we can remove `UndecodedBytes` here to avoid the
-          // dependency of serverpod_serialization on the `postgres` package.
-          entry.key: entry.value is pg.UndecodedBytes
-              ? (entry.value as pg.UndecodedBytes).bytes
-              : entry.value,
+        for (final (index, column) in row.schema.columns.indexed)
+          column.columnName ?? '[$index]': _decodeResultValue(
+            row[index],
+            column.typeOid,
+          ),
       };
     });
+  }
+
+  dynamic _decodeResultValue(dynamic value, int typeOid) {
+    // Serverpod serialization already knows the type of the target class, so
+    // we can remove `UndecodedBytes` here to avoid the dependency of
+    // serverpod_serialization on the `postgres` package.
+    if (value is pg.UndecodedBytes) {
+      return value.bytes;
+    }
+
+    // PostgreSQL numeric / decimal values are returned as strings by the
+    // driver. Parse through Decimal to preserve arbitrary precision.
+    if (typeOid == pg.Type.numeric.oid && value != null && value is! Decimal) {
+      return Decimal.parse(value.toString());
+    }
+
+    return value;
   }
 
   pg.Session _resolveQueryContext(Transaction? transaction) {
@@ -941,6 +956,7 @@ class PostgresDatabaseConnection
     if (column is ColumnBool) return 'boolean';
     if (column is ColumnInt) return 'bigint';
     if (column is ColumnDouble) return 'double precision';
+    if (column is ColumnDecimal) return 'numeric';
     if (column is ColumnDateTime) return 'timestamp without time zone';
     if (column is ColumnByteData) return 'bytea';
     if (column is ColumnDuration) return 'bigint';

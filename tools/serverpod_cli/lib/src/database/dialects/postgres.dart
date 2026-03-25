@@ -187,6 +187,9 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
       case ColumnType.doublePrecision:
         type = 'double precision';
         break;
+      case ColumnType.numeric:
+        type = 'numeric';
+        break;
       case ColumnType.integer:
         type = 'integer';
         break;
@@ -707,6 +710,7 @@ extension PostgresColumnTypeDefault on ColumnType {
       case ColumnType.boolean:
       case ColumnType.integer:
       case ColumnType.doublePrecision:
+      case ColumnType.numeric:
       case ColumnType.bigint:
         return '$defaultValue';
       case ColumnType.text:

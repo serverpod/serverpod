@@ -1,0 +1,6 @@
+class: ObjectWithDecimal
+table: object_with_decimal
+fields:
+  notNullableDecimal: Decimal
+  nullableDecimal: Decimal?
+  highPrecisionDecimal: Decimal

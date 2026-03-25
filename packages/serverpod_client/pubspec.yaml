@@ -13,6 +13,7 @@ environment:
 
 dependencies:
   collection: ^1.18.0
+  decimal: ^3.2.4
   http: '>=1.1.0 <2.0.0'
   meta: ^1.15.0
   serverpod_serialization: 3.5.0-beta.2

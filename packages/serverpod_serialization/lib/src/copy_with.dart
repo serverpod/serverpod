@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:decimal/decimal.dart';
 import 'package:uuid/uuid.dart';
 
 import 'pgvector.dart';
@@ -78,4 +79,5 @@ const _nonMutableTypes = [
   UuidValue,
   Uri,
   BigInt,
+  Decimal,
 ];

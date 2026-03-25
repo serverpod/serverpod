@@ -157,6 +157,7 @@ Expression _buildFromJson(
         field,
       );
     case ValueType.bigInt:
+    case ValueType.decimal:
       return _buildComplexTypeFromJson(
         type,
         valueExpression,

@@ -323,6 +323,21 @@ class ColumnDouble extends ColumnComparable<double>
   Expression _encodeValueForQuery(double value) => Expression(value);
 }
 
+/// A [Column] holding a [Decimal].
+class ColumnDecimal extends ColumnComparable<Decimal>
+    with _ColumnComparisonBetweenOperations<Decimal> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnDecimal(
+    super.columnName,
+    super.table, {
+    super.hasDefault,
+    super.fieldName,
+  });
+
+  @override
+  Expression _encodeValueForQuery(Decimal value) => EscapedExpression(value);
+}
+
 /// A [Column] holding a count of rows.
 class ColumnCount extends _ValueOperatorColumn<int>
     with

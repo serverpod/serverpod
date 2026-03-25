@@ -21,6 +21,7 @@ void main() {
       'UuidValue',
       'Uri',
       'BigInt',
+      'Decimal',
       'ByteData',
     ];
 
@@ -1683,6 +1684,40 @@ fields:
     test('then a definition column type is set to bigint.', () {
       var definition = definitions.first as ClassDefinition;
       expect(definition.fields.first.type.databaseType, 'bigint');
+    });
+  });
+
+  group('Given a class with a Decimal field when analyzing', () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+            class: Example
+            fields:
+              amount: Decimal
+            ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+
+    test('then no errors was generated.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then a definition column type is set to numeric.', () {
+      var definition = definitions.first as ClassDefinition;
+      expect(definition.fields.first.type.databaseType, 'numeric');
+    });
+
+    test('then a definition runtime column type is set to ColumnDecimal.', () {
+      var definition = definitions.first as ClassDefinition;
+      expect(definition.fields.first.type.columnType, 'ColumnDecimal');
     });
   });
 

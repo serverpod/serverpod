@@ -347,7 +347,9 @@ class TypeDefinition {
                   'package:uuid/uuid.dart',
                 ].contains(url)) ||
             (url == null &&
-                (['UuidValue', ...vectorClassNames]).contains(className))) {
+                (['UuidValue', 'Decimal', ...vectorClassNames]).contains(
+                  className,
+                ))) {
           // serverpod: reference
           t.url = serverpodUrl(serverCode);
         } else if (url?.startsWith('project:') ?? false) {
@@ -458,6 +460,7 @@ class TypeDefinition {
     if (className == 'UuidValue') return 'uuid';
     if (className == 'Uri') return 'text';
     if (className == 'BigInt') return 'text';
+    if (className == 'Decimal') return 'numeric';
     if (className == 'Vector') return 'vector';
     if (className == 'HalfVector') return 'halfvec';
     if (className == 'SparseVector') return 'sparsevec';
@@ -485,6 +488,7 @@ class TypeDefinition {
     if (className == 'UuidValue') return 'ColumnUuid';
     if (className == 'Uri') return 'ColumnUri';
     if (className == 'BigInt') return 'ColumnBigInt';
+    if (className == 'Decimal') return 'ColumnDecimal';
     if (className == 'Vector') return 'ColumnVector';
     if (className == 'HalfVector') return 'ColumnHalfVector';
     if (className == 'SparseVector') return 'ColumnSparseVector';
@@ -787,6 +791,7 @@ class TypeDefinition {
     if (className == 'ByteData') return ValueType.byteData;
     if (className == 'UuidValue') return ValueType.uuidValue;
     if (className == 'BigInt') return ValueType.bigInt;
+    if (className == 'Decimal') return ValueType.decimal;
     if (className == 'Vector') return ValueType.vector;
     if (className == 'HalfVector') return ValueType.halfVector;
     if (className == 'SparseVector') return ValueType.sparseVector;
@@ -818,6 +823,8 @@ class TypeDefinition {
         return DefaultValueAllowedType.uuidValue;
       case ValueType.bigInt:
         return DefaultValueAllowedType.bigInt;
+      case ValueType.decimal:
+        return DefaultValueAllowedType.decimal;
       case ValueType.duration:
         return DefaultValueAllowedType.duration;
       case ValueType.isEnum:
@@ -1010,6 +1017,7 @@ enum ValueType {
   byteData,
   uuidValue,
   bigInt,
+  decimal,
   list,
   set,
   map,
@@ -1031,6 +1039,7 @@ enum DefaultValueAllowedType {
   string,
   uuidValue,
   bigInt,
+  decimal,
   duration,
   uri,
   isEnum,

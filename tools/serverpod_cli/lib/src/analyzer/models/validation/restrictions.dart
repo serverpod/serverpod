@@ -2237,7 +2237,13 @@ class Restrictions {
     return errors;
   }
 
-  static const _supportedPropertyTypes = ['int', 'double', 'bool', 'String'];
+  static const _supportedPropertyTypes = [
+    'int',
+    'double',
+    'Decimal',
+    'bool',
+    'String',
+  ];
 
   SourceSpanSeverityException? _validateEnumPropertyType(
     String propertyValue,

@@ -656,4 +656,28 @@ END
       },
     );
   });
+
+  test(
+    'Given a model with a Decimal field when generating PostgreSQL SQL then the column type is numeric.',
+    () {
+      var modelName = 'decimalModel';
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(modelName.sentenceCase)
+            .withFileName(modelName)
+            .withTableName(modelName)
+            .withSimpleField('amount', 'Decimal')
+            .build(),
+      ];
+
+      var databaseDefinition = createDatabaseDefinitionFromModels(
+        models,
+        'example',
+        [],
+      );
+      var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+      expect(pgsql, contains('"amount" numeric NOT NULL'));
+    },
+  );
 }

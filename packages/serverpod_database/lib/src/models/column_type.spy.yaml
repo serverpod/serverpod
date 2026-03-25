@@ -11,6 +11,8 @@ values:
   - integer
   ### Dart type: [double]
   - doublePrecision
+  ### Dart type: [Decimal]
+  - numeric
   ### Dart type: [DateTime]
   - timestampWithoutTimeZone
   ### Dart type: [ByteData]

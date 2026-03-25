@@ -27,6 +27,9 @@ enum ColumnType implements _i1.SerializableModel {
   /// Dart type: [double]
   doublePrecision,
 
+  /// Dart type: [Decimal]
+  numeric,
+
   /// Dart type: [DateTime]
   timestampWithoutTimeZone,
 
@@ -69,24 +72,26 @@ enum ColumnType implements _i1.SerializableModel {
       case 3:
         return ColumnType.doublePrecision;
       case 4:
-        return ColumnType.timestampWithoutTimeZone;
+        return ColumnType.numeric;
       case 5:
-        return ColumnType.bytea;
+        return ColumnType.timestampWithoutTimeZone;
       case 6:
-        return ColumnType.bigint;
+        return ColumnType.bytea;
       case 7:
-        return ColumnType.uuid;
+        return ColumnType.bigint;
       case 8:
-        return ColumnType.json;
+        return ColumnType.uuid;
       case 9:
-        return ColumnType.unknown;
+        return ColumnType.json;
       case 10:
-        return ColumnType.vector;
+        return ColumnType.unknown;
       case 11:
-        return ColumnType.halfvec;
+        return ColumnType.vector;
       case 12:
-        return ColumnType.sparsevec;
+        return ColumnType.halfvec;
       case 13:
+        return ColumnType.sparsevec;
+      case 14:
         return ColumnType.bit;
       default:
         throw ArgumentError(
