@@ -107,7 +107,7 @@ class SignInScreen extends StatelessWidget {
       // See the `firebase.dart` file for more information.
       // body: FirebaseSignInScreen(client: client),
       body: SignInLocalizationProvider(
-        basic: BasicSignInTexts(
+        basic: const BasicSignInTexts(
           noAuthenticationProvidersConfigured: 'No auth providers configured',
           orContinueWith: 'or continue with',
         ),
@@ -129,12 +129,12 @@ class SignInScreen extends StatelessWidget {
           containsNumber: 'Contains at least one number',
           containsSpecialCharacter: 'Contains at least one special character',
         ),
-        apple: AppleSignInTexts(signInButton: 'Use Apple account'),
-        google: GoogleSignInTexts(signInButton: 'Use Google account'),
-        github: GitHubSignInTexts(signInButton: 'Use GitHub account'),
-        microsoft: MicrosoftSignInTexts(signInButton: 'Use Microsoft account'),
-        facebook: FacebookSignInTexts(signInButton: 'Use Facebook account'),
-        anonymous: AnonymousSignInTexts(signInButton: 'Continue as guest'),
+        apple: const AppleSignInTexts(signInButton: 'Apple'),
+        google: const GoogleSignInTexts(signInButton: 'Google'),
+        github: const GitHubSignInTexts(signInButton: 'GitHub'),
+        microsoft: const MicrosoftSignInTexts(signInButton: 'Microsoft'),
+        facebook: const FacebookSignInTexts(signInButton: 'Facebook'),
+        anonymous: const AnonymousSignInTexts(signInButton: 'Sign In as Guest'),
         child: SignInWidget(
           client: client,
           // NOTE: No need to call navigation here if it gets done on the
