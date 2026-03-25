@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../anonymous/anonymous_sign_in_texts.dart';
 import '../apple/apple_sign_in_texts.dart';
+import '../common/widgets/password_requirement_texts.dart';
 import '../email/email_sign_in_texts.dart';
 import '../facebook/facebook_sign_in_texts.dart';
 import '../github/github_sign_in_texts.dart';
@@ -21,6 +22,7 @@ class SignInLocalizationProvider extends InheritedWidget {
     this.microsoft = MicrosoftSignInTexts.defaults,
     this.facebook = FacebookSignInTexts.defaults,
     this.anonymous = AnonymousSignInTexts.defaults,
+    this.passwordRequirementTexts = PasswordRequirementTexts.defaults,
     required super.child,
     super.key,
   });
@@ -49,6 +51,9 @@ class SignInLocalizationProvider extends InheritedWidget {
   /// Texts for anonymous sign-in.
   final AnonymousSignInTexts anonymous;
 
+  /// Texts for password requirements.
+  final PasswordRequirementTexts passwordRequirementTexts;
+
   /// Returns the nearest localization provider in the widget tree, if any.
   static SignInLocalizationProvider? maybeOf(BuildContext context) {
     return context
@@ -75,6 +80,7 @@ class SignInLocalizationProvider extends InheritedWidget {
         oldWidget.github != github ||
         oldWidget.microsoft != microsoft ||
         oldWidget.facebook != facebook ||
-        oldWidget.anonymous != anonymous;
+        oldWidget.anonymous != anonymous ||
+        oldWidget.passwordRequirementTexts != passwordRequirementTexts;
   }
 }

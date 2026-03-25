@@ -2,7 +2,6 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 
-import '../common/widgets/password_requirements.dart';
 import '../localization/sign_in_localization_provider.dart';
 import 'email_auth_controller.dart';
 import 'forms/login.dart';
