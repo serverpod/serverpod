@@ -526,6 +526,7 @@ extension FilterConstraintGenerator on FilterConstraint {
     if (columnType == ColumnType.integer ||
         columnType == ColumnType.bigint ||
         columnType == ColumnType.doublePrecision ||
+        columnType == ColumnType.numeric ||
         columnType == ColumnType.boolean) {
       formattedValue = value;
     } else if (columnType == ColumnType.text) {

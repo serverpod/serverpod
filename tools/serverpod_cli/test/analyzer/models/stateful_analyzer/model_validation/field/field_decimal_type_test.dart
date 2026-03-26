@@ -9,85 +9,91 @@ import '../../../../../test_util/builders/model_source_builder.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  test(
-    'Given a class with a Decimal field when analyzing then the field is parsed as Decimal.',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+  group('Given Decimal type fields when analyzing', () {
+    test(
+      'Given a class with a Decimal field when analyzing then the field is parsed as Decimal.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
           class: Example
           fields:
             amount: Decimal
           ''',
-        ).build(),
-      ];
+          ).build(),
+        ];
 
-      var collector = CodeGenerationCollector();
-      var definitions = StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
+        var collector = CodeGenerationCollector();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
-      expect(collector.errors, isEmpty);
-      var definition = definitions.first as ClassDefinition;
-      expect(definition.fields.first.type.className, 'Decimal');
-      expect(definition.fields.first.type.nullable, isFalse);
-    },
-  );
+        expect(collector.errors, isEmpty);
+        expect(definitions, isNotEmpty);
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields, isNotEmpty);
+        expect(definition.fields.first.type.className, 'Decimal');
+        expect(definition.fields.first.type.nullable, isFalse);
+      },
+    );
 
-  test(
-    'Given a class with a nullable Decimal field when analyzing then the field is parsed as nullable Decimal.',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+    test(
+      'Given a class with a nullable Decimal field when analyzing then the field is parsed as nullable Decimal.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
           class: Example
           fields:
             amount: Decimal?
           ''',
-        ).build(),
-      ];
+          ).build(),
+        ];
 
-      var collector = CodeGenerationCollector();
-      var definitions = StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
+        var collector = CodeGenerationCollector();
+        var definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
-      expect(collector.errors, isEmpty);
-      var definition = definitions.first as ClassDefinition;
-      expect(definition.fields.first.type.className, 'Decimal');
-      expect(definition.fields.first.type.nullable, isTrue);
-    },
-  );
+        expect(collector.errors, isEmpty);
+        expect(definitions, isNotEmpty);
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields, isNotEmpty);
+        expect(definition.fields.first.type.className, 'Decimal');
+        expect(definition.fields.first.type.nullable, isTrue);
+      },
+    );
 
-  test(
-    'Given a class with a generic Decimal type when analyzing then an error is reported.',
-    () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
+    test(
+      'Given a class with a generic Decimal type when analyzing then an error is reported.',
+      () {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
           class: Example
           fields:
             amount: Decimal<String>
           ''',
-        ).build(),
-      ];
+          ).build(),
+        ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
 
-      expect(collector.errors, isNotEmpty);
-      expect(
-        collector.errors.first.message,
-        'The type "Decimal" cannot have generic types defined.',
-      );
-    },
-  );
+        expect(collector.errors, isNotEmpty);
+        expect(
+          collector.errors.first.message,
+          'The type "Decimal" cannot have generic types defined.',
+        );
+      },
+    );
+  });
 }
