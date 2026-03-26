@@ -481,7 +481,7 @@ class DefaultValueRestriction extends ValueRestriction {
       return [
         SourceSpanSeverityException(
           'The "$key" value must be a valid Decimal '
-          '(e.g., "$key"=\'123.456\').',
+          '(e.g., "$key"=123.456).',
           span,
         ),
       ];
