@@ -1993,7 +1993,7 @@ class SerializableModelLibraryGenerator {
         return refer(
           field.type.className,
           serverpodUrl(serverCode),
-        ).property('parse').call([literalString(defaultValue)]).code;
+        ).property('parse').call([literalString(defaultValue.toString())]).code;
       case DefaultValueAllowedType.duration:
         Duration parsedDuration = parseDuration(defaultValue);
         return refer(field.type.className).constInstance([], {
