@@ -106,19 +106,49 @@ class SignInScreen extends StatelessWidget {
       // Uncomment this to replace the default sign-in screen with Firebase.
       // See the `firebase.dart` file for more information.
       // body: FirebaseSignInScreen(client: client),
-      body: SignInWidget(
-        client: client,
-        // NOTE: No need to call navigation here if it gets done on the
-        // client.auth.authInfo listener.
-        onAuthenticated: () => onAuthenticated(context),
-        onError: (error) => onError(context, error),
-        // NOTE: To customize widgets, pass the desired widget here.
-        // googleSignInWidget: GoogleSignInWidget(
-        //   client: client,
-        //   onAuthenticated: () => onAuthenticated(context),
-        //   onError: (error) => onError(context, error),
-        //   scopes: const [],
-        // ),
+      body: SignInLocalizationProvider(
+        basic: const BasicSignInTexts(
+          noAuthenticationProvidersConfigured: 'No auth providers configured',
+          orContinueWith: 'or continue with',
+        ),
+        // To override only a few, you can use the copyWith method.
+        email: EmailSignInTexts.defaults.copyWith(
+          title: 'Sign in with email',
+          forgotPassword: 'Forgot password?',
+          signIn: 'Sign in',
+          dontHaveAnAccount: "Don't have an account?",
+          signUp: 'Sign up',
+          signUpTitle: 'Sign up with email',
+          continueAction: 'Continue',
+        ),
+        passwordRequirementTexts: PasswordRequirementTexts.defaults.copyWith(
+          minLengthTemplate: 'At least {length} characters',
+          maxLengthTemplate: 'At most {length} characters',
+          containsLowercase: 'Contains at least one lowercase letter',
+          containsUppercase: 'Contains at least one uppercase letter',
+          containsNumber: 'Contains at least one number',
+          containsSpecialCharacter: 'Contains at least one special character',
+        ),
+        apple: const AppleSignInTexts(signInButton: 'Apple'),
+        google: const GoogleSignInTexts(signInButton: 'Google'),
+        github: const GitHubSignInTexts(signInButton: 'GitHub'),
+        microsoft: const MicrosoftSignInTexts(signInButton: 'Microsoft'),
+        facebook: const FacebookSignInTexts(signInButton: 'Facebook'),
+        anonymous: const AnonymousSignInTexts(signInButton: 'Sign In as Guest'),
+        child: SignInWidget(
+          client: client,
+          // NOTE: No need to call navigation here if it gets done on the
+          // client.auth.authInfo listener.
+          onAuthenticated: () => onAuthenticated(context),
+          onError: (error) => onError(context, error),
+          // NOTE: To customize widgets, pass the desired widget here.
+          // googleSignInWidget: GoogleSignInWidget(
+          //   client: client,
+          //   onAuthenticated: () => onAuthenticated(context),
+          //   onError: (error) => onError(context, error),
+          //   scopes: const [],
+          // ),
+        ),
       ),
     );
   }

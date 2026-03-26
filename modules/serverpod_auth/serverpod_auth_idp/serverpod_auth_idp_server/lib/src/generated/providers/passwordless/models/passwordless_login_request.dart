@@ -24,8 +24,6 @@ abstract class GenericPasswordlessLoginRequest
     required this.nonce,
     required this.challengeId,
     this.challenge,
-    this.loginChallengeId,
-    this.loginChallenge,
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory GenericPasswordlessLoginRequest({
@@ -34,8 +32,6 @@ abstract class GenericPasswordlessLoginRequest
     required String nonce,
     required _i1.UuidValue challengeId,
     _i2.SecretChallenge? challenge,
-    _i1.UuidValue? loginChallengeId,
-    _i2.SecretChallenge? loginChallenge,
   }) = _GenericPasswordlessLoginRequestImpl;
 
   factory GenericPasswordlessLoginRequest.fromJson(
@@ -57,16 +53,6 @@ abstract class GenericPasswordlessLoginRequest
           : _i3.Protocol().deserialize<_i2.SecretChallenge>(
               jsonSerialization['challenge'],
             ),
-      loginChallengeId: jsonSerialization['loginChallengeId'] == null
-          ? null
-          : _i1.UuidValueJsonExtension.fromJson(
-              jsonSerialization['loginChallengeId'],
-            ),
-      loginChallenge: jsonSerialization['loginChallenge'] == null
-          ? null
-          : _i3.Protocol().deserialize<_i2.SecretChallenge>(
-              jsonSerialization['loginChallenge'],
-            ),
     );
   }
 
@@ -82,21 +68,15 @@ abstract class GenericPasswordlessLoginRequest
 
   /// Opaque identifier for this login attempt.
   ///
-  /// This can be a normalized login handle (e.g., email), a hash (e.g., phoneHash),
+  /// This can be a serialized login handle (e.g., email), a hash (e.g., phoneHash),
   /// or any other deterministic value that the configured provider can resolve to
   /// an auth user.
   String nonce;
 
   _i1.UuidValue challengeId;
 
-  /// The associated challenge for this request.
+  /// The single verification challenge for this request.
   _i2.SecretChallenge? challenge;
-
-  _i1.UuidValue? loginChallengeId;
-
-  /// Used to complete the login.
-  /// This will be set after the verification challenge has been validated.
-  _i2.SecretChallenge? loginChallenge;
 
   @override
   _i1.Table<_i1.UuidValue?> get table => t;
@@ -110,8 +90,6 @@ abstract class GenericPasswordlessLoginRequest
     String? nonce,
     _i1.UuidValue? challengeId,
     _i2.SecretChallenge? challenge,
-    _i1.UuidValue? loginChallengeId,
-    _i2.SecretChallenge? loginChallenge,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -122,9 +100,6 @@ abstract class GenericPasswordlessLoginRequest
       'nonce': nonce,
       'challengeId': challengeId.toJson(),
       if (challenge != null) 'challenge': challenge?.toJson(),
-      if (loginChallengeId != null)
-        'loginChallengeId': loginChallengeId?.toJson(),
-      if (loginChallenge != null) 'loginChallenge': loginChallenge?.toJson(),
     };
   }
 
@@ -135,12 +110,8 @@ abstract class GenericPasswordlessLoginRequest
 
   static GenericPasswordlessLoginRequestInclude include({
     _i2.SecretChallengeInclude? challenge,
-    _i2.SecretChallengeInclude? loginChallenge,
   }) {
-    return GenericPasswordlessLoginRequestInclude._(
-      challenge: challenge,
-      loginChallenge: loginChallenge,
-    );
+    return GenericPasswordlessLoginRequestInclude._(challenge: challenge);
   }
 
   static GenericPasswordlessLoginRequestIncludeList includeList({
@@ -179,16 +150,12 @@ class _GenericPasswordlessLoginRequestImpl
     required String nonce,
     required _i1.UuidValue challengeId,
     _i2.SecretChallenge? challenge,
-    _i1.UuidValue? loginChallengeId,
-    _i2.SecretChallenge? loginChallenge,
   }) : super._(
          id: id,
          createdAt: createdAt,
          nonce: nonce,
          challengeId: challengeId,
          challenge: challenge,
-         loginChallengeId: loginChallengeId,
-         loginChallenge: loginChallenge,
        );
 
   /// Returns a shallow copy of this [GenericPasswordlessLoginRequest]
@@ -201,8 +168,6 @@ class _GenericPasswordlessLoginRequestImpl
     String? nonce,
     _i1.UuidValue? challengeId,
     Object? challenge = _Undefined,
-    Object? loginChallengeId = _Undefined,
-    Object? loginChallenge = _Undefined,
   }) {
     return GenericPasswordlessLoginRequest(
       id: id is _i1.UuidValue? ? id : this.id,
@@ -212,12 +177,6 @@ class _GenericPasswordlessLoginRequestImpl
       challenge: challenge is _i2.SecretChallenge?
           ? challenge
           : this.challenge?.copyWith(),
-      loginChallengeId: loginChallengeId is _i1.UuidValue?
-          ? loginChallengeId
-          : this.loginChallengeId,
-      loginChallenge: loginChallenge is _i2.SecretChallenge?
-          ? loginChallenge
-          : this.loginChallenge?.copyWith(),
     );
   }
 }
@@ -243,13 +202,6 @@ class GenericPasswordlessLoginRequestUpdateTable
     table.challengeId,
     value,
   );
-
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> loginChallengeId(
-    _i1.UuidValue? value,
-  ) => _i1.ColumnValue(
-    table.loginChallengeId,
-    value,
-  );
 }
 
 class GenericPasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
@@ -271,10 +223,6 @@ class GenericPasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
       'challengeId',
       this,
     );
-    loginChallengeId = _i1.ColumnUuid(
-      'loginChallengeId',
-      this,
-    );
   }
 
   late final GenericPasswordlessLoginRequestUpdateTable updateTable;
@@ -284,21 +232,15 @@ class GenericPasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
 
   /// Opaque identifier for this login attempt.
   ///
-  /// This can be a normalized login handle (e.g., email), a hash (e.g., phoneHash),
+  /// This can be a serialized login handle (e.g., email), a hash (e.g., phoneHash),
   /// or any other deterministic value that the configured provider can resolve to
   /// an auth user.
   late final _i1.ColumnString nonce;
 
   late final _i1.ColumnUuid challengeId;
 
-  /// The associated challenge for this request.
+  /// The single verification challenge for this request.
   _i2.SecretChallengeTable? _challenge;
-
-  late final _i1.ColumnUuid loginChallengeId;
-
-  /// Used to complete the login.
-  /// This will be set after the verification challenge has been validated.
-  _i2.SecretChallengeTable? _loginChallenge;
 
   _i2.SecretChallengeTable get challenge {
     if (_challenge != null) return _challenge!;
@@ -313,35 +255,18 @@ class GenericPasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
     return _challenge!;
   }
 
-  _i2.SecretChallengeTable get loginChallenge {
-    if (_loginChallenge != null) return _loginChallenge!;
-    _loginChallenge = _i1.createRelationTable(
-      relationFieldName: 'loginChallenge',
-      field: GenericPasswordlessLoginRequest.t.loginChallengeId,
-      foreignField: _i2.SecretChallenge.t.id,
-      tableRelation: tableRelation,
-      createTable: (foreignTableRelation) =>
-          _i2.SecretChallengeTable(tableRelation: foreignTableRelation),
-    );
-    return _loginChallenge!;
-  }
-
   @override
   List<_i1.Column> get columns => [
     id,
     createdAt,
     nonce,
     challengeId,
-    loginChallengeId,
   ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'challenge') {
       return challenge;
-    }
-    if (relationField == 'loginChallenge') {
-      return loginChallenge;
     }
     return null;
   }
@@ -350,21 +275,14 @@ class GenericPasswordlessLoginRequestTable extends _i1.Table<_i1.UuidValue?> {
 class GenericPasswordlessLoginRequestInclude extends _i1.IncludeObject {
   GenericPasswordlessLoginRequestInclude._({
     _i2.SecretChallengeInclude? challenge,
-    _i2.SecretChallengeInclude? loginChallenge,
   }) {
     _challenge = challenge;
-    _loginChallenge = loginChallenge;
   }
 
   _i2.SecretChallengeInclude? _challenge;
 
-  _i2.SecretChallengeInclude? _loginChallenge;
-
   @override
-  Map<String, _i1.Include?> get includes => {
-    'challenge': _challenge,
-    'loginChallenge': _loginChallenge,
-  };
+  Map<String, _i1.Include?> get includes => {'challenge': _challenge};
 
   @override
   _i1.Table<_i1.UuidValue?> get table => GenericPasswordlessLoginRequest.t;
@@ -395,9 +313,6 @@ class GenericPasswordlessLoginRequestRepository {
 
   final attachRow =
       const GenericPasswordlessLoginRequestAttachRowRepository._();
-
-  final detachRow =
-      const GenericPasswordlessLoginRequestDetachRowRepository._();
 
   /// Returns a list of [GenericPasswordlessLoginRequest]s matching the given query parameters.
   ///
@@ -721,57 +636,6 @@ class GenericPasswordlessLoginRequestAttachRowRepository {
     await session.db.updateRow<GenericPasswordlessLoginRequest>(
       $genericPasswordlessLoginRequest,
       columns: [GenericPasswordlessLoginRequest.t.challengeId],
-      transaction: transaction,
-    );
-  }
-
-  /// Creates a relation between the given [GenericPasswordlessLoginRequest] and [SecretChallenge]
-  /// by setting the [GenericPasswordlessLoginRequest]'s foreign key `loginChallengeId` to refer to the [SecretChallenge].
-  Future<void> loginChallenge(
-    _i1.DatabaseSession session,
-    GenericPasswordlessLoginRequest genericPasswordlessLoginRequest,
-    _i2.SecretChallenge loginChallenge, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (genericPasswordlessLoginRequest.id == null) {
-      throw ArgumentError.notNull('genericPasswordlessLoginRequest.id');
-    }
-    if (loginChallenge.id == null) {
-      throw ArgumentError.notNull('loginChallenge.id');
-    }
-
-    var $genericPasswordlessLoginRequest = genericPasswordlessLoginRequest
-        .copyWith(loginChallengeId: loginChallenge.id);
-    await session.db.updateRow<GenericPasswordlessLoginRequest>(
-      $genericPasswordlessLoginRequest,
-      columns: [GenericPasswordlessLoginRequest.t.loginChallengeId],
-      transaction: transaction,
-    );
-  }
-}
-
-class GenericPasswordlessLoginRequestDetachRowRepository {
-  const GenericPasswordlessLoginRequestDetachRowRepository._();
-
-  /// Detaches the relation between this [GenericPasswordlessLoginRequest] and the [SecretChallenge] set in `loginChallenge`
-  /// by setting the [GenericPasswordlessLoginRequest]'s foreign key `loginChallengeId` to `null`.
-  ///
-  /// This removes the association between the two models without deleting
-  /// the related record.
-  Future<void> loginChallenge(
-    _i1.DatabaseSession session,
-    GenericPasswordlessLoginRequest genericPasswordlessLoginRequest, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (genericPasswordlessLoginRequest.id == null) {
-      throw ArgumentError.notNull('genericPasswordlessLoginRequest.id');
-    }
-
-    var $genericPasswordlessLoginRequest = genericPasswordlessLoginRequest
-        .copyWith(loginChallengeId: null);
-    await session.db.updateRow<GenericPasswordlessLoginRequest>(
-      $genericPasswordlessLoginRequest,
-      columns: [GenericPasswordlessLoginRequest.t.loginChallengeId],
       transaction: transaction,
     );
   }

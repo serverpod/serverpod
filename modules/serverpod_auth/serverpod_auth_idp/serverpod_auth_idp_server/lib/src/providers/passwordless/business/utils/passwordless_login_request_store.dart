@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 
 import '../../../../../core.dart';
@@ -17,6 +18,7 @@ class GenericPasswordlessLoginRequestStore {
     final request = await GenericPasswordlessLoginRequest.db.insertRow(
       session,
       GenericPasswordlessLoginRequest(
+        createdAt: clock.now(),
         nonce: serializedHandle,
         challengeId: challengeId,
       ),
@@ -45,7 +47,7 @@ class GenericPasswordlessLoginRequestStore {
   Future<bool> deleteById(
     final Session session, {
     required final UuidValue requestId,
-    final Transaction? transaction,
+    required final Transaction transaction,
   }) async {
     final deleted = await GenericPasswordlessLoginRequest.db.deleteWhere(
       session,
@@ -56,7 +58,21 @@ class GenericPasswordlessLoginRequestStore {
     return deleted.isNotEmpty;
   }
 
-  /// Loads request data with verification challenge.
+  /// Deletes requests created before [createdBefore] and their challenges.
+  Future<void> deleteCreatedBefore(
+    final Session session, {
+    required final DateTime createdBefore,
+    required final Transaction transaction,
+  }) async {
+    final deleted = await GenericPasswordlessLoginRequest.db.deleteWhere(
+      session,
+      where: (final t) => t.createdAt < createdBefore,
+      transaction: transaction,
+    );
+    await _deleteChallenges(session, deleted, transaction: transaction);
+  }
+
+  /// Loads request data with its single verification challenge.
   Future<PasswordlessLoginRequestData?> getRequestWithChallenge(
     final Session session, {
     required final UuidValue requestId,
@@ -100,7 +116,7 @@ class PasswordlessLoginRequestData {
   /// Serialized handle stored with the request.
   final String serializedHandle;
 
-  /// Verification challenge.
+  /// The single verification challenge for this request.
   final SecretChallenge? challenge;
 
   /// Creates a [PasswordlessLoginRequestData].

@@ -7,7 +7,8 @@ export 'src/common/widgets/divider.dart';
 export 'src/common/widgets/gaps.dart';
 export 'src/common/widgets/loading_indicator.dart';
 export 'src/common/widgets/password_field.dart';
-export 'src/common/widgets/password_requirements.dart';
+export 'src/common/widgets/password_requirements/requirements.dart';
+export 'src/common/widgets/password_requirements/widget.dart';
 export 'src/common/widgets/text_field.dart';
 export 'src/common/widgets/verification_code.dart';
 

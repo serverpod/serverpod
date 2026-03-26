@@ -4,6 +4,8 @@ import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/passwordless.dart';
+import 'package:serverpod_auth_idp_server/src/providers/passwordless/business/passwordless_idp_server_exceptions.dart'
+    show PasswordlessLoginNotFoundException;
 import 'package:test/test.dart';
 
 import '../../test_tags.dart';
@@ -23,6 +25,7 @@ void main() {
       const handle = 'test-handle';
       late String verificationCode;
       late UuidValue deliveredRequestId;
+      late String deliveredHandle;
       late String deliveredVerificationCode;
 
       Future<void> initializeFixture({
@@ -62,6 +65,7 @@ void main() {
                   required final String verificationCode,
                   required final Transaction? transaction,
                 }) async {
+                  deliveredHandle = handle;
                   deliveredRequestId = requestId;
                   deliveredVerificationCode = verificationCode;
                 },
@@ -92,6 +96,7 @@ void main() {
 
             expect(requestId, isA<UuidValue>());
             expect(deliveredRequestId, equals(requestId));
+            expect(deliveredHandle, equals(handle));
             expect(deliveredVerificationCode, equals(verificationCode));
           },
         );
@@ -108,6 +113,167 @@ void main() {
               session,
               loginRequestId: requestId,
               verificationCode: '$verificationCode-invalid',
+            );
+
+            await expectLater(
+              result,
+              throwsA(
+                isA<PasswordlessLoginException>().having(
+                  (final e) => e.reason,
+                  'reason',
+                  PasswordlessLoginExceptionReason.invalid,
+                ),
+              ),
+            );
+          },
+        );
+      });
+
+      group(
+        'Given passwordless provider without sendLoginVerificationCode callback',
+        () {
+          setUp(() async {
+            session = sessionBuilder.build();
+            handleToUserId = {};
+            verificationCode = const Uuid().v4().toString();
+
+            fixture = PasswordlessIdpTestFixture(
+              config: PasswordlessIdpConfig(
+                secretHashPepper: 'pepper',
+                resolveAuthUserId:
+                    (
+                      final Session session, {
+                      required final String handle,
+                      required final Transaction? transaction,
+                    }) async {
+                      final authUserId = handleToUserId[handle];
+                      if (authUserId == null) {
+                        throw PasswordlessLoginNotFoundException();
+                      }
+                      return authUserId;
+                    },
+                loginVerificationCodeGenerator: () => verificationCode,
+                sendLoginVerificationCode: null,
+              ),
+            );
+
+            final authUser = await fixture.authUsers.create(session);
+            handleToUserId[handle] = authUser.id;
+          });
+
+          tearDown(() async {
+            await fixture.tearDown(session);
+          });
+
+          test(
+            'when startLogin and finishLogin are called then login still succeeds',
+            () async {
+              final requestId = await fixture.passwordlessIdp.startLogin(
+                session,
+                handle: handle,
+              );
+
+              final result = await fixture.passwordlessIdp.finishLogin(
+                session,
+                loginRequestId: requestId,
+                verificationCode: verificationCode,
+              );
+
+              expect(requestId, isA<UuidValue>());
+              expect(result, isA<AuthSuccess>());
+            },
+          );
+        },
+      );
+
+      group('Given passwordless provider rotating secret hash peppers', () {
+        late PasswordlessIdpTestFixture<String> oldPepperFixture;
+        late PasswordlessIdpTestFixture<String> rotatedPepperFixture;
+        late PasswordlessIdpTestFixture<String> noFallbackFixture;
+
+        Future<PasswordlessIdpTestFixture<String>> createFixture({
+          required final String secretHashPepper,
+          final List<String> fallbackSecretHashPeppers = const [],
+        }) async {
+          return PasswordlessIdpTestFixture(
+            config: PasswordlessIdpConfig(
+              secretHashPepper: secretHashPepper,
+              fallbackSecretHashPeppers: fallbackSecretHashPeppers,
+              resolveAuthUserId:
+                  (
+                    final Session session, {
+                    required final String handle,
+                    required final Transaction? transaction,
+                  }) async {
+                    final authUserId = handleToUserId[handle];
+                    if (authUserId == null) {
+                      throw PasswordlessLoginNotFoundException();
+                    }
+                    return authUserId;
+                  },
+              loginVerificationCodeGenerator: () => verificationCode,
+              sendLoginVerificationCode: null,
+            ),
+          );
+        }
+
+        setUp(() async {
+          session = sessionBuilder.build();
+          handleToUserId = {};
+          verificationCode = const Uuid().v4().toString();
+
+          oldPepperFixture = await createFixture(
+            secretHashPepper: 'old-pepper',
+          );
+          rotatedPepperFixture = await createFixture(
+            secretHashPepper: 'new-pepper',
+            fallbackSecretHashPeppers: const ['old-pepper'],
+          );
+          noFallbackFixture = await createFixture(
+            secretHashPepper: 'new-pepper',
+          );
+
+          final authUser = await oldPepperFixture.authUsers.create(session);
+          handleToUserId[handle] = authUser.id;
+        });
+
+        tearDown(() async {
+          await oldPepperFixture.tearDown(session);
+          await rotatedPepperFixture.tearDown(session);
+          await noFallbackFixture.tearDown(session);
+        });
+
+        test(
+          'when finishLogin uses a rotated pepper with a fallback then it still succeeds',
+          () async {
+            final requestId = await oldPepperFixture.passwordlessIdp.startLogin(
+              session,
+              handle: handle,
+            );
+
+            final result = await rotatedPepperFixture.passwordlessIdp
+                .finishLogin(
+                  session,
+                  loginRequestId: requestId,
+                  verificationCode: verificationCode,
+                );
+
+            expect(result, isA<AuthSuccess>());
+          },
+        );
+
+        test(
+          'when finishLogin uses a rotated pepper without a fallback then it throws PasswordlessLoginException with reason "invalid"',
+          () async {
+            final requestId = await oldPepperFixture.passwordlessIdp.startLogin(
+              session,
+              handle: handle,
+            );
+
+            final result = noFallbackFixture.passwordlessIdp.finishLogin(
+              session,
+              loginRequestId: requestId,
+              verificationCode: verificationCode,
             );
 
             await expectLater(
@@ -243,6 +409,40 @@ void main() {
             );
 
             expect(result, isA<AuthSuccess>());
+          },
+        );
+
+        test(
+          'when a login request is started and completed then a single SecretChallenge covers the full verify-and-consume lifecycle',
+          () async {
+            final requestId = await fixture.passwordlessIdp.startLogin(
+              session,
+              handle: handle,
+            );
+
+            final request = await GenericPasswordlessLoginRequest.db.findById(
+              session,
+              requestId,
+            );
+            final challengesBeforeFinish = await SecretChallenge.db.find(
+              session,
+            );
+
+            expect(request, isNotNull);
+            expect(challengesBeforeFinish, hasLength(1));
+            expect(
+              challengesBeforeFinish.single.id,
+              equals(request!.challengeId),
+            );
+
+            final result = await fixture.passwordlessIdp.finishLogin(
+              session,
+              loginRequestId: requestId,
+              verificationCode: deliveredVerificationCode,
+            );
+
+            expect(result, isA<AuthSuccess>());
+            expect(await SecretChallenge.db.find(session), isEmpty);
           },
         );
 
@@ -438,6 +638,39 @@ void main() {
         );
       });
 
+      group('Given a missing login request', () {
+        setUp(() async {
+          session = sessionBuilder.build();
+          await initializeFixture();
+        });
+
+        tearDown(() async {
+          await fixture.tearDown(session);
+        });
+
+        test(
+          'when finishLogin is called then it throws PasswordlessLoginException with reason "invalid"',
+          () async {
+            final result = fixture.passwordlessIdp.finishLogin(
+              session,
+              loginRequestId: UuidValue.withValidation(const Uuid().v4()),
+              verificationCode: verificationCode,
+            );
+
+            await expectLater(
+              result,
+              throwsA(
+                isA<PasswordlessLoginException>().having(
+                  (final e) => e.reason,
+                  'reason',
+                  PasswordlessLoginExceptionReason.invalid,
+                ),
+              ),
+            );
+          },
+        );
+      });
+
       group('Given an expired login request', () {
         late UuidValue requestId;
 
@@ -541,12 +774,80 @@ void main() {
             expect(challenge, isNull);
           },
         );
+
+        test(
+          'when an expired login is finished inside a caller transaction then cleanup rolls back with the savepoint',
+          () async {
+            final request = await GenericPasswordlessLoginRequest.db.findById(
+              session,
+              requestId,
+            );
+            final challengeId = request!.challengeId;
+
+            await session.db.transaction((final transaction) async {
+              await withClock(
+                Clock.fixed(clock.now().add(const Duration(minutes: 2))),
+                () async {
+                  final result = fixture.passwordlessIdp.finishLogin(
+                    session,
+                    loginRequestId: requestId,
+                    verificationCode: deliveredVerificationCode,
+                    transaction: transaction,
+                  );
+                  await expectLater(
+                    result,
+                    throwsA(
+                      isA<PasswordlessLoginException>().having(
+                        (final e) => e.reason,
+                        'reason',
+                        PasswordlessLoginExceptionReason.expired,
+                      ),
+                    ),
+                  );
+                },
+              );
+
+              expect(
+                await GenericPasswordlessLoginRequest.db.findById(
+                  session,
+                  requestId,
+                  transaction: transaction,
+                ),
+                isNotNull,
+              );
+              expect(
+                await SecretChallenge.db.findById(
+                  session,
+                  challengeId,
+                  transaction: transaction,
+                ),
+                isNotNull,
+              );
+            });
+
+            expect(
+              await GenericPasswordlessLoginRequest.db.findById(
+                session,
+                requestId,
+              ),
+              isNotNull,
+            );
+            expect(
+              await SecretChallenge.db.findById(session, challengeId),
+              isNotNull,
+            );
+          },
+        );
       });
 
-      group('Given a custom serializer with empty serialized handle', () {
+      group('Given a custom deserializer that reports invalid handle format', () {
         setUp(() async {
           session = sessionBuilder.build();
-          await initializeFixture(serializeHandle: (final handle) => '');
+          await initializeFixture(
+            deserializeHandle: (final handle) {
+              throw const FormatException('invalid handle format');
+            },
+          );
         });
 
         tearDown(() async {
@@ -575,9 +876,96 @@ void main() {
         );
       });
 
+      group(
+        'Given a stored handle that reports invalid serialized format',
+        () {
+          late UuidValue requestId;
+
+          setUp(() async {
+            session = sessionBuilder.build();
+            await initializeFixture(
+              deserializeHandle: (final handle) {
+                if (handle == 'test-handle') return handle;
+                throw const FormatException('invalid stored handle format');
+              },
+              serializeHandle: (final handle) => 'stored:$handle',
+            );
+
+            requestId = await fixture.passwordlessIdp.startLogin(
+              session,
+              handle: handle,
+            );
+          });
+
+          tearDown(() async {
+            await fixture.tearDown(session);
+          });
+
+          test(
+            'when finishLogin is called then it throws PasswordlessLoginException with reason "invalid"',
+            () async {
+              final result = fixture.passwordlessIdp.finishLogin(
+                session,
+                loginRequestId: requestId,
+                verificationCode: deliveredVerificationCode,
+              );
+
+              await expectLater(
+                result,
+                throwsA(
+                  isA<PasswordlessLoginException>().having(
+                    (final e) => e.reason,
+                    'reason',
+                    PasswordlessLoginExceptionReason.invalid,
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+
+      group('Given a stored handle that triggers a custom deserializer bug', () {
+        late UuidValue requestId;
+
+        setUp(() async {
+          session = sessionBuilder.build();
+          await initializeFixture(
+            deserializeHandle: (final handle) {
+              if (handle == 'test-handle') return handle;
+              throw StateError('broken stored handle parser');
+            },
+            serializeHandle: (final handle) => 'stored:$handle',
+          );
+
+          requestId = await fixture.passwordlessIdp.startLogin(
+            session,
+            handle: handle,
+          );
+        });
+
+        tearDown(() async {
+          await fixture.tearDown(session);
+        });
+
+        test(
+          'when finishLogin is called then it surfaces the deserializer error',
+          () async {
+            final result = fixture.passwordlessIdp.finishLogin(
+              session,
+              loginRequestId: requestId,
+              verificationCode: deliveredVerificationCode,
+            );
+
+            await expectLater(result, throwsA(isA<StateError>()));
+          },
+        );
+      });
+
       group('Given passwordless provider with default int handle support', () {
         late PasswordlessIdpTestFixture<int> intFixture;
         late Map<int, UuidValue> intHandleToUserId;
+        late int deliveredIntHandle;
         const intHandle = '42';
 
         setUp(() async {
@@ -604,11 +992,12 @@ void main() {
               sendLoginVerificationCode:
                   (
                     final Session session, {
-                    required final String handle,
+                    required final int handle,
                     required final UuidValue requestId,
                     required final String verificationCode,
                     required final Transaction? transaction,
                   }) async {
+                    deliveredIntHandle = handle;
                     deliveredRequestId = requestId;
                     deliveredVerificationCode = verificationCode;
                   },
@@ -638,6 +1027,7 @@ void main() {
             );
 
             expect(authSuccess, isA<AuthSuccess>());
+            expect(deliveredIntHandle, equals(42));
             final request = await GenericPasswordlessLoginRequest.db
                 .findFirstRow(
                   session,
@@ -654,6 +1044,27 @@ void main() {
             expect(attempts.single.nonce, equals(intHandle));
           },
         );
+
+        test(
+          'when startLogin is called with an invalid raw handle then it throws PasswordlessLoginException with reason "invalid"',
+          () async {
+            final result = intFixture.passwordlessIdp.startLogin(
+              session,
+              handle: 'not-a-number',
+            );
+
+            await expectLater(
+              result,
+              throwsA(
+                isA<PasswordlessLoginException>().having(
+                  (final e) => e.reason,
+                  'reason',
+                  PasswordlessLoginExceptionReason.invalid,
+                ),
+              ),
+            );
+          },
+        );
       });
 
       group(
@@ -661,14 +1072,16 @@ void main() {
         () {
           late PasswordlessIdpTestFixture<UuidValue> uuidFixture;
           late Map<UuidValue, UuidValue> handleToAuthUserId;
+          late UuidValue deliveredUuidHandle;
+          late UuidValue typedUuidHandle;
           late String uuidHandle;
 
           setUp(() async {
             session = sessionBuilder.build();
             handleToAuthUserId = {};
             verificationCode = const Uuid().v4().toString();
-            final typedHandle = UuidValue.withValidation(const Uuid().v4());
-            uuidHandle = typedHandle.uuid;
+            typedUuidHandle = UuidValue.withValidation(const Uuid().v4());
+            uuidHandle = typedUuidHandle.uuid;
 
             uuidFixture = PasswordlessIdpTestFixture(
               config: PasswordlessIdpConfig<UuidValue>(
@@ -689,11 +1102,12 @@ void main() {
                 sendLoginVerificationCode:
                     (
                       final Session session, {
-                      required final String handle,
+                      required final UuidValue handle,
                       required final UuidValue requestId,
                       required final String verificationCode,
                       required final Transaction? transaction,
                     }) async {
+                      deliveredUuidHandle = handle;
                       deliveredRequestId = requestId;
                       deliveredVerificationCode = verificationCode;
                     },
@@ -701,7 +1115,7 @@ void main() {
             );
 
             final authUser = await uuidFixture.authUsers.create(session);
-            handleToAuthUserId[typedHandle] = authUser.id;
+            handleToAuthUserId[typedUuidHandle] = authUser.id;
           });
 
           tearDown(() async {
@@ -723,6 +1137,7 @@ void main() {
               );
 
               expect(authSuccess, isA<AuthSuccess>());
+              expect(deliveredUuidHandle, equals(typedUuidHandle));
               final attempts = await RateLimitedRequestAttempt.db.find(
                 session,
                 where: (final t) =>
@@ -737,6 +1152,7 @@ void main() {
 
       group('Given passwordless provider with custom handle serialization', () {
         late PasswordlessIdpTestFixture<_TestHandle> customFixture;
+        late _TestHandle deliveredCustomHandle;
         late Map<String, UuidValue> serializedHandleToUserId;
 
         setUp(() async {
@@ -770,11 +1186,12 @@ void main() {
               sendLoginVerificationCode:
                   (
                     final Session session, {
-                    required final String handle,
+                    required final _TestHandle handle,
                     required final UuidValue requestId,
                     required final String verificationCode,
                     required final Transaction? transaction,
                   }) async {
+                    deliveredCustomHandle = handle;
                     deliveredRequestId = requestId;
                     deliveredVerificationCode = verificationCode;
                   },
@@ -809,6 +1226,7 @@ void main() {
             );
 
             expect(authSuccess, isA<AuthSuccess>());
+            expect(deliveredCustomHandle.value, equals('test-handle'));
             expect(request, isNotNull);
             expect(request!.nonce, equals('custom:test-handle'));
 
@@ -838,7 +1256,7 @@ void main() {
         });
 
         test(
-          'when deleteIncompleteLoginAttempts is called then rate limit resets',
+          'when deleteIncompleteLoginAttempts is called from admin then request-side rate limit resets',
           () async {
             await expectLater(
               fixture.passwordlessIdp.startLogin(session, handle: handle),
@@ -852,7 +1270,7 @@ void main() {
             );
 
             await session.db.transaction((final transaction) async {
-              await fixture.passwordlessIdp.deleteIncompleteLoginAttempts(
+              await fixture.passwordlessIdp.admin.deleteIncompleteLoginAttempts(
                 session,
                 olderThan: Duration.zero,
                 transaction: transaction,
@@ -867,6 +1285,313 @@ void main() {
           },
         );
       });
+
+      group('Given rate-limited login verification attempts', () {
+        late UuidValue requestId;
+
+        setUp(() async {
+          session = sessionBuilder.build();
+          await initializeFixture();
+
+          requestId = await fixture.passwordlessIdp.startLogin(
+            session,
+            handle: handle,
+          );
+
+          for (var i = 0; i < 3; i++) {
+            await expectLater(
+              fixture.passwordlessIdp.finishLogin(
+                session,
+                loginRequestId: requestId,
+                verificationCode: '$deliveredVerificationCode-invalid-$i',
+              ),
+              throwsA(
+                isA<PasswordlessLoginException>().having(
+                  (final e) => e.reason,
+                  'reason',
+                  PasswordlessLoginExceptionReason.invalid,
+                ),
+              ),
+            );
+          }
+        });
+
+        tearDown(() async {
+          await fixture.tearDown(session);
+        });
+
+        test(
+          'when deleteIncompleteLoginAttempts is called from admin then verification-side attempts and the pending request are cleared',
+          () async {
+            final request = await GenericPasswordlessLoginRequest.db.findById(
+              session,
+              requestId,
+            );
+            final challengeId = request!.challengeId;
+
+            await expectLater(
+              fixture.passwordlessIdp.finishLogin(
+                session,
+                loginRequestId: requestId,
+                verificationCode: deliveredVerificationCode,
+              ),
+              throwsA(
+                isA<PasswordlessLoginException>().having(
+                  (final e) => e.reason,
+                  'reason',
+                  PasswordlessLoginExceptionReason.tooManyAttempts,
+                ),
+              ),
+            );
+
+            await session.db.transaction((final transaction) async {
+              await fixture.passwordlessIdp.admin.deleteIncompleteLoginAttempts(
+                session,
+                olderThan: Duration.zero,
+                transaction: transaction,
+              );
+            });
+
+            final verificationAttempts = await RateLimitedRequestAttempt.db
+                .find(
+                  session,
+                  where: (final t) =>
+                      t.domain.equals('passwordless') &
+                      t.source.equals('login_verify') &
+                      t.nonce.equals(requestId.uuid),
+                );
+            expect(verificationAttempts, isEmpty);
+            expect(
+              await GenericPasswordlessLoginRequest.db.findById(
+                session,
+                requestId,
+              ),
+              isNull,
+            );
+            expect(
+              await SecretChallenge.db.findById(session, challengeId),
+              isNull,
+            );
+
+            final newRequestId = await fixture.passwordlessIdp.startLogin(
+              session,
+              handle: handle,
+            );
+            final result = await fixture.passwordlessIdp.finishLogin(
+              session,
+              loginRequestId: newRequestId,
+              verificationCode: deliveredVerificationCode,
+            );
+            expect(result, isA<AuthSuccess>());
+          },
+        );
+      });
+
+      group('Given both expired and active login requests', () {
+        late DateTime cleanupTime;
+        late UuidValue expiredRequestId;
+        late UuidValue activeRequestId;
+        late UuidValue expiredChallengeId;
+        late UuidValue activeChallengeId;
+
+        const activeHandle = 'fresh-handle';
+
+        setUp(() async {
+          session = sessionBuilder.build();
+          await initializeFixture(
+            loginVerificationCodeLifetime: const Duration(minutes: 1),
+          );
+
+          final activeAuthUser = await fixture.authUsers.create(session);
+          handleToUserId[activeHandle] = activeAuthUser.id;
+
+          final initialTime = clock.now();
+          cleanupTime = initialTime.add(const Duration(minutes: 2));
+
+          await withClock(Clock.fixed(initialTime), () async {
+            expiredRequestId = await fixture.passwordlessIdp.startLogin(
+              session,
+              handle: handle,
+            );
+          });
+          final expiredRequest = await GenericPasswordlessLoginRequest.db
+              .findById(session, expiredRequestId);
+          expiredChallengeId = expiredRequest!.challengeId;
+
+          await withClock(Clock.fixed(cleanupTime), () async {
+            activeRequestId = await fixture.passwordlessIdp.startLogin(
+              session,
+              handle: activeHandle,
+            );
+          });
+          final activeRequest = await GenericPasswordlessLoginRequest.db
+              .findById(
+                session,
+                activeRequestId,
+              );
+          activeChallengeId = activeRequest!.challengeId;
+        });
+
+        tearDown(() async {
+          await fixture.tearDown(session);
+        });
+
+        test(
+          'when deleteIncompleteLoginAttempts uses the default cutoff then it deletes expired requests but keeps active ones',
+          () async {
+            await withClock(Clock.fixed(cleanupTime), () async {
+              await session.db.transaction((final transaction) async {
+                await fixture.passwordlessIdp.admin
+                    .deleteIncompleteLoginAttempts(
+                      session,
+                      transaction: transaction,
+                    );
+              });
+            });
+
+            expect(
+              await GenericPasswordlessLoginRequest.db.findById(
+                session,
+                expiredRequestId,
+              ),
+              isNull,
+            );
+            expect(
+              await SecretChallenge.db.findById(session, expiredChallengeId),
+              isNull,
+            );
+            expect(
+              await GenericPasswordlessLoginRequest.db.findById(
+                session,
+                activeRequestId,
+              ),
+              isNotNull,
+            );
+            expect(
+              await SecretChallenge.db.findById(session, activeChallengeId),
+              isNotNull,
+            );
+          },
+        );
+      });
+
+      group(
+        'Given stale and recent login state with a custom cleanup window',
+        () {
+          late DateTime cleanupTime;
+          late UuidValue staleRequestId;
+          late UuidValue recentRequestId;
+          late UuidValue staleChallengeId;
+          late UuidValue recentChallengeId;
+
+          const staleHandle = 'stale-handle';
+          const recentHandle = 'recent-handle';
+          const cleanupWindow = Duration(minutes: 30);
+
+          setUp(() async {
+            session = sessionBuilder.build();
+            await initializeFixture();
+
+            handleToUserId[staleHandle] = (await fixture.authUsers.create(
+              session,
+            )).id;
+            handleToUserId[recentHandle] = (await fixture.authUsers.create(
+              session,
+            )).id;
+
+            final initialTime = clock.now();
+            cleanupTime = initialTime.add(const Duration(minutes: 40));
+
+            await withClock(Clock.fixed(initialTime), () async {
+              staleRequestId = await fixture.passwordlessIdp.startLogin(
+                session,
+                handle: staleHandle,
+              );
+            });
+            staleChallengeId =
+                (await GenericPasswordlessLoginRequest.db.findById(
+                  session,
+                  staleRequestId,
+                ))!.challengeId;
+
+            await withClock(
+              Clock.fixed(initialTime.add(const Duration(minutes: 20))),
+              () async {
+                recentRequestId = await fixture.passwordlessIdp.startLogin(
+                  session,
+                  handle: recentHandle,
+                );
+              },
+            );
+            recentChallengeId =
+                (await GenericPasswordlessLoginRequest.db.findById(
+                  session,
+                  recentRequestId,
+                ))!.challengeId;
+          });
+
+          tearDown(() async {
+            await fixture.tearDown(session);
+          });
+
+          test(
+            'when deleteIncompleteLoginAttempts uses a positive olderThan then it only deletes older state',
+            () async {
+              await withClock(Clock.fixed(cleanupTime), () async {
+                await session.db.transaction((final transaction) async {
+                  await fixture.passwordlessIdp.admin
+                      .deleteIncompleteLoginAttempts(
+                        session,
+                        olderThan: cleanupWindow,
+                        transaction: transaction,
+                      );
+                });
+              });
+
+              expect(
+                await GenericPasswordlessLoginRequest.db.findById(
+                  session,
+                  staleRequestId,
+                ),
+                isNull,
+              );
+              expect(
+                await SecretChallenge.db.findById(session, staleChallengeId),
+                isNull,
+              );
+              expect(
+                await GenericPasswordlessLoginRequest.db.findById(
+                  session,
+                  recentRequestId,
+                ),
+                isNotNull,
+              );
+              expect(
+                await SecretChallenge.db.findById(session, recentChallengeId),
+                isNotNull,
+              );
+
+              final staleAttempts = await RateLimitedRequestAttempt.db.find(
+                session,
+                where: (final t) =>
+                    t.domain.equals('passwordless') &
+                    t.source.equals('login_request') &
+                    t.nonce.equals(staleHandle),
+              );
+              final recentAttempts = await RateLimitedRequestAttempt.db.find(
+                session,
+                where: (final t) =>
+                    t.domain.equals('passwordless') &
+                    t.source.equals('login_request') &
+                    t.nonce.equals(recentHandle),
+              );
+
+              expect(staleAttempts, isEmpty);
+              expect(recentAttempts, isNotEmpty);
+            },
+          );
+        },
+      );
     },
   );
 }

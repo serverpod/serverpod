@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../localization/sign_in_localization_provider.dart';
 import '../../common/widgets/buttons/action_button.dart';
 import '../../common/widgets/buttons/text_button.dart';
 import '../../common/widgets/gaps.dart';
@@ -38,6 +39,7 @@ class StartRegistrationForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.emailSignInTexts;
     final onTermsAndConditionsPressed = this.onTermsAndConditionsPressed;
     final onPrivacyPolicyPressed = this.onPrivacyPolicyPressed;
 
@@ -45,7 +47,7 @@ class StartRegistrationForm extends StatelessWidget {
         onTermsAndConditionsPressed != null || onPrivacyPolicyPressed != null;
 
     return FormStandardLayout(
-      title: 'Sign Up with email',
+      title: texts.signUpTitle,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -75,16 +77,16 @@ class StartRegistrationForm extends StatelessWidget {
                     controller.legalNoticeAcceptedNotifier.value)
             ? () => unawaited(controller.startRegistration())
             : null,
-        label: 'Continue',
+        label: texts.continueAction,
         isLoading: controller.isLoading,
       ),
       bottomText: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("Already have an account?"),
+          Text(texts.alreadyHaveAnAccount),
           HyperlinkTextButton(
             onPressed: () => controller.navigateTo(EmailFlowScreen.login),
-            label: 'Sign in',
+            label: texts.signIn,
           ),
         ],
       ),

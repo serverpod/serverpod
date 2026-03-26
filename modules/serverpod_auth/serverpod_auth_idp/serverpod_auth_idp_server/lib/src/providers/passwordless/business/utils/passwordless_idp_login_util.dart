@@ -43,16 +43,38 @@ class PasswordlessIdpLoginUtil<THandle> {
          ),
        );
 
-  // 19MiB memory cost as recommended by OWASP:
-  // https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
-  static Argon2HashUtil _createHashUtil(
-    final PasswordlessIdpConfig<dynamic> config,
-  ) {
-    return Argon2HashUtil(
-      hashPepper: config.secretHashPepper,
-      fallbackHashPeppers: config.fallbackSecretHashPeppers,
-      hashSaltLength: config.secretHashSaltLength,
-      parameters: Argon2HashParameters(memory: 19456),
+  /// {@template passwordless_idp_login_util.delete_incomplete_login_attempts}
+  /// Cleans up passwordless login state older than [olderThan].
+  ///
+  /// This removes pending passwordless login requests, their associated
+  /// verification challenges, and both login request and verification attempts.
+  ///
+  /// If [olderThan] is `null`, this will remove all attempts outside the time
+  /// windows checked upon login request creation and login verification, and
+  /// all pending login requests that have outlived
+  /// [PasswordlessIdpConfig.loginVerificationCodeLifetime].
+  /// {@endtemplate}
+  Future<void> deleteIncompleteLoginAttempts(
+    final Session session, {
+    final Duration? olderThan,
+    required final Transaction transaction,
+  }) async {
+    await _requestRateLimiter.deleteAttempts(
+      session,
+      olderThan: olderThan,
+      transaction: transaction,
+    );
+    await _verifyRateLimiter.deleteAttempts(
+      session,
+      olderThan: olderThan,
+      transaction: transaction,
+    );
+    await _requestStore.deleteCreatedBefore(
+      session,
+      createdBefore: clock.now().subtract(
+        olderThan ?? _config.loginVerificationCodeLifetime,
+      ),
+      transaction: transaction,
     );
   }
 
@@ -62,7 +84,14 @@ class PasswordlessIdpLoginUtil<THandle> {
     required final String handle,
     required final Transaction transaction,
   }) async {
-    final serializedHandle = _toSerializedHandle(handle);
+    final THandle typedHandle;
+    final String serializedHandle;
+    try {
+      typedHandle = _config.deserializeHandle(handle);
+      serializedHandle = _config.serializeHandle(typedHandle);
+    } on FormatException {
+      throw PasswordlessLoginInvalidException();
+    }
 
     if (await _requestRateLimiter.hasTooManyAttempts(
       session,
@@ -97,7 +126,7 @@ class PasswordlessIdpLoginUtil<THandle> {
 
     await _config.sendLoginVerificationCode?.call(
       session,
-      handle: handle,
+      handle: typedHandle,
       requestId: requestId,
       verificationCode: verificationCode,
       transaction: transaction,
@@ -145,7 +174,11 @@ class PasswordlessIdpLoginUtil<THandle> {
     }
 
     if (_isExpired(request)) {
-      await _requestStore.deleteById(session, requestId: request.id);
+      await _requestStore.deleteById(
+        session,
+        requestId: request.id,
+        transaction: transaction,
+      );
       throw PasswordlessLoginExpiredException();
     }
 
@@ -161,45 +194,22 @@ class PasswordlessIdpLoginUtil<THandle> {
     return request;
   }
 
-  /// {@template passwordless_idp_login_util.delete_incomplete_login_attempts}
-  /// Cleans up the log of login request rate limit attempts older than
-  /// [olderThan].
-  ///
-  /// If [olderThan] is `null`, this will remove all attempts outside the time
-  /// window that is checked upon login, as configured in
-  /// [PasswordlessIdpConfig.loginRequestRateLimit].
-  ///
-  /// If [serializedHandle] is provided, only attempts for the given handle
-  /// will be deleted.
-  /// {@endtemplate}
-  Future<void> deleteIncompleteLoginAttempts(
-    final Session session, {
-    final Duration? olderThan,
-    final String? serializedHandle,
-    required final Transaction transaction,
-  }) async {
-    await _requestRateLimiter.deleteAttempts(
-      session,
-      olderThan: olderThan,
-      nonce: serializedHandle,
-      transaction: transaction,
-    );
-  }
-
   bool _isExpired(final PasswordlessLoginRequestData request) {
     return request.createdAt
         .add(_config.loginVerificationCodeLifetime)
         .isBefore(clock.now());
   }
 
-  String _toSerializedHandle(final String handle) {
-    try {
-      final typed = _config.deserializeHandle(handle);
-      final serialized = _config.serializeHandle(typed);
-      if (serialized.isEmpty) throw const FormatException();
-      return serialized;
-    } catch (_) {
-      throw PasswordlessLoginInvalidException();
-    }
+  // 19MiB memory cost as recommended by OWASP:
+  // https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
+  static Argon2HashUtil _createHashUtil(
+    final PasswordlessIdpConfig<dynamic> config,
+  ) {
+    return Argon2HashUtil(
+      hashPepper: config.secretHashPepper,
+      fallbackHashPeppers: config.fallbackSecretHashPeppers,
+      hashSaltLength: config.secretHashSaltLength,
+      parameters: Argon2HashParameters(memory: 19456),
+    );
   }
 }

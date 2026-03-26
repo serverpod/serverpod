@@ -14,7 +14,13 @@ export '../../../common/rate_limited_request_attempt/rate_limit.dart';
 export '../../utils/default_code_generators.dart'
     show defaultNumericVerificationCodeGenerator;
 
-/// Function for reading a handle from its serialized representation.
+/// Function for parsing a handle string into [THandle].
+///
+/// This is used both for the incoming RPC `String handle` and for reading back
+/// persisted handle strings previously produced by [SerializeHandleFunction].
+///
+/// Throw [FormatException] for invalid handle strings. Other exception types
+/// are treated as integrator bugs and are not remapped by the framework.
 typedef DeserializeHandleFunction<THandle> = THandle Function(String handle);
 
 /// Function for resolving an auth user id from a handle.
@@ -30,16 +36,20 @@ typedef ResolveAuthUserIdFunction<THandle> =
     });
 
 /// Function for sending out passwordless verification codes.
-typedef SendPasswordlessVerificationCodeFunction =
+typedef SendPasswordlessVerificationCodeFunction<THandle> =
     FutureOr<void> Function(
       Session session, {
-      required String handle,
+      required THandle handle,
       required UuidValue requestId,
       required String verificationCode,
       required Transaction? transaction,
     });
 
 /// Function for converting a handle to a stable serialized string.
+///
+/// The returned string must round-trip through [DeserializeHandleFunction],
+/// since it is persisted during `startLogin()` and parsed again in
+/// `finishLogin()`.
 typedef SerializeHandleFunction<THandle> = String Function(THandle handle);
 
 /// {@template passwordless_idp_config}
@@ -68,9 +78,14 @@ class PasswordlessIdpConfig<THandle>
   final int secretHashSaltLength;
 
   /// Function for converting a handle to a serialized string for persistence.
+  ///
+  /// The returned value must remain parseable by [deserializeHandle].
   final SerializeHandleFunction<THandle> serializeHandle;
 
-  /// Function for reading a handle from a serialized string.
+  /// Function for parsing a handle string.
+  ///
+  /// This is used for both inbound RPC input and for stored handle strings
+  /// previously produced by [serializeHandle].
   final DeserializeHandleFunction<THandle> deserializeHandle;
 
   /// The lifetime of login verification codes.
@@ -87,9 +102,16 @@ class PasswordlessIdpConfig<THandle>
 
   /// Callback for sending login verification codes.
   ///
+  /// Receives the parsed [THandle] that was created from the incoming
+  /// `String handle`, before the handle is persisted.
+  ///
+  /// The same logical handle is later recovered from the persisted serialized
+  /// string and passed to [resolveAuthUserId].
+  ///
   /// This is optional. If `null`, no verification code will be delivered.
   /// This allows integrators to deliver codes through other channels.
-  final SendPasswordlessVerificationCodeFunction? sendLoginVerificationCode;
+  final SendPasswordlessVerificationCodeFunction<THandle>?
+  sendLoginVerificationCode;
 
   /// Creates a new passwordless identity provider configuration.
   PasswordlessIdpConfig({
@@ -125,6 +147,14 @@ class PasswordlessIdpConfig<THandle>
     );
   }
 
+  static Object _decodeSerializedHandle(final String handle) {
+    try {
+      return jsonDecode(handle);
+    } on FormatException {
+      return handle;
+    }
+  }
+
   static DeserializeHandleFunction<THandle>
   _defaultDeserializeHandle<THandle>() => (final handle) {
     if (THandle == String) return handle as THandle;
@@ -133,10 +163,11 @@ class PasswordlessIdpConfig<THandle>
     // Protocol().deserialize receives the native type it expects.
     // For raw endpoint strings that are not valid JSON (e.g. a bare
     // UUID), fall back to passing the string directly.
+    final decodedHandle = _decodeSerializedHandle(handle);
     try {
-      return proto.Protocol().deserialize<THandle>(jsonDecode(handle));
-    } on FormatException {
-      return proto.Protocol().deserialize<THandle>(handle);
+      return proto.Protocol().deserialize<THandle>(decodedHandle);
+    } catch (_) {
+      throw FormatException('Invalid passwordless handle.', handle);
     }
   };
 
