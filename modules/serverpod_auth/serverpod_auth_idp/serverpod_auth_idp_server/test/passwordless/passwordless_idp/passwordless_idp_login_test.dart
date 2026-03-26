@@ -595,6 +595,60 @@ void main() {
             await expectLater(result, throwsA(isA<AuthUserBlockedException>()));
           },
         );
+
+        test(
+          'when login is blocked after verification then the request is still consumed',
+          () async {
+            final requestId = await fixture.passwordlessIdp.startLogin(
+              session,
+              handle: handle,
+            );
+            final request = await GenericPasswordlessLoginRequest.db.findById(
+              session,
+              requestId,
+            );
+            final challengeId = request!.challengeId;
+
+            final firstAttempt = fixture.passwordlessIdp.finishLogin(
+              session,
+              loginRequestId: requestId,
+              verificationCode: deliveredVerificationCode,
+            );
+
+            await expectLater(
+              firstAttempt,
+              throwsA(isA<AuthUserBlockedException>()),
+            );
+            expect(
+              await GenericPasswordlessLoginRequest.db.findById(
+                session,
+                requestId,
+              ),
+              isNull,
+            );
+            expect(
+              await SecretChallenge.db.findById(session, challengeId),
+              isNull,
+            );
+
+            final secondAttempt = fixture.passwordlessIdp.finishLogin(
+              session,
+              loginRequestId: requestId,
+              verificationCode: deliveredVerificationCode,
+            );
+
+            await expectLater(
+              secondAttempt,
+              throwsA(
+                isA<PasswordlessLoginException>().having(
+                  (final e) => e.reason,
+                  'reason',
+                  PasswordlessLoginExceptionReason.invalid,
+                ),
+              ),
+            );
+          },
+        );
       });
 
       group('Given a login request with missing auth user resolution', () {
@@ -626,6 +680,62 @@ void main() {
 
             await expectLater(
               result,
+              throwsA(
+                isA<PasswordlessLoginException>().having(
+                  (final e) => e.reason,
+                  'reason',
+                  PasswordlessLoginExceptionReason.invalid,
+                ),
+              ),
+            );
+          },
+        );
+
+        test(
+          'when finishLogin fails during auth user resolution then the request is still consumed',
+          () async {
+            final request = await GenericPasswordlessLoginRequest.db.findById(
+              session,
+              requestId,
+            );
+            final challengeId = request!.challengeId;
+
+            final firstAttempt = fixture.passwordlessIdp.finishLogin(
+              session,
+              loginRequestId: requestId,
+              verificationCode: deliveredVerificationCode,
+            );
+
+            await expectLater(
+              firstAttempt,
+              throwsA(
+                isA<PasswordlessLoginException>().having(
+                  (final e) => e.reason,
+                  'reason',
+                  PasswordlessLoginExceptionReason.invalid,
+                ),
+              ),
+            );
+            expect(
+              await GenericPasswordlessLoginRequest.db.findById(
+                session,
+                requestId,
+              ),
+              isNull,
+            );
+            expect(
+              await SecretChallenge.db.findById(session, challengeId),
+              isNull,
+            );
+
+            final secondAttempt = fixture.passwordlessIdp.finishLogin(
+              session,
+              loginRequestId: requestId,
+              verificationCode: deliveredVerificationCode,
+            );
+
+            await expectLater(
+              secondAttempt,
               throwsA(
                 isA<PasswordlessLoginException>().having(
                   (final e) => e.reason,

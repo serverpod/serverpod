@@ -5,6 +5,7 @@ import 'passwordless_idp_admin.dart';
 import 'passwordless_idp_config.dart';
 import 'passwordless_idp_server_exceptions.dart';
 import 'utils/passwordless_idp_login_util.dart';
+import 'utils/passwordless_login_request_store.dart';
 
 /// Main class for the passwordless identity provider.
 ///
@@ -63,30 +64,19 @@ class PasswordlessIdp<THandle> {
   }) async {
     if (transaction == null) {
       return _withReplacedServerException(() async {
-        final result = await session.db
-            .transaction<({AuthSuccess? authSuccess, bool expired})>(
-              (final transaction) async {
-                try {
-                  return (
-                    authSuccess: await _finishLoginInTransaction(
-                      session,
-                      loginRequestId: loginRequestId,
-                      verificationCode: verificationCode,
-                      transaction: transaction,
-                    ),
-                    expired: false,
-                  );
-                } on PasswordlessLoginExpiredException {
-                  return (authSuccess: null, expired: true);
-                }
-              },
-            );
+        final request = await _consumeLoginRequest(
+          session,
+          loginRequestId: loginRequestId,
+          verificationCode: verificationCode,
+        );
 
-        if (result.expired) {
-          throw PasswordlessLoginExpiredException();
-        }
-
-        return result.authSuccess!;
+        return session.db.transaction(
+          (final transaction) => _finishLoginFromVerifiedRequest(
+            session,
+            request: request,
+            transaction: transaction,
+          ),
+        );
       });
     }
 
@@ -125,19 +115,46 @@ class PasswordlessIdp<THandle> {
     );
   }
 
-  Future<AuthSuccess> _finishLoginInTransaction(
+  Future<PasswordlessLoginRequestData> _consumeLoginRequest(
     final Session session, {
     required final UuidValue loginRequestId,
     required final String verificationCode,
+  }) async {
+    final result = await session.db
+        .transaction<
+          ({
+            PasswordlessLoginRequestData? request,
+            PasswordlessLoginServerException? exception,
+          })
+        >((final transaction) async {
+          try {
+            return (
+              request: await _loginUtil.verifyAndCompleteLogin(
+                session,
+                loginRequestId: loginRequestId,
+                verificationCode: verificationCode,
+                transaction: transaction,
+              ),
+              exception: null,
+            );
+          } on PasswordlessLoginServerException catch (exception) {
+            return (request: null, exception: exception);
+          }
+        });
+
+    final exception = result.exception;
+    if (exception != null) {
+      throw exception;
+    }
+
+    return result.request!;
+  }
+
+  Future<AuthSuccess> _finishLoginFromVerifiedRequest(
+    final Session session, {
+    required final PasswordlessLoginRequestData request,
     required final Transaction transaction,
   }) async {
-    final request = await _loginUtil.verifyAndCompleteLogin(
-      session,
-      loginRequestId: loginRequestId,
-      verificationCode: verificationCode,
-      transaction: transaction,
-    );
-
     final THandle handle;
     try {
       handle = config.deserializeHandle(request.serializedHandle);
@@ -162,6 +179,26 @@ class PasswordlessIdp<THandle> {
       authUserId: authUserId,
       method: method,
       scopes: authUser.scopes,
+      transaction: transaction,
+    );
+  }
+
+  Future<AuthSuccess> _finishLoginInTransaction(
+    final Session session, {
+    required final UuidValue loginRequestId,
+    required final String verificationCode,
+    required final Transaction transaction,
+  }) async {
+    final request = await _loginUtil.verifyAndCompleteLogin(
+      session,
+      loginRequestId: loginRequestId,
+      verificationCode: verificationCode,
+      transaction: transaction,
+    );
+
+    return _finishLoginFromVerifiedRequest(
+      session,
+      request: request,
       transaction: transaction,
     );
   }

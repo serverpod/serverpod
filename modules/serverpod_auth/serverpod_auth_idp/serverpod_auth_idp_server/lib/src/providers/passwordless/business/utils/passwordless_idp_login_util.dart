@@ -137,8 +137,9 @@ class PasswordlessIdpLoginUtil<THandle> {
 
   /// Verifies the login code and completes the login in a single step.
   ///
-  /// Returns the request data on success; the request row is atomically
-  /// deleted to enforce single-use semantics.
+  /// Returns the request data on success after deleting the request row within
+  /// [transaction]. Once that transaction commits, the request cannot be
+  /// reused.
   Future<PasswordlessLoginRequestData> verifyAndCompleteLogin(
     final Session session, {
     required final UuidValue loginRequestId,
