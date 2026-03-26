@@ -8,11 +8,16 @@ on:
       - dev
       - tests
       - stable-*
+    paths-ignore:
+      # Skip CI when only Markdown files are changed.
+      - "**/*.md"
   pull_request:
     branches:
       - main
       - dev
       - stable-*
+    paths-ignore:
+      - "**/*.md"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
