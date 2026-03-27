@@ -4,6 +4,7 @@
 - feat: Ensures at-least-once semantics for future calls execution.
 - feat: Allows configuring localization for the sign in widgets. ([@justlunix](https://github.com/justlunix))
 - feat: Adds `onAfterAccountCreated` callbacks to all IDPs for custom post-account creation logic. ([@kamil-matula](https://github.com/kamil-matula))
+- fix: Fixes future calls generation if models were not previously available on the project (like when running with a clean `generated` folder).
 
 ## 3.5.0-beta.2
 
