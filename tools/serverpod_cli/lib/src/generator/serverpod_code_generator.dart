@@ -6,14 +6,12 @@ import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/shared_code_generator.dart';
-import 'package:serverpod_cli/src/generator/dart/temp_protocol_generator.dart';
 import 'package:serverpod_cli/src/generator/yaml/endpoint_description_generator.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 abstract class ServerpodCodeGenerator {
   static final List<CodeGenerator> _generators = [
-    const DartTemporaryProtocolGenerator(),
     const DartServerCodeGenerator(),
     const DartClientCodeGenerator(),
     const DartSharedCodeGenerator(),

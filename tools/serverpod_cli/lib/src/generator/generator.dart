@@ -5,10 +5,11 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/generator/dart/temp_protocol_generator.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
+import 'package:serverpod_cli/src/util/analysis_helpers.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
-import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// Holds the set of analyzers needed for code generation.
@@ -137,6 +138,33 @@ Future<GenerateResult> performGenerate({
   );
   success &= !analyzers.models.hasSevereErrors;
 
+  List<String> generatedModelFiles = [];
+
+  // Generate model files and a temporary protocol.dart before analyzing
+  // future calls and endpoints. The temp protocol exports model classes so
+  // that endpoint and future call files can resolve `import protocol.dart`.
+  // The full protocol (with Protocol class, endpoint dispatch, etc.) is
+  // generated later by ServerpodCodeGenerator.generateProtocolDefinition.
+  if (requirements.generateModels) {
+    log.debug('Generating files for serializable models.');
+
+    var tempProtocolPath = await _writeTemporaryProtocol(
+      models: models,
+      config: config,
+    );
+
+    generatedModelFiles =
+        await ServerpodCodeGenerator.generateSerializableModels(
+          models: models,
+          config: config,
+        );
+
+    await refreshAnalysisContext(
+      analyzers.futureCalls.collection,
+      [...generatedModelFiles, tempProtocolPath],
+    );
+  }
+
   log.debug('Analyzing the future calls models.');
 
   var futureCallsModelsAnalyzerCollector = CodeGenerationCollector();
@@ -149,17 +177,14 @@ Future<GenerateResult> performGenerate({
   success &= !futureCallsModelsAnalyzerCollector.hasSevereErrors;
   futureCallsModelsAnalyzerCollector.printErrors();
 
-  log.debug('Generating files for serializable models.');
-
   final allModels = <SerializableModelDefinition>[
     ...models,
     ...futureCallModels,
   ];
 
-  List<String> generatedModelFiles = [];
-
-  if (requirements.generateModels) {
-    log.debug('Generating files for serializable models.');
+  // Regenerate model files if future calls introduced parameter models.
+  if (requirements.generateModels && futureCallModels.isNotEmpty) {
+    log.debug('Regenerating model files with future call parameter models.');
     generatedModelFiles =
         await ServerpodCodeGenerator.generateSerializableModels(
           models: allModels,
@@ -242,4 +267,27 @@ Future<GenerateResult> performGenerate({
   );
 
   return (success: success, generatedFiles: allGeneratedFiles);
+}
+
+/// Writes a temporary protocol.dart that exports all model classes.
+///
+/// This allows endpoint and future call files to resolve their
+/// `import 'protocol.dart'` during analysis. The full protocol (with the
+/// Protocol class, endpoint dispatch, etc.) overwrites this later via
+/// [ServerpodCodeGenerator.generateProtocolDefinition].
+Future<String> _writeTemporaryProtocol({
+  required List<SerializableModelDefinition> models,
+  required GeneratorConfig config,
+}) async {
+  var generatedTempProtocol = const DartTemporaryProtocolGenerator()
+      .generateSerializableModelsCode(models: models, config: config);
+
+  var protocolPath = generatedTempProtocol.keys.first;
+  var content = generatedTempProtocol.values.first;
+
+  var file = File(protocolPath);
+  await file.create(recursive: true);
+  await file.writeAsString(content, flush: true);
+
+  return protocolPath;
 }

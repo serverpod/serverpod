@@ -1,4 +1,5 @@
 @Timeout(Duration(minutes: 12))
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -43,14 +44,19 @@ Future<(Process, KeywordSearchInStream)> startServerpodWithStreamSearch(
   );
 
   var streamSearch = KeywordSearchInStream(keywords: keywords);
-  process.stdout
+  var stdoutSubscription = process.stdout
       .transform(const Utf8Decoder())
       .transform(const LineSplitter())
       .listen(streamSearch.onData);
-  process.stderr
+  var stderrSubscription = process.stderr
       .transform(const Utf8Decoder())
       .transform(const LineSplitter())
       .listen(print);
+
+  addTearDown(() {
+    stdoutSubscription.cancel();
+    stderrSubscription.cancel();
+  });
 
   return (process, streamSearch);
 }
@@ -68,6 +74,7 @@ Future<void> waitForServerRunning(KeywordSearchInStream streamSearch) async {
 
 void main() async {
   group('Given a mini project', () {
+    late String sandboxDir;
     var projectName =
         'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
     var serverDir = path.join(projectName, '${projectName}_server');
@@ -76,27 +83,31 @@ void main() async {
     KeywordSearchInStream? streamSearch;
 
     setUpAll(() async {
+      sandboxDir = d.sandbox;
       var result = await runServerpod(
         ['create', projectName, '--mini'],
-        workingDirectory: d.sandbox,
+        workingDirectory: sandboxDir,
       );
       assert(
         result.exitCode == 0,
         'Failed to create the serverpod project.',
       );
-      createDynamicPortConfig(path.join(d.sandbox, serverDir));
+      createDynamicPortConfig(path.join(sandboxDir, serverDir));
     });
 
     tearDown(() async {
-      serverProcess?.kill();
+      serverProcess?.killAndWaitForExit();
       streamSearch?.cancel();
+
+      serverProcess = null;
+      streamSearch = null;
     });
 
     group("when running 'serverpod start --watch'", () {
       setUp(() async {
         (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
           ['start', '--watch'],
-          workingDirectory: path.join(d.sandbox, serverDir),
+          workingDirectory: path.join(sandboxDir, serverDir),
           keywords: startWatchKeywords,
         );
       });
@@ -121,7 +132,7 @@ void main() async {
           // Add a new endpoint file.
           var endpointFile = File(
             path.join(
-              d.sandbox,
+              sandboxDir,
               serverDir,
               'lib',
               'src',
@@ -156,7 +167,7 @@ class TestEndpoint extends Endpoint {
           // Add a model file.
           var modelFile = File(
             path.join(
-              d.sandbox,
+              sandboxDir,
               serverDir,
               'lib',
               'src',
@@ -181,7 +192,7 @@ fields:
           var clientDir = path.join(projectName, '${projectName}_client');
           var entityFile = File(
             path.join(
-              d.sandbox,
+              sandboxDir,
               clientDir,
               'lib',
               'src',
@@ -245,7 +256,7 @@ fields:
       setUp(() async {
         (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
           ['start', '--watch', '--no-fes'],
-          workingDirectory: path.join(d.sandbox, serverDir),
+          workingDirectory: path.join(sandboxDir, serverDir),
           keywords: startWatchKeywords,
         );
       });
@@ -267,7 +278,7 @@ fields:
       setUp(() async {
         (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
           ['start'],
-          workingDirectory: path.join(d.sandbox, serverDir),
+          workingDirectory: path.join(sandboxDir, serverDir),
           keywords: ['Server running.'],
         );
       });
@@ -283,7 +294,7 @@ fields:
 
           var generatedEndpointsFile = File(
             path.join(
-              d.sandbox,
+              sandboxDir,
               serverDir,
               'lib',
               'src',
@@ -300,4 +311,17 @@ fields:
       );
     });
   });
+}
+
+extension on Process {
+  Future<void> killAndWaitForExit() async {
+    this.kill(ProcessSignal.sigint);
+    await this.exitCode.timeout(
+      const Duration(seconds: 5),
+      onTimeout: () {
+        this.kill(ProcessSignal.sigkill);
+        return this.exitCode;
+      },
+    );
+  }
 }

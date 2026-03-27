@@ -132,6 +132,13 @@ jobs:
         run: |
           git config core.safecrlf false
           util/run_tests_serverpod_generate
+      - name: Verify generate from scratch
+        shell: bash
+        run: |
+          rm -rf tests/serverpod_test_server/lib/src/generated
+          export SERVERPOD_HOME=$(pwd)
+          cd tests/serverpod_test_server
+          dart run "$SERVERPOD_HOME/tools/serverpod_cli/bin/serverpod_cli.dart" generate --no-analytics
 
   update_pubspecs:
     name: update pubspecs

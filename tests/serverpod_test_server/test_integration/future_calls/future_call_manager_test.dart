@@ -214,7 +214,7 @@ void main() async {
       late FutureCallManager futureCallManager;
       late CompleterTestCall testCall;
       late Session session;
-      var testCallName = 'testCall';
+      var testCallName = 'test-future-call-execution-and-deletion-call';
       var identifier = 'alex';
 
       setUp(() async {
@@ -249,6 +249,7 @@ void main() async {
         test('then the FutureCallEntry gets deleted from database', () async {
           final futureCallEntries = await FutureCallEntry.db.find(
             session,
+            where: (entry) => entry.name.equals(testCallName),
           );
 
           expect(futureCallEntries, isEmpty);
@@ -429,7 +430,7 @@ void main() async {
       late FutureCallManager futureCallManager;
       late CounterTestCall testCall;
       late Session session;
-      var testCallName = 'testCall';
+      var testCallName = 'test-multiple-scheduled-call';
       var identifier = 'alex';
 
       setUp(() async {
@@ -474,6 +475,7 @@ void main() async {
           () async {
             final futureCallEntries = await FutureCallEntry.db.find(
               session,
+              where: (entry) => entry.name.equals(testCallName),
             );
 
             expect(futureCallEntries, isEmpty);
@@ -490,7 +492,7 @@ void main() async {
       late ListTestCall testCall;
       var oldestSimpleData = SimpleData(num: 1);
       var newestSimpleData = SimpleData(num: 2);
-      var testCallName = 'testCall';
+      var testCallName = 'test-multiple-scheduled-call-with-diff-date';
       var identifier = 'alex';
 
       setUp(() async {
@@ -549,14 +551,16 @@ void main() async {
   withServerpod(
     'Given FutureCallManager with concurrency limit 2 and 2 FutureCalls are scheduled',
     (sessionBuilder, _) {
+      late Session session;
       late FutureCallManager futureCallManager;
       late ListTestCall testCall;
       var firstButSlowest = SimpleData(num: 1000);
       var lastButFastest = SimpleData(num: 20);
-      var testCallName = 'testCall';
+      var testCallName = 'concurrent-test-call';
       var identifier = 'alex';
 
       setUp(() async {
+        session = sessionBuilder.build();
         futureCallManager =
             FutureCallManagerBuilder.fromTestSessionBuilder(sessionBuilder)
                 .withConfig(
@@ -589,6 +593,14 @@ void main() async {
         );
       });
 
+      tearDown(() async {
+        await FutureCallEntry.db.deleteWhere(
+          session,
+          where: (t) => t.name.equals(testCallName),
+        );
+        await session.close();
+      });
+
       group('when running all scheduled FutureCalls', () {
         setUp(() async {
           await futureCallManager.runScheduledFutureCalls();
@@ -607,6 +619,7 @@ void main() async {
         });
       });
     },
+    rollbackDatabase: RollbackDatabase.disabled,
   );
 
   withServerpod(
@@ -724,7 +737,7 @@ void main() async {
       late Session session;
       late Session logSession;
       late FutureCallManager futureCallManager;
-      final testCallName = 'Test-Future-Call';
+      final testCallName = 'scheduled-but-unregistered-call';
 
       setUp(() async {
         server = IntegrationTestServer.create();
@@ -752,6 +765,11 @@ void main() async {
       });
 
       tearDown(() async {
+        await FutureCallEntry.db.deleteWhere(
+          session,
+          where: (t) => t.name.equals(testCallName),
+        );
+
         await session.close();
         await logSession.close();
         await server.shutdown(exitProcess: false);
@@ -774,7 +792,7 @@ void main() async {
               'Attempted to run a FutureCall that was not registered. This is likely due '
               'to changing a FutureCall method after it was scheduled, leading to an '
               'entry that no longer has a matching method. For legacy future calls, '
-              r'make sure they are registered in the server start. Entry: \{.*\"name\":\s*\"Test-Future-Call\".*\}',
+              r'make sure they are registered in the server start. Entry: \{.*\"name\":\s*\"scheduled-but-unregistered-call\".*\}',
             ),
           );
         },

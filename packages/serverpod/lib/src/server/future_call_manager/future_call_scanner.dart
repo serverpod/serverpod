@@ -68,7 +68,7 @@ class FutureCallScanner {
     try {
       final now = DateTime.now().toUtc();
 
-      final entries = await FutureCallEntry.db.deleteWhere(
+      final entries = await FutureCallEntry.db.find(
         _internalSession,
         where: (row) => row.time <= now,
       );
