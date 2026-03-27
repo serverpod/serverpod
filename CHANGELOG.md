@@ -12,8 +12,12 @@
 - refactor: Decouples all database-related code from `serverpod` into the new `serverpod_database` package to allow supporting client-side databases in the future.
 - refactor: Removes database-specific default values from the definition files to allow supporting extra database dialects.
 - refactor: Reduces the time taken to run incremental generation steps with the `--watch` flag by x15 and regular `generate` command by 20%.
+
+## 3.4.5
+
 - fix: Truncates logged error messages to prevent hanging on formatter issues during code generation.
 - fix: Fixes the CLI invoking the welcome page more than once per install.
+- chore: Moves the `flutter_secure_storage` override from the workspace to the created Flutter package on a new project.
 
 ## 3.4.4
 
