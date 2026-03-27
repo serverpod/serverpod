@@ -1,3 +1,10 @@
+## 3.5.0-beta.3
+
+- feat(EXPERIMENTAL): Adds MCP server to the serverpod CLI with `apply_migrations` tool.
+- feat: Ensures at-least-once semantics for future calls execution.
+- feat: Allows configuring localization for the sign in widgets. ([@justlunix](https://github.com/justlunix))
+- feat: Adds `onAfterAccountCreated` callbacks to all IDPs for custom post-account creation logic. ([@kamil-matula](https://github.com/kamil-matula))
+
 ## 3.5.0-beta.2
 
 - fix: Fixes time spinners not updating correctly when running the `generate` or `start` commands.
